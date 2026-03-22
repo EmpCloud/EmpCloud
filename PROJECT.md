@@ -197,6 +197,7 @@ EMP Cloud dashboard → user clicks "Launch" on a module → URL opens with `?ss
 - Never commit .pem, .key, .env files — always verify .gitignore
 - Never use `git add .` — add specific files by name
 - User only tests via ngrok URLs
+- Always add screenshots to README.md with markdown image references before pushing to remote — screenshots in the repo but not in the README are invisible to the team
 
 ---
 
