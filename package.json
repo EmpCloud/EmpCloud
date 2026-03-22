@@ -1,0 +1,25 @@
+{
+  "name": "empcloud",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EMP Cloud — Central identity, subscription & gateway platform for the EMP ecosystem",
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter ./packages/* dev",
+    "build": "pnpm --filter @empcloud/shared build && pnpm --parallel --filter @empcloud/server --filter @empcloud/client build",
+    "typecheck": "pnpm --parallel --filter ./packages/* typecheck",
+    "test": "pnpm --parallel --filter ./packages/* test",
+    "lint": "pnpm --parallel --filter ./packages/* lint",
+    "clean": "pnpm --parallel --filter ./packages/* clean",
+    "migrate": "pnpm --filter @empcloud/server migrate",
+    "seed": "pnpm --filter @empcloud/server seed",
+    "generate-keys": "pnpm --filter @empcloud/server generate-keys"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

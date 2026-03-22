@@ -1,0 +1,48 @@
+{
+  "folders": [
+    {
+      "name": "root",
+      "path": "."
+    },
+    {
+      "name": "server",
+      "path": "packages/server"
+    },
+    {
+      "name": "client",
+      "path": "packages/client"
+    },
+    {
+      "name": "shared",
+      "path": "packages/shared"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/pnpm-lock.yaml": true
+    },
+    "tailwindCSS.experimental.classRegex": [
+      ["cn\\(([^)]*)\\)", "'([^']*)'"]
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-playwright.playwright"
+    ]
+  }
+}
