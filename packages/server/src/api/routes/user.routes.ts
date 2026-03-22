@@ -16,6 +16,10 @@ import {
   AuditAction,
 } from "@empcloud/shared";
 import { paramInt, param } from "../../utils/params.js";
+import * as importService from "../../services/import/import.service.js";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 const router = Router();
 
@@ -126,6 +130,51 @@ router.post("/accept-invitation", async (req: Request, res: Response, next: Next
       password,
     });
     sendSuccess(res, user, 201);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/users/org-chart
+router.get("/org-chart", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const tree = await userService.getOrgChart(req.user!.org_id);
+    sendSuccess(res, tree);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/users/import — parse CSV and return preview
+router.post("/import", authenticate, requireOrgAdmin, upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.file) {
+      sendSuccess(res, { error: "No file uploaded" }, 400);
+      return;
+    }
+    const rows = importService.parseCSV(req.file.buffer);
+    const result = await importService.validateImportData(req.user!.org_id, rows);
+    sendSuccess(res, { ...result, totalRows: rows.length });
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/users/import/execute — execute the import
+router.post("/import/execute", authenticate, requireOrgAdmin, upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.file) {
+      sendSuccess(res, { error: "No file uploaded" }, 400);
+      return;
+    }
+    const rows = importService.parseCSV(req.file.buffer);
+    const { valid } = await importService.validateImportData(req.user!.org_id, rows);
+    const result = await importService.executeImport(req.user!.org_id, valid, req.user!.sub);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.USER_CREATED,
+      details: { bulk_import: true, count: result.count },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result, 201);
   } catch (err) { next(err); }
 });
 

@@ -27,11 +27,21 @@ const DocumentsPage = lazy(() => import("@/pages/documents/DocumentsPage"));
 const DocumentCategoriesPage = lazy(() => import("@/pages/documents/DocumentCategoriesPage"));
 const AnnouncementsPage = lazy(() => import("@/pages/announcements/AnnouncementsPage"));
 const PoliciesPage = lazy(() => import("@/pages/policies/PoliciesPage"));
+const OrgChartPage = lazy(() => import("@/pages/employees/OrgChartPage"));
+const ImportEmployeesPage = lazy(() => import("@/pages/employees/ImportEmployeesPage"));
+const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
+}
+
+function RootRedirect() {
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === "org_admin" || user?.role === "super_admin" || user?.role === "hr_admin" || user?.role === "hr_manager";
+  if (isAdmin) return <DashboardPage />;
+  return <SelfServiceDashboardPage />;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
@@ -62,7 +72,8 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/self-service" element={<SelfServiceDashboardPage />} />
           <Route path="/modules" element={<ModulesPage />} />
           <Route path="/subscriptions" element={<SubscriptionsPage />} />
           <Route path="/users" element={<UsersPage />} />
@@ -83,6 +94,8 @@ export default function App() {
           <Route path="/documents/categories" element={<DocumentCategoriesPage />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/policies" element={<PoliciesPage />} />
+          <Route path="/org-chart" element={<OrgChartPage />} />
+          <Route path="/employees/import" element={<ImportEmployeesPage />} />
         </Route>
 
         {/* Fallback */}

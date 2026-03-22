@@ -1,8 +1,9 @@
-import { useOrgStats, useSubscriptions, useModules } from "@/api/hooks";
+import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
-import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight } from "lucide-react";
+import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
 
 const hrmsQuickLinks = [
   { path: "/employees", label: "Employee Directory", icon: Users, color: "bg-blue-50 text-blue-600" },
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const { data: stats } = useOrgStats();
   const { data: subscriptions } = useSubscriptions();
   const { data: modules } = useModules();
+  const { data: widgets, isLoading: widgetsLoading } = useDashboardWidgets();
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
 
   const activeSubscriptions = subscriptions?.filter(
@@ -25,6 +27,14 @@ export default function DashboardPage() {
   ) || [];
 
   const moduleMap = new Map(modules?.map((m: any) => [m.id, m]) || []);
+
+  // Build lookup sets for widget visibility and module URLs
+  const subscribedSlugs = new Set(
+    activeSubscriptions.map((s: any) => (moduleMap.get(s.module_id) as any)?.slug).filter(Boolean)
+  );
+  const moduleBaseUrls = new Map<string, string>(
+    modules?.filter((m: any) => m.base_url).map((m: any) => [m.slug, m.base_url]) || []
+  );
 
   // Core HRMS is the platform itself — not a module in the DB
   const hrmsModule = {
@@ -127,6 +137,77 @@ export default function DashboardPage() {
                 </Link>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Module Insights — live data from subscribed module APIs */}
+      {activeSubscriptions.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Module Insights</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Recruit Widget */}
+            {subscribedSlugs.has("emp-recruit") && (
+              <WidgetCard
+                title="Recruitment"
+                icon={Briefcase}
+                color="indigo"
+                moduleUrl={moduleBaseUrls.get("emp-recruit")}
+                isLoading={widgetsLoading}
+                isOffline={!widgetsLoading && widgets?.recruit === null}
+              >
+                <Stat label="Open Jobs" value={widgets?.recruit?.openJobs as number} />
+                <Stat label="Candidates" value={widgets?.recruit?.totalCandidates as number} />
+                <Stat label="Recent Hires" value={widgets?.recruit?.recentHires as number} />
+              </WidgetCard>
+            )}
+
+            {/* Performance Widget */}
+            {subscribedSlugs.has("emp-performance") && (
+              <WidgetCard
+                title="Performance"
+                icon={Target}
+                color="green"
+                moduleUrl={moduleBaseUrls.get("emp-performance")}
+                isLoading={widgetsLoading}
+                isOffline={!widgetsLoading && widgets?.performance === null}
+              >
+                <Stat label="Active Cycles" value={widgets?.performance?.activeCycles as number} />
+                <Stat label="Pending Reviews" value={widgets?.performance?.pendingReviews as number} />
+                <Stat label="Goal Completion" value={widgets?.performance?.goalCompletion != null ? `${widgets.performance.goalCompletion}%` : undefined} />
+              </WidgetCard>
+            )}
+
+            {/* Rewards Widget */}
+            {subscribedSlugs.has("emp-rewards") && (
+              <WidgetCard
+                title="Recognition"
+                icon={Award}
+                color="amber"
+                moduleUrl={moduleBaseUrls.get("emp-rewards")}
+                isLoading={widgetsLoading}
+                isOffline={!widgetsLoading && widgets?.rewards === null}
+              >
+                <Stat label="Kudos This Month" value={widgets?.rewards?.totalKudos as number} />
+                <Stat label="Points Given" value={widgets?.rewards?.pointsDistributed as number} />
+                <Stat label="Badges Earned" value={widgets?.rewards?.badgesAwarded as number} />
+              </WidgetCard>
+            )}
+
+            {/* Exit Widget */}
+            {subscribedSlugs.has("emp-exit") && (
+              <WidgetCard
+                title="Exit & Attrition"
+                icon={UserMinus}
+                color="rose"
+                moduleUrl={moduleBaseUrls.get("emp-exit")}
+                isLoading={widgetsLoading}
+                isOffline={!widgetsLoading && widgets?.exit === null}
+              >
+                <Stat label="Active Exits" value={widgets?.exit?.activeExits as number} />
+                <Stat label="Attrition Rate" value={widgets?.exit?.attritionRate != null ? `${widgets.exit.attritionRate}%` : undefined} />
+              </WidgetCard>
+            )}
           </div>
         </div>
       )}

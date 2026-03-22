@@ -93,6 +93,14 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Test files alongside source: `*.test.ts`
 - Playwright for E2E
 
+## Working Rules
+- NEVER start building from a plan without explicit user confirmation
+- Present plans/feature lists first, ask for approval, WAIT for "yes" before coding
+- Always show READMEs, code plans, and architecture decisions before executing
+- Always deploy to ngrok before asking user to test — user only tests via ngrok URLs
+- Never commit .pem, .key, .env files or secrets to git — always verify .gitignore before staging
+- Never use `git add .` or `git add -A` — always add specific files by name
+
 ## Security (SOC 2)
 - Never log secrets, tokens, or passwords
 - PKCE required for all public OAuth clients

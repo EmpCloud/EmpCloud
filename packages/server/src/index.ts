@@ -13,6 +13,9 @@ import { loadKeys } from "./services/oauth/jwt.service.js";
 import { errorHandler } from "./api/middleware/error.middleware.js";
 import { sendSuccess } from "./utils/response.js";
 
+// Docs
+import { swaggerUIHandler, openapiHandler } from "./api/docs/index.js";
+
 // Route imports
 import authRoutes from "./api/routes/auth.routes.js";
 import oauthRoutes from "./api/routes/oauth.routes.js";
@@ -28,6 +31,8 @@ import leaveRoutes from "./api/routes/leave.routes.js";
 import documentRoutes from "./api/routes/document.routes.js";
 import announcementRoutes from "./api/routes/announcement.routes.js";
 import policyRoutes from "./api/routes/policy.routes.js";
+import notificationRoutes from "./api/routes/notification.routes.js";
+import dashboardRoutes from "./api/routes/dashboard.routes.js";
 
 async function main() {
   // Initialize database
@@ -58,6 +63,8 @@ async function main() {
     await m008(db);
     await m009(db);
     await m010(db);
+    const { up: m011 } = await import("./db/migrations/011_notifications.js");
+    await m011(db);
     logger.info("Auto-migration complete (including HRMS)");
   }
 
@@ -120,6 +127,12 @@ async function main() {
   app.use("/api/v1/documents", apiLimiter, documentRoutes);
   app.use("/api/v1/announcements", apiLimiter, announcementRoutes);
   app.use("/api/v1/policies", apiLimiter, policyRoutes);
+  app.use("/api/v1/notifications", apiLimiter, notificationRoutes);
+  app.use("/api/v1/dashboard", apiLimiter, dashboardRoutes);
+
+  // API Documentation
+  app.get("/api/docs", swaggerUIHandler);
+  app.get("/api/docs/openapi.json", openapiHandler);
 
   // Error handler (must be last)
   app.use(errorHandler);

@@ -136,6 +136,112 @@ export async function inviteUser(orgId: number, invitedBy: number, data: InviteU
   return { token, invitation };
 }
 
+// ---------------------------------------------------------------------------
+// Org Chart
+// ---------------------------------------------------------------------------
+
+export interface OrgChartNode {
+  id: number;
+  name: string;
+  designation: string | null;
+  department: string | null;
+  photo: string | null;
+  children: OrgChartNode[];
+}
+
+export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
+  const db = getDB();
+
+  const users = await db("users")
+    .leftJoin("departments", "users.department_id", "departments.id")
+    .where({ "users.organization_id": orgId, "users.status": 1 })
+    .select(
+      "users.id",
+      "users.first_name",
+      "users.last_name",
+      "users.designation",
+      "users.reporting_manager_id",
+      "users.photo",
+      "departments.name as department"
+    );
+
+  // Build a map of nodes
+  const nodeMap = new Map<number, OrgChartNode>();
+  for (const u of users) {
+    nodeMap.set(u.id, {
+      id: u.id,
+      name: `${u.first_name} ${u.last_name}`,
+      designation: u.designation || null,
+      department: u.department || null,
+      photo: u.photo || null,
+      children: [],
+    });
+  }
+
+  // Build tree
+  const roots: OrgChartNode[] = [];
+  for (const u of users) {
+    const node = nodeMap.get(u.id)!;
+    if (u.reporting_manager_id && nodeMap.has(u.reporting_manager_id)) {
+      nodeMap.get(u.reporting_manager_id)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
+
+// ---------------------------------------------------------------------------
+// Bulk Import
+// ---------------------------------------------------------------------------
+
+export async function bulkCreateUsers(
+  orgId: number,
+  rows: Array<{
+    first_name: string;
+    last_name: string;
+    email: string;
+    designation?: string;
+    department_id?: number;
+    role?: string;
+    emp_code?: string;
+    contact_number?: string;
+  }>,
+  importedBy: number
+): Promise<{ count: number }> {
+  const db = getDB();
+
+  const insertRows = rows.map((row) => ({
+    organization_id: orgId,
+    first_name: row.first_name,
+    last_name: row.last_name,
+    email: row.email,
+    designation: row.designation || null,
+    department_id: row.department_id || null,
+    role: row.role || "employee",
+    emp_code: row.emp_code || null,
+    contact_number: row.contact_number || null,
+    employment_type: "full_time",
+    date_of_joining: new Date().toISOString().slice(0, 10),
+    status: 1,
+    created_at: new Date(),
+    updated_at: new Date(),
+  }));
+
+  await db.transaction(async (trx) => {
+    // Insert in batches of 100
+    for (let i = 0; i < insertRows.length; i += 100) {
+      await trx("users").insert(insertRows.slice(i, i + 100));
+    }
+    await trx("organizations")
+      .where({ id: orgId })
+      .increment("current_user_count", insertRows.length);
+  });
+
+  return { count: insertRows.length };
+}
+
 export async function acceptInvitation(params: {
   token: string;
   firstName: string;

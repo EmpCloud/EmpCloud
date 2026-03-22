@@ -126,6 +126,17 @@ export function useAssignSeat() {
   });
 }
 
+// --- Dashboard Widgets ---
+
+export function useDashboardWidgets() {
+  return useQuery({
+    queryKey: ["dashboard-widgets"],
+    queryFn: () => api.get("/dashboard/widgets").then((r) => r.data.data),
+    refetchInterval: 5 * 60 * 1000, // refresh every 5 minutes
+    staleTime: 4 * 60 * 1000,
+  });
+}
+
 // --- Audit ---
 
 export function useAuditLogs(params?: { page?: number; action?: string }) {
