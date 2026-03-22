@@ -9,3 +9,8 @@ coverage/
 .turbo/
 keys/*.pem
 keys/*.key
+**/keys/*.pem
+**/keys/*.key
+*.pem
+*.key
+uploads/
