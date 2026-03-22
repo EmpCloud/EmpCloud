@@ -314,6 +314,41 @@ empcloud/
 - Subscription management (add modules, adjust seats)
 - Audit log (centralized activity trail)
 
+## Screenshots
+
+### Dashboard
+![Dashboard](e2e/screenshots/cloud-01-dashboard.png)
+
+### Employee Directory
+![Employee Directory](e2e/screenshots/cloud-02-employees.png)
+
+### Attendance Management
+![Attendance](e2e/screenshots/cloud-03-attendance.png)
+
+### Leave Management
+![Leave](e2e/screenshots/cloud-04-leave.png)
+
+### Document Management
+![Documents](e2e/screenshots/cloud-05-documents.png)
+
+### Announcements
+![Announcements](e2e/screenshots/cloud-06-announcements.png)
+
+### Company Policies
+![Policies](e2e/screenshots/cloud-07-policies.png)
+
+### Module Marketplace
+![Modules](e2e/screenshots/cloud-08-modules.png)
+
+### Subscriptions
+![Subscriptions](e2e/screenshots/cloud-09-subscriptions.png)
+
+### Organization Settings
+![Settings](e2e/screenshots/cloud-10-settings.png)
+
+### Audit Log
+![Audit Log](e2e/screenshots/cloud-11-audit.png)
+
 ## OAuth2 Flow
 
 ```
