@@ -2,14 +2,18 @@
 
 **The core HRMS platform, identity server, and module gateway for the EMP ecosystem.**
 
-EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, and company policies. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2 and subdomain routing.
+[![Status: Built](https://img.shields.io/badge/Status-Built-green)]()
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green.svg)](LICENSE)
+
+EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, company policies, org chart visualization, notification center, bulk CSV import, employee self-service dashboard, and unified dashboard widgets. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2 and subdomain routing.
 
 ## Architecture
 
 ```
 empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 |   Built-in: Employee Profiles, Attendance, Leave, Documents,
-|             Announcements, Policies, Org Management, Auth
+|             Announcements, Policies, Org Chart, Notifications,
+|             Bulk Import, Self-Service Dashboard, Unified Widgets
 |
 |- payroll.empcloud.com         <- EMP Payroll (sellable module)
 |- monitor.empcloud.com         <- EMP Monitor (sellable module)
@@ -43,6 +47,7 @@ empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 | **Cache** | Redis 7 |
 | **Auth** | OAuth2/OIDC, RS256 JWT, PKCE, bcryptjs |
 | **Queue** | BullMQ (async jobs) |
+| **API Docs** | Swagger UI + OpenAPI 3.0 JSON |
 | **Monorepo** | pnpm workspaces |
 | **Infra** | Docker, Docker Compose |
 
@@ -67,7 +72,11 @@ empcloud/
 │   │       │   │   ├── leave.routes.ts          # Leave management
 │   │       │   │   ├── document.routes.ts       # Document management
 │   │       │   │   ├── announcement.routes.ts   # Announcements
-│   │       │   │   └── policy.routes.ts         # Company policies
+│   │       │   │   ├── policy.routes.ts         # Company policies
+│   │       │   │   ├── org-chart.routes.ts      # Org chart visualization
+│   │       │   │   ├── notification.routes.ts   # Notification center
+│   │       │   │   ├── import.routes.ts         # Bulk CSV import
+│   │       │   │   └── dashboard.routes.ts      # Unified dashboard widgets
 │   │       │   ├── middleware/     # auth, rbac, rate-limit, cors
 │   │       │   └── validators/    # Zod request schemas
 │   │       ├── services/
@@ -83,7 +92,11 @@ empcloud/
 │   │       │   ├── leave/         # Leave types, policies, balances, approvals
 │   │       │   ├── document/      # Document categories, uploads, verification
 │   │       │   ├── announcement/  # Company announcements, read tracking
-│   │       │   └── policy/        # Company policies, versioning, acknowledgments
+│   │       │   ├── policy/        # Company policies, versioning, acknowledgments
+│   │       │   ├── org-chart/     # Org chart tree building, reporting lines
+│   │       │   ├── notification/  # In-app notification center
+│   │       │   ├── import/        # Bulk CSV import (preview, validate, execute)
+│   │       │   └── dashboard/     # Unified dashboard widgets with Redis caching
 │   │       ├── db/
 │   │       │   ├── migrations/
 │   │       │   │   ├── 001_identity_schema.ts
@@ -95,21 +108,29 @@ empcloud/
 │   │       │   │   ├── 007_leave.ts
 │   │       │   │   ├── 008_documents.ts
 │   │       │   │   ├── 009_announcements.ts
-│   │       │   │   └── 010_policies.ts
+│   │       │   │   ├── 010_policies.ts
+│   │       │   │   ├── 011_org_chart.ts
+│   │       │   │   ├── 012_notifications.ts
+│   │       │   │   └── 013_import_dashboard.ts
 │   │       │   └── seed.ts        # Demo data
 │   │       ├── config/            # Environment config
+│   │       ├── swagger/           # OpenAPI spec & Swagger UI setup
 │   │       └── utils/             # Logger, crypto, helpers
 │   ├── client/                     # React SPA
 │   │   └── src/
 │   │       ├── pages/
 │   │       │   ├── auth/              # Login, Register
-│   │       │   ├── dashboard/         # Central dashboard
+│   │       │   ├── dashboard/         # Central dashboard with unified widgets
 │   │       │   ├── employees/         # Employee Directory, Employee Profile (tabbed)
 │   │       │   ├── attendance/        # Dashboard, Records, Shifts, Regularizations
 │   │       │   ├── leave/             # Dashboard, Applications, Calendar, Types/Policies
 │   │       │   ├── documents/         # Documents Overview, Document Categories
 │   │       │   ├── announcements/     # Announcements list & detail
 │   │       │   ├── policies/          # Policies list & acknowledgment
+│   │       │   ├── org-chart/         # Org Chart visualization page
+│   │       │   ├── notifications/     # Notification Center
+│   │       │   ├── import/            # Bulk CSV Import (preview + validate)
+│   │       │   ├── self-service/      # Employee Self-Service Dashboard
 │   │       │   ├── modules/           # Module marketplace
 │   │       │   ├── subscriptions/     # Subscription management
 │   │       │   ├── users/             # User management
@@ -128,6 +149,26 @@ empcloud/
 ```
 
 ## Core Features
+
+| Feature | Status |
+|---------|--------|
+| Authentication & SSO (OAuth2/OIDC) | Built |
+| Organization Management | Built |
+| Employee Extended Profiles | Built |
+| Attendance Management | Built |
+| Leave Management | Built |
+| Document Management | Built |
+| Announcements | Built |
+| Company Policies | Built |
+| Module Subscriptions | Built |
+| Internal Billing Engine | Built |
+| Central Dashboard | Built |
+| Org Chart Visualization | Built |
+| Notification Center | Built |
+| Bulk Employee CSV Import | Built |
+| Employee Self-Service Dashboard | Built |
+| Unified Dashboard Widgets | Built |
+| API Documentation (Swagger UI) | Built |
 
 ### Authentication & SSO (OAuth2/OIDC)
 
@@ -200,6 +241,54 @@ empcloud/
 - Mandatory vs optional policy classification
 - Pending acknowledgment reports
 
+### Org Chart Visualization
+
+- Interactive tree-based org chart rendering
+- Hierarchical reporting lines (manager -> direct reports)
+- Department and location grouping
+- Zoom/pan navigation
+- Click-through to employee profiles
+
+### Notification Center
+
+- In-app bell icon with unread count badge
+- Dropdown notification list with real-time updates
+- Mark as read / mark all as read
+- Notification types: leave approvals, announcements, document expiry, attendance alerts
+- Click-through navigation to relevant pages
+
+### Bulk Employee CSV Import
+
+- CSV file upload with column mapping
+- Preview imported data before execution
+- Row-level validation with error highlighting
+- Batch insert with rollback on failure
+- Import history and status tracking
+
+### Employee Self-Service Dashboard
+
+- Role-based redirect (Employee vs Admin/HR)
+- Personal attendance summary and quick check-in
+- Leave balance overview and apply shortcut
+- Pending document uploads
+- Upcoming announcements and policy acknowledgments
+- Recent notifications
+
+### Unified Dashboard Widgets
+
+- Live data aggregation from all subscribed modules
+- Widget cards: headcount, attendance rate, pending leaves, open positions, active exits, recognition stats
+- Redis-cached widget data with configurable TTL
+- Module-specific deep links from each widget
+- Responsive grid layout
+
+### API Documentation
+
+- Swagger UI available at `/api/docs`
+- OpenAPI 3.0 JSON spec at `/api/docs/openapi.json`
+- All endpoints documented with request/response schemas
+- Try-it-out functionality with authentication
+
 ### Module Subscriptions
 
 - Module marketplace (browse available EMP modules)
@@ -219,6 +308,7 @@ empcloud/
 ### Central Dashboard
 
 - Module launcher (cards for each subscribed module)
+- Unified widgets with live data from subscribed modules
 - Organization settings & branding
 - User management (invite, roles, deactivate)
 - Subscription management (add modules, adjust seats)
@@ -300,6 +390,18 @@ empcloud/
 - `company_policies` — Policy documents with versions
 - `policy_acknowledgments` — Employee acknowledgment records
 
+### Org Chart Tables (migration 011)
+- `reporting_lines` — Manager-employee reporting relationships
+- `org_chart_settings` — Per-org chart display configuration
+
+### Notification Tables (migration 012)
+- `notifications` — In-app notifications with type, status, and link
+
+### Import & Dashboard Tables (migration 013)
+- `import_jobs` — Bulk CSV import job tracking
+- `import_rows` — Row-level import data and validation results
+- `dashboard_widget_config` — Per-org widget layout and preferences
+
 ## API Overview
 
 | Group | Base Path | Description |
@@ -316,8 +418,13 @@ empcloud/
 | Documents | `/api/v1/documents` | Categories, upload, download, verify, mandatory tracking, expiry alerts |
 | Announcements | `/api/v1/announcements` | CRUD, read tracking, unread count |
 | Policies | `/api/v1/policies` | CRUD, versioning, acknowledge, pending acknowledgments |
+| Org Chart | `/api/v1/org-chart` | Tree data, reporting lines, department grouping |
+| Notifications | `/api/v1/notifications` | List, mark read, unread count, preferences |
+| Import | `/api/v1/import` | CSV upload, preview, validate, execute, history |
+| Dashboard | `/api/v1/dashboard` | Unified widgets, module summaries, cached stats |
 | Audit | `/api/v1/audit` | Audit log |
 | Health | `/health` | Health check |
+| API Docs | `/api/docs` | Swagger UI + OpenAPI JSON |
 
 ## Getting Started
 
@@ -346,6 +453,11 @@ pnpm --filter server seed
 # Start dev servers
 pnpm dev
 ```
+
+Once running, visit:
+- **Client**: http://localhost:5173
+- **API**: http://localhost:3000
+- **API Documentation**: http://localhost:3000/api/docs
 
 ### Environment Variables
 
@@ -392,16 +504,16 @@ EMP Cloud is designed as an **open module registry** — adding a new module req
 
 | Module | Slug | URL | Status |
 |--------|------|-----|--------|
-| **EMP HRMS** | — | empcloud.com | Built — part of EMP Cloud (employees, attendance, leave, documents, announcements, policies) |
+| **EMP HRMS** | — | empcloud.com | Built — part of EMP Cloud (employees, attendance, leave, documents, announcements, policies, org chart, notifications, bulk import, self-service, unified widgets) |
 | EMP Payroll | `emp-payroll` | payroll.empcloud.com | Built — open-source basic engine, premium advanced tax. Fetches attendance/leave from EMP Cloud |
 | EMP Monitor | `emp-monitor` | monitor.empcloud.com | Refactor from monolith |
-| EMP Recruit | `emp-recruit` | recruit.empcloud.com | Planned — open-source job posting & pipeline, premium AI screening |
+| EMP Recruit | `emp-recruit` | recruit.empcloud.com | Built — ATS, interviews, AI resume scoring, offer PDFs, candidate portal, custom pipelines |
 | EMP Field | `emp-field` | field.empcloud.com | Planned — open-source GPS check-in, premium route optimization |
 | EMP Biometrics | `emp-biometrics` | biometrics.empcloud.com | Planned — premium facial recognition, open-source basic biometric hooks |
 | EMP Projects | `emp-projects` | projects.empcloud.com | Partially built |
-| EMP Rewards | `emp-rewards` | rewards.empcloud.com | Planned — open-source badges & kudos, premium AI-powered rewards |
-| EMP Performance | `emp-performance` | performance.empcloud.com | Planned — open-source reviews & OKRs, premium succession planning |
-| EMP Exit | `emp-exit` | exit.empcloud.com | Planned — fully open-source (high community value) |
+| EMP Rewards | `emp-rewards` | rewards.empcloud.com | Built — kudos, badges, celebrations, Slack integration, team challenges, manager dashboard |
+| EMP Performance | `emp-performance` | performance.empcloud.com | Built — reviews, OKRs, 9-box grid, succession planning, goal alignment, skills gap analysis |
+| EMP Exit | `emp-exit` | exit.empcloud.com | Built — offboarding workflows, predictive attrition, buyout calculator, rehire, NPS surveys |
 
 > **9 sellable modules** in the marketplace. EMP HRMS is built into EMP Cloud (not a separate module). EMP Billing is the internal billing engine (not sellable).
 
