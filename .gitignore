@@ -14,3 +14,6 @@ keys/*.key
 *.pem
 *.key
 uploads/
+
+.deployment.env
+*.deployment.env
