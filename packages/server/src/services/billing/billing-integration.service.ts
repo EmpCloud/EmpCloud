@@ -98,13 +98,19 @@ export async function autoProvisionClient(
   orgName: string,
   orgEmail: string
 ): Promise<string | null> {
-  const result = await billingFetch<{ id: string }>("POST", "/clients/auto-provision", {
-    name: orgName,
-    email: orgEmail,
-    currency: "INR",
-  });
+  // Billing returns { client: { id, ... }, isNew: boolean }
+  const result = await billingFetch<{ client?: { id: string }; id?: string }>(
+    "POST",
+    "/clients/auto-provision",
+    {
+      name: orgName,
+      email: orgEmail,
+      currency: "INR",
+    }
+  );
 
-  if (!result?.id) return null;
+  const clientId = result?.client?.id ?? result?.id;
+  if (!clientId) return null;
 
   const db = getDB();
   // Upsert the mapping
@@ -115,13 +121,13 @@ export async function autoProvisionClient(
   if (!existing) {
     await db("billing_client_mappings").insert({
       organization_id: orgId,
-      billing_client_id: result.id,
+      billing_client_id: clientId,
       created_at: new Date(),
     });
   }
 
-  logger.info(`Billing client provisioned for org ${orgId}: ${result.id}`);
-  return result.id;
+  logger.info(`Billing client provisioned for org ${orgId}: ${clientId}`);
+  return clientId;
 }
 
 export async function getOrCreateBillingClientId(orgId: number): Promise<string | null> {
