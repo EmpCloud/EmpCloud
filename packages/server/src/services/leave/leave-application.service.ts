@@ -302,9 +302,9 @@ export async function getLeaveCalendar(
       : `${year}-${String(month + 1).padStart(2, "0")}-01`;
 
   const leaves = await db("leave_applications")
-    .where({ organization_id: orgId, status: "approved" })
-    .where("start_date", "<", endDate)
-    .where("end_date", ">=", startDate)
+    .where({ "leave_applications.organization_id": orgId, "leave_applications.status": "approved" })
+    .where("leave_applications.start_date", "<", endDate)
+    .where("leave_applications.end_date", ">=", startDate)
     .join("users", "leave_applications.user_id", "users.id")
     .join("leave_types", "leave_applications.leave_type_id", "leave_types.id")
     .select(

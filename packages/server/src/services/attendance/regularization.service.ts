@@ -20,6 +20,15 @@ export async function submitRegularization(orgId: number, userId: number, data: 
     .where({ organization_id: orgId, user_id: userId, date: data.date })
     .first();
 
+  // Helper: if value looks like a bare time (HH:mm or HH:mm:ss), prefix with the date
+  const toTimestamp = (value: string | null | undefined): string | null => {
+    if (!value) return null;
+    // Already a full datetime / ISO string
+    if (value.includes("T") || value.length > 10) return value;
+    // Bare time like "09:00" → combine with request date
+    return `${data.date}T${value}`;
+  };
+
   const [id] = await db("attendance_regularizations").insert({
     organization_id: orgId,
     user_id: userId,
@@ -27,8 +36,8 @@ export async function submitRegularization(orgId: number, userId: number, data: 
     date: data.date,
     original_check_in: attendance?.check_in || null,
     original_check_out: attendance?.check_out || null,
-    requested_check_in: data.requested_check_in || null,
-    requested_check_out: data.requested_check_out || null,
+    requested_check_in: toTimestamp(data.requested_check_in),
+    requested_check_out: toTimestamp(data.requested_check_out),
     reason: data.reason,
     status: "pending",
     created_at: new Date(),

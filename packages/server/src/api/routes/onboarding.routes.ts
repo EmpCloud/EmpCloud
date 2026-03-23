@@ -30,7 +30,7 @@ router.get("/status", async (req: Request, res: Response, next: NextFunction) =>
 // POST /api/v1/onboarding/step/:step
 router.post("/step/:step", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const step = parseInt(req.params.step, 10);
+    const step = parseInt(String(req.params.step), 10);
     const result = await completeStep(req.user!.org_id, req.user!.sub, step, req.body);
     sendSuccess(res, result);
   } catch (err) {

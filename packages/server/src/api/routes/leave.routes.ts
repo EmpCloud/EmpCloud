@@ -154,8 +154,36 @@ router.post("/balances/initialize", authenticate, requireHR, async (req: Request
 });
 
 // ===========================================================================
+// Leave Balances — /me shortcut
+// ===========================================================================
+
+// GET /api/v1/leave/balances/me — shortcut for current user's balances
+router.get("/balances/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const year = req.query.year ? Number(req.query.year) : undefined;
+    const balances = await leaveBalanceService.getBalances(req.user!.org_id, req.user!.sub, year);
+    sendSuccess(res, balances);
+  } catch (err) { next(err); }
+});
+
+// ===========================================================================
 // Leave Applications
 // ===========================================================================
+
+// GET /api/v1/leave/applications/me — current user's applications
+router.get("/applications/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, per_page, status, leave_type_id } = leaveQuerySchema.parse(req.query);
+    const result = await leaveApplicationService.listApplications(req.user!.org_id, {
+      page,
+      perPage: per_page,
+      status,
+      leaveTypeId: leave_type_id,
+      userId: req.user!.sub,
+    });
+    sendPaginated(res, result.applications, result.total, page, per_page);
+  } catch (err) { next(err); }
+});
 
 // GET /api/v1/leave/applications
 router.get("/applications", authenticate, async (req: Request, res: Response, next: NextFunction) => {

@@ -58,7 +58,7 @@ export function requireSelfOrHR(paramName: string = "id") {
       return;
     }
 
-    const targetUserId = parseInt(req.params[paramName], 10);
+    const targetUserId = parseInt(String(req.params[paramName]), 10);
     const isSelf = req.user.sub === targetUserId;
     const userRoleLevel = ROLE_HIERARCHY[req.user.role] ?? 0;
     const hrLevel = ROLE_HIERARCHY["hr_manager" as UserRole] ?? 40;

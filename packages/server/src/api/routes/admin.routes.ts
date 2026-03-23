@@ -48,7 +48,7 @@ router.get("/organizations", async (req: Request, res: Response, next: NextFunct
 // GET /api/v1/admin/organizations/:id — org detail
 router.get("/organizations/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orgId = parseInt(req.params.id, 10);
+    const orgId = parseInt(String(req.params.id), 10);
     const detail = await getOrgDetail(orgId);
     sendSuccess(res, detail);
   } catch (err) {
