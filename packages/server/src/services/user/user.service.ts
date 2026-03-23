@@ -153,7 +153,7 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
   const db = getDB();
 
   const users = await db("users")
-    .leftJoin("departments", "users.department_id", "departments.id")
+    .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
     .where({ "users.organization_id": orgId, "users.status": 1 })
     .select(
       "users.id",
@@ -161,8 +161,8 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
       "users.last_name",
       "users.designation",
       "users.reporting_manager_id",
-      "users.photo",
-      "departments.name as department"
+      "users.photo_path as photo",
+      "organization_departments.name as department"
     );
 
   // Build a map of nodes
