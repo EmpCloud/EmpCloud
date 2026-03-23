@@ -127,7 +127,7 @@ export async function listDocuments(
     query = query.where("employee_documents.category_id", params.category_id);
   }
 
-  const [{ count }] = await query.clone().count("employee_documents.id as count");
+  const [{ count }] = await query.clone().clearSelect().count("employee_documents.id as count");
   const documents = await query
     .orderBy("employee_documents.created_at", "desc")
     .limit(perPage)
