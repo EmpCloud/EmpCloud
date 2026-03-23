@@ -40,12 +40,14 @@ export async function createSubscription(
 ): Promise<OrgSubscription> {
   const db = getDB();
 
-  // Check if already subscribed
+  // Check if already subscribed (active or trial)
   const existing = await db("org_subscriptions")
     .where({ organization_id: orgId, module_id: data.module_id })
-    .whereNot({ status: "cancelled" })
     .first();
-  if (existing) throw new ConflictError("Organization already has an active subscription for this module");
+
+  if (existing && existing.status !== "cancelled") {
+    throw new ConflictError("Organization already has an active subscription for this module");
+  }
 
   const now = new Date();
   const periodEnd = new Date(now);
@@ -72,22 +74,45 @@ export async function createSubscription(
   const mod = await db("modules").where({ id: data.module_id }).first();
   const moduleName = mod?.name ?? `Module #${data.module_id}`;
 
-  const [id] = await db("org_subscriptions").insert({
-    organization_id: orgId,
-    module_id: data.module_id,
-    plan_tier: data.plan_tier,
-    status: trialEndsAt ? "trial" : "active",
-    total_seats: data.total_seats,
-    used_seats: 0,
-    billing_cycle: data.billing_cycle || "monthly",
-    price_per_seat: pricePerSeat,
-    currency: "INR",
-    trial_ends_at: trialEndsAt,
-    current_period_start: now,
-    current_period_end: periodEnd,
-    created_at: now,
-    updated_at: now,
-  });
+  let id: number;
+
+  if (existing && existing.status === "cancelled") {
+    // Reactivate: update the cancelled row to avoid violating the
+    // unique(organization_id, module_id) constraint on org_subscriptions
+    id = existing.id;
+    await db("org_subscriptions").where({ id }).update({
+      plan_tier: data.plan_tier,
+      status: trialEndsAt ? "trial" : "active",
+      total_seats: data.total_seats,
+      used_seats: 0,
+      billing_cycle: data.billing_cycle || "monthly",
+      price_per_seat: pricePerSeat,
+      currency: "INR",
+      trial_ends_at: trialEndsAt,
+      current_period_start: now,
+      current_period_end: periodEnd,
+      cancelled_at: null,
+      updated_at: now,
+    });
+  } else {
+    // Fresh subscription — insert new row
+    [id] = await db("org_subscriptions").insert({
+      organization_id: orgId,
+      module_id: data.module_id,
+      plan_tier: data.plan_tier,
+      status: trialEndsAt ? "trial" : "active",
+      total_seats: data.total_seats,
+      used_seats: 0,
+      billing_cycle: data.billing_cycle || "monthly",
+      price_per_seat: pricePerSeat,
+      currency: "INR",
+      trial_ends_at: trialEndsAt,
+      current_period_start: now,
+      current_period_end: periodEnd,
+      created_at: now,
+      updated_at: now,
+    });
+  }
 
   // --- Billing integration (non-blocking) ---
   // Create an invoice in EMP Billing for paid, non-trial subscriptions
