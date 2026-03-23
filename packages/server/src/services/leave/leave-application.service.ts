@@ -14,6 +14,11 @@ export async function applyLeave(
 ): Promise<LeaveApplication> {
   const db = getDB();
 
+  // Validate dates
+  if (new Date(data.end_date) < new Date(data.start_date)) {
+    throw new ValidationError("End date must not be before start date");
+  }
+
   // Validate leave type exists and is active
   const leaveType = await db("leave_types")
     .where({ id: data.leave_type_id, organization_id: orgId, is_active: true })

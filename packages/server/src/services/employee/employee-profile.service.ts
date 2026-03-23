@@ -121,14 +121,18 @@ export async function getDirectory(
   const page = params.page || 1;
   const perPage = params.per_page || 20;
 
-  let query = db("users").where({ "users.organization_id": orgId });
+  let query = db("users")
+    .leftJoin("departments", "users.department_id", "departments.id")
+    .where({ "users.organization_id": orgId });
 
   if (params.search) {
     const s = `%${params.search}%`;
     query = query.where(function () {
       this.where("users.first_name", "like", s)
         .orWhere("users.last_name", "like", s)
-        .orWhere("users.email", "like", s);
+        .orWhere("users.email", "like", s)
+        .orWhere("users.designation", "like", s)
+        .orWhere("departments.name", "like", s);
     });
   }
 

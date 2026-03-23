@@ -154,22 +154,24 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
 
   const users = await db("users")
     .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
-    .where({ "users.organization_id": orgId, "users.status": 1 })
+    .where("users.organization_id", orgId)
+    .where("users.status", 1)
     .select(
-      "users.id",
-      "users.first_name",
-      "users.last_name",
-      "users.designation",
-      "users.reporting_manager_id",
+      "users.id as id",
+      "users.first_name as first_name",
+      "users.last_name as last_name",
+      "users.designation as designation",
+      "users.reporting_manager_id as reporting_manager_id",
       "users.photo_path as photo",
       "organization_departments.name as department"
     );
 
-  // Build a map of nodes
+  // Build a map of nodes (use Number() to handle potential BigInt from MySQL)
   const nodeMap = new Map<number, OrgChartNode>();
   for (const u of users) {
-    nodeMap.set(u.id, {
-      id: u.id,
+    const uid = Number(u.id);
+    nodeMap.set(uid, {
+      id: uid,
       name: `${u.first_name} ${u.last_name}`,
       designation: u.designation || null,
       department: u.department || null,
@@ -181,9 +183,11 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
   // Build tree
   const roots: OrgChartNode[] = [];
   for (const u of users) {
-    const node = nodeMap.get(u.id)!;
-    if (u.reporting_manager_id && nodeMap.has(u.reporting_manager_id)) {
-      nodeMap.get(u.reporting_manager_id)!.children.push(node);
+    const uid = Number(u.id);
+    const managerId = u.reporting_manager_id ? Number(u.reporting_manager_id) : null;
+    const node = nodeMap.get(uid)!;
+    if (managerId && nodeMap.has(managerId)) {
+      nodeMap.get(managerId)!.children.push(node);
     } else {
       roots.push(node);
     }

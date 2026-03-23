@@ -163,6 +163,7 @@ export async function updateSubscription(
       enterprise: 175000,
     };
     updateData.price_per_seat = PLAN_PRICING[data.plan_tier] ?? sub.price_per_seat;
+    updateData.currency = "INR";
   }
 
   await db("org_subscriptions")
