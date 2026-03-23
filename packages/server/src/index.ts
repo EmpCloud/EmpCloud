@@ -36,6 +36,8 @@ import dashboardRoutes from "./api/routes/dashboard.routes.js";
 import billingWebhookRoutes from "./api/routes/billing-webhook.routes.js";
 import moduleWebhookRoutes from "./api/routes/module-webhook.routes.js";
 import billingRoutes from "./api/routes/billing.routes.js";
+import adminRoutes from "./api/routes/admin.routes.js";
+import onboardingRoutes from "./api/routes/onboarding.routes.js";
 
 async function main() {
   // Initialize database
@@ -70,7 +72,9 @@ async function main() {
     await m011(db);
     const { up: m012 } = await import("./db/migrations/012_billing_integration.js");
     await m012(db);
-    logger.info("Auto-migration complete (including HRMS + billing)");
+    const { up: m013 } = await import("./db/migrations/013_onboarding.js");
+    await m013(db);
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding)");
   }
 
   // Load RSA keys
@@ -139,6 +143,8 @@ async function main() {
   app.use("/api/v1/notifications", apiLimiter, notificationRoutes);
   app.use("/api/v1/dashboard", apiLimiter, dashboardRoutes);
   app.use("/api/v1/billing", apiLimiter, billingRoutes);
+  app.use("/api/v1/admin", apiLimiter, adminRoutes);
+  app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);

@@ -1,5 +1,5 @@
 # =============================================================================
-# EMP Cloud — Server Dockerfile (multi-stage)
+# EMP Cloud — Server Dockerfile (multi-stage, production)
 # =============================================================================
 
 # --- Build stage ---
@@ -7,28 +7,30 @@ FROM node:20-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@9 --activate
 WORKDIR /app
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/server/package.json packages/server/
-RUN pnpm install --frozen-lockfile || pnpm install
+RUN pnpm install --frozen-lockfile
 
-COPY packages/shared packages/shared
-COPY packages/server packages/server
+COPY packages/shared/ packages/shared/
+COPY packages/server/ packages/server/
 RUN pnpm --filter @empcloud/shared build
 RUN pnpm --filter @empcloud/server build
 
 # --- Production stage ---
-FROM node:20-alpine AS production
-RUN corepack enable && corepack prepare pnpm@9 --activate
+FROM node:20-alpine
 WORKDIR /app
 
-COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/packages/shared/package.json packages/shared/
-COPY --from=builder /app/packages/shared/dist packages/shared/dist
-COPY --from=builder /app/packages/server/package.json packages/server/
-COPY --from=builder /app/packages/server/dist packages/server/dist
-COPY --from=builder /app/node_modules node_modules
-COPY --from=builder /app/packages/server/node_modules packages/server/node_modules
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
+COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/packages/server/dist ./packages/server/dist
+COPY --from=builder /app/packages/server/package.json ./packages/server/
+COPY --from=builder /app/packages/server/node_modules ./packages/server/node_modules
+
+USER appuser
 EXPOSE 3000
 CMD ["node", "packages/server/dist/index.js"]

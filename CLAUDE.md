@@ -101,6 +101,28 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Never commit .pem, .key, .env files or secrets to git — always verify .gitignore before staging
 - Never use `git add .` or `git add -A` — always add specific files by name
 
+## Cross-Module Integration Patterns
+
+### Billing Integration
+- EMP Billing is an internal engine — NOT a sellable module, NOT in the marketplace
+- EMP Cloud calls Billing APIs to create invoices, process payments, manage subscription lifecycle
+- Billing has its own database (`emp_billing`) but is tightly coupled to EMP Cloud's subscription service
+- Flow: User subscribes to module in Cloud -> Cloud calls Billing API -> Billing creates invoice -> Billing processes payment -> Cloud activates subscription
+
+### Cross-Module Webhooks
+- Modules send event webhooks to EMP Cloud for unified activity tracking
+- Pattern: Module event occurs -> Module POSTs to `EMP_CLOUD_URL/api/v1/webhooks/inbound` with `{ module, event, payload }`
+- Webhook sources: Recruit (hire events), Exit (offboarding events), Performance (review completions), Rewards (recognition events)
+- EMP Cloud processes webhooks to update unified dashboard, trigger notifications, and maintain audit trail
+- All webhook payloads include `organization_id` for tenant isolation
+
+### Payroll HRMS Proxy
+- EMP Payroll fetches attendance and leave data from EMP Cloud (not its own DB)
+- Controlled by `USE_CLOUD_HRMS=true` environment flag in Payroll
+- When enabled, Payroll calls `EMP_CLOUD_URL/api/v1/attendance` and `/api/v1/leave` instead of local tables
+- This ensures a single source of truth for attendance/leave across the ecosystem
+- Payroll authenticates to Cloud using service-to-service JWT
+
 ## Security (SOC 2)
 - Never log secrets, tokens, or passwords
 - PKCE required for all public OAuth clients

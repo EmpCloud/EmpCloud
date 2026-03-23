@@ -52,7 +52,7 @@ export default function AttendanceDashboardPage() {
       </div>
 
       {/* Today's Records Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Today's Attendance</h2>
         </div>

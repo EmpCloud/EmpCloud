@@ -21,6 +21,9 @@ import {
   BookOpen,
   Bell,
   Network,
+  Menu,
+  X,
+  Crown,
 } from "lucide-react";
 
 const navItems = [
@@ -159,16 +162,21 @@ export default function DashboardLayout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Auto-close sidebar on navigation
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+  function SidebarContent() {
+    return (
+      <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <Building2 className="h-8 w-8 text-brand-600" />
@@ -178,6 +186,14 @@ export default function DashboardLayout() {
             </div>
           </div>
         </div>
+
+        {/* Close button on mobile */}
+        <button
+          className="lg:hidden absolute top-4 right-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <X className="h-5 w-5" />
+        </button>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
@@ -198,6 +214,32 @@ export default function DashboardLayout() {
               </Link>
             );
           })}
+          {user?.role === "super_admin" && (
+            <>
+              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Platform Admin</div>
+              {[
+                { path: "/admin", label: "Super Dashboard", icon: Crown },
+                { path: "/admin/organizations", label: "All Organizations", icon: Building2 },
+              ].map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-amber-50 text-amber-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </>
+          )}
         </nav>
 
         <div className="p-4 border-t border-gray-200">
@@ -222,18 +264,44 @@ export default function DashboardLayout() {
             Sign out
           </button>
         </div>
-      </aside>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* Desktop sidebar */}
+      <div className="hidden lg:block">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed left-0 top-0 z-50 h-full">
+            <SidebarContent />
+          </div>
+        </div>
+      )}
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto flex flex-col">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {/* Top header bar */}
-        <div className="flex items-center justify-end px-8 py-3 border-b border-gray-200 bg-white shrink-0">
+        <div className="flex items-center justify-between px-4 lg:px-8 py-3 border-b border-gray-200 bg-white shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 lg:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <div className="flex-1" />
           <NotificationDropdown />
         </div>
-        <div className="flex-1 overflow-auto p-8">
+        <div className="flex-1 overflow-auto p-4 lg:p-8">
           <Outlet />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

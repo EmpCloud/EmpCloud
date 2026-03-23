@@ -1,7 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import api from "@/api/client";
 
 // Lazy-loaded pages
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
@@ -31,6 +32,11 @@ const OrgChartPage = lazy(() => import("@/pages/employees/OrgChartPage"));
 const ImportEmployeesPage = lazy(() => import("@/pages/employees/ImportEmployeesPage"));
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
 const BillingPage = lazy(() => import("@/pages/billing/BillingPage"));
+const OnboardingWizard = lazy(() => import("@/pages/onboarding/OnboardingWizard"));
+// Super Admin pages
+const SuperAdminDashboard = lazy(() => import("@/pages/admin/SuperAdminDashboard"));
+const OrgListPage = lazy(() => import("@/pages/admin/OrgListPage"));
+const OrgDetailPage = lazy(() => import("@/pages/admin/OrgDetailPage"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -40,6 +46,37 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function RootRedirect() {
   const user = useAuthStore((s) => s.user);
+  const [checking, setChecking] = useState(true);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+
+  useEffect(() => {
+    async function checkOnboarding() {
+      try {
+        const { data } = await api.get("/onboarding/status");
+        if (data.data && !data.data.completed) {
+          setNeedsOnboarding(true);
+        }
+      } catch {
+        // If endpoint fails, skip onboarding check
+      } finally {
+        setChecking(false);
+      }
+    }
+    checkOnboarding();
+  }, []);
+
+  if (checking) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
+  if (needsOnboarding) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   const isAdmin = user?.role === "org_admin" || user?.role === "super_admin" || user?.role === "hr_admin" || user?.role === "hr_manager";
   if (isAdmin) return <DashboardPage />;
   return <SelfServiceDashboardPage />;
@@ -64,6 +101,16 @@ export default function App() {
         {/* Public routes */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+
+        {/* Onboarding (protected but no dashboard layout) */}
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingWizard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected routes */}
         <Route
@@ -98,6 +145,10 @@ export default function App() {
           <Route path="/policies" element={<PoliciesPage />} />
           <Route path="/org-chart" element={<OrgChartPage />} />
           <Route path="/employees/import" element={<ImportEmployeesPage />} />
+          {/* Super Admin routes */}
+          <Route path="/admin" element={<SuperAdminDashboard />} />
+          <Route path="/admin/organizations" element={<OrgListPage />} />
+          <Route path="/admin/organizations/:id" element={<OrgDetailPage />} />
         </Route>
 
         {/* Fallback */}

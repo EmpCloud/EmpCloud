@@ -34,7 +34,7 @@ export default function RegisterPage() {
         },
         result.tokens
       );
-      navigate("/");
+      navigate("/onboarding");
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Registration failed");
     }

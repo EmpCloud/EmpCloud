@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: empcloud
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install
+      - run: pnpm --filter @empcloud/shared build
+      - run: pnpm --filter @empcloud/server typecheck
+      - run: pnpm --filter @empcloud/client typecheck
+      - name: Run tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: root
+          DB_PASSWORD: secret
+          DB_NAME: empcloud
+          DB_AUTO_MIGRATE: true
+          REDIS_HOST: 127.0.0.1
+          NODE_ENV: test
+          JWT_SECRET: test-secret
+          RSA_PRIVATE_KEY_PATH: ./keys/private.pem
+          RSA_PUBLIC_KEY_PATH: ./keys/public.pem
+        run: |
+          pnpm generate-keys
+          pnpm --filter @empcloud/server test

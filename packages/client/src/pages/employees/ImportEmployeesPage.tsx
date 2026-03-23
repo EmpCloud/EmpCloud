@@ -165,7 +165,7 @@ export default function ImportEmployeesPage() {
 
           {/* Valid rows table */}
           {preview.valid.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
               <div className="px-6 py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <h3 className="text-sm font-medium text-gray-700">

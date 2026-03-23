@@ -168,3 +168,37 @@ export function useAuditLogs(params?: { page?: number; action?: string }) {
     queryFn: () => api.get("/audit", { params }).then((r) => r.data),
   });
 }
+
+// --- Onboarding ---
+
+export function useOnboardingStatus() {
+  return useQuery({
+    queryKey: ["onboarding-status"],
+    queryFn: () => api.get("/onboarding/status").then((r) => r.data.data),
+  });
+}
+
+export function useCompleteOnboardingStep() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ step, data }: { step: number; data: object }) =>
+      api.post(`/onboarding/step/${step}`, data).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["onboarding-status"] }),
+  });
+}
+
+export function useCompleteOnboarding() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post("/onboarding/complete").then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["onboarding-status"] }),
+  });
+}
+
+export function useSkipOnboarding() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post("/onboarding/skip").then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["onboarding-status"] }),
+  });
+}
