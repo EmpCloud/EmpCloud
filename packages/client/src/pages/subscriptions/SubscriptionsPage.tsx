@@ -1,5 +1,6 @@
 import { useSubscriptions, useBillingSummary, useModules } from "@/api/hooks";
-import { CreditCard, TrendingUp } from "lucide-react";
+import { CreditCard, TrendingUp, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function SubscriptionsPage() {
   const { data: subscriptions, isLoading } = useSubscriptions();
@@ -21,6 +22,17 @@ export default function SubscriptionsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Subscriptions</h1>
         <p className="text-gray-500 mt-1">Manage your module subscriptions and billing.</p>
       </div>
+
+      {/* Billing banner */}
+      <Link
+        to="/billing"
+        className="flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-6 py-4 mb-6 hover:bg-brand-100 transition-colors group"
+      >
+        <p className="text-sm font-medium text-brand-700">
+          View detailed invoices and payment history
+        </p>
+        <ArrowRight className="h-4 w-4 text-brand-600 group-hover:translate-x-1 transition-transform" />
+      </Link>
 
       {/* Billing summary */}
       {billing && (

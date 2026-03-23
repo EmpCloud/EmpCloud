@@ -137,6 +137,29 @@ export function useDashboardWidgets() {
   });
 }
 
+// --- Billing ---
+
+export function useBillingInvoices(params?: { page?: number; per_page?: number }) {
+  return useQuery({
+    queryKey: ["billing-invoices", params],
+    queryFn: () => api.get("/billing/invoices", { params }).then((r) => r.data),
+  });
+}
+
+export function useBillingPayments(params?: { page?: number; per_page?: number }) {
+  return useQuery({
+    queryKey: ["billing-payments", params],
+    queryFn: () => api.get("/billing/payments", { params }).then((r) => r.data),
+  });
+}
+
+export function useBillingOverviewSummary() {
+  return useQuery({
+    queryKey: ["billing-overview-summary"],
+    queryFn: () => api.get("/billing/summary").then((r) => r.data.data),
+  });
+}
+
 // --- Audit ---
 
 export function useAuditLogs(params?: { page?: number; action?: string }) {

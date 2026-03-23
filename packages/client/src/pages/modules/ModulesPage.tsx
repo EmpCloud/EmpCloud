@@ -8,6 +8,7 @@ export default function ModulesPage() {
   const createSub = useCreateSubscription();
   const [subscribing, setSubscribing] = useState<number | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   const subscribedModuleIds = new Set(
     subscriptions?.filter((s: any) => s.status !== "cancelled").map((s: any) => s.module_id) || []
@@ -22,6 +23,8 @@ export default function ModulesPage() {
         total_seats: 10,
         billing_cycle: "monthly",
       });
+      setToast("Subscription created. Invoice will be generated shortly.");
+      setTimeout(() => setToast(null), 5000);
     } finally {
       setSubscribing(null);
     }
@@ -42,6 +45,14 @@ export default function ModulesPage() {
         <h1 className="text-2xl font-bold text-gray-900">Module Marketplace</h1>
         <p className="text-gray-500 mt-1">Browse and subscribe to EMP modules for your organization.</p>
       </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 animate-in fade-in">
+          <Check className="h-4 w-4" />
+          {toast}
+        </div>
+      )}
 
       <div className="space-y-4">
         {sortedModules.map((mod: any) => {

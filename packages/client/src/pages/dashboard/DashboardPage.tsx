@@ -1,6 +1,6 @@
-import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets } from "@/api/hooks";
+import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets, useBillingOverviewSummary } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
-import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus } from "lucide-react";
+import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const { data: subscriptions } = useSubscriptions();
   const { data: modules } = useModules();
   const { data: widgets, isLoading: widgetsLoading } = useDashboardWidgets();
+  const { data: billingSummary } = useBillingOverviewSummary();
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
 
   const activeSubscriptions = subscriptions?.filter(
@@ -52,7 +53,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -97,6 +98,28 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        <Link
+          to="/billing"
+          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+        >
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <Receipt className="h-6 w-6 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">
+                {billingSummary
+                  ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
+                      (billingSummary.monthlyRecurring ?? 0) / 100
+                    )
+                  : "..."}
+              </p>
+              <p className="text-sm text-gray-500">
+                Billing{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} overdue)` : ""}
+              </p>
+            </div>
+          </div>
+        </Link>
       </div>
 
       {/* Core HRMS — Always shown (it IS the platform) */}

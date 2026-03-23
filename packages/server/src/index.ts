@@ -33,6 +33,8 @@ import announcementRoutes from "./api/routes/announcement.routes.js";
 import policyRoutes from "./api/routes/policy.routes.js";
 import notificationRoutes from "./api/routes/notification.routes.js";
 import dashboardRoutes from "./api/routes/dashboard.routes.js";
+import billingWebhookRoutes from "./api/routes/billing-webhook.routes.js";
+import billingRoutes from "./api/routes/billing.routes.js";
 
 async function main() {
   // Initialize database
@@ -65,7 +67,9 @@ async function main() {
     await m010(db);
     const { up: m011 } = await import("./db/migrations/011_notifications.js");
     await m011(db);
-    logger.info("Auto-migration complete (including HRMS)");
+    const { up: m012 } = await import("./db/migrations/012_billing_integration.js");
+    await m012(db);
+    logger.info("Auto-migration complete (including HRMS + billing)");
   }
 
   // Load RSA keys
@@ -112,6 +116,9 @@ async function main() {
   // OIDC Discovery (must be at root)
   app.use("/", oauthRoutes);
 
+  // Billing webhooks (unauthenticated — Billing sends these directly)
+  app.use("/api/v1/webhooks", billingWebhookRoutes);
+
   // API routes
   app.use("/api/v1/auth", authLimiter, authRoutes);
   app.use("/oauth", authLimiter, oauthRoutes);
@@ -129,6 +136,7 @@ async function main() {
   app.use("/api/v1/policies", apiLimiter, policyRoutes);
   app.use("/api/v1/notifications", apiLimiter, notificationRoutes);
   app.use("/api/v1/dashboard", apiLimiter, dashboardRoutes);
+  app.use("/api/v1/billing", apiLimiter, billingRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);
