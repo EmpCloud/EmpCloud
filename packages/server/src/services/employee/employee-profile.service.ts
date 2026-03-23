@@ -122,7 +122,7 @@ export async function getDirectory(
   const perPage = params.per_page || 20;
 
   let query = db("users")
-    .leftJoin("departments", "users.department_id", "departments.id")
+    .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
     .where({ "users.organization_id": orgId });
 
   if (params.search) {
@@ -132,7 +132,7 @@ export async function getDirectory(
         .orWhere("users.last_name", "like", s)
         .orWhere("users.email", "like", s)
         .orWhere("users.designation", "like", s)
-        .orWhere("departments.name", "like", s);
+        .orWhere("organization_departments.name", "like", s);
     });
   }
 
