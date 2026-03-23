@@ -83,6 +83,9 @@ async function main() {
   // Create Express app
   const app = express();
 
+  // Trust proxy (behind Nginx)
+  app.set("trust proxy", 1);
+
   // Global middleware
   app.use(helmet());
   app.use(cors({

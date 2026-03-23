@@ -33,6 +33,14 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/users/org-chart — MUST be before /:id to avoid matching "org-chart" as an ID
+router.get("/org-chart", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const tree = await userService.getOrgChart(req.user!.org_id);
+    sendSuccess(res, tree);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/users/:id
 router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -130,14 +138,6 @@ router.post("/accept-invitation", async (req: Request, res: Response, next: Next
       password,
     });
     sendSuccess(res, user, 201);
-  } catch (err) { next(err); }
-});
-
-// GET /api/v1/users/org-chart
-router.get("/org-chart", authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const tree = await userService.getOrgChart(req.user!.org_id);
-    sendSuccess(res, tree);
   } catch (err) { next(err); }
 });
 
