@@ -34,6 +34,7 @@ import policyRoutes from "./api/routes/policy.routes.js";
 import notificationRoutes from "./api/routes/notification.routes.js";
 import dashboardRoutes from "./api/routes/dashboard.routes.js";
 import billingWebhookRoutes from "./api/routes/billing-webhook.routes.js";
+import moduleWebhookRoutes from "./api/routes/module-webhook.routes.js";
 import billingRoutes from "./api/routes/billing.routes.js";
 
 async function main() {
@@ -116,8 +117,9 @@ async function main() {
   // OIDC Discovery (must be at root)
   app.use("/", oauthRoutes);
 
-  // Billing webhooks (unauthenticated — Billing sends these directly)
+  // Webhooks (unauthenticated — modules send these directly)
   app.use("/api/v1/webhooks", billingWebhookRoutes);
+  app.use("/api/v1/webhooks", moduleWebhookRoutes);
 
   // API routes
   app.use("/api/v1/auth", authLimiter, authRoutes);

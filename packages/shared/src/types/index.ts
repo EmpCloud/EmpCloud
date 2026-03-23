@@ -106,6 +106,13 @@ export enum AuditAction {
   ANNOUNCEMENT_CREATED = "announcement_created",
   POLICY_CREATED = "policy_created",
   POLICY_ACKNOWLEDGED = "policy_acknowledged",
+  // Cross-module webhooks
+  MODULE_WEBHOOK_RECEIVED = "module_webhook_received",
+  CANDIDATE_HIRED = "candidate_hired",
+  EXIT_INITIATED = "exit_initiated",
+  EXIT_COMPLETED = "exit_completed",
+  PERFORMANCE_CYCLE_COMPLETED = "performance_cycle_completed",
+  REWARDS_MILESTONE_ACHIEVED = "rewards_milestone_achieved",
 }
 
 export enum InvitationStatus {
