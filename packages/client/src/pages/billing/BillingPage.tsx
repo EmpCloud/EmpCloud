@@ -561,10 +561,11 @@ function OverviewTab() {
 function InvoicesTab() {
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const { data, isLoading } = useBillingInvoices({ page, per_page: 10 });
+  const { data: rawData, isLoading } = useBillingInvoices({ page, per_page: 10 });
 
-  const invoices = data?.data ?? [];
-  const meta = data?.meta;
+  const invoiceData = rawData?.data ?? rawData ?? {};
+  const invoices = invoiceData?.invoices ?? invoiceData?.data ?? [];
+  const meta = { page: invoiceData?.page ?? 1, totalPages: invoiceData?.totalPages ?? 1, total: invoiceData?.total ?? 0 };
 
   if (isLoading) return <div className="text-gray-400">Loading invoices...</div>;
 
@@ -714,10 +715,11 @@ function InvoiceRow({
 
 function PaymentsTab() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useBillingPayments({ page, per_page: 10 });
+  const { data: rawData, isLoading } = useBillingPayments({ page, per_page: 10 });
 
-  const payments = data?.data ?? [];
-  const meta = data?.meta;
+  const paymentData = rawData?.data ?? rawData ?? {};
+  const payments = paymentData?.payments ?? paymentData?.data ?? [];
+  const meta = { page: paymentData?.page ?? 1, totalPages: paymentData?.totalPages ?? 1, total: paymentData?.total ?? 0 };
 
   if (isLoading) return <div className="text-gray-400">Loading payments...</div>;
 
