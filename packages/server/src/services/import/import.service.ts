@@ -70,7 +70,7 @@ export async function validateImportData(
   const existingEmails = new Set(existingUsers.map((u: any) => u.email.toLowerCase()));
 
   // Fetch departments for this org
-  const departments = await db("departments")
+  const departments = await db("organization_departments")
     .where({ organization_id: orgId })
     .select("id", "name");
   const deptMap = new Map(departments.map((d: any) => [d.name.toLowerCase(), d.id]));
