@@ -5,6 +5,8 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ConflictError, ValidationError } from "../../utils/errors.js";
 import { getAccessibleFeatures } from "../module/module.service.js";
+import { logger } from "../../utils/logger.js";
+import * as billingIntegration from "../billing/billing-integration.service.js";
 import type {
   OrgSubscription,
   CreateSubscriptionInput,
@@ -66,6 +68,10 @@ export async function createSubscription(
   };
   const pricePerSeat = PLAN_PRICING[data.plan_tier] ?? 50000;
 
+  // Fetch the module name for the invoice line item
+  const mod = await db("modules").where({ id: data.module_id }).first();
+  const moduleName = mod?.name ?? `Module #${data.module_id}`;
+
   const [id] = await db("org_subscriptions").insert({
     organization_id: orgId,
     module_id: data.module_id,
@@ -82,6 +88,28 @@ export async function createSubscription(
     created_at: now,
     updated_at: now,
   });
+
+  // --- Billing integration (non-blocking) ---
+  // Create an invoice in EMP Billing for paid, non-trial subscriptions
+  if (pricePerSeat > 0 && !trialEndsAt) {
+    const totalAmount = pricePerSeat * data.total_seats;
+    billingIntegration
+      .createInvoice(orgId, [
+        {
+          description: `${moduleName} — ${data.plan_tier} plan (${data.total_seats} seats × ${data.billing_cycle || "monthly"})`,
+          quantity: data.total_seats,
+          unitPrice: pricePerSeat,
+        },
+      ])
+      .then((invoiceId) => {
+        if (invoiceId) {
+          logger.info(`Billing invoice created for subscription ${id}: ${invoiceId}`);
+        }
+      })
+      .catch((err) => {
+        logger.warn(`Failed to create billing invoice for subscription ${id}: ${err.message}`);
+      });
+  }
 
   return getSubscription(orgId, id);
 }
@@ -131,6 +159,16 @@ export async function cancelSubscription(orgId: number, subId: number): Promise<
   await db("org_module_seats")
     .where({ subscription_id: subId })
     .delete();
+
+  // Cancel billing subscription if mapped (non-blocking)
+  billingIntegration
+    .getBillingSubscriptionId(subId)
+    .then((billingSubId) => {
+      if (billingSubId) return billingIntegration.cancelBillingSubscription(billingSubId);
+    })
+    .catch((err) => {
+      logger.warn(`Failed to cancel billing subscription for sub ${subId}: ${err.message}`);
+    });
 
   return getSubscription(orgId, subId);
 }
