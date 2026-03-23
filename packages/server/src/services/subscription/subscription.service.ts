@@ -57,6 +57,15 @@ export async function createSubscription(
     ? new Date(now.getTime() + data.trial_days * 86400000)
     : null;
 
+  // Compute price per seat based on plan tier (in smallest currency unit — paise)
+  const PLAN_PRICING: Record<string, number> = {
+    free: 0,
+    basic: 50000,         // ₹500/seat/month
+    professional: 100000, // ₹1,000/seat/month
+    enterprise: 175000,   // ₹1,750/seat/month
+  };
+  const pricePerSeat = PLAN_PRICING[data.plan_tier] ?? 50000;
+
   const [id] = await db("org_subscriptions").insert({
     organization_id: orgId,
     module_id: data.module_id,
@@ -65,8 +74,8 @@ export async function createSubscription(
     total_seats: data.total_seats,
     used_seats: 0,
     billing_cycle: data.billing_cycle || "monthly",
-    price_per_seat: 0, // set by billing integration
-    currency: "USD",
+    price_per_seat: pricePerSeat,
+    currency: "INR",
     trial_ends_at: trialEndsAt,
     current_period_start: now,
     current_period_end: periodEnd,
@@ -91,9 +100,21 @@ export async function updateSubscription(
     );
   }
 
+  // Recalculate price if plan tier changed
+  const updateData: any = { ...data, updated_at: new Date() };
+  if (data.plan_tier) {
+    const PLAN_PRICING: Record<string, number> = {
+      free: 0,
+      basic: 50000,
+      professional: 100000,
+      enterprise: 175000,
+    };
+    updateData.price_per_seat = PLAN_PRICING[data.plan_tier] ?? sub.price_per_seat;
+  }
+
   await db("org_subscriptions")
     .where({ id: subId })
-    .update({ ...data, updated_at: new Date() });
+    .update(updateData);
 
   return getSubscription(orgId, subId);
 }
