@@ -646,29 +646,62 @@ function InvoiceRow({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+  const handleDownloadPdf = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const token = localStorage.getItem("empcloud-auth")
+        ? JSON.parse(localStorage.getItem("empcloud-auth") || "{}").state?.accessToken
+        : null;
+      const res = await fetch(`/api/v1/billing/invoices/${invoice.id}/pdf`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        alert("PDF not available for this invoice");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${invoice.invoiceNumber || "invoice"}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Failed to download PDF");
+    }
+  };
+
+  const invoiceTotal = invoice.total ?? invoice.amount ?? 0;
+  const amountDue = invoice.amountDue ?? invoice.amount_due ?? invoiceTotal;
+  const amountPaid = invoice.amountPaid ?? invoice.amount_paid ?? 0;
+
   return (
     <>
-      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+      <tr
+        className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+        onClick={onToggle}
+      >
         <td className="px-4 py-3">
-          <button onClick={onToggle} className="text-gray-400 hover:text-gray-600">
+          <span className="text-gray-400">
             {isExpanded ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
               <ChevronRight className="h-4 w-4" />
             )}
-          </button>
+          </span>
         </td>
-        <td className="px-4 py-3 font-medium text-gray-900">{invoice.invoiceNumber}</td>
+        <td className="px-4 py-3 font-medium text-brand-600 hover:text-brand-700">{invoice.invoiceNumber}</td>
         <td className="px-4 py-3 text-gray-600">{formatDate(invoice.issueDate)}</td>
         <td className="px-4 py-3 text-gray-600">{formatDate(invoice.dueDate)}</td>
         <td className="px-4 py-3 text-right font-medium text-gray-900">
-          {formatINR(invoice.amount)}
+          {formatINR(invoiceTotal)}
         </td>
         <td className="px-4 py-3 text-center">
           <StatusBadge status={invoice.status} />
         </td>
         <td className="px-4 py-3 text-right">
           <button
+            onClick={handleDownloadPdf}
             className="inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium"
             title="Download PDF"
           >
@@ -677,31 +710,110 @@ function InvoiceRow({
           </button>
         </td>
       </tr>
-      {isExpanded && invoice.items?.length > 0 && (
+      {isExpanded && (
         <tr>
-          <td colSpan={7} className="bg-gray-50 px-8 py-4">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-gray-500">
-                  <th className="text-left pb-2 font-medium">Item</th>
-                  <th className="text-right pb-2 font-medium">Qty</th>
-                  <th className="text-right pb-2 font-medium">Rate</th>
-                  <th className="text-right pb-2 font-medium">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoice.items.map((item: any, idx: number) => (
-                  <tr key={idx} className="border-t border-gray-200">
-                    <td className="py-1.5 text-gray-700">{item.name}</td>
-                    <td className="py-1.5 text-right text-gray-600">{item.quantity}</td>
-                    <td className="py-1.5 text-right text-gray-600">{formatINR(item.rate)}</td>
-                    <td className="py-1.5 text-right font-medium text-gray-900">
-                      {formatINR(item.amount)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <td colSpan={7} className="bg-gray-50 px-6 py-5 border-b border-gray-200">
+            {/* Invoice Detail View */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Invoice Number</p>
+                <p className="text-sm font-semibold text-gray-900">{invoice.invoiceNumber}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Issue Date</p>
+                <p className="text-sm text-gray-900">{formatDate(invoice.issueDate)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Due Date</p>
+                <p className="text-sm text-gray-900">{formatDate(invoice.dueDate)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Status</p>
+                <StatusBadge status={invoice.status} />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Currency</p>
+                <p className="text-sm text-gray-900">{invoice.currency || "INR"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Reference</p>
+                <p className="text-sm text-gray-900">{invoice.referenceNumber || "—"}</p>
+              </div>
+            </div>
+
+            {/* Line Items */}
+            {invoice.items?.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-medium text-gray-500 mb-2 uppercase">Line Items</p>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-gray-500 border-b border-gray-200">
+                      <th className="text-left pb-2 font-medium">Description</th>
+                      <th className="text-right pb-2 font-medium">Qty</th>
+                      <th className="text-right pb-2 font-medium">Rate</th>
+                      <th className="text-right pb-2 font-medium">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invoice.items.map((item: any, idx: number) => (
+                      <tr key={idx} className="border-t border-gray-100">
+                        <td className="py-2 text-gray-700">{item.name || item.description}</td>
+                        <td className="py-2 text-right text-gray-600">{item.quantity}</td>
+                        <td className="py-2 text-right text-gray-600">{formatINR(item.rate || item.unitPrice || 0)}</td>
+                        <td className="py-2 text-right font-medium text-gray-900">
+                          {formatINR(item.amount || (item.quantity * (item.rate || item.unitPrice || 0)))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Totals */}
+            <div className="border-t border-gray-200 pt-3 space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-900">{formatINR(invoice.subtotal ?? invoiceTotal)}</span>
+              </div>
+              {invoice.discountAmount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Discount</span>
+                  <span className="text-green-600">-{formatINR(invoice.discountAmount)}</span>
+                </div>
+              )}
+              {invoice.taxAmount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Tax</span>
+                  <span className="text-gray-900">{formatINR(invoice.taxAmount)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm font-bold border-t border-gray-300 pt-2">
+                <span className="text-gray-900">Total</span>
+                <span className="text-gray-900">{formatINR(invoiceTotal)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Paid</span>
+                <span className="text-green-600">{formatINR(amountPaid)}</span>
+              </div>
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-gray-700">Amount Due</span>
+                <span className={amountDue > 0 ? "text-red-600" : "text-green-600"}>{formatINR(amountDue)}</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 mt-4 pt-3 border-t border-gray-200">
+              <button
+                onClick={(e) => { e.stopPropagation(); handleDownloadPdf(e); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand-600 text-white rounded-lg hover:bg-brand-700"
+              >
+                <Download className="h-3.5 w-3.5" /> Download PDF
+              </button>
+              {invoice.notes && (
+                <div className="text-xs text-gray-500 italic">Note: {invoice.notes}</div>
+              )}
+            </div>
           </td>
         </tr>
       )}
