@@ -28,6 +28,7 @@ function isBillingConfigured(): boolean {
 
 // ---------------------------------------------------------------------------
 // HTTP helper — wraps fetch with error handling
+// Returns the full parsed JSON envelope { success, data, meta }
 // ---------------------------------------------------------------------------
 
 async function billingFetch<T = any>(
@@ -53,6 +54,35 @@ async function billingFetch<T = any>(
 
     const json = await response.json() as any;
     return (json.data ?? json) as T;
+  } catch (err: any) {
+    logger.warn(`Billing API unreachable: ${method} ${path} → ${err.message}`);
+    return null;
+  }
+}
+
+// Like billingFetch but returns the full envelope { success, data, meta }
+async function billingFetchRaw(
+  method: string,
+  path: string,
+  body?: unknown
+): Promise<any | null> {
+  if (!isBillingConfigured()) return null;
+
+  const url = `${BILLING_BASE}${path}`;
+  try {
+    const response = await fetch(url, {
+      method,
+      headers: getHeaders(),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "");
+      logger.warn(`Billing API error: ${method} ${path} → ${response.status} ${text}`);
+      return null;
+    }
+
+    return await response.json();
   } catch (err: any) {
     logger.warn(`Billing API unreachable: ${method} ${path} → ${err.message}`);
     return null;
@@ -188,9 +218,18 @@ export async function createInvoice(
   const dueDate = new Date(now);
   dueDate.setDate(dueDate.getDate() + 30);
 
+  // Map Cloud's item format to Billing's expected format:
+  // Billing expects: { name, quantity, rate } (rate in smallest currency unit)
+  const billingItems = items.map((item) => ({
+    name: item.description,
+    description: item.description,
+    quantity: item.quantity,
+    rate: item.unitPrice,
+  }));
+
   const result = await billingFetch<{ id: string }>("POST", "/invoices", {
     clientId,
-    items,
+    items: billingItems,
     issueDate: now.toISOString().split("T")[0],
     dueDate: dueDate.toISOString().split("T")[0],
     autoSend: true,
@@ -206,12 +245,24 @@ export async function getInvoices(
   const clientId = await getOrCreateBillingClientId(orgId);
   if (!clientId) return { invoices: [], total: 0 };
 
+  // Billing uses "limit" not "perPage"
   const query = new URLSearchParams({ clientId });
   if (params?.page) query.set("page", String(params.page));
-  if (params?.perPage) query.set("perPage", String(params.perPage));
+  if (params?.perPage) query.set("limit", String(params.perPage));
 
-  const result = await billingFetch("GET", `/invoices?${query.toString()}`);
-  return result ?? { invoices: [], total: 0 };
+  const result = await billingFetchRaw("GET", `/invoices?${query.toString()}`);
+  if (!result) return { invoices: [], total: 0 };
+
+  // Billing returns { success, data: [...], meta: { page, limit, total, totalPages } }
+  const invoices = Array.isArray(result.data) ? result.data : [];
+  const meta = result.meta ?? {};
+
+  return {
+    invoices,
+    total: meta.total ?? invoices.length,
+    page: meta.page ?? 1,
+    totalPages: meta.totalPages ?? 1,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -225,12 +276,24 @@ export async function getPayments(
   const clientId = await getOrCreateBillingClientId(orgId);
   if (!clientId) return { payments: [], total: 0 };
 
+  // Billing uses "limit" not "perPage"
   const query = new URLSearchParams({ clientId });
   if (params?.page) query.set("page", String(params.page));
-  if (params?.perPage) query.set("perPage", String(params.perPage));
+  if (params?.perPage) query.set("limit", String(params.perPage));
 
-  const result = await billingFetch("GET", `/payments?${query.toString()}`);
-  return result ?? { payments: [], total: 0 };
+  const result = await billingFetchRaw("GET", `/payments?${query.toString()}`);
+  if (!result) return { payments: [], total: 0 };
+
+  // Billing returns { success, data: [...], meta: { page, limit, total, totalPages } }
+  const payments = Array.isArray(result.data) ? result.data : [];
+  const meta = result.meta ?? {};
+
+  return {
+    payments,
+    total: meta.total ?? payments.length,
+    page: meta.page ?? 1,
+    totalPages: meta.totalPages ?? 1,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -238,15 +301,14 @@ export async function getPayments(
 // ---------------------------------------------------------------------------
 
 export async function getBillingSummary(orgId: number): Promise<object> {
-  const [invoices, payments] = await Promise.all([
+  const [invoiceResult, paymentResult] = await Promise.all([
     getInvoices(orgId, { page: 1, perPage: 5 }),
     getPayments(orgId, { page: 1, perPage: 5 }),
   ]);
 
-  // Calculate outstanding from invoices
-  const invoiceList = Array.isArray(invoices?.invoices)
-    ? invoices.invoices
-    : Array.isArray(invoices) ? invoices : [];
+  const invoiceList = Array.isArray(invoiceResult?.invoices)
+    ? invoiceResult.invoices
+    : [];
 
   const outstandingAmount = invoiceList
     .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
@@ -254,9 +316,9 @@ export async function getBillingSummary(orgId: number): Promise<object> {
 
   return {
     recent_invoices: invoiceList,
-    recent_payments: Array.isArray(payments?.payments)
-      ? payments.payments
-      : Array.isArray(payments) ? payments : [],
+    recent_payments: Array.isArray(paymentResult?.payments)
+      ? paymentResult.payments
+      : [],
     outstanding_amount: outstandingAmount,
     currency: "INR",
   };
