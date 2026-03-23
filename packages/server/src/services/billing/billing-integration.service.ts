@@ -317,8 +317,8 @@ export async function getBillingSummary(orgId: number): Promise<object> {
     : [];
 
   const outstandingAmount = invoiceList
-    .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
-    .reduce((sum: number, inv: any) => sum + (Number(inv.totalAmount) || 0), 0);
+    .filter((inv: any) => inv.status === "sent" || inv.status === "overdue" || inv.status === "viewed")
+    .reduce((sum: number, inv: any) => sum + (Number(inv.amountDue) || Number(inv.total) || 0), 0);
 
   return {
     recent_invoices: invoiceList,
