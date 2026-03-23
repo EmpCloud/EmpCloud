@@ -9,7 +9,6 @@ const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("@/pages/auth/RegisterPage"));
 const DashboardPage = lazy(() => import("@/pages/dashboard/DashboardPage"));
 const ModulesPage = lazy(() => import("@/pages/modules/ModulesPage"));
-const SubscriptionsPage = lazy(() => import("@/pages/subscriptions/SubscriptionsPage"));
 const UsersPage = lazy(() => import("@/pages/users/UsersPage"));
 const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
 const AuditPage = lazy(() => import("@/pages/audit/AuditPage"));
@@ -123,7 +122,7 @@ export default function App() {
           <Route path="/" element={<RootRedirect />} />
           <Route path="/self-service" element={<SelfServiceDashboardPage />} />
           <Route path="/modules" element={<ModulesPage />} />
-          <Route path="/subscriptions" element={<SubscriptionsPage />} />
+          <Route path="/subscriptions" element={<Navigate to="/billing" replace />} />
           <Route path="/billing" element={<BillingPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/settings" element={<SettingsPage />} />

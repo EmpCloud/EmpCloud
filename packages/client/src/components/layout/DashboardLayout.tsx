@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Users,
   Package,
-  CreditCard,
   Settings,
   Shield,
   LogOut,
@@ -29,7 +28,6 @@ import {
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/modules", label: "Modules", icon: Package },
-  { path: "/subscriptions", label: "Subscriptions", icon: CreditCard },
   { path: "/billing", label: "Billing", icon: Receipt },
   { path: "/users", label: "Users", icon: Users },
   { path: "/employees", label: "Employees", icon: Contact },
