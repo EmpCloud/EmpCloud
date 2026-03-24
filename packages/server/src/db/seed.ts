@@ -124,6 +124,12 @@ async function seed() {
     { module: "emp-performance", key: "succession_planning", name: "Succession Planning", tier: "enterprise" },
     { module: "emp-rewards", key: "badges_kudos", name: "Badges & Kudos", tier: "free" },
     { module: "emp-rewards", key: "ai_rewards", name: "AI-Powered Rewards", tier: "professional" },
+    { module: "emp-lms", key: "courses_learning", name: "Courses & Learning Paths", tier: "basic" },
+    { module: "emp-lms", key: "scorm_xapi", name: "SCORM/xAPI Content Support", tier: "professional" },
+    { module: "emp-lms", key: "ai_recommendations", name: "AI Learning Recommendations", tier: "professional" },
+    { module: "emp-lms", key: "compliance_training", name: "Compliance Training & Certifications", tier: "basic" },
+    { module: "emp-lms", key: "ilt_sessions", name: "Instructor-Led Training (ILT)", tier: "professional" },
+    { module: "emp-lms", key: "extended_enterprise", name: "Extended Enterprise Training", tier: "enterprise" },
   ];
 
   for (const f of features) {
@@ -203,6 +209,15 @@ async function seed() {
       moduleSlug: "emp-billing",
       redirectUris: ["http://localhost:5175/callback", "https://billing.empcloud.com/callback"],
       scopes: ["openid", "profile", "email", "emp-billing:access"],
+      grantTypes: ["authorization_code", "refresh_token"],
+    },
+    {
+      name: "EMP LMS",
+      clientId: "emp-lms",
+      isConfidential: false,
+      moduleSlug: "emp-lms",
+      redirectUris: ["http://localhost:5183/callback", "https://lms.empcloud.com/callback", "https://test-lms.empcloud.com/callback"],
+      scopes: ["openid", "profile", "email", "emp-lms:access"],
       grantTypes: ["authorization_code", "refresh_token"],
     },
   ];

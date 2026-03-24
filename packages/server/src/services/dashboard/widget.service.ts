@@ -82,6 +82,16 @@ const MODULE_ENDPOINTS: ModuleEndpoint[] = [
       activeExits: data.active_exits ?? data.activeExits ?? 0,
     }),
   },
+  {
+    slug: "emp-lms",
+    port: 4700,
+    path: "/api/v1/analytics/overview",
+    transform: (data) => ({
+      activeCourses: data.active_courses ?? data.activeCourses ?? 0,
+      totalEnrollments: data.total_enrollments ?? data.totalEnrollments ?? 0,
+      completionRate: data.completion_rate ?? data.completionRate ?? 0,
+    }),
+  },
 ];
 
 const CACHE_TTL = 300; // 5 minutes in seconds

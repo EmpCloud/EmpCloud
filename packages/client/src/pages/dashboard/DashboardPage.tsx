@@ -1,6 +1,6 @@
 import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets, useBillingOverviewSummary } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
-import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt } from "lucide-react";
+import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
@@ -229,6 +229,22 @@ export default function DashboardPage() {
               >
                 <Stat label="Active Exits" value={widgets?.exit?.activeExits as number} />
                 <Stat label="Attrition Rate" value={widgets?.exit?.attritionRate != null ? `${widgets.exit.attritionRate}%` : undefined} />
+              </WidgetCard>
+            )}
+
+            {/* LMS Widget */}
+            {subscribedSlugs.has("emp-lms") && (
+              <WidgetCard
+                title="Learning & Development"
+                icon={GraduationCap}
+                color="cyan"
+                moduleUrl={moduleBaseUrls.get("emp-lms")}
+                isLoading={widgetsLoading}
+                isOffline={!widgetsLoading && widgets?.lms === null}
+              >
+                <Stat label="Active Courses" value={widgets?.lms?.activeCourses as number} />
+                <Stat label="Enrollments" value={widgets?.lms?.totalEnrollments as number} />
+                <Stat label="Completion Rate" value={widgets?.lms?.completionRate != null ? `${widgets.lms.completionRate}%` : undefined} />
               </WidgetCard>
             )}
           </div>

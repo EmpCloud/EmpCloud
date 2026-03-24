@@ -21,6 +21,7 @@ export const DEFAULT_MODULES = [
   { slug: "emp-rewards", name: "EMP Rewards", description: "Employee recognition, badges & kudos" },
   { slug: "emp-performance", name: "EMP Performance", description: "Performance reviews, OKRs & succession planning" },
   { slug: "emp-exit", name: "EMP Exit", description: "Exit management & full-final settlement" },
+  { slug: "emp-lms", name: "EMP LMS", description: "Learning management, courses, certifications & compliance training" },
 ] as const;
 
 // ---------------------------------------------------------------------------
