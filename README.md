@@ -5,7 +5,18 @@
 [![Status: Built](https://img.shields.io/badge/Status-Built-green)]()
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green.svg)](LICENSE)
 
-EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, company policies, org chart visualization, notification center, bulk CSV import, employee self-service dashboard, and unified dashboard widgets. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2 and subdomain routing.
+EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, company policies, org chart visualization, notification center, bulk CSV import, employee self-service dashboard, unified dashboard widgets, super admin dashboard, onboarding wizard, and online payment processing. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2, SSO token exchange, and subdomain routing.
+
+## Scale
+
+| Metric | Count |
+|--------|-------|
+| Database tables | ~155+ across 8+ databases |
+| API endpoints | ~430+ |
+| Frontend pages | ~160+ |
+| Automated tests | 1,800+ |
+| GitHub repositories | 8 |
+| Modules deployed to test server | 8 |
 
 ## Architecture
 
@@ -13,7 +24,8 @@ EMP Cloud is both the central identity/subscription platform AND the core HRMS a
 empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 |   Built-in: Employee Profiles, Attendance, Leave, Documents,
 |             Announcements, Policies, Org Chart, Notifications,
-|             Bulk Import, Self-Service Dashboard, Unified Widgets
+|             Bulk Import, Self-Service Dashboard, Unified Widgets,
+|             Super Admin Dashboard, Onboarding Wizard, API Docs
 |
 |- payroll.empcloud.com         <- EMP Payroll (sellable module)
 |- monitor.empcloud.com         <- EMP Monitor (sellable module)
@@ -24,18 +36,36 @@ empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 |- rewards.empcloud.com         <- EMP Rewards (sellable module)
 |- performance.empcloud.com     <- EMP Performance (sellable module)
 |- exit.empcloud.com            <- EMP Exit (sellable module)
+|- lms.empcloud.com             <- EMP LMS (sellable module)
 ```
 
 ### Design Principles
 
 - **EMP Cloud IS the core HRMS** — Attendance, Leave, Employee Profiles, Documents, Announcements, and Policies are built directly into EMP Cloud, not separate modules
 - **EMP Billing is internal** — It powers subscription invoicing behind the scenes; it is NOT a sellable module in the marketplace
-- **9 sellable modules** in the marketplace — Payroll, Monitor, Recruit, Field, Biometrics, Projects, Rewards, Performance, Exit
+- **10 sellable modules** in the marketplace — Payroll, Monitor, Recruit, Field, Biometrics, Projects, Rewards, Performance, Exit, LMS
 - **OAuth2/OIDC Authorization Server** — SOC 2 compliant, RS256 asymmetric signing, PKCE for SPAs
-- **Single MySQL instance, separate databases** — `empcloud` (identity + HRMS + subscriptions), `emp_payroll`, `emp_monitor`, etc.
+- **SSO via sso_token URL parameter** — Cross-module SSO uses a short-lived sso_token passed as a URL parameter for seamless authentication across subdomains
+- **Single MySQL instance, separate databases** — `empcloud` (identity + HRMS + subscriptions), `emp_payroll`, `emp_monitor`, `emp_lms`, etc.
 - **Subdomain-based module routing** — Each sellable module is an independent app with its own URL
 - **Seat-based subscriptions** — Orgs subscribe to modules with allocated seats per module
 - **Payroll fetches from Cloud** — EMP Payroll retrieves attendance and leave data from EMP Cloud via service APIs, not its own tables
+- **Online payment integration** — Stripe, Razorpay, and PayPal for invoice payments
+
+## Test Deployment URLs
+
+All modules are deployed to the test environment:
+
+| Module | Frontend URL | API URL |
+|--------|-------------|---------|
+| EMP Cloud | https://test-empcloud.empcloud.com | https://test-empcloud-api.empcloud.com |
+| EMP Recruit | https://test-recruit.empcloud.com | https://test-recruit-api.empcloud.com |
+| EMP Performance | https://test-performance.empcloud.com | https://test-performance-api.empcloud.com |
+| EMP Rewards | https://test-rewards.empcloud.com | https://test-rewards-api.empcloud.com |
+| EMP Exit | https://test-exit.empcloud.com | https://test-exit-api.empcloud.com |
+| EMP LMS | https://testlms.empcloud.com | https://testlms-api.empcloud.com |
+| EMP Payroll | https://testpayroll.empcloud.com | https://testpayroll-api.empcloud.com |
+| EMP Billing | (internal, port 4001) | (internal, port 4001) |
 
 ## Tech Stack
 
@@ -47,6 +77,7 @@ empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 | **Cache** | Redis 7 |
 | **Auth** | OAuth2/OIDC, RS256 JWT, PKCE, bcryptjs |
 | **Queue** | BullMQ (async jobs) |
+| **Payments** | Stripe, Razorpay, PayPal |
 | **API Docs** | Swagger UI + OpenAPI 3.0 JSON |
 | **Monorepo** | pnpm workspaces |
 | **Infra** | Docker, Docker Compose |
@@ -76,7 +107,9 @@ empcloud/
 │   │       │   │   ├── org-chart.routes.ts      # Org chart visualization
 │   │       │   │   ├── notification.routes.ts   # Notification center
 │   │       │   │   ├── import.routes.ts         # Bulk CSV import
-│   │       │   │   └── dashboard.routes.ts      # Unified dashboard widgets
+│   │       │   │   ├── dashboard.routes.ts      # Unified dashboard widgets
+│   │       │   │   ├── onboarding.routes.ts     # Onboarding wizard
+│   │       │   │   └── payment.routes.ts        # Online payment processing
 │   │       │   ├── middleware/     # auth, rbac, rate-limit, cors
 │   │       │   └── validators/    # Zod request schemas
 │   │       ├── services/
@@ -96,7 +129,8 @@ empcloud/
 │   │       │   ├── org-chart/     # Org chart tree building, reporting lines
 │   │       │   ├── notification/  # In-app notification center
 │   │       │   ├── import/        # Bulk CSV import (preview, validate, execute)
-│   │       │   └── dashboard/     # Unified dashboard widgets with Redis caching
+│   │       │   ├── dashboard/     # Unified dashboard widgets with Redis caching
+│   │       │   └── payment/       # Stripe, Razorpay, PayPal payment processing
 │   │       ├── db/
 │   │       │   ├── migrations/
 │   │       │   │   ├── 001_identity_schema.ts
@@ -131,6 +165,8 @@ empcloud/
 │   │       │   ├── notifications/     # Notification Center
 │   │       │   ├── import/            # Bulk CSV Import (preview + validate)
 │   │       │   ├── self-service/      # Employee Self-Service Dashboard
+│   │       │   ├── admin/             # Super Admin Dashboard
+│   │       │   ├── onboarding/        # Onboarding Wizard
 │   │       │   ├── modules/           # Module marketplace
 │   │       │   ├── subscriptions/     # Subscription management
 │   │       │   ├── users/             # User management
@@ -168,6 +204,10 @@ empcloud/
 | Bulk Employee CSV Import | Built |
 | Employee Self-Service Dashboard | Built |
 | Unified Dashboard Widgets | Built |
+| Super Admin Dashboard | Built |
+| Onboarding Wizard | Built |
+| Module Insights Widgets | Built |
+| Online Payment (Stripe, Razorpay, PayPal) | Built |
 | API Documentation (Swagger UI) | Built |
 
 ### Authentication & SSO (OAuth2/OIDC)
@@ -176,6 +216,7 @@ empcloud/
 - Authorization Code Flow with PKCE (for SPA modules)
 - Client Credentials Flow (for service-to-service)
 - RS256 asymmetric JWT signing (public key verification by modules)
+- Cross-module SSO via `sso_token` URL parameter — EMP Cloud generates a short-lived SSO token and passes it as a query parameter when redirecting to module subdomains, enabling seamless single sign-on without requiring re-authentication
 - Token introspection & revocation
 - Refresh token rotation (detect theft)
 - OIDC endpoints: `/.well-known/openid-configuration`, `/oauth/jwks`
@@ -282,6 +323,35 @@ empcloud/
 - Module-specific deep links from each widget
 - Responsive grid layout
 
+### Super Admin Dashboard
+
+- System-wide overview across all organizations
+- Module health and subscription metrics
+- User and organization management at platform level
+- System configuration and settings
+
+### Onboarding Wizard
+
+- Guided step-by-step setup for new organizations
+- Department and location creation
+- Initial employee import
+- Module subscription recommendations
+
+### Module Insights Widgets
+
+- Per-module insight cards on the main dashboard
+- Live data from Recruit, Performance, Rewards, Exit, LMS, and Payroll
+- Quick-action links to module dashboards
+
+### Online Payment (Stripe, Razorpay, PayPal)
+
+- Multi-gateway payment processing for subscription invoices
+- Stripe integration with Payment Intents API
+- Razorpay integration for INR payments
+- PayPal integration for international payments
+- Payment status tracking and webhook handling
+- Automatic invoice status updates on payment completion
+
 ### API Documentation
 
 - Swagger UI available at `/api/docs`
@@ -303,53 +373,38 @@ empcloud/
 - Seat-based pricing (per user/month per module)
 - Subscription lifecycle events trigger billing
 - Usage metering for consumption-based modules
+- Online payment collection via Stripe, Razorpay, PayPal
 - Note: EMP Billing is the internal billing engine, not a sellable module
 
 ### Central Dashboard
 
 - Module launcher (cards for each subscribed module)
 - Unified widgets with live data from subscribed modules
+- Module insights with real-time stats from deployed modules
 - Organization settings & branding
 - User management (invite, roles, deactivate)
 - Subscription management (add modules, adjust seats)
 - Audit log (centralized activity trail)
 
-## Screenshots
+## SSO Flow (sso_token Approach)
 
-### Dashboard
-![Dashboard](e2e/screenshots/cloud-01-dashboard.png)
+```
+1. User is authenticated on EMP Cloud (empcloud.com)
+2. User clicks a module link (e.g., "Open Recruit")
+3. EMP Cloud generates a short-lived sso_token (stored in DB, expires in 60s)
+4. User is redirected to: recruit.empcloud.com/sso/callback?sso_token=<token>
+5. Module backend receives the sso_token
+6. Module calls EMP Cloud API: POST /api/v1/auth/sso/validate
+   with { sso_token } to exchange it for user info
+7. EMP Cloud validates the token (exists, not expired, not used)
+   -> Returns user details + organization info
+8. Module creates a local session for the user
+9. User is now authenticated on the module without re-entering credentials
+```
 
-### Employee Directory
-![Employee Directory](e2e/screenshots/cloud-02-employees.png)
+This approach avoids the full OAuth2 redirect dance for cross-module navigation, providing a seamless user experience while maintaining security through one-time-use, short-lived tokens.
 
-### Attendance Management
-![Attendance](e2e/screenshots/cloud-03-attendance.png)
-
-### Leave Management
-![Leave](e2e/screenshots/cloud-04-leave.png)
-
-### Document Management
-![Documents](e2e/screenshots/cloud-05-documents.png)
-
-### Announcements
-![Announcements](e2e/screenshots/cloud-06-announcements.png)
-
-### Company Policies
-![Policies](e2e/screenshots/cloud-07-policies.png)
-
-### Module Marketplace
-![Modules](e2e/screenshots/cloud-08-modules.png)
-
-### Subscriptions
-![Subscriptions](e2e/screenshots/cloud-09-subscriptions.png)
-
-### Organization Settings
-![Settings](e2e/screenshots/cloud-10-settings.png)
-
-### Audit Log
-![Audit Log](e2e/screenshots/cloud-11-audit.png)
-
-## OAuth2 Flow
+## OAuth2 Flow (Full)
 
 ```
 1. User visits payroll.empcloud.com
@@ -378,7 +433,7 @@ empcloud/
 - `user_roles` — User <-> Role assignments
 - `organization_departments` — Departments per org
 - `organization_locations` — Locations per org
-- `modules` — Registry of EMP modules (payroll, monitor, recruit...)
+- `modules` — Registry of EMP modules (payroll, monitor, recruit, lms...)
 - `org_subscriptions` — Which modules an org subscribes to
 - `org_module_seats` — Per-user seat assignments per module
 - `module_features` — Feature flags per module per plan tier
@@ -441,7 +496,7 @@ empcloud/
 
 | Group | Base Path | Description |
 |-------|-----------|-------------|
-| Auth | `/api/v1/auth` | Login, register, password reset |
+| Auth | `/api/v1/auth` | Login, register, password reset, SSO token validation |
 | OAuth | `/oauth` | OAuth2/OIDC endpoints |
 | Organizations | `/api/v1/organizations` | Org CRUD |
 | Users | `/api/v1/users` | User management & invitations |
@@ -456,7 +511,8 @@ empcloud/
 | Org Chart | `/api/v1/org-chart` | Tree data, reporting lines, department grouping |
 | Notifications | `/api/v1/notifications` | List, mark read, unread count, preferences |
 | Import | `/api/v1/import` | CSV upload, preview, validate, execute, history |
-| Dashboard | `/api/v1/dashboard` | Unified widgets, module summaries, cached stats |
+| Dashboard | `/api/v1/dashboard` | Unified widgets, module summaries, module insights, cached stats |
+| Payments | `/api/v1/payments` | Stripe, Razorpay, PayPal payment processing & webhooks |
 | Audit | `/api/v1/audit` | Audit log |
 | Health | `/health` | Health check |
 | API Docs | `/api/docs` | Swagger UI + OpenAPI JSON |
@@ -524,6 +580,14 @@ AUTH_CODE_EXPIRY=10m
 # CORS
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175
 
+# Payment Gateways
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
+PAYPAL_CLIENT_ID=...
+PAYPAL_CLIENT_SECRET=...
+
 # Email (for invitations & password reset)
 SMTP_HOST=localhost
 SMTP_PORT=1025
@@ -535,22 +599,23 @@ SMTP_PASS=
 
 EMP Cloud is designed as an **open module registry** — adding a new module requires zero code changes in EMP Cloud. Just register the module and its OAuth client in the database.
 
-### Module Roadmap
+### Module Registry
 
-| Module | Slug | URL | Status |
-|--------|------|-----|--------|
-| **EMP HRMS** | — | empcloud.com | Built — part of EMP Cloud (employees, attendance, leave, documents, announcements, policies, org chart, notifications, bulk import, self-service, unified widgets) |
-| EMP Payroll | `emp-payroll` | payroll.empcloud.com | Built — open-source basic engine, premium advanced tax. Fetches attendance/leave from EMP Cloud |
-| EMP Monitor | `emp-monitor` | monitor.empcloud.com | Refactor from monolith |
-| EMP Recruit | `emp-recruit` | recruit.empcloud.com | Built — ATS, interviews, AI resume scoring, offer PDFs, candidate portal, custom pipelines |
-| EMP Field | `emp-field` | field.empcloud.com | Planned — open-source GPS check-in, premium route optimization |
-| EMP Biometrics | `emp-biometrics` | biometrics.empcloud.com | Planned — premium facial recognition, open-source basic biometric hooks |
-| EMP Projects | `emp-projects` | projects.empcloud.com | Partially built |
-| EMP Rewards | `emp-rewards` | rewards.empcloud.com | Built — kudos, badges, celebrations, Slack integration, team challenges, manager dashboard |
-| EMP Performance | `emp-performance` | performance.empcloud.com | Built — reviews, OKRs, 9-box grid, succession planning, goal alignment, skills gap analysis |
-| EMP Exit | `emp-exit` | exit.empcloud.com | Built — offboarding workflows, predictive attrition, buyout calculator, rehire, NPS surveys |
+| Module | Description | Pricing (INR/mo Basic/Pro) | OAuth Client ID | Status |
+|--------|-------------|---------------------------|-----------------|--------|
+| **EMP HRMS** | Core HR — employees, attendance, leave, documents, announcements, policies, org chart, notifications, bulk import, self-service, widgets | Included with EMP Cloud | — | Built |
+| EMP Payroll | Payroll processing, tax, compliance | 4500 / 4965 | emp-payroll | Built |
+| EMP Monitor | Employee monitoring & productivity | — | emp-monitor | Refactor from monolith |
+| EMP Recruit | ATS, interviews, AI resume scoring, offer PDFs, candidate portal, custom pipelines | 4200 / 4632 | emp-recruit | Built |
+| EMP Field | GPS check-in, route optimization | — | emp-field | Planned |
+| EMP Biometrics | Facial recognition, biometric hooks | — | emp-biometrics | Planned |
+| EMP Projects | Project & task management | — | emp-projects | Partially built |
+| EMP Rewards | Kudos, badges, celebrations, Slack integration, team challenges, manager dashboard | 4000 / 4414 | emp-rewards | Built |
+| EMP Performance | Reviews, OKRs, 9-box grid, succession planning, goal alignment, skills gap analysis | 4300 / 4746 | emp-performance | Built |
+| EMP Exit | Offboarding workflows, predictive attrition, buyout calculator, rehire, NPS surveys | 3800 / 4193 | emp-exit | Built |
+| EMP LMS | Learning Management & Training | 4700 / 5183 | emp-lms | Built |
 
-> **9 sellable modules** in the marketplace. EMP HRMS is built into EMP Cloud (not a separate module). EMP Billing is the internal billing engine (not sellable).
+> **10 sellable modules** in the marketplace. EMP HRMS is built into EMP Cloud (not a separate module). EMP Billing is the internal billing engine (not sellable).
 
 > **Open-source + premium model**: Each module has an open-source core and optional premium features gated by plan tier via `module_features` flags in EMP Cloud.
 
@@ -564,11 +629,35 @@ No code changes required in EMP Cloud. Just:
 4. The module uses EMP Cloud's OAuth2 flow for auth and public key for JWT verification
 5. Orgs can now subscribe to the module and assign seats from the EMP Cloud dashboard
 
+## Payment Gateways
+
+EMP Cloud integrates with three payment gateways for invoice payments:
+
+| Gateway | Use Case | Features |
+|---------|----------|----------|
+| **Stripe** | International payments (USD, EUR, etc.) | Payment Intents API, webhook-driven status updates, automatic retry |
+| **Razorpay** | Indian payments (INR) | UPI, net banking, cards, webhook verification |
+| **PayPal** | International alternative | PayPal checkout, order capture, webhook notifications |
+
+Payment flow:
+1. Organization receives an invoice from the billing engine
+2. Organization selects a payment gateway and initiates payment
+3. Payment is processed through the selected gateway
+4. Webhook confirms payment completion
+5. Invoice is automatically marked as paid
+6. Subscription is activated or renewed
+
+## Screenshots
+
+### SSO Flow: Cloud to LMS
+![SSO Cloud to LMS](e2e/screenshots/sso-lms/result.png)
+
 ## Security
 
 - OAuth2/OIDC compliant (SOC 2 ready)
 - RS256 asymmetric JWT signing
 - PKCE for public clients (SPAs)
+- SSO tokens are one-time-use and expire in 60 seconds
 - Refresh token rotation
 - Centralized token revocation
 - bcrypt password hashing (12 rounds)
@@ -576,6 +665,7 @@ No code changes required in EMP Cloud. Just:
 - CORS allowlisting per module
 - Audit logging for all sensitive operations
 - Per-module client credentials (independently revocable)
+- Payment webhook signature verification (Stripe, Razorpay, PayPal)
 
 ## License
 
