@@ -38,6 +38,7 @@ import moduleWebhookRoutes from "./api/routes/module-webhook.routes.js";
 import billingRoutes from "./api/routes/billing.routes.js";
 import adminRoutes from "./api/routes/admin.routes.js";
 import onboardingRoutes from "./api/routes/onboarding.routes.js";
+import biometricsRoutes from "./api/routes/biometrics.routes.js";
 
 async function main() {
   // Initialize database
@@ -74,7 +75,9 @@ async function main() {
     await m012(db);
     const { up: m013 } = await import("./db/migrations/013_onboarding.js");
     await m013(db);
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding)");
+    const { up: m015 } = await import("./db/migrations/015_biometrics.js");
+    await m015(db);
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics)");
   }
 
   // Load RSA keys
@@ -92,7 +95,7 @@ async function main() {
     origin: config.cors.allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-EmpCloud-API-Key"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-EmpCloud-API-Key", "X-Device-API-Key"],
   }));
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true }));
@@ -148,6 +151,7 @@ async function main() {
   app.use("/api/v1/billing", apiLimiter, billingRoutes);
   app.use("/api/v1/admin", apiLimiter, adminRoutes);
   app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
+  app.use("/api/v1/biometrics", apiLimiter, biometricsRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);

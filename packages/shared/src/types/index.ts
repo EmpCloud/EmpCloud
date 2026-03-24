@@ -113,6 +113,14 @@ export enum AuditAction {
   EXIT_COMPLETED = "exit_completed",
   PERFORMANCE_CYCLE_COMPLETED = "performance_cycle_completed",
   REWARDS_MILESTONE_ACHIEVED = "rewards_milestone_achieved",
+  // Biometrics
+  BIOMETRIC_FACE_ENROLLED = "biometric_face_enrolled",
+  BIOMETRIC_FACE_REMOVED = "biometric_face_removed",
+  BIOMETRIC_CHECKIN = "biometric_checkin",
+  BIOMETRIC_CHECKOUT = "biometric_checkout",
+  BIOMETRIC_DEVICE_REGISTERED = "biometric_device_registered",
+  BIOMETRIC_DEVICE_DECOMMISSIONED = "biometric_device_decommissioned",
+  BIOMETRIC_SETTINGS_UPDATED = "biometric_settings_updated",
 }
 
 export enum InvitationStatus {

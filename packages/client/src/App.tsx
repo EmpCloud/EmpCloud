@@ -32,10 +32,20 @@ const ImportEmployeesPage = lazy(() => import("@/pages/employees/ImportEmployees
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
 const BillingPage = lazy(() => import("@/pages/billing/BillingPage"));
 const OnboardingWizard = lazy(() => import("@/pages/onboarding/OnboardingWizard"));
+// Biometrics pages
+const BiometricsDashboardPage = lazy(() => import("@/pages/biometrics/BiometricsDashboardPage"));
+const FaceEnrollmentPage = lazy(() => import("@/pages/biometrics/FaceEnrollmentPage"));
+const QRAttendancePage = lazy(() => import("@/pages/biometrics/QRAttendancePage"));
+const DeviceManagementPage = lazy(() => import("@/pages/biometrics/DeviceManagementPage"));
+const BiometricSettingsPage = lazy(() => import("@/pages/biometrics/BiometricSettingsPage"));
+const BiometricLogsPage = lazy(() => import("@/pages/biometrics/BiometricLogsPage"));
 // Super Admin pages
 const SuperAdminDashboard = lazy(() => import("@/pages/admin/SuperAdminDashboard"));
 const OrgListPage = lazy(() => import("@/pages/admin/OrgListPage"));
 const OrgDetailPage = lazy(() => import("@/pages/admin/OrgDetailPage"));
+const ModuleAnalyticsPage = lazy(() => import("@/pages/admin/ModuleAnalyticsPage"));
+const RevenueAnalyticsPage = lazy(() => import("@/pages/admin/RevenueAnalyticsPage"));
+const SubscriptionMetricsPage = lazy(() => import("@/pages/admin/SubscriptionMetricsPage"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -144,10 +154,20 @@ export default function App() {
           <Route path="/policies" element={<PoliciesPage />} />
           <Route path="/org-chart" element={<OrgChartPage />} />
           <Route path="/employees/import" element={<ImportEmployeesPage />} />
+          {/* Biometrics routes */}
+          <Route path="/biometrics" element={<BiometricsDashboardPage />} />
+          <Route path="/biometrics/enrollment" element={<FaceEnrollmentPage />} />
+          <Route path="/biometrics/qr" element={<QRAttendancePage />} />
+          <Route path="/biometrics/devices" element={<DeviceManagementPage />} />
+          <Route path="/biometrics/settings" element={<BiometricSettingsPage />} />
+          <Route path="/biometrics/logs" element={<BiometricLogsPage />} />
           {/* Super Admin routes */}
           <Route path="/admin" element={<SuperAdminDashboard />} />
           <Route path="/admin/organizations" element={<OrgListPage />} />
           <Route path="/admin/organizations/:id" element={<OrgDetailPage />} />
+          <Route path="/admin/modules" element={<ModuleAnalyticsPage />} />
+          <Route path="/admin/revenue" element={<RevenueAnalyticsPage />} />
+          <Route path="/admin/subscriptions" element={<SubscriptionMetricsPage />} />
         </Route>
 
         {/* Fallback */}

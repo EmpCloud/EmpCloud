@@ -543,3 +543,84 @@ export type ApplyLeaveInput = z.infer<typeof applyLeaveSchema>;
 export type CreateLeaveTypeInput = z.infer<typeof createLeaveTypeSchema>;
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;
 export type CreatePolicyInput = z.infer<typeof createPolicySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Biometrics Validators
+// ---------------------------------------------------------------------------
+
+export const faceEnrollSchema = z.object({
+  user_id: z.number().int().positive(),
+  face_encoding: z.string().optional(),
+  thumbnail_path: z.string().max(512).optional(),
+  enrollment_method: z.enum(["webcam", "upload", "device"]).default("upload"),
+  quality_score: z.number().min(0).max(100).optional(),
+});
+
+export const faceVerifySchema = z.object({
+  face_encoding: z.string().min(1),
+  liveness_passed: z.boolean().optional(),
+});
+
+export const biometricCheckInSchema = z.object({
+  method: z.enum(["face", "fingerprint", "qr", "selfie"]),
+  device_id: z.number().int().positive().optional(),
+  confidence_score: z.number().min(0).max(1).optional(),
+  liveness_passed: z.boolean().optional(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
+  image_path: z.string().max(512).optional(),
+  qr_code: z.string().max(128).optional(),
+});
+
+export const biometricCheckOutSchema = biometricCheckInSchema;
+
+export const registerDeviceSchema = z.object({
+  name: z.string().min(1).max(100),
+  type: z.enum(["face_terminal", "fingerprint_reader", "qr_scanner", "multi"]),
+  serial_number: z.string().min(1).max(100),
+  ip_address: z.string().max(45).optional(),
+  location_id: z.number().int().positive().optional(),
+  location_name: z.string().max(200).optional(),
+});
+
+export const updateDeviceSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  ip_address: z.string().max(45).optional(),
+  location_id: z.number().int().positive().optional(),
+  location_name: z.string().max(200).optional(),
+  status: z.enum(["online", "offline", "maintenance"]).optional(),
+  is_active: z.boolean().optional(),
+});
+
+export const biometricSettingsSchema = z.object({
+  face_match_threshold: z.number().min(0).max(1).optional(),
+  liveness_required: z.boolean().optional(),
+  selfie_geo_required: z.boolean().optional(),
+  geo_radius_meters: z.number().int().min(10).max(50000).optional(),
+  qr_type: z.enum(["static", "rotating"]).optional(),
+  qr_rotation_minutes: z.number().int().min(1).max(1440).optional(),
+});
+
+export const qrGenerateSchema = z.object({
+  user_id: z.number().int().positive(),
+});
+
+export const qrScanSchema = z.object({
+  code: z.string().min(1).max(128),
+});
+
+export const biometricLogsQuerySchema = paginationSchema.extend({
+  method: z.enum(["face", "fingerprint", "qr", "selfie"]).optional(),
+  user_id: z.coerce.number().int().positive().optional(),
+  result: z.enum(["success", "failed", "spoofing_detected", "no_match"]).optional(),
+  date_from: z.string().optional(),
+  date_to: z.string().optional(),
+});
+
+export type FaceEnrollInput = z.infer<typeof faceEnrollSchema>;
+export type FaceVerifyInput = z.infer<typeof faceVerifySchema>;
+export type BiometricCheckInInput = z.infer<typeof biometricCheckInSchema>;
+export type RegisterDeviceInput = z.infer<typeof registerDeviceSchema>;
+export type UpdateDeviceInput = z.infer<typeof updateDeviceSchema>;
+export type BiometricSettingsInput = z.infer<typeof biometricSettingsSchema>;
+export type BiometricLogsQueryInput = z.infer<typeof biometricLogsQuerySchema>;

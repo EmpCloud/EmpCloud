@@ -23,6 +23,13 @@ import {
   Menu,
   X,
   Crown,
+  ScanFace,
+  Fingerprint,
+  QrCode,
+  Smartphone,
+  ScrollText,
+  CreditCard,
+  TrendingUp,
 } from "lucide-react";
 
 const navItems = [
@@ -39,6 +46,15 @@ const navItems = [
   { path: "/policies", label: "Policies", icon: BookOpen },
   { path: "/settings", label: "Settings", icon: Settings },
   { path: "/audit", label: "Audit Log", icon: Shield },
+];
+
+const biometricsNavItems = [
+  { path: "/biometrics", label: "Biometric Dashboard", icon: ScanFace },
+  { path: "/biometrics/enrollment", label: "Face Enrollment", icon: Fingerprint },
+  { path: "/biometrics/qr", label: "QR Attendance", icon: QrCode },
+  { path: "/biometrics/devices", label: "Devices", icon: Smartphone },
+  { path: "/biometrics/logs", label: "Biometric Logs", icon: ScrollText },
+  { path: "/biometrics/settings", label: "Biometric Settings", icon: Settings },
 ];
 
 function NotificationDropdown() {
@@ -162,6 +178,17 @@ export default function DashboardLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Fetch org subscriptions to conditionally show module nav items
+  const { data: subscriptions } = useQuery({
+    queryKey: ["subscriptions"],
+    queryFn: () => api.get("/subscriptions").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+
+  const hasBiometrics = (subscriptions || []).some(
+    (s: any) => s.module_slug === "emp-biometrics" && (s.status === "active" || s.status === "trial")
+  );
+
   // Auto-close sidebar on navigation
   useEffect(() => {
     setSidebarOpen(false);
@@ -212,15 +239,41 @@ export default function DashboardLayout() {
               </Link>
             );
           })}
+          {hasBiometrics && (
+            <>
+              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Biometrics</div>
+              {biometricsNavItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-brand-50 text-brand-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </>
+          )}
           {user?.role === "super_admin" && (
             <>
               <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Platform Admin</div>
               {[
-                { path: "/admin", label: "Super Dashboard", icon: Crown },
-                { path: "/admin/organizations", label: "All Organizations", icon: Building2 },
+                { path: "/admin", label: "Overview Dashboard", icon: Crown },
+                { path: "/admin/organizations", label: "Organizations", icon: Building2 },
+                { path: "/admin/modules", label: "Module Analytics", icon: Package },
+                { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
+                { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
               ].map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+                const isActive = location.pathname === item.path || (item.path !== "/admin" && location.pathname.startsWith(item.path));
                 return (
                   <Link
                     key={item.path}
