@@ -142,6 +142,19 @@ export enum AuditAction {
   ASSET_ASSIGNED = "asset_assigned",
   ASSET_RETURNED = "asset_returned",
   ASSET_RETIRED = "asset_retired",
+  // Anonymous Feedback
+  FEEDBACK_SUBMITTED = "feedback_submitted",
+  FEEDBACK_RESPONDED = "feedback_responded",
+  FEEDBACK_STATUS_UPDATED = "feedback_status_updated",
+  // Events
+  EVENT_CREATED = "event_created",
+  EVENT_CANCELLED = "event_cancelled",
+  // Whistleblowing
+  WHISTLEBLOWER_REPORT_SUBMITTED = "whistleblower_report_submitted",
+  WHISTLEBLOWER_INVESTIGATOR_ASSIGNED = "whistleblower_investigator_assigned",
+  WHISTLEBLOWER_UPDATE_ADDED = "whistleblower_update_added",
+  WHISTLEBLOWER_STATUS_CHANGED = "whistleblower_status_changed",
+  WHISTLEBLOWER_ESCALATED = "whistleblower_escalated",
 }
 
 export enum InvitationStatus {

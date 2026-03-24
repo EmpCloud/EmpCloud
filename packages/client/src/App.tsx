@@ -57,12 +57,28 @@ const AssetListPage = lazy(() => import("@/pages/assets/AssetListPage"));
 const AssetDetailPage = lazy(() => import("@/pages/assets/AssetDetailPage"));
 const MyAssetsPage = lazy(() => import("@/pages/assets/MyAssetsPage"));
 const AssetCategoriesPage = lazy(() => import("@/pages/assets/AssetCategoriesPage"));
+// Anonymous Feedback pages
+const SubmitFeedbackPage = lazy(() => import("@/pages/feedback/SubmitFeedbackPage"));
+const MyFeedbackPage = lazy(() => import("@/pages/feedback/MyFeedbackPage"));
+const FeedbackDashboardPage = lazy(() => import("@/pages/feedback/FeedbackDashboardPage"));
+const FeedbackListPage = lazy(() => import("@/pages/feedback/FeedbackListPage"));
 // Position Management pages
 const PositionDashboardPage = lazy(() => import("@/pages/positions/PositionDashboardPage"));
 const PositionListPage = lazy(() => import("@/pages/positions/PositionListPage"));
 const PositionDetailPage = lazy(() => import("@/pages/positions/PositionDetailPage"));
 const VacanciesPage = lazy(() => import("@/pages/positions/VacanciesPage"));
 const HeadcountPlanPage = lazy(() => import("@/pages/positions/HeadcountPlanPage"));
+// Event pages
+const EventsListPage = lazy(() => import("@/pages/events/EventsListPage"));
+const EventDetailPage = lazy(() => import("@/pages/events/EventDetailPage"));
+const EventDashboardPage = lazy(() => import("@/pages/events/EventDashboardPage"));
+const MyEventsPage = lazy(() => import("@/pages/events/MyEventsPage"));
+// Whistleblowing pages
+const WBSubmitReportPage = lazy(() => import("@/pages/whistleblowing/SubmitReportPage"));
+const WBTrackReportPage = lazy(() => import("@/pages/whistleblowing/TrackReportPage"));
+const WBDashboardPage = lazy(() => import("@/pages/whistleblowing/WhistleblowingDashboardPage"));
+const WBReportListPage = lazy(() => import("@/pages/whistleblowing/ReportListPage"));
+const WBReportDetailPage = lazy(() => import("@/pages/whistleblowing/ReportDetailPage"));
 // Super Admin pages
 const SuperAdminDashboard = lazy(() => import("@/pages/admin/SuperAdminDashboard"));
 const OrgListPage = lazy(() => import("@/pages/admin/OrgListPage"));
@@ -178,6 +194,11 @@ export default function App() {
           <Route path="/policies" element={<PoliciesPage />} />
           <Route path="/org-chart" element={<OrgChartPage />} />
           <Route path="/employees/import" element={<ImportEmployeesPage />} />
+          {/* Anonymous Feedback routes */}
+          <Route path="/feedback/submit" element={<SubmitFeedbackPage />} />
+          <Route path="/feedback/my" element={<MyFeedbackPage />} />
+          <Route path="/feedback/dashboard" element={<FeedbackDashboardPage />} />
+          <Route path="/feedback" element={<FeedbackListPage />} />
           {/* Position Management routes */}
           <Route path="/positions" element={<PositionDashboardPage />} />
           <Route path="/positions/list" element={<PositionListPage />} />
@@ -209,6 +230,17 @@ export default function App() {
           <Route path="/assets/categories" element={<AssetCategoriesPage />} />
           <Route path="/assets/:id" element={<AssetDetailPage />} />
           <Route path="/assets" element={<AssetListPage />} />
+          {/* Event routes */}
+          <Route path="/events" element={<EventsListPage />} />
+          <Route path="/events/my" element={<MyEventsPage />} />
+          <Route path="/events/dashboard" element={<EventDashboardPage />} />
+          <Route path="/events/:id" element={<EventDetailPage />} />
+          {/* Whistleblowing routes */}
+          <Route path="/whistleblowing/submit" element={<WBSubmitReportPage />} />
+          <Route path="/whistleblowing/track" element={<WBTrackReportPage />} />
+          <Route path="/whistleblowing/dashboard" element={<WBDashboardPage />} />
+          <Route path="/whistleblowing/reports/:id" element={<WBReportDetailPage />} />
+          <Route path="/whistleblowing/reports" element={<WBReportListPage />} />
           {/* Super Admin routes */}
           <Route path="/admin" element={<SuperAdminDashboard />} />
           <Route path="/admin/organizations" element={<OrgListPage />} />

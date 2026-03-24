@@ -955,3 +955,185 @@ export type AssignAssetInput = z.infer<typeof assignAssetSchema>;
 export type ReturnAssetInput = z.infer<typeof returnAssetSchema>;
 export type AssetActionInput = z.infer<typeof assetActionSchema>;
 export type AssetQueryInput = z.infer<typeof assetQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Anonymous Feedback Validators
+// ---------------------------------------------------------------------------
+
+const feedbackCategoryEnum = z.enum([
+  "workplace",
+  "management",
+  "process",
+  "culture",
+  "harassment",
+  "safety",
+  "suggestion",
+  "other",
+]);
+
+const feedbackSentimentEnum = z.enum(["positive", "neutral", "negative"]);
+
+const feedbackStatusEnum = z.enum([
+  "new",
+  "acknowledged",
+  "under_review",
+  "resolved",
+  "archived",
+]);
+
+export const submitFeedbackSchema = z.object({
+  category: feedbackCategoryEnum,
+  subject: z.string().min(1).max(255),
+  message: z.string().min(1),
+  sentiment: feedbackSentimentEnum.optional().nullable(),
+  is_urgent: z.boolean().default(false),
+});
+
+export const respondFeedbackSchema = z.object({
+  admin_response: z.string().min(1),
+});
+
+export const updateFeedbackStatusSchema = z.object({
+  status: feedbackStatusEnum,
+});
+
+export const feedbackQuerySchema = paginationSchema.extend({
+  category: feedbackCategoryEnum.optional(),
+  status: feedbackStatusEnum.optional(),
+  sentiment: feedbackSentimentEnum.optional(),
+  is_urgent: z.coerce.boolean().optional(),
+  search: z.string().optional(),
+});
+
+export type SubmitFeedbackInput = z.infer<typeof submitFeedbackSchema>;
+export type RespondFeedbackInput = z.infer<typeof respondFeedbackSchema>;
+export type UpdateFeedbackStatusInput = z.infer<typeof updateFeedbackStatusSchema>;
+export type FeedbackQueryInput = z.infer<typeof feedbackQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Event Validators
+// ---------------------------------------------------------------------------
+
+const eventTypeEnum = z.enum([
+  "meeting",
+  "training",
+  "celebration",
+  "team_building",
+  "town_hall",
+  "holiday",
+  "workshop",
+  "social",
+  "other",
+]);
+
+const eventStatusEnum = z.enum(["upcoming", "ongoing", "completed", "cancelled"]);
+
+export const createEventSchema = z.object({
+  title: z.string().min(1).max(255),
+  description: z.string().optional().nullable(),
+  event_type: eventTypeEnum.default("other"),
+  start_date: z.string().min(1),
+  end_date: z.string().optional().nullable(),
+  is_all_day: z.boolean().default(false),
+  location: z.string().max(255).optional().nullable(),
+  virtual_link: z.string().max(500).optional().nullable(),
+  target_type: z.enum(["all", "department", "role"]).default("all"),
+  target_ids: z.string().optional().nullable(),
+  max_attendees: z.number().int().positive().optional().nullable(),
+  is_mandatory: z.boolean().default(false),
+});
+
+export const updateEventSchema = createEventSchema.partial();
+
+export const rsvpEventSchema = z.object({
+  status: z.enum(["attending", "maybe", "declined"]).default("attending"),
+});
+
+export const eventQuerySchema = paginationSchema.extend({
+  event_type: eventTypeEnum.optional(),
+  status: eventStatusEnum.optional(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
+});
+
+export type CreateEventInput = z.infer<typeof createEventSchema>;
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;
+export type RsvpEventInput = z.infer<typeof rsvpEventSchema>;
+export type EventQueryInput = z.infer<typeof eventQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Whistleblowing Validators (EU Directive 2019/1937)
+// ---------------------------------------------------------------------------
+
+const whistleblowerCategoryEnum = z.enum([
+  "fraud",
+  "corruption",
+  "harassment",
+  "discrimination",
+  "safety_violation",
+  "data_breach",
+  "financial_misconduct",
+  "environmental",
+  "retaliation",
+  "other",
+]);
+
+const whistleblowerSeverityEnum = z.enum(["low", "medium", "high", "critical"]);
+
+const whistleblowerStatusEnum = z.enum([
+  "submitted",
+  "under_investigation",
+  "escalated",
+  "resolved",
+  "dismissed",
+  "closed",
+]);
+
+const whistleblowerUpdateTypeEnum = z.enum([
+  "status_change",
+  "note",
+  "response_to_reporter",
+  "escalation",
+]);
+
+export const submitWhistleblowerReportSchema = z.object({
+  category: whistleblowerCategoryEnum,
+  severity: whistleblowerSeverityEnum.default("medium"),
+  subject: z.string().min(1).max(255),
+  description: z.string().min(1),
+  evidence_paths: z.array(z.string()).optional().nullable(),
+  is_anonymous: z.boolean().default(true),
+});
+
+export const whistleblowerUpdateSchema = z.object({
+  content: z.string().min(1),
+  update_type: whistleblowerUpdateTypeEnum.default("note"),
+  is_visible_to_reporter: z.boolean().default(false),
+});
+
+export const whistleblowerStatusSchema = z.object({
+  status: whistleblowerStatusEnum,
+  resolution: z.string().optional().nullable(),
+});
+
+export const whistleblowerEscalateSchema = z.object({
+  escalated_to: z.string().min(1).max(255),
+});
+
+export const whistleblowerAssignSchema = z.object({
+  investigator_id: z.number().int().positive(),
+});
+
+export const whistleblowerQuerySchema = paginationSchema.extend({
+  status: whistleblowerStatusEnum.optional(),
+  category: whistleblowerCategoryEnum.optional(),
+  severity: whistleblowerSeverityEnum.optional(),
+  search: z.string().optional(),
+});
+
+export type SubmitWhistleblowerReportInput = z.infer<typeof submitWhistleblowerReportSchema>;
+export type WhistleblowerUpdateInput = z.infer<typeof whistleblowerUpdateSchema>;
+export type WhistleblowerStatusInput = z.infer<typeof whistleblowerStatusSchema>;
+export type WhistleblowerEscalateInput = z.infer<typeof whistleblowerEscalateSchema>;
+export type WhistleblowerAssignInput = z.infer<typeof whistleblowerAssignSchema>;
+export type WhistleblowerQueryInput = z.infer<typeof whistleblowerQuerySchema>;

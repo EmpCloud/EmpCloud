@@ -39,6 +39,12 @@ import {
   FolderOpen,
   Briefcase,
   Target,
+  MessageSquarePlus,
+  MessageSquare,
+  PartyPopper,
+  CalendarCheck,
+  ShieldAlert,
+  Search,
 } from "lucide-react";
 
 const assetNavItems = [
@@ -56,6 +62,29 @@ const positionNavItems = [
   { path: "/positions/list", label: "All Positions", icon: Briefcase },
   { path: "/positions/vacancies", label: "Vacancies", icon: Target },
   { path: "/positions/headcount-plans", label: "Headcount Plans", icon: ClipboardList },
+];
+
+const eventNavItems = [
+  { path: "/events", label: "Events", icon: PartyPopper },
+  { path: "/events/my", label: "My Events", icon: CalendarCheck },
+];
+
+const eventHRNavItems = [
+  { path: "/events", label: "Events", icon: PartyPopper },
+  { path: "/events/my", label: "My Events", icon: CalendarCheck },
+  { path: "/events/dashboard", label: "Event Dashboard", icon: BarChart3 },
+];
+
+const whistleblowingNavItems = [
+  { path: "/whistleblowing/submit", label: "Submit Report", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", icon: Search },
+];
+
+const whistleblowingHRNavItems = [
+  { path: "/whistleblowing/submit", label: "Submit Report", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", icon: Search },
+  { path: "/whistleblowing/dashboard", label: "Dashboard", icon: BarChart3 },
+  { path: "/whistleblowing/reports", label: "All Reports", icon: ClipboardList },
 ];
 
 // Items visible to ALL users (including employees)
@@ -109,6 +138,18 @@ const surveyHRNavItems = [
   { path: "/surveys/dashboard", label: "Survey Dashboard", icon: BarChart3 },
   { path: "/surveys/list", label: "All Surveys", icon: ClipboardList },
   { path: "/surveys/respond", label: "Active Surveys", icon: ClipboardList },
+];
+
+const feedbackNavItems = [
+  { path: "/feedback/submit", label: "Submit Feedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", icon: MessageSquare },
+];
+
+const feedbackHRNavItems = [
+  { path: "/feedback/submit", label: "Submit Feedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", icon: MessageSquare },
+  { path: "/feedback", label: "All Feedback", icon: MessageSquare },
+  { path: "/feedback/dashboard", label: "Feedback Dashboard", icon: BarChart3 },
 ];
 
 const biometricsNavItems = [
@@ -326,6 +367,52 @@ export default function DashboardLayout() {
               })}
             </>
           )}
+          {/* Events section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Events</div>
+          {(user && HR_ROLES.includes(user.role)
+            ? eventHRNavItems
+            : eventNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+          {/* Whistleblowing section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Whistleblowing</div>
+          {(user && HR_ROLES.includes(user.role)
+            ? whistleblowingHRNavItems
+            : whistleblowingNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
           {/* Helpdesk section — visible to all users */}
           <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Helpdesk</div>
           {(user && HR_ROLES.includes(user.role)
@@ -377,6 +464,29 @@ export default function DashboardLayout() {
           {(user && HR_ROLES.includes(user.role)
             ? assetHRNavItems
             : assetNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+          {/* Feedback section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Feedback</div>
+          {(user && HR_ROLES.includes(user.role)
+            ? feedbackHRNavItems
+            : feedbackNavItems
           ).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
