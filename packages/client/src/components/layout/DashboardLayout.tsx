@@ -58,7 +58,20 @@ const positionNavItems = [
   { path: "/positions/headcount-plans", label: "Headcount Plans", icon: ClipboardList },
 ];
 
-const navItems = [
+// Items visible to ALL users (including employees)
+const employeeNavItems = [
+  { path: "/", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/self-service", label: "Self Service", icon: Contact },
+  { path: "/attendance", label: "Attendance", icon: Clock },
+  { path: "/leave", label: "Leave", icon: CalendarDays },
+  { path: "/documents", label: "Documents", icon: FileText },
+  { path: "/announcements", label: "Announcements", icon: Megaphone },
+  { path: "/policies", label: "Policies", icon: BookOpen },
+  { path: "/org-chart", label: "Org Chart", icon: Network },
+];
+
+// Items visible only to HR Admin, Org Admin, Super Admin
+const adminNavItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/modules", label: "Modules", icon: Package },
   { path: "/billing", label: "Billing", icon: Receipt },
@@ -73,6 +86,8 @@ const navItems = [
   { path: "/settings", label: "Settings", icon: Settings },
   { path: "/audit", label: "Audit Log", icon: Shield },
 ];
+
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
 
 const helpdeskNavItems = [
   { path: "/helpdesk/my-tickets", label: "My Tickets", icon: TicketCheck },
@@ -269,7 +284,7 @@ export default function DashboardLayout() {
         </button>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
+          {(user && HR_ROLES.includes(user.role) ? adminNavItems : employeeNavItems).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             return (
@@ -288,7 +303,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Positions section — HR only */}
-          {user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role) && (
+          {user && HR_ROLES.includes(user.role) && (
             <>
               <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Positions</div>
               {positionNavItems.map((item) => {
@@ -313,7 +328,7 @@ export default function DashboardLayout() {
           )}
           {/* Helpdesk section — visible to all users */}
           <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Helpdesk</div>
-          {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
+          {(user && HR_ROLES.includes(user.role)
             ? helpdeskHRNavItems
             : helpdeskNavItems
           ).map((item) => {
@@ -336,7 +351,7 @@ export default function DashboardLayout() {
           })}
           {/* Surveys section — visible to all users */}
           <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Surveys</div>
-          {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
+          {(user && HR_ROLES.includes(user.role)
             ? surveyHRNavItems
             : surveyNavItems
           ).map((item) => {
@@ -359,7 +374,7 @@ export default function DashboardLayout() {
           })}
           {/* Assets section — visible to all users */}
           <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Assets</div>
-          {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
+          {(user && HR_ROLES.includes(user.role)
             ? assetHRNavItems
             : assetNavItems
           ).map((item) => {
