@@ -73,6 +73,17 @@ const EventsListPage = lazy(() => import("@/pages/events/EventsListPage"));
 const EventDetailPage = lazy(() => import("@/pages/events/EventDetailPage"));
 const EventDashboardPage = lazy(() => import("@/pages/events/EventDashboardPage"));
 const MyEventsPage = lazy(() => import("@/pages/events/MyEventsPage"));
+// Forum / Social Intranet pages
+const ForumPage = lazy(() => import("@/pages/forum/ForumPage"));
+const CategoryPostsPage = lazy(() => import("@/pages/forum/CategoryPostsPage"));
+const PostDetailPage = lazy(() => import("@/pages/forum/PostDetailPage"));
+const CreatePostPage = lazy(() => import("@/pages/forum/CreatePostPage"));
+const ForumDashboardPage = lazy(() => import("@/pages/forum/ForumDashboardPage"));
+// Wellness pages
+const WellnessPage = lazy(() => import("@/pages/wellness/WellnessPage"));
+const WellnessDashboardPage = lazy(() => import("@/pages/wellness/WellnessDashboardPage"));
+const MyWellnessPage = lazy(() => import("@/pages/wellness/MyWellnessPage"));
+const DailyCheckInPage = lazy(() => import("@/pages/wellness/DailyCheckInPage"));
 // Whistleblowing pages
 // Chatbot page
 const ChatbotPage = lazy(() => import("@/pages/chatbot/ChatbotPage"));
@@ -238,6 +249,17 @@ export default function App() {
           <Route path="/events/my" element={<MyEventsPage />} />
           <Route path="/events/dashboard" element={<EventDashboardPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
+          {/* Forum / Social Intranet routes */}
+          <Route path="/forum" element={<ForumPage />} />
+          <Route path="/forum/new" element={<CreatePostPage />} />
+          <Route path="/forum/dashboard" element={<ForumDashboardPage />} />
+          <Route path="/forum/category/:id" element={<CategoryPostsPage />} />
+          <Route path="/forum/post/:id" element={<PostDetailPage />} />
+          {/* Wellness routes */}
+          <Route path="/wellness" element={<WellnessPage />} />
+          <Route path="/wellness/dashboard" element={<WellnessDashboardPage />} />
+          <Route path="/wellness/my" element={<MyWellnessPage />} />
+          <Route path="/wellness/check-in" element={<DailyCheckInPage />} />
           {/* Whistleblowing routes */}
           <Route path="/whistleblowing/submit" element={<WBSubmitReportPage />} />
           <Route path="/whistleblowing/track" element={<WBTrackReportPage />} />

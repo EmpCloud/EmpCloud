@@ -1,0 +1,316 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/api/client";
+import {
+  MessageCircle,
+  Users,
+  TrendingUp,
+  Eye,
+  Heart,
+  Plus,
+  Pencil,
+  BarChart3,
+  MessagesSquare,
+} from "lucide-react";
+
+function useDashboard() {
+  return useQuery({
+    queryKey: ["forum-dashboard"],
+    queryFn: () => api.get("/forum/dashboard").then((r) => r.data.data),
+  });
+}
+
+export default function ForumDashboardPage() {
+  const { data: stats, isLoading } = useDashboard();
+  const qc = useQueryClient();
+
+  // Category management
+  const [showCatForm, setShowCatForm] = useState(false);
+  const [editingCat, setEditingCat] = useState<any>(null);
+  const [catName, setCatName] = useState("");
+  const [catDescription, setCatDescription] = useState("");
+  const [catIcon, setCatIcon] = useState("");
+  const [catSortOrder, setCatSortOrder] = useState(0);
+
+  const createCategory = useMutation({
+    mutationFn: (data: object) => api.post("/forum/categories", data).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["forum-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["forum-categories"] });
+      resetCatForm();
+    },
+  });
+
+  const updateCategory = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: object }) =>
+      api.put(`/forum/categories/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["forum-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["forum-categories"] });
+      resetCatForm();
+    },
+  });
+
+  const resetCatForm = () => {
+    setShowCatForm(false);
+    setEditingCat(null);
+    setCatName("");
+    setCatDescription("");
+    setCatIcon("");
+    setCatSortOrder(0);
+  };
+
+  const startEditCategory = (cat: any) => {
+    setEditingCat(cat);
+    setCatName(cat.name);
+    setCatDescription(cat.description || "");
+    setCatIcon(cat.icon || "");
+    setCatSortOrder(cat.sort_order || 0);
+    setShowCatForm(true);
+  };
+
+  const handleCatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      name: catName,
+      description: catDescription || null,
+      icon: catIcon || null,
+      sort_order: catSortOrder,
+    };
+    if (editingCat) {
+      updateCategory.mutate({ id: editingCat.id, data: payload });
+    } else {
+      createCategory.mutate(payload);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-gray-400">Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Forum Dashboard</h1>
+          <p className="text-gray-500 mt-1">Manage community discussions and categories.</p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
+              <MessagesSquare className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">{stats?.total_posts ?? 0}</p>
+              <p className="text-xs text-gray-500">Total Posts</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
+              <MessageCircle className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">{stats?.total_replies ?? 0}</p>
+              <p className="text-xs text-gray-500">Total Replies</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">{stats?.active_discussions ?? 0}</p>
+              <p className="text-xs text-gray-500">Active This Week</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Trending Posts */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-brand-600" /> Trending Posts
+          </h2>
+          {!stats?.trending_posts?.length ? (
+            <p className="text-sm text-gray-400">No trending posts this week.</p>
+          ) : (
+            <div className="space-y-3">
+              {stats.trending_posts.map((post: any, idx: number) => (
+                <div key={post.id} className="flex items-start gap-3">
+                  <span className="text-sm font-bold text-gray-300 w-5 text-right">{idx + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
+                    <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
+                      <span>{post.author_first_name} {post.author_last_name}</span>
+                      <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.like_count}</span>
+                      <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" /> {post.reply_count}</span>
+                      <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Top Contributors */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Users className="h-5 w-5 text-brand-600" /> Top Contributors (30 days)
+          </h2>
+          {!stats?.top_contributors?.length ? (
+            <p className="text-sm text-gray-400">No contributors yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {stats.top_contributors.map((user: any, idx: number) => (
+                <div key={user.id} className="flex items-center gap-3">
+                  <span className="text-sm font-bold text-gray-300 w-5 text-right">{idx + 1}</span>
+                  <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-semibold text-brand-700">
+                      {user.first_name?.[0]}{user.last_name?.[0]}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user.first_name} {user.last_name}
+                    </p>
+                  </div>
+                  <span className="text-sm font-semibold text-brand-600">
+                    {user.contribution_count} posts
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Manage Categories */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-brand-600" /> Categories
+          </h2>
+          <button
+            onClick={() => {
+              resetCatForm();
+              setShowCatForm(true);
+            }}
+            className="flex items-center gap-2 bg-brand-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-700"
+          >
+            <Plus className="h-4 w-4" /> Add Category
+          </button>
+        </div>
+
+        {/* Category form */}
+        {showCatForm && (
+          <form onSubmit={handleCatSubmit} className="bg-gray-50 rounded-lg p-4 mb-4 space-y-3">
+            <h3 className="text-sm font-semibold text-gray-900">
+              {editingCat ? "Edit Category" : "New Category"}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={catName}
+                  onChange={(e) => setCatName(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  placeholder="e.g. Engineering"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Icon (emoji)</label>
+                <input
+                  type="text"
+                  value={catIcon}
+                  onChange={(e) => setCatIcon(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  placeholder="e.g. #"
+                  maxLength={50}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
+                <input
+                  type="number"
+                  value={catSortOrder}
+                  onChange={(e) => setCatSortOrder(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  min={0}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <input
+                type="text"
+                value={catDescription}
+                onChange={(e) => setCatDescription(e.target.value)}
+                className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                placeholder="Brief description of this category"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={resetCatForm}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={createCategory.isPending || updateCategory.isPending}
+                className="bg-brand-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              >
+                {editingCat ? "Update" : "Create"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Category list */}
+        {!stats?.categories?.length ? (
+          <p className="text-sm text-gray-400">No categories created yet.</p>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {stats.categories.map((cat: any) => (
+              <div key={cat.id} className="flex items-center gap-4 py-3">
+                <span className="text-lg w-8 text-center">{cat.icon || "#"}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900">{cat.name}</p>
+                  {cat.description && (
+                    <p className="text-xs text-gray-500 truncate">{cat.description}</p>
+                  )}
+                </div>
+                <span className="text-sm text-gray-500">{cat.post_count} posts</span>
+                <span className="text-xs text-gray-400">Order: {cat.sort_order}</span>
+                <button
+                  onClick={() => startEditCategory(cat)}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

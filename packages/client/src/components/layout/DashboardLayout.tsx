@@ -46,6 +46,11 @@ import {
   ShieldAlert,
   Search,
   BotMessageSquare,
+  MessagesSquare,
+  PenSquare,
+  Heart,
+  Dumbbell,
+  Smile,
 } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
 
@@ -75,6 +80,30 @@ const eventHRNavItems = [
   { path: "/events", label: "Events", icon: PartyPopper },
   { path: "/events/my", label: "My Events", icon: CalendarCheck },
   { path: "/events/dashboard", label: "Event Dashboard", icon: BarChart3 },
+];
+
+const wellnessNavItems = [
+  { path: "/wellness", label: "Wellness", icon: Heart },
+  { path: "/wellness/my", label: "My Wellness", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", icon: Smile },
+];
+
+const wellnessHRNavItems = [
+  { path: "/wellness", label: "Wellness", icon: Heart },
+  { path: "/wellness/my", label: "My Wellness", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", icon: Smile },
+  { path: "/wellness/dashboard", label: "Wellness Dashboard", icon: BarChart3 },
+];
+
+const forumNavItems = [
+  { path: "/forum", label: "Forum", icon: MessagesSquare },
+  { path: "/forum/new", label: "Create Post", icon: PenSquare },
+];
+
+const forumHRNavItems = [
+  { path: "/forum", label: "Forum", icon: MessagesSquare },
+  { path: "/forum/new", label: "Create Post", icon: PenSquare },
+  { path: "/forum/dashboard", label: "Forum Dashboard", icon: BarChart3 },
 ];
 
 const whistleblowingNavItems = [
@@ -371,6 +400,29 @@ export default function DashboardLayout() {
               })}
             </>
           )}
+          {/* Community section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Community</div>
+          {(user && HR_ROLES.includes(user.role)
+            ? forumHRNavItems
+            : forumNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
           {/* Events section — visible to all users */}
           <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Events</div>
           {(user && HR_ROLES.includes(user.role)
@@ -445,6 +497,29 @@ export default function DashboardLayout() {
           {(user && HR_ROLES.includes(user.role)
             ? surveyHRNavItems
             : surveyNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+          {/* Wellness section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Wellness</div>
+          {(user && HR_ROLES.includes(user.role)
+            ? wellnessHRNavItems
+            : wellnessNavItems
           ).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;

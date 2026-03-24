@@ -1137,3 +1137,134 @@ export type WhistleblowerStatusInput = z.infer<typeof whistleblowerStatusSchema>
 export type WhistleblowerEscalateInput = z.infer<typeof whistleblowerEscalateSchema>;
 export type WhistleblowerAssignInput = z.infer<typeof whistleblowerAssignSchema>;
 export type WhistleblowerQueryInput = z.infer<typeof whistleblowerQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Forum / Social Intranet Validators
+// ---------------------------------------------------------------------------
+
+const forumPostTypeEnum = z.enum(["discussion", "question", "idea", "poll"]);
+
+export const createForumCategorySchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  sort_order: z.number().int().min(0).optional(),
+});
+
+export const updateForumCategorySchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  sort_order: z.number().int().min(0).optional(),
+  is_active: z.boolean().optional(),
+});
+
+export const createForumPostSchema = z.object({
+  category_id: z.number().int().positive(),
+  title: z.string().min(1).max(255),
+  content: z.string().min(1),
+  post_type: forumPostTypeEnum.default("discussion"),
+  tags: z.array(z.string()).optional().nullable(),
+});
+
+export const updateForumPostSchema = z.object({
+  title: z.string().min(1).max(255).optional(),
+  content: z.string().min(1).optional(),
+  tags: z.array(z.string()).optional().nullable(),
+});
+
+export const forumPostQuerySchema = paginationSchema.extend({
+  category_id: z.coerce.number().int().positive().optional(),
+  post_type: forumPostTypeEnum.optional(),
+  author_id: z.coerce.number().int().positive().optional(),
+  search: z.string().optional(),
+});
+
+export const createForumReplySchema = z.object({
+  content: z.string().min(1),
+  parent_reply_id: z.number().int().positive().optional().nullable(),
+});
+
+export const forumLikeSchema = z.object({
+  target_type: z.enum(["post", "reply"]),
+  target_id: z.number().int().positive(),
+});
+
+export type CreateForumCategoryInput = z.infer<typeof createForumCategorySchema>;
+export type UpdateForumCategoryInput = z.infer<typeof updateForumCategorySchema>;
+export type CreateForumPostInput = z.infer<typeof createForumPostSchema>;
+export type UpdateForumPostInput = z.infer<typeof updateForumPostSchema>;
+export type ForumPostQueryInput = z.infer<typeof forumPostQuerySchema>;
+export type CreateForumReplyInput = z.infer<typeof createForumReplySchema>;
+export type ForumLikeInput = z.infer<typeof forumLikeSchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Wellness Program Validators
+// ---------------------------------------------------------------------------
+
+const wellnessProgramTypeEnum = z.enum([
+  "fitness",
+  "mental_health",
+  "nutrition",
+  "meditation",
+  "yoga",
+  "team_activity",
+  "health_checkup",
+  "other",
+]);
+
+const wellnessMoodEnum = z.enum(["great", "good", "okay", "low", "stressed"]);
+const wellnessGoalTypeEnum = z.enum(["steps", "exercise", "meditation", "water", "sleep", "custom"]);
+const wellnessGoalFrequencyEnum = z.enum(["daily", "weekly", "monthly"]);
+const wellnessGoalStatusEnum = z.enum(["active", "completed", "abandoned"]);
+
+export const createWellnessProgramSchema = z.object({
+  title: z.string().min(1).max(255),
+  description: z.string().optional().nullable(),
+  program_type: wellnessProgramTypeEnum.default("other"),
+  start_date: z.string().optional().nullable(),
+  end_date: z.string().optional().nullable(),
+  is_active: z.boolean().optional(),
+  max_participants: z.number().int().positive().optional().nullable(),
+  points_reward: z.number().int().min(0).optional(),
+});
+
+export const updateWellnessProgramSchema = createWellnessProgramSchema.partial();
+
+export const wellnessCheckInSchema = z.object({
+  check_in_date: z.string().optional(),
+  mood: wellnessMoodEnum,
+  energy_level: z.number().int().min(1).max(5),
+  sleep_hours: z.number().min(0).max(24).optional().nullable(),
+  exercise_minutes: z.number().int().min(0).optional(),
+  notes: z.string().optional().nullable(),
+});
+
+export const createWellnessGoalSchema = z.object({
+  title: z.string().min(1).max(255),
+  goal_type: wellnessGoalTypeEnum.default("custom"),
+  target_value: z.number().int().positive(),
+  unit: z.string().min(1).max(20),
+  frequency: wellnessGoalFrequencyEnum.default("daily"),
+  start_date: z.string(),
+  end_date: z.string().optional().nullable(),
+});
+
+export const updateWellnessGoalSchema = z.object({
+  title: z.string().min(1).max(255).optional(),
+  current_value: z.number().int().min(0).optional(),
+  target_value: z.number().int().positive().optional(),
+  status: wellnessGoalStatusEnum.optional(),
+});
+
+export const wellnessQuerySchema = paginationSchema.extend({
+  program_type: wellnessProgramTypeEnum.optional(),
+  is_active: z.coerce.boolean().optional(),
+});
+
+export type CreateWellnessProgramInput = z.infer<typeof createWellnessProgramSchema>;
+export type UpdateWellnessProgramInput = z.infer<typeof updateWellnessProgramSchema>;
+export type WellnessCheckInInput = z.infer<typeof wellnessCheckInSchema>;
+export type CreateWellnessGoalInput = z.infer<typeof createWellnessGoalSchema>;
+export type UpdateWellnessGoalInput = z.infer<typeof updateWellnessGoalSchema>;
+export type WellnessQueryInput = z.infer<typeof wellnessQuerySchema>;

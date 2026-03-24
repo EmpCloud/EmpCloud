@@ -155,6 +155,13 @@ export enum AuditAction {
   WHISTLEBLOWER_UPDATE_ADDED = "whistleblower_update_added",
   WHISTLEBLOWER_STATUS_CHANGED = "whistleblower_status_changed",
   WHISTLEBLOWER_ESCALATED = "whistleblower_escalated",
+  // Forum / Social Intranet
+  FORUM_POST_CREATED = "forum_post_created",
+  FORUM_POST_DELETED = "forum_post_deleted",
+  // Wellness
+  WELLNESS_PROGRAM_CREATED = "wellness_program_created",
+  WELLNESS_ENROLLED = "wellness_enrolled",
+  WELLNESS_CHECK_IN = "wellness_check_in",
 }
 
 export enum InvitationStatus {
