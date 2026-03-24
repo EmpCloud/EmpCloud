@@ -78,4 +78,35 @@ router.get("/invoices/:id/pdf", authenticate, async (req: Request, res: Response
   }
 });
 
+// POST /api/v1/billing/pay — Create a payment checkout session
+router.post("/pay", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { invoiceId, gateway = "stripe" } = req.body;
+    if (!invoiceId) {
+      sendError(res, 400, "VALIDATION_ERROR", "invoiceId is required");
+      return;
+    }
+
+    const result = await billingIntegration.createPaymentOrder(invoiceId, gateway);
+    if (!result) {
+      sendError(res, 502, "BILLING_UNAVAILABLE", "Could not create payment session. Billing service may be unavailable.");
+      return;
+    }
+
+    sendSuccess(res, result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/billing/gateways — List available payment gateways
+router.get("/gateways", authenticate, async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const gateways = await billingIntegration.listPaymentGateways();
+    sendSuccess(res, gateways);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

@@ -331,6 +331,35 @@ export async function getBillingSummary(orgId: number): Promise<object> {
 }
 
 // ---------------------------------------------------------------------------
+// Online Payment — Create gateway checkout session
+// ---------------------------------------------------------------------------
+
+export async function createPaymentOrder(
+  invoiceId: string,
+  gateway: string = "stripe"
+): Promise<{ checkoutUrl?: string; gatewayOrderId?: string } | null> {
+  const result = await billingFetch<{
+    checkoutUrl?: string;
+    gatewayOrderId?: string;
+    clientSecret?: string;
+    metadata?: Record<string, unknown>;
+  }>("POST", "/online-payments/create-order", {
+    invoiceId,
+    gateway,
+  });
+
+  return result;
+}
+
+export async function listPaymentGateways(): Promise<Array<{ name: string; displayName: string }>> {
+  const result = await billingFetch<Array<{ name: string; displayName: string }>>(
+    "GET",
+    "/online-payments/gateways"
+  );
+  return result ?? [];
+}
+
+// ---------------------------------------------------------------------------
 // Subscription mapping helpers
 // ---------------------------------------------------------------------------
 

@@ -637,6 +637,65 @@ function InvoicesTab() {
   );
 }
 
+function PayNowButton({ invoiceId }: { invoiceId: string }) {
+  const [loading, setLoading] = useState(false);
+  const [showGateways, setShowGateways] = useState(false);
+
+  const handlePay = async (gateway: string) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("empcloud-auth")
+        ? JSON.parse(localStorage.getItem("empcloud-auth") || "{}").state?.accessToken
+        : null;
+      const res = await fetch("/api/v1/billing/pay", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ invoiceId, gateway }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.checkoutUrl) {
+        window.open(data.data.checkoutUrl, "_blank");
+      } else {
+        alert(data.error?.message || "Could not create payment session");
+      }
+    } catch {
+      alert("Payment service unavailable");
+    } finally {
+      setLoading(false);
+      setShowGateways(false);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={(e) => { e.stopPropagation(); setShowGateways(!showGateways); }}
+        disabled={loading}
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+      >
+        <CreditCard className="h-3.5 w-3.5" />
+        {loading ? "Processing..." : "Pay Now"}
+      </button>
+      {showGateways && (
+        <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[160px]">
+          <button onClick={(e) => { e.stopPropagation(); handlePay("stripe"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-t-lg font-medium text-gray-700">
+            Stripe (Card)
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 font-medium text-gray-700">
+            Razorpay (UPI/Card)
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-b-lg font-medium text-gray-700">
+            PayPal
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function InvoiceRow({
   invoice,
   isExpanded,
@@ -810,6 +869,9 @@ function InvoiceRow({
               >
                 <Download className="h-3.5 w-3.5" /> Download PDF
               </button>
+              {amountDue > 0 && (
+                <PayNowButton invoiceId={invoice.id} />
+              )}
               {invoice.notes && (
                 <div className="text-xs text-gray-500 italic">Note: {invoice.notes}</div>
               )}
