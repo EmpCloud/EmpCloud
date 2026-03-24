@@ -239,8 +239,54 @@ async function seed() {
   }
   logger.info("OAuth clients registered");
 
+  // --- Create Super Admin User ---
+  const existingSuperAdmin = await db("users").where({ email: "admin@empcloud.com" }).first();
+  if (!existingSuperAdmin) {
+    // Create a platform-level organization for the super admin
+    let platformOrgId: number;
+    const existingPlatformOrg = await db("organizations").where({ slug: "empcloud-platform" }).first();
+    if (existingPlatformOrg) {
+      platformOrgId = existingPlatformOrg.id;
+    } else {
+      [platformOrgId] = await db("organizations").insert({
+        name: "EMP Cloud Platform",
+        legal_name: "EMP Cloud Platform",
+        slug: "empcloud-platform",
+        email: "admin@empcloud.com",
+        timezone: "Asia/Kolkata",
+        country: "IN",
+        language: "en",
+        current_user_count: 1,
+        total_allowed_user_count: 10,
+        is_active: true,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+    }
+
+    const superAdminPassword = await hashPassword("SuperAdmin@2026");
+    await db("users").insert({
+      organization_id: platformOrgId,
+      first_name: "Super",
+      last_name: "Admin",
+      email: "admin@empcloud.com",
+      password: superAdminPassword,
+      role: "super_admin",
+      designation: "Platform Administrator",
+      status: 1,
+      is_active: true,
+      date_of_joining: "2025-01-01",
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+    logger.info("Super admin created: admin@empcloud.com / SuperAdmin@2026");
+  } else {
+    logger.info("Super admin already exists, skipping");
+  }
+
   logger.info("=== Seed complete ===");
   logger.info("Login: ananya@technova.in / Welcome@123");
+  logger.info("Super Admin: admin@empcloud.com / SuperAdmin@2026");
   await closeDB();
 }
 
