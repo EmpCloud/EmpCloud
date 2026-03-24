@@ -39,6 +39,7 @@ import billingRoutes from "./api/routes/billing.routes.js";
 import adminRoutes from "./api/routes/admin.routes.js";
 import onboardingRoutes from "./api/routes/onboarding.routes.js";
 import biometricsRoutes from "./api/routes/biometrics.routes.js";
+import helpdeskRoutes from "./api/routes/helpdesk.routes.js";
 
 async function main() {
   // Initialize database
@@ -77,7 +78,9 @@ async function main() {
     await m013(db);
     const { up: m015 } = await import("./db/migrations/015_biometrics.js");
     await m015(db);
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics)");
+    const { up: m016 } = await import("./db/migrations/016_helpdesk.js");
+    await m016(db);
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk)");
   }
 
   // Load RSA keys
@@ -152,6 +155,7 @@ async function main() {
   app.use("/api/v1/admin", apiLimiter, adminRoutes);
   app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
   app.use("/api/v1/biometrics", apiLimiter, biometricsRoutes);
+  app.use("/api/v1/helpdesk", apiLimiter, helpdeskRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);

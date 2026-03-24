@@ -121,6 +121,12 @@ export enum AuditAction {
   BIOMETRIC_DEVICE_REGISTERED = "biometric_device_registered",
   BIOMETRIC_DEVICE_DECOMMISSIONED = "biometric_device_decommissioned",
   BIOMETRIC_SETTINGS_UPDATED = "biometric_settings_updated",
+  // Helpdesk
+  TICKET_CREATED = "ticket_created",
+  TICKET_ASSIGNED = "ticket_assigned",
+  TICKET_RESOLVED = "ticket_resolved",
+  TICKET_CLOSED = "ticket_closed",
+  KB_ARTICLE_CREATED = "kb_article_created",
 }
 
 export enum InvitationStatus {

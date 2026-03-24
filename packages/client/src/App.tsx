@@ -32,6 +32,12 @@ const ImportEmployeesPage = lazy(() => import("@/pages/employees/ImportEmployees
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
 const BillingPage = lazy(() => import("@/pages/billing/BillingPage"));
 const OnboardingWizard = lazy(() => import("@/pages/onboarding/OnboardingWizard"));
+// Helpdesk pages
+const HelpdeskDashboardPage = lazy(() => import("@/pages/helpdesk/HelpdeskDashboardPage"));
+const TicketListPage = lazy(() => import("@/pages/helpdesk/TicketListPage"));
+const MyTicketsPage = lazy(() => import("@/pages/helpdesk/MyTicketsPage"));
+const TicketDetailPage = lazy(() => import("@/pages/helpdesk/TicketDetailPage"));
+const KnowledgeBasePage = lazy(() => import("@/pages/helpdesk/KnowledgeBasePage"));
 // Biometrics pages
 const BiometricsDashboardPage = lazy(() => import("@/pages/biometrics/BiometricsDashboardPage"));
 const FaceEnrollmentPage = lazy(() => import("@/pages/biometrics/FaceEnrollmentPage"));
@@ -154,6 +160,12 @@ export default function App() {
           <Route path="/policies" element={<PoliciesPage />} />
           <Route path="/org-chart" element={<OrgChartPage />} />
           <Route path="/employees/import" element={<ImportEmployeesPage />} />
+          {/* Helpdesk routes */}
+          <Route path="/helpdesk/dashboard" element={<HelpdeskDashboardPage />} />
+          <Route path="/helpdesk/tickets" element={<TicketListPage />} />
+          <Route path="/helpdesk/my-tickets" element={<MyTicketsPage />} />
+          <Route path="/helpdesk/tickets/:id" element={<TicketDetailPage />} />
+          <Route path="/helpdesk/kb" element={<KnowledgeBasePage />} />
           {/* Biometrics routes */}
           <Route path="/biometrics" element={<BiometricsDashboardPage />} />
           <Route path="/biometrics/enrollment" element={<FaceEnrollmentPage />} />

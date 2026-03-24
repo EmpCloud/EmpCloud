@@ -624,3 +624,93 @@ export type RegisterDeviceInput = z.infer<typeof registerDeviceSchema>;
 export type UpdateDeviceInput = z.infer<typeof updateDeviceSchema>;
 export type BiometricSettingsInput = z.infer<typeof biometricSettingsSchema>;
 export type BiometricLogsQueryInput = z.infer<typeof biometricLogsQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Helpdesk Validators
+// ---------------------------------------------------------------------------
+
+const helpdeskCategoryEnum = z.enum([
+  "leave",
+  "payroll",
+  "benefits",
+  "it",
+  "facilities",
+  "onboarding",
+  "policy",
+  "general",
+]);
+
+const ticketPriorityEnum = z.enum(["low", "medium", "high", "urgent"]);
+
+const ticketStatusEnum = z.enum([
+  "open",
+  "in_progress",
+  "awaiting_response",
+  "resolved",
+  "closed",
+  "reopened",
+]);
+
+export const createTicketSchema = z.object({
+  category: helpdeskCategoryEnum,
+  priority: ticketPriorityEnum.default("medium"),
+  subject: z.string().min(1).max(255),
+  description: z.string().min(1),
+  department_id: z.number().int().positive().optional().nullable(),
+  tags: z.array(z.string()).optional().nullable(),
+});
+
+export const updateTicketSchema = z.object({
+  category: helpdeskCategoryEnum.optional(),
+  priority: ticketPriorityEnum.optional(),
+  status: ticketStatusEnum.optional(),
+  assigned_to: z.number().int().positive().optional().nullable(),
+  department_id: z.number().int().positive().optional().nullable(),
+  tags: z.array(z.string()).optional().nullable(),
+});
+
+export const addCommentSchema = z.object({
+  comment: z.string().min(1),
+  is_internal: z.boolean().default(false),
+  attachments: z.array(z.string()).optional().nullable(),
+});
+
+export const rateTicketSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().optional().nullable(),
+});
+
+export const createArticleSchema = z.object({
+  title: z.string().min(1).max(255),
+  content: z.string().min(1),
+  category: helpdeskCategoryEnum,
+  slug: z.string().max(255).optional(),
+  is_published: z.boolean().default(false),
+  is_featured: z.boolean().default(false),
+});
+
+export const updateArticleSchema = z.object({
+  title: z.string().min(1).max(255).optional(),
+  content: z.string().min(1).optional(),
+  category: helpdeskCategoryEnum.optional(),
+  slug: z.string().max(255).optional(),
+  is_published: z.boolean().optional(),
+  is_featured: z.boolean().optional(),
+});
+
+export const helpdeskQuerySchema = paginationSchema.extend({
+  status: ticketStatusEnum.optional(),
+  category: helpdeskCategoryEnum.optional(),
+  priority: ticketPriorityEnum.optional(),
+  assigned_to: z.coerce.number().int().positive().optional(),
+  raised_by: z.coerce.number().int().positive().optional(),
+  search: z.string().optional(),
+});
+
+export type CreateTicketInput = z.infer<typeof createTicketSchema>;
+export type UpdateTicketInput = z.infer<typeof updateTicketSchema>;
+export type AddCommentInput = z.infer<typeof addCommentSchema>;
+export type RateTicketInput = z.infer<typeof rateTicketSchema>;
+export type CreateArticleInput = z.infer<typeof createArticleSchema>;
+export type UpdateArticleInput = z.infer<typeof updateArticleSchema>;
+export type HelpdeskQueryInput = z.infer<typeof helpdeskQuerySchema>;

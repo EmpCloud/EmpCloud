@@ -30,6 +30,9 @@ import {
   ScrollText,
   CreditCard,
   TrendingUp,
+  Headphones,
+  TicketCheck,
+  BookMarked,
 } from "lucide-react";
 
 const navItems = [
@@ -46,6 +49,18 @@ const navItems = [
   { path: "/policies", label: "Policies", icon: BookOpen },
   { path: "/settings", label: "Settings", icon: Settings },
   { path: "/audit", label: "Audit Log", icon: Shield },
+];
+
+const helpdeskNavItems = [
+  { path: "/helpdesk/my-tickets", label: "My Tickets", icon: TicketCheck },
+  { path: "/helpdesk/kb", label: "Knowledge Base", icon: BookMarked },
+];
+
+const helpdeskHRNavItems = [
+  { path: "/helpdesk/my-tickets", label: "My Tickets", icon: TicketCheck },
+  { path: "/helpdesk/tickets", label: "All Tickets", icon: TicketCheck },
+  { path: "/helpdesk/dashboard", label: "Helpdesk Dashboard", icon: Headphones },
+  { path: "/helpdesk/kb", label: "Knowledge Base", icon: BookMarked },
 ];
 
 const biometricsNavItems = [
@@ -222,6 +237,29 @@ export default function DashboardLayout() {
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+          {/* Helpdesk section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Helpdesk</div>
+          {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
+            ? helpdeskHRNavItems
+            : helpdeskNavItems
+          ).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             return (
