@@ -38,6 +38,12 @@ const TicketListPage = lazy(() => import("@/pages/helpdesk/TicketListPage"));
 const MyTicketsPage = lazy(() => import("@/pages/helpdesk/MyTicketsPage"));
 const TicketDetailPage = lazy(() => import("@/pages/helpdesk/TicketDetailPage"));
 const KnowledgeBasePage = lazy(() => import("@/pages/helpdesk/KnowledgeBasePage"));
+// Survey pages
+const SurveyDashboardPage = lazy(() => import("@/pages/surveys/SurveyDashboardPage"));
+const SurveyListPage = lazy(() => import("@/pages/surveys/SurveyListPage"));
+const SurveyBuilderPage = lazy(() => import("@/pages/surveys/SurveyBuilderPage"));
+const SurveyRespondPage = lazy(() => import("@/pages/surveys/SurveyRespondPage"));
+const SurveyResultsPage = lazy(() => import("@/pages/surveys/SurveyResultsPage"));
 // Biometrics pages
 const BiometricsDashboardPage = lazy(() => import("@/pages/biometrics/BiometricsDashboardPage"));
 const FaceEnrollmentPage = lazy(() => import("@/pages/biometrics/FaceEnrollmentPage"));
@@ -45,6 +51,18 @@ const QRAttendancePage = lazy(() => import("@/pages/biometrics/QRAttendancePage"
 const DeviceManagementPage = lazy(() => import("@/pages/biometrics/DeviceManagementPage"));
 const BiometricSettingsPage = lazy(() => import("@/pages/biometrics/BiometricSettingsPage"));
 const BiometricLogsPage = lazy(() => import("@/pages/biometrics/BiometricLogsPage"));
+// Asset Management pages
+const AssetDashboardPage = lazy(() => import("@/pages/assets/AssetDashboardPage"));
+const AssetListPage = lazy(() => import("@/pages/assets/AssetListPage"));
+const AssetDetailPage = lazy(() => import("@/pages/assets/AssetDetailPage"));
+const MyAssetsPage = lazy(() => import("@/pages/assets/MyAssetsPage"));
+const AssetCategoriesPage = lazy(() => import("@/pages/assets/AssetCategoriesPage"));
+// Position Management pages
+const PositionDashboardPage = lazy(() => import("@/pages/positions/PositionDashboardPage"));
+const PositionListPage = lazy(() => import("@/pages/positions/PositionListPage"));
+const PositionDetailPage = lazy(() => import("@/pages/positions/PositionDetailPage"));
+const VacanciesPage = lazy(() => import("@/pages/positions/VacanciesPage"));
+const HeadcountPlanPage = lazy(() => import("@/pages/positions/HeadcountPlanPage"));
 // Super Admin pages
 const SuperAdminDashboard = lazy(() => import("@/pages/admin/SuperAdminDashboard"));
 const OrgListPage = lazy(() => import("@/pages/admin/OrgListPage"));
@@ -160,12 +178,24 @@ export default function App() {
           <Route path="/policies" element={<PoliciesPage />} />
           <Route path="/org-chart" element={<OrgChartPage />} />
           <Route path="/employees/import" element={<ImportEmployeesPage />} />
+          {/* Position Management routes */}
+          <Route path="/positions" element={<PositionDashboardPage />} />
+          <Route path="/positions/list" element={<PositionListPage />} />
+          <Route path="/positions/vacancies" element={<VacanciesPage />} />
+          <Route path="/positions/headcount-plans" element={<HeadcountPlanPage />} />
+          <Route path="/positions/:id" element={<PositionDetailPage />} />
           {/* Helpdesk routes */}
           <Route path="/helpdesk/dashboard" element={<HelpdeskDashboardPage />} />
           <Route path="/helpdesk/tickets" element={<TicketListPage />} />
           <Route path="/helpdesk/my-tickets" element={<MyTicketsPage />} />
           <Route path="/helpdesk/tickets/:id" element={<TicketDetailPage />} />
           <Route path="/helpdesk/kb" element={<KnowledgeBasePage />} />
+          {/* Survey routes */}
+          <Route path="/surveys/dashboard" element={<SurveyDashboardPage />} />
+          <Route path="/surveys/list" element={<SurveyListPage />} />
+          <Route path="/surveys/builder" element={<SurveyBuilderPage />} />
+          <Route path="/surveys/respond" element={<SurveyRespondPage />} />
+          <Route path="/surveys/:id/results" element={<SurveyResultsPage />} />
           {/* Biometrics routes */}
           <Route path="/biometrics" element={<BiometricsDashboardPage />} />
           <Route path="/biometrics/enrollment" element={<FaceEnrollmentPage />} />
@@ -173,6 +203,12 @@ export default function App() {
           <Route path="/biometrics/devices" element={<DeviceManagementPage />} />
           <Route path="/biometrics/settings" element={<BiometricSettingsPage />} />
           <Route path="/biometrics/logs" element={<BiometricLogsPage />} />
+          {/* Asset Management routes */}
+          <Route path="/assets/dashboard" element={<AssetDashboardPage />} />
+          <Route path="/assets/my" element={<MyAssetsPage />} />
+          <Route path="/assets/categories" element={<AssetCategoriesPage />} />
+          <Route path="/assets/:id" element={<AssetDetailPage />} />
+          <Route path="/assets" element={<AssetListPage />} />
           {/* Super Admin routes */}
           <Route path="/admin" element={<SuperAdminDashboard />} />
           <Route path="/admin/organizations" element={<OrgListPage />} />

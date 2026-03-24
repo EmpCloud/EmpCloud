@@ -1,0 +1,284 @@
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin } from "lucide-react";
+import api from "@/api/client";
+
+export default function PositionDetailPage() {
+  const { id } = useParams();
+  const queryClient = useQueryClient();
+  const [showAssign, setShowAssign] = useState(false);
+  const [assignForm, setAssignForm] = useState({ user_id: "", start_date: "", is_primary: true });
+  const [userSearch, setUserSearch] = useState("");
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["position", id],
+    queryFn: () => api.get(`/positions/${id}`).then((r) => r.data.data),
+    enabled: !!id,
+  });
+
+  const { data: usersData } = useQuery({
+    queryKey: ["users-search", userSearch],
+    queryFn: () => api.get("/users", { params: { search: userSearch, per_page: 20 } }).then((r) => r.data.data),
+    enabled: showAssign,
+  });
+
+  const assignMutation = useMutation({
+    mutationFn: (body: object) => api.post(`/positions/${id}/assign`, body).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["position", id] });
+      setShowAssign(false);
+      setAssignForm({ user_id: "", start_date: "", is_primary: true });
+    },
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: (assignmentId: number) => api.delete(`/positions/assignments/${assignmentId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["position", id] });
+    },
+  });
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64"><div className="text-gray-400">Loading...</div></div>;
+  }
+
+  const pos = data;
+  if (!pos) {
+    return <div className="text-center py-12 text-gray-400">Position not found</div>;
+  }
+
+  const activeAssignments = (pos.assignments || []).filter((a: any) => a.status === "active");
+  const pastAssignments = (pos.assignments || []).filter((a: any) => a.status === "ended");
+
+  const handleAssign = (e: React.FormEvent) => {
+    e.preventDefault();
+    assignMutation.mutate({
+      user_id: Number(assignForm.user_id),
+      start_date: assignForm.start_date,
+      is_primary: assignForm.is_primary,
+    });
+  };
+
+  return (
+    <div>
+      <Link to="/positions/list" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4">
+        <ArrowLeft className="h-4 w-4" /> Back to Positions
+      </Link>
+
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">{pos.title}</h1>
+            {pos.is_critical && <AlertTriangle className="h-5 w-5 text-red-500" />}
+          </div>
+          <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+            {pos.code && <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">{pos.code}</span>}
+            {pos.department_name && <span>{pos.department_name}</span>}
+            {pos.location_name && (
+              <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{pos.location_name}</span>
+            )}
+            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+              pos.status === "active" ? "bg-green-50 text-green-700" :
+              pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
+              "bg-gray-100 text-gray-500"
+            }`}>
+              {pos.status}
+            </span>
+          </div>
+        </div>
+        {pos.status === "active" && (
+          <button
+            onClick={() => setShowAssign(!showAssign)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700"
+          >
+            <UserPlus className="h-4 w-4" />
+            Assign Employee
+          </button>
+        )}
+      </div>
+
+      {/* Assign Form */}
+      {showAssign && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Assign Employee to Position</h3>
+          <form onSubmit={handleAssign} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Employee *</label>
+              <input
+                type="text"
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                placeholder="Search users..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-2"
+              />
+              <select
+                value={assignForm.user_id}
+                onChange={(e) => setAssignForm({ ...assignForm, user_id: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                required
+              >
+                <option value="">Select Employee</option>
+                {(usersData || []).map((u: any) => (
+                  <option key={u.id} value={u.id}>
+                    {u.first_name} {u.last_name} ({u.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+              <input
+                type="date"
+                value={assignForm.start_date}
+                onChange={(e) => setAssignForm({ ...assignForm, start_date: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                required
+              />
+            </div>
+            <div className="flex items-end gap-3">
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={assignForm.is_primary}
+                  onChange={(e) => setAssignForm({ ...assignForm, is_primary: e.target.checked })}
+                  className="h-4 w-4 text-brand-600 border-gray-300 rounded"
+                />
+                Primary Position
+              </label>
+            </div>
+            <div className="col-span-full flex gap-3">
+              <button
+                type="submit"
+                disabled={assignMutation.isPending}
+                className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
+              >
+                {assignMutation.isPending ? "Assigning..." : "Assign"}
+              </button>
+              <button type="button" onClick={() => setShowAssign(false)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
+                Cancel
+              </button>
+            </div>
+            {assignMutation.isError && (
+              <p className="col-span-full text-sm text-red-600">
+                {(assignMutation.error as any)?.response?.data?.error?.message || "Failed to assign"}
+              </p>
+            )}
+          </form>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Position Details */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Info */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Position Details</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500">Employment Type</span>
+                <p className="font-medium text-gray-900 capitalize mt-1">{(pos.employment_type || "").replace("_", " ")}</p>
+              </div>
+              <div>
+                <span className="text-gray-500">Headcount</span>
+                <p className="font-medium text-gray-900 mt-1">{pos.headcount_filled} / {pos.headcount_budget}</p>
+              </div>
+              {(pos.min_salary || pos.max_salary) && (
+                <div>
+                  <span className="text-gray-500">Salary Range</span>
+                  <p className="font-medium text-gray-900 mt-1">
+                    {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
+                  </p>
+                </div>
+              )}
+              {pos.reports_to && (
+                <div>
+                  <span className="text-gray-500">Reports To</span>
+                  <p className="font-medium text-gray-900 mt-1">
+                    <Link to={`/positions/${pos.reports_to.id}`} className="text-brand-600 hover:underline">
+                      {pos.reports_to.title} ({pos.reports_to.code})
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Job Description */}
+          {pos.job_description && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{pos.job_description}</p>
+            </div>
+          )}
+
+          {/* Requirements */}
+          {pos.requirements && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h3>
+              <p className="text-sm text-gray-600 whitespace-pre-wrap">{pos.requirements}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar — Assignments */}
+        <div className="space-y-6">
+          {/* Current Assignees */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Current Assignees ({activeAssignments.length})
+            </h3>
+            {activeAssignments.length === 0 ? (
+              <p className="text-sm text-gray-400">No one assigned</p>
+            ) : (
+              <div className="space-y-3">
+                {activeAssignments.map((a: any) => (
+                  <div key={a.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+                        {a.first_name?.[0]}{a.last_name?.[0]}
+                      </div>
+                      <div>
+                        <Link to={`/employees/${a.user_id}`} className="text-sm font-medium text-gray-900 hover:text-brand-600">
+                          {a.first_name} {a.last_name}
+                        </Link>
+                        <p className="text-xs text-gray-500">Since {new Date(a.start_date).toLocaleDateString()}</p>
+                        {!a.is_primary && <span className="text-xs text-amber-600">Acting/Interim</span>}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (confirm("End this assignment?")) removeMutation.mutate(a.id);
+                      }}
+                      className="text-gray-400 hover:text-red-500"
+                      title="End assignment"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Past Assignments */}
+          {pastAssignments.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Assignment History</h3>
+              <div className="space-y-2">
+                {pastAssignments.map((a: any) => (
+                  <div key={a.id} className="text-sm text-gray-500 flex items-center gap-2">
+                    <Briefcase className="h-3 w-3" />
+                    <span>
+                      {a.first_name} {a.last_name} ({new Date(a.start_date).toLocaleDateString()} - {a.end_date ? new Date(a.end_date).toLocaleDateString() : "N/A"})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -33,7 +33,30 @@ import {
   Headphones,
   TicketCheck,
   BookMarked,
+  ClipboardList,
+  BarChart3,
+  Laptop,
+  FolderOpen,
+  Briefcase,
+  Target,
 } from "lucide-react";
+
+const assetNavItems = [
+  { path: "/assets/my", label: "My Assets", icon: Laptop },
+];
+
+const assetHRNavItems = [
+  { path: "/assets/dashboard", label: "Asset Dashboard", icon: BarChart3 },
+  { path: "/assets", label: "All Assets", icon: Laptop },
+  { path: "/assets/categories", label: "Categories", icon: FolderOpen },
+];
+
+const positionNavItems = [
+  { path: "/positions", label: "Dashboard", icon: BarChart3 },
+  { path: "/positions/list", label: "All Positions", icon: Briefcase },
+  { path: "/positions/vacancies", label: "Vacancies", icon: Target },
+  { path: "/positions/headcount-plans", label: "Headcount Plans", icon: ClipboardList },
+];
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -61,6 +84,16 @@ const helpdeskHRNavItems = [
   { path: "/helpdesk/tickets", label: "All Tickets", icon: TicketCheck },
   { path: "/helpdesk/dashboard", label: "Helpdesk Dashboard", icon: Headphones },
   { path: "/helpdesk/kb", label: "Knowledge Base", icon: BookMarked },
+];
+
+const surveyNavItems = [
+  { path: "/surveys/respond", label: "Active Surveys", icon: ClipboardList },
+];
+
+const surveyHRNavItems = [
+  { path: "/surveys/dashboard", label: "Survey Dashboard", icon: BarChart3 },
+  { path: "/surveys/list", label: "All Surveys", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", icon: ClipboardList },
 ];
 
 const biometricsNavItems = [
@@ -254,11 +287,81 @@ export default function DashboardLayout() {
               </Link>
             );
           })}
+          {/* Positions section — HR only */}
+          {user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role) && (
+            <>
+              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Positions</div>
+              {positionNavItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-brand-50 text-brand-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </>
+          )}
           {/* Helpdesk section — visible to all users */}
           <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Helpdesk</div>
           {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
             ? helpdeskHRNavItems
             : helpdeskNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+          {/* Surveys section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Surveys</div>
+          {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
+            ? surveyHRNavItems
+            : surveyNavItems
+          ).map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-brand-50 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+          {/* Assets section — visible to all users */}
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Assets</div>
+          {(user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role)
+            ? assetHRNavItems
+            : assetNavItems
           ).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;

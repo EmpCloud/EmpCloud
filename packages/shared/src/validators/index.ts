@@ -626,6 +626,87 @@ export type BiometricSettingsInput = z.infer<typeof biometricSettingsSchema>;
 export type BiometricLogsQueryInput = z.infer<typeof biometricLogsQuerySchema>;
 
 // ---------------------------------------------------------------------------
+// HRMS — Position Management Validators
+// ---------------------------------------------------------------------------
+
+const positionEmploymentTypeEnum = z.enum(["full_time", "part_time", "contract", "intern"]);
+const positionStatusEnum = z.enum(["active", "frozen", "closed"]);
+const headcountPlanStatusEnum = z.enum(["draft", "submitted", "approved", "rejected"]);
+const headcountQuarterEnum = z.enum(["Q1", "Q2", "Q3", "Q4", "annual"]);
+
+export const createPositionSchema = z.object({
+  title: z.string().min(1).max(200),
+  code: z.string().max(50).optional().nullable(),
+  department_id: z.number().int().positive().optional().nullable(),
+  location_id: z.number().int().positive().optional().nullable(),
+  reports_to_position_id: z.number().int().positive().optional().nullable(),
+  job_description: z.string().optional().nullable(),
+  requirements: z.string().optional().nullable(),
+  min_salary: z.number().int().optional().nullable(),
+  max_salary: z.number().int().optional().nullable(),
+  currency: z.string().max(3).default("INR"),
+  employment_type: positionEmploymentTypeEnum.default("full_time"),
+  headcount_budget: z.number().int().min(1).default(1),
+  is_critical: z.boolean().default(false),
+});
+
+export const updatePositionSchema = createPositionSchema.partial().extend({
+  status: positionStatusEnum.optional(),
+});
+
+export const assignPositionSchema = z.object({
+  user_id: z.number().int().positive(),
+  start_date: z.string(),
+  end_date: z.string().optional().nullable(),
+  is_primary: z.boolean().default(true),
+});
+
+export const positionQuerySchema = paginationSchema.extend({
+  department_id: z.coerce.number().int().positive().optional(),
+  status: positionStatusEnum.optional(),
+  employment_type: positionEmploymentTypeEnum.optional(),
+  search: z.string().optional(),
+  is_critical: z.coerce.boolean().optional(),
+});
+
+export const createHeadcountPlanSchema = z.object({
+  title: z.string().min(1).max(200),
+  fiscal_year: z.string().min(4).max(10),
+  quarter: headcountQuarterEnum.optional().nullable(),
+  department_id: z.number().int().positive().optional().nullable(),
+  planned_headcount: z.number().int().min(0).default(0),
+  current_headcount: z.number().int().min(0).default(0),
+  budget_amount: z.number().int().optional().nullable(),
+  currency: z.string().max(3).default("INR"),
+  notes: z.string().optional().nullable(),
+});
+
+export const updateHeadcountPlanSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  fiscal_year: z.string().min(4).max(10).optional(),
+  quarter: headcountQuarterEnum.optional().nullable(),
+  department_id: z.number().int().positive().optional().nullable(),
+  planned_headcount: z.number().int().min(0).optional(),
+  current_headcount: z.number().int().min(0).optional(),
+  budget_amount: z.number().int().optional().nullable(),
+  currency: z.string().max(3).optional(),
+  status: headcountPlanStatusEnum.optional(),
+  notes: z.string().optional().nullable(),
+});
+
+export const headcountPlanQuerySchema = paginationSchema.extend({
+  fiscal_year: z.string().optional(),
+  status: headcountPlanStatusEnum.optional(),
+  department_id: z.coerce.number().int().positive().optional(),
+});
+
+export type CreatePositionInput = z.infer<typeof createPositionSchema>;
+export type UpdatePositionInput = z.infer<typeof updatePositionSchema>;
+export type AssignPositionInput = z.infer<typeof assignPositionSchema>;
+export type CreateHeadcountPlanInput = z.infer<typeof createHeadcountPlanSchema>;
+export type UpdateHeadcountPlanInput = z.infer<typeof updateHeadcountPlanSchema>;
+
+// ---------------------------------------------------------------------------
 // HRMS — Helpdesk Validators
 // ---------------------------------------------------------------------------
 
@@ -714,3 +795,163 @@ export type RateTicketInput = z.infer<typeof rateTicketSchema>;
 export type CreateArticleInput = z.infer<typeof createArticleSchema>;
 export type UpdateArticleInput = z.infer<typeof updateArticleSchema>;
 export type HelpdeskQueryInput = z.infer<typeof helpdeskQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Survey Validators
+// ---------------------------------------------------------------------------
+
+const surveyTypeEnum = z.enum([
+  "pulse",
+  "enps",
+  "engagement",
+  "custom",
+  "onboarding",
+  "exit_survey",
+]);
+
+const surveyStatusEnum = z.enum(["draft", "active", "closed", "archived"]);
+
+const surveyTargetTypeEnum = z.enum(["all", "department", "role", "custom"]);
+
+const surveyRecurrenceEnum = z.enum(["none", "weekly", "monthly", "quarterly"]);
+
+const questionTypeEnum = z.enum([
+  "rating_1_5",
+  "rating_1_10",
+  "enps_0_10",
+  "yes_no",
+  "multiple_choice",
+  "text",
+  "scale",
+]);
+
+const surveyQuestionSchema = z.object({
+  question_text: z.string().min(1),
+  question_type: questionTypeEnum.default("rating_1_5"),
+  options: z.array(z.string()).optional().nullable(),
+  is_required: z.boolean().default(true),
+  sort_order: z.number().int().min(0).optional(),
+});
+
+export const createSurveySchema = z.object({
+  title: z.string().min(1).max(255),
+  description: z.string().optional().nullable(),
+  type: surveyTypeEnum.default("pulse"),
+  is_anonymous: z.boolean().default(true),
+  start_date: z.string().optional().nullable(),
+  end_date: z.string().optional().nullable(),
+  target_type: surveyTargetTypeEnum.default("all"),
+  target_ids: z.array(z.number()).optional().nullable(),
+  recurrence: surveyRecurrenceEnum.default("none"),
+  questions: z.array(surveyQuestionSchema).optional(),
+});
+
+export const updateSurveySchema = createSurveySchema.partial();
+
+export const submitSurveyResponseSchema = z.object({
+  answers: z.array(
+    z.object({
+      question_id: z.number().int().positive(),
+      rating_value: z.number().int().optional().nullable(),
+      text_value: z.string().optional().nullable(),
+    })
+  ),
+});
+
+export const surveyQuerySchema = paginationSchema.extend({
+  status: surveyStatusEnum.optional(),
+  type: surveyTypeEnum.optional(),
+});
+
+export type CreateSurveyInput = z.infer<typeof createSurveySchema>;
+export type UpdateSurveyInput = z.infer<typeof updateSurveySchema>;
+export type SubmitSurveyResponseInput = z.infer<typeof submitSurveyResponseSchema>;
+export type SurveyQueryInput = z.infer<typeof surveyQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Asset Management Validators
+// ---------------------------------------------------------------------------
+
+const assetStatusEnum = z.enum([
+  "available",
+  "assigned",
+  "in_repair",
+  "retired",
+  "lost",
+  "damaged",
+]);
+
+const assetConditionEnum = z.enum(["new", "good", "fair", "poor"]);
+
+export const createAssetCategorySchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().optional().nullable(),
+});
+
+export const updateAssetCategorySchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().optional().nullable(),
+  is_active: z.boolean().optional(),
+});
+
+export const createAssetSchema = z.object({
+  name: z.string().min(1).max(200),
+  category_id: z.number().int().positive().optional().nullable(),
+  description: z.string().optional().nullable(),
+  serial_number: z.string().max(100).optional().nullable(),
+  brand: z.string().max(100).optional().nullable(),
+  model: z.string().max(100).optional().nullable(),
+  purchase_date: z.string().optional().nullable(),
+  purchase_cost: z.number().int().optional().nullable(),
+  warranty_expiry: z.string().optional().nullable(),
+  status: assetStatusEnum.default("available"),
+  condition_status: assetConditionEnum.default("new"),
+  location_name: z.string().max(200).optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
+export const updateAssetSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  category_id: z.number().int().positive().optional().nullable(),
+  description: z.string().optional().nullable(),
+  serial_number: z.string().max(100).optional().nullable(),
+  brand: z.string().max(100).optional().nullable(),
+  model: z.string().max(100).optional().nullable(),
+  purchase_date: z.string().optional().nullable(),
+  purchase_cost: z.number().int().optional().nullable(),
+  warranty_expiry: z.string().optional().nullable(),
+  condition_status: assetConditionEnum.optional(),
+  location_name: z.string().max(200).optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
+export const assignAssetSchema = z.object({
+  assigned_to: z.number().int().positive(),
+  notes: z.string().optional().nullable(),
+});
+
+export const returnAssetSchema = z.object({
+  condition: assetConditionEnum.optional(),
+  notes: z.string().optional().nullable(),
+});
+
+export const assetActionSchema = z.object({
+  notes: z.string().optional().nullable(),
+});
+
+export const assetQuerySchema = paginationSchema.extend({
+  status: assetStatusEnum.optional(),
+  category_id: z.coerce.number().int().positive().optional(),
+  assigned_to: z.coerce.number().int().positive().optional(),
+  condition_status: assetConditionEnum.optional(),
+  search: z.string().optional(),
+});
+
+export type CreateAssetCategoryInput = z.infer<typeof createAssetCategorySchema>;
+export type UpdateAssetCategoryInput = z.infer<typeof updateAssetCategorySchema>;
+export type CreateAssetInput = z.infer<typeof createAssetSchema>;
+export type UpdateAssetInput = z.infer<typeof updateAssetSchema>;
+export type AssignAssetInput = z.infer<typeof assignAssetSchema>;
+export type ReturnAssetInput = z.infer<typeof returnAssetSchema>;
+export type AssetActionInput = z.infer<typeof assetActionSchema>;
+export type AssetQueryInput = z.infer<typeof assetQuerySchema>;
