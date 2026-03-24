@@ -36,9 +36,9 @@ export default function SelfServiceDashboardPage() {
     queryKey: ["my-attendance-today"],
     queryFn: () =>
       api
-        .get("/attendance/my", { params: { page: 1, per_page: 1 } })
+        .get("/attendance/me/today")
         .then((r) => r.data.data)
-        .catch(() => []),
+        .catch(() => null),
   });
 
   // Leave balance
@@ -46,7 +46,7 @@ export default function SelfServiceDashboardPage() {
     queryKey: ["my-leave-balance"],
     queryFn: () =>
       api
-        .get("/leave/balance")
+        .get("/leave/balances/me")
         .then((r) => r.data.data)
         .catch(() => []),
   });
