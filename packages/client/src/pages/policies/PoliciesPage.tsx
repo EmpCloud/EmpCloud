@@ -192,6 +192,7 @@ function HRPoliciesView() {
   const createPolicy = useCreatePolicy();
   const [showCreate, setShowCreate] = useState(false);
   const [viewAckFor, setViewAckFor] = useState<number | null>(null);
+  const [viewContentFor, setViewContentFor] = useState<number | null>(null);
   const ackQuery = useAcknowledgments(viewAckFor);
 
   // Form state
@@ -331,12 +332,20 @@ function HRPoliciesView() {
                     <span className="text-sm font-medium text-brand-700">{p.acknowledgment_count ?? 0}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <button
-                      onClick={() => setViewAckFor(viewAckFor === p.id ? null : p.id)}
-                      className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium"
-                    >
-                      <Users className="h-3.5 w-3.5" /> View
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setViewContentFor(viewContentFor === p.id ? null : p.id)}
+                        className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium"
+                      >
+                        <FileText className="h-3.5 w-3.5" /> View
+                      </button>
+                      <button
+                        onClick={() => setViewAckFor(viewAckFor === p.id ? null : p.id)}
+                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 font-medium"
+                      >
+                        <Users className="h-3.5 w-3.5" /> Acks
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -369,6 +378,33 @@ function HRPoliciesView() {
           </div>
         )}
       </div>
+
+      {/* Policy content panel */}
+      {viewContentFor && (() => {
+        const policy = policies.find((p: any) => p.id === viewContentFor);
+        if (!policy) return null;
+        return (
+          <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">{policy.title}</h3>
+              <button
+                onClick={() => setViewContentFor(null)}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >
+                Close
+              </button>
+            </div>
+            {policy.category && (
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{policy.category}</span>
+            )}
+            <span className="ml-2 text-xs text-gray-400">v{policy.version}</span>
+            {policy.effective_date && (
+              <p className="text-xs text-gray-400 mt-2">Effective: {policy.effective_date}</p>
+            )}
+            <div className="prose prose-sm max-w-none py-4 text-gray-700 whitespace-pre-wrap">{policy.content}</div>
+          </div>
+        );
+      })()}
 
       {/* Acknowledgment detail panel */}
       {viewAckFor && (

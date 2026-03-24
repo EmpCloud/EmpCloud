@@ -108,7 +108,10 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<any> {
   try {
     const response = await fetch(url, {
       signal: controller.signal,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Internal-Service": "empcloud-dashboard",
+      },
     });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);

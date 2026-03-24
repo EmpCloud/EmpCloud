@@ -63,9 +63,8 @@ export async function validateImportData(
 ): Promise<{ valid: ImportRow[]; errors: ImportError[] }> {
   const db = getDB();
 
-  // Fetch existing emails
+  // Fetch existing emails (check globally due to unique constraint on email column)
   const existingUsers = await db("users")
-    .where({ organization_id: orgId })
     .select("email");
   const existingEmails = new Set(existingUsers.map((u: any) => u.email.toLowerCase()));
 

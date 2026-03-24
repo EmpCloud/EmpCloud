@@ -132,7 +132,8 @@ export async function getDirectory(
         .orWhere("users.last_name", "like", s)
         .orWhere("users.email", "like", s)
         .orWhere("users.designation", "like", s)
-        .orWhere("organization_departments.name", "like", s);
+        .orWhere("organization_departments.name", "like", s)
+        .orWhereRaw("CONCAT(users.first_name, ' ', users.last_name) LIKE ?", [s]);
     });
   }
 

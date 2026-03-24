@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban } from "lucide-react";
 
 interface LeaveBalance {
   id: number;
@@ -236,12 +236,92 @@ export default function LeaveDashboardPage() {
         </form>
       )}
 
+      {/* Recent Applications */}
+      <RecentApplications leaveTypes={leaveTypes} />
+
       {/* Legend */}
-      <div className="flex items-center gap-6 text-xs text-gray-500">
+      <div className="flex items-center gap-6 text-xs text-gray-500 mt-6">
         <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-amber-500" /> Pending</span>
         <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> Approved</span>
         <span className="flex items-center gap-1"><XCircle className="h-3.5 w-3.5 text-red-500" /> Rejected</span>
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Recent Applications sub-component
+// ---------------------------------------------------------------------------
+
+const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
+  pending: { bg: "bg-amber-50", text: "text-amber-700", icon: Clock },
+  approved: { bg: "bg-green-50", text: "text-green-700", icon: CheckCircle2 },
+  rejected: { bg: "bg-red-50", text: "text-red-700", icon: XCircle },
+  cancelled: { bg: "bg-gray-50", text: "text-gray-500", icon: Ban },
+};
+
+function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["leave-applications-me"],
+    queryFn: () =>
+      api
+        .get("/leave/applications/me", { params: { page: 1, per_page: 5 } })
+        .then((r) => r.data),
+  });
+
+  const applications = data?.data || [];
+  const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900">Recent Applications</h2>
+      </div>
+      <table className="min-w-full">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {isLoading ? (
+            <tr>
+              <td colSpan={4} className="px-6 py-8 text-center text-gray-400">Loading...</td>
+            </tr>
+          ) : applications.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="px-6 py-8 text-center text-gray-400">No applications yet.</td>
+            </tr>
+          ) : (
+            applications.map((app: any) => {
+              const style = STATUS_STYLES[app.status] || STATUS_STYLES.pending;
+              const Icon = style.icon;
+              return (
+                <tr key={app.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {getTypeName(app.leave_type_id)}
+                    {app.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {app.start_date} &mdash; {app.end_date}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 font-medium">
+                    {Number(app.days_count)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
+                      <Icon className="h-3 w-3" /> {app.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
