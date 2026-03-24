@@ -35,7 +35,7 @@ export function requireRole(...allowedRoles: UserRole[]) {
 /**
  * Require org admin or higher.
  */
-export const requireOrgAdmin = requireRole("org_admin" as UserRole, "super_admin" as UserRole);
+export const requireOrgAdmin = requireRole("org_admin" as UserRole, "super_admin" as UserRole, "hr_admin" as UserRole);
 
 /**
  * Require super admin.
