@@ -14,6 +14,7 @@ import {
   createDocCategorySchema,
   updateDocCategorySchema,
   verifyDocumentSchema,
+  rejectDocumentSchema,
   paginationSchema,
   AuditAction,
 } from "@empcloud/shared";
@@ -48,6 +49,25 @@ router.put("/categories/:id", authenticate, requireHR, async (req: Request, res:
     const data = updateDocCategorySchema.parse(req.body);
     const category = await documentService.updateCategory(req.user!.org_id, paramInt(req.params.id), data);
     sendSuccess(res, category);
+  } catch (err) { next(err); }
+});
+
+// DELETE /api/v1/documents/categories/:id
+router.delete("/categories/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await documentService.deleteCategory(req.user!.org_id, paramInt(req.params.id));
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.DOCUMENT_CATEGORY_DELETED,
+      resourceType: "document_category",
+      resourceId: String(req.params.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, { message: "Category deactivated" });
   } catch (err) { next(err); }
 });
 
@@ -106,6 +126,43 @@ router.post("/upload", authenticate, upload.single("file"), async (req: Request,
     });
 
     sendSuccess(res, doc, 201);
+  } catch (err) { next(err); }
+});
+
+// ---------------------------------------------------------------------------
+// My Documents (employee self-service — before /:id to avoid param collision)
+// ---------------------------------------------------------------------------
+
+// GET /api/v1/documents/my
+router.get("/my", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, per_page } = paginationSchema.parse(req.query);
+    const result = await documentService.getMyDocuments(req.user!.org_id, req.user!.sub, {
+      page,
+      perPage: per_page,
+    });
+    sendPaginated(res, result.documents, result.total, page, per_page);
+  } catch (err) { next(err); }
+});
+
+// ---------------------------------------------------------------------------
+// Expiring Documents
+// ---------------------------------------------------------------------------
+
+// GET /api/v1/documents/expiring
+router.get("/expiring", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const daysAhead = req.query.days ? Number(req.query.days) : 30;
+    const documents = await documentService.getExpiryAlerts(req.user!.org_id, daysAhead);
+    sendSuccess(res, documents);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/documents/mandatory-status
+router.get("/mandatory-status", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await documentService.getMandatoryTracking(req.user!.org_id);
+    sendSuccess(res, result);
   } catch (err) { next(err); }
 });
 
@@ -174,6 +231,31 @@ router.put("/:id/verify", authenticate, requireHR, async (req: Request, res: Res
       organizationId: req.user!.org_id,
       userId: req.user!.sub,
       action: AuditAction.DOCUMENT_VERIFIED,
+      resourceType: "document",
+      resourceId: String(doc.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, doc);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/documents/:id/reject
+router.post("/:id/reject", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = rejectDocumentSchema.parse(req.body);
+    const doc = await documentService.rejectDocument(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.sub,
+      data.rejection_reason,
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.DOCUMENT_REJECTED,
       resourceType: "document",
       resourceId: String(doc.id),
       ipAddress: req.ip,

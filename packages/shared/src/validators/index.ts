@@ -378,6 +378,27 @@ export const assignShiftSchema = z.object({
   effective_to: z.string().optional().nullable(),
 });
 
+export const bulkAssignShiftSchema = z.object({
+  user_ids: z.array(z.number().int().positive()).min(1),
+  shift_id: z.number().int().positive(),
+  effective_from: z.string(),
+  effective_to: z.string().optional().nullable(),
+});
+
+export const shiftSwapRequestSchema = z.object({
+  target_employee_id: z.number().int().positive(),
+  shift_assignment_id: z.number().int().positive(),
+  target_shift_assignment_id: z.number().int().positive(),
+  date: z.string(),
+  reason: z.string().min(1),
+});
+
+export const shiftScheduleQuerySchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  department_id: z.coerce.number().int().positive().optional(),
+});
+
 export const createGeoFenceSchema = z.object({
   name: z.string().min(1).max(100),
   latitude: z.number().min(-90).max(90),
@@ -498,6 +519,10 @@ export const verifyDocumentSchema = z.object({
   verification_remarks: z.string().optional().nullable(),
 });
 
+export const rejectDocumentSchema = z.object({
+  rejection_reason: z.string().min(1, "Rejection reason is required"),
+});
+
 // ---------------------------------------------------------------------------
 // HRMS — Announcement Validators
 // ---------------------------------------------------------------------------
@@ -543,6 +568,9 @@ export type ApplyLeaveInput = z.infer<typeof applyLeaveSchema>;
 export type CreateLeaveTypeInput = z.infer<typeof createLeaveTypeSchema>;
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;
 export type CreatePolicyInput = z.infer<typeof createPolicySchema>;
+export type BulkAssignShiftInput = z.infer<typeof bulkAssignShiftSchema>;
+export type ShiftSwapRequestInput = z.infer<typeof shiftSwapRequestSchema>;
+export type RejectDocumentInput = z.infer<typeof rejectDocumentSchema>;
 
 // ---------------------------------------------------------------------------
 // HRMS — Biometrics Validators
@@ -1268,3 +1296,80 @@ export type WellnessCheckInInput = z.infer<typeof wellnessCheckInSchema>;
 export type CreateWellnessGoalInput = z.infer<typeof createWellnessGoalSchema>;
 export type UpdateWellnessGoalInput = z.infer<typeof updateWellnessGoalSchema>;
 export type WellnessQueryInput = z.infer<typeof wellnessQuerySchema>;
+
+// ---------------------------------------------------------------------------
+// Custom Fields
+// ---------------------------------------------------------------------------
+
+export const customFieldEntityTypeEnum = z.enum([
+  "employee",
+  "department",
+  "location",
+  "project",
+  "document",
+]);
+
+export const customFieldTypeEnum = z.enum([
+  "text",
+  "textarea",
+  "number",
+  "decimal",
+  "date",
+  "datetime",
+  "dropdown",
+  "multi_select",
+  "checkbox",
+  "email",
+  "phone",
+  "url",
+  "file",
+]);
+
+export const createCustomFieldDefinitionSchema = z.object({
+  entity_type: customFieldEntityTypeEnum,
+  field_name: z.string().min(1).max(100),
+  field_type: customFieldTypeEnum,
+  options: z.array(z.string()).optional().nullable(),
+  default_value: z.string().max(5000).optional().nullable(),
+  placeholder: z.string().max(200).optional().nullable(),
+  is_required: z.boolean().optional(),
+  is_searchable: z.boolean().optional(),
+  validation_regex: z.string().max(255).optional().nullable(),
+  min_value: z.number().optional().nullable(),
+  max_value: z.number().optional().nullable(),
+  section: z.string().max(100).optional(),
+  help_text: z.string().max(5000).optional().nullable(),
+});
+
+export const updateCustomFieldDefinitionSchema = createCustomFieldDefinitionSchema
+  .omit({ entity_type: true })
+  .partial();
+
+export const setCustomFieldValuesSchema = z.object({
+  values: z.array(
+    z.object({
+      fieldId: z.number().int().positive(),
+      value: z.union([z.string(), z.number(), z.boolean(), z.array(z.string()), z.null()]),
+    })
+  ),
+});
+
+export const reorderCustomFieldsSchema = z.object({
+  entity_type: customFieldEntityTypeEnum,
+  field_ids: z.array(z.number().int().positive()),
+});
+
+export const customFieldSearchSchema = z.object({
+  entity_type: customFieldEntityTypeEnum,
+  field_id: z.coerce.number().int().positive(),
+  search_value: z.string().min(1),
+});
+
+export const entityTypeParamSchema = z.object({
+  entityType: customFieldEntityTypeEnum,
+});
+
+export type CreateCustomFieldDefinitionInput = z.infer<typeof createCustomFieldDefinitionSchema>;
+export type UpdateCustomFieldDefinitionInput = z.infer<typeof updateCustomFieldDefinitionSchema>;
+export type SetCustomFieldValueInput = z.infer<typeof setCustomFieldValuesSchema>["values"][number];
+export type CustomFieldEntityType = z.infer<typeof customFieldEntityTypeEnum>;

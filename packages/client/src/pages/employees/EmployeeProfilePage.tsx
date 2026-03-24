@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   User,
   GraduationCap,
@@ -8,11 +8,15 @@ import {
   Users,
   MapPin,
   ArrowLeft,
+  SlidersHorizontal,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 
-type Tab = "personal" | "education" | "experience" | "dependents" | "addresses";
+type Tab = "personal" | "education" | "experience" | "dependents" | "addresses" | "custom";
 
 const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: "personal", label: "Personal", icon: User },
@@ -20,6 +24,7 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: "experience", label: "Experience", icon: Briefcase },
   { key: "dependents", label: "Dependents", icon: Users },
   { key: "addresses", label: "Addresses", icon: MapPin },
+  { key: "custom", label: "Custom Fields", icon: SlidersHorizontal },
 ];
 
 export default function EmployeeProfilePage() {
@@ -133,6 +138,7 @@ export default function EmployeeProfilePage() {
         {activeTab === "experience" && <ExperienceTab data={experience} />}
         {activeTab === "dependents" && <DependentsTab data={dependents} />}
         {activeTab === "addresses" && <AddressesTab data={addresses} />}
+        {activeTab === "custom" && <CustomFieldsTab entityId={userId} />}
       </div>
     </div>
   );
@@ -318,6 +324,394 @@ function AddressesTab({ data }: { data?: any[] }) {
           <p className="text-sm text-gray-400">{addr.country}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Custom Fields Tab — Dynamic fields from custom field definitions
+// ---------------------------------------------------------------------------
+
+type CustomFieldValue = {
+  field_id: number;
+  field_name: string;
+  field_key: string;
+  field_type: string;
+  section: string;
+  is_required: boolean;
+  help_text: string | null;
+  options: string[] | null;
+  value: unknown;
+};
+
+type FieldDef = {
+  id: number;
+  field_name: string;
+  field_key: string;
+  field_type: string;
+  section: string;
+  is_required: boolean;
+  help_text: string | null;
+  options: string[] | null;
+  placeholder: string | null;
+  default_value: string | null;
+};
+
+function CustomFieldsTab({ entityId }: { entityId: number }) {
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [formValues, setFormValues] = useState<Record<number, unknown>>({});
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch field definitions for employee type
+  const { data: definitions = [] } = useQuery<FieldDef[]>({
+    queryKey: ["custom-field-definitions", "employee"],
+    queryFn: () =>
+      api
+        .get("/custom-fields/definitions", { params: { entity_type: "employee" } })
+        .then((r) => r.data.data),
+  });
+
+  // Fetch current values for this employee
+  const { data: values = [], isLoading } = useQuery<CustomFieldValue[]>({
+    queryKey: ["custom-field-values", "employee", entityId],
+    queryFn: () =>
+      api
+        .get(`/custom-fields/values/employee/${entityId}`)
+        .then((r) => r.data.data),
+  });
+
+  // Save mutation
+  const saveMutation = useMutation({
+    mutationFn: (payload: { values: Array<{ fieldId: number; value: unknown }> }) =>
+      api.post(`/custom-fields/values/employee/${entityId}`, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["custom-field-values", "employee", entityId],
+      });
+      setEditing(false);
+      setError(null);
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.error?.message || "Failed to save custom fields");
+    },
+  });
+
+  function startEditing() {
+    // Pre-populate form values from existing values + definitions
+    const initial: Record<number, unknown> = {};
+    for (const def of definitions) {
+      const existing = values.find((v) => v.field_id === def.id);
+      initial[def.id] = existing?.value ?? def.default_value ?? (def.field_type === "checkbox" ? false : "");
+    }
+    setFormValues(initial);
+    setEditing(true);
+    setError(null);
+  }
+
+  function handleSave() {
+    const payload = definitions.map((def) => ({
+      fieldId: def.id,
+      value: formValues[def.id] ?? null,
+    }));
+    saveMutation.mutate({ values: payload });
+  }
+
+  if (isLoading) {
+    return <p className="text-sm text-gray-400">Loading custom fields...</p>;
+  }
+
+  if (definitions.length === 0) {
+    return (
+      <div className="text-center py-6">
+        <p className="text-sm text-gray-400">
+          No custom fields have been defined for employees yet.
+        </p>
+        <p className="text-xs text-gray-400 mt-1">
+          HR administrators can create custom fields from the Custom Fields settings page.
+        </p>
+      </div>
+    );
+  }
+
+  // Group definitions by section
+  const sections: Record<string, FieldDef[]> = {};
+  for (const def of definitions) {
+    const sec = def.section || "Custom Fields";
+    if (!sections[sec]) sections[sec] = [];
+    sections[sec].push(def);
+  }
+
+  // Build a lookup for existing values
+  const valueLookup: Record<number, unknown> = {};
+  for (const v of values) {
+    valueLookup[v.field_id] = v.value;
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-gray-700">Custom Fields</h3>
+        {!editing ? (
+          <button
+            onClick={startEditing}
+            className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSave}
+              disabled={saveMutation.isPending}
+              className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Check className="h-3.5 w-3.5" />
+              Save
+            </button>
+            <button
+              onClick={() => {
+                setEditing(false);
+                setError(null);
+              }}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
+            >
+              <X className="h-3.5 w-3.5" />
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">
+          {error}
+        </div>
+      )}
+
+      {Object.entries(sections).map(([sectionName, sectionDefs]) => (
+        <div key={sectionName} className="mb-6 last:mb-0">
+          {Object.keys(sections).length > 1 && (
+            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              {sectionName}
+            </h4>
+          )}
+          <dl>
+            {sectionDefs.map((def) =>
+              editing ? (
+                <CustomFieldEdit
+                  key={def.id}
+                  def={def}
+                  value={formValues[def.id]}
+                  onChange={(val) =>
+                    setFormValues((prev) => ({ ...prev, [def.id]: val }))
+                  }
+                />
+              ) : (
+                <CustomFieldDisplay
+                  key={def.id}
+                  def={def}
+                  value={valueLookup[def.id]}
+                />
+              )
+            )}
+          </dl>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CustomFieldDisplay({ def, value }: { def: FieldDef; value: unknown }) {
+  let displayValue: string = "-";
+
+  if (value !== null && value !== undefined && value !== "") {
+    if (def.field_type === "checkbox") {
+      displayValue = value ? "Yes" : "No";
+    } else if (def.field_type === "multi_select" && Array.isArray(value)) {
+      displayValue = value.join(", ");
+    } else if (def.field_type === "date" || def.field_type === "datetime") {
+      try {
+        displayValue = new Date(value as string).toLocaleDateString();
+      } catch {
+        displayValue = String(value);
+      }
+    } else {
+      displayValue = String(value);
+    }
+  }
+
+  return (
+    <div className="grid grid-cols-3 py-3 border-b border-gray-100 last:border-0">
+      <dt className="text-sm font-medium text-gray-500">
+        {def.field_name}
+        {def.is_required && <span className="text-red-400 ml-0.5">*</span>}
+      </dt>
+      <dd className="col-span-2 text-sm text-gray-900">{displayValue}</dd>
+    </div>
+  );
+}
+
+function CustomFieldEdit({
+  def,
+  value,
+  onChange,
+}: {
+  def: FieldDef;
+  value: unknown;
+  onChange: (val: unknown) => void;
+}) {
+  const inputClass =
+    "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+
+  let input: React.ReactNode;
+
+  switch (def.field_type) {
+    case "text":
+    case "email":
+    case "phone":
+    case "url":
+      input = (
+        <input
+          type={def.field_type === "email" ? "email" : def.field_type === "phone" ? "tel" : def.field_type === "url" ? "url" : "text"}
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={def.placeholder || ""}
+          className={inputClass}
+        />
+      );
+      break;
+    case "textarea":
+      input = (
+        <textarea
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={def.placeholder || ""}
+          rows={3}
+          className={inputClass}
+        />
+      );
+      break;
+    case "number":
+    case "decimal":
+      input = (
+        <input
+          type="number"
+          step={def.field_type === "decimal" ? "0.01" : "1"}
+          value={value !== null && value !== undefined && value !== "" ? String(value) : ""}
+          onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
+          placeholder={def.placeholder || ""}
+          className={inputClass}
+        />
+      );
+      break;
+    case "date":
+      input = (
+        <input
+          type="date"
+          value={value ? String(value).slice(0, 10) : ""}
+          onChange={(e) => onChange(e.target.value || null)}
+          className={inputClass}
+        />
+      );
+      break;
+    case "datetime":
+      input = (
+        <input
+          type="datetime-local"
+          value={value ? String(value).slice(0, 16) : ""}
+          onChange={(e) => onChange(e.target.value || null)}
+          className={inputClass}
+        />
+      );
+      break;
+    case "dropdown":
+      input = (
+        <select
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value || null)}
+          className={inputClass}
+        >
+          <option value="">Select...</option>
+          {(def.options || []).map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      );
+      break;
+    case "multi_select": {
+      const selected = Array.isArray(value) ? (value as string[]) : [];
+      input = (
+        <div className="space-y-1">
+          {(def.options || []).map((opt) => (
+            <label key={opt} className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={selected.includes(opt)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    onChange([...selected, opt]);
+                  } else {
+                    onChange(selected.filter((s) => s !== opt));
+                  }
+                }}
+                className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      );
+      break;
+    }
+    case "checkbox":
+      input = (
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={(e) => onChange(e.target.checked)}
+            className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+          />
+          {def.field_name}
+        </label>
+      );
+      break;
+    case "file":
+      input = (
+        <input
+          type="text"
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={def.placeholder || "File reference or path"}
+          className={inputClass}
+        />
+      );
+      break;
+    default:
+      input = (
+        <input
+          type="text"
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+          className={inputClass}
+        />
+      );
+  }
+
+  return (
+    <div className="grid grid-cols-3 py-3 border-b border-gray-100 last:border-0 items-start">
+      <dt className="text-sm font-medium text-gray-500 pt-2">
+        {def.field_name}
+        {def.is_required && <span className="text-red-400 ml-0.5">*</span>}
+        {def.help_text && (
+          <p className="text-xs text-gray-400 font-normal mt-0.5">{def.help_text}</p>
+        )}
+      </dt>
+      <dd className="col-span-2">{input}</dd>
     </div>
   );
 }

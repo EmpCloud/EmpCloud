@@ -15,6 +15,9 @@ import {
   createShiftSchema,
   updateShiftSchema,
   assignShiftSchema,
+  bulkAssignShiftSchema,
+  shiftSwapRequestSchema,
+  shiftScheduleQuerySchema,
   createGeoFenceSchema,
   checkInSchema,
   checkOutSchema,
@@ -82,6 +85,110 @@ router.get("/shifts/assignments", authenticate, requireHR, async (req: Request, 
     const shiftId = req.query.shift_id ? Number(req.query.shift_id) : undefined;
     const assignments = await shiftService.listShiftAssignments(req.user!.org_id, { user_id: userId, shift_id: shiftId });
     sendSuccess(res, assignments);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/attendance/shifts/bulk-assign
+router.post("/shifts/bulk-assign", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = bulkAssignShiftSchema.parse(req.body);
+    const result = await shiftService.bulkAssignShifts(req.user!.org_id, data, req.user!.sub);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SHIFT_BULK_ASSIGNED,
+      resourceType: "shift_assignment",
+      resourceId: String(data.shift_id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result, 201);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/shifts/schedule
+router.get("/shifts/schedule", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const params = shiftScheduleQuerySchema.parse(req.query);
+    const schedule = await shiftService.getSchedule(req.user!.org_id, params);
+    sendSuccess(res, schedule);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/shifts/my-schedule
+router.get("/shifts/my-schedule", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const schedule = await shiftService.getMySchedule(req.user!.org_id, req.user!.sub);
+    sendSuccess(res, schedule);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/attendance/shifts/swap-request
+router.post("/shifts/swap-request", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = shiftSwapRequestSchema.parse(req.body);
+    const result = await shiftService.createSwapRequest(req.user!.org_id, req.user!.sub, data);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SHIFT_SWAP_REQUESTED,
+      resourceType: "shift_swap_request",
+      resourceId: String(result.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result, 201);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/shifts/swap-requests
+router.get("/shifts/swap-requests", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const status = req.query.status as string | undefined;
+    const requests = await shiftService.listSwapRequests(req.user!.org_id, { status });
+    sendSuccess(res, requests);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/attendance/shifts/swap-requests/:id/approve
+router.post("/shifts/swap-requests/:id/approve", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await shiftService.approveSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SHIFT_SWAP_APPROVED,
+      resourceType: "shift_swap_request",
+      resourceId: String(req.params.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/attendance/shifts/swap-requests/:id/reject
+router.post("/shifts/swap-requests/:id/reject", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await shiftService.rejectSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SHIFT_SWAP_REJECTED,
+      resourceType: "shift_swap_request",
+      resourceId: String(req.params.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result);
   } catch (err) { next(err); }
 });
 

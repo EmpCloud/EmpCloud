@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/api/client";
-import { FolderOpen, Plus, Pencil, X } from "lucide-react";
+import { FolderOpen, Plus, Pencil, Trash2, X } from "lucide-react";
 
 // --- Hooks ---
 
@@ -30,12 +30,21 @@ function useUpdateCategory() {
   });
 }
 
+function useDeleteCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.delete(`/documents/categories/${id}`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["doc-categories"] }),
+  });
+}
+
 // --- Component ---
 
 export default function DocumentCategoriesPage() {
   const { data: categories, isLoading } = useDocCategories();
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -187,12 +196,24 @@ export default function DocumentCategoriesPage() {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <button
-                      onClick={() => startEdit(cat)}
-                      className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-800 font-medium"
-                    >
-                      <Pencil className="h-3 w-3" /> Edit
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => startEdit(cat)}
+                        className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-800 font-medium"
+                      >
+                        <Pencil className="h-3 w-3" /> Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Deactivate category "${cat.name}"? Documents in this category will remain.`)) {
+                            deleteCategory.mutate(cat.id);
+                          }
+                        }}
+                        className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium"
+                      >
+                        <Trash2 className="h-3 w-3" /> Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

@@ -49,6 +49,8 @@ import whistleblowingRoutes from "./api/routes/whistleblowing.routes.js";
 import chatbotRoutes from "./api/routes/chatbot.routes.js";
 import forumRoutes from "./api/routes/forum.routes.js";
 import wellnessRoutes from "./api/routes/wellness.routes.js";
+import managerRoutes from "./api/routes/manager.routes.js";
+import customFieldRoutes from "./api/routes/custom-field.routes.js";
 
 async function main() {
   // Initialize database
@@ -107,7 +109,9 @@ async function main() {
     await m024(db);
     const { up: m025 } = await import("./db/migrations/025_wellness.js");
     await m025(db);
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness)");
+    const { up: m027 } = await import("./db/migrations/027_custom_fields.js");
+    await m027(db);
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness + custom-fields)");
   }
 
   // Load RSA keys
@@ -192,6 +196,8 @@ async function main() {
   app.use("/api/v1/chatbot", apiLimiter, chatbotRoutes);
   app.use("/api/v1/forum", apiLimiter, forumRoutes);
   app.use("/api/v1/wellness", apiLimiter, wellnessRoutes);
+  app.use("/api/v1/manager", apiLimiter, managerRoutes);
+  app.use("/api/v1/custom-fields", apiLimiter, customFieldRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);

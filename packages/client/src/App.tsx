@@ -18,6 +18,7 @@ const EmployeeProfilePage = lazy(() => import("@/pages/employees/EmployeeProfile
 const AttendanceDashboardPage = lazy(() => import("@/pages/attendance/AttendanceDashboardPage"));
 const AttendancePage = lazy(() => import("@/pages/attendance/AttendancePage"));
 const ShiftsPage = lazy(() => import("@/pages/attendance/ShiftsPage"));
+const ShiftSchedulePage = lazy(() => import("@/pages/attendance/ShiftSchedulePage"));
 const RegularizationsPage = lazy(() => import("@/pages/attendance/RegularizationsPage"));
 const LeaveDashboardPage = lazy(() => import("@/pages/leave/LeaveDashboardPage"));
 const LeaveApplicationsPage = lazy(() => import("@/pages/leave/LeaveApplicationsPage"));
@@ -25,6 +26,7 @@ const LeaveCalendarPage = lazy(() => import("@/pages/leave/LeaveCalendarPage"));
 const LeaveTypesPage = lazy(() => import("@/pages/leave/LeaveTypesPage"));
 const DocumentsPage = lazy(() => import("@/pages/documents/DocumentsPage"));
 const DocumentCategoriesPage = lazy(() => import("@/pages/documents/DocumentCategoriesPage"));
+const MyDocumentsPage = lazy(() => import("@/pages/documents/MyDocumentsPage"));
 const AnnouncementsPage = lazy(() => import("@/pages/announcements/AnnouncementsPage"));
 const PoliciesPage = lazy(() => import("@/pages/policies/PoliciesPage"));
 const OrgChartPage = lazy(() => import("@/pages/employees/OrgChartPage"));
@@ -32,6 +34,10 @@ const ImportEmployeesPage = lazy(() => import("@/pages/employees/ImportEmployees
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
 const BillingPage = lazy(() => import("@/pages/billing/BillingPage"));
 const OnboardingWizard = lazy(() => import("@/pages/onboarding/OnboardingWizard"));
+// Manager pages
+const ManagerDashboardPage = lazy(() => import("@/pages/manager/ManagerDashboardPage"));
+// Comp-Off page
+const CompOffPage = lazy(() => import("@/pages/leave/CompOffPage"));
 // Helpdesk pages
 const HelpdeskDashboardPage = lazy(() => import("@/pages/helpdesk/HelpdeskDashboardPage"));
 const TicketListPage = lazy(() => import("@/pages/helpdesk/TicketListPage"));
@@ -92,6 +98,8 @@ const WBTrackReportPage = lazy(() => import("@/pages/whistleblowing/TrackReportP
 const WBDashboardPage = lazy(() => import("@/pages/whistleblowing/WhistleblowingDashboardPage"));
 const WBReportListPage = lazy(() => import("@/pages/whistleblowing/ReportListPage"));
 const WBReportDetailPage = lazy(() => import("@/pages/whistleblowing/ReportDetailPage"));
+// Custom Fields pages
+const CustomFieldsSettingsPage = lazy(() => import("@/pages/custom-fields/CustomFieldsSettingsPage"));
 // Super Admin pages
 const SuperAdminDashboard = lazy(() => import("@/pages/admin/SuperAdminDashboard"));
 const OrgListPage = lazy(() => import("@/pages/admin/OrgListPage"));
@@ -196,12 +204,16 @@ export default function App() {
           <Route path="/attendance" element={<AttendanceDashboardPage />} />
           <Route path="/attendance/my" element={<AttendancePage />} />
           <Route path="/attendance/shifts" element={<ShiftsPage />} />
+          <Route path="/attendance/shift-schedule" element={<ShiftSchedulePage />} />
           <Route path="/attendance/regularizations" element={<RegularizationsPage />} />
           <Route path="/leave" element={<LeaveDashboardPage />} />
           <Route path="/leave/applications" element={<LeaveApplicationsPage />} />
           <Route path="/leave/calendar" element={<LeaveCalendarPage />} />
+          <Route path="/leave/comp-off" element={<CompOffPage />} />
           <Route path="/leave/settings" element={<LeaveTypesPage />} />
+          <Route path="/manager" element={<ManagerDashboardPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/documents/my" element={<MyDocumentsPage />} />
           <Route path="/documents/categories" element={<DocumentCategoriesPage />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/policies" element={<PoliciesPage />} />
@@ -266,6 +278,8 @@ export default function App() {
           <Route path="/whistleblowing/dashboard" element={<WBDashboardPage />} />
           <Route path="/whistleblowing/reports/:id" element={<WBReportDetailPage />} />
           <Route path="/whistleblowing/reports" element={<WBReportListPage />} />
+          {/* Custom Fields routes */}
+          <Route path="/custom-fields" element={<CustomFieldsSettingsPage />} />
           {/* Super Admin routes */}
           <Route path="/admin" element={<SuperAdminDashboard />} />
           <Route path="/admin/organizations" element={<OrgListPage />} />

@@ -51,6 +51,9 @@ import {
   Heart,
   Dumbbell,
   Smile,
+  UsersRound,
+  Gift,
+  SlidersHorizontal,
 } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
 
@@ -123,8 +126,10 @@ const employeeNavItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/self-service", label: "Self Service", icon: Contact },
   { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
+  { path: "/manager", label: "My Team", icon: UsersRound },
   { path: "/attendance", label: "Attendance", icon: Clock },
   { path: "/leave", label: "Leave", icon: CalendarDays },
+  { path: "/leave/comp-off", label: "Comp-Off", icon: Gift },
   { path: "/documents", label: "Documents", icon: FileText },
   { path: "/announcements", label: "Announcements", icon: Megaphone },
   { path: "/policies", label: "Policies", icon: BookOpen },
@@ -140,12 +145,15 @@ const adminNavItems = [
   { path: "/employees", label: "Employees", icon: Contact },
   { path: "/org-chart", label: "Org Chart", icon: Network },
   { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
+  { path: "/manager", label: "My Team", icon: UsersRound },
   { path: "/attendance", label: "Attendance", icon: Clock },
   { path: "/leave", label: "Leave", icon: CalendarDays },
+  { path: "/leave/comp-off", label: "Comp-Off", icon: Gift },
   { path: "/documents", label: "Documents", icon: FileText },
   { path: "/announcements", label: "Announcements", icon: Megaphone },
   { path: "/policies", label: "Policies", icon: BookOpen },
   { path: "/settings", label: "Settings", icon: Settings },
+  { path: "/custom-fields", label: "Custom Fields", icon: SlidersHorizontal },
   { path: "/audit", label: "Audit Log", icon: Shield },
 ];
 

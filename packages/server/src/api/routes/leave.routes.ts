@@ -315,6 +315,51 @@ router.get("/calendar", authenticate, async (req: Request, res: Response, next: 
 // Comp-Off
 // ===========================================================================
 
+// GET /api/v1/leave/comp-off/my — My comp-off requests
+router.get("/comp-off/my", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const perPage = Number(req.query.per_page) || 20;
+    const status = req.query.status as string | undefined;
+    const result = await compOffService.listCompOffs(req.user!.org_id, { page, perPage, userId: req.user!.sub, status });
+    sendPaginated(res, result.requests, result.total, page, perPage);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/leave/comp-off/pending — Pending comp-off approvals (HR/manager)
+router.get("/comp-off/pending", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const perPage = Number(req.query.per_page) || 20;
+    const result = await compOffService.listCompOffs(req.user!.org_id, { page, perPage, status: "pending" });
+    sendPaginated(res, result.requests, result.total, page, perPage);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/leave/comp-off/balance — My comp-off leave balance
+router.get("/comp-off/balance", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = (await import("../../db/connection.js")).getDB();
+    const year = Number(req.query.year) || new Date().getFullYear();
+    const compOffType = await db("leave_types")
+      .where({ organization_id: req.user!.org_id, code: "COMP_OFF" })
+      .first();
+    if (!compOffType) {
+      sendSuccess(res, { balance: 0, total_allocated: 0, total_used: 0, year });
+      return;
+    }
+    const balance = await db("leave_balances")
+      .where({
+        organization_id: req.user!.org_id,
+        user_id: req.user!.sub,
+        leave_type_id: compOffType.id,
+        year,
+      })
+      .first();
+    sendSuccess(res, balance || { balance: 0, total_allocated: 0, total_used: 0, year });
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/leave/comp-off
 router.get("/comp-off", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -327,8 +372,17 @@ router.get("/comp-off", authenticate, async (req: Request, res: Response, next: 
   } catch (err) { next(err); }
 });
 
-// POST /api/v1/leave/comp-off
+// POST /api/v1/leave/comp-off — Request comp-off
 router.post("/comp-off", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = createCompOffSchema.parse(req.body);
+    const request = await compOffService.requestCompOff(req.user!.org_id, req.user!.sub, data);
+    sendSuccess(res, request, 201);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/leave/comp-off/request — Alias for requesting comp-off
+router.post("/comp-off/request", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createCompOffSchema.parse(req.body);
     const request = await compOffService.requestCompOff(req.user!.org_id, req.user!.sub, data);

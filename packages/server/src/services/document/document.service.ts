@@ -52,6 +52,19 @@ export async function updateCategory(
   return db("document_categories").where({ id: categoryId }).first();
 }
 
+export async function deleteCategory(orgId: number, categoryId: number) {
+  const db = getDB();
+  const category = await db("document_categories")
+    .where({ id: categoryId, organization_id: orgId })
+    .first();
+  if (!category) throw new NotFoundError("Document category");
+
+  // Soft delete — mark as inactive
+  await db("document_categories")
+    .where({ id: categoryId })
+    .update({ is_active: false, updated_at: new Date() });
+}
+
 // ---------------------------------------------------------------------------
 // Documents
 // ---------------------------------------------------------------------------
@@ -180,7 +193,9 @@ export async function verifyDocument(
       is_verified: data.is_verified,
       verified_by: data.is_verified ? verifiedBy : null,
       verified_at: data.is_verified ? new Date() : null,
+      verification_status: data.is_verified ? "verified" : "pending",
       verification_remarks: data.verification_remarks || null,
+      rejection_reason: null,
       updated_at: new Date(),
     });
 
@@ -263,4 +278,65 @@ export async function getExpiryAlerts(orgId: number, daysAhead = 30) {
     .orderBy("employee_documents.expires_at", "asc");
 
   return documents;
+}
+
+// ---------------------------------------------------------------------------
+// Reject Document
+// ---------------------------------------------------------------------------
+
+export async function rejectDocument(
+  orgId: number,
+  docId: number,
+  rejectedBy: number,
+  rejectionReason: string,
+) {
+  const db = getDB();
+  const doc = await db("employee_documents")
+    .where({ id: docId, organization_id: orgId })
+    .first();
+  if (!doc) throw new NotFoundError("Document");
+
+  await db("employee_documents")
+    .where({ id: docId })
+    .update({
+      is_verified: false,
+      verified_by: null,
+      verified_at: null,
+      verification_status: "rejected",
+      rejection_reason: rejectionReason,
+      verification_remarks: null,
+      updated_at: new Date(),
+    });
+
+  return db("employee_documents").where({ id: docId }).first();
+}
+
+// ---------------------------------------------------------------------------
+// My Documents (employee's own documents)
+// ---------------------------------------------------------------------------
+
+export async function getMyDocuments(
+  orgId: number,
+  userId: number,
+  params?: { page?: number; perPage?: number },
+) {
+  const db = getDB();
+  const page = params?.page || 1;
+  const perPage = params?.perPage || 20;
+
+  const query = db("employee_documents")
+    .where({ "employee_documents.organization_id": orgId, "employee_documents.user_id": userId })
+    .leftJoin("document_categories", "employee_documents.category_id", "document_categories.id")
+    .select(
+      "employee_documents.*",
+      "document_categories.name as category_name",
+    );
+
+  const [{ count }] = await query.clone().clearSelect().count("employee_documents.id as count");
+  const documents = await query
+    .orderBy("employee_documents.created_at", "desc")
+    .limit(perPage)
+    .offset((page - 1) * perPage);
+
+  return { documents, total: Number(count) };
 }

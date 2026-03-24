@@ -162,6 +162,18 @@ export enum AuditAction {
   WELLNESS_PROGRAM_CREATED = "wellness_program_created",
   WELLNESS_ENROLLED = "wellness_enrolled",
   WELLNESS_CHECK_IN = "wellness_check_in",
+  // Shift Scheduling
+  SHIFT_BULK_ASSIGNED = "shift_bulk_assigned",
+  SHIFT_SWAP_REQUESTED = "shift_swap_requested",
+  SHIFT_SWAP_APPROVED = "shift_swap_approved",
+  SHIFT_SWAP_REJECTED = "shift_swap_rejected",
+  // Documents
+  DOCUMENT_REJECTED = "document_rejected",
+  DOCUMENT_CATEGORY_DELETED = "document_category_deleted",
+  // Custom Fields
+  CUSTOM_FIELD_CREATED = "custom_field_created",
+  CUSTOM_FIELD_UPDATED = "custom_field_updated",
+  CUSTOM_FIELD_DELETED = "custom_field_deleted",
 }
 
 export enum InvitationStatus {
