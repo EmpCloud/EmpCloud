@@ -343,7 +343,7 @@ export async function createPaymentOrder(
     gatewayOrderId?: string;
     clientSecret?: string;
     metadata?: Record<string, unknown>;
-  }>("POST", "/online-payments/create-order", {
+  }>("POST", "/payments/online/create-order", {
     invoiceId,
     gateway,
   });
@@ -354,7 +354,7 @@ export async function createPaymentOrder(
 export async function listPaymentGateways(): Promise<Array<{ name: string; displayName: string }>> {
   const result = await billingFetch<Array<{ name: string; displayName: string }>>(
     "GET",
-    "/online-payments/gateways"
+    "/payments/online/gateways"
   );
   return result ?? [];
 }

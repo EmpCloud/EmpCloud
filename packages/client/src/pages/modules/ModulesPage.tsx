@@ -277,7 +277,7 @@ export default function ModulesPage() {
                         Core — Included Free
                       </span>
                     )}
-                    {mod.has_free_tier && !isHRMS && (
+                    {!!mod.has_free_tier && !isHRMS && (
                       <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">Free tier</span>
                     )}
                     {!mod.is_active && (
