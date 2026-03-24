@@ -46,6 +46,7 @@ import positionRoutes from "./api/routes/position.routes.js";
 import feedbackRoutes from "./api/routes/anonymous-feedback.routes.js";
 import eventRoutes from "./api/routes/event.routes.js";
 import whistleblowingRoutes from "./api/routes/whistleblowing.routes.js";
+import chatbotRoutes from "./api/routes/chatbot.routes.js";
 
 async function main() {
   // Initialize database
@@ -96,7 +97,11 @@ async function main() {
     await m020(db);
     const { up: m021 } = await import("./db/migrations/021_events.js");
     await m021(db);
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events)");
+    const { up: m022 } = await import("./db/migrations/022_whistleblowing.js");
+    await m022(db);
+    const { up: m023 } = await import("./db/migrations/023_chatbot.js");
+    await m023(db);
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot)");
   }
 
   // Load RSA keys
@@ -178,6 +183,7 @@ async function main() {
   app.use("/api/v1/feedback", apiLimiter, feedbackRoutes);
   app.use("/api/v1/events", apiLimiter, eventRoutes);
   app.use("/api/v1/whistleblowing", apiLimiter, whistleblowingRoutes);
+  app.use("/api/v1/chatbot", apiLimiter, chatbotRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);

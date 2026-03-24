@@ -45,7 +45,9 @@ import {
   CalendarCheck,
   ShieldAlert,
   Search,
+  BotMessageSquare,
 } from "lucide-react";
+import ChatWidget from "@/components/ChatWidget";
 
 const assetNavItems = [
   { path: "/assets/my", label: "My Assets", icon: Laptop },
@@ -91,6 +93,7 @@ const whistleblowingHRNavItems = [
 const employeeNavItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/self-service", label: "Self Service", icon: Contact },
+  { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
   { path: "/attendance", label: "Attendance", icon: Clock },
   { path: "/leave", label: "Leave", icon: CalendarDays },
   { path: "/documents", label: "Documents", icon: FileText },
@@ -107,6 +110,7 @@ const adminNavItems = [
   { path: "/users", label: "Users", icon: Users },
   { path: "/employees", label: "Employees", icon: Contact },
   { path: "/org-chart", label: "Org Chart", icon: Network },
+  { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
   { path: "/attendance", label: "Attendance", icon: Clock },
   { path: "/leave", label: "Leave", icon: CalendarDays },
   { path: "/documents", label: "Documents", icon: FileText },
@@ -619,6 +623,9 @@ export default function DashboardLayout() {
           <Outlet />
         </div>
       </div>
+
+      {/* Floating AI Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }

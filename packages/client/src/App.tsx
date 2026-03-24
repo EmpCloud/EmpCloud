@@ -74,6 +74,8 @@ const EventDetailPage = lazy(() => import("@/pages/events/EventDetailPage"));
 const EventDashboardPage = lazy(() => import("@/pages/events/EventDashboardPage"));
 const MyEventsPage = lazy(() => import("@/pages/events/MyEventsPage"));
 // Whistleblowing pages
+// Chatbot page
+const ChatbotPage = lazy(() => import("@/pages/chatbot/ChatbotPage"));
 const WBSubmitReportPage = lazy(() => import("@/pages/whistleblowing/SubmitReportPage"));
 const WBTrackReportPage = lazy(() => import("@/pages/whistleblowing/TrackReportPage"));
 const WBDashboardPage = lazy(() => import("@/pages/whistleblowing/WhistleblowingDashboardPage"));
@@ -192,6 +194,7 @@ export default function App() {
           <Route path="/documents/categories" element={<DocumentCategoriesPage />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/policies" element={<PoliciesPage />} />
+          <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/org-chart" element={<OrgChartPage />} />
           <Route path="/employees/import" element={<ImportEmployeesPage />} />
           {/* Anonymous Feedback routes */}
