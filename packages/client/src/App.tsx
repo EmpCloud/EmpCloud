@@ -151,7 +151,10 @@ function RootRedirect() {
     return <Navigate to="/onboarding" replace />;
   }
 
-  const isAdmin = user?.role === "org_admin" || user?.role === "super_admin" || user?.role === "hr_admin" || user?.role === "hr_manager";
+  // Super admin goes straight to Platform Admin dashboard
+  if (user?.role === "super_admin") return <Navigate to="/admin/super" replace />;
+
+  const isAdmin = user?.role === "org_admin" || user?.role === "hr_admin" || user?.role === "hr_manager";
   if (isAdmin) return <DashboardPage />;
   return <SelfServiceDashboardPage />;
 }
