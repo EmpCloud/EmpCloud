@@ -25,7 +25,50 @@ import {
   Check,
   Users,
   TrendingUp,
+  Wallet,
+  UserPlus,
+  Target,
+  Award,
+  UserMinus,
+  Monitor,
+  MapPin,
+  Fingerprint,
+  FolderKanban,
+  GraduationCap,
+  Package,
 } from "lucide-react";
+
+// ---------------------------------------------------------------------------
+// Module icon & color mapping
+// ---------------------------------------------------------------------------
+
+const moduleIcons: Record<string, any> = {
+  "emp-payroll": Wallet,
+  "emp-recruit": UserPlus,
+  "emp-performance": Target,
+  "emp-rewards": Award,
+  "emp-exit": UserMinus,
+  "emp-monitor": Monitor,
+  "emp-field": MapPin,
+  "emp-biometrics": Fingerprint,
+  "emp-projects": FolderKanban,
+  "emp-lms": GraduationCap,
+  "emp-billing": Receipt,
+};
+
+const moduleColors: Record<string, { bg: string; text: string }> = {
+  "emp-payroll":     { bg: "bg-emerald-50",  text: "text-emerald-600" },
+  "emp-recruit":     { bg: "bg-blue-50",     text: "text-blue-600" },
+  "emp-performance": { bg: "bg-orange-50",   text: "text-orange-600" },
+  "emp-rewards":     { bg: "bg-yellow-50",   text: "text-yellow-600" },
+  "emp-exit":        { bg: "bg-red-50",      text: "text-red-600" },
+  "emp-monitor":     { bg: "bg-purple-50",   text: "text-purple-600" },
+  "emp-field":       { bg: "bg-teal-50",     text: "text-teal-600" },
+  "emp-biometrics":  { bg: "bg-pink-50",     text: "text-pink-600" },
+  "emp-projects":    { bg: "bg-indigo-50",   text: "text-indigo-600" },
+  "emp-lms":         { bg: "bg-cyan-50",     text: "text-cyan-600" },
+  "emp-billing":     { bg: "bg-gray-50",     text: "text-gray-600" },
+};
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -399,8 +442,8 @@ function SubscriptionsTab() {
               <div key={sub.id} className="bg-white rounded-xl border border-gray-200 p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center">
-                      <CreditCard className="h-5 w-5 text-brand-600" />
+                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${moduleColors[mod?.slug]?.bg || "bg-brand-50"}`}>
+                      {(() => { const Icon = moduleIcons[mod?.slug] || Package; const color = moduleColors[mod?.slug]?.text || "text-brand-600"; return <Icon className={`h-5 w-5 ${color}`} />; })()}
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>

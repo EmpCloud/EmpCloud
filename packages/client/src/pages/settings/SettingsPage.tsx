@@ -4,6 +4,20 @@ import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
 import { Building2, MapPin, Briefcase, Pencil, X, Plus, Trash2, Save } from "lucide-react";
 
+const TIMEZONES = [
+  "UTC",
+  "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+  "America/Toronto", "America/Vancouver", "America/Sao_Paulo", "America/Mexico_City",
+  "Europe/London", "Europe/Paris", "Europe/Berlin", "Europe/Madrid", "Europe/Rome",
+  "Europe/Amsterdam", "Europe/Stockholm", "Europe/Warsaw", "Europe/Zurich",
+  "Europe/Dublin", "Europe/Moscow",
+  "Asia/Kolkata", "Asia/Dubai", "Asia/Singapore", "Asia/Tokyo", "Asia/Seoul",
+  "Asia/Shanghai", "Asia/Hong_Kong", "Asia/Bangkok", "Asia/Jakarta", "Asia/Manila",
+  "Asia/Kuala_Lumpur", "Asia/Ho_Chi_Minh", "Asia/Riyadh",
+  "Australia/Sydney", "Australia/Melbourne", "Pacific/Auckland",
+  "Africa/Lagos", "Africa/Nairobi", "Africa/Cairo", "Africa/Johannesburg",
+];
+
 export default function SettingsPage() {
   const { data: org, isLoading } = useOrg();
   const { data: departments } = useDepartments();
@@ -127,12 +141,25 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
         {fields.map(([label, key]) => (
           <div key={key}>
             <label className="block text-xs text-gray-500 mb-1">{label}</label>
-            <input
-              type={key === "email" ? "email" : "text"}
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            />
+            {key === "timezone" ? (
+              <select
+                value={form[key]}
+                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              >
+                <option value="">Select timezone</option>
+                {TIMEZONES.map((tz) => (
+                  <option key={tz} value={tz}>{tz}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={key === "email" ? "email" : "text"}
+                value={form[key]}
+                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            )}
           </div>
         ))}
       </div>
@@ -301,13 +328,16 @@ function LocationsCard({ locations }: { locations: any[] }) {
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             required
           />
-          <input
-            type="text"
+          <select
             value={locForm.timezone}
             onChange={(e) => setLocForm({ ...locForm, timezone: e.target.value })}
-            placeholder="Timezone (optional)"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          />
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+          >
+            <option value="">Select timezone</option>
+            {TIMEZONES.map((tz) => (
+              <option key={tz} value={tz}>{tz}</option>
+            ))}
+          </select>
           <button
             type="submit"
             disabled={addLoc.isPending}
