@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,8 +7,10 @@ import { loginSchema, type LoginInput } from "@empcloud/shared";
 import { useLogin } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
 import { Building2 } from "lucide-react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const login = useLogin();
   const setAuth = useAuthStore((s) => s.login);
@@ -45,11 +48,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Building2 className="h-12 w-12 text-brand-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">Sign in to EMP Cloud</h1>
-          <p className="text-sm text-gray-500 mt-1">Enterprise HRMS Platform</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('auth.signInTo')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('auth.enterprisePlatform')}</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 space-y-5">
@@ -58,7 +64,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
             <input
               type="email"
               {...register("email")}
@@ -69,12 +75,12 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
             <input
               type="password"
               {...register("password")}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
-              placeholder="Enter your password"
+              placeholder={t('auth.password')}
             />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
           </div>
@@ -84,13 +90,13 @@ export default function LoginPage() {
             disabled={isSubmitting}
             className="w-full bg-brand-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
-            {isSubmitting ? "Signing in..." : "Sign in"}
+            {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
           </button>
 
           <p className="text-center text-sm text-gray-500">
-            Don't have an account?{" "}
+            {t('auth.noAccount')}{" "}
             <Link to="/register" className="text-brand-600 hover:text-brand-700 font-medium">
-              Register your organization
+              {t('auth.registerOrg')}
             </Link>
           </p>
         </form>

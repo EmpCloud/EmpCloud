@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -56,151 +57,152 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const assetNavItems = [
-  { path: "/assets/my", label: "My Assets", icon: Laptop },
+  { path: "/assets/my", label: "My Assets", i18nKey: "nav.assets", icon: Laptop },
 ];
 
 const assetHRNavItems = [
-  { path: "/assets/dashboard", label: "Asset Dashboard", icon: BarChart3 },
-  { path: "/assets", label: "All Assets", icon: Laptop },
-  { path: "/assets/categories", label: "Categories", icon: FolderOpen },
+  { path: "/assets/dashboard", label: "Asset Dashboard", i18nKey: "nav.assets", icon: BarChart3 },
+  { path: "/assets", label: "All Assets", i18nKey: "nav.assets", icon: Laptop },
+  { path: "/assets/categories", label: "Categories", i18nKey: "", icon: FolderOpen },
 ];
 
 const positionNavItems = [
-  { path: "/positions", label: "Dashboard", icon: BarChart3 },
-  { path: "/positions/list", label: "All Positions", icon: Briefcase },
-  { path: "/positions/vacancies", label: "Vacancies", icon: Target },
-  { path: "/positions/headcount-plans", label: "Headcount Plans", icon: ClipboardList },
+  { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
+  { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
+  { path: "/positions/vacancies", label: "Vacancies", i18nKey: "", icon: Target },
+  { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "", icon: ClipboardList },
 ];
 
 const eventNavItems = [
-  { path: "/events", label: "Events", icon: PartyPopper },
-  { path: "/events/my", label: "My Events", icon: CalendarCheck },
+  { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
+  { path: "/events/my", label: "My Events", i18nKey: "", icon: CalendarCheck },
 ];
 
 const eventHRNavItems = [
-  { path: "/events", label: "Events", icon: PartyPopper },
-  { path: "/events/my", label: "My Events", icon: CalendarCheck },
-  { path: "/events/dashboard", label: "Event Dashboard", icon: BarChart3 },
+  { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
+  { path: "/events/my", label: "My Events", i18nKey: "", icon: CalendarCheck },
+  { path: "/events/dashboard", label: "Event Dashboard", i18nKey: "", icon: BarChart3 },
 ];
 
 const wellnessNavItems = [
-  { path: "/wellness", label: "Wellness", icon: Heart },
-  { path: "/wellness/my", label: "My Wellness", icon: Dumbbell },
-  { path: "/wellness/check-in", label: "Daily Check-in", icon: Smile },
+  { path: "/wellness", label: "Wellness", i18nKey: "nav.wellness", icon: Heart },
+  { path: "/wellness/my", label: "My Wellness", i18nKey: "", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "", icon: Smile },
 ];
 
 const wellnessHRNavItems = [
-  { path: "/wellness", label: "Wellness", icon: Heart },
-  { path: "/wellness/my", label: "My Wellness", icon: Dumbbell },
-  { path: "/wellness/check-in", label: "Daily Check-in", icon: Smile },
-  { path: "/wellness/dashboard", label: "Wellness Dashboard", icon: BarChart3 },
+  { path: "/wellness", label: "Wellness", i18nKey: "nav.wellness", icon: Heart },
+  { path: "/wellness/my", label: "My Wellness", i18nKey: "", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "", icon: Smile },
+  { path: "/wellness/dashboard", label: "Wellness Dashboard", i18nKey: "", icon: BarChart3 },
 ];
 
 const forumNavItems = [
-  { path: "/forum", label: "Forum", icon: MessagesSquare },
-  { path: "/forum/new", label: "Create Post", icon: PenSquare },
+  { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
+  { path: "/forum/new", label: "Create Post", i18nKey: "", icon: PenSquare },
 ];
 
 const forumHRNavItems = [
-  { path: "/forum", label: "Forum", icon: MessagesSquare },
-  { path: "/forum/new", label: "Create Post", icon: PenSquare },
-  { path: "/forum/dashboard", label: "Forum Dashboard", icon: BarChart3 },
+  { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
+  { path: "/forum/new", label: "Create Post", i18nKey: "", icon: PenSquare },
+  { path: "/forum/dashboard", label: "Forum Dashboard", i18nKey: "", icon: BarChart3 },
 ];
 
 const whistleblowingNavItems = [
-  { path: "/whistleblowing/submit", label: "Submit Report", icon: ShieldAlert },
-  { path: "/whistleblowing/track", label: "Track Report", icon: Search },
+  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "", icon: Search },
 ];
 
 const whistleblowingHRNavItems = [
-  { path: "/whistleblowing/submit", label: "Submit Report", icon: ShieldAlert },
-  { path: "/whistleblowing/track", label: "Track Report", icon: Search },
-  { path: "/whistleblowing/dashboard", label: "Dashboard", icon: BarChart3 },
-  { path: "/whistleblowing/reports", label: "All Reports", icon: ClipboardList },
+  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "", icon: Search },
+  { path: "/whistleblowing/dashboard", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
+  { path: "/whistleblowing/reports", label: "All Reports", i18nKey: "", icon: ClipboardList },
 ];
 
 // Items visible to ALL users (including employees)
 // For employees, Dashboard IS the self-service page (RootRedirect renders SelfServiceDashboardPage)
 // so we only show one "Dashboard" entry pointing to "/"
 const employeeNavItems = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
-  { path: "/manager", label: "My Team", icon: UsersRound },
-  { path: "/attendance", label: "Attendance", icon: Clock },
-  { path: "/leave", label: "Leave", icon: CalendarDays },
-  { path: "/leave/comp-off", label: "Comp-Off", icon: Gift },
-  { path: "/documents", label: "Documents", icon: FileText },
-  { path: "/announcements", label: "Announcements", icon: Megaphone },
-  { path: "/policies", label: "Policies", icon: BookOpen },
-  { path: "/org-chart", label: "Org Chart", icon: Network },
+  { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
+  { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
+  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+  { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },
+  { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
+  { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
+  { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
+  { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
+  { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
 ];
 
 // Items visible only to HR Admin, Org Admin, Super Admin
 const adminNavItems = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/modules", label: "Modules", icon: Package },
-  { path: "/billing", label: "Billing", icon: Receipt },
-  { path: "/users", label: "Users", icon: Users },
-  { path: "/employees", label: "Employees", icon: Contact },
-  { path: "/org-chart", label: "Org Chart", icon: Network },
-  { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
-  { path: "/manager", label: "My Team", icon: UsersRound },
-  { path: "/attendance", label: "Attendance", icon: Clock },
-  { path: "/leave", label: "Leave", icon: CalendarDays },
-  { path: "/leave/comp-off", label: "Comp-Off", icon: Gift },
-  { path: "/documents", label: "Documents", icon: FileText },
-  { path: "/announcements", label: "Announcements", icon: Megaphone },
-  { path: "/policies", label: "Policies", icon: BookOpen },
-  { path: "/settings", label: "Settings", icon: Settings },
-  { path: "/custom-fields", label: "Custom Fields", icon: SlidersHorizontal },
-  { path: "/audit", label: "Audit Log", icon: Shield },
+  { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package },
+  { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
+  { path: "/users", label: "Users", i18nKey: "nav.users", icon: Users },
+  { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact },
+  { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
+  { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
+  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+  { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },
+  { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
+  { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
+  { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
+  { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
+  { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings },
+  { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal },
+  { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield },
 ];
 
 const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
 
 const helpdeskNavItems = [
-  { path: "/helpdesk/my-tickets", label: "My Tickets", icon: TicketCheck },
-  { path: "/helpdesk/kb", label: "Knowledge Base", icon: BookMarked },
+  { path: "/helpdesk/my-tickets", label: "My Tickets", i18nKey: "helpdesk.myTickets", icon: TicketCheck },
+  { path: "/helpdesk/kb", label: "Knowledge Base", i18nKey: "helpdesk.knowledgeBase", icon: BookMarked },
 ];
 
 const helpdeskHRNavItems = [
-  { path: "/helpdesk/my-tickets", label: "My Tickets", icon: TicketCheck },
-  { path: "/helpdesk/tickets", label: "All Tickets", icon: TicketCheck },
-  { path: "/helpdesk/dashboard", label: "Helpdesk Dashboard", icon: Headphones },
-  { path: "/helpdesk/kb", label: "Knowledge Base", icon: BookMarked },
+  { path: "/helpdesk/my-tickets", label: "My Tickets", i18nKey: "helpdesk.myTickets", icon: TicketCheck },
+  { path: "/helpdesk/tickets", label: "All Tickets", i18nKey: "helpdesk.allTickets", icon: TicketCheck },
+  { path: "/helpdesk/dashboard", label: "Helpdesk Dashboard", i18nKey: "nav.helpdesk", icon: Headphones },
+  { path: "/helpdesk/kb", label: "Knowledge Base", i18nKey: "helpdesk.knowledgeBase", icon: BookMarked },
 ];
 
 const surveyNavItems = [
-  { path: "/surveys/respond", label: "Active Surveys", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
 ];
 
 const surveyHRNavItems = [
-  { path: "/surveys/dashboard", label: "Survey Dashboard", icon: BarChart3 },
-  { path: "/surveys/list", label: "All Surveys", icon: ClipboardList },
-  { path: "/surveys/respond", label: "Active Surveys", icon: ClipboardList },
+  { path: "/surveys/dashboard", label: "Survey Dashboard", i18nKey: "nav.surveys", icon: BarChart3 },
+  { path: "/surveys/list", label: "All Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
 ];
 
 const feedbackNavItems = [
-  { path: "/feedback/submit", label: "Submit Feedback", icon: MessageSquarePlus },
-  { path: "/feedback/my", label: "My Feedback", icon: MessageSquare },
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.feedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
 ];
 
 const feedbackHRNavItems = [
-  { path: "/feedback/submit", label: "Submit Feedback", icon: MessageSquarePlus },
-  { path: "/feedback/my", label: "My Feedback", icon: MessageSquare },
-  { path: "/feedback", label: "All Feedback", icon: MessageSquare },
-  { path: "/feedback/dashboard", label: "Feedback Dashboard", icon: BarChart3 },
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.feedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
+  { path: "/feedback", label: "All Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
+  { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "nav.feedback", icon: BarChart3 },
 ];
 
 const biometricsNavItems = [
-  { path: "/biometrics", label: "Biometric Dashboard", icon: ScanFace },
-  { path: "/biometrics/enrollment", label: "Face Enrollment", icon: Fingerprint },
-  { path: "/biometrics/qr", label: "QR Attendance", icon: QrCode },
-  { path: "/biometrics/devices", label: "Devices", icon: Smartphone },
-  { path: "/biometrics/logs", label: "Biometric Logs", icon: ScrollText },
-  { path: "/biometrics/settings", label: "Biometric Settings", icon: Settings },
+  { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
+  { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "", icon: Fingerprint },
+  { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "", icon: QrCode },
+  { path: "/biometrics/devices", label: "Devices", i18nKey: "", icon: Smartphone },
+  { path: "/biometrics/logs", label: "Biometric Logs", i18nKey: "", icon: ScrollText },
+  { path: "/biometrics/settings", label: "Biometric Settings", i18nKey: "", icon: Settings },
 ];
 
 function NotificationDropdown() {
@@ -319,6 +321,7 @@ function NotificationDropdown() {
 }
 
 export default function DashboardLayout() {
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -395,14 +398,14 @@ export default function DashboardLayout() {
                 }`}
               >
                 <Icon className="h-5 w-5" />
-                {item.label}
+                {item.i18nKey ? t(item.i18nKey) : item.label}
               </Link>
             );
           })}
           {/* Positions section — HR only */}
           {user && HR_ROLES.includes(user.role) && (
             <>
-              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Positions</div>
+              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.positions')}</div>
               {positionNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -417,14 +420,14 @@ export default function DashboardLayout() {
                     }`}
                   >
                     <Icon className="h-5 w-5" />
-                    {item.label}
+                    {item.i18nKey ? t(item.i18nKey) : item.label}
                   </Link>
                 );
               })}
             </>
           )}
           {/* Community section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Community</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.forum')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? forumHRNavItems
             : forumNavItems
@@ -448,7 +451,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Events section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Events</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.events')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? eventHRNavItems
             : eventNavItems
@@ -472,7 +475,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Whistleblowing section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Whistleblowing</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.whistleblowing')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? whistleblowingHRNavItems
             : whistleblowingNavItems
@@ -496,7 +499,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Helpdesk section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Helpdesk</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.helpdesk')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? helpdeskHRNavItems
             : helpdeskNavItems
@@ -520,7 +523,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Surveys section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Surveys</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.surveys')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? surveyHRNavItems
             : surveyNavItems
@@ -544,7 +547,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Wellness section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Wellness</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.wellness')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? wellnessHRNavItems
             : wellnessNavItems
@@ -568,7 +571,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Assets section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Assets</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.assets')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? assetHRNavItems
             : assetNavItems
@@ -592,7 +595,7 @@ export default function DashboardLayout() {
             );
           })}
           {/* Feedback section — visible to all users */}
-          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Feedback</div>
+          <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.feedback')}</div>
           {(user && HR_ROLES.includes(user.role)
             ? feedbackHRNavItems
             : feedbackNavItems
@@ -617,7 +620,7 @@ export default function DashboardLayout() {
           })}
           {hasBiometrics && (
             <>
-              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Biometrics</div>
+              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.biometrics')}</div>
               {biometricsNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -633,7 +636,7 @@ export default function DashboardLayout() {
                     }`}
                   >
                     <Icon className="h-5 w-5" />
-                    {item.label}
+                    {item.i18nKey ? t(item.i18nKey) : item.label}
                   </Link>
                 );
               })}
@@ -641,7 +644,7 @@ export default function DashboardLayout() {
           )}
           {user?.role === "super_admin" && (
             <>
-              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">Platform Admin</div>
+              <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.platformAdmin')}</div>
               {[
                 { path: "/admin", label: "Overview Dashboard", icon: Crown },
                 { path: "/admin/organizations", label: "Organizations", icon: Building2 },
@@ -690,7 +693,7 @@ export default function DashboardLayout() {
             className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Sign out
+            {t('nav.signOut')}
           </button>
         </div>
       </div>
@@ -725,6 +728,7 @@ export default function DashboardLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
+          <LanguageSwitcher />
           <NotificationDropdown />
         </div>
         <div className="flex-1 overflow-auto p-4 lg:p-8">

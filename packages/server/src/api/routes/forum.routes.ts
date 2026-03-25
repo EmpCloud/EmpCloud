@@ -91,7 +91,8 @@ router.get("/posts/:id", authenticate, async (req: Request, res: Response, next:
   try {
     const post = await forumService.getPost(
       req.user!.org_id,
-      paramInt(req.params.id)
+      paramInt(req.params.id),
+      true // increment view count on page load
     );
 
     // Also fetch user's like status for this post and its replies

@@ -1,5 +1,6 @@
 import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets, useBillingOverviewSummary } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
+import { useTranslation } from "react-i18next";
 import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -29,6 +30,7 @@ const hrmsQuickLinks = [
 ];
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const { data: stats, isLoading: statsLoading, isError: statsError } = useOrgStats();
   const { data: subscriptions } = useSubscriptions();
@@ -61,9 +63,9 @@ export default function DashboardPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.first_name}
+          {t('common.welcome')}, {user?.first_name}
         </h1>
-        <p className="text-gray-500 mt-1">Here's what's happening with your organization.</p>
+        <p className="text-gray-500 mt-1">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Stats cards */}
@@ -93,7 +95,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{stats?.total_users ?? 0}</p>
-                  <p className="text-sm text-gray-500">Total Users</p>
+                  <p className="text-sm text-gray-500">{t('dashboard.totalUsers')}</p>
                 </div>
               </div>
             </Link>
@@ -107,7 +109,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{stats?.active_subscriptions ?? 0}</p>
-                  <p className="text-sm text-gray-500">Active Modules</p>
+                  <p className="text-sm text-gray-500">{t('dashboard.activeModules')}</p>
                 </div>
               </div>
             </Link>
@@ -121,7 +123,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{stats?.total_departments ?? 0}</p>
-                  <p className="text-sm text-gray-500">Departments</p>
+                  <p className="text-sm text-gray-500">{t('dashboard.departments')}</p>
                 </div>
               </div>
             </Link>
@@ -132,7 +134,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">SOC 2</p>
-                  <p className="text-sm text-gray-500">Compliant</p>
+                  <p className="text-sm text-gray-500">{t('dashboard.compliant')}</p>
                 </div>
               </div>
             </div>
@@ -169,13 +171,13 @@ export default function DashboardPage() {
       {/* Core HRMS — Always shown (it IS the platform) */}
       {hrmsModule && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Core HRMS</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.coreHRMS')}</h2>
           <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-xl p-8 text-white">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">
-                    Included Free
+                    {t('dashboard.includedFree')}
                   </span>
                   <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">
                     Active
@@ -211,7 +213,7 @@ export default function DashboardPage() {
       {/* Module Insights — live data from subscribed module APIs */}
       {activeSubscriptions.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Module Insights</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.moduleInsights')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Recruit Widget */}
             {subscribedSlugs.has("emp-recruit") && (
@@ -296,13 +298,13 @@ export default function DashboardPage() {
       )}
 
       {/* Subscribed Modules */}
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Modules</h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.yourModules')}</h2>
       {activeSubscriptions.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
           <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No paid modules yet. Core HRMS is active above.</p>
+          <p className="text-gray-500">{t('dashboard.noModulesYet')}</p>
           <Link to="/modules" className="text-brand-600 text-sm font-medium hover:text-brand-700 mt-2 inline-block">
-            Browse module marketplace
+            {t('dashboard.browseModules')}
           </Link>
         </div>
       ) : (
@@ -346,7 +348,7 @@ export default function DashboardPage() {
                     onClick={() => setExpandedModule(isExpanded ? null : sub.id)}
                     className="text-xs text-brand-600 hover:text-brand-700 font-medium mb-3 flex items-center gap-0.5"
                   >
-                    {isExpanded ? "Show less" : "Read more"}
+                    {isExpanded ? t('dashboard.showLess') : t('dashboard.readMore')}
                     <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                   </button>
                 )}
@@ -371,7 +373,7 @@ export default function DashboardPage() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
                   >
-                    Launch <ExternalLink className="h-3.5 w-3.5" />
+                    {t('dashboard.launch')} <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 )}
               </div>

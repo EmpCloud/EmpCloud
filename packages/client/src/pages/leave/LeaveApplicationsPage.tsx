@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
 import { CheckCircle2, XCircle, Clock, Ban, Filter } from "lucide-react";
 
 interface LeaveApplication {
@@ -28,8 +29,12 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
   cancelled: { bg: "bg-gray-50", text: "text-gray-500", icon: Ban },
 };
 
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin", "manager"];
+
 export default function LeaveApplicationsPage() {
   const qc = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const canApprove = user ? HR_ROLES.includes(user.role) : false;
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -156,12 +161,14 @@ export default function LeaveApplicationsPage() {
                       <div className="flex items-center gap-2">
                         {app.status === "pending" && (
                           <>
-                            <button
-                              onClick={() => setActionId(actionId === app.id ? null : app.id)}
-                              className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100"
-                            >
-                              Review
-                            </button>
+                            {canApprove && (
+                              <button
+                                onClick={() => setActionId(actionId === app.id ? null : app.id)}
+                                className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100"
+                              >
+                                Review
+                              </button>
+                            )}
                             <button
                               onClick={() => cancelMut.mutate(app.id)}
                               className="text-xs bg-gray-50 text-gray-600 px-2 py-1 rounded hover:bg-gray-100"
@@ -179,7 +186,7 @@ export default function LeaveApplicationsPage() {
                           </button>
                         )}
                       </div>
-                      {actionId === app.id && app.status === "pending" && (
+                      {canApprove && actionId === app.id && app.status === "pending" && (
                         <div className="mt-2 flex items-center gap-2">
                           <input
                             type="text"

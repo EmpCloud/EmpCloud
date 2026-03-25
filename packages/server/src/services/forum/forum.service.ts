@@ -169,7 +169,7 @@ export async function listPosts(orgId: number, filters: ForumPostQueryInput) {
   return { posts, total: Number(count) };
 }
 
-export async function getPost(orgId: number, postId: number) {
+export async function getPost(orgId: number, postId: number, incrementView = false) {
   const db = getDB();
 
   const post = await db("forum_posts")
@@ -188,8 +188,10 @@ export async function getPost(orgId: number, postId: number) {
 
   if (!post) throw new NotFoundError("Forum post");
 
-  // Increment view count
-  await db("forum_posts").where({ id: postId }).increment("view_count", 1);
+  // Only increment view count when explicitly requested (i.e. on page load via GET route)
+  if (incrementView) {
+    await db("forum_posts").where({ id: postId }).increment("view_count", 1);
+  }
 
   // Fetch replies with author info
   const replies = await db("forum_replies")
