@@ -322,6 +322,14 @@ export async function assignUserToPosition(
     .increment("headcount_filled", 1)
     .update({ updated_at: new Date() });
 
+  // Auto-update status to "filled" when headcount_filled reaches headcount_budget
+  const updated = await db("positions").where({ id: positionId }).first();
+  if (updated && updated.headcount_filled >= updated.headcount_budget) {
+    await db("positions")
+      .where({ id: positionId })
+      .update({ status: "filled", updated_at: new Date() });
+  }
+
   return db("position_assignments").where({ id }).first();
 }
 
@@ -348,6 +356,14 @@ export async function removeUserFromPosition(orgId: number, assignmentId: number
     .where("headcount_filled", ">", 0)
     .decrement("headcount_filled", 1)
     .update({ updated_at: new Date() });
+
+  // If position was "filled", revert to "active" since there's now a vacancy
+  const pos = await db("positions").where({ id: assignment.position_id }).first();
+  if (pos && pos.status === "filled" && pos.headcount_filled < pos.headcount_budget) {
+    await db("positions")
+      .where({ id: assignment.position_id })
+      .update({ status: "active", updated_at: new Date() });
+  }
 }
 
 // ---------------------------------------------------------------------------

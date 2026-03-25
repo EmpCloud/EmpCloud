@@ -39,6 +39,15 @@ export default function PositionDetailPage() {
     },
   });
 
+  const updateStatusMutation = useMutation({
+    mutationFn: (newStatus: string) =>
+      api.put(`/positions/${id}`, { status: newStatus }).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["position", id] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+  });
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-64"><div className="text-gray-400">Loading...</div></div>;
   }
@@ -78,16 +87,29 @@ export default function PositionDetailPage() {
             {pos.location_name && (
               <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{pos.location_name}</span>
             )}
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-              pos.status === "active" ? "bg-green-50 text-green-700" :
-              pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
-              "bg-gray-100 text-gray-500"
-            }`}>
-              {pos.status}
-            </span>
+            <select
+              value={pos.status}
+              onChange={(e) => {
+                if (e.target.value !== pos.status) {
+                  updateStatusMutation.mutate(e.target.value);
+                }
+              }}
+              disabled={updateStatusMutation.isPending}
+              className={`text-xs px-2 py-1 rounded-full font-medium border-0 cursor-pointer ${
+                pos.status === "active" ? "bg-green-50 text-green-700" :
+                pos.status === "filled" ? "bg-blue-50 text-blue-700" :
+                pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
+                "bg-gray-100 text-gray-500"
+              }`}
+            >
+              <option value="active">Active</option>
+              <option value="filled">Filled</option>
+              <option value="frozen">Frozen</option>
+              <option value="closed">Closed</option>
+            </select>
           </div>
         </div>
-        {pos.status === "active" && (
+        {(pos.status === "active" || pos.status === "filled") && pos.headcount_filled < pos.headcount_budget && (
           <button
             onClick={() => setShowAssign(!showAssign)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700"

@@ -46,6 +46,12 @@ export default function ReportDetailPage() {
     queryFn: () => api.get(`/whistleblowing/reports/${id}`).then((r) => r.data.data),
   });
 
+  // Fetch users for investigator dropdown
+  const { data: usersData } = useQuery({
+    queryKey: ["users-for-investigator"],
+    queryFn: () => api.get("/users", { params: { per_page: 100 } }).then((r) => r.data.data),
+  });
+
   const assignMutation = useMutation({
     mutationFn: () =>
       api.post(`/whistleblowing/reports/${id}/assign`, {
@@ -285,13 +291,18 @@ export default function ReportDetailPage() {
           <div className="bg-white rounded-xl shadow-sm border p-5">
             <h4 className="text-sm font-semibold text-gray-700 mb-3">Assign Investigator</h4>
             <div className="flex gap-2">
-              <input
-                type="number"
+              <select
                 value={investigatorId}
                 onChange={(e) => setInvestigatorId(e.target.value)}
-                placeholder="User ID"
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-              />
+              >
+                <option value="">Select investigator...</option>
+                {(usersData || []).map((u: any) => (
+                  <option key={u.id} value={u.id}>
+                    {u.first_name} {u.last_name} ({u.email})
+                  </option>
+                ))}
+              </select>
               <button
                 onClick={() => assignMutation.mutate()}
                 disabled={!investigatorId || assignMutation.isPending}

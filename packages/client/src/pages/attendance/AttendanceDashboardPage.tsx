@@ -1,9 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle } from "lucide-react";
+import { useAuthStore } from "@/lib/auth-store";
+
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
 
 export default function AttendanceDashboardPage() {
+  const user = useAuthStore((s) => s.user);
+  const isHR = user && HR_ROLES.includes(user.role);
+
+  // Redirect non-HR users to their personal attendance page
+  if (!isHR) {
+    return <Navigate to="/attendance/my" replace />;
+  }
   const [page, setPage] = useState(1);
 
   const { data: dashboard, isLoading: dashLoading } = useQuery({

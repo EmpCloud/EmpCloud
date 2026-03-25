@@ -4,6 +4,14 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp } from "lucide-react";
 
+const AVAILABLE_ROLES = [
+  { value: "employee", label: "Employee" },
+  { value: "hr_admin", label: "HR Admin" },
+  { value: "hr_manager", label: "HR Manager" },
+  { value: "org_admin", label: "Org Admin" },
+  { value: "manager", label: "Manager" },
+];
+
 const PRIORITY_CONFIG: Record<string, { label: string; color: string; icon: typeof Info }> = {
   urgent: { label: "Urgent", color: "bg-red-100 text-red-700 border-red-200", icon: AlertCircle },
   high: { label: "High", color: "bg-orange-100 text-orange-700 border-orange-200", icon: AlertTriangle },
@@ -63,12 +71,19 @@ export default function AnnouncementsPage() {
   const announcements = data?.data || [];
   const meta = data?.meta;
 
+  // Fetch departments for target dropdown
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: () => api.get("/departments").then((r) => r.data.data),
+    enabled: !!isHR && targetType === "department",
+  });
+
   // Form state
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [priority, setPriority] = useState("normal");
   const [targetType, setTargetType] = useState("all");
-  const [targetIds, setTargetIds] = useState("");
+  const [selectedTargetIds, setSelectedTargetIds] = useState<string[]>([]);
   const [expiresAt, setExpiresAt] = useState("");
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -78,16 +93,22 @@ export default function AnnouncementsPage() {
       content,
       priority,
       target_type: targetType,
-      target_ids: targetIds || null,
+      target_ids: selectedTargetIds.length > 0 ? JSON.stringify(selectedTargetIds) : null,
       expires_at: expiresAt || null,
     });
     setTitle("");
     setContent("");
     setPriority("normal");
     setTargetType("all");
-    setTargetIds("");
+    setSelectedTargetIds([]);
     setExpiresAt("");
     setShowForm(false);
+  };
+
+  const handleTargetToggle = (id: string) => {
+    setSelectedTargetIds((prev) =>
+      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
+    );
   };
 
   const handleMarkRead = async (id: number) => {
@@ -165,7 +186,7 @@ export default function AnnouncementsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Target</label>
               <select
                 value={targetType}
-                onChange={(e) => setTargetType(e.target.value)}
+                onChange={(e) => { setTargetType(e.target.value); setSelectedTargetIds([]); }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
                 <option value="all">All Employees</option>
@@ -174,18 +195,48 @@ export default function AnnouncementsPage() {
               </select>
             </div>
 
-            {targetType !== "all" && (
+            {targetType === "department" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Target IDs (JSON array)
+                  Select Departments
                 </label>
-                <input
-                  type="text"
-                  value={targetIds}
-                  onChange={(e) => setTargetIds(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  placeholder='e.g. ["1","2"] or ["hr_admin"]'
-                />
+                <div className="w-full border border-gray-300 rounded-lg p-2 max-h-40 overflow-y-auto bg-white">
+                  {(departments || []).length === 0 ? (
+                    <p className="text-xs text-gray-400 p-1">Loading departments...</p>
+                  ) : (
+                    (departments || []).map((dept: any) => (
+                      <label key={dept.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedTargetIds.includes(String(dept.id))}
+                          onChange={() => handleTargetToggle(String(dept.id))}
+                          className="rounded border-gray-300 text-brand-600"
+                        />
+                        <span className="text-sm text-gray-700">{dept.name}</span>
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+            {targetType === "role" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Roles
+                </label>
+                <div className="w-full border border-gray-300 rounded-lg p-2 max-h-40 overflow-y-auto bg-white">
+                  {AVAILABLE_ROLES.map((role) => (
+                    <label key={role.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedTargetIds.includes(role.value)}
+                        onChange={() => handleTargetToggle(role.value)}
+                        className="rounded border-gray-300 text-brand-600"
+                      />
+                      <span className="text-sm text-gray-700">{role.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             )}
 

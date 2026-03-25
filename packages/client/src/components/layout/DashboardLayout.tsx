@@ -322,6 +322,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarNavRef = useRef<HTMLElement>(null);
 
   // Fetch org subscriptions to conditionally show module nav items
   const { data: subscriptions } = useQuery({
@@ -337,6 +338,16 @@ export default function DashboardLayout() {
   // Auto-close sidebar on navigation
   useEffect(() => {
     setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Scroll active sidebar item into view without resetting sidebar scroll position
+  useEffect(() => {
+    const navEl = sidebarNavRef.current;
+    if (!navEl) return;
+    const activeLink = navEl.querySelector('[data-active="true"]');
+    if (activeLink) {
+      activeLink.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   }, [location.pathname]);
 
   const handleLogout = () => {
@@ -365,7 +376,7 @@ export default function DashboardLayout() {
           <X className="h-5 w-5" />
         </button>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
           {(user && HR_ROLES.includes(user.role) ? adminNavItems : employeeNavItems).map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -373,6 +384,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -420,6 +432,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -443,6 +456,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -466,6 +480,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -489,6 +504,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -512,6 +528,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -535,6 +552,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -558,6 +576,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -581,6 +600,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-brand-50 text-brand-700"
@@ -602,6 +622,7 @@ export default function DashboardLayout() {
                   <Link
                     key={item.path}
                     to={item.path}
+                    data-active={isActive}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
                         ? "bg-brand-50 text-brand-700"
@@ -631,6 +652,7 @@ export default function DashboardLayout() {
                   <Link
                     key={item.path}
                     to={item.path}
+                    data-active={isActive}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
                         ? "bg-amber-50 text-amber-700"

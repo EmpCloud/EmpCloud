@@ -240,6 +240,7 @@ export default function PositionListPage() {
         >
           <option value="">All Statuses</option>
           <option value="active">Active</option>
+          <option value="filled">Filled</option>
           <option value="frozen">Frozen</option>
           <option value="closed">Closed</option>
         </select>
@@ -296,6 +297,7 @@ export default function PositionListPage() {
                   <td className="px-6 py-4">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                       pos.status === "active" ? "bg-green-50 text-green-700" :
+                      pos.status === "filled" ? "bg-blue-50 text-blue-700" :
                       pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
                       "bg-gray-100 text-gray-500"
                     }`}>

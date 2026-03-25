@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
   MessageCircle,
@@ -149,10 +150,10 @@ export default function ForumDashboardPage() {
           ) : (
             <div className="space-y-3">
               {stats.trending_posts.map((post: any, idx: number) => (
-                <div key={post.id} className="flex items-start gap-3">
+                <Link key={post.id} to={`/forum/post/${post.id}`} className="flex items-start gap-3 hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors">
                   <span className="text-sm font-bold text-gray-300 w-5 text-right">{idx + 1}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
+                    <p className="text-sm font-medium text-gray-900 truncate hover:text-brand-600">{post.title}</p>
                     <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
                       <span>{post.author_first_name} {post.author_last_name}</span>
                       <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.like_count}</span>
@@ -160,7 +161,7 @@ export default function ForumDashboardPage() {
                       <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -196,6 +197,29 @@ export default function ForumDashboardPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Recent Posts — quick access to all forum posts */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <MessagesSquare className="h-5 w-5 text-brand-600" /> All Posts
+          </h2>
+          <Link
+            to="/forum"
+            className="text-sm text-brand-600 hover:text-brand-700 hover:underline"
+          >
+            View Forum
+          </Link>
+        </div>
+        {!stats?.trending_posts?.length && Number(stats?.total_posts) === 0 ? (
+          <p className="text-sm text-gray-400">No posts yet. Encourage employees to start discussions!</p>
+        ) : (
+          <p className="text-sm text-gray-500">
+            {stats?.total_posts} total posts, {stats?.total_replies} total replies.{" "}
+            <Link to="/forum" className="text-brand-600 hover:underline">Browse all posts</Link>
+          </p>
+        )}
       </div>
 
       {/* Manage Categories */}

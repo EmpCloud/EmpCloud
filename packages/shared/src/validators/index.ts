@@ -658,7 +658,7 @@ export type BiometricLogsQueryInput = z.infer<typeof biometricLogsQuerySchema>;
 // ---------------------------------------------------------------------------
 
 const positionEmploymentTypeEnum = z.enum(["full_time", "part_time", "contract", "intern"]);
-const positionStatusEnum = z.enum(["active", "frozen", "closed"]);
+const positionStatusEnum = z.enum(["active", "filled", "frozen", "closed"]);
 const headcountPlanStatusEnum = z.enum(["draft", "submitted", "approved", "rejected"]);
 const headcountQuarterEnum = z.enum(["Q1", "Q2", "Q3", "Q4", "annual"]);
 

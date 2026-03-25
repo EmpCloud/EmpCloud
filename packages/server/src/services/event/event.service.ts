@@ -91,6 +91,24 @@ export async function listEvents(
     .limit(perPage)
     .offset((page - 1) * perPage);
 
+  // Auto-correct status for past events that are still marked as "upcoming"
+  const now = new Date();
+  const pastUpcomingIds: number[] = [];
+  for (const event of events) {
+    const endDate = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
+    if ((event.status === "upcoming" || event.status === "ongoing") && endDate < now) {
+      event.status = "completed";
+      pastUpcomingIds.push(event.id);
+    }
+  }
+  // Update the database in the background for stale events
+  if (pastUpcomingIds.length > 0) {
+    db("company_events")
+      .whereIn("id", pastUpcomingIds)
+      .update({ status: "completed", updated_at: new Date() })
+      .catch(() => {}); // fire-and-forget
+  }
+
   return {
     events,
     total: Number(count),

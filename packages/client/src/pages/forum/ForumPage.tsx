@@ -41,7 +41,18 @@ function useRecentPosts(search: string, sortBy: string) {
       api
         .get("/forum/posts", { params: { page: 1, per_page: 10, search: search || undefined, sort_by: sortBy } })
         .then((r) => r.data),
+    retry: 1,
   });
+}
+
+function safeParseTags(tags: string | null | undefined): string[] {
+  if (!tags) return [];
+  try {
+    const parsed = JSON.parse(tags);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 function timeAgo(dateStr: string) {
@@ -58,8 +69,8 @@ function timeAgo(dateStr: string) {
 export default function ForumPage() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("recent");
-  const { data: categories, isLoading: loadingCats } = useCategories();
-  const { data: postsData, isLoading: loadingPosts } = useRecentPosts(search, sortBy);
+  const { data: categories, isLoading: loadingCats, isError: catsError } = useCategories();
+  const { data: postsData, isLoading: loadingPosts, isError: postsError } = useRecentPosts(search, sortBy);
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
 
@@ -95,6 +106,10 @@ export default function ForumPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Categories</h2>
         {loadingCats ? (
           <div className="text-gray-400 text-sm">Loading categories...</div>
+        ) : catsError ? (
+          <div className="bg-white rounded-xl border border-red-200 p-6 text-center text-red-500 text-sm">
+            Failed to load categories. Please try refreshing the page.
+          </div>
         ) : !categories || categories.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400 text-sm">
             No categories yet. {isHR ? "Create one from the Dashboard." : "Ask your HR team to set up categories."}
@@ -164,6 +179,10 @@ export default function ForumPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
             Loading posts...
           </div>
+        ) : postsError ? (
+          <div className="bg-white rounded-xl border border-red-200 p-8 text-center text-red-500">
+            Failed to load posts. Please try refreshing the page.
+          </div>
         ) : posts.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
             No posts yet. Be the first to start a discussion!
@@ -226,9 +245,9 @@ export default function ForumPage() {
                       <span className="flex items-center gap-1">
                         <MessageCircle className="h-3 w-3" /> {post.reply_count}
                       </span>
-                      {post.tags && JSON.parse(post.tags)?.length > 0 && (
+                      {safeParseTags(post.tags).length > 0 && (
                         <span className="flex items-center gap-1">
-                          {JSON.parse(post.tags)
+                          {safeParseTags(post.tags)
                             .slice(0, 3)
                             .map((tag: string) => (
                               <span

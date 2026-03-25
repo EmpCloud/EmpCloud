@@ -44,6 +44,7 @@ export default function KnowledgeBasePage() {
   const [searchInput, setSearchInput] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -86,6 +87,7 @@ export default function KnowledgeBasePage() {
       api.post(`/helpdesk/kb/${id}/helpful`, { helpful }).then((r) => r.data.data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["kb-articles"] });
+      setHasVoted(true);
       if (selectedArticle) {
         setSelectedArticle(data);
       }
@@ -113,6 +115,7 @@ export default function KnowledgeBasePage() {
     try {
       const { data } = await api.get(`/helpdesk/kb/${idOrSlug}`);
       setSelectedArticle(data.data);
+      setHasVoted(false);
     } catch {
       // handle error silently
     }
@@ -170,34 +173,40 @@ export default function KnowledgeBasePage() {
             <p className="text-sm font-medium text-gray-700 mb-3">
               Was this article helpful?
             </p>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() =>
-                  rateArticle.mutate({
-                    id: selectedArticle.id,
-                    helpful: true,
-                  })
-                }
-                disabled={rateArticle.isPending}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-green-200 text-green-700 text-sm font-medium hover:bg-green-50 disabled:opacity-50"
-              >
-                <ThumbsUp className="h-4 w-4" /> Yes (
-                {selectedArticle.helpful_count})
-              </button>
-              <button
-                onClick={() =>
-                  rateArticle.mutate({
-                    id: selectedArticle.id,
-                    helpful: false,
-                  })
-                }
-                disabled={rateArticle.isPending}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-700 text-sm font-medium hover:bg-red-50 disabled:opacity-50"
-              >
-                <ThumbsDown className="h-4 w-4" /> No (
-                {selectedArticle.not_helpful_count})
-              </button>
-            </div>
+            {hasVoted ? (
+              <p className="text-sm text-green-600 flex items-center gap-2">
+                <ThumbsUp className="h-4 w-4" /> Thank you for your feedback!
+              </p>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() =>
+                    rateArticle.mutate({
+                      id: selectedArticle.id,
+                      helpful: true,
+                    })
+                  }
+                  disabled={rateArticle.isPending}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-green-200 text-green-700 text-sm font-medium hover:bg-green-50 disabled:opacity-50"
+                >
+                  <ThumbsUp className="h-4 w-4" /> Yes (
+                  {selectedArticle.helpful_count})
+                </button>
+                <button
+                  onClick={() =>
+                    rateArticle.mutate({
+                      id: selectedArticle.id,
+                      helpful: false,
+                    })
+                  }
+                  disabled={rateArticle.isPending}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-700 text-sm font-medium hover:bg-red-50 disabled:opacity-50"
+                >
+                  <ThumbsDown className="h-4 w-4" /> No (
+                  {selectedArticle.not_helpful_count})
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
