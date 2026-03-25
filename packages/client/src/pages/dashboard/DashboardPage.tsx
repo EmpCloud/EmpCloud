@@ -1,9 +1,23 @@
 import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets, useBillingOverviewSummary } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
-import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap } from "lucide-react";
+import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
+
+function StatCardSkeleton() {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+      <div className="flex items-center gap-4">
+        <div className="h-12 w-12 rounded-lg bg-gray-200" />
+        <div>
+          <div className="h-6 w-12 rounded bg-gray-200 mb-2" />
+          <div className="h-4 w-20 rounded bg-gray-200" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const hrmsQuickLinks = [
   { path: "/employees", label: "Employee Directory", icon: Users, color: "bg-blue-50 text-blue-600" },
@@ -16,11 +30,11 @@ const hrmsQuickLinks = [
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
-  const { data: stats } = useOrgStats();
+  const { data: stats, isLoading: statsLoading, isError: statsError } = useOrgStats();
   const { data: subscriptions } = useSubscriptions();
   const { data: modules } = useModules();
   const { data: widgets, isLoading: widgetsLoading } = useDashboardWidgets();
-  const { data: billingSummary } = useBillingOverviewSummary();
+  const { data: billingSummary, isLoading: billingLoading } = useBillingOverviewSummary();
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
 
   const activeSubscriptions = subscriptions?.filter(
@@ -54,81 +68,102 @@ export default function DashboardPage() {
 
       {/* Stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <Link
-          to="/users"
-          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
-        >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats?.total_users ?? "..."}</p>
-              <p className="text-sm text-gray-500">Total Users</p>
-            </div>
+        {statsLoading ? (
+          <>
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </>
+        ) : statsError ? (
+          <div className="sm:col-span-2 lg:col-span-5 bg-white rounded-xl border border-red-200 p-6 text-center">
+            <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
+            <p className="text-sm text-red-600">Failed to load organization stats. Please try refreshing the page.</p>
           </div>
-        </Link>
-        <Link
-          to="/modules"
-          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
-        >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-green-50 flex items-center justify-center">
-              <Package className="h-6 w-6 text-green-600" />
+        ) : (
+          <>
+            <Link
+              to="/users"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.total_users ?? 0}</p>
+                  <p className="text-sm text-gray-500">Total Users</p>
+                </div>
+              </div>
+            </Link>
+            <Link
+              to="/modules"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-green-50 flex items-center justify-center">
+                  <Package className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.active_subscriptions ?? 0}</p>
+                  <p className="text-sm text-gray-500">Active Modules</p>
+                </div>
+              </div>
+            </Link>
+            <Link
+              to="/settings"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-purple-50 flex items-center justify-center">
+                  <Building2 className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.total_departments ?? 0}</p>
+                  <p className="text-sm text-gray-500">Departments</p>
+                </div>
+              </div>
+            </Link>
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-amber-50 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">SOC 2</p>
+                  <p className="text-sm text-gray-500">Compliant</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats?.active_subscriptions ?? "..."}</p>
-              <p className="text-sm text-gray-500">Active Modules</p>
-            </div>
-          </div>
-        </Link>
-        <Link
-          to="/settings"
-          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
-        >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-purple-50 flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{stats?.total_departments ?? "..."}</p>
-              <p className="text-sm text-gray-500">Departments</p>
-            </div>
-          </div>
-        </Link>
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-amber-50 flex items-center justify-center">
-              <Shield className="h-6 w-6 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">SOC 2</p>
-              <p className="text-sm text-gray-500">Compliant</p>
-            </div>
-          </div>
-        </div>
-        <Link
-          to="/billing"
-          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
-        >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <Receipt className="h-6 w-6 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">
-                {billingSummary
-                  ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
-                      (billingSummary.monthlyRecurring ?? 0) / 100
-                    )
-                  : "..."}
-              </p>
-              <p className="text-sm text-gray-500">
-                Billing{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} overdue)` : ""}
-              </p>
-            </div>
-          </div>
-        </Link>
+            <Link
+              to="/billing"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-lg bg-emerald-50 flex items-center justify-center">
+                  <Receipt className="h-6 w-6 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {billingLoading ? (
+                      <span className="inline-block h-6 w-20 bg-gray-200 rounded animate-pulse" />
+                    ) : billingSummary ? (
+                      new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
+                        (billingSummary.monthlyRecurring ?? 0) / 100
+                      )
+                    ) : (
+                      "--"
+                    )}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Billing{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} overdue)` : ""}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Core HRMS — Always shown (it IS the platform) */}

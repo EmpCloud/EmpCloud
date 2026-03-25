@@ -3,6 +3,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import { lazy, Suspense, useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/client";
+import ToastContainer from "@/components/ui/Toast";
 
 // Lazy-loaded pages
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
@@ -137,8 +138,11 @@ function RootRedirect() {
 
   if (checking) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-gray-400">Loading...</div>
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 border-2 border-gray-300 border-t-brand-600 rounded-full animate-spin" />
+          <p className="text-sm text-gray-400">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -159,14 +163,18 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 }
 
 const Loading = () => (
-  <div className="flex items-center justify-center h-screen">
-    <div className="text-gray-400">Loading...</div>
+  <div className="flex items-center justify-center h-64">
+    <div className="flex flex-col items-center gap-3">
+      <div className="h-7 w-7 border-2 border-gray-300 border-t-brand-600 rounded-full animate-spin" />
+      <p className="text-sm text-gray-400">Loading...</p>
+    </div>
   </div>
 );
 
 export default function App() {
   return (
     <Suspense fallback={<Loading />}>
+      <ToastContainer />
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />

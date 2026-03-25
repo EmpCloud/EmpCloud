@@ -24,8 +24,28 @@ export default function MyAssetsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading your assets...</div>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Assets</h1>
+          <p className="text-sm text-gray-500 mt-1">Equipment and assets assigned to you</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <div className="h-4 w-32 bg-gray-200 rounded mb-2" />
+                  <div className="h-3 w-20 bg-gray-200 rounded" />
+                </div>
+                <div className="h-5 w-14 bg-gray-200 rounded-full" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 w-24 bg-gray-200 rounded" />
+                <div className="h-3 w-36 bg-gray-200 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -38,9 +58,10 @@ export default function MyAssetsPage() {
       </div>
 
       {!assets || assets.length === 0 ? (
-        <div className="text-center py-16">
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
           <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No assets assigned to you</p>
+          <p className="text-lg font-medium text-gray-500 mb-1">No assets assigned to you</p>
+          <p className="text-sm text-gray-400">When your organization assigns equipment to you, it will appear here.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

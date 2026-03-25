@@ -54,7 +54,7 @@ export default function AttendanceDashboardPage() {
                 <s.icon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{dashLoading ? "..." : s.value}</p>
+                <p className="text-2xl font-bold text-gray-900">{dashLoading ? <span className="inline-block h-7 w-10 bg-gray-200 rounded animate-pulse" /> : s.value}</p>
                 <p className="text-xs text-gray-500">{s.label}</p>
               </div>
             </div>
@@ -80,7 +80,18 @@ export default function AttendanceDashboardPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {recLoading ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <>
+                {[1, 2, 3, 4].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-4"><div className="h-4 w-28 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-10 bg-gray-200 rounded" /></td>
+                  </tr>
+                ))}
+              </>
             ) : records.length === 0 ? (
               <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No attendance records today</td></tr>
             ) : (

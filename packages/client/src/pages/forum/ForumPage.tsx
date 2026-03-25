@@ -16,6 +16,7 @@ import {
   HelpCircle,
   MessagesSquare,
   BarChart3,
+  AlertCircle,
 } from "lucide-react";
 
 const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
@@ -176,16 +177,40 @@ export default function ForumPage() {
       {/* Posts Feed */}
       <div className="space-y-3">
         {loadingPosts ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading posts...
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-full bg-gray-200 flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-4 w-16 bg-gray-200 rounded-full" />
+                      <div className="h-3 w-20 bg-gray-200 rounded" />
+                    </div>
+                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-2" />
+                    <div className="h-3 w-full bg-gray-200 rounded" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : postsError ? (
-          <div className="bg-white rounded-xl border border-red-200 p-8 text-center text-red-500">
-            Failed to load posts. Please try refreshing the page.
+          <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
+            <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
+            <p className="text-sm text-red-600 font-medium mb-1">Failed to load posts</p>
+            <p className="text-sm text-red-500">Please try refreshing the page.</p>
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            No posts yet. Be the first to start a discussion!
+          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <MessagesSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-lg font-medium text-gray-500 mb-1">No posts yet</p>
+            <p className="text-sm text-gray-400 mb-4">Be the first to start a discussion!</p>
+            <Link
+              to="/forum/new"
+              className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            >
+              <Plus className="h-4 w-4" /> Start a Discussion
+            </Link>
           </div>
         ) : (
           posts.map((post: any) => {

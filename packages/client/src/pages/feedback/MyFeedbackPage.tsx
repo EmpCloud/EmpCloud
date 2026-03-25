@@ -45,13 +45,29 @@ export default function MyFeedbackPage() {
 
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading your feedback...
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-5 w-20 bg-gray-200 rounded-full" />
+                  <div className="h-5 w-16 bg-gray-200 rounded-full" />
+                </div>
+                <div className="h-5 w-48 bg-gray-200 rounded mb-2" />
+                <div className="h-4 w-full bg-gray-200 rounded" />
+              </div>
+            ))}
           </div>
         ) : feedbackList.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            <MessageSquare className="h-8 w-8 mx-auto mb-3 opacity-50" />
-            <p>You haven't submitted any feedback yet.</p>
+          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-lg font-medium text-gray-500 mb-1">No feedback submitted yet</p>
+            <p className="text-sm text-gray-400 mb-4">Share your thoughts anonymously with HR.</p>
+            <a
+              href="/feedback/submit"
+              className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            >
+              Submit Feedback
+            </a>
           </div>
         ) : (
           feedbackList.map((f: any) => {

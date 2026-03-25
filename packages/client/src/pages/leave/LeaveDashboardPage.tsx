@@ -91,7 +91,15 @@ export default function LeaveDashboardPage() {
       {/* Balance Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {loadingBalances ? (
-          <div className="col-span-full text-center text-gray-400 py-8">Loading balances...</div>
+          <>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+                <div className="h-4 w-24 bg-gray-200 rounded mb-3" />
+                <div className="h-7 w-16 bg-gray-200 rounded mb-2" />
+                <div className="h-2 w-full bg-gray-200 rounded-full" />
+              </div>
+            ))}
+          </>
         ) : balances.length === 0 ? (
           <div className="col-span-full text-center text-gray-400 py-8">
             No leave balances found. Ask HR to initialize balances.
@@ -296,9 +304,16 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         </thead>
         <tbody className="divide-y divide-gray-100">
           {isLoading ? (
-            <tr>
-              <td colSpan={4} className="px-6 py-8 text-center text-gray-400">Loading...</td>
-            </tr>
+            <>
+              {[1, 2, 3].map((i) => (
+                <tr key={i} className="animate-pulse">
+                  <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
+                  <td className="px-6 py-4"><div className="h-4 w-32 bg-gray-200 rounded" /></td>
+                  <td className="px-6 py-4"><div className="h-4 w-8 bg-gray-200 rounded" /></td>
+                  <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
+                </tr>
+              ))}
+            </>
           ) : applications.length === 0 ? (
             <tr>
               <td colSpan={4} className="px-6 py-8 text-center text-gray-400">No applications yet.</td>

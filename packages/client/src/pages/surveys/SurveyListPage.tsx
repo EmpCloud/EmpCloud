@@ -43,17 +43,23 @@ export default function SurveyListPage() {
 
   const publishMutation = useMutation({
     mutationFn: (id: number) => api.post(`/surveys/${id}/publish`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["surveys"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["surveys"] });
+    },
   });
 
   const closeMutation = useMutation({
     mutationFn: (id: number) => api.post(`/surveys/${id}/close`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["surveys"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["surveys"] });
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/surveys/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["surveys"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["surveys"] });
+    },
   });
 
   const surveys = data?.data || [];
@@ -209,13 +215,23 @@ export default function SurveyListPage() {
                           </>
                         )}
                         {s.status === "closed" && (
-                          <Link
-                            to={`/surveys/${s.id}/results`}
-                            className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                            title="View Results"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Link>
+                          <>
+                            <Link
+                              to={`/surveys/${s.id}/results`}
+                              className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                              title="View Results"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                            <button
+                              onClick={() => publishMutation.mutate(s.id)}
+                              disabled={publishMutation.isPending}
+                              className="p-1.5 rounded hover:bg-green-50 text-green-600 hover:text-green-700"
+                              title="Re-publish"
+                            >
+                              <Play className="h-4 w-4" />
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>

@@ -227,8 +227,23 @@ export default function MyTicketsPage() {
       {/* Tickets List */}
       <div className="space-y-3">
         {isLoading ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading your tickets...
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-4 w-10 bg-gray-200 rounded" />
+                      <div className="h-4 w-14 bg-gray-200 rounded-full" />
+                      <div className="h-4 w-16 bg-gray-200 rounded" />
+                    </div>
+                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-1" />
+                    <div className="h-3 w-full bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-3 w-20 bg-gray-200 rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : tickets.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">

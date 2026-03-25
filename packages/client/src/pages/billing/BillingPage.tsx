@@ -316,7 +316,22 @@ function SubscriptionsTab() {
     setTimeout(() => setToast(null), 4000);
   };
 
-  if (isLoading) return <div className="text-gray-400">Loading subscriptions...</div>;
+  if (isLoading) return (
+    <div className="space-y-4">
+      {[1, 2].map((i) => (
+        <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 bg-gray-200 rounded-lg" />
+            <div>
+              <div className="h-4 w-32 bg-gray-200 rounded mb-2" />
+              <div className="h-3 w-20 bg-gray-200 rounded" />
+            </div>
+          </div>
+          <div className="h-3 w-full bg-gray-200 rounded" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div>
@@ -471,7 +486,16 @@ function OverviewTab() {
   const { data: summary, isLoading } = useBillingOverviewSummary();
 
   if (isLoading) {
-    return <div className="text-gray-400">Loading billing overview...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+            <div className="h-3 w-20 bg-gray-200 rounded mb-3" />
+            <div className="h-7 w-24 bg-gray-200 rounded" />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (!summary) {

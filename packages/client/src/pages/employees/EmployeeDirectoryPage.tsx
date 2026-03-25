@@ -91,11 +91,23 @@ export default function EmployeeDirectoryPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
-                  Loading...
-                </td>
-              </tr>
+              <>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-gray-200" />
+                        <div className="h-4 w-28 bg-gray-200 rounded" />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4"><div className="h-4 w-36 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-14 bg-gray-200 rounded-full" /></td>
+                  </tr>
+                ))}
+              </>
             ) : employees.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center text-gray-400">

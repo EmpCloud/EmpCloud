@@ -122,9 +122,10 @@ const whistleblowingHRNavItems = [
 ];
 
 // Items visible to ALL users (including employees)
+// For employees, Dashboard IS the self-service page (RootRedirect renders SelfServiceDashboardPage)
+// so we only show one "Dashboard" entry pointing to "/"
 const employeeNavItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/self-service", label: "Self Service", icon: Contact },
   { path: "/chatbot", label: "AI Assistant", icon: BotMessageSquare },
   { path: "/manager", label: "My Team", icon: UsersRound },
   { path: "/attendance", label: "Attendance", icon: Clock },
@@ -358,7 +359,7 @@ export default function DashboardLayout() {
   function SidebarContent() {
     return (
       <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
-        <div className="p-6 border-b border-gray-200">
+        <Link to="/" className="block p-6 border-b border-gray-200 hover:bg-gray-50 transition-colors">
           <div className="flex items-center gap-2">
             <Building2 className="h-8 w-8 text-brand-600" />
             <div>
@@ -366,7 +367,7 @@ export default function DashboardLayout() {
               <p className="text-xs text-gray-500 truncate">{user?.org_name}</p>
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Close button on mobile */}
         <button
@@ -379,7 +380,9 @@ export default function DashboardLayout() {
         <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
           {(user && HR_ROLES.includes(user.role) ? adminNavItems : employeeNavItems).map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = item.path === "/"
+              ? location.pathname === "/"
+              : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
             return (
               <Link
                 key={item.path}

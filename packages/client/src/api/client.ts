@@ -4,6 +4,7 @@
 
 import axios from "axios";
 import { useAuthStore } from "@/lib/auth-store";
+import { showToast } from "@/components/ui/Toast";
 
 const api = axios.create({
   baseURL: "/api/v1",
@@ -45,6 +46,19 @@ api.interceptors.response.use(
           window.location.href = "/login";
         }
       }
+    }
+
+    // Show toast for non-401 server errors so users see feedback instead of blank pages
+    if (error.response && error.response.status !== 401) {
+      const status = error.response.status;
+      const msg =
+        error.response.data?.error?.message ||
+        error.response.data?.message ||
+        (status >= 500 ? "Something went wrong. Please try again later." : "Request failed.");
+      showToast("error", msg);
+    } else if (!error.response && error.message) {
+      // Network error
+      showToast("error", "Network error. Please check your connection.");
     }
 
     return Promise.reject(error);

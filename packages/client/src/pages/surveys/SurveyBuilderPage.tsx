@@ -110,21 +110,25 @@ export default function SurveyBuilderPage() {
     },
   });
 
-  const buildPayload = () => ({
-    title,
-    description: description || null,
-    type,
-    is_anonymous: isAnonymous,
-    target_type: targetType,
-    start_date: startDate || null,
-    end_date: endDate || null,
-    recurrence,
-    questions: questions.map((q, idx) => ({
-      ...q,
-      sort_order: idx,
-      options: q.options && q.options.length > 0 ? q.options : null,
-    })),
-  });
+  const buildPayload = () => {
+    // Filter out questions with empty text to avoid Zod validation failures
+    const validQuestions = questions.filter((q) => q.question_text.trim().length > 0);
+    return {
+      title,
+      description: description || null,
+      type,
+      is_anonymous: isAnonymous,
+      target_type: targetType,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      recurrence,
+      questions: validQuestions.map((q, idx) => ({
+        ...q,
+        sort_order: idx,
+        options: q.options && q.options.length > 0 ? q.options : null,
+      })),
+    };
+  };
 
   const handleSaveDraft = () => {
     const payload = buildPayload();

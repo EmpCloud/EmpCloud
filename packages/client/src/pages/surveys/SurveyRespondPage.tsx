@@ -55,13 +55,23 @@ export default function SurveyRespondPage() {
         </h2>
 
         {isLoading ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading surveys...
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-5 w-16 bg-gray-200 rounded-full" />
+                </div>
+                <div className="h-5 w-48 bg-gray-200 rounded mb-2" />
+                <div className="h-4 w-full bg-gray-200 rounded mb-4" />
+                <div className="h-9 w-full bg-gray-200 rounded-lg" />
+              </div>
+            ))}
           </div>
         ) : pendingSurveys.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-            No pending surveys at this time.
+          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <ClipboardList className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <p className="text-lg font-medium text-gray-500 mb-1">No active surveys</p>
+            <p className="text-sm text-gray-400">Check back later for new surveys to complete.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

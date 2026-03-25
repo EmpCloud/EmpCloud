@@ -62,7 +62,11 @@ export default function AttendancePage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Today - {now.toLocaleDateString("default", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</h2>
         <div className="flex flex-wrap items-center gap-4">
           {todayLoading ? (
-            <p className="text-gray-400">Loading...</p>
+            <div className="flex items-center gap-4 animate-pulse">
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+              <div className="h-9 w-28 bg-gray-200 rounded-lg" />
+            </div>
           ) : (
             <>
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -152,7 +156,18 @@ export default function AttendancePage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {histLoading ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-10 bg-gray-200 rounded" /></td>
+                  </tr>
+                ))}
+              </>
             ) : records.length === 0 ? (
               <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No records for this month</td></tr>
             ) : (

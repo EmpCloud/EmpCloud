@@ -210,23 +210,25 @@ export async function publishSurvey(orgId: number, surveyId: number) {
     .where({ id: surveyId, organization_id: orgId })
     .first();
   if (!existing) throw new NotFoundError("Survey");
-  if (existing.status !== "draft") {
-    throw new ForbiddenError("Only draft surveys can be published");
+  if (existing.status !== "draft" && existing.status !== "closed") {
+    throw new ForbiddenError("Only draft or closed surveys can be published");
   }
 
   // Must have at least one question
   const questionCount = await db("survey_questions")
-    .where({ survey_id: surveyId })
+    .where({ survey_id: surveyId, organization_id: orgId })
     .count("id as count");
   if (Number(questionCount[0].count) === 0) {
     throw new ValidationError("Survey must have at least one question before publishing");
   }
 
-  await db("surveys").where({ id: surveyId }).update({
-    status: "active",
-    start_date: existing.start_date || new Date(),
-    updated_at: new Date(),
-  });
+  await db("surveys")
+    .where({ id: surveyId, organization_id: orgId })
+    .update({
+      status: "active",
+      start_date: existing.start_date || new Date(),
+      updated_at: new Date(),
+    });
 
   return getSurvey(orgId, surveyId);
 }
