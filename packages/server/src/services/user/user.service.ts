@@ -26,7 +26,8 @@ export async function listUsers(orgId: number, params?: { page?: number; perPage
       this.where("first_name", "like", s)
         .orWhere("last_name", "like", s)
         .orWhere("email", "like", s)
-        .orWhere("emp_code", "like", s);
+        .orWhere("emp_code", "like", s)
+        .orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [s]);
     });
   }
 

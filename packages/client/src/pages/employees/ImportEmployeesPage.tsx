@@ -119,7 +119,7 @@ export default function ImportEmployeesPage() {
             Drag and drop a CSV file here, or click to browse
           </p>
           <p className="text-xs text-gray-400 mb-4">
-            Required columns: first_name, last_name, email, designation, department_name
+            Required columns: first_name, last_name, email. Optional: designation, department_name, emp_code, role, contact_number
           </p>
           <label className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer transition-colors">
             <Upload className="h-4 w-4" />
@@ -177,7 +177,9 @@ export default function ImportEmployeesPage() {
                   <tr>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Name</th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Email</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Emp Code</th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Designation</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Department</th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Status</th>
                   </tr>
                 </thead>
@@ -189,7 +191,13 @@ export default function ImportEmployeesPage() {
                       </td>
                       <td className="px-6 py-2 text-sm text-gray-500">{row.email}</td>
                       <td className="px-6 py-2 text-sm text-gray-500">
+                        {row.emp_code || "-"}
+                      </td>
+                      <td className="px-6 py-2 text-sm text-gray-500">
                         {row.designation || "-"}
+                      </td>
+                      <td className="px-6 py-2 text-sm text-gray-500">
+                        {row.department_name || "-"}
                       </td>
                       <td className="px-6 py-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500" />

@@ -19,6 +19,7 @@ interface LeaveType {
   code: string;
   color: string | null;
   is_paid: boolean;
+  is_active: boolean | number;
 }
 
 export default function LeaveDashboardPage() {
@@ -67,6 +68,8 @@ export default function LeaveDashboardPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.leave_type_id || form.leave_type_id === 0) return;
+    if (!form.start_date || !form.end_date || !form.reason) return;
     applyLeave.mutate(form);
   };
 
@@ -147,7 +150,7 @@ export default function LeaveDashboardPage() {
               >
                 <option value={0} disabled>Select type</option>
                 {leaveTypes
-                  .filter((t: any) => t.is_active)
+                  .filter((t: any) => t.is_active !== false && t.is_active !== 0)
                   .map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
@@ -217,6 +220,11 @@ export default function LeaveDashboardPage() {
               />
             </div>
           </div>
+          {applyLeave.isError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
+              {(applyLeave.error as any)?.response?.data?.error?.message || "Failed to submit leave application. Please check all fields and try again."}
+            </div>
+          )}
           <div className="flex justify-end gap-3 mt-4">
             <button
               type="button"
@@ -230,7 +238,7 @@ export default function LeaveDashboardPage() {
               disabled={applyLeave.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              <CalendarDays className="h-4 w-4" /> Submit Application
+              <CalendarDays className="h-4 w-4" /> {applyLeave.isPending ? "Submitting..." : "Submit Application"}
             </button>
           </div>
         </form>

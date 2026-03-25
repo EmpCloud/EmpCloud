@@ -71,6 +71,9 @@ export default function CreatePostPage() {
               required
             >
               <option value="">Select category...</option>
+              {(categories || []).length === 0 && (
+                <option value="" disabled>No categories — create them in Forum Dashboard</option>
+              )}
               {(categories || []).map((cat: any) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.icon ? `${cat.icon} ` : ""}{cat.name}

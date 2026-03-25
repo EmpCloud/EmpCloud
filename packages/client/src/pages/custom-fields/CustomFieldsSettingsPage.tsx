@@ -538,6 +538,15 @@ export default function CustomFieldsSettingsPage() {
               </div>
             )}
 
+            {/* Error Display */}
+            {(createMutation.isError || updateMutation.isError) && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+                {(createMutation.error as any)?.response?.data?.error?.message
+                  || (updateMutation.error as any)?.response?.data?.error?.message
+                  || "Failed to save field. Please try again."}
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex items-center gap-3 pt-2">
               <button
@@ -545,7 +554,9 @@ export default function CustomFieldsSettingsPage() {
                 disabled={createMutation.isPending || updateMutation.isPending}
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
               >
-                {editingId ? "Update Field" : "Create Field"}
+                {createMutation.isPending || updateMutation.isPending
+                  ? "Saving..."
+                  : editingId ? "Update Field" : "Create Field"}
               </button>
               <button
                 type="button"

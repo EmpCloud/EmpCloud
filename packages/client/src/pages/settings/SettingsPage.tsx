@@ -260,6 +260,12 @@ function LocationsCard({ locations }: { locations: any[] }) {
     },
   });
 
+  const deleteLoc = useMutation({
+    mutationFn: (id: number) =>
+      api.delete(`/organizations/me/locations/${id}`).then((r) => r.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["locations"] }),
+  });
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
@@ -315,7 +321,16 @@ function LocationsCard({ locations }: { locations: any[] }) {
         {locations.map((l: any) => (
           <li key={l.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm">
             <span>{l.name}</span>
-            {l.timezone && <span className="text-xs text-gray-400">{l.timezone}</span>}
+            <div className="flex items-center gap-2">
+              {l.timezone && <span className="text-xs text-gray-400">{l.timezone}</span>}
+              <button
+                onClick={() => deleteLoc.mutate(l.id)}
+                className="text-gray-400 hover:text-red-500"
+                title="Delete location"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </li>
         ))}
       </ul>

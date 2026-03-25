@@ -332,6 +332,7 @@ export default function DocumentsPage() {
                 onChange={(e) => setUploadUserId(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 placeholder="Leave empty for self"
+                min={1}
               />
             </div>
             <div>
@@ -344,10 +345,15 @@ export default function DocumentsPage() {
               />
             </div>
           </div>
+          {uploadDoc.isError && (
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+              {(uploadDoc.error as any)?.response?.data?.error?.message || "Failed to upload document. Please try again."}
+            </div>
+          )}
           <div className="mt-4 flex justify-end">
             <button
               type="submit"
-              disabled={uploadDoc.isPending}
+              disabled={uploadDoc.isPending || !uploadFile || !uploadCategory}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               <Upload className="h-4 w-4" /> {uploadDoc.isPending ? "Uploading..." : "Upload"}
@@ -468,6 +474,7 @@ export default function DocumentsPage() {
                 onChange={(e) => { setSearchUserId(e.target.value); setPage(1); }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
                 placeholder="Search by employee ID..."
+                min={1}
               />
             </div>
             <select

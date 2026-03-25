@@ -54,7 +54,10 @@ export default function DashboardPage() {
 
       {/* Stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <Link
+          to="/users"
+          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+        >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
               <Users className="h-6 w-6 text-blue-600" />
@@ -64,8 +67,11 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-500">Total Users</p>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        </Link>
+        <Link
+          to="/modules"
+          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+        >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-lg bg-green-50 flex items-center justify-center">
               <Package className="h-6 w-6 text-green-600" />
@@ -75,8 +81,11 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-500">Active Modules</p>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        </Link>
+        <Link
+          to="/settings"
+          className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+        >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-lg bg-purple-50 flex items-center justify-center">
               <Building2 className="h-6 w-6 text-purple-600" />
@@ -86,7 +95,7 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-500">Departments</p>
             </div>
           </div>
-        </div>
+        </Link>
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-lg bg-amber-50 flex items-center justify-center">

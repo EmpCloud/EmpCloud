@@ -1,15 +1,31 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin } from "lucide-react";
+import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save } from "lucide-react";
+import { useDepartments } from "@/api/hooks";
 import api from "@/api/client";
 
 export default function PositionDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAssign, setShowAssign] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [assignForm, setAssignForm] = useState({ user_id: "", start_date: "", is_primary: true });
   const [userSearch, setUserSearch] = useState("");
+  const [editForm, setEditForm] = useState({
+    title: "",
+    department_id: "",
+    employment_type: "full_time",
+    headcount_budget: 1,
+    is_critical: false,
+    job_description: "",
+    min_salary: "",
+    max_salary: "",
+    currency: "INR",
+  });
+
+  const { data: departments } = useDepartments();
 
   const { data, isLoading } = useQuery({
     queryKey: ["position", id],
@@ -45,6 +61,24 @@ export default function PositionDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: object) =>
+      api.put(`/positions/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["position", id] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      setShowEdit(false);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => api.delete(`/positions/${id}`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      navigate("/positions/list");
     },
   });
 
@@ -109,15 +143,49 @@ export default function PositionDetailPage() {
             </select>
           </div>
         </div>
-        {(pos.status === "active" || pos.status === "filled") && pos.headcount_filled < pos.headcount_budget && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowAssign(!showAssign)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700"
+            onClick={() => {
+              setEditForm({
+                title: pos.title || "",
+                department_id: pos.department_id ? String(pos.department_id) : "",
+                employment_type: pos.employment_type || "full_time",
+                headcount_budget: pos.headcount_budget || 1,
+                is_critical: pos.is_critical || false,
+                job_description: pos.job_description || "",
+                min_salary: pos.min_salary ? String(pos.min_salary) : "",
+                max_salary: pos.max_salary ? String(pos.max_salary) : "",
+                currency: pos.currency || "INR",
+              });
+              setShowEdit(!showEdit);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
           >
-            <UserPlus className="h-4 w-4" />
-            Assign Employee
+            <Pencil className="h-4 w-4" />
+            Edit
           </button>
-        )}
+          <button
+            onClick={() => {
+              if (confirm("Are you sure you want to delete this position? This action cannot be undone.")) {
+                deleteMutation.mutate();
+              }
+            }}
+            disabled={deleteMutation.isPending}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 disabled:opacity-50"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete
+          </button>
+          {(pos.status === "active" || pos.status === "filled") && pos.headcount_filled < pos.headcount_budget && (
+            <button
+              onClick={() => setShowAssign(!showAssign)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700"
+            >
+              <UserPlus className="h-4 w-4" />
+              Assign Employee
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Assign Form */}
@@ -184,6 +252,136 @@ export default function PositionDetailPage() {
             {assignMutation.isError && (
               <p className="col-span-full text-sm text-red-600">
                 {(assignMutation.error as any)?.response?.data?.error?.message || "Failed to assign"}
+              </p>
+            )}
+          </form>
+        </div>
+      )}
+
+      {/* Edit Form */}
+      {showEdit && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Position</h3>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateMutation.mutate({
+                title: editForm.title,
+                department_id: editForm.department_id ? Number(editForm.department_id) : null,
+                employment_type: editForm.employment_type,
+                headcount_budget: Number(editForm.headcount_budget),
+                is_critical: editForm.is_critical,
+                job_description: editForm.job_description || null,
+                min_salary: editForm.min_salary ? Number(editForm.min_salary) : null,
+                max_salary: editForm.max_salary ? Number(editForm.max_salary) : null,
+                currency: editForm.currency,
+              });
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+              <input
+                type="text"
+                value={editForm.title}
+                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+              <select
+                value={editForm.department_id}
+                onChange={(e) => setEditForm({ ...editForm, department_id: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="">None</option>
+                {(departments || []).map((d: any) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+              <select
+                value={editForm.employment_type}
+                onChange={(e) => setEditForm({ ...editForm, employment_type: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="full_time">Full Time</option>
+                <option value="part_time">Part Time</option>
+                <option value="contract">Contract</option>
+                <option value="intern">Intern</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Headcount Budget</label>
+              <input
+                type="number"
+                value={editForm.headcount_budget}
+                onChange={(e) => setEditForm({ ...editForm, headcount_budget: Number(e.target.value) })}
+                min={1}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Min Salary (paise/cents)</label>
+              <input
+                type="number"
+                value={editForm.min_salary}
+                onChange={(e) => setEditForm({ ...editForm, min_salary: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Max Salary (paise/cents)</label>
+              <input
+                type="number"
+                value={editForm.max_salary}
+                onChange={(e) => setEditForm({ ...editForm, max_salary: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div className="col-span-full">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+              <textarea
+                value={editForm.job_description}
+                onChange={(e) => setEditForm({ ...editForm, job_description: e.target.value })}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="edit_is_critical"
+                checked={editForm.is_critical}
+                onChange={(e) => setEditForm({ ...editForm, is_critical: e.target.checked })}
+                className="h-4 w-4 text-brand-600 border-gray-300 rounded"
+              />
+              <label htmlFor="edit_is_critical" className="text-sm text-gray-700">Critical Role</label>
+            </div>
+            <div className="col-span-full flex gap-3">
+              <button
+                type="submit"
+                disabled={updateMutation.isPending}
+                className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
+              >
+                <Save className="h-4 w-4" />
+                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowEdit(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+            {updateMutation.isError && (
+              <p className="col-span-full text-sm text-red-600">
+                {(updateMutation.error as any)?.response?.data?.error?.message || "Failed to update position"}
               </p>
             )}
           </form>

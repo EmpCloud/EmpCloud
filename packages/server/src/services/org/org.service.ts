@@ -74,6 +74,13 @@ export async function listLocations(orgId: number) {
   return db("organization_locations").where({ organization_id: orgId, is_active: true });
 }
 
+export async function deleteLocation(orgId: number, locationId: number) {
+  const db = getDB();
+  await db("organization_locations")
+    .where({ id: locationId, organization_id: orgId })
+    .update({ is_active: false, updated_at: new Date() });
+}
+
 export async function createLocation(orgId: number, data: { name: string; address?: string; timezone?: string }) {
   const db = getDB();
   const [id] = await db("organization_locations").insert({

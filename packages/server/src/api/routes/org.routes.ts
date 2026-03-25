@@ -83,4 +83,12 @@ router.post("/me/locations", authenticate, requireOrgAdmin, async (req: Request,
   } catch (err) { next(err); }
 });
 
+// DELETE /api/v1/organizations/me/locations/:id
+router.delete("/me/locations/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await orgService.deleteLocation(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, { message: "Location deleted" });
+  } catch (err) { next(err); }
+});
+
 export default router;

@@ -93,8 +93,17 @@ export default function EventDashboardPage() {
     setShowForm(false);
   }
 
+  const [dateError, setDateError] = useState("");
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setDateError("");
+
+    if (endDate && startDate && new Date(endDate) < new Date(startDate)) {
+      setDateError("End date cannot be before start date.");
+      return;
+    }
+
     await createMutation.mutateAsync({
       title,
       description: description || null,
@@ -281,7 +290,8 @@ export default function EventDashboardPage() {
               <input
                 type="datetime-local"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={(e) => { setEndDate(e.target.value); setDateError(""); }}
+                min={startDate || undefined}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
             </div>
@@ -355,6 +365,12 @@ export default function EventDashboardPage() {
               </div>
             </div>
           </div>
+
+          {dateError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+              {dateError}
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <button

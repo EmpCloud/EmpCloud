@@ -83,6 +83,7 @@ export default function EmployeeDirectoryPage() {
             <tr>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Email</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Designation</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Emp Code</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
@@ -91,13 +92,13 @@ export default function EmployeeDirectoryPage() {
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
                   Loading...
                 </td>
               </tr>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
                   No employees found
                 </td>
               </tr>
@@ -119,6 +120,9 @@ export default function EmployeeDirectoryPage() {
                     </Link>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{emp.email}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {emp.department_name || "-"}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {emp.designation || "-"}
                   </td>
