@@ -3,13 +3,20 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Trash2, GripVertical, Save, Play, ArrowLeft } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
 
 interface Question {
+  _key: string;
   question_text: string;
   question_type: string;
   options: string[] | null;
   is_required: boolean;
   sort_order: number;
+}
+
+let _questionKeyCounter = 0;
+function nextQuestionKey() {
+  return `q-${++_questionKeyCounter}-${Date.now()}`;
 }
 
 const QUESTION_TYPES = [
@@ -45,7 +52,7 @@ export default function SurveyBuilderPage() {
   const [endDate, setEndDate] = useState("");
   const [recurrence, setRecurrence] = useState("none");
   const [questions, setQuestions] = useState<Question[]>([
-    { question_text: "", question_type: "rating_1_5", options: null, is_required: true, sort_order: 0 },
+    { _key: nextQuestionKey(), question_text: "", question_type: "rating_1_5", options: null, is_required: true, sort_order: 0 },
   ]);
 
   // Load existing survey for editing
@@ -68,6 +75,7 @@ export default function SurveyBuilderPage() {
       if (existingSurvey.questions && existingSurvey.questions.length > 0) {
         setQuestions(
           existingSurvey.questions.map((q: any, idx: number) => ({
+            _key: nextQuestionKey(),
             question_text: q.question_text,
             question_type: q.question_type,
             options: q.options || null,
@@ -122,17 +130,20 @@ export default function SurveyBuilderPage() {
       start_date: startDate || null,
       end_date: endDate || null,
       recurrence,
-      questions: validQuestions.map((q, idx) => ({
-        ...q,
-        sort_order: idx,
-        options: q.options && q.options.length > 0 ? q.options : null,
-      })),
+      questions: validQuestions.map((q, idx) => {
+        const { _key, ...rest } = q;
+        return {
+          ...rest,
+          sort_order: idx,
+          options: q.options && q.options.filter((o) => o.trim()).length > 0 ? q.options.filter((o) => o.trim()) : null,
+        };
+      }),
     };
   };
 
   const validateDates = () => {
     if (startDate && endDate && endDate < startDate) {
-      alert("End date cannot be before the start date.");
+      showToast("error", "End date cannot be before the start date.");
       return false;
     }
     return true;
@@ -158,6 +169,7 @@ export default function SurveyBuilderPage() {
     setQuestions([
       ...questions,
       {
+        _key: nextQuestionKey(),
         question_text: "",
         question_type: "rating_1_5",
         options: null,
@@ -322,7 +334,7 @@ export default function SurveyBuilderPage() {
 
         <div className="space-y-4">
           {questions.map((q, idx) => (
-            <div key={idx} className="border border-gray-200 rounded-lg p-4">
+            <div key={q._key} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <div className="flex flex-col items-center gap-1 pt-2">
                   <button
@@ -383,7 +395,7 @@ export default function SurveyBuilderPage() {
                       <textarea
                         value={(q.options || []).join("\n")}
                         onChange={(e) => {
-                          const opts = e.target.value.split("\n").filter((o) => o.trim());
+                          const opts = e.target.value.split("\n");
                           updateQuestion(idx, "options", opts.length > 0 ? opts : null);
                         }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[60px]"

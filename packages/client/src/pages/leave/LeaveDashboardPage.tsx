@@ -237,7 +237,7 @@ export default function LeaveDashboardPage() {
           </div>
           {applyLeave.isError && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
-              {(applyLeave.error as any)?.response?.data?.error?.message || "Failed to submit leave application. Please check all fields and try again."}
+              {(applyLeave.error && typeof applyLeave.error === "object" && "response" in applyLeave.error ? (applyLeave.error as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message : null) || "Failed to submit leave application. Please check all fields and try again."}
             </div>
           )}
           <div className="flex justify-end gap-3 mt-4">

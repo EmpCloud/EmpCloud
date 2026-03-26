@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "@/lib/auth-store";
 import {
   useBillingInvoices,
@@ -347,17 +347,32 @@ function SubscriptionsTab() {
   const moduleMap = new Map(modules?.map((m: any) => [m.id, m]) || []);
 
   const handleUpdate = async (id: number, data: object) => {
-    await updateSub.mutateAsync({ id, data });
-    setEditingSub(null);
-    setToast("Subscription updated successfully");
-    setTimeout(() => setToast(null), 4000);
+    try {
+      await updateSub.mutateAsync({ id, data });
+      setEditingSub(null);
+      setToast("Subscription updated successfully");
+      setTimeout(() => setToast(null), 4000);
+    } catch (err: any) {
+      const msg = err?.response?.data?.error?.message || "Failed to update subscription";
+      setToast(null);
+      // Show error inline — reuse toast slot with prefix
+      setToast(`Error: ${msg}`);
+      setTimeout(() => setToast(null), 5000);
+    }
   };
 
   const handleCancel = async (id: number) => {
-    await cancelSub.mutateAsync(id);
-    setCancelConfirm(null);
-    setToast("Subscription cancelled");
-    setTimeout(() => setToast(null), 4000);
+    try {
+      await cancelSub.mutateAsync(id);
+      setCancelConfirm(null);
+      setToast("Subscription cancelled");
+      setTimeout(() => setToast(null), 4000);
+    } catch (err: any) {
+      const msg = err?.response?.data?.error?.message || "Failed to cancel subscription";
+      setCancelConfirm(null);
+      setToast(`Error: ${msg}`);
+      setTimeout(() => setToast(null), 5000);
+    }
   };
 
   if (isLoading) return (
@@ -380,8 +395,8 @@ function SubscriptionsTab() {
   return (
     <div>
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2">
-          <Check className="h-4 w-4" />{toast}
+        <div className={`fixed bottom-6 right-6 z-50 ${toast.startsWith("Error:") ? "bg-red-600" : "bg-green-600"} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2`}>
+          {toast.startsWith("Error:") ? <AlertCircle className="h-4 w-4" /> : <Check className="h-4 w-4" />}{toast}
         </div>
       )}
 
@@ -678,10 +693,10 @@ function InvoicesTab() {
       </div>
 
       {/* Pagination */}
-      {meta && meta.total_pages > 1 && (
+      {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} invoices)
+            Page {meta.page} of {meta.totalPages} ({meta.total} invoices)
           </p>
           <div className="flex gap-2">
             <button
@@ -692,7 +707,7 @@ function InvoicesTab() {
               Previous
             </button>
             <button
-              disabled={page >= meta.total_pages}
+              disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
               className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
             >
@@ -708,6 +723,19 @@ function InvoicesTab() {
 function PayNowButton({ invoiceId }: { invoiceId: string }) {
   const [loading, setLoading] = useState(false);
   const [showGateways, setShowGateways] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!showGateways) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowGateways(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showGateways]);
 
   const handlePay = async (gateway: string) => {
     setLoading(true);
@@ -736,7 +764,7 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={(e) => { e.stopPropagation(); setShowGateways(!showGateways); }}
         disabled={loading}
@@ -999,10 +1027,10 @@ function PaymentsTab() {
         </table>
       </div>
 
-      {meta && meta.total_pages > 1 && (
+      {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} payments)
+            Page {meta.page} of {meta.totalPages} ({meta.total} payments)
           </p>
           <div className="flex gap-2">
             <button
@@ -1013,7 +1041,7 @@ function PaymentsTab() {
               Previous
             </button>
             <button
-              disabled={page >= meta.total_pages}
+              disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
               className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
             >

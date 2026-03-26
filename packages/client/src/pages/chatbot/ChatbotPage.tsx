@@ -369,10 +369,10 @@ export default function ChatbotPage() {
 
   // Delete conversation
   const deleteConvo = useMutation({
-    mutationFn: (id: number) => api.delete(`/chatbot/conversations/${id}`),
-    onSuccess: () => {
+    mutationFn: (id: number) => api.delete(`/chatbot/conversations/${id}`).then(() => id),
+    onSuccess: (deletedId: number) => {
       queryClient.invalidateQueries({ queryKey: ["chatbot-conversations"] });
-      if (activeConvoId) setActiveConvoId(null);
+      if (activeConvoId === deletedId) setActiveConvoId(null);
     },
   });
 

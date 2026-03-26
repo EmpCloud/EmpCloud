@@ -1,13 +1,27 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogIn, LogOut, Clock } from "lucide-react";
+
+function useToday() {
+  const [today, setToday] = useState(() => new Date());
+  // Re-check the date on window focus so we never show a stale day after midnight
+  useEffect(() => {
+    const onFocus = () => {
+      const fresh = new Date();
+      if (fresh.toDateString() !== today.toDateString()) setToday(fresh);
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [today]);
+  return today;
+}
 
 export default function AttendancePage() {
   const qc = useQueryClient();
-  const now = new Date();
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [year, setYear] = useState(now.getFullYear());
+  const now = useToday();
+  const [month, setMonth] = useState(() => new Date().getMonth() + 1);
+  const [year, setYear] = useState(() => new Date().getFullYear());
   const [page, setPage] = useState(1);
 
   const { data: todayRecord, isLoading: todayLoading } = useQuery({

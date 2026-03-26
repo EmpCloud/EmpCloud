@@ -6,6 +6,23 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
 
+interface Subscription {
+  id: number;
+  module_id: number;
+  status: string;
+  plan_tier: string;
+  used_seats: number;
+  total_seats: number;
+}
+
+interface Module {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  base_url: string | null;
+}
+
 function StatCardSkeleton() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
@@ -39,18 +56,18 @@ export default function DashboardPage() {
   const { data: billingSummary, isLoading: billingLoading } = useBillingOverviewSummary();
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
 
-  const activeSubscriptions = subscriptions?.filter(
-    (s: any) => s.status === "active" || s.status === "trial"
+  const activeSubscriptions: Subscription[] = subscriptions?.filter(
+    (s: Subscription) => s.status === "active" || s.status === "trial"
   ) || [];
 
-  const moduleMap = new Map(modules?.map((m: any) => [m.id, m]) || []);
+  const moduleMap = new Map<number, Module>(modules?.map((m: Module) => [m.id, m]) || []);
 
   // Build lookup sets for widget visibility and module URLs
   const subscribedSlugs = new Set(
-    activeSubscriptions.map((s: any) => (moduleMap.get(s.module_id) as any)?.slug).filter(Boolean)
+    activeSubscriptions.map((s) => moduleMap.get(s.module_id)?.slug).filter(Boolean)
   );
   const moduleBaseUrls = new Map<string, string>(
-    modules?.filter((m: any) => m.base_url).map((m: any) => [m.slug, m.base_url]) || []
+    modules?.filter((m: Module) => m.base_url).map((m: Module) => [m.slug, m.base_url!]) || []
   );
 
   // Core HRMS is the platform itself — not a module in the DB
@@ -309,8 +326,8 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {activeSubscriptions.map((sub: any) => {
-            const mod = moduleMap.get(sub.module_id) as any;
+          {activeSubscriptions.map((sub) => {
+            const mod = moduleMap.get(sub.module_id);
             const isExpanded = expandedModule === sub.id;
             return (
               <div
@@ -339,11 +356,11 @@ export default function DashboardPage() {
                 {/* Description - truncated with expand */}
                 <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                   {isExpanded
-                    ? mod?.description
-                    : mod?.description?.substring(0, 150) + (mod?.description?.length > 150 ? "..." : "")
+                    ? (mod?.description ?? "")
+                    : (mod?.description ?? "").substring(0, 150) + ((mod?.description?.length ?? 0) > 150 ? "..." : "")
                   }
                 </p>
-                {mod?.description?.length > 150 && (
+                {(mod?.description?.length ?? 0) > 150 && (
                   <button
                     onClick={() => setExpandedModule(isExpanded ? null : sub.id)}
                     className="text-xs text-brand-600 hover:text-brand-700 font-medium mb-3 flex items-center gap-0.5"

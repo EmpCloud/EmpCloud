@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -215,34 +215,33 @@ function FieldRow({ label, value }: { label: string; value?: string | number | n
 function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; userId?: number }) {
   const [form, setForm] = useState<Record<string, string>>({});
 
-  // Populate form when entering edit mode
-  const startEdit = () => {
-    setForm({
-      personal_email: profile.personal_email || "",
-      contact_number: profile.contact_number || "",
-      gender: profile.gender || "",
-      date_of_birth: profile.date_of_birth ? profile.date_of_birth.slice(0, 10) : "",
-      blood_group: profile.blood_group || "",
-      marital_status: profile.marital_status || "",
-      nationality: profile.nationality || "",
-      aadhar_number: profile.aadhar_number || "",
-      pan_number: profile.pan_number || "",
-      passport_number: profile.passport_number || "",
-      passport_expiry: profile.passport_expiry ? profile.passport_expiry.slice(0, 10) : "",
-      visa_status: profile.visa_status || "",
-      visa_expiry: profile.visa_expiry ? profile.visa_expiry.slice(0, 10) : "",
-      emergency_contact_name: profile.emergency_contact_name || "",
-      emergency_contact_phone: profile.emergency_contact_phone || "",
-      emergency_contact_relation: profile.emergency_contact_relation || "",
-      notice_period_days: profile.notice_period_days ? String(profile.notice_period_days) : "",
-      reporting_manager_id: profile.reporting_manager_id ? String(profile.reporting_manager_id) : "",
-    });
-  };
-
-  // Initialize form on first edit
-  if (editing && Object.keys(form).length === 0) {
-    startEdit();
-  }
+  // Populate form when entering edit mode (via useEffect to avoid setState during render)
+  useEffect(() => {
+    if (editing && profile) {
+      setForm({
+        personal_email: profile.personal_email || "",
+        contact_number: profile.contact_number || "",
+        gender: profile.gender || "",
+        date_of_birth: profile.date_of_birth ? profile.date_of_birth.slice(0, 10) : "",
+        blood_group: profile.blood_group || "",
+        marital_status: profile.marital_status || "",
+        nationality: profile.nationality || "",
+        aadhar_number: profile.aadhar_number || "",
+        pan_number: profile.pan_number || "",
+        passport_number: profile.passport_number || "",
+        passport_expiry: profile.passport_expiry ? profile.passport_expiry.slice(0, 10) : "",
+        visa_status: profile.visa_status || "",
+        visa_expiry: profile.visa_expiry ? profile.visa_expiry.slice(0, 10) : "",
+        emergency_contact_name: profile.emergency_contact_name || "",
+        emergency_contact_phone: profile.emergency_contact_phone || "",
+        emergency_contact_relation: profile.emergency_contact_relation || "",
+        notice_period_days: profile.notice_period_days ? String(profile.notice_period_days) : "",
+        reporting_manager_id: profile.reporting_manager_id ? String(profile.reporting_manager_id) : "",
+      });
+    } else if (!editing) {
+      setForm({});
+    }
+  }, [editing, profile]);
 
   if (editing) {
     const set = (key: string, val: string) => setForm((prev) => ({ ...prev, [key]: val }));
