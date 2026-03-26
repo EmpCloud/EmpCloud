@@ -161,7 +161,7 @@ const adminNavItems = [
   { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield },
 ];
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin"];
 
 const helpdeskNavItems = [
   { path: "/helpdesk/my-tickets", label: "My Tickets", i18nKey: "helpdesk.myTickets", icon: TicketCheck },
@@ -382,6 +382,7 @@ export default function DashboardLayout() {
         </button>
 
         <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {user?.role !== "super_admin" && <>
           {(user && HR_ROLES.includes(user.role) ? adminNavItems : employeeNavItems).map((item) => {
             const Icon = item.icon;
             const isActive = item.path === "/"
@@ -643,6 +644,8 @@ export default function DashboardLayout() {
               })}
             </>
           )}
+          </>}
+          {/* ---- Platform Admin Section (super_admin only) ---- */}
           {user?.role === "super_admin" && (
             <>
               <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{t('nav.platformAdmin')}</div>
