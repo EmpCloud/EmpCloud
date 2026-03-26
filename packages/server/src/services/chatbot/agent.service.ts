@@ -53,7 +53,7 @@ function checkRateLimit(userId: number): boolean {
 // Provider detection
 // ---------------------------------------------------------------------------
 
-export type AIProvider = "anthropic" | "openai" | "deepseek" | "groq" | "ollama" | "openai-compatible" | "none";
+export type AIProvider = "anthropic" | "openai" | "gemini" | "deepseek" | "groq" | "ollama" | "openai-compatible" | "none";
 
 // Provider presets: base URLs for popular OpenAI-compatible providers
 const PROVIDER_PRESETS: Record<string, string> = {
@@ -67,6 +67,7 @@ const PROVIDER_PRESETS: Record<string, string> = {
 
 export function detectProvider(): AIProvider {
   if (config.ai.anthropicApiKey) return "anthropic";
+  if (config.ai.geminiApiKey) return "gemini";
   if (config.ai.openaiApiKey) {
     const baseUrl = config.ai.openaiBaseUrl?.toLowerCase() || "";
     if (baseUrl.includes("deepseek")) return "deepseek";
@@ -398,6 +399,124 @@ async function runOpenAIAgent(
  * Run the AI agent to generate a response. Returns the final text.
  * Throws if the LLM call fails.
  */
+// ---------------------------------------------------------------------------
+// Gemini agent (Google AI)
+// Uses Gemini's REST API with function calling
+// ---------------------------------------------------------------------------
+
+async function runGeminiAgent(
+  orgId: number,
+  userId: number,
+  message: string,
+  history: ConversationMessage[]
+): Promise<string> {
+  const apiKey = config.ai.geminiApiKey;
+  const model = config.ai.model.startsWith("gemini") ? config.ai.model : "gemini-2.0-flash";
+  const systemPrompt = await buildSystemPrompt(orgId, userId);
+
+  // Build Gemini tool declarations
+  const geminiTools = [{
+    functionDeclarations: tools.map((t) => ({
+      name: t.name,
+      description: t.description,
+      parameters: {
+        type: "OBJECT" as const,
+        properties: Object.fromEntries(
+          Object.entries(t.parameters).map(([k, v]) => [
+            k,
+            { type: (v as ToolParameter).type === "number" ? "NUMBER" : "STRING", description: (v as ToolParameter).description },
+          ])
+        ),
+        required: Object.entries(t.parameters)
+          .filter(([, v]) => (v as ToolParameter).required)
+          .map(([k]) => k),
+      },
+    })),
+  }];
+
+  // Build contents array
+  const contents: Array<{ role: string; parts: Array<Record<string, unknown>> }> = [];
+  for (const h of history.slice(-20)) {
+    contents.push({ role: h.role === "assistant" ? "model" : "user", parts: [{ text: h.content }] });
+  }
+  contents.push({ role: "user", parts: [{ text: message }] });
+
+  const MAX_ITERATIONS = 10;
+
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          tools: geminiTools,
+          generationConfig: { maxOutputTokens: config.ai.maxTokens },
+        }),
+      }
+    );
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      logger.error(`Gemini API error ${resp.status}: ${errText.substring(0, 200)}`);
+      throw new Error(`Gemini API error: ${resp.status}`);
+    }
+
+    const data = await resp.json() as {
+      candidates?: Array<{
+        content?: {
+          parts?: Array<{
+            text?: string;
+            functionCall?: { name: string; args: Record<string, unknown> };
+          }>;
+        };
+      }>;
+    };
+
+    const parts = data.candidates?.[0]?.content?.parts || [];
+
+    // Check for function calls
+    const functionCalls = parts.filter((p) => p.functionCall);
+    if (functionCalls.length === 0) {
+      // No tool calls — return text
+      const textParts = parts.filter((p) => p.text);
+      return textParts.map((p) => p.text).join("\n") || "I couldn't generate a response.";
+    }
+
+    // Execute tool calls and feed results back
+    // Add model's response to contents
+    contents.push({ role: "model", parts });
+
+    const functionResponses: Array<{ functionResponse: { name: string; response: { result: string } } }> = [];
+
+    for (const fc of functionCalls) {
+      const { name, args } = fc.functionCall!;
+      logger.info(`Gemini tool call: ${name}(${JSON.stringify(args).substring(0, 100)})`);
+      try {
+        const result = await executeTool(name, orgId, args || {});
+        functionResponses.push({
+          functionResponse: { name, response: { result: typeof result === "string" ? result : JSON.stringify(result) } },
+        });
+      } catch (err: unknown) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        functionResponses.push({
+          functionResponse: { name, response: { result: `Error: ${errMsg}` } },
+        });
+      }
+    }
+
+    contents.push({ role: "user", parts: functionResponses as unknown as Array<Record<string, unknown>> });
+  }
+
+  return "I'm having trouble processing your request. Please try again.";
+}
+
+// ---------------------------------------------------------------------------
+// Main agent router
+// ---------------------------------------------------------------------------
+
 export async function runAgent(
   orgId: number,
   userId: number,
@@ -415,7 +534,12 @@ export async function runAgent(
     return runAnthropicAgent(orgId, userId, message, conversationHistory);
   }
 
-  if (provider === "openai") {
+  if (provider === "gemini") {
+    return runGeminiAgent(orgId, userId, message, conversationHistory);
+  }
+
+  // OpenAI, DeepSeek, Groq, Ollama, Together, etc. — all use OpenAI-compatible API
+  if (provider !== "none") {
     return runOpenAIAgent(orgId, userId, message, conversationHistory);
   }
 
