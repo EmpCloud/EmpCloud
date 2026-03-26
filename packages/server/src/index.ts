@@ -61,69 +61,10 @@ async function main() {
 
   // Auto-migrate if enabled
   if (config.db.autoMigrate) {
-    const { up: m001 } = await import("./db/migrations/001_identity_schema.js");
-    const { up: m002 } = await import("./db/migrations/002_modules_subscriptions.js");
-    const { up: m003 } = await import("./db/migrations/003_oauth2.js");
-    const { up: m004 } = await import("./db/migrations/004_audit_invitations.js");
     const { getDB } = await import("./db/connection.js");
+    const { runAllMigrations } = await import("./db/run-migrations.js");
     const db = getDB();
-    await m001(db);
-    await m002(db);
-    await m003(db);
-    await m004(db);
-    // HRMS migrations
-    const { up: m005 } = await import("./db/migrations/005_employee_profiles.js");
-    const { up: m006 } = await import("./db/migrations/006_attendance.js");
-    const { up: m007 } = await import("./db/migrations/007_leave.js");
-    const { up: m008 } = await import("./db/migrations/008_documents.js");
-    const { up: m009 } = await import("./db/migrations/009_announcements.js");
-    const { up: m010 } = await import("./db/migrations/010_policies.js");
-    await m005(db);
-    await m006(db);
-    await m007(db);
-    await m008(db);
-    await m009(db);
-    await m010(db);
-    const { up: m011 } = await import("./db/migrations/011_notifications.js");
-    await m011(db);
-    const { up: m012 } = await import("./db/migrations/012_billing_integration.js");
-    await m012(db);
-    const { up: m013 } = await import("./db/migrations/013_onboarding.js");
-    await m013(db);
-    const { up: m015 } = await import("./db/migrations/015_biometrics.js");
-    await m015(db);
-    const { up: m016 } = await import("./db/migrations/016_helpdesk.js");
-    await m016(db);
-    const { up: m017 } = await import("./db/migrations/017_surveys.js");
-    await m017(db);
-    const { up: m018 } = await import("./db/migrations/018_assets.js");
-    await m018(db);
-    const { up: m019 } = await import("./db/migrations/019_positions.js");
-    await m019(db);
-    const { up: m020 } = await import("./db/migrations/020_anonymous_feedback.js");
-    await m020(db);
-    const { up: m021 } = await import("./db/migrations/021_events.js");
-    await m021(db);
-    const { up: m022 } = await import("./db/migrations/022_whistleblowing.js");
-    await m022(db);
-    const { up: m023 } = await import("./db/migrations/023_chatbot.js");
-    await m023(db);
-    const { up: m024 } = await import("./db/migrations/024_social_intranet.js");
-    await m024(db);
-    const { up: m025 } = await import("./db/migrations/025_wellness.js");
-    await m025(db);
-    const { up: m026 } = await import("./db/migrations/026_shift_swap_requests.js");
-    await m026(db);
-    const { up: m027 } = await import("./db/migrations/027_custom_fields.js");
-    await m027(db);
-    const { up: m028 } = await import("./db/migrations/028_ai_config.js");
-    await m028(db);
-    const { up: m029 } = await import("./db/migrations/029_kb_article_ratings.js");
-    await m029(db);
-    // Note: EMP Cloud uses auto-migrate with hasTable/hasColumn guards instead of
-    // a migration tracking table (like knex_migrations). This is by design — each
-    // migration is idempotent and safe to re-run on every startup.
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness + shift-swaps + custom-fields + ai-config + kb-ratings)");
+    await runAllMigrations(db);
   }
 
   // Load RSA keys

@@ -1,0 +1,211 @@
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  Settings,
+  Shield,
+  Building2,
+  Contact,
+  Clock,
+  CalendarDays,
+  FileText,
+  Receipt,
+  Megaphone,
+  BookOpen,
+  Network,
+  Crown,
+  ScanFace,
+  Fingerprint,
+  QrCode,
+  Smartphone,
+  ScrollText,
+  CreditCard,
+  TrendingUp,
+  Headphones,
+  TicketCheck,
+  BookMarked,
+  ClipboardList,
+  BarChart3,
+  Laptop,
+  FolderOpen,
+  Briefcase,
+  Target,
+  MessageSquarePlus,
+  MessageSquare,
+  PartyPopper,
+  CalendarCheck,
+  ShieldAlert,
+  Search,
+  BotMessageSquare,
+  MessagesSquare,
+  PenSquare,
+  Heart,
+  Dumbbell,
+  Smile,
+  UsersRound,
+  Gift,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
+
+export type NavItem = {
+  path: string;
+  label: string;
+  i18nKey?: string;
+  icon: any;
+};
+
+// Items visible to ALL users (including employees)
+export const employeeNavItems: NavItem[] = [
+  { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/my-profile", label: "My Profile", i18nKey: "nav.myProfile", icon: Contact },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
+  { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
+  { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+  { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },
+  { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
+  { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
+  { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
+  { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
+  { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
+];
+
+// Items visible only to HR Admin, Org Admin, Super Admin
+export const adminNavItems: NavItem[] = [
+  { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package },
+  { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
+  { path: "/users", label: "Users", i18nKey: "nav.users", icon: Users },
+  { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact },
+  { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
+  { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
+  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+  { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },
+  { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
+  { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
+  { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
+  { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
+  { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings },
+  { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal },
+  { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield },
+];
+
+export const positionNavItems: NavItem[] = [
+  { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
+  { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
+  { path: "/positions/vacancies", label: "Vacancies", i18nKey: "", icon: Target },
+  { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "", icon: ClipboardList },
+];
+
+export const forumNavItems: NavItem[] = [
+  { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
+  { path: "/forum/new", label: "Create Post", i18nKey: "", icon: PenSquare },
+];
+
+export const forumHRNavItems: NavItem[] = [
+  { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
+  { path: "/forum/new", label: "Create Post", i18nKey: "", icon: PenSquare },
+  { path: "/forum/dashboard", label: "Forum Dashboard", i18nKey: "", icon: BarChart3 },
+];
+
+export const eventNavItems: NavItem[] = [
+  { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
+  { path: "/events/my", label: "My Events", i18nKey: "", icon: CalendarCheck },
+];
+
+export const eventHRNavItems: NavItem[] = [
+  { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
+  { path: "/events/my", label: "My Events", i18nKey: "", icon: CalendarCheck },
+  { path: "/events/dashboard", label: "Event Dashboard", i18nKey: "", icon: BarChart3 },
+];
+
+export const whistleblowingNavItems: NavItem[] = [
+  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "", icon: Search },
+];
+
+export const whistleblowingHRNavItems: NavItem[] = [
+  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "", icon: Search },
+  { path: "/whistleblowing/dashboard", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
+  { path: "/whistleblowing/reports", label: "All Reports", i18nKey: "", icon: ClipboardList },
+];
+
+export const helpdeskNavItems: NavItem[] = [
+  { path: "/helpdesk/my-tickets", label: "My Tickets", i18nKey: "helpdesk.myTickets", icon: TicketCheck },
+  { path: "/helpdesk/kb", label: "Knowledge Base", i18nKey: "helpdesk.knowledgeBase", icon: BookMarked },
+];
+
+export const helpdeskHRNavItems: NavItem[] = [
+  { path: "/helpdesk/my-tickets", label: "My Tickets", i18nKey: "helpdesk.myTickets", icon: TicketCheck },
+  { path: "/helpdesk/tickets", label: "All Tickets", i18nKey: "helpdesk.allTickets", icon: TicketCheck },
+  { path: "/helpdesk/dashboard", label: "Helpdesk Dashboard", i18nKey: "nav.helpdesk", icon: Headphones },
+  { path: "/helpdesk/kb", label: "Knowledge Base", i18nKey: "helpdesk.knowledgeBase", icon: BookMarked },
+];
+
+export const surveyNavItems: NavItem[] = [
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
+];
+
+export const surveyHRNavItems: NavItem[] = [
+  { path: "/surveys/dashboard", label: "Survey Dashboard", i18nKey: "nav.surveys", icon: BarChart3 },
+  { path: "/surveys/list", label: "All Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
+];
+
+export const wellnessNavItems: NavItem[] = [
+  { path: "/wellness", label: "Wellness", i18nKey: "nav.wellness", icon: Heart },
+  { path: "/wellness/my", label: "My Wellness", i18nKey: "", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "", icon: Smile },
+];
+
+export const wellnessHRNavItems: NavItem[] = [
+  { path: "/wellness", label: "Wellness", i18nKey: "nav.wellness", icon: Heart },
+  { path: "/wellness/my", label: "My Wellness", i18nKey: "", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "", icon: Smile },
+  { path: "/wellness/dashboard", label: "Wellness Dashboard", i18nKey: "", icon: BarChart3 },
+];
+
+export const assetNavItems: NavItem[] = [
+  { path: "/assets/my", label: "My Assets", i18nKey: "nav.assets", icon: Laptop },
+];
+
+export const assetHRNavItems: NavItem[] = [
+  { path: "/assets/dashboard", label: "Asset Dashboard", i18nKey: "nav.assets", icon: BarChart3 },
+  { path: "/assets", label: "All Assets", i18nKey: "nav.assets", icon: Laptop },
+  { path: "/assets/categories", label: "Categories", i18nKey: "", icon: FolderOpen },
+];
+
+export const feedbackNavItems: NavItem[] = [
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.feedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
+];
+
+export const feedbackHRNavItems: NavItem[] = [
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.feedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
+  { path: "/feedback", label: "All Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
+  { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "nav.feedback", icon: BarChart3 },
+];
+
+export const biometricsNavItems: NavItem[] = [
+  { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
+  { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "", icon: Fingerprint },
+  { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "", icon: QrCode },
+  { path: "/biometrics/devices", label: "Devices", i18nKey: "", icon: Smartphone },
+  { path: "/biometrics/logs", label: "Biometric Logs", i18nKey: "", icon: ScrollText },
+  { path: "/biometrics/settings", label: "Biometric Settings", i18nKey: "", icon: Settings },
+];
+
+export const platformAdminNavItems: NavItem[] = [
+  { path: "/admin", label: "Overview Dashboard", icon: Crown },
+  { path: "/admin/organizations", label: "Organizations", icon: Building2 },
+  { path: "/admin/modules", label: "Module Analytics", icon: Package },
+  { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
+  { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
+  { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
+  { path: "/admin/logs", label: "Log Dashboard", icon: ScrollText },
+];
+
+export const HR_ROLES = ["hr_admin", "hr_manager", "org_admin"];
