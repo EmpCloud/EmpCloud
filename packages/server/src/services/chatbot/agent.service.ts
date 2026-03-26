@@ -156,7 +156,7 @@ async function buildSystemPrompt(
   const empCount = Number(empRow?.count ?? 0);
 
   // Department count
-  const [deptRow] = await db("departments")
+  const [deptRow] = await db("organization_departments")
     .where({ organization_id: orgId })
     .count("id as count");
   const deptCount = Number(deptRow?.count ?? 0);

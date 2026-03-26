@@ -678,7 +678,7 @@ export const tools: ToolDefinition[] = [
         .where({ organization_id: orgId, status: 1 })
         .count("id as count");
 
-      const [depts] = await db("departments")
+      const [depts] = await db("organization_departments")
         .where({ organization_id: orgId })
         .count("id as count");
 
