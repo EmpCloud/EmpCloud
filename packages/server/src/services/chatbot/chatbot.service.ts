@@ -550,6 +550,7 @@ export async function sendMessage(
   // Generate response — use AI agent if available, otherwise rule-based
   let response: ChatResponse;
   const aiProvider = await detectProviderAsync();
+  logger.info(`Chatbot provider detected: ${aiProvider} for org ${orgId} user ${userId}`);
 
   if (aiProvider !== "none") {
     // LLM-powered agent path
