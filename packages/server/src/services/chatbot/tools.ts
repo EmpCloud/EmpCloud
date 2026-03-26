@@ -80,7 +80,7 @@ export const tools: ToolDefinition[] = [
     execute: async (orgId) => {
       const db = getDB();
       const [row] = await db("users")
-        .where({ organization_id: orgId, is_active: true })
+        .where({ organization_id: orgId, status: 1 })
         .count("id as count");
       return { total_employees: Number(row.count) };
     },
@@ -110,7 +110,7 @@ export const tools: ToolDefinition[] = [
           );
         })
         .where("u.organization_id", orgId)
-        .where("u.is_active", true)
+        .where("u.status", 1)
         .where(function () {
           this.whereRaw("LOWER(u.first_name) LIKE ?", [`%${q}%`])
             .orWhereRaw("LOWER(u.last_name) LIKE ?", [`%${q}%`])
@@ -144,7 +144,7 @@ export const tools: ToolDefinition[] = [
         .where("d.organization_id", orgId)
         .leftJoin("users as u", function () {
           this.on("u.organization_id", "=", "d.organization_id")
-            .andOnVal("u.is_active", "=", true);
+            .andOnVal("u.status", "=", 1);
         })
         .leftJoin("employee_profiles as ep", function () {
           this.on("ep.user_id", "=", "u.id")
@@ -177,7 +177,7 @@ export const tools: ToolDefinition[] = [
       const date = todayStr();
 
       const totalUsers = await db("users")
-        .where({ organization_id: orgId, is_active: true })
+        .where({ organization_id: orgId, status: 1 })
         .count("id as count")
         .first();
 
@@ -307,7 +307,7 @@ export const tools: ToolDefinition[] = [
           );
         })
         .where("u.organization_id", orgId)
-        .where("u.is_active", true)
+        .where("u.status", 1)
         .whereRaw("LOWER(ep.department) LIKE ?", [`%${dept.toLowerCase()}%`])
         .select("u.id", "u.first_name", "u.last_name");
 
@@ -552,7 +552,8 @@ export const tools: ToolDefinition[] = [
       const db = getDB();
       const lim = Math.min(Number(limit) || 5, 20);
       const announcements = await db("announcements")
-        .where({ organization_id: orgId, is_active: true })
+        .where({ organization_id: orgId })
+        .whereIn("status", ["published", "active"])
         .orderBy("published_at", "desc")
         .limit(lim)
         .select("id", "title", "priority", "published_at", "content");
@@ -674,7 +675,7 @@ export const tools: ToolDefinition[] = [
       const db = getDB();
 
       const [users] = await db("users")
-        .where({ organization_id: orgId, is_active: true })
+        .where({ organization_id: orgId, status: 1 })
         .count("id as count");
 
       const [depts] = await db("departments")
@@ -830,7 +831,7 @@ export const tools: ToolDefinition[] = [
         .first();
 
       const totalUsers = await db("users")
-        .where({ organization_id: orgId, is_active: true })
+        .where({ organization_id: orgId, status: 1 })
         .count("id as count")
         .first();
 
