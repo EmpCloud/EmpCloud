@@ -37,7 +37,7 @@ interface Message {
 // Markdown-lite renderer (bold, italic, links, tables, lists)
 // ---------------------------------------------------------------------------
 
-function renderMarkdown(text: string) {
+function renderMarkdown(text: string, onClickSuggestion?: (text: string) => void) {
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
   let tableRows: string[][] = [];
@@ -50,7 +50,7 @@ function renderMarkdown(text: string) {
       elements.push(
         <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-2">
           {listItems.map((li, i) => (
-            <li key={i}>{renderInline(li)}</li>
+            <li key={i}>{renderInline(li, onClickSuggestion)}</li>
           ))}
         </ul>
       );
@@ -70,7 +70,7 @@ function renderMarkdown(text: string) {
               <tr className="bg-gray-50">
                 {header.map((cell, i) => (
                   <th key={i} className="px-3 py-2 text-left font-medium text-gray-700 border-b border-gray-200">
-                    {renderInline(cell.trim())}
+                    {renderInline(cell.trim(), onClickSuggestion)}
                   </th>
                 ))}
               </tr>
@@ -80,7 +80,7 @@ function renderMarkdown(text: string) {
                 <tr key={ri} className={ri % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                   {row.map((cell, ci) => (
                     <td key={ci} className="px-3 py-2 text-gray-600 border-b border-gray-100">
-                      {renderInline(cell.trim())}
+                      {renderInline(cell.trim(), onClickSuggestion)}
                     </td>
                   ))}
                 </tr>
@@ -143,34 +143,51 @@ function renderMarkdown(text: string) {
   return elements;
 }
 
-function renderInline(text: string): React.ReactNode {
-  // Process bold, italic, links, and inline code
+function renderInline(text: string, onClickSuggestion?: (text: string) => void): React.ReactNode {
+  // Process bold, italic, links, inline code, and "quoted suggestions"
   const parts: React.ReactNode[] = [];
-  // Match **bold**, *italic*, [text](/link), `code`
-  const regex = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(\[(.+?)\]\((.+?)\))|(`(.+?)`)/g;
+  const regex = /(\*\*"?(.+?)"?\*\*)|(\*"?(.+?)"?\*)|(\[(.+?)\]\((.+?)\))|(`(.+?)`)|("([^"]{8,}[?]?)")/g;
   let lastIndex = 0;
   let match;
 
   while ((match = regex.exec(text)) !== null) {
-    // Add text before this match
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
     }
 
     if (match[1]) {
-      // Bold
-      parts.push(
-        <strong key={`b-${match.index}`} className="font-semibold">
-          {match[2]}
-        </strong>
-      );
+      // Bold — make clickable if looks like a question/suggestion
+      const boldText = match[2];
+      const looksClickable = onClickSuggestion && (boldText.includes("?") || /^(what|how|show|who|give|list|when|get)/i.test(boldText));
+      if (looksClickable) {
+        parts.push(
+          <button key={`b-${match.index}`} onClick={() => onClickSuggestion(boldText)} className="text-left font-semibold text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 cursor-pointer transition-colors">
+            {boldText}
+          </button>
+        );
+      } else {
+        parts.push(
+          <strong key={`b-${match.index}`} className="font-semibold">
+            {boldText}
+          </strong>
+        );
+      }
     } else if (match[3]) {
-      // Italic
-      parts.push(
-        <em key={`i-${match.index}`} className="italic text-gray-500">
-          {match[4]}
-        </em>
-      );
+      // Italic — make clickable if looks like a suggestion
+      const italicText = match[4];
+      if (onClickSuggestion && (italicText.includes("?") || italicText.length > 10)) {
+        parts.push(
+          <button key={`i-${match.index}`} onClick={() => onClickSuggestion(italicText)} className="text-left italic text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 cursor-pointer transition-colors">
+            {italicText}
+          </button>
+        );
+      } else {
+        parts.push(
+          <em key={`i-${match.index}`} className="italic text-gray-500">
+            {italicText}
+          </em>
+        );
+      }
     } else if (match[5]) {
       // Link
       parts.push(
@@ -192,6 +209,18 @@ function renderInline(text: string): React.ReactNode {
           {match[9]}
         </code>
       );
+    } else if (match[10]) {
+      // "Quoted text" — make clickable as suggestion
+      const quoted = match[11];
+      if (onClickSuggestion) {
+        parts.push(
+          <button key={`q-${match.index}`} onClick={() => onClickSuggestion(quoted)} className="text-left text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 cursor-pointer transition-colors">
+            &ldquo;{quoted}&rdquo;
+          </button>
+        );
+      } else {
+        parts.push(<span key={`q-${match.index}`}>&ldquo;{quoted}&rdquo;</span>);
+      }
     }
 
     lastIndex = match.index + match[0].length;
@@ -237,7 +266,7 @@ function MessageBubble({ message }: { message: Message }) {
           }`}
         >
           <div className={`text-sm ${isUser ? "text-white" : "text-gray-800"}`}>
-            {isUser ? message.content : renderMarkdown(message.content)}
+            {isUser ? message.content : renderMarkdown(message.content, handleSend)}
           </div>
         </div>
         <p className={`text-[10px] text-gray-400 mt-1 ${isUser ? "text-right" : "text-left"}`}>

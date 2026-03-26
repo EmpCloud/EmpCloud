@@ -25,27 +25,62 @@ interface Message {
 // Mini markdown renderer for widget
 // ---------------------------------------------------------------------------
 
-function renderWidgetMarkdown(text: string): React.ReactNode {
+function renderWidgetMarkdown(text: string, onClickSuggestion?: (text: string) => void): React.ReactNode {
   const lines = text.split("\n");
   return lines.map((line, i) => {
     if (line.trim() === "") return <div key={i} className="h-1.5" />;
 
     // Process inline markdown
     const parts: React.ReactNode[] = [];
-    const regex = /(\*\*(.+?)\*\*)|(\[(.+?)\]\((.+?)\))/g;
+    const regex = /(\*\*"?(.+?)"?\*\*)|(\*"?(.+?)"?\*)|(\[(.+?)\]\((.+?)\))|("([^"]{8,}[?]?)")/g;
     let lastIdx = 0;
     let match;
 
     while ((match = regex.exec(line)) !== null) {
       if (match.index > lastIdx) parts.push(line.slice(lastIdx, match.index));
       if (match[1]) {
-        parts.push(<strong key={`b-${i}-${match.index}`} className="font-semibold">{match[2]}</strong>);
+        // **bold text** — make clickable if it looks like a question/suggestion
+        const boldText = match[2];
+        const looksClickable = boldText.includes("?") || boldText.toLowerCase().startsWith("what") || boldText.toLowerCase().startsWith("how") || boldText.toLowerCase().startsWith("show") || boldText.toLowerCase().startsWith("who") || boldText.toLowerCase().startsWith("give") || boldText.toLowerCase().startsWith("list");
+        if (looksClickable && onClickSuggestion) {
+          parts.push(
+            <button key={`b-${i}-${match.index}`} onClick={() => onClickSuggestion(boldText)} className="text-left font-semibold text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 cursor-pointer transition-colors">
+              {boldText}
+            </button>
+          );
+        } else {
+          parts.push(<strong key={`b-${i}-${match.index}`} className="font-semibold">{boldText}</strong>);
+        }
       } else if (match[3]) {
+        // *italic text* — also make clickable if it looks like a suggestion
+        const italicText = match[4];
+        if (onClickSuggestion && (italicText.includes("?") || italicText.length > 10)) {
+          parts.push(
+            <button key={`i-${i}-${match.index}`} onClick={() => onClickSuggestion(italicText)} className="text-left italic text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 cursor-pointer transition-colors">
+              {italicText}
+            </button>
+          );
+        } else {
+          parts.push(<em key={`i-${i}-${match.index}`}>{italicText}</em>);
+        }
+      } else if (match[5]) {
         parts.push(
-          <a key={`a-${i}-${match.index}`} href={match[5]} className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
-            {match[4]}
+          <a key={`a-${i}-${match.index}`} href={match[7]} className="text-brand-600 underline underline-offset-2 hover:text-brand-700">
+            {match[6]}
           </a>
         );
+      } else if (match[8]) {
+        // "Quoted text" — make clickable as suggestion
+        const quoted = match[9];
+        if (onClickSuggestion) {
+          parts.push(
+            <button key={`q-${i}-${match.index}`} onClick={() => onClickSuggestion(quoted)} className="text-left text-violet-600 hover:text-violet-800 hover:underline underline-offset-2 cursor-pointer transition-colors">
+              &ldquo;{quoted}&rdquo;
+            </button>
+          );
+        } else {
+          parts.push(<span key={`q-${i}-${match.index}`}>&ldquo;{quoted}&rdquo;</span>);
+        }
       }
       lastIdx = match.index + match[0].length;
     }
@@ -255,7 +290,7 @@ export default function ChatWidget() {
                     : "bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm"
                 }`}
               >
-                {isUser ? msg.content : renderWidgetMarkdown(msg.content)}
+                {isUser ? msg.content : renderWidgetMarkdown(msg.content, handleSend)}
               </div>
             </div>
           );
