@@ -122,20 +122,27 @@ function RootRedirect() {
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+    // Skip onboarding for super_admin — they manage the platform, not a company
+    if (user?.role === "super_admin") {
+      setChecking(false);
+      return;
+    }
     async function checkOnboarding() {
       try {
         const { data } = await api.get("/onboarding/status");
-        if (data.data && !data.data.completed) {
+        if (mounted && data.data && !data.data.completed) {
           setNeedsOnboarding(true);
         }
       } catch {
         // If endpoint fails, skip onboarding check
       } finally {
-        setChecking(false);
+        if (mounted) setChecking(false);
       }
     }
     checkOnboarding();
-  }, []);
+    return () => { mounted = false; };
+  }, [user?.role]);
 
   if (checking) {
     return (
