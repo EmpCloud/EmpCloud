@@ -55,6 +55,7 @@ import {
   UsersRound,
   Gift,
   SlidersHorizontal,
+  Sparkles,
 } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -651,6 +652,7 @@ export default function DashboardLayout() {
                 { path: "/admin/modules", label: "Module Analytics", icon: Package },
                 { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
                 { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
+                { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
               ].map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path || (item.path !== "/admin" && location.pathname.startsWith(item.path));

@@ -8,6 +8,9 @@ import { logger } from "../../utils/logger.js";
 import { config } from "../../config/index.js";
 import { getDB } from "../../db/connection.js";
 import { tools, executeTool, type ToolParameter } from "./tools.js";
+import {
+  getDecryptedConfig,
+} from "../../services/admin/ai-config.service.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -65,7 +68,37 @@ const PROVIDER_PRESETS: Record<string, string> = {
   lmstudio: "http://localhost:1234",
 };
 
+// Cached DB config (refreshed every 60s)
+let _dbConfigCache: Record<string, string | null> | null = null;
+let _dbConfigCacheTime = 0;
+const DB_CONFIG_TTL = 60_000; // 60 seconds
+
+async function loadDBConfig(): Promise<Record<string, string | null>> {
+  const now = Date.now();
+  if (_dbConfigCache && now - _dbConfigCacheTime < DB_CONFIG_TTL) {
+    return _dbConfigCache;
+  }
+  try {
+    _dbConfigCache = await getDecryptedConfig();
+    _dbConfigCacheTime = now;
+    return _dbConfigCache;
+  } catch {
+    // DB table might not exist yet (pre-migration)
+    return {};
+  }
+}
+
+// Synchronous version for backward compat — uses cached DB config
 export function detectProvider(): AIProvider {
+  // Check cached DB config first
+  if (_dbConfigCache) {
+    const dbProvider = _dbConfigCache["active_provider"];
+    if (dbProvider && dbProvider !== "none") {
+      return dbProvider as AIProvider;
+    }
+  }
+
+  // Fall back to env vars
   if (config.ai.anthropicApiKey) return "anthropic";
   if (config.ai.geminiApiKey) return "gemini";
   if (config.ai.openaiApiKey) {
@@ -77,6 +110,29 @@ export function detectProvider(): AIProvider {
     return "openai";
   }
   return "none";
+}
+
+// Async version that refreshes DB config cache
+export async function detectProviderAsync(): Promise<AIProvider> {
+  await loadDBConfig();
+  return detectProvider();
+}
+
+// Get effective config: DB values override env vars
+async function getEffectiveConfig() {
+  const dbConfig = await loadDBConfig();
+
+  return {
+    anthropicApiKey: dbConfig["anthropic_api_key"] || config.ai.anthropicApiKey,
+    openaiApiKey: dbConfig["openai_api_key"] || config.ai.openaiApiKey,
+    openaiBaseUrl: dbConfig["openai_base_url"] || config.ai.openaiBaseUrl,
+    geminiApiKey: dbConfig["gemini_api_key"] || config.ai.geminiApiKey,
+    model: dbConfig["ai_model"] || config.ai.model,
+    maxTokens: dbConfig["ai_max_tokens"]
+      ? parseInt(dbConfig["ai_max_tokens"], 10)
+      : config.ai.maxTokens,
+    activeProvider: (dbConfig["active_provider"] as AIProvider) || "none",
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -225,8 +281,9 @@ async function runAnthropicAgent(
   history: ConversationMessage[]
 ): Promise<string> {
   // Dynamic import to avoid crash if package not installed
+  const effectiveConfig = await getEffectiveConfig();
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
-  const client = new Anthropic({ apiKey: config.ai.anthropicApiKey });
+  const client = new Anthropic({ apiKey: effectiveConfig.anthropicApiKey });
 
   const systemPrompt = await buildSystemPrompt(orgId, userId);
   const anthropicTools = toAnthropicTools();
@@ -242,8 +299,8 @@ async function runAnthropicAgent(
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
     const response = await client.messages.create({
-      model: config.ai.model,
-      max_tokens: config.ai.maxTokens,
+      model: effectiveConfig.model,
+      max_tokens: effectiveConfig.maxTokens,
       system: systemPrompt,
       tools: anthropicTools as any,
       messages: messages as any,
@@ -306,10 +363,11 @@ async function runOpenAIAgent(
   message: string,
   history: ConversationMessage[]
 ): Promise<string> {
-  const apiKey = config.ai.openaiApiKey;
-  const model = config.ai.model.startsWith("claude")
+  const effectiveConfig = await getEffectiveConfig();
+  const apiKey = effectiveConfig.openaiApiKey;
+  const model = effectiveConfig.model.startsWith("claude")
     ? "gpt-4o"
-    : config.ai.model;
+    : effectiveConfig.model;
 
   const systemPrompt = await buildSystemPrompt(orgId, userId);
   const openaiTools = toOpenAITools();
@@ -326,7 +384,7 @@ async function runOpenAIAgent(
   const MAX_ITERATIONS = 10;
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    const baseUrl = config.ai.openaiBaseUrl || "https://api.openai.com";
+    const baseUrl = effectiveConfig.openaiBaseUrl || "https://api.openai.com";
     const resp = await fetch(`${baseUrl.replace(/\/+$/, "")}/v1/chat/completions`, {
       method: "POST",
       headers: {
@@ -338,7 +396,7 @@ async function runOpenAIAgent(
         messages,
         tools: openaiTools,
         tool_choice: "auto",
-        max_tokens: config.ai.maxTokens,
+        max_tokens: effectiveConfig.maxTokens,
       }),
     });
 
@@ -410,8 +468,9 @@ async function runGeminiAgent(
   message: string,
   history: ConversationMessage[]
 ): Promise<string> {
-  const apiKey = config.ai.geminiApiKey;
-  const model = config.ai.model.startsWith("gemini") ? config.ai.model : "gemini-2.0-flash";
+  const effectiveConfig = await getEffectiveConfig();
+  const apiKey = effectiveConfig.geminiApiKey;
+  const model = effectiveConfig.model.startsWith("gemini") ? effectiveConfig.model : "gemini-2.0-flash";
   const systemPrompt = await buildSystemPrompt(orgId, userId);
 
   // Build Gemini tool declarations
@@ -453,7 +512,7 @@ async function runGeminiAgent(
           systemInstruction: { parts: [{ text: systemPrompt }] },
           contents,
           tools: geminiTools,
-          generationConfig: { maxOutputTokens: config.ai.maxTokens },
+          generationConfig: { maxOutputTokens: effectiveConfig.maxTokens },
         }),
       }
     );
@@ -528,7 +587,7 @@ export async function runAgent(
     return "You've sent too many messages in a short time. Please wait a moment and try again.";
   }
 
-  const provider = detectProvider();
+  const provider = await detectProviderAsync();
 
   if (provider === "anthropic") {
     return runAnthropicAgent(orgId, userId, message, conversationHistory);

@@ -51,6 +51,7 @@ import forumRoutes from "./api/routes/forum.routes.js";
 import wellnessRoutes from "./api/routes/wellness.routes.js";
 import managerRoutes from "./api/routes/manager.routes.js";
 import customFieldRoutes from "./api/routes/custom-field.routes.js";
+import aiConfigRoutes from "./api/routes/ai-config.routes.js";
 
 async function main() {
   // Initialize database
@@ -113,10 +114,12 @@ async function main() {
     await m026(db);
     const { up: m027 } = await import("./db/migrations/027_custom_fields.js");
     await m027(db);
+    const { up: m028 } = await import("./db/migrations/028_ai_config.js");
+    await m028(db);
     // Note: EMP Cloud uses auto-migrate with hasTable/hasColumn guards instead of
     // a migration tracking table (like knex_migrations). This is by design — each
     // migration is idempotent and safe to re-run on every startup.
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness + shift-swaps + custom-fields)");
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness + shift-swaps + custom-fields + ai-config)");
   }
 
   // Load RSA keys
@@ -189,6 +192,7 @@ async function main() {
   app.use("/api/v1/dashboard", apiLimiter, dashboardRoutes);
   app.use("/api/v1/billing", apiLimiter, billingRoutes);
   app.use("/api/v1/admin", apiLimiter, adminRoutes);
+  app.use("/api/v1/admin/ai-config", apiLimiter, aiConfigRoutes);
   app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
   app.use("/api/v1/biometrics", apiLimiter, biometricsRoutes);
   app.use("/api/v1/helpdesk", apiLimiter, helpdeskRoutes);
