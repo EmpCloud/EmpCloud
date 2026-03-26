@@ -418,7 +418,7 @@ export const tools: ToolDefinition[] = [
           "lt.name as leave_type",
           "lb.total_allocated",
           "lb.total_used",
-          "lb.total_pending",
+          "lb.total_carry_forward",
           "lb.balance"
         );
 
