@@ -3,7 +3,7 @@
 **The core HRMS platform, identity server, and module gateway for the EMP ecosystem.**
 
 [![Status: Built](https://img.shields.io/badge/Status-Built-green)]()
-[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green.svg)](LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
 EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, company policies, org chart visualization, notification center, bulk CSV import, employee self-service dashboard, unified dashboard widgets, super admin dashboard, onboarding wizard, and online payment processing. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2, SSO token exchange, and subdomain routing.
 
@@ -711,4 +711,4 @@ EMP Payroll includes global payroll and Employer of Record (EOR) capabilities:
 
 ## License
 
-GPL-3.0
+AGPL-3.0
