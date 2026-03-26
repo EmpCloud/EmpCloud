@@ -6,7 +6,7 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
-import { runAgent, detectProvider, type AIProvider } from "./agent.service.js";
+import { runAgent, detectProvider, detectProviderAsync, type AIProvider } from "./agent.service.js";
 
 // ---------------------------------------------------------------------------
 // Intent definitions
@@ -549,7 +549,7 @@ export async function sendMessage(
 
   // Generate response — use AI agent if available, otherwise rule-based
   let response: ChatResponse;
-  const aiProvider = detectProvider();
+  const aiProvider = await detectProviderAsync();
 
   if (aiProvider !== "none") {
     // LLM-powered agent path
@@ -632,8 +632,8 @@ export async function sendMessage(
   };
 }
 
-export function getAIStatus(): { engine: string; provider: AIProvider } {
-  const provider = detectProvider();
+export async function getAIStatus(): Promise<{ engine: string; provider: AIProvider }> {
+  const provider = await detectProviderAsync();
   return {
     engine: provider !== "none" ? "ai" : "rule-based",
     provider,
