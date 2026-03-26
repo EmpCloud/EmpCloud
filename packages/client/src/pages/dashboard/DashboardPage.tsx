@@ -362,12 +362,16 @@ export default function DashboardPage() {
                 <div className="w-full bg-gray-100 rounded-full h-1.5 mb-4">
                   <div
                     className="bg-brand-500 h-1.5 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, (sub.used_seats / sub.total_seats) * 100)}%` }}
+                    style={{ width: `${sub.total_seats ? Math.min(100, (sub.used_seats / sub.total_seats) * 100) : 0}%` }}
                   />
                 </div>
 
                 {mod?.base_url && (
                   <a
+                    // ACCEPTED RISK: The JWT is intentionally passed as a query parameter for SSO.
+                    // All EMP ecosystem modules use this pattern to establish a session on the target
+                    // module. The token is short-lived, transmitted over HTTPS, and the target module
+                    // exchanges it for a server-side session immediately on load.
                     href={`${mod.base_url}?sso_token=${encodeURIComponent(useAuthStore.getState().accessToken || "")}`}
                     target="_blank"
                     rel="noopener noreferrer"

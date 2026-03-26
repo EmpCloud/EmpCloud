@@ -20,6 +20,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Mutex for token refresh — prevents concurrent 401s from triggering multiple refreshes
+let refreshPromise: Promise<string> | null = null;
+
 // Handle 401 — attempt token refresh
 api.interceptors.response.use(
   (response) => response,
@@ -32,16 +35,28 @@ api.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const { data } = await axios.post("/oauth/token", {
-            grant_type: "refresh_token",
-            refresh_token: refreshToken,
-            client_id: "empcloud-dashboard",
-          });
+          // If a refresh is already in-flight, reuse its promise
+          if (!refreshPromise) {
+            refreshPromise = axios
+              .post("/oauth/token", {
+                grant_type: "refresh_token",
+                refresh_token: refreshToken,
+                client_id: "empcloud-dashboard",
+              })
+              .then(({ data }) => {
+                useAuthStore.getState().setTokens(data.access_token, data.refresh_token);
+                return data.access_token as string;
+              })
+              .finally(() => {
+                refreshPromise = null;
+              });
+          }
 
-          useAuthStore.getState().setTokens(data.access_token, data.refresh_token);
-          originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+          const newAccessToken = await refreshPromise;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         } catch {
+          refreshPromise = null;
           useAuthStore.getState().logout();
           window.location.href = "/login";
         }

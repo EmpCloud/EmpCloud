@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthStore } from "@/lib/auth-store";
 import {
   useBillingInvoices,
   useBillingPayments,
@@ -711,9 +712,7 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
   const handlePay = async (gateway: string) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("empcloud-auth")
-        ? JSON.parse(localStorage.getItem("empcloud-auth") || "{}").state?.accessToken
-        : null;
+      const token = useAuthStore.getState().accessToken || null;
       const res = await fetch("/api/v1/billing/pay", {
         method: "POST",
         headers: {
@@ -775,9 +774,7 @@ function InvoiceRow({
   const handleDownloadPdf = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const token = localStorage.getItem("empcloud-auth")
-        ? JSON.parse(localStorage.getItem("empcloud-auth") || "{}").state?.accessToken
-        : null;
+      const token = useAuthStore.getState().accessToken || null;
       const res = await fetch(`/api/v1/billing/invoices/${invoice.id}/pdf`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

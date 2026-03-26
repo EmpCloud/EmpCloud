@@ -137,7 +137,7 @@ export default function LeaveDashboardPage() {
                 <div
                   className="h-2 rounded-full"
                   style={{
-                    width: `${Math.min(100, (Number(bal.total_used) / (Number(bal.total_allocated) + Number(bal.total_carry_forward))) * 100)}%`,
+                    width: `${(Number(bal.total_allocated) + Number(bal.total_carry_forward)) > 0 ? Math.min(100, (Number(bal.total_used) / (Number(bal.total_allocated) + Number(bal.total_carry_forward))) * 100) : 0}%`,
                     backgroundColor: getTypeColor(bal.leave_type_id),
                   }}
                 />
@@ -377,8 +377,8 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   });
 
   const approveMut = useMutation({
-    mutationFn: (id: number) =>
-      api.put(`/leave/applications/${id}/approve`, { remarks }).then((r) => r.data.data),
+    mutationFn: ({ id, remarks: r }: { id: number; remarks: string }) =>
+      api.put(`/leave/applications/${id}/approve`, { remarks: r }).then((res) => res.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
       qc.invalidateQueries({ queryKey: ["leave-balances"] });
@@ -389,8 +389,8 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   });
 
   const rejectMut = useMutation({
-    mutationFn: (id: number) =>
-      api.put(`/leave/applications/${id}/reject`, { remarks }).then((r) => r.data.data),
+    mutationFn: ({ id, remarks: r }: { id: number; remarks: string }) =>
+      api.put(`/leave/applications/${id}/reject`, { remarks: r }).then((res) => res.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
       qc.invalidateQueries({ queryKey: ["leave-applications"] });
@@ -450,14 +450,14 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                       className="px-2 py-1 border border-gray-300 rounded text-xs flex-1 min-w-[120px]"
                     />
                     <button
-                      onClick={() => approveMut.mutate(app.id)}
+                      onClick={() => approveMut.mutate({ id: app.id, remarks })}
                       disabled={approveMut.isPending}
                       className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50"
                     >
                       Approve
                     </button>
                     <button
-                      onClick={() => rejectMut.mutate(app.id)}
+                      onClick={() => rejectMut.mutate({ id: app.id, remarks })}
                       disabled={rejectMut.isPending}
                       className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
                     >

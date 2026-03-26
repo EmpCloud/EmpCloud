@@ -237,7 +237,7 @@ function renderInline(text: string, onClickSuggestion?: (text: string) => void):
 // Message Bubble
 // ---------------------------------------------------------------------------
 
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({ message, onSend }: { message: Message; onSend?: (text: string) => void }) {
   const isUser = message.role === "user";
   const time = new Date(message.created_at).toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -266,7 +266,7 @@ function MessageBubble({ message }: { message: Message }) {
           }`}
         >
           <div className={`text-sm ${isUser ? "text-white" : "text-gray-800"}`}>
-            {isUser ? message.content : renderMarkdown(message.content, handleSend)}
+            {isUser ? message.content : renderMarkdown(message.content, onSend)}
           </div>
         </div>
         <p className={`text-[10px] text-gray-400 mt-1 ${isUser ? "text-right" : "text-left"}`}>
@@ -552,7 +552,7 @@ export default function ChatbotPage() {
               )}
 
               {messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble key={msg.id} message={msg} onSend={handleSend} />
               ))}
 
               {isTyping && <TypingIndicator />}

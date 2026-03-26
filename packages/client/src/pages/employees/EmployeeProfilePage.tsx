@@ -34,34 +34,36 @@ export default function EmployeeProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>("personal");
   const [editing, setEditing] = useState(false);
 
+  const isValidId = !!id && !isNaN(userId);
+
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["employee-profile", userId],
     queryFn: () => api.get(`/employees/${userId}/profile`).then((r) => r.data.data),
-    enabled: !!userId,
+    enabled: isValidId,
   });
 
   const { data: education } = useQuery({
     queryKey: ["employee-education", userId],
     queryFn: () => api.get(`/employees/${userId}/education`).then((r) => r.data.data),
-    enabled: !!userId && activeTab === "education",
+    enabled: isValidId && activeTab === "education",
   });
 
   const { data: experience } = useQuery({
     queryKey: ["employee-experience", userId],
     queryFn: () => api.get(`/employees/${userId}/experience`).then((r) => r.data.data),
-    enabled: !!userId && activeTab === "experience",
+    enabled: isValidId && activeTab === "experience",
   });
 
   const { data: dependents } = useQuery({
     queryKey: ["employee-dependents", userId],
     queryFn: () => api.get(`/employees/${userId}/dependents`).then((r) => r.data.data),
-    enabled: !!userId && activeTab === "dependents",
+    enabled: isValidId && activeTab === "dependents",
   });
 
   const { data: addresses } = useQuery({
     queryKey: ["employee-addresses", userId],
     queryFn: () => api.get(`/employees/${userId}/addresses`).then((r) => r.data.data),
-    enabled: !!userId && activeTab === "addresses",
+    enabled: isValidId && activeTab === "addresses",
   });
 
   // Fetch users for reporting manager dropdown
@@ -79,6 +81,20 @@ export default function EmployeeProfilePage() {
       setEditing(false);
     },
   });
+
+  // Guard against missing or invalid id parameter (placed after all hooks to satisfy Rules of Hooks)
+  if (!isValidId) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <User className="h-12 w-12 text-gray-300 mb-4" />
+        <h2 className="text-lg font-semibold text-gray-700 mb-1">Invalid Employee</h2>
+        <p className="text-sm text-gray-500 mb-4">The employee ID in the URL is missing or invalid.</p>
+        <Link to="/employees" className="text-brand-600 text-sm font-medium hover:text-brand-700">
+          &larr; Back to Employee Directory
+        </Link>
+      </div>
+    );
+  }
 
   if (profileLoading) {
     return (
