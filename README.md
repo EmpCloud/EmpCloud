@@ -711,4 +711,12 @@ EMP Payroll includes global payroll and Employer of Record (EOR) capabilities:
 
 ## License
 
-AGPL-3.0
+**AGPL-3.0** — Free for open-source use. Commercial license required for proprietary/SaaS deployment.
+
+| Use Case | License | Cost |
+|----------|---------|------|
+| Self-hosted, open source, share modifications | AGPL-3.0 (free) | Free |
+| SaaS / closed-source / proprietary | Commercial License | Contact us |
+| Enterprise with support & SLA | Enterprise License | Contact us |
+
+**Commercial License:** For proprietary use, SaaS deployment, or to remove AGPL-3.0 obligations, contact **sales@empcloud.com** for a commercial license.
