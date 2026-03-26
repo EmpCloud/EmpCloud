@@ -11,12 +11,14 @@ EMP Cloud is both the central identity/subscription platform AND the core HRMS a
 
 | Metric | Count |
 |--------|-------|
-| Database tables | ~155+ across 8+ databases |
-| API endpoints | ~430+ |
-| Frontend pages | ~160+ |
-| Automated tests | 1,800+ |
-| GitHub repositories | 8 |
-| Modules deployed to test server | 8 |
+| Database tables | ~180+ across 9+ databases |
+| API endpoints | ~500+ |
+| Frontend pages | ~200+ |
+| Automated tests | 2,000+ (79 E2E + 109 security + unit tests) |
+| GitHub repositories | 10 |
+| Modules deployed to test server | 10 |
+| AI agent tools | 41 |
+| Languages supported | 9 |
 
 ## Architecture
 
@@ -25,7 +27,7 @@ empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 |   Built-in: Employee Profiles, Attendance, Leave, Documents,
 |             Announcements, Policies, Org Chart, Notifications,
 |             Bulk Import, Self-Service Dashboard, Unified Widgets,
-|             Super Admin Dashboard, Onboarding Wizard, API Docs
+|             Super Admin Dashboard, Onboarding Wizard, AI Agent, API Docs
 |
 |- payroll.empcloud.com         <- EMP Payroll (sellable module)
 |- monitor.empcloud.com         <- EMP Monitor (sellable module)
@@ -65,6 +67,8 @@ All modules are deployed to the test environment:
 | EMP Exit | https://test-exit.empcloud.com | https://test-exit-api.empcloud.com |
 | EMP LMS | https://testlms.empcloud.com | https://testlms-api.empcloud.com |
 | EMP Payroll | https://testpayroll.empcloud.com | https://testpayroll-api.empcloud.com |
+| EMP Project | https://test-project.empcloud.com | https://test-project-api.empcloud.com |
+| EMP Monitor | https://test-empmonitor.empcloud.com | https://test-empmonitor-api.empcloud.com |
 | EMP Billing | (internal, port 4001) | (internal, port 4001) |
 
 ## Tech Stack
@@ -78,7 +82,10 @@ All modules are deployed to the test environment:
 | **Auth** | OAuth2/OIDC, RS256 JWT, PKCE, bcryptjs |
 | **Queue** | BullMQ (async jobs) |
 | **Payments** | Stripe, Razorpay, PayPal |
-| **API Docs** | Swagger UI + OpenAPI 3.0 JSON |
+| **API Docs** | Swagger UI + OpenAPI 3.0 JSON (per module) + Mobile API docs (105KB) |
+| **AI Agent** | 41 tools, Claude/OpenAI/Gemini/DeepSeek/Groq/Ollama |
+| **Logging** | Winston + daily rotation (30 days) + correlation IDs |
+| **i18n** | react-i18next, 9 languages |
 | **Monorepo** | pnpm workspaces |
 | **Infra** | Docker, Docker Compose |
 
@@ -209,6 +216,9 @@ empcloud/
 | Module Insights Widgets | Built |
 | Online Payment (Stripe, Razorpay, PayPal) | Built |
 | API Documentation (Swagger UI) | Built |
+| AI Agent (41 tools, multi-provider) | Built |
+| Log Pipeline & Dashboard | Built |
+| Internationalization (9 languages) | Built |
 
 ### Authentication & SSO (OAuth2/OIDC)
 
@@ -354,8 +364,9 @@ empcloud/
 
 ### API Documentation
 
-- Swagger UI available at `/api/docs`
+- Swagger UI available at `/api/docs` on each module
 - OpenAPI 3.0 JSON spec at `/api/docs/openapi.json`
+- Mobile API documentation: `docs/MOBILE-API.md` (105KB, 500+ endpoints across all modules)
 - All endpoints documented with request/response schemas
 - Try-it-out functionality with authentication
 
@@ -605,11 +616,11 @@ EMP Cloud is designed as an **open module registry** — adding a new module req
 |--------|-------------|---------------------------|-----------------|--------|
 | **EMP HRMS** | Core HR — employees, attendance, leave, documents, announcements, policies, org chart, notifications, bulk import, self-service, widgets | Included with EMP Cloud | — | Built |
 | EMP Payroll | Payroll processing, tax, compliance | 4500 / 4965 | emp-payroll | Built |
-| EMP Monitor | Employee monitoring & productivity | — | emp-monitor | Refactor from monolith |
+| EMP Monitor | Employee monitoring & productivity | — | emp-monitor | Built |
 | EMP Recruit | ATS, interviews, AI resume scoring, offer PDFs, candidate portal, custom pipelines | 4200 / 4632 | emp-recruit | Built |
 | EMP Field | GPS check-in, route optimization | — | emp-field | Planned |
 | EMP Biometrics | Facial recognition, biometric hooks | — | emp-biometrics | Planned |
-| EMP Projects | Project & task management | — | emp-projects | Partially built |
+| EMP Projects | Project & task management | — | emp-projects | Built |
 | EMP Rewards | Kudos, badges, celebrations, Slack integration, team challenges, manager dashboard | 4000 / 4414 | emp-rewards | Built |
 | EMP Performance | Reviews, OKRs, 9-box grid, succession planning, goal alignment, skills gap analysis | 4300 / 4746 | emp-performance | Built |
 | EMP Exit | Offboarding workflows, predictive attrition, buyout calculator, rehire, NPS surveys | 3800 / 4193 | emp-exit | Built |
@@ -652,20 +663,51 @@ Payment flow:
 ### SSO Flow: Cloud to LMS
 ![SSO Cloud to LMS](e2e/screenshots/sso-lms/result.png)
 
+## AI Agent
+
+EMP Cloud includes a built-in AI agent with tool-calling capabilities for natural language interaction with the platform.
+
+- **41 tools** — 26 core tools (employee lookup, attendance, leave, reports) + 15 cross-module tools (payroll, recruit, performance, rewards, exit, LMS, monitor, project)
+- **Multi-provider support** — Claude, OpenAI, Gemini, DeepSeek, Groq, Ollama
+- **Super Admin configurable** — API keys and provider selection at `/admin/ai-config`
+- **Tool-calling loop** — Real-time database queries with structured tool responses
+- **Tenant-isolated** — All tool queries scoped to the user's organization
+
+## Log Pipeline
+
+- **Winston logger** with daily file rotation (30-day retention)
+- **Request correlation IDs** — `X-Request-ID` header propagated through all service calls
+- **Slow query logging** — Queries exceeding 1s are flagged and logged
+- **Log Dashboard** — Admin UI at `/admin/logs` for viewing and filtering logs
+- **Daily report script** — Automated summary of errors, slow queries, and auth events
+
+## Global Payroll / EOR
+
+EMP Payroll includes global payroll and Employer of Record (EOR) capabilities:
+
+- **30 countries supported** with country-specific tax calculations
+- **Contractor invoice management** — Generate, approve, and track contractor invoices
+- **Compliance checklists** — Per-country regulatory requirements and deadlines
+- **Multi-currency payroll** — Process payroll in local currencies with exchange rate handling
+
 ## Security
 
 - OAuth2/OIDC compliant (SOC 2 ready)
-- RS256 asymmetric JWT signing
+- **109 security tests** — Automated security test suite covering auth, injection, XSS, CSRF
+- **Tenant isolation verified** — Cross-org data access blocked at query and API level
+- RS256 asymmetric JWT signing with **RSA key rotation** support
 - PKCE for public clients (SPAs)
 - SSO tokens are one-time-use and expire in 60 seconds
 - Refresh token rotation
 - Centralized token revocation
 - bcrypt password hashing (12 rounds)
-- Rate limiting on auth endpoints
+- **Rate limiting on auth endpoints** — Aggressive rate limits on login, register, password reset
+- **AES-256-GCM encrypted API keys** — All stored API keys (payment gateways, AI providers) encrypted at rest
 - CORS allowlisting per module
 - Audit logging for all sensitive operations
 - Per-module client credentials (independently revocable)
 - Payment webhook signature verification (Stripe, Razorpay, PayPal)
+- **173 SQL injection fixes** applied to EMP Monitor codebase
 
 ## License
 
