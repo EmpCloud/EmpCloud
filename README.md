@@ -618,8 +618,8 @@ EMP Cloud is designed as an **open module registry** — adding a new module req
 | EMP Payroll | Payroll processing, tax, compliance | 4500 / 4965 | emp-payroll | Built |
 | EMP Monitor | Employee monitoring & productivity | — | emp-monitor | Built |
 | EMP Recruit | ATS, interviews, AI resume scoring, offer PDFs, candidate portal, custom pipelines | 4200 / 4632 | emp-recruit | Built |
-| EMP Field | GPS check-in, route optimization | — | emp-field | Planned |
-| EMP Biometrics | Facial recognition, biometric hooks | — | emp-biometrics | Planned |
+| EMP Field | GPS check-in, route optimization | — | emp-field | Built (other team) |
+| EMP Biometrics | Facial recognition, QR attendance, device management | — | emp-biometrics | Built (APIs in Cloud) |
 | EMP Projects | Project & task management | — | emp-projects | Built |
 | EMP Rewards | Kudos, badges, celebrations, Slack integration, team challenges, manager dashboard | 4000 / 4414 | emp-rewards | Built |
 | EMP Performance | Reviews, OKRs, 9-box grid, succession planning, goal alignment, skills gap analysis | 4300 / 4746 | emp-performance | Built |
