@@ -53,11 +53,28 @@ function checkRateLimit(userId: number): boolean {
 // Provider detection
 // ---------------------------------------------------------------------------
 
-export type AIProvider = "anthropic" | "openai" | "none";
+export type AIProvider = "anthropic" | "openai" | "deepseek" | "groq" | "ollama" | "openai-compatible" | "none";
+
+// Provider presets: base URLs for popular OpenAI-compatible providers
+const PROVIDER_PRESETS: Record<string, string> = {
+  deepseek: "https://api.deepseek.com",
+  groq: "https://api.groq.com/openai",
+  together: "https://api.together.xyz",
+  fireworks: "https://api.fireworks.ai/inference",
+  ollama: "http://localhost:11434",
+  lmstudio: "http://localhost:1234",
+};
 
 export function detectProvider(): AIProvider {
   if (config.ai.anthropicApiKey) return "anthropic";
-  if (config.ai.openaiApiKey) return "openai";
+  if (config.ai.openaiApiKey) {
+    const baseUrl = config.ai.openaiBaseUrl?.toLowerCase() || "";
+    if (baseUrl.includes("deepseek")) return "deepseek";
+    if (baseUrl.includes("groq")) return "groq";
+    if (baseUrl.includes("localhost:11434") || baseUrl.includes("ollama")) return "ollama";
+    if (baseUrl) return "openai-compatible";
+    return "openai";
+  }
   return "none";
 }
 
@@ -308,7 +325,8 @@ async function runOpenAIAgent(
   const MAX_ITERATIONS = 10;
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    const baseUrl = config.ai.openaiBaseUrl || "https://api.openai.com";
+    const resp = await fetch(`${baseUrl.replace(/\/+$/, "")}/v1/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
