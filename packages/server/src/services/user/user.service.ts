@@ -111,6 +111,14 @@ export async function deactivateUser(orgId: number, userId: number): Promise<voi
 // Invitations
 // ---------------------------------------------------------------------------
 
+export async function listInvitations(orgId: number, status: string = "pending") {
+  const db = getDB();
+  return db("invitations")
+    .where({ organization_id: orgId, status })
+    .select("id", "email", "role", "status", "created_at", "expires_at")
+    .orderBy("created_at", "desc");
+}
+
 export async function inviteUser(orgId: number, invitedBy: number, data: InviteUserInput): Promise<{ token: string; invitation: object }> {
   const db = getDB();
 

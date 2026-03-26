@@ -106,6 +106,10 @@ export default function MyWellnessPage() {
 
   const handleCreateGoal = (e: React.FormEvent) => {
     e.preventDefault();
+    if (goalForm.start_date && goalForm.end_date && goalForm.end_date < goalForm.start_date) {
+      alert("End date cannot be before the start date.");
+      return;
+    }
     createGoalMutation.mutate({
       title: goalForm.title,
       goal_type: goalForm.goal_type,
@@ -521,6 +525,7 @@ export default function MyWellnessPage() {
                     type="date"
                     value={goalForm.end_date}
                     onChange={(e) => setGoalForm({ ...goalForm, end_date: e.target.value })}
+                    min={goalForm.start_date || undefined}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   />
                 </div>

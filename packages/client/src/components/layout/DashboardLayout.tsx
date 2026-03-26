@@ -129,9 +129,10 @@ const whistleblowingHRNavItems = [
 // so we only show one "Dashboard" entry pointing to "/"
 const employeeNavItems = [
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/my-profile", label: "My Profile", i18nKey: "nav.myProfile", icon: Contact },
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
-  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+  { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
   { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },
   { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
   { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },

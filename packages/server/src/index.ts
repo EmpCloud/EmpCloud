@@ -116,10 +116,12 @@ async function main() {
     await m027(db);
     const { up: m028 } = await import("./db/migrations/028_ai_config.js");
     await m028(db);
+    const { up: m029 } = await import("./db/migrations/029_kb_article_ratings.js");
+    await m029(db);
     // Note: EMP Cloud uses auto-migrate with hasTable/hasColumn guards instead of
     // a migration tracking table (like knex_migrations). This is by design — each
     // migration is idempotent and safe to re-run on every startup.
-    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness + shift-swaps + custom-fields + ai-config)");
+    logger.info("Auto-migration complete (including HRMS + billing + onboarding + biometrics + helpdesk + surveys + assets + positions + feedback + events + whistleblowing + chatbot + forum + wellness + shift-swaps + custom-fields + ai-config + kb-ratings)");
   }
 
   // Load RSA keys

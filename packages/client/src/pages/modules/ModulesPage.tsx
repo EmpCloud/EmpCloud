@@ -1,4 +1,4 @@
-import { useModules, useSubscriptions, useCreateSubscription } from "@/api/hooks";
+import { useModules, useSubscriptions, useCreateSubscription, useCancelSubscription } from "@/api/hooks";
 import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar } from "lucide-react";
 import { useState } from "react";
 
@@ -188,14 +188,33 @@ export default function ModulesPage() {
   const { data: modules, isLoading } = useModules();
   const { data: subscriptions } = useSubscriptions();
   const createSub = useCreateSubscription();
+  const cancelSub = useCancelSubscription();
   const [subscribing, setSubscribing] = useState<number | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [subscribeModule, setSubscribeModule] = useState<any>(null);
+  const [confirmUnsubscribe, setConfirmUnsubscribe] = useState<number | null>(null);
 
-  const subscribedModuleIds = new Set(
-    subscriptions?.filter((s: any) => s.status !== "cancelled").map((s: any) => s.module_id) || []
-  );
+  const activeSubscriptions = subscriptions?.filter((s: any) => s.status !== "cancelled") || [];
+  const subscribedModuleIds = new Set(activeSubscriptions.map((s: any) => s.module_id));
+  const subscriptionByModuleId: Record<number, any> = {};
+  for (const s of activeSubscriptions) {
+    subscriptionByModuleId[s.module_id] = s;
+  }
+
+  const handleUnsubscribe = async (moduleId: number) => {
+    const sub = subscriptionByModuleId[moduleId];
+    if (!sub) return;
+    try {
+      await cancelSub.mutateAsync(sub.id);
+      setToast("Subscription cancelled successfully.");
+      setTimeout(() => setToast(null), 5000);
+      setConfirmUnsubscribe(null);
+    } catch {
+      setToast("Failed to cancel subscription.");
+      setTimeout(() => setToast(null), 5000);
+    }
+  };
 
   const handleSubscribe = async (data: { module_id: number; plan_tier: string; total_seats: number; billing_cycle: string }) => {
     setSubscribing(data.module_id);
@@ -310,9 +329,36 @@ export default function ModulesPage() {
                       <Check className="h-4 w-4" /> Active
                     </span>
                   ) : isSubscribed ? (
-                    <button disabled className="flex items-center gap-1.5 text-sm font-medium text-green-600">
-                      <Check className="h-4 w-4" /> Subscribed
-                    </button>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+                        <Check className="h-4 w-4" /> Subscribed
+                      </span>
+                      {confirmUnsubscribe === mod.id ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">Are you sure?</span>
+                          <button
+                            onClick={() => handleUnsubscribe(mod.id)}
+                            disabled={cancelSub.isPending}
+                            className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
+                          >
+                            {cancelSub.isPending ? "Cancelling..." : "Yes, Cancel"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmUnsubscribe(null)}
+                            className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
+                          >
+                            No
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmUnsubscribe(mod.id)}
+                          className="text-xs text-red-500 hover:text-red-700 font-medium"
+                        >
+                          Unsubscribe
+                        </button>
+                      )}
+                    </div>
                   ) : (
                     <button
                       onClick={() => setSubscribeModule(mod)}

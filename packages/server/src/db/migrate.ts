@@ -28,6 +28,8 @@ async function run() {
     { name: "012_billing_integration", mod: await import("./migrations/012_billing_integration.js") },
     { name: "013_onboarding", mod: await import("./migrations/013_onboarding.js") },
     { name: "014_fix_subscription_pricing", mod: await import("./migrations/014_fix_subscription_pricing.js") },
+    { name: "028_ai_config", mod: await import("./migrations/028_ai_config.js") },
+    { name: "029_kb_article_ratings", mod: await import("./migrations/029_kb_article_ratings.js") },
   ];
 
   for (const { name, mod } of migrations) {

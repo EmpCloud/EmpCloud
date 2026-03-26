@@ -442,6 +442,28 @@ router.delete(
   }
 );
 
+// GET /api/v1/helpdesk/kb/:id/my-rating — Get current user's rating for an article
+router.get(
+  "/kb/:id/my-rating",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const db = (await import("../../db/connection.js")).getDB();
+      const hasTable = await db.schema.hasTable("kb_article_ratings");
+      if (!hasTable) {
+        sendSuccess(res, { rated: false, helpful: null });
+        return;
+      }
+      const rating = await db("kb_article_ratings")
+        .where({ article_id: paramInt(req.params.id), user_id: req.user!.id })
+        .first();
+      sendSuccess(res, rating ? { rated: true, helpful: rating.helpful } : { rated: false, helpful: null });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // POST /api/v1/helpdesk/kb/:id/helpful — Rate article helpfulness
 router.post(
   "/kb/:id/helpful",
@@ -452,7 +474,8 @@ router.post(
       const article = await helpdeskService.rateArticle(
         req.user!.org_id,
         paramInt(req.params.id),
-        helpful === true
+        helpful === true,
+        req.user!.id
       );
       sendSuccess(res, article);
     } catch (err) {

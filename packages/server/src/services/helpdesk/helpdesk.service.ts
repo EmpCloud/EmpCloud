@@ -774,13 +774,54 @@ export async function deleteArticle(orgId: number, articleId: number) {
 // Knowledge Base — Rate Article Helpfulness
 // ---------------------------------------------------------------------------
 
-export async function rateArticle(orgId: number, articleId: number, helpful: boolean) {
+export async function rateArticle(orgId: number, articleId: number, helpful: boolean, userId?: number) {
   const db = getDB();
 
   const existing = await db("knowledge_base_articles")
     .where({ id: articleId, organization_id: orgId })
     .first();
   if (!existing) throw new NotFoundError("Article");
+
+  // Check if user already rated this article (prevent duplicate votes)
+  if (userId) {
+    // Ensure the ratings table exists
+    const hasTable = await db.schema.hasTable("kb_article_ratings");
+    if (hasTable) {
+      const existingRating = await db("kb_article_ratings")
+        .where({ article_id: articleId, user_id: userId })
+        .first();
+
+      if (existingRating) {
+        // User already voted — if same vote, do nothing; if different, swap
+        if (existingRating.helpful === helpful) {
+          return db("knowledge_base_articles").where({ id: articleId }).first();
+        }
+        // Swap vote: decrement old, increment new
+        if (helpful) {
+          await db("knowledge_base_articles").where({ id: articleId }).increment("helpful_count", 1);
+          await db("knowledge_base_articles").where({ id: articleId }).decrement("not_helpful_count", 1);
+        } else {
+          await db("knowledge_base_articles").where({ id: articleId }).increment("not_helpful_count", 1);
+          await db("knowledge_base_articles").where({ id: articleId }).decrement("helpful_count", 1);
+        }
+        await db("kb_article_ratings")
+          .where({ article_id: articleId, user_id: userId })
+          .update({ helpful, updated_at: new Date() });
+
+        return db("knowledge_base_articles").where({ id: articleId }).first();
+      }
+
+      // First vote — record it
+      await db("kb_article_ratings").insert({
+        article_id: articleId,
+        user_id: userId,
+        organization_id: orgId,
+        helpful,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+    }
+  }
 
   if (helpful) {
     await db("knowledge_base_articles").where({ id: articleId }).increment("helpful_count", 1);

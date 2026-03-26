@@ -97,10 +97,11 @@ export default function SelfServiceDashboardPage() {
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <QuickLink to="/my-profile" icon={FileText} label="My Profile" />
         <QuickLink to="/leave/applications" icon={CalendarDays} label="Apply Leave" />
         <QuickLink to="/attendance/my" icon={Clock} label="Mark Attendance" />
-        <QuickLink to="/documents" icon={FileText} label="Upload Document" />
+        <QuickLink to="/helpdesk/my-tickets" icon={FileText} label="Request Update" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

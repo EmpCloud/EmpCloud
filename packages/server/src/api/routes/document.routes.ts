@@ -79,8 +79,15 @@ router.delete("/categories/:id", authenticate, requireHR, async (req: Request, r
 router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
-    const user_id = req.query.user_id ? Number(req.query.user_id) : undefined;
     const category_id = req.query.category_id ? Number(req.query.category_id) : undefined;
+
+    // Non-HR users can only see their own documents
+    const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    const user_id = isHR
+      ? (req.query.user_id ? Number(req.query.user_id) : undefined)
+      : req.user!.sub;
+
     const result = await documentService.listDocuments(req.user!.org_id, {
       user_id,
       category_id,

@@ -130,7 +130,16 @@ export default function SurveyBuilderPage() {
     };
   };
 
+  const validateDates = () => {
+    if (startDate && endDate && endDate < startDate) {
+      alert("End date cannot be before the start date.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSaveDraft = () => {
+    if (!validateDates()) return;
     const payload = buildPayload();
     if (editId) {
       updateMutation.mutate(payload);
@@ -140,6 +149,7 @@ export default function SurveyBuilderPage() {
   };
 
   const handlePublish = () => {
+    if (!validateDates()) return;
     const payload = buildPayload();
     publishMutation.mutate(payload);
   };
@@ -277,6 +287,7 @@ export default function SurveyBuilderPage() {
                 type="datetime-local"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                min={startDate || undefined}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
             </div>

@@ -1,4 +1,6 @@
 import { useUsers, useInviteUser, useCreateUser, useDepartments } from "@/api/hooks";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/api/client";
 import { useState, useRef, useCallback } from "react";
 import { UserPlus, Search, Mail, Upload, Download, X, CheckCircle2, XCircle, FileSpreadsheet, AlertTriangle, Loader2 } from "lucide-react";
 
@@ -383,6 +385,13 @@ function CsvImportModal({
 // Main UsersPage
 // ---------------------------------------------------------------------------
 
+function usePendingInvitations() {
+  return useQuery({
+    queryKey: ["pending-invitations"],
+    queryFn: () => api.get("/users/invitations", { params: { status: "pending" } }).then((r) => r.data.data).catch(() => []),
+  });
+}
+
 export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -393,10 +402,12 @@ export default function UsersPage() {
   const [inviteRole, setInviteRole] = useState("employee");
   const [showCsvImport, setShowCsvImport] = useState(false);
   const { data: departmentsData } = useDepartments();
+  const { data: pendingInvitations } = usePendingInvitations();
 
   const users = data?.data || [];
   const meta = data?.meta;
   const departments = (departmentsData as any[]) || [];
+  const invitations = (pendingInvitations as any[]) || [];
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -480,6 +491,34 @@ export default function UsersPage() {
           placeholder="Search by name, email, or employee code..."
         />
       </div>
+
+      {/* Pending Invitations */}
+      {invitations.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+          <h3 className="text-sm font-semibold text-amber-800 mb-2">Pending Invitations ({invitations.length})</h3>
+          <div className="space-y-2">
+            {invitations.map((inv: any) => (
+              <div key={inv.id} className="flex items-center justify-between bg-white rounded-lg px-4 py-2 border border-amber-100">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-semibold text-amber-700">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-900">{inv.email}</span>
+                    <span className="text-xs text-gray-500 ml-2 capitalize">{(inv.role || "employee").replace(/_/g, " ")}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">Pending</span>
+                  <span className="text-xs text-gray-400">
+                    Invited {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Users table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">

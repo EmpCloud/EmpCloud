@@ -30,7 +30,9 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
 export default function EmployeeProfilePage() {
   const { id } = useParams<{ id: string }>();
   const userId = Number(id);
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<Tab>("personal");
+  const [editing, setEditing] = useState(false);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["employee-profile", userId],
@@ -60,6 +62,22 @@ export default function EmployeeProfilePage() {
     queryKey: ["employee-addresses", userId],
     queryFn: () => api.get(`/employees/${userId}/addresses`).then((r) => r.data.data),
     enabled: !!userId && activeTab === "addresses",
+  });
+
+  // Fetch users for reporting manager dropdown
+  const { data: allUsers } = useQuery({
+    queryKey: ["users-for-manager"],
+    queryFn: () => api.get("/users", { params: { per_page: 500 } }).then((r) => r.data.data),
+    enabled: editing,
+  });
+
+  const updateProfile = useMutation({
+    mutationFn: (data: Record<string, unknown>) =>
+      api.put(`/employees/${userId}/profile`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employee-profile", userId] });
+      setEditing(false);
+    },
   });
 
   if (profileLoading) {
@@ -102,10 +120,21 @@ export default function EmployeeProfilePage() {
             <p className="text-sm text-gray-500">{profile.designation || "No designation"}</p>
             <p className="text-sm text-gray-400">{profile.email}</p>
           </div>
-          <div className="ml-auto text-right text-sm text-gray-500">
-            {profile.emp_code && <p>Emp Code: {profile.emp_code}</p>}
-            {profile.date_of_joining && (
-              <p>Joined: {new Date(profile.date_of_joining).toLocaleDateString()}</p>
+          <div className="ml-auto flex items-start gap-4">
+            <div className="text-right text-sm text-gray-500">
+              {profile.emp_code && <p>Emp Code: {profile.emp_code}</p>}
+              {profile.date_of_joining && (
+                <p>Joined: {new Date(profile.date_of_joining).toLocaleDateString()}</p>
+              )}
+            </div>
+            {activeTab === "personal" && (
+              <button
+                onClick={() => setEditing(!editing)}
+                className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                {editing ? "Cancel" : "Edit Profile"}
+              </button>
             )}
           </div>
         </div>
@@ -133,7 +162,17 @@ export default function EmployeeProfilePage() {
 
       {/* Tab Content */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        {activeTab === "personal" && <PersonalTab profile={profile} />}
+        {activeTab === "personal" && (
+          <PersonalTab
+            profile={profile}
+            editing={editing}
+            onSave={(data: Record<string, unknown>) => updateProfile.mutate(data)}
+            saving={updateProfile.isPending}
+            error={updateProfile.isError ? ((updateProfile.error as any)?.response?.data?.error?.message || "Failed to save") : null}
+            allUsers={allUsers || []}
+            userId={userId}
+          />
+        )}
         {activeTab === "education" && <EducationTab data={education} />}
         {activeTab === "experience" && <ExperienceTab data={experience} />}
         {activeTab === "dependents" && <DependentsTab data={dependents} />}
@@ -157,7 +196,148 @@ function FieldRow({ label, value }: { label: string; value?: string | number | n
   );
 }
 
-function PersonalTab({ profile }: { profile: any }) {
+function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; userId?: number }) {
+  const [form, setForm] = useState<Record<string, string>>({});
+
+  // Populate form when entering edit mode
+  const startEdit = () => {
+    setForm({
+      personal_email: profile.personal_email || "",
+      contact_number: profile.contact_number || "",
+      gender: profile.gender || "",
+      date_of_birth: profile.date_of_birth ? profile.date_of_birth.slice(0, 10) : "",
+      blood_group: profile.blood_group || "",
+      marital_status: profile.marital_status || "",
+      nationality: profile.nationality || "",
+      aadhar_number: profile.aadhar_number || "",
+      pan_number: profile.pan_number || "",
+      passport_number: profile.passport_number || "",
+      passport_expiry: profile.passport_expiry ? profile.passport_expiry.slice(0, 10) : "",
+      visa_status: profile.visa_status || "",
+      visa_expiry: profile.visa_expiry ? profile.visa_expiry.slice(0, 10) : "",
+      emergency_contact_name: profile.emergency_contact_name || "",
+      emergency_contact_phone: profile.emergency_contact_phone || "",
+      emergency_contact_relation: profile.emergency_contact_relation || "",
+      notice_period_days: profile.notice_period_days ? String(profile.notice_period_days) : "",
+      reporting_manager_id: profile.reporting_manager_id ? String(profile.reporting_manager_id) : "",
+    });
+  };
+
+  // Initialize form on first edit
+  if (editing && Object.keys(form).length === 0) {
+    startEdit();
+  }
+
+  if (editing) {
+    const set = (key: string, val: string) => setForm((prev) => ({ ...prev, [key]: val }));
+    const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+
+    return (
+      <div>
+        {error && <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">{error}</div>}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Personal Email</label>
+            <input type="email" value={form.personal_email} onChange={(e) => set("personal_email", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+            <input type="text" value={form.contact_number} onChange={(e) => set("contact_number", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+            <select value={form.gender} onChange={(e) => set("gender", e.target.value)} className={inputClass}>
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+            <input type="date" value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+            <input type="text" value={form.blood_group} onChange={(e) => set("blood_group", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+            <select value={form.marital_status} onChange={(e) => set("marital_status", e.target.value)} className={inputClass}>
+              <option value="">Select</option>
+              <option value="single">Single</option>
+              <option value="married">Married</option>
+              <option value="divorced">Divorced</option>
+              <option value="widowed">Widowed</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+            <input type="text" value={form.nationality} onChange={(e) => set("nationality", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
+            <input type="text" value={form.aadhar_number} onChange={(e) => set("aadhar_number", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+            <input type="text" value={form.pan_number} onChange={(e) => set("pan_number", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
+            <input type="text" value={form.passport_number} onChange={(e) => set("passport_number", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Passport Expiry</label>
+            <input type="date" value={form.passport_expiry} onChange={(e) => set("passport_expiry", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Visa Status</label>
+            <input type="text" value={form.visa_status} onChange={(e) => set("visa_status", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Visa Expiry</label>
+            <input type="date" value={form.visa_expiry} onChange={(e) => set("visa_expiry", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+            <input type="text" value={form.emergency_contact_name} onChange={(e) => set("emergency_contact_name", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Phone</label>
+            <input type="text" value={form.emergency_contact_phone} onChange={(e) => set("emergency_contact_phone", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Relation</label>
+            <input type="text" value={form.emergency_contact_relation} onChange={(e) => set("emergency_contact_relation", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notice Period (days)</label>
+            <input type="number" value={form.notice_period_days} onChange={(e) => set("notice_period_days", e.target.value)} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Reporting Manager</label>
+            <select value={form.reporting_manager_id} onChange={(e) => set("reporting_manager_id", e.target.value)} className={inputClass}>
+              <option value="">No Manager</option>
+              {(allUsers || []).filter((u: any) => u.id !== userId).map((u: any) => (
+                <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.email})</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            onClick={() => onSave?.(Object.fromEntries(Object.entries(form).map(([k, v]) => [k, v || null])))}
+            disabled={saving}
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+          >
+            <Check className="h-4 w-4" /> {saving ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <dl>
       <FieldRow label="Personal Email" value={profile.personal_email} />
@@ -198,6 +378,7 @@ function PersonalTab({ profile }: { profile: any }) {
         value={profile.confirmation_date ? new Date(profile.confirmation_date).toLocaleDateString() : null}
       />
       <FieldRow label="Notice Period (days)" value={profile.notice_period_days} />
+      <FieldRow label="Reporting Manager" value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
     </dl>
   );
 }

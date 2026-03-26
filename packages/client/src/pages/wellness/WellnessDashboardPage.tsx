@@ -72,6 +72,10 @@ export default function WellnessDashboardPage() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.start_date && form.end_date && form.end_date < form.start_date) {
+      alert("End date cannot be before the start date.");
+      return;
+    }
     createMutation.mutate({
       title: form.title,
       description: form.description || null,
@@ -366,6 +370,7 @@ export default function WellnessDashboardPage() {
                     type="date"
                     value={form.end_date}
                     onChange={(e) => setForm({ ...form, end_date: e.target.value })}
+                    min={form.start_date || undefined}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   />
                 </div>

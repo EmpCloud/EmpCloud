@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { Navigate } from "react-router-dom";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
 import {
   FileText,
   Search,
@@ -90,7 +92,17 @@ function useDeleteDocument() {
 
 type DocTab = "all" | "expiring" | "mandatory";
 
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+
 export default function DocumentsPage() {
+  const user = useAuthStore((s) => s.user);
+  const isHR = user && HR_ROLES.includes(user.role);
+
+  // Employees should only see their own documents via /documents/my
+  if (!isHR) {
+    return <Navigate to="/documents/my" replace />;
+  }
+
   const [page, setPage] = useState(1);
   const [searchUserId, setSearchUserId] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
@@ -118,6 +130,17 @@ export default function DocumentsPage() {
   const rejectDoc = useRejectDocument();
   const deleteDoc = useDeleteDocument();
 
+  // Fetch users for employee dropdown
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const { data: employeeList } = useQuery({
+    queryKey: ["users-list-docs", employeeSearch],
+    queryFn: () =>
+      api
+        .get("/users", { params: { per_page: 50, ...(employeeSearch && { search: employeeSearch }) } })
+        .then((r) => r.data.data),
+    enabled: showUpload,
+  });
+
   // Upload form state
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadName, setUploadName] = useState("");
@@ -143,7 +166,24 @@ export default function DocumentsPage() {
     setUploadCategory("");
     setUploadUserId("");
     setUploadExpiry("");
+    setEmployeeSearch("");
   };
+
+  const handleDownload = useCallback(async (docId: number, docName: string) => {
+    try {
+      const response = await api.get(`/documents/${docId}/download`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", docName || "document");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert("Failed to download document.");
+    }
+  }, []);
 
   const handleReject = (docId: number) => {
     if (!rejectReason.trim()) return;
@@ -325,15 +365,43 @@ export default function DocumentsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
-              <input
-                type="number"
-                value={uploadUserId}
-                onChange={(e) => setUploadUserId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Leave empty for self"
-                min={1}
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={employeeSearch}
+                  onChange={(e) => { setEmployeeSearch(e.target.value); if (!e.target.value) setUploadUserId(""); }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  placeholder="Search by name or email (leave empty for self)"
+                />
+                {employeeSearch && employeeList && employeeList.length > 0 && !uploadUserId && (
+                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {employeeList.map((u: any) => (
+                      <button
+                        key={u.id}
+                        type="button"
+                        onClick={() => {
+                          setUploadUserId(String(u.id));
+                          setEmployeeSearch(`${u.first_name} ${u.last_name} (${u.email})`);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                      >
+                        <span className="font-medium text-gray-900">{u.first_name} {u.last_name}</span>
+                        <span className="text-gray-500 ml-2">{u.email}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {uploadUserId && (
+                  <button
+                    type="button"
+                    onClick={() => { setUploadUserId(""); setEmployeeSearch(""); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
@@ -541,13 +609,13 @@ export default function DocumentsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <a
-                            href={`/api/v1/documents/${doc.id}/download`}
+                          <button
+                            onClick={() => handleDownload(doc.id, doc.name)}
                             className="text-xs text-brand-600 hover:text-brand-800 font-medium"
                           >
                             Download
-                          </a>
-                          {!doc.is_verified && doc.verification_status !== "rejected" && (
+                          </button>
+                          {isHR && !doc.is_verified && doc.verification_status !== "rejected" && (
                             <>
                               <button
                                 onClick={() => verifyDoc.mutate({ id: doc.id, is_verified: true })}
@@ -563,7 +631,7 @@ export default function DocumentsPage() {
                               </button>
                             </>
                           )}
-                          {doc.verification_status === "rejected" && (
+                          {isHR && doc.verification_status === "rejected" && (
                             <button
                               onClick={() => verifyDoc.mutate({ id: doc.id, is_verified: true })}
                               className="text-xs text-green-600 hover:text-green-800 font-medium"
@@ -571,16 +639,18 @@ export default function DocumentsPage() {
                               Verify
                             </button>
                           )}
-                          <button
-                            onClick={() => {
-                              if (window.confirm("Delete this document?")) {
-                                deleteDoc.mutate(doc.id);
-                              }
-                            }}
-                            className="text-xs text-red-600 hover:text-red-800 font-medium"
-                          >
-                            Delete
-                          </button>
+                          {isHR && (
+                            <button
+                              onClick={() => {
+                                if (window.confirm("Delete this document?")) {
+                                  deleteDoc.mutate(doc.id);
+                                }
+                              }}
+                              className="text-xs text-red-600 hover:text-red-800 font-medium"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

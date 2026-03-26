@@ -167,6 +167,12 @@ function RootRedirect() {
   return <SelfServiceDashboardPage />;
 }
 
+function MyProfileRedirect() {
+  const user = useAuthStore((s) => s.user);
+  if (!user) return <Navigate to="/login" replace />;
+  return <Navigate to={`/employees/${user.id}`} replace />;
+}
+
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (isAuthenticated) return <Navigate to="/" replace />;
@@ -211,6 +217,7 @@ export default function App() {
         >
           <Route path="/" element={<RootRedirect />} />
           <Route path="/self-service" element={<SelfServiceDashboardPage />} />
+          <Route path="/my-profile" element={<MyProfileRedirect />} />
           <Route path="/modules" element={<ModulesPage />} />
           <Route path="/subscriptions" element={<Navigate to="/billing" replace />} />
           <Route path="/billing" element={<BillingPage />} />

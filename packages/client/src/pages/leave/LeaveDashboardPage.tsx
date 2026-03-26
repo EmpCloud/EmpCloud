@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban } from "lucide-react";
+import { useAuthStore } from "@/lib/auth-store";
+import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle } from "lucide-react";
+
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin", "manager"];
 
 interface LeaveBalance {
   id: number;
@@ -24,6 +27,8 @@ interface LeaveType {
 
 export default function LeaveDashboardPage() {
   const qc = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user ? HR_ROLES.includes(user.role) : false;
   const [showApply, setShowApply] = useState(false);
 
   const { data: balances = [], isLoading: loadingBalances } = useQuery<LeaveBalance[]>({
@@ -55,6 +60,8 @@ export default function LeaveDashboardPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["leave-balances"] });
       qc.invalidateQueries({ queryKey: ["leave-applications"] });
+      qc.invalidateQueries({ queryKey: ["leave-applications-me"] });
+      qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
       setShowApply(false);
       setForm({ leave_type_id: 0, start_date: "", end_date: "", days_count: 1, is_half_day: false, half_day_type: "", reason: "" });
     },
@@ -252,6 +259,9 @@ export default function LeaveDashboardPage() {
         </form>
       )}
 
+      {/* Pending Approvals — Admin/Manager View */}
+      {isAdmin && <PendingApprovals leaveTypes={leaveTypes} />}
+
       {/* Recent Applications */}
       <RecentApplications leaveTypes={leaveTypes} />
 
@@ -343,6 +353,134 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
               );
             })
           )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Pending Approvals sub-component — shows all pending leave requests for admins
+// ---------------------------------------------------------------------------
+
+function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
+  const qc = useQueryClient();
+  const [remarks, setRemarks] = useState("");
+  const [actionId, setActionId] = useState<number | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["leave-applications-pending"],
+    queryFn: () =>
+      api
+        .get("/leave/applications", { params: { page: 1, per_page: 20, status: "pending" } })
+        .then((r) => r.data),
+  });
+
+  const approveMut = useMutation({
+    mutationFn: (id: number) =>
+      api.put(`/leave/applications/${id}/approve`, { remarks }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
+      qc.invalidateQueries({ queryKey: ["leave-balances"] });
+      qc.invalidateQueries({ queryKey: ["leave-applications"] });
+      setActionId(null);
+      setRemarks("");
+    },
+  });
+
+  const rejectMut = useMutation({
+    mutationFn: (id: number) =>
+      api.put(`/leave/applications/${id}/reject`, { remarks }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
+      qc.invalidateQueries({ queryKey: ["leave-applications"] });
+      setActionId(null);
+      setRemarks("");
+    },
+  });
+
+  const applications = data?.data || [];
+  const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
+
+  if (isLoading) return null;
+  if (applications.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-xl border border-amber-200 overflow-hidden mb-6">
+      <div className="px-6 py-4 border-b border-amber-200 bg-amber-50">
+        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-amber-500" />
+          Pending Leave Requests ({applications.length})
+        </h2>
+      </div>
+      <table className="min-w-full">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Reason</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {applications.map((app: any) => (
+            <tr key={app.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                {app.user_first_name ? `${app.user_first_name} ${app.user_last_name || ""}` : `User #${app.user_id}`}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {getTypeName(app.leave_type_id)}
+                {app.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-500">
+                {app.start_date} &mdash; {app.end_date}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700 font-medium">{Number(app.days_count)}</td>
+              <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{app.reason}</td>
+              <td className="px-6 py-4">
+                {actionId === app.id ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={remarks}
+                      onChange={(e) => setRemarks(e.target.value)}
+                      placeholder="Remarks (optional)"
+                      className="px-2 py-1 border border-gray-300 rounded text-xs flex-1 min-w-[120px]"
+                    />
+                    <button
+                      onClick={() => approveMut.mutate(app.id)}
+                      disabled={approveMut.isPending}
+                      className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => rejectMut.mutate(app.id)}
+                      disabled={rejectMut.isPending}
+                      className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                    <button
+                      onClick={() => { setActionId(null); setRemarks(""); }}
+                      className="text-xs text-gray-500 px-1"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setActionId(app.id)}
+                    className="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-lg hover:bg-amber-100 font-medium"
+                  >
+                    Review
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

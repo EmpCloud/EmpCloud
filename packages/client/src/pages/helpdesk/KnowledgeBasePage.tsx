@@ -115,7 +115,13 @@ export default function KnowledgeBasePage() {
     try {
       const { data } = await api.get(`/helpdesk/kb/${idOrSlug}`);
       setSelectedArticle(data.data);
-      setHasVoted(false);
+      // Check if user already rated this article
+      try {
+        const { data: ratingData } = await api.get(`/helpdesk/kb/${data.data.id}/my-rating`);
+        setHasVoted(ratingData.data?.rated || false);
+      } catch {
+        setHasVoted(false);
+      }
     } catch {
       // handle error silently
     }

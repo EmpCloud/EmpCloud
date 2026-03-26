@@ -33,6 +33,15 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/users/invitations — List pending invitations
+router.get("/invitations", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const status = (req.query.status as string) || "pending";
+    const invitations = await userService.listInvitations(req.user!.org_id, status);
+    sendSuccess(res, invitations);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/users/org-chart — MUST be before /:id to avoid matching "org-chart" as an ID
 router.get("/org-chart", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {

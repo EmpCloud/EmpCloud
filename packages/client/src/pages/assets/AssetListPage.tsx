@@ -101,6 +101,10 @@ export default function AssetListPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formPurchaseDate && formWarrantyExpiry && formWarrantyExpiry < formPurchaseDate) {
+      alert("Warranty expiry date cannot be before the purchase date.");
+      return;
+    }
     await createAsset.mutateAsync({
       name: formName,
       category_id: formCategoryId ? Number(formCategoryId) : null,
@@ -362,6 +366,7 @@ export default function AssetListPage() {
                     type="date"
                     value={formWarrantyExpiry}
                     onChange={(e) => setFormWarrantyExpiry(e.target.value)}
+                    min={formPurchaseDate || undefined}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>

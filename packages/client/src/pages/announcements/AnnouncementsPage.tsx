@@ -71,18 +71,18 @@ export default function AnnouncementsPage() {
   const announcements = data?.data || [];
   const meta = data?.meta;
 
-  // Fetch departments for target dropdown
-  const { data: departments } = useQuery({
-    queryKey: ["departments"],
-    queryFn: () => api.get("/departments").then((r) => r.data.data),
-    enabled: !!isHR && targetType === "department",
-  });
-
   // Form state
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [priority, setPriority] = useState("normal");
   const [targetType, setTargetType] = useState("all");
+
+  // Fetch departments for target dropdown (must be after targetType state declaration)
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
+    enabled: !!isHR && targetType === "department",
+  });
   const [selectedTargetIds, setSelectedTargetIds] = useState<string[]>([]);
   const [expiresAt, setExpiresAt] = useState("");
 

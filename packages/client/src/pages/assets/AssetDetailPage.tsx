@@ -113,7 +113,7 @@ export default function AssetDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link to="/assets" className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <Link to={isHR ? "/assets" : "/assets/my"} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
           <ArrowLeft className="h-5 w-5 text-gray-500" />
         </Link>
         <div className="flex-1">

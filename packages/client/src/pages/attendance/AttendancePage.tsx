@@ -13,7 +13,7 @@ export default function AttendancePage() {
   const { data: todayRecord, isLoading: todayLoading } = useQuery({
     queryKey: ["attendance-today"],
     queryFn: () => api.get("/attendance/me/today").then((r) => r.data.data),
-    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
   });
 
   const { data: historyData, isLoading: histLoading } = useQuery({
