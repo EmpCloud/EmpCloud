@@ -111,6 +111,7 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<any> {
       headers: {
         "Content-Type": "application/json",
         "X-Internal-Service": "empcloud-dashboard",
+        "X-Internal-Secret": process.env.INTERNAL_SERVICE_SECRET || "",
       },
     });
     if (!response.ok) {
