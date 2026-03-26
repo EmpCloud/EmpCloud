@@ -12,7 +12,11 @@ const spec = {
     description:
       "Master identity, subscription, and gateway platform for the EMP HRMS ecosystem. Serves as the OAuth2/OIDC authorization server and module registry for all sub-modules.",
   },
-  servers: [{ url: "http://localhost:3000", description: "Local development" }],
+  servers: [
+    { url: process.env.BASE_URL || "http://localhost:3000", description: "Current server" },
+    { url: "https://test-empcloud-api.empcloud.com", description: "Test environment" },
+    { url: "http://localhost:3000", description: "Local development" },
+  ],
   security: [{ bearerAuth: [] }],
   components: {
     securitySchemes: {
