@@ -151,7 +151,7 @@ async function buildSystemPrompt(
 
   // Employee count
   const [empRow] = await db("users")
-    .where({ organization_id: orgId, is_active: true })
+    .where({ organization_id: orgId, status: 1 })
     .count("id as count");
   const empCount = Number(empRow?.count ?? 0);
 
