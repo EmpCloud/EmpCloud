@@ -45,6 +45,21 @@ function todayStr(): string {
   return new Date().toISOString().split("T")[0];
 }
 
+async function fetchModule(port: number, path: string, orgId: number): Promise<any> {
+  try {
+    const url = `http://localhost:${port}${path}${path.includes("?") ? "&" : "?"}organization_id=${orgId}`;
+    const resp = await fetch(url, {
+      headers: { "X-Internal-Service": "empcloud-dashboard" },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!resp.ok) return { error: `API returned ${resp.status}` };
+    const data = await resp.json() as Record<string, unknown>;
+    return data.data || data;
+  } catch (err: any) {
+    return { error: `Module unavailable: ${err.message}` };
+  }
+}
+
 // ---------------------------------------------------------------------------
 // SQL Safety validator (for run_sql_query)
 // ---------------------------------------------------------------------------
@@ -1040,6 +1055,169 @@ export const tools: ToolDefinition[] = [
         return { error: `Query failed: ${msg}` };
       }
     },
+  },
+
+  // ==========================================================================
+  // Cross-Module Tools (HTTP calls to external EMP modules)
+  // ==========================================================================
+
+  // ---- Payroll (port 4000) ----
+  {
+    name: "get_payroll_summary",
+    description:
+      "Get the latest payroll run summary including total gross, deductions, net pay, and employee count",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4000, "/api/v1/payroll/runs?limit=1&sort=created_at:desc", orgId),
+  },
+
+  {
+    name: "get_employee_salary",
+    description:
+      "Get salary details for a specific employee including CTC, components, and deductions",
+    parameters: [
+      {
+        name: "employee_name",
+        type: "string",
+        description: "Employee name to search",
+        required: true,
+      },
+    ],
+    execute: async (orgId, _userId, { employee_name }) => {
+      const db = getDB();
+      const user = await db("users")
+        .where({ organization_id: orgId, status: 1 })
+        .where(function () {
+          this.whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [
+            `%${employee_name}%`,
+          ]).orWhere("first_name", "like", `%${employee_name}%`);
+        })
+        .first();
+      if (!user) return { error: "Employee not found" };
+      return fetchModule(4000, `/api/v1/salaries/employee/${user.id}`, orgId);
+    },
+  },
+
+  {
+    name: "get_payroll_analytics",
+    description:
+      "Get payroll cost analytics — total cost trends, department-wise breakdown",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4000, "/api/v1/analytics/cost-summary", orgId),
+  },
+
+  // ---- Recruitment (port 4500) ----
+  {
+    name: "get_open_jobs",
+    description:
+      "Get current open job postings with title, department, and applicant count",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4500, "/api/v1/jobs?status=open&limit=20", orgId),
+  },
+
+  {
+    name: "get_hiring_pipeline",
+    description:
+      "Get recruitment pipeline summary — candidates by stage (applied, screened, interview, offer, hired)",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4500, "/api/v1/analytics/pipeline", orgId),
+  },
+
+  {
+    name: "get_recruitment_stats",
+    description:
+      "Get recruitment metrics — total candidates, time to hire, source effectiveness, offer acceptance rate",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4500, "/api/v1/analytics/overview", orgId),
+  },
+
+  // ---- Performance (port 4300) ----
+  {
+    name: "get_review_cycle_status",
+    description:
+      "Get active performance review cycles with completion percentage and pending reviews",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4300, "/api/v1/review-cycles?status=active", orgId),
+  },
+
+  {
+    name: "get_goals_summary",
+    description:
+      "Get OKR/goals summary — total goals, completion rate, on-track vs at-risk",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4300, "/api/v1/analytics/overview", orgId),
+  },
+
+  {
+    name: "get_team_performance",
+    description:
+      "Get team performance overview — average ratings, top performers, performance distribution",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4300, "/api/v1/analytics/overview", orgId),
+  },
+
+  // ---- Rewards (port 4600) ----
+  {
+    name: "get_kudos_summary",
+    description:
+      "Get recent kudos/recognition summary — total kudos, top recognized employees, trending categories",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4600, "/api/v1/analytics/overview", orgId),
+  },
+
+  {
+    name: "get_recognition_leaderboard",
+    description:
+      "Get the employee recognition leaderboard — top employees by points",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4600, "/api/v1/leaderboard?period=monthly&limit=10", orgId),
+  },
+
+  // ---- Exit (port 4400) ----
+  {
+    name: "get_active_exits",
+    description:
+      "Get employees currently in the offboarding/exit process with their status and reason",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4400, "/api/v1/exits?status=in_progress", orgId),
+  },
+
+  {
+    name: "get_attrition_analytics",
+    description:
+      "Get attrition analytics — attrition rate, top reasons for leaving, department trends",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4400, "/api/v1/analytics/attrition", orgId),
+  },
+
+  // ---- LMS (port 4700) ----
+  {
+    name: "get_course_catalog",
+    description:
+      "Get available training courses with enrollment counts and completion rates",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4700, "/api/v1/courses?limit=20", orgId),
+  },
+
+  {
+    name: "get_training_compliance",
+    description:
+      "Get compliance training status — mandatory courses, overdue employees, completion percentage",
+    parameters: [],
+    execute: async (orgId) =>
+      fetchModule(4700, "/api/v1/analytics/overview", orgId),
   },
 ];
 
