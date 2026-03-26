@@ -657,6 +657,7 @@ export default function DashboardLayout() {
                 { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
                 { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
                 { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
+                { path: "/admin/logs", label: "Log Dashboard", icon: ScrollText },
               ].map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path || (item.path !== "/admin" && location.pathname.startsWith(item.path));

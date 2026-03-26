@@ -109,6 +109,7 @@ const ModuleAnalyticsPage = lazy(() => import("@/pages/admin/ModuleAnalyticsPage
 const RevenueAnalyticsPage = lazy(() => import("@/pages/admin/RevenueAnalyticsPage"));
 const SubscriptionMetricsPage = lazy(() => import("@/pages/admin/SubscriptionMetricsPage"));
 const AIConfigPage = lazy(() => import("@/pages/admin/AIConfigPage"));
+const LogDashboardPage = lazy(() => import("@/pages/admin/LogDashboardPage"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -314,6 +315,7 @@ export default function App() {
           <Route path="/admin/revenue" element={<RevenueAnalyticsPage />} />
           <Route path="/admin/subscriptions" element={<SubscriptionMetricsPage />} />
           <Route path="/admin/ai-config" element={<AIConfigPage />} />
+          <Route path="/admin/logs" element={<LogDashboardPage />} />
         </Route>
 
         {/* Fallback */}

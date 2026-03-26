@@ -11,6 +11,7 @@ import { logger } from "./utils/logger.js";
 import { initDB, closeDB } from "./db/connection.js";
 import { loadKeys } from "./services/oauth/jwt.service.js";
 import { errorHandler } from "./api/middleware/error.middleware.js";
+import { requestIdMiddleware } from "./api/middleware/request-id.middleware.js";
 import { sendSuccess } from "./utils/response.js";
 
 // Docs
@@ -52,6 +53,7 @@ import wellnessRoutes from "./api/routes/wellness.routes.js";
 import managerRoutes from "./api/routes/manager.routes.js";
 import customFieldRoutes from "./api/routes/custom-field.routes.js";
 import aiConfigRoutes from "./api/routes/ai-config.routes.js";
+import logRoutes from "./api/routes/logs.routes.js";
 
 async function main() {
   // Initialize database
@@ -134,12 +136,13 @@ async function main() {
   app.set("trust proxy", 1);
 
   // Global middleware
+  app.use(requestIdMiddleware);
   app.use(helmet());
   app.use(cors({
     origin: config.cors.allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-EmpCloud-API-Key", "X-Device-API-Key"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-EmpCloud-API-Key", "X-Device-API-Key", "X-Request-ID"],
   }));
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true }));
@@ -195,6 +198,7 @@ async function main() {
   app.use("/api/v1/billing", apiLimiter, billingRoutes);
   app.use("/api/v1/admin", apiLimiter, adminRoutes);
   app.use("/api/v1/admin/ai-config", apiLimiter, aiConfigRoutes);
+  app.use("/api/v1/admin/logs", apiLimiter, logRoutes);
   app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
   app.use("/api/v1/biometrics", apiLimiter, biometricsRoutes);
   app.use("/api/v1/helpdesk", apiLimiter, helpdeskRoutes);

@@ -27,6 +27,30 @@ export async function initDB(): Promise<Knex> {
     },
   });
 
+  // Slow query logging
+  db.on("query", (queryData: any) => {
+    queryData._startTime = Date.now();
+  });
+
+  db.on("query-response", (_response: any, queryData: any) => {
+    const duration = Date.now() - (queryData._startTime || Date.now());
+    if (duration > 1000) {
+      logger.warn("Slow query", {
+        sql: queryData.sql?.substring(0, 200),
+        duration_ms: duration,
+        bindings: queryData.bindings?.slice(0, 5),
+      });
+    }
+  });
+
+  db.on("query-error", (error: any, queryData: any) => {
+    logger.error("Query error", {
+      sql: queryData.sql?.substring(0, 200),
+      error: error.message,
+      bindings: queryData.bindings?.slice(0, 5),
+    });
+  });
+
   await db.raw("SELECT 1");
   logger.info(`Database connected (${config.db.host}:${config.db.port}/${config.db.name})`);
 
