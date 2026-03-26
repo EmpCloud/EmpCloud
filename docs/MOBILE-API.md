@@ -1,2263 +1,4792 @@
-Perfect! Now I have all the information I need. Let me create comprehensive API documentation for mobile app developers. Let me compile this into a well-structured document:
+# EMP Cloud Platform -- Complete API Documentation
 
-## EMP Cloud - Comprehensive API Documentation for Mobile App Developers
+**Version:** 1.0.0
+**Last Updated:** 2026-03-26
+**Audience:** Mobile App Developers, Third-Party Integrators
 
-### API Base URL
-```
-https://api.empcloud.com/api/v1
-```
+---
+
+## Table of Contents
+
+1. [Getting Started](#1-getting-started)
+   - [Base URLs](#base-urls)
+   - [Authentication](#authentication)
+   - [SSO Flow for Mobile](#sso-flow-for-mobile)
+   - [Response Envelope](#response-envelope)
+   - [Pagination](#pagination)
+   - [File Uploads](#file-uploads)
+   - [Roles & Permissions](#roles--permissions)
+   - [Rate Limiting](#rate-limiting)
+   - [Error Codes Reference](#error-codes-reference)
+2. [EMP Cloud Core](#2-emp-cloud-core)
+   - [Auth](#21-auth)
+   - [OAuth2 / OIDC](#22-oauth2--oidc)
+   - [Organizations](#23-organizations)
+   - [Users](#24-users)
+   - [Modules (Marketplace)](#25-modules-marketplace)
+   - [Subscriptions & Seats](#26-subscriptions--seats)
+   - [Employees](#27-employees)
+   - [Attendance](#28-attendance)
+   - [Leave](#29-leave)
+   - [Documents](#210-documents)
+   - [Announcements](#211-announcements)
+   - [Policies](#212-policies)
+   - [Notifications](#213-notifications)
+   - [Dashboard](#214-dashboard)
+   - [Biometrics](#215-biometrics)
+   - [Helpdesk](#216-helpdesk)
+   - [Surveys](#217-surveys)
+   - [Assets](#218-assets)
+   - [Positions](#219-positions)
+   - [Anonymous Feedback](#220-anonymous-feedback)
+   - [Events](#221-events)
+   - [Wellness](#222-wellness)
+   - [Forum / Social Intranet](#223-forum--social-intranet)
+   - [Whistleblowing](#224-whistleblowing)
+   - [Chatbot](#225-chatbot)
+   - [Custom Fields](#226-custom-fields)
+   - [Manager Self-Service](#227-manager-self-service)
+   - [Billing (Cloud Proxy)](#228-billing-cloud-proxy)
+   - [Onboarding Wizard](#229-onboarding-wizard)
+   - [Audit Logs](#230-audit-logs)
+   - [Webhooks (Inbound)](#231-webhooks-inbound)
+   - [Super Admin](#232-super-admin)
+   - [AI Configuration (Super Admin)](#233-ai-configuration-super-admin)
+   - [Log Dashboard (Super Admin)](#234-log-dashboard-super-admin)
+3. [EMP Recruit](#3-emp-recruit)
+4. [EMP Performance](#4-emp-performance)
+5. [EMP Rewards](#5-emp-rewards)
+6. [EMP Exit](#6-emp-exit)
+7. [EMP Payroll](#7-emp-payroll)
+8. [EMP LMS](#8-emp-lms)
+9. [EMP Billing](#9-emp-billing)
+10. [Webhook Format](#10-webhook-format)
+
+---
+
+## 1. Getting Started
+
+### Base URLs
+
+| Module | Base URL |
+|--------|----------|
+| EMP Cloud (Core HRMS) | `https://test-empcloud-api.empcloud.com` |
+| EMP Recruit | `https://test-recruit-api.empcloud.com` |
+| EMP Performance | `https://test-performance-api.empcloud.com` |
+| EMP Rewards | `https://test-rewards-api.empcloud.com` |
+| EMP Exit | `https://test-exit-api.empcloud.com` |
+| EMP LMS | `https://testlms-api.empcloud.com` |
+| EMP Payroll | `https://testpayroll-api.empcloud.com` |
+| EMP Billing | (Internal only -- not directly accessible by mobile) |
 
 ### Authentication
-All endpoints (except registration, login, forgot-password, and reset-password) require Bearer token authentication:
+
+All authenticated endpoints require a Bearer token in the `Authorization` header:
 
 ```
 Authorization: Bearer <access_token>
 ```
 
-Token obtained via `/api/v1/auth/login` endpoint.
+**Getting a token:**
 
----
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
 
-## 1. AUTHENTICATION & SSO
-
-### 1.1 User Registration
-**POST** `/api/v1/auth/register`
-- **Auth Required:** No
-- **Role Required:** None
-- **Request Body:**
-  - `org_name` (string, required) - Organization name
-  - `org_legal_name` (string, required) - Legal entity name
-  - `org_country` (string, required) - Country code
-  - `org_state` (string, optional) - State/province
-  - `org_timezone` (string, required) - IANA timezone (e.g., "Asia/Kolkata")
-  - `org_email` (string, required) - Organization email
-  - `first_name` (string, required) - Admin first name
-  - `last_name` (string, required) - Admin last name
-  - `email` (string, required) - Admin email
-  - `password` (string, required) - Password (min 8 chars)
-- **Response:** Organization, user, and tokens
-- **Status Codes:** 201 (Created), 400 (Validation Error), 409 (Conflict)
-
-### 1.2 User Login
-**POST** `/api/v1/auth/login`
-- **Auth Required:** No
-- **Request Body:**
-  - `email` (string, required) - User email
-  - `password` (string, required) - User password
-- **Response:** 
-  ```json
-  {
-    "user": { "id", "email", "role", "org_id", ... },
-    "org": { "id", "name", "timezone", ... },
-    "access_token": "jwt_token",
-    "refresh_token": "jwt_token"
-  }
-  ```
-- **Status Codes:** 200 (Success), 401 (Invalid credentials), 400 (Validation Error)
-
-### 1.3 Change Password
-**POST** `/api/v1/auth/change-password`
-- **Auth Required:** Yes (JWT token)
-- **Request Body:**
-  - `current_password` (string, required) - Current password
-  - `new_password` (string, required) - New password (min 8 chars)
-- **Response:** `{ "message": "Password changed successfully" }`
-- **Status Codes:** 200 (Success), 400 (Validation Error), 401 (Unauthorized)
-
-### 1.4 Forgot Password
-**POST** `/api/v1/auth/forgot-password`
-- **Auth Required:** No
-- **Request Body:**
-  - `email` (string, required) - User email
-- **Response:** `{ "message": "If the email exists, a reset link has been sent" }` (always returns 200 for security)
-- **Status Codes:** 200 (Always, to prevent email enumeration)
-
-### 1.5 Reset Password
-**POST** `/api/v1/auth/reset-password`
-- **Auth Required:** No
-- **Request Body:**
-  - `token` (string, required) - Password reset token (from email link)
-  - `password` (string, required) - New password
-- **Response:** `{ "message": "Password reset successfully" }`
-- **Status Codes:** 200 (Success), 400 (Invalid/Expired Token)
-
-### 1.6 OAuth Token Exchange
-**POST** `/oauth/token`
-- **Auth Required:** No (client credentials required)
-- **Request Body:**
-  - `grant_type` (string, required) - "authorization_code" or "refresh_token"
-  - `client_id` (string, required)
-  - `client_secret` (string, conditional - required for confidential clients)
-  - `code` (string, conditional - required for authorization_code flow)
-  - `redirect_uri` (string, conditional - required for authorization_code flow)
-  - `code_verifier` (string, optional - required if PKCE was used)
-  - `refresh_token` (string, conditional - required for refresh_token flow)
-- **Response:**
-  ```json
-  {
-    "access_token": "jwt_token",
-    "token_type": "Bearer",
-    "expires_in": 3600,
-    "refresh_token": "jwt_token",
-    "id_token": "jwt_token"
-  }
-  ```
-
-### 1.7 OAuth Authorization
-**GET** `/oauth/authorize`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `client_id` (string, required)
-  - `redirect_uri` (string, required)
-  - `response_type` (string, required) - "code"
-  - `scope` (string, optional)
-  - `state` (string, required) - CSRF protection
-  - `code_challenge` (string, required for public clients) - PKCE
-  - `code_challenge_method` (string, optional) - "S256" or "plain"
-  - `nonce` (string, optional) - For OpenID Connect
-- **Response:** Redirects to redirect_uri with `code` and `state`
-- **OIDC Discovery:** GET `/.well-known/openid-configuration`
-- **JWKS Endpoint:** GET `/oauth/jwks`
-
-### 1.8 OAuth Token Revocation
-**POST** `/oauth/revoke`
-- **Request Body:**
-  - `token` (string, required)
-  - `token_type_hint` (string, optional) - "access_token" or "refresh_token"
-  - `client_id` (string, required)
-  - `client_secret` (string, required)
-- **Response:** 200 (always, per RFC 7009)
-
-### 1.9 UserInfo (OIDC)
-**GET** `/oauth/userinfo`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "sub": "user_id",
-    "email": "user@example.com",
-    "name": "Full Name",
-    "given_name": "First",
-    "family_name": "Last",
-    "org_id": "org_id",
-    "org_name": "Organization",
-    "role": "employee"
-  }
-  ```
-
----
-
-## 2. EMPLOYEE PROFILE
-
-### 2.1 Get My Profile
-**GET** `/api/v1/employees/{userId}/profile`
-- **Auth Required:** Yes
-- **Permissions:** Own profile (or HR role)
-- **Response:** 
-  ```json
-  {
-    "id": "user_id",
-    "email": "user@example.com",
-    "first_name": "John",
-    "last_name": "Doe",
-    "gender": "male",
-    "date_of_birth": "1990-01-15",
-    "phone": "+91-9999999999",
-    "mobile": "+91-9999999999",
-    "pan": "AAAPA1234A",
-    "aadhar": "123456789012",
-    "blood_group": "O+",
-    "designation": "Senior Engineer",
-    "department": "Engineering",
-    "joining_date": "2020-01-15",
-    "employment_type": "Full-time",
-    "status": "active",
-    "profile_picture": "url"
-  }
-  ```
-- **Status Codes:** 200 (Success), 403 (Forbidden), 404 (Not Found)
-
-### 2.2 Update My Profile
-**PUT** `/api/v1/employees/{userId}/profile`
-- **Auth Required:** Yes
-- **Permissions:** Own profile (or HR role)
-- **Request Body:** Any profile fields (partial update supported)
-  - `first_name`, `last_name`, `gender`, `date_of_birth`, `phone`, `mobile`, `pan`, `aadhar`, `blood_group`, etc.
-- **Response:** Updated profile object
-- **Status Codes:** 200 (Success), 400 (Validation Error), 403 (Forbidden)
-
-### 2.3 Get Employee Directory
-**GET** `/api/v1/employees/directory`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer, default 1)
-  - `per_page` (integer, default 20, max 100)
-  - `search` (string, optional) - Search by name/email
-  - `department_id` (integer, optional)
-  - `designation` (string, optional)
-  - `status` (string, optional) - "active", "inactive"
-- **Response:** Paginated list of employees
-  ```json
-  {
-    "data": [
-      { "id", "email", "first_name", "last_name", "designation", "department", "phone" }
-    ],
-    "total": 150,
-    "page": 1,
-    "per_page": 20
-  }
-  ```
-
-### 2.4 Get Birthdays (This Month)
-**GET** `/api/v1/employees/birthdays`
-- **Auth Required:** Yes
-- **Response:** Array of employees with birthdays this month
-
-### 2.5 Get Work Anniversaries (This Month)
-**GET** `/api/v1/employees/anniversaries`
-- **Auth Required:** Yes
-- **Response:** Array of employees with work anniversaries this month
-
-### 2.6 Get Headcount Analytics
-**GET** `/api/v1/employees/headcount`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Analytics on total employees, by department, by status, etc.
-
-### 2.7 Get Employee Addresses
-**GET** `/api/v1/employees/{userId}/addresses`
-- **Auth Required:** Yes
-- **Permissions:** Own addresses (or HR role)
-- **Response:** Array of addresses (current, permanent, etc.)
-
-### 2.8 Add Employee Address
-**POST** `/api/v1/employees/{userId}/addresses`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `address_type` (string) - "current", "permanent", etc.
-  - `street_address` (string)
-  - `city` (string)
-  - `state` (string)
-  - `postal_code` (string)
-  - `country` (string)
-  - `is_current` (boolean, optional)
-- **Response:** Created address object
-- **Status Codes:** 201 (Created)
-
-### 2.9 Update Employee Address
-**PUT** `/api/v1/employees/{userId}/addresses/{addressId}`
-- **Auth Required:** Yes
-- **Request Body:** Any address fields (partial update)
-- **Response:** Updated address
-
-### 2.10 Delete Employee Address
-**DELETE** `/api/v1/employees/{userId}/addresses/{addressId}`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Address deleted" }`
-
-### 2.11 Get Employee Education
-**GET** `/api/v1/employees/{userId}/education`
-- **Auth Required:** Yes
-- **Response:** Array of education records
-
-### 2.12 Add Education Record
-**POST** `/api/v1/employees/{userId}/education`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `institution` (string) - School/University name
-  - `degree` (string)
-  - `field_of_study` (string)
-  - `graduation_year` (integer)
-  - `grade` (string, optional)
-- **Response:** Created education record
-- **Status Codes:** 201 (Created)
-
-### 2.13 Update Education Record
-**PUT** `/api/v1/employees/{userId}/education/{educationId}`
-- **Auth Required:** Yes
-- **Request Body:** Any education fields
-- **Response:** Updated education record
-
-### 2.14 Delete Education Record
-**DELETE** `/api/v1/employees/{userId}/education/{educationId}`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Education record deleted" }`
-
-### 2.15 Get Work Experience
-**GET** `/api/v1/employees/{userId}/experience`
-- **Auth Required:** Yes
-- **Response:** Array of work experience records
-
-### 2.16 Add Work Experience
-**POST** `/api/v1/employees/{userId}/experience`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `company_name` (string)
-  - `designation` (string)
-  - `start_date` (date)
-  - `end_date` (date, optional - null for current)
-  - `description` (string, optional)
-  - `industry` (string, optional)
-- **Response:** Created experience record
-- **Status Codes:** 201 (Created)
-
-### 2.17 Update Work Experience
-**PUT** `/api/v1/employees/{userId}/experience/{experienceId}`
-- **Auth Required:** Yes
-- **Request Body:** Any experience fields
-- **Response:** Updated experience record
-
-### 2.18 Delete Work Experience
-**DELETE** `/api/v1/employees/{userId}/experience/{experienceId}`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Experience record deleted" }`
-
-### 2.19 Get Dependents
-**GET** `/api/v1/employees/{userId}/dependents`
-- **Auth Required:** Yes
-- **Response:** Array of dependent records
-
-### 2.20 Add Dependent
-**POST** `/api/v1/employees/{userId}/dependents`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `name` (string)
-  - `relationship` (string) - "spouse", "child", "parent", etc.
-  - `date_of_birth` (date)
-  - `gender` (string, optional)
-  - `aadhar` (string, optional)
-- **Response:** Created dependent record
-- **Status Codes:** 201 (Created)
-
-### 2.21 Update Dependent
-**PUT** `/api/v1/employees/{userId}/dependents/{dependentId}`
-- **Auth Required:** Yes
-- **Request Body:** Any dependent fields
-- **Response:** Updated dependent record
-
-### 2.22 Delete Dependent
-**DELETE** `/api/v1/employees/{userId}/dependents/{dependentId}`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Dependent deleted" }`
-
----
-
-## 3. ATTENDANCE
-
-### 3.1 Check-In
-**POST** `/api/v1/attendance/check-in`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `latitude` (float, optional)
-  - `longitude` (float, optional)
-  - `ip_address` (string, optional)
-  - `notes` (string, optional)
-  - `check_in_method` (string, optional) - "biometric", "qr", "manual", "mobile"
-- **Response:** Created attendance record
-- **Status Codes:** 201 (Created), 400 (Already checked in)
-
-### 3.2 Check-Out
-**POST** `/api/v1/attendance/check-out`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `latitude` (float, optional)
-  - `longitude` (float, optional)
-  - `ip_address` (string, optional)
-  - `notes` (string, optional)
-  - `check_out_method` (string, optional)
-- **Response:** Updated attendance record with duration
-- **Status Codes:** 200 (Success), 400 (Not checked in)
-
-### 3.3 Get Today's Attendance
-**GET** `/api/v1/attendance/me/today`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "id": "attendance_id",
-    "user_id": "user_id",
-    "date": "2026-03-26",
-    "check_in_time": "2026-03-26T09:00:00Z",
-    "check_out_time": "2026-03-26T17:30:00Z",
-    "duration": 28800,
-    "status": "present",
-    "latitude_in": 19.0760,
-    "longitude_in": 72.8777
-  }
-  ```
-- **Status Codes:** 200 (Success), 404 (No attendance yet)
-
-### 3.4 Get My Attendance History
-**GET** `/api/v1/attendance/me/history`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer, default 1)
-  - `per_page` (integer, default 20)
-  - `month` (integer, optional) - 1-12
-  - `year` (integer, optional) - e.g., 2026
-- **Response:** Paginated attendance records
-- **Status Codes:** 200 (Success)
-
-### 3.5 Get Shift List
-**GET** `/api/v1/attendance/shifts`
-- **Auth Required:** Yes
-- **Response:** Array of all configured shifts
-  ```json
-  {
-    "id": "shift_id",
-    "name": "Morning Shift",
-    "start_time": "09:00",
-    "end_time": "17:00",
-    "break_duration": 60,
-    "is_active": true
-  }
-  ```
-
-### 3.6 Create Shift (HR Only)
-**POST** `/api/v1/attendance/shifts`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `name` (string, required)
-  - `start_time` (string, required) - "HH:MM"
-  - `end_time` (string, required) - "HH:MM"
-  - `break_duration` (integer, optional) - minutes
-  - `days` (array, optional) - [1-7] for day of week
-  - `is_active` (boolean, optional)
-- **Response:** Created shift
-- **Status Codes:** 201 (Created)
-
-### 3.7 Update Shift (HR Only)
-**PUT** `/api/v1/attendance/shifts/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any shift fields
-- **Response:** Updated shift
-
-### 3.8 Delete Shift (HR Only)
-**DELETE** `/api/v1/attendance/shifts/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Shift deactivated" }`
-
-### 3.9 Get My Shift Schedule
-**GET** `/api/v1/attendance/shifts/my-schedule`
-- **Auth Required:** Yes
-- **Response:** Current user's assigned shifts for the week/month
-
-### 3.10 Request Shift Swap
-**POST** `/api/v1/attendance/shifts/swap-request`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `from_shift_id` (integer)
-  - `to_shift_id` (integer)
-  - `swap_with_user_id` (integer, optional)
-  - `reason` (string, optional)
-- **Response:** Created swap request
-- **Status Codes:** 201 (Created)
-
-### 3.11 Get My Shift Swap Requests
-**GET** `/api/v1/attendance/shifts/swap-requests`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `status` (string, optional) - "pending", "approved", "rejected"
-- **Response:** Array of swap requests
-
-### 3.12 Approve Shift Swap (HR Only)
-**POST** `/api/v1/attendance/shifts/swap-requests/{id}/approve`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Updated swap request with status "approved"
-
-### 3.13 Reject Shift Swap (HR Only)
-**POST** `/api/v1/attendance/shifts/swap-requests/{id}/reject`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Updated swap request with status "rejected"
-
-### 3.14 Get Geo-Fences
-**GET** `/api/v1/attendance/geo-fences`
-- **Auth Required:** Yes
-- **Response:** Array of configured geo-fences
-  ```json
-  {
-    "id": "fence_id",
-    "name": "Office Location",
-    "latitude": 19.0760,
-    "longitude": 72.8777,
-    "radius": 100,
-    "is_active": true
-  }
-  ```
-
-### 3.15 Create Geo-Fence (HR Only)
-**POST** `/api/v1/attendance/geo-fences`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `name` (string)
-  - `latitude` (float)
-  - `longitude` (float)
-  - `radius` (float) - meters
-  - `is_active` (boolean, optional)
-- **Response:** Created geo-fence
-- **Status Codes:** 201 (Created)
-
-### 3.16 Update Geo-Fence (HR Only)
-**PUT** `/api/v1/attendance/geo-fences/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any geo-fence fields
-- **Response:** Updated geo-fence
-
-### 3.17 Delete Geo-Fence (HR Only)
-**DELETE** `/api/v1/attendance/geo-fences/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Geo-fence deactivated" }`
-
-### 3.18 Submit Attendance Regularization
-**POST** `/api/v1/attendance/regularizations`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `date` (date)
-  - `check_in_time` (string, optional)
-  - `check_out_time` (string, optional)
-  - `reason` (string)
-  - `supporting_docs` (array, optional)
-- **Response:** Created regularization request
-- **Status Codes:** 201 (Created)
-
-### 3.19 Get My Regularizations
-**GET** `/api/v1/attendance/regularizations/me`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer, default 1)
-  - `per_page` (integer, default 20)
-- **Response:** Paginated regularization requests
-
-### 3.20 Approve/Reject Regularization (HR Only)
-**PUT** `/api/v1/attendance/regularizations/{id}/approve`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `status` (string) - "approved" or "rejected"
-  - `rejection_reason` (string, optional)
-- **Response:** Updated regularization with status
-
-### 3.21 Get Attendance Records (HR Only)
-**GET** `/api/v1/attendance/records`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `month` (integer, optional)
-  - `year` (integer, optional)
-  - `user_id` (integer, optional)
-  - `department_id` (integer, optional)
-- **Response:** Paginated all attendance records
-
-### 3.22 Get Attendance Dashboard (HR Only)
-**GET** `/api/v1/attendance/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Analytics - present, absent, late, on-leave counts
-
-### 3.23 Get Monthly Attendance Report (HR Only)
-**GET** `/api/v1/attendance/monthly-report`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `month` (integer, optional) - default current month
-  - `year` (integer, optional) - default current year
-  - `user_id` (integer, optional)
-- **Response:** Detailed monthly report per employee
-
----
-
-## 4. LEAVE MANAGEMENT
-
-### 4.1 Get Leave Types
-**GET** `/api/v1/leave/types`
-- **Auth Required:** Yes
-- **Response:** Array of leave types (Annual, Sick, Casual, etc.)
-  ```json
-  {
-    "id": "type_id",
-    "name": "Annual Leave",
-    "code": "ANNUAL",
-    "max_days_per_year": 20,
-    "requires_approval": true,
-    "is_active": true
-  }
-  ```
-
-### 4.2 Create Leave Type (HR Only)
-**POST** `/api/v1/leave/types`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `name` (string)
-  - `code` (string)
-  - `max_days_per_year` (integer)
-  - `requires_approval` (boolean, optional)
-  - `description` (string, optional)
-- **Response:** Created leave type
-- **Status Codes:** 201 (Created)
-
-### 4.3 Update Leave Type (HR Only)
-**PUT** `/api/v1/leave/types/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any leave type fields
-- **Response:** Updated leave type
-
-### 4.4 Get Leave Policies
-**GET** `/api/v1/leave/policies`
-- **Auth Required:** Yes
-- **Response:** Array of leave policies
-
-### 4.5 Create Leave Policy (HR Only)
-**POST** `/api/v1/leave/policies`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `name` (string)
-  - `description` (string, optional)
-  - `applicable_to_all` (boolean)
-  - `department_ids` (array, optional)
-  - `designation_ids` (array, optional)
-  - `leave_type_id` (integer)
-  - `days_per_year` (integer)
-  - `carryover_days` (integer, optional)
-- **Response:** Created policy
-- **Status Codes:** 201 (Created)
-
-### 4.6 Get My Leave Balance
-**GET** `/api/v1/leave/balances/me`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `year` (integer, optional) - default current year
-- **Response:**
-  ```json
-  {
-    "balances": [
-      {
-        "leave_type_id": "type_id",
-        "leave_type_name": "Annual Leave",
-        "year": 2026,
-        "total_allocated": 20,
-        "used": 3,
-        "balance": 17,
-        "pending_approval": 2
-      }
-    ]
-  }
-  ```
-
-### 4.7 Get Leave Balance (Any User, HR can get others)
-**GET** `/api/v1/leave/balances`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `user_id` (integer, optional) - default self
-  - `year` (integer, optional)
-- **Response:** Same as above
-
-### 4.8 Apply for Leave
-**POST** `/api/v1/leave/applications`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `leave_type_id` (integer)
-  - `from_date` (date)
-  - `to_date` (date)
-  - `reason` (string, optional)
-  - `half_day` (boolean, optional)
-  - `half_day_type` (string, optional) - "first_half", "second_half"
-  - `supporting_documents` (array, optional)
-- **Response:** Created leave application
-  ```json
-  {
-    "id": "application_id",
-    "user_id": "user_id",
-    "leave_type_id": "type_id",
-    "from_date": "2026-04-01",
-    "to_date": "2026-04-05",
-    "days": 5,
-    "status": "pending",
-    "created_at": "2026-03-26T10:00:00Z"
-  }
-  ```
-- **Status Codes:** 201 (Created)
-
-### 4.9 Get My Leave Applications
-**GET** `/api/v1/leave/applications/me`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer, default 1)
-  - `per_page` (integer, default 20)
-  - `status` (string, optional) - "pending", "approved", "rejected"
-  - `leave_type_id` (integer, optional)
-- **Response:** Paginated applications
-
-### 4.10 Get All Leave Applications (HR/Manager)
-**GET** `/api/v1/leave/applications`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `status` (string, optional)
-  - `leave_type_id` (integer, optional)
-  - `user_id` (integer, optional) - HR can filter by user
-- **Response:** Paginated applications
-
-### 4.11 Get Leave Application Detail
-**GET** `/api/v1/leave/applications/{id}`
-- **Auth Required:** Yes
-- **Response:** Single application with approval history
-
-### 4.12 Approve Leave Application
-**PUT** `/api/v1/leave/applications/{id}/approve`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `remarks` (string, optional)
-- **Response:** Updated application with status "approved"
-
-### 4.13 Reject Leave Application
-**PUT** `/api/v1/leave/applications/{id}/reject`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `remarks` (string, optional)
-- **Response:** Updated application with status "rejected"
-
-### 4.14 Cancel Leave Application
-**PUT** `/api/v1/leave/applications/{id}/cancel`
-- **Auth Required:** Yes
-- **Response:** Updated application with status "cancelled"
-
-### 4.15 Get Leave Calendar
-**GET** `/api/v1/leave/calendar`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `month` (integer, optional) - 1-12
-  - `year` (integer, optional)
-- **Response:** Calendar view with leave dates and statuses
-
-### 4.16 Request Comp-Off
-**POST** `/api/v1/leave/comp-off`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `worked_on_date` (date)
-  - `reason` (string, optional)
-  - `comp_off_date` (date, optional)
-- **Response:** Created comp-off request
-- **Status Codes:** 201 (Created)
-
-### 4.17 Get My Comp-Off Requests
-**GET** `/api/v1/leave/comp-off/my`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `status` (string, optional)
-- **Response:** Paginated comp-off requests
-
-### 4.18 Get My Comp-Off Balance
-**GET** `/api/v1/leave/comp-off/balance`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `year` (integer, optional)
-- **Response:**
-  ```json
-  {
-    "balance": 2,
-    "total_allocated": 5,
-    "total_used": 3,
-    "year": 2026
-  }
-  ```
-
-### 4.19 Approve Comp-Off
-**PUT** `/api/v1/leave/comp-off/{id}/approve`
-- **Auth Required:** Yes
-- **Response:** Updated comp-off request
-
-### 4.20 Reject Comp-Off
-**PUT** `/api/v1/leave/comp-off/{id}/reject`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `reason` (string, optional)
-- **Response:** Updated comp-off request
-
----
-
-## 5. DOCUMENTS
-
-### 5.1 Get Document Categories
-**GET** `/api/v1/documents/categories`
-- **Auth Required:** Yes
-- **Response:** Array of document categories
-
-### 5.2 Create Document Category (HR Only)
-**POST** `/api/v1/documents/categories`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `name` (string)
-  - `description` (string, optional)
-  - `is_mandatory` (boolean, optional)
-  - `expiry_days` (integer, optional)
-- **Response:** Created category
-- **Status Codes:** 201 (Created)
-
-### 5.3 Get My Documents
-**GET** `/api/v1/documents/my`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-- **Response:** Paginated documents of current user
-  ```json
-  {
-    "data": [
-      {
-        "id": "doc_id",
-        "name": "Aadhar Card",
-        "category_id": "cat_id",
-        "file_path": "s3://...",
-        "status": "verified",
-        "expires_at": "2027-03-26",
-        "uploaded_at": "2026-03-26T10:00:00Z"
-      }
-    ],
-    "total": 5
-  }
-  ```
-
-### 5.4 Upload Document
-**POST** `/api/v1/documents/upload`
-- **Auth Required:** Yes
-- **Content-Type:** multipart/form-data
-- **Request Form Data:**
-  - `file` (file, required) - Document file
-  - `category_id` (integer, required)
-  - `name` (string, optional) - Document name
-  - `expires_at` (date, optional)
-  - `user_id` (integer, optional) - HR can upload for others
-- **Response:** Created document
-- **Status Codes:** 201 (Created)
-
-### 5.5 Get Document Detail
-**GET** `/api/v1/documents/{id}`
-- **Auth Required:** Yes
-- **Response:** Single document details
-
-### 5.6 Download Document
-**GET** `/api/v1/documents/{id}/download`
-- **Auth Required:** Yes
-- **Response:** File download (Content-Disposition: attachment)
-
-### 5.7 Delete Document (HR Only)
-**DELETE** `/api/v1/documents/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Document deleted" }`
-
-### 5.8 Verify Document (HR Only)
-**PUT** `/api/v1/documents/{id}/verify`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `verified_by_id` (integer)
-  - `remarks` (string, optional)
-- **Response:** Updated document with status "verified"
-
-### 5.9 Reject Document (HR Only)
-**POST** `/api/v1/documents/{id}/reject`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `rejection_reason` (string)
-- **Response:** Updated document with status "rejected"
-
-### 5.10 Get Expiring Documents (HR Only)
-**GET** `/api/v1/documents/expiring`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `days` (integer, optional) - default 30
-- **Response:** Documents expiring within days
-
-### 5.11 Get Mandatory Document Tracking (HR Only)
-**GET** `/api/v1/documents/mandatory-status`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Employees missing mandatory documents
-
----
-
-## 6. ANNOUNCEMENTS
-
-### 6.1 Get Announcements
-**GET** `/api/v1/announcements`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-- **Response:** Paginated announcements visible to user
-  ```json
-  {
-    "data": [
-      {
-        "id": "announce_id",
-        "title": "Policy Update",
-        "content": "New remote work policy...",
-        "created_by": "HR Name",
-        "created_at": "2026-03-26T10:00:00Z",
-        "is_read": false,
-        "visibility": "all_employees"
-      }
-    ],
-    "total": 15
-  }
-  ```
-
-### 6.2 Get Unread Announcement Count
-**GET** `/api/v1/announcements/unread-count`
-- **Auth Required:** Yes
-- **Response:** `{ "count": 3 }`
-
-### 6.3 Create Announcement (HR Only)
-**POST** `/api/v1/announcements`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title` (string)
-  - `content` (string)
-  - `visibility` (string) - "all_employees", "specific_department", "specific_users"
-  - `department_ids` (array, optional)
-  - `user_ids` (array, optional)
-  - `published_at` (datetime, optional)
-- **Response:** Created announcement
-- **Status Codes:** 201 (Created)
-
-### 6.4 Update Announcement (HR Only)
-**PUT** `/api/v1/announcements/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any announcement fields
-- **Response:** Updated announcement
-
-### 6.5 Delete Announcement (HR Only)
-**DELETE** `/api/v1/announcements/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Announcement deleted" }`
-
-### 6.6 Mark Announcement as Read
-**POST** `/api/v1/announcements/{id}/read`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Marked as read" }`
-
----
-
-## 7. POLICIES
-
-### 7.1 Get All Policies
-**GET** `/api/v1/policies`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `category` (string, optional)
-- **Response:** Paginated policies
-
-### 7.2 Get Policy Detail
-**GET** `/api/v1/policies/{id}`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "id": "policy_id",
-    "title": "Code of Conduct",
-    "content": "HTML content...",
-    "category": "compliance",
-    "requires_acknowledgment": true,
-    "published_at": "2026-01-01",
-    "my_acknowledgment": {
-      "acknowledged_at": "2026-01-05",
-      "acknowledged_by_id": "user_id"
-    }
-  }
-  ```
-
-### 7.3 Get Pending Policies (Not Yet Acknowledged)
-**GET** `/api/v1/policies/pending`
-- **Auth Required:** Yes
-- **Response:** Array of policies user hasn't acknowledged yet
-
-### 7.4 Create Policy (HR Only)
-**POST** `/api/v1/policies`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title` (string)
-  - `content` (string)
-  - `category` (string)
-  - `requires_acknowledgment` (boolean)
-  - `published_at` (datetime, optional)
-- **Response:** Created policy
-- **Status Codes:** 201 (Created)
-
-### 7.5 Update Policy (HR Only)
-**PUT** `/api/v1/policies/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any policy fields
-- **Response:** Updated policy
-
-### 7.6 Delete Policy (HR Only)
-**DELETE** `/api/v1/policies/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Policy deactivated" }`
-
-### 7.7 Acknowledge Policy
-**POST** `/api/v1/policies/{id}/acknowledge`
-- **Auth Required:** Yes
-- **Response:** Acknowledgment record created
-
-### 7.8 Get Policy Acknowledgments (HR Only)
-**GET** `/api/v1/policies/{id}/acknowledgments`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** List of users who acknowledged + pending acknowledgments
-
----
-
-## 8. NOTIFICATIONS
-
-### 8.1 Get Notifications
-**GET** `/api/v1/notifications`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `unread_only` (boolean, optional) - "true" to get only unread
-- **Response:** Paginated notifications
-  ```json
-  {
-    "data": [
-      {
-        "id": "notif_id",
-        "type": "leave_approved",
-        "title": "Leave Approved",
-        "message": "Your leave from Apr 1-5 has been approved",
-        "data": { "application_id": "123" },
-        "is_read": false,
-        "created_at": "2026-03-26T10:00:00Z"
-      }
-    ],
-    "total": 25
-  }
-  ```
-
-### 8.2 Get Unread Count
-**GET** `/api/v1/notifications/unread-count`
-- **Auth Required:** Yes
-- **Response:** `{ "count": 5 }`
-
-### 8.3 Mark Notification as Read
-**PUT** `/api/v1/notifications/{id}/read`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Notification marked as read" }`
-
-### 8.4 Mark All as Read
-**PUT** `/api/v1/notifications/read-all`
-- **Auth Required:** Yes
-- **Response:** `{ "marked_count": 5 }`
-
----
-
-## 9. HELPDESK
-
-### 9.1 Create Support Ticket
-**POST** `/api/v1/helpdesk/tickets`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `title` (string)
-  - `description` (string)
-  - `category` (string)
-  - `priority` (string) - "low", "medium", "high", "urgent"
-  - `attachments` (array, optional)
-- **Response:** Created ticket
-  ```json
-  {
-    "id": "ticket_id",
-    "title": "Cannot login",
-    "description": "Getting 401 error",
-    "status": "open",
-    "priority": "high",
-    "raised_by_id": "user_id",
-    "created_at": "2026-03-26T10:00:00Z",
-    "comments_count": 0
-  }
-  ```
-- **Status Codes:** 201 (Created)
-
-### 9.2 Get My Tickets
-**GET** `/api/v1/helpdesk/tickets/my`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `status` (string, optional)
-  - `category` (string, optional)
-- **Response:** Paginated user's tickets
-
-### 9.3 Get All Tickets (HR Can See All)
-**GET** `/api/v1/helpdesk/tickets`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `status` (string, optional)
-  - `category` (string, optional)
-  - `priority` (string, optional)
-  - `assigned_to` (integer, optional) - HR only
-  - `raised_by` (integer, optional) - HR only
-  - `search` (string, optional)
-- **Response:** Paginated tickets (HR: all, Employee: own)
-
-### 9.4 Get Ticket Detail with Comments
-**GET** `/api/v1/helpdesk/tickets/{id}`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "id": "ticket_id",
-    "title": "Cannot login",
-    "description": "Getting 401 error",
-    "status": "open",
-    "priority": "high",
-    "category": "account",
-    "raised_by": { "id", "name", "email" },
-    "assigned_to": { "id", "name", "email" },
-    "resolution": null,
-    "rating": null,
-    "created_at": "2026-03-26T10:00:00Z",
-    "updated_at": "2026-03-26T11:30:00Z",
-    "comments": [
-      {
-        "id": "comment_id",
-        "author": { "id", "name" },
-        "comment": "Let me check...",
-        "is_internal": false,
-        "created_at": "2026-03-26T10:30:00Z"
-      }
-    ]
-  }
-  ```
-
-### 9.5 Update Ticket (HR Only)
-**PUT** `/api/v1/helpdesk/tickets/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title`, `description`, `priority`, `category`, `status`
-- **Response:** Updated ticket
-
-### 9.6 Assign Ticket (HR Only)
-**POST** `/api/v1/helpdesk/tickets/{id}/assign`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `assigned_to` (integer) - User ID
-- **Response:** Updated ticket with assignment
-
-### 9.7 Add Comment to Ticket
-**POST** `/api/v1/helpdesk/tickets/{id}/comment`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `comment` (string)
-  - `is_internal` (boolean, optional) - Only HR can post internal comments
-  - `attachments` (array, optional)
-- **Response:** Created comment
-- **Status Codes:** 201 (Created)
-
-### 9.8 Resolve Ticket (HR Only)
-**POST** `/api/v1/helpdesk/tickets/{id}/resolve`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `resolution` (string)
-- **Response:** Updated ticket with status "resolved"
-
-### 9.9 Close Ticket
-**POST** `/api/v1/helpdesk/tickets/{id}/close`
-- **Auth Required:** Yes
-- **Response:** Updated ticket with status "closed"
-
-### 9.10 Reopen Ticket
-**POST** `/api/v1/helpdesk/tickets/{id}/reopen`
-- **Auth Required:** Yes
-- **Response:** Updated ticket with status "open"
-
-### 9.11 Rate Resolved Ticket
-**POST** `/api/v1/helpdesk/tickets/{id}/rate`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `rating` (integer) - 1-5
-  - `comment` (string, optional)
-- **Response:** Updated ticket with rating
-
-### 9.12 Get Knowledge Base Articles
-**GET** `/api/v1/helpdesk/kb`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `category` (string, optional)
-  - `search` (string, optional)
-- **Response:** Paginated published KB articles
-  ```json
-  {
-    "data": [
-      {
-        "id": "article_id",
-        "title": "How to Reset Password",
-        "slug": "how-to-reset-password",
-        "content": "HTML content...",
-        "category": "account",
-        "views": 150,
-        "helpful_count": 45,
-        "unhelpful_count": 5,
-        "published": true
-      }
-    ]
-  }
-  ```
-
-### 9.13 Get KB Article Detail
-**GET** `/api/v1/helpdesk/kb/{idOrSlug}`
-- **Auth Required:** Yes
-- **Response:** Single article (increments view count)
-
-### 9.14 Create KB Article (HR Only)
-**POST** `/api/v1/helpdesk/kb`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title` (string)
-  - `slug` (string)
-  - `content` (string) - HTML
-  - `category` (string)
-  - `published` (boolean, optional)
-- **Response:** Created article
-- **Status Codes:** 201 (Created)
-
-### 9.15 Update KB Article (HR Only)
-**PUT** `/api/v1/helpdesk/kb/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any article fields
-- **Response:** Updated article
-
-### 9.16 Delete KB Article (HR Only)
-**DELETE** `/api/v1/helpdesk/kb/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Article unpublished" }`
-
-### 9.17 Rate Article Helpfulness
-**POST** `/api/v1/helpdesk/kb/{id}/helpful`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `helpful` (boolean)
-- **Response:** Updated article with updated counts
-
-### 9.18 Get Helpdesk Dashboard (HR Only)
-**GET** `/api/v1/helpdesk/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:**
-  ```json
-  {
-    "open_tickets": 12,
-    "resolved_tickets": 89,
-    "avg_resolution_time": 180,
-    "avg_rating": 4.2,
-    "tickets_by_priority": { "low": 2, "medium": 5, "high": 4, "urgent": 1 },
-    "tickets_by_category": { "account": 5, "technical": 8, ... }
-  }
-  ```
-
----
-
-## 10. EVENTS
-
-### 10.1 Get Upcoming Events
-**GET** `/api/v1/events/upcoming`
-- **Auth Required:** Yes
-- **Response:** Array of upcoming events (next 30 days)
-
-### 10.2 Get My RSVPd Events
-**GET** `/api/v1/events/my`
-- **Auth Required:** Yes
-- **Response:** Events user has RSVP'd to
-
-### 10.3 List All Events
-**GET** `/api/v1/events`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `event_type` (string, optional)
-  - `status` (string, optional)
-  - `start_date` (date, optional)
-  - `end_date` (date, optional)
-- **Response:** Paginated events
-  ```json
-  {
-    "data": [
-      {
-        "id": "event_id",
-        "title": "Team Outing",
-        "description": "Annual team outing...",
-        "event_type": "team_outing",
-        "start_date": "2026-04-15",
-        "start_time": "10:00",
-        "end_date": "2026-04-15",
-        "end_time": "18:00",
-        "location": "Beach Resort",
-        "organizer": { "id", "name" },
-        "rsvp_count": { "yes": 45, "no": 5, "maybe": 10 },
-        "my_rsvp": "yes",
-        "status": "published"
-      }
-    ]
-  }
-  ```
-
-### 10.4 Get Event Detail
-**GET** `/api/v1/events/{id}`
-- **Auth Required:** Yes
-- **Response:** Single event with attendee list and my RSVP status
-
-### 10.5 Create Event (HR Only)
-**POST** `/api/v1/events`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title` (string)
-  - `description` (string)
-  - `event_type` (string)
-  - `start_date` (date)
-  - `start_time` (time, optional)
-  - `end_date` (date)
-  - `end_time` (time, optional)
-  - `location` (string)
-  - `max_attendees` (integer, optional)
-  - `visibility` (string, optional) - "all", "department", "specific_users"
-  - `department_ids` (array, optional)
-- **Response:** Created event
-- **Status Codes:** 201 (Created)
-
-### 10.6 Update Event (HR Only)
-**PUT** `/api/v1/events/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any event fields
-- **Response:** Updated event
-
-### 10.7 Delete Event (HR Only)
-**DELETE** `/api/v1/events/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Event deleted" }`
-
-### 10.8 Cancel Event (HR Only)
-**POST** `/api/v1/events/{id}/cancel`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Updated event with status "cancelled"
-
-### 10.9 RSVP to Event
-**POST** `/api/v1/events/{id}/rsvp`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `status` (string) - "yes", "no", "maybe"
-- **Response:** Updated RSVP record
-
-### 10.10 Get Event Dashboard (HR Only)
-**GET** `/api/v1/events/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Event analytics and attendance stats
-
----
-
-## 11. WELLNESS
-
-### 11.1 Get My Enrolled Programs
-**GET** `/api/v1/wellness/my`
-- **Auth Required:** Yes
-- **Response:** Array of wellness programs user is enrolled in
-
-### 11.2 Get My Wellness Summary
-**GET** `/api/v1/wellness/summary`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "enrolled_programs": 3,
-    "check_ins_this_month": 8,
-    "active_goals": 2,
-    "completed_programs": 1,
-    "wellness_score": 75
-  }
-  ```
-
-### 11.3 Daily Wellness Check-In
-**POST** `/api/v1/wellness/check-in`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `mood` (integer) - 1-5 scale
-  - `energy_level` (integer) - 1-5 scale
-  - `stress_level` (integer) - 1-5 scale
-  - `notes` (string, optional)
-  - `activities` (array, optional) - e.g., ["exercise", "meditation"]
-- **Response:** Created check-in record
-- **Status Codes:** 201 (Created)
-
-### 11.4 Get My Check-In History
-**GET** `/api/v1/wellness/check-ins`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `start_date` (date, optional)
-  - `end_date` (date, optional)
-- **Response:** Paginated check-ins with trend analysis
-
-### 11.5 Create Wellness Goal
-**POST** `/api/v1/wellness/goals`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `title` (string)
-  - `description` (string, optional)
-  - `goal_type` (string) - "fitness", "mental_health", "nutrition", "sleep", "other"
-  - `target_value` (float, optional)
-  - `target_unit` (string, optional) - "days", "km", "minutes", etc.
-  - `deadline` (date)
-- **Response:** Created goal
-- **Status Codes:** 201 (Created)
-
-### 11.6 Get My Goals
-**GET** `/api/v1/wellness/goals`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `status` (string, optional) - "active", "completed", "abandoned"
-- **Response:** Array of wellness goals
-
-### 11.7 Update Goal Progress
-**PUT** `/api/v1/wellness/goals/{id}`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `current_progress` (float, optional)
-  - `status` (string, optional) - "active", "completed", "abandoned"
-  - `notes` (string, optional)
-- **Response:** Updated goal
-
-### 11.8 List Wellness Programs
-**GET** `/api/v1/wellness/programs`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `program_type` (string, optional)
-  - `status` (string, optional) - "active", "completed"
-- **Response:** Paginated programs
-  ```json
-  {
-    "data": [
-      {
-        "id": "program_id",
-        "title": "6-Week Yoga Challenge",
-        "description": "...",
-        "program_type": "fitness",
-        "duration_weeks": 6,
-        "enrollment_count": 45,
-        "my_enrollment": {
-          "enrolled": true,
-          "progress": 50,
-          "status": "in_progress"
-        }
-      }
-    ]
-  }
-  ```
-
-### 11.9 Get Program Detail
-**GET** `/api/v1/wellness/programs/{id}`
-- **Auth Required:** Yes
-- **Response:** Single program with progress tracking
-
-### 11.10 Create Wellness Program (HR Only)
-**POST** `/api/v1/wellness/programs`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title` (string)
-  - `description` (string)
-  - `program_type` (string)
-  - `duration_weeks` (integer)
-  - `start_date` (date)
-  - `max_enrollments` (integer, optional)
-  - `content_url` (string, optional)
-- **Response:** Created program
-- **Status Codes:** 201 (Created)
-
-### 11.11 Enroll in Program
-**POST** `/api/v1/wellness/programs/{id}/enroll`
-- **Auth Required:** Yes
-- **Response:** Enrollment record
-- **Status Codes:** 201 (Created)
-
-### 11.12 Complete Program
-**POST** `/api/v1/wellness/programs/{id}/complete`
-- **Auth Required:** Yes
-- **Response:** Updated enrollment with completion status
-
-### 11.13 Get Wellness Dashboard (HR Only)
-**GET** `/api/v1/wellness/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Organization-wide wellness metrics and trends
-
----
-
-## 12. FEEDBACK (Anonymous)
-
-### 12.1 Submit Anonymous Feedback
-**POST** `/api/v1/feedback`
-- **Auth Required:** Yes (for audit logging only, identity not tracked)
-- **Request Body:**
-  - `title` (string)
-  - `feedback_text` (string)
-  - `category` (string) - "management", "work_culture", "facilities", "benefits", "other"
-  - `is_urgent` (boolean, optional)
-  - `sentiment` (string, optional) - "positive", "neutral", "negative"
-- **Response:** Created feedback (anonymized in response)
-  ```json
-  {
-    "id": "feedback_id",
-    "feedback_hash": "hash_for_tracking",
-    "title": "Better parking needed",
-    "category": "facilities",
-    "status": "new",
-    "created_at": "2026-03-26T10:00:00Z"
-  }
-  ```
-- **Status Codes:** 201 (Created)
-- **Note:** User identity is NOT logged or visible
-
-### 12.2 Get My Feedback (Tracked by Hash)
-**GET** `/api/v1/feedback/my`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-- **Response:** Feedback submitted by current user (matched via hash)
-
-### 12.3 Get All Feedback (HR Only, Without User Identity)
-**GET** `/api/v1/feedback`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `category` (string, optional)
-  - `status` (string, optional) - "new", "in_progress", "resolved"
-  - `sentiment` (string, optional)
-  - `is_urgent` (boolean, optional)
-  - `search` (string, optional)
-- **Response:** Paginated feedback (anonymized)
-
-### 12.4 Get Feedback Detail (HR Only)
-**GET** `/api/v1/feedback/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Single feedback with responses and status
-
-### 12.5 Respond to Feedback (HR Only)
-**POST** `/api/v1/feedback/{id}/respond`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `admin_response` (string) - Response to feedback
-- **Response:** Updated feedback with response
-
-### 12.6 Update Feedback Status (HR Only)
-**PUT** `/api/v1/feedback/{id}/status`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `status` (string) - "new", "in_progress", "resolved"
-- **Response:** Updated feedback
-
-### 12.7 Get Feedback Dashboard (HR Only)
-**GET** `/api/v1/feedback/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:**
-  ```json
-  {
-    "total_feedback": 45,
-    "new": 5,
-    "in_progress": 12,
-    "resolved": 28,
-    "by_category": { "management": 15, "facilities": 20, ... },
-    "by_sentiment": { "positive": 5, "neutral": 20, "negative": 20 },
-    "avg_resolution_time": 3.5
-  }
-  ```
-
----
-
-## 13. SURVEYS
-
-### 13.1 Get Active Surveys (For Employee to Respond)
-**GET** `/api/v1/surveys/active`
-- **Auth Required:** Yes
-- **Response:** Array of active surveys user hasn't responded to yet
-
-### 13.2 List All Surveys
-**GET** `/api/v1/surveys`
-- **Auth Required:** Yes
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `status` (string, optional) - "draft", "published", "closed"
-  - `type` (string, optional) - "engagement", "satisfaction", "feedback", etc.
-- **Response:** Paginated surveys
-  ```json
-  {
-    "data": [
-      {
-        "id": "survey_id",
-        "title": "Employee Engagement Survey 2026",
-        "description": "...",
-        "survey_type": "engagement",
-        "status": "published",
-        "questions_count": 25,
-        "responses_count": 120,
-        "my_response": null,
-        "start_date": "2026-03-01",
-        "end_date": "2026-03-31"
-      }
-    ]
-  }
-  ```
-
-### 13.3 Get Survey Detail
-**GET** `/api/v1/surveys/{id}`
-- **Auth Required:** Yes
-- **Response:** Survey with all questions and options
-
-### 13.4 Submit Survey Response
-**POST** `/api/v1/surveys/{id}/respond`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `answers` (array) - Array of { question_id, answer_value } objects
-    ```json
-    {
-      "answers": [
-        { "question_id": 1, "answer_value": "5" },
-        { "question_id": 2, "answer_value": "Strongly Agree" }
-      ]
-    }
-    ```
-- **Response:** Submitted response confirmation
-- **Status Codes:** 201 (Created)
-
-### 13.5 Get My Survey Responses
-**GET** `/api/v1/surveys/my-responses`
-- **Auth Required:** Yes
-- **Response:** Array of surveys user has responded to with answers
-
-### 13.6 Create Survey (HR Only)
-**POST** `/api/v1/surveys`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `title` (string)
-  - `description` (string, optional)
-  - `survey_type` (string)
-  - `questions` (array) - Array of question objects
-    ```json
-    {
-      "questions": [
-        {
-          "question_text": "How satisfied are you?",
-          "question_type": "rating",
-          "scale": 5,
-          "options": []
-        },
-        {
-          "question_text": "Which areas need improvement?",
-          "question_type": "multiple_choice",
-          "options": ["Management", "Work Environment", "Benefits"]
-        }
-      ]
-    }
-    ```
-  - `visibility` (string) - "all_employees", "specific_department", "specific_users"
-  - `start_date` (date)
-  - `end_date` (date)
-- **Response:** Created survey (draft status)
-- **Status Codes:** 201 (Created)
-
-### 13.6 Update Survey (HR Only, Draft Only)
-**PUT** `/api/v1/surveys/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any survey fields
-- **Response:** Updated survey
-
-### 13.7 Publish Survey (HR Only)
-**POST** `/api/v1/surveys/{id}/publish`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Updated survey with status "published"
-
-### 13.8 Close Survey (HR Only)
-**POST** `/api/v1/surveys/{id}/close`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Updated survey with status "closed"
-
-### 13.9 Delete Survey (HR Only, Draft Only)
-**DELETE** `/api/v1/surveys/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** `{ "message": "Survey deleted" }`
-
-### 13.10 Get Survey Results (HR Only)
-**GET** `/api/v1/surveys/{id}/results`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:**
-  ```json
-  {
-    "total_responses": 120,
-    "response_rate": 75,
-    "questions": [
-      {
-        "question_id": 1,
-        "question_text": "How satisfied are you?",
-        "answers": {
-          "1": 5,
-          "2": 10,
-          "3": 30,
-          "4": 50,
-          "5": 25
-        },
-        "average": 3.8
-      }
-    ]
-  }
-  ```
-
-### 13.11 Get Survey Dashboard (HR Only)
-**GET** `/api/v1/surveys/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** All active surveys, response rates, and trend analysis
-
----
-
-## 14. BIOMETRICS (Face Recognition, QR Code, Check-In)
-
-### 14.1 Enroll Face (HR Only)
-**POST** `/api/v1/biometrics/face/enroll`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `user_id` (integer)
-  - `face_encoding` (string) - Base64 or vector representation
-  - `thumbnail_path` (string, optional)
-  - `enrollment_method` (string) - "mobile_app", "mobile_device", "kiosk"
-  - `quality_score` (float, optional) - 0-1
-- **Response:** Created face enrollment
-- **Status Codes:** 201 (Created)
-
-### 14.2 Get Face Enrollments (HR Only)
-**GET** `/api/v1/biometrics/face/enrollments`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `user_id` (integer, optional)
-- **Response:** Array of active face enrollments
-
-### 14.3 Delete Face Enrollment (HR Only)
-**DELETE** `/api/v1/biometrics/face/enrollments/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Decommissioned enrollment
-
-### 14.4 Verify Face (Mobile Check-In)
-**POST** `/api/v1/biometrics/face/verify`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `face_encoding` (string) - Captured face encoding
-  - `confidence_threshold` (float, optional) - 0-1, default 0.8
-  - `timestamp` (datetime, optional)
-- **Response:**
-  ```json
-  {
-    "matched": true,
-    "user_id": "user_id",
-    "confidence": 0.95,
-    "message": "Face verified successfully"
-  }
-  ```
-
-### 14.5 Generate QR Code (HR Only)
-**POST** `/api/v1/biometrics/qr/generate`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `user_id` (integer)
-- **Response:**
-  ```json
-  {
-    "id": "qr_id",
-    "user_id": "user_id",
-    "code": "QR_CODE_DATA",
-    "qr_image_url": "data:image/png;base64,...",
-    "valid_until": "2026-04-26"
-  }
-  ```
-- **Status Codes:** 201 (Created)
-
-### 14.6 Get My QR Code
-**GET** `/api/v1/biometrics/qr/my-code`
-- **Auth Required:** Yes
-- **Response:** Current user's QR code (auto-generates if none exists)
-
-### 14.7 Validate QR Code Scan
-**POST** `/api/v1/biometrics/qr/scan`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `code` (string) - Scanned QR code data
-- **Response:**
-  ```json
-  {
-    "valid": true,
-    "user_id": "user_id",
-    "timestamp": "2026-03-26T10:00:00Z"
-  }
-  ```
-
-### 14.8 Biometric Check-In (Face or QR)
-**POST** `/api/v1/biometrics/check-in`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `method` (string) - "face", "qr", "nfc"
-  - `device_id` (string, optional)
-  - `confidence_score` (float, optional) - For face recognition
-  - `liveness_passed` (boolean, optional) - For anti-spoofing
-  - `latitude` (float, optional)
-  - `longitude` (float, optional)
-  - `image_path` (string, optional) - Path to check-in photo
-  - `qr_code` (string, optional) - Scanned QR code
-- **Response:**
-  ```json
-  {
-    "success": true,
-    "biometric_log": {
-      "id": "log_id",
-      "user_id": "user_id",
-      "method": "face",
-      "timestamp": "2026-03-26T09:00:00Z",
-      "confidence": 0.92,
-      "location": { "latitude": 19.0760, "longitude": 72.8777 }
-    },
-    "attendance": {
-      "id": "attendance_id",
-      "status": "present",
-      "check_in_time": "2026-03-26T09:00:00Z"
-    }
-  }
-  ```
-- **Status Codes:** 201 (Created)
-
-### 14.9 Biometric Check-Out
-**POST** `/api/v1/biometrics/check-out`
-- **Auth Required:** Yes
-- **Request Body:** Same as check-in
-- **Response:** Similar structure with check-out time and duration
-
-### 14.10 Register Biometric Device (HR Only)
-**POST** `/api/v1/biometrics/devices`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:**
-  - `name` (string)
-  - `device_type` (string) - "facial_recognition", "fingerprint", "iris", "nfc_reader"
-  - `location` (string)
-  - `ip_address` (string, optional)
-  - `api_key` (string) - Device authentication key
-  - `is_active` (boolean, optional)
-- **Response:** Created device with registration details
-- **Status Codes:** 201 (Created)
-
-### 14.11 Get Biometric Devices (HR Only)
-**GET** `/api/v1/biometrics/devices`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `status` (string, optional) - "active", "inactive"
-  - `type` (string, optional)
-- **Response:** Array of registered devices
-
-### 14.12 Update Biometric Device (HR Only)
-**PUT** `/api/v1/biometrics/devices/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any device fields
-- **Response:** Updated device
-
-### 14.13 Delete/Decommission Device (HR Only)
-**DELETE** `/api/v1/biometrics/devices/{id}`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:** Decommissioned device
-
-### 14.14 Device Heartbeat (Unauthenticated, API Key Auth)
-**POST** `/api/v1/biometrics/devices/{id}/heartbeat`
-- **Auth Required:** No (Device API Key Required)
-- **Headers:** `X-Device-API-Key: <api_key>`
-- **Request Body:**
-  - `status` (string) - "online", "offline", "error"
-  - `battery_level` (float, optional)
-  - `last_sync` (datetime, optional)
-- **Response:** Acknowledgment
-- **Status Codes:** 200 (Success), 401 (Invalid API Key)
-
-### 14.15 Get Biometric Settings (HR Only)
-**GET** `/api/v1/biometrics/settings`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:**
-  ```json
-  {
-    "face_recognition_enabled": true,
-    "face_confidence_threshold": 0.8,
-    "qr_code_enabled": true,
-    "qr_validity_days": 30,
-    "liveness_detection_enabled": true,
-    "location_tracking_enabled": true,
-    "photo_storage_enabled": true
-  }
-  ```
-
-### 14.16 Update Biometric Settings (HR Only)
-**PUT** `/api/v1/biometrics/settings`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Request Body:** Any settings fields
-- **Response:** Updated settings
-
-### 14.17 Get Biometric Logs (HR Only)
-**GET** `/api/v1/biometrics/logs`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Query Parameters:**
-  - `page` (integer)
-  - `per_page` (integer)
-  - `method` (string, optional) - "face", "qr", "nfc"
-  - `user_id` (integer, optional)
-  - `result` (string, optional) - "success", "failed"
-  - `date_from` (date, optional)
-  - `date_to` (date, optional)
-- **Response:** Paginated biometric logs
-
-### 14.18 Get Biometric Dashboard (HR Only)
-**GET** `/api/v1/biometrics/dashboard`
-- **Auth Required:** Yes
-- **Role Required:** HR
-- **Response:**
-  ```json
-  {
-    "total_enrollments": 150,
-    "face_enrollments": 150,
-    "qr_codes_active": 148,
-    "devices_online": 8,
-    "checkins_today": 132,
-    "avg_face_confidence": 0.94,
-    "false_rejection_rate": 0.02
-  }
-  ```
-
----
-
-## 15. CHATBOT (AI-Powered HR Assistant)
-
-### 15.1 Start New Conversation
-**POST** `/api/v1/chatbot/conversations`
-- **Auth Required:** Yes
-- **Response:** Created conversation
-  ```json
-  {
-    "id": "conversation_id",
-    "user_id": "user_id",
-    "created_at": "2026-03-26T10:00:00Z",
-    "status": "active"
-  }
-  ```
-- **Status Codes:** 201 (Created)
-
-### 15.2 Get My Conversations
-**GET** `/api/v1/chatbot/conversations`
-- **Auth Required:** Yes
-- **Response:** Array of user's conversations
-
-### 15.3 Get Conversation Messages
-**GET** `/api/v1/chatbot/conversations/{id}`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "id": "conversation_id",
-    "messages": [
-      {
-        "id": "msg_id",
-        "role": "user",
-        "message": "How do I apply for leave?",
-        "timestamp": "2026-03-26T10:00:00Z"
-      },
-      {
-        "id": "msg_id",
-        "role": "assistant",
-        "message": "To apply for leave, go to ...",
-        "timestamp": "2026-03-26T10:00:15Z"
-      }
-    ]
-  }
-  ```
-
-### 15.4 Send Message to Chatbot
-**POST** `/api/v1/chatbot/conversations/{id}/send`
-- **Auth Required:** Yes
-- **Request Body:**
-  - `message` (string) - User's message/question
-- **Response:** AI response with bot message
-  ```json
-  {
-    "user_message": {
-      "id": "msg_id",
-      "message": "What's my leave balance?",
-      "role": "user"
-    },
-    "assistant_message": {
-      "id": "msg_id",
-      "message": "Your leave balance for 2026 is: ...",
-      "role": "assistant",
-      "confidence": 0.92
-    }
-  }
-  ```
-
-### 15.5 Delete Conversation
-**DELETE** `/api/v1/chatbot/conversations/{id}`
-- **Auth Required:** Yes
-- **Response:** `{ "message": "Conversation archived" }`
-
-### 15.6 Get Suggested Questions
-**GET** `/api/v1/chatbot/suggestions`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "suggestions": [
-      "How do I apply for leave?",
-      "What's my leave balance?",
-      "How do I submit expense report?",
-      "What are the company policies?",
-      "How do I request shift swap?"
-    ]
-  }
-  ```
-
-### 15.7 Check AI Status
-**GET** `/api/v1/chatbot/ai-status`
-- **Auth Required:** Yes
-- **Response:**
-  ```json
-  {
-    "ai_engine_active": true,
-    "model": "gpt-4",
-    "last_updated": "2026-03-26T08:00:00Z"
-  }
-  ```
-
----
-
-## 16. COMMON PATTERNS & BEST PRACTICES
-
-### 16.1 Pagination
-Most list endpoints support pagination:
-```
-GET /api/v1/[resource]?page=1&per_page=20
-```
-
-Response includes:
-```json
 {
-  "data": [...],
-  "total": 150,
-  "page": 1,
-  "per_page": 20
+  "email": "ananya@technova.in",
+  "password": "SecureP@ss123"
 }
 ```
 
-### 16.2 Error Responses
-All errors follow standard format:
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 522,
+      "email": "ananya@technova.in",
+      "first_name": "Ananya",
+      "last_name": "Gupta",
+      "role": "org_admin",
+      "organization_id": 5
+    },
+    "tokens": {
+      "access_token": "eyJhbGciOiJSUzI1NiIs...",
+      "refresh_token": "eyJhbGciOiJSUzI1NiIs..."
+    },
+    "org": {
+      "id": 5,
+      "name": "TechNova Solutions",
+      "country": "IN"
+    }
+  }
+}
+```
+
+**Refreshing a token (OAuth2):**
+
+```http
+POST /oauth/token
+Content-Type: application/json
+
+{
+  "grant_type": "refresh_token",
+  "refresh_token": "eyJhbGciOiJSUzI1NiIs...",
+  "client_id": "your-client-id"
+}
+```
+
+**Token characteristics:**
+- Algorithm: RS256 (asymmetric JWT)
+- Access token lifetime: ~15 minutes
+- Refresh tokens are rotated on each use
+- Revocation is instant (server-side check)
+
+### SSO Flow for Mobile
+
+To access a sub-module (Recruit, Payroll, etc.) from the mobile app:
+
+1. User authenticates with EMP Cloud and receives an `access_token`
+2. Mobile app calls the sub-module's SSO endpoint:
+
+```http
+POST https://test-recruit-api.empcloud.com/api/v1/auth/sso
+Content-Type: application/json
+
+{
+  "token": "<empcloud_access_token>"
+}
+```
+
+3. The sub-module validates the token with EMP Cloud, verifies the user has a seat for that module, and returns its own module-specific token
+4. Use the module-specific token for all subsequent requests to that module
+
+### Response Envelope
+
+All API responses follow a consistent envelope format:
+
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+**Paginated Success:**
+```json
+{
+  "success": true,
+  "data": [ ... ],
+  "meta": {
+    "total": 150,
+    "page": 1,
+    "per_page": 20,
+    "total_pages": 8
+  }
+}
+```
+
+**Error:**
 ```json
 {
   "success": false,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Invalid request",
-    "details": [
-      { "field": "email", "message": "Invalid email format" }
-    ]
+    "message": "Invalid email address",
+    "details": { ... }
   }
 }
 ```
 
-**Common Error Codes:**
-- `VALIDATION_ERROR` (400) - Input validation failed
-- `UNAUTHORIZED` (401) - Missing or invalid authentication
-- `FORBIDDEN` (403) - Authenticated but insufficient permissions
-- `NOT_FOUND` (404) - Resource not found
-- `CONFLICT` (409) - Resource already exists
-- `INTERNAL_SERVER_ERROR` (500) - Server error
+### Pagination
 
-### 16.3 Authentication & CORS
-- **CORS Headers Required:** See index.ts for allowed origins
-- **Custom Headers Supported:** `X-EmpCloud-API-Key`, `X-Device-API-Key`, `X-Request-ID`
-- **Rate Limiting:** 
-  - Auth endpoints: Configured limit per window
-  - API endpoints: Configured limit per window
+Most list endpoints support pagination via query parameters:
 
-### 16.4 Audit Logging
-All sensitive operations are logged:
-- User authentication (login, password change)
-- Profile updates
-- Document verification
-- Leave approvals
-- Policy acknowledgments
-- Biometric enrollments
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| page | number | 1 | Page number (1-indexed) |
+| per_page | number | 20 | Items per page (max 100) |
+| search | string | -- | Full-text search (where supported) |
 
-Audit logs include: user ID, action, resource, IP address, user agent
+### File Uploads
 
-### 16.5 File Upload
-For file uploads (documents, etc.):
+File upload endpoints use `multipart/form-data`. The file field name is `file` unless stated otherwise.
+
 ```
-Content-Type: multipart/form-data
 POST /api/v1/documents/upload
-  - file (multipart file)
-  - category_id (form field)
-  - name (form field, optional)
+Content-Type: multipart/form-data
+
+file: <binary>
+category_id: 3
+name: "Passport Scan"
 ```
 
-### 16.6 Date/Time Format
-- All dates: `YYYY-MM-DD` (ISO 8601)
-- All times: `HH:MM` (24-hour format)
-- All timestamps: ISO 8601 with UTC timezone `YYYY-MM-DDTHH:MM:SSZ`
+Maximum file sizes:
+- Documents: 10 MB
+- CSV imports: 5 MB
+- Profile photos: 2 MB
+- Resumes (Recruit): 10 MB
 
-### 16.7 Query Parameters
-Boolean query parameters accept: `"true"`, `"1"`, or `true` (no quotes)
+### Roles & Permissions
 
-### 16.8 Webhooks & Callbacks
-Webhooks available for:
-- Leave approvals/rejections
-- Announcements published
-- Biometric enrollments
-- Policy acknowledgments
-- Survey responses
-- Ticket resolutions
+| Role | Level | Description |
+|------|-------|-------------|
+| `super_admin` | 100 | Platform-level admin (EMP Cloud operator) |
+| `org_admin` | 80 | Organization administrator |
+| `hr_admin` | 60 | HR department head |
+| `hr_manager` | 40 | HR team member |
+| `manager` | 20 | Team/department manager |
+| `employee` | 10 | Standard employee |
 
-Configure via admin panel.
+Endpoints annotated with **Auth: HR** require `hr_manager` or above.
+Endpoints annotated with **Auth: Admin** require `org_admin` or above.
+Endpoints annotated with **Auth: Super Admin** require `super_admin`.
 
----
+### Rate Limiting
 
-## 17. SDK / CLIENT LIBRARY RECOMMENDATIONS
+| Endpoint Category | Window | Max Requests |
+|-------------------|--------|-------------|
+| Auth (login, register, forgot-password) | 15 minutes | 20 |
+| OAuth token | 15 minutes | 60 |
+| General API | 1 minute | 120 |
+| File upload | 1 minute | 10 |
+| Chatbot send | 1 minute | 20 |
 
-For easier integration, consider using:
-- **JavaScript/TypeScript:** `@empcloud/sdk-js` (with TypeScript types)
-- **React:** `@empcloud/react` (hooks and components)
-- **Flutter:** `empcloud_flutter` (for mobile apps)
-- **Python:** `empcloud-sdk-python`
-- **Go:** `github.com/empcloud/sdk-go`
+Rate-limited responses return `429 Too Many Requests` with a `Retry-After` header.
 
----
+### Error Codes Reference
 
-## 18. MOBILE APP DEVELOPMENT GUIDE
-
-### Recommended Flow:
-1. **Authentication:** Login â†’ Store tokens securely â†’ Auto-refresh tokens
-2. **Home Dashboard:** Fetch notifications, announcements, leave balance
-3. **Attendance:** Check-in/out, view history
-4. **Leave Management:** Apply leave, check balance
-5. **Profile:** View/edit personal info
-6. **Notifications:** Real-time updates via WebSocket or polling
-
-### Performance Tips:
-- Implement local caching with TTL
-- Use batch endpoints where available
-- Implement pagination for large lists
-- Compress request/response payloads
-- Cache user profile and org settings
-- Handle network retries with exponential backoff
-
-### Security:
-- Store JWT tokens in secure storage (Keychain/Keystore)
-- Implement token refresh before expiry
-- HTTPS only
-- Certificate pinning recommended
-- Implement logout on unauthorized (401) errors
-- Validate SSL certificates
+| HTTP Status | Error Code | Description |
+|-------------|-----------|-------------|
+| 400 | `VALIDATION_ERROR` | Request body or query parameter validation failed |
+| 400 | `BAD_REQUEST` | Malformed request |
+| 401 | `UNAUTHORIZED` | Missing or invalid token |
+| 401 | `TOKEN_EXPIRED` | Access token has expired -- refresh it |
+| 403 | `FORBIDDEN` | Insufficient permissions for this action |
+| 404 | `NOT_FOUND` | Resource not found |
+| 409 | `CONFLICT` | Duplicate resource or conflicting state |
+| 422 | `UNPROCESSABLE_ENTITY` | Business logic validation failed |
+| 429 | `RATE_LIMITED` | Too many requests |
+| 500 | `INTERNAL_ERROR` | Server error |
+| 502 | `BILLING_UNAVAILABLE` | Billing service is unreachable |
 
 ---
 
-## 19. RATE LIMITS & QUOTAS
+## 2. EMP Cloud Core
 
-Rate limits are applied per organization:
-- **Auth endpoints:** 10 requests per minute (30-second window)
-- **API endpoints:** 1000 requests per hour
-- **File uploads:** 10 MB per file, 1 GB per day per user
-- **Biometric logs:** 500 check-ins per minute per device
-
-Exceeded limits return `429 Too Many Requests`.
+**Base URL:** `https://test-empcloud-api.empcloud.com`
 
 ---
 
-## 20. API VERSIONING & DEPRECATION
+### 2.1 Auth
 
-Current version: `v1`
+#### POST /api/v1/auth/register
 
-Deprecated endpoints will have sunset date of at least 12 months notice.
+**Description:** Register a new organization and admin user
+
+**Auth Required:** No
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| org_name | string | Yes | Organization display name |
+| org_legal_name | string | No | Legal entity name |
+| org_country | string | Yes | ISO country code (e.g., "IN") |
+| org_state | string | No | State/province |
+| org_timezone | string | No | IANA timezone (e.g., "Asia/Kolkata") |
+| org_email | string | No | Organization contact email |
+| first_name | string | Yes | Admin user first name |
+| last_name | string | Yes | Admin user last name |
+| email | string | Yes | Admin user email |
+| password | string | Yes | Min 8 characters |
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "org": { "id": 5, "name": "TechNova Solutions" },
+    "user": { "id": 522, "email": "ananya@technova.in", "role": "org_admin" },
+    "tokens": {
+      "access_token": "eyJhbG...",
+      "refresh_token": "eyJhbG..."
+    }
+  }
+}
+```
+
+**Error Responses:**
+- `409` -- Email already registered
+- `400` -- Validation error
 
 ---
 
-## File Paths Referenced
-- Route files: `/packages/server/src/api/routes/*.routes.ts`
-- Server entry: `/packages/server/src/index.ts`
-- Validators: `/packages/shared/src/validators/index.ts`
+#### POST /api/v1/auth/login
 
-This comprehensive API documentation provides mobile app developers with everything needed to integrate with EMP Cloud's full suite of HR management features.
+**Description:** Authenticate user with email and password
+
+**Auth Required:** No
+
+**Rate Limited:** Yes (20 requests/15 min)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| email | string | Yes | User email address |
+| password | string | Yes | User password |
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 522,
+      "email": "ananya@technova.in",
+      "first_name": "Ananya",
+      "last_name": "Gupta",
+      "role": "org_admin",
+      "organization_id": 5
+    },
+    "tokens": {
+      "access_token": "eyJhbG...",
+      "refresh_token": "eyJhbG..."
+    },
+    "org": { "id": 5, "name": "TechNova Solutions" }
+  }
+}
+```
+
+**Error Responses:**
+- `401` -- Invalid email or password
+- `429` -- Too many attempts, rate limited
+
+---
+
+#### POST /api/v1/auth/change-password
+
+**Description:** Change current user's password
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| current_password | string | Yes | Current password |
+| new_password | string | Yes | New password (min 8 chars) |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Password changed successfully" } }
+```
+
+**Error Responses:**
+- `401` -- Current password incorrect
+
+---
+
+#### POST /api/v1/auth/forgot-password
+
+**Description:** Request a password reset email. Always returns success to prevent email enumeration.
+
+**Auth Required:** No
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| email | string | Yes | Account email |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "If the email exists, a reset link has been sent" } }
+```
+
+---
+
+#### POST /api/v1/auth/reset-password
+
+**Description:** Reset password using a token from the reset email
+
+**Auth Required:** No
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| token | string | Yes | Reset token from email |
+| password | string | Yes | New password |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Password reset successfully" } }
+```
+
+**Error Responses:**
+- `400` -- Invalid or expired token
+
+---
+
+### 2.2 OAuth2 / OIDC
+
+#### GET /.well-known/openid-configuration
+
+**Description:** OpenID Connect discovery document
+
+**Auth Required:** No
+
+**Response (200):** Standard OIDC discovery JSON
+
+---
+
+#### GET /oauth/jwks
+
+**Description:** JSON Web Key Set for token verification
+
+**Auth Required:** No
+
+**Response (200):** JWKS JSON with RS256 public keys
+
+---
+
+#### GET /oauth/authorize
+
+**Description:** OAuth2 authorization endpoint. Validates the client, creates an authorization code, and redirects back with the code.
+
+**Auth Required:** Yes (Bearer token)
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| client_id | string | Yes | OAuth client ID |
+| redirect_uri | string | Yes | Registered redirect URI |
+| response_type | string | Yes | Must be "code" |
+| scope | string | No | Space-separated scopes |
+| state | string | Yes | CSRF state parameter |
+| code_challenge | string | Conditional | Required for public clients (PKCE) |
+| code_challenge_method | string | No | "S256" (default) or "plain" |
+| nonce | string | No | OIDC nonce |
+
+**Response:** 302 redirect to `redirect_uri?code=<code>&state=<state>`
+
+---
+
+#### POST /oauth/token
+
+**Description:** Exchange authorization code or refresh token for access tokens
+
+**Auth Required:** No (client credentials in body)
+
+**Request Body (authorization_code):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| grant_type | string | Yes | "authorization_code" |
+| code | string | Yes | Authorization code |
+| client_id | string | Yes | OAuth client ID |
+| client_secret | string | Conditional | Required for confidential clients |
+| redirect_uri | string | Yes | Must match authorize request |
+| code_verifier | string | Conditional | PKCE verifier for public clients |
+
+**Request Body (refresh_token):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| grant_type | string | Yes | "refresh_token" |
+| refresh_token | string | Yes | Refresh token |
+| client_id | string | Yes | OAuth client ID |
+
+**Response (200):**
+```json
+{
+  "access_token": "eyJhbG...",
+  "token_type": "Bearer",
+  "expires_in": 900,
+  "refresh_token": "eyJhbG...",
+  "id_token": "eyJhbG..."
+}
+```
+
+---
+
+#### POST /oauth/revoke
+
+**Description:** Revoke an access or refresh token (RFC 7009)
+
+**Auth Required:** No (client credentials in body)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| token | string | Yes | Token to revoke |
+| token_type_hint | string | No | "access_token" or "refresh_token" |
+| client_id | string | Yes | OAuth client ID |
+| client_secret | string | Conditional | Required for confidential clients |
+
+**Response:** `200 OK` (always, per RFC 7009)
+
+---
+
+#### POST /oauth/introspect
+
+**Description:** Token introspection (RFC 7662)
+
+**Auth Required:** No (client credentials in body)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| token | string | Yes | Token to inspect |
+| token_type_hint | string | No | "access_token" or "refresh_token" |
+| client_id | string | Yes | OAuth client ID |
+| client_secret | string | Conditional | Required for confidential clients |
+
+**Response (200):**
+```json
+{
+  "active": true,
+  "sub": "522",
+  "client_id": "recruit-app",
+  "scope": "openid profile",
+  "exp": 1711500000
+}
+```
+
+---
+
+#### GET /oauth/userinfo
+
+**Description:** OIDC UserInfo endpoint
+
+**Auth Required:** Yes
+
+**Response (200):**
+```json
+{
+  "sub": "522",
+  "email": "ananya@technova.in",
+  "name": "Ananya Gupta",
+  "given_name": "Ananya",
+  "family_name": "Gupta",
+  "org_id": 5,
+  "org_name": "TechNova Solutions",
+  "role": "org_admin"
+}
+```
+
+---
+
+### 2.3 Organizations
+
+#### GET /api/v1/organizations/me
+
+**Description:** Get current user's organization
+
+**Auth Required:** Yes
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 5,
+    "name": "TechNova Solutions",
+    "legal_name": "TechNova Solutions Pvt Ltd",
+    "country": "IN",
+    "state": "Karnataka",
+    "timezone": "Asia/Kolkata",
+    "email": "admin@technova.in"
+  }
+}
+```
+
+---
+
+#### PUT /api/v1/organizations/me
+
+**Description:** Update organization settings
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:** Partial organization fields (name, legal_name, country, state, timezone, email)
+
+---
+
+#### GET /api/v1/organizations/me/stats
+
+**Description:** Organization statistics (user count, department count, etc.)
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/organizations/me/departments
+
+**Description:** List all departments
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/organizations/me/departments
+
+**Description:** Create a department
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | Department name |
+
+---
+
+#### DELETE /api/v1/organizations/me/departments/:id
+
+**Description:** Delete a department
+
+**Auth Required:** Yes (Admin)
+
+---
+
+#### GET /api/v1/organizations/me/locations
+
+**Description:** List all office locations
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/organizations/me/locations
+
+**Description:** Create an office location
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | Location name |
+| address | string | No | Street address |
+| city | string | No | City |
+| state | string | No | State/province |
+| country | string | No | Country |
+| latitude | number | No | GPS latitude |
+| longitude | number | No | GPS longitude |
+
+---
+
+#### DELETE /api/v1/organizations/me/locations/:id
+
+**Description:** Delete an office location
+
+**Auth Required:** Yes (Admin)
+
+---
+
+### 2.4 Users
+
+#### GET /api/v1/users
+
+**Description:** List users in the organization (paginated)
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `search`
+
+---
+
+#### GET /api/v1/users/:id
+
+**Description:** Get a single user by ID
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/users
+
+**Description:** Create a new user
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| email | string | Yes | User email |
+| first_name | string | Yes | First name |
+| last_name | string | Yes | Last name |
+| role | string | Yes | One of the role values |
+| department_id | number | No | Department ID |
+| phone | string | No | Phone number |
+
+---
+
+#### PUT /api/v1/users/:id
+
+**Description:** Update a user
+
+**Auth Required:** Yes (Admin)
+
+---
+
+#### DELETE /api/v1/users/:id
+
+**Description:** Deactivate a user (soft delete)
+
+**Auth Required:** Yes (Admin)
+
+---
+
+#### POST /api/v1/users/invite
+
+**Description:** Send an invitation email to a new user
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| email | string | Yes | Invitee email |
+| role | string | Yes | Assigned role |
+| department_id | number | No | Department |
+
+---
+
+#### POST /api/v1/users/accept-invitation
+
+**Description:** Accept an invitation and create account
+
+**Auth Required:** No
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| token | string | Yes | Invitation token |
+| first_name | string | Yes | First name |
+| last_name | string | Yes | Last name |
+| password | string | Yes | Account password |
+
+---
+
+#### GET /api/v1/users/invitations
+
+**Description:** List pending invitations
+
+**Auth Required:** Yes (Admin)
+
+**Query Parameters:** `status` (default: "pending")
+
+---
+
+#### GET /api/v1/users/org-chart
+
+**Description:** Get organizational hierarchy tree
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/users/import
+
+**Description:** Parse CSV and return preview of user import
+
+**Auth Required:** Yes (Admin)
+
+**Content-Type:** multipart/form-data
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| file | file | Yes | CSV file (max 5MB) |
+
+---
+
+#### POST /api/v1/users/import/execute
+
+**Description:** Execute the user import after preview
+
+**Auth Required:** Yes (Admin)
+
+**Content-Type:** multipart/form-data
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| file | file | Yes | Same CSV file |
+
+---
+
+### 2.5 Modules (Marketplace)
+
+#### GET /api/v1/modules
+
+**Description:** List all available modules in the marketplace
+
+**Auth Required:** Yes
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "EMP Recruit",
+      "slug": "recruit",
+      "description": "Applicant tracking & hiring",
+      "icon": "users-search",
+      "monthly_price": 50000,
+      "yearly_price": 500000,
+      "is_active": true
+    }
+  ]
+}
+```
+
+---
+
+#### GET /api/v1/modules/:id
+
+**Description:** Get single module details
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/modules/:id/features
+
+**Description:** Get features/capabilities for a module
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/modules
+
+**Description:** Create a new module (platform admin only)
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### PUT /api/v1/modules/:id
+
+**Description:** Update a module
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+### 2.6 Subscriptions & Seats
+
+#### GET /api/v1/subscriptions
+
+**Description:** List organization's active subscriptions
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/subscriptions/:id
+
+**Description:** Get subscription details
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/subscriptions/billing-summary
+
+**Description:** Billing summary for the organization
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/subscriptions
+
+**Description:** Subscribe to a module
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| module_id | number | Yes | Module to subscribe to |
+| plan_tier | string | Yes | "basic", "pro", or "enterprise" |
+| total_seats | number | Yes | Number of seats |
+| billing_period | string | No | "monthly" or "yearly" |
+
+---
+
+#### PUT /api/v1/subscriptions/:id
+
+**Description:** Update subscription (change plan, seats)
+
+**Auth Required:** Yes (Admin)
+
+---
+
+#### DELETE /api/v1/subscriptions/:id
+
+**Description:** Cancel a subscription
+
+**Auth Required:** Yes (Admin)
+
+---
+
+#### GET /api/v1/subscriptions/:id/seats
+
+**Description:** List seat assignments for a subscription
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/subscriptions/assign-seat
+
+**Description:** Assign a module seat to a user
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| module_id | number | Yes | Module ID |
+| user_id | number | Yes | User to assign seat to |
+
+---
+
+#### POST /api/v1/subscriptions/revoke-seat
+
+**Description:** Revoke a module seat from a user
+
+**Auth Required:** Yes (Admin)
+
+**Request Body:** Same as assign-seat
+
+---
+
+#### POST /api/v1/subscriptions/check-access
+
+**Description:** Check if a user has access to a module (used by sub-modules internally)
+
+**Auth Required:** No (service-to-service)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| user_id | number | Yes | User ID |
+| module_slug | string | Yes | Module slug (e.g., "recruit") |
+| organization_id | number | Yes | Org ID |
+
+---
+
+### 2.7 Employees
+
+#### GET /api/v1/employees/directory
+
+**Description:** Employee directory with search and filters
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `search`, `department_id`, `location_id`
+
+---
+
+#### GET /api/v1/employees/birthdays
+
+**Description:** Upcoming birthdays in the organization
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/employees/anniversaries
+
+**Description:** Upcoming work anniversaries
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/employees/headcount
+
+**Description:** Headcount analytics by department, location, etc.
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/employees/:id/profile
+
+**Description:** Get employee profile (personal details, emergency contacts, etc.)
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### PUT /api/v1/employees/:id/profile
+
+**Description:** Create or update employee profile
+
+**Auth Required:** Yes (Self or HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| date_of_birth | string | No | YYYY-MM-DD |
+| gender | string | No | "male", "female", "other" |
+| marital_status | string | No | "single", "married", etc. |
+| blood_group | string | No | Blood type |
+| personal_email | string | No | Personal email |
+| personal_phone | string | No | Personal phone |
+| emergency_contact_name | string | No | Emergency contact |
+| emergency_contact_phone | string | No | Emergency phone |
+
+---
+
+#### GET /api/v1/employees/:id/addresses
+
+**Description:** List employee addresses
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### POST /api/v1/employees/:id/addresses
+
+**Description:** Add an address
+
+**Auth Required:** Yes (Self or HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| type | string | Yes | "permanent", "current", "temporary" |
+| line1 | string | Yes | Address line 1 |
+| line2 | string | No | Address line 2 |
+| city | string | Yes | City |
+| state | string | Yes | State |
+| postal_code | string | Yes | ZIP/postal code |
+| country | string | Yes | Country |
+
+---
+
+#### PUT /api/v1/employees/:id/addresses/:addressId
+
+**Description:** Update an address
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### DELETE /api/v1/employees/:id/addresses/:addressId
+
+**Description:** Delete an address
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### GET /api/v1/employees/:id/education
+
+**Description:** List education records
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### POST /api/v1/employees/:id/education
+
+**Description:** Add education record
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### PUT /api/v1/employees/:id/education/:educationId
+
+**Description:** Update education record
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### DELETE /api/v1/employees/:id/education/:educationId
+
+**Description:** Delete education record
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### GET /api/v1/employees/:id/experience
+
+**Description:** List work experience records
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### POST /api/v1/employees/:id/experience
+
+**Description:** Add work experience record
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### PUT /api/v1/employees/:id/experience/:experienceId
+
+**Description:** Update work experience record
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### DELETE /api/v1/employees/:id/experience/:experienceId
+
+**Description:** Delete work experience record
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### GET /api/v1/employees/:id/dependents
+
+**Description:** List dependents
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### POST /api/v1/employees/:id/dependents
+
+**Description:** Add a dependent
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### PUT /api/v1/employees/:id/dependents/:dependentId
+
+**Description:** Update a dependent
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+#### DELETE /api/v1/employees/:id/dependents/:dependentId
+
+**Description:** Delete a dependent
+
+**Auth Required:** Yes (Self or HR)
+
+---
+
+### 2.8 Attendance
+
+#### Shifts
+
+##### GET /api/v1/attendance/shifts
+
+**Description:** List all shifts in the organization
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/attendance/shifts
+
+**Description:** Create a new shift
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | Shift name |
+| start_time | string | Yes | HH:MM format |
+| end_time | string | Yes | HH:MM format |
+| grace_period_minutes | number | No | Late check-in grace |
+| is_overnight | boolean | No | Crosses midnight |
+| working_days | number[] | No | 0=Sun, 1=Mon, ... 6=Sat |
+
+---
+
+##### PUT /api/v1/attendance/shifts/:id
+
+**Description:** Update a shift
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/attendance/shifts/:id
+
+**Description:** Deactivate a shift
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/attendance/shifts/assign
+
+**Description:** Assign a shift to a user
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| user_id | number | Yes | Employee ID |
+| shift_id | number | Yes | Shift ID |
+| effective_from | string | Yes | YYYY-MM-DD |
+| effective_to | string | No | YYYY-MM-DD |
+
+---
+
+##### GET /api/v1/attendance/shifts/assignments
+
+**Description:** List shift assignments
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `user_id`, `shift_id`
+
+---
+
+##### POST /api/v1/attendance/shifts/bulk-assign
+
+**Description:** Bulk assign shifts to multiple users
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| shift_id | number | Yes | Shift ID |
+| user_ids | number[] | Yes | Array of employee IDs |
+| effective_from | string | Yes | YYYY-MM-DD |
+
+---
+
+##### GET /api/v1/attendance/shifts/schedule
+
+**Description:** View shift schedule grid (HR view)
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `start_date`, `end_date`, `department_id`
+
+---
+
+##### GET /api/v1/attendance/shifts/my-schedule
+
+**Description:** View current user's shift schedule
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/attendance/shifts/swap-request
+
+**Description:** Request to swap shift with another employee
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| target_user_id | number | Yes | User to swap with |
+| swap_date | string | Yes | Date of the swap |
+| reason | string | No | Reason for swap |
+
+---
+
+##### GET /api/v1/attendance/shifts/swap-requests
+
+**Description:** List shift swap requests
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `status`
+
+---
+
+##### POST /api/v1/attendance/shifts/swap-requests/:id/approve
+
+**Description:** Approve a shift swap request
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/attendance/shifts/swap-requests/:id/reject
+
+**Description:** Reject a shift swap request
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Geo-Fences
+
+##### GET /api/v1/attendance/geo-fences
+
+**Description:** List geo-fence locations
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/attendance/geo-fences
+
+**Description:** Create a geo-fence zone
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | Location name |
+| latitude | number | Yes | Center latitude |
+| longitude | number | Yes | Center longitude |
+| radius_meters | number | Yes | Fence radius |
+
+---
+
+##### PUT /api/v1/attendance/geo-fences/:id
+
+**Description:** Update a geo-fence
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/attendance/geo-fences/:id
+
+**Description:** Deactivate a geo-fence
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Attendance Records
+
+##### POST /api/v1/attendance/check-in
+
+**Description:** Clock in for the day
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| latitude | number | No | GPS latitude |
+| longitude | number | No | GPS longitude |
+| notes | string | No | Check-in notes |
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1234,
+    "user_id": 522,
+    "check_in_time": "2026-03-26T09:02:15.000Z",
+    "status": "present",
+    "is_late": false
+  }
+}
+```
+
+---
+
+##### POST /api/v1/attendance/check-out
+
+**Description:** Clock out for the day
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| latitude | number | No | GPS latitude |
+| longitude | number | No | GPS longitude |
+| notes | string | No | Check-out notes |
+
+---
+
+##### GET /api/v1/attendance/me/today
+
+**Description:** Get today's attendance record for current user
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/attendance/me/history
+
+**Description:** Get attendance history for current user
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `month`, `year`
+
+---
+
+##### GET /api/v1/attendance/records
+
+**Description:** List attendance records (all employees)
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `month`, `year`, `user_id`, `department_id`
+
+---
+
+##### GET /api/v1/attendance/dashboard
+
+**Description:** Attendance dashboard stats (today's present, absent, late, etc.)
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### GET /api/v1/attendance/monthly-report
+
+**Description:** Monthly attendance report
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `month`, `year`, `user_id`
+
+---
+
+#### Regularizations
+
+##### POST /api/v1/attendance/regularizations
+
+**Description:** Submit a regularization request (correct missed check-in/out)
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| date | string | Yes | Date to regularize (YYYY-MM-DD) |
+| check_in_time | string | No | Corrected check-in time |
+| check_out_time | string | No | Corrected check-out time |
+| reason | string | Yes | Reason for regularization |
+
+---
+
+##### GET /api/v1/attendance/regularizations
+
+**Description:** List all regularization requests
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `status`
+
+---
+
+##### GET /api/v1/attendance/regularizations/me
+
+**Description:** My regularization requests
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`
+
+---
+
+##### PUT /api/v1/attendance/regularizations/:id/approve
+
+**Description:** Approve or reject a regularization
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| status | string | Yes | "approved" or "rejected" |
+| rejection_reason | string | Conditional | Required if rejecting |
+
+---
+
+### 2.9 Leave
+
+#### Leave Types
+
+##### GET /api/v1/leave/types
+
+**Description:** List all leave types (Casual, Sick, Earned, etc.)
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/leave/types/:id
+
+**Description:** Get leave type details
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/leave/types
+
+**Description:** Create a leave type
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | "Casual Leave" |
+| code | string | Yes | "CL" |
+| description | string | No | Description |
+| default_balance | number | Yes | Annual entitlement |
+| is_paid | boolean | No | Default true |
+| is_carry_forward | boolean | No | Can carry to next year |
+| max_carry_forward | number | No | Max carry forward days |
+
+---
+
+##### PUT /api/v1/leave/types/:id
+
+**Description:** Update a leave type
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/leave/types/:id
+
+**Description:** Deactivate a leave type
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Leave Policies
+
+##### GET /api/v1/leave/policies
+
+**Description:** List leave policies
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/leave/policies/:id
+
+**Description:** Get policy details
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/leave/policies
+
+**Description:** Create leave policy
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### PUT /api/v1/leave/policies/:id
+
+**Description:** Update leave policy
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/leave/policies/:id
+
+**Description:** Deactivate leave policy
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Leave Balances
+
+##### GET /api/v1/leave/balances
+
+**Description:** Get leave balances. Defaults to current user; HR can query by `user_id`.
+
+**Auth Required:** Yes
+
+**Query Parameters:** `user_id`, `year`
+
+---
+
+##### GET /api/v1/leave/balances/me
+
+**Description:** Shortcut for current user's leave balances
+
+**Auth Required:** Yes
+
+**Query Parameters:** `year`
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "leave_type_id": 1,
+      "leave_type_name": "Casual Leave",
+      "total_allocated": 12,
+      "total_used": 3,
+      "balance": 9,
+      "year": 2026
+    }
+  ]
+}
+```
+
+---
+
+##### POST /api/v1/leave/balances/initialize
+
+**Description:** Initialize leave balances for all employees for a given year
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| year | number | Yes | Year to initialize (e.g., 2026) |
+
+---
+
+#### Leave Applications
+
+##### GET /api/v1/leave/applications/me
+
+**Description:** Current user's leave applications
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `status`, `leave_type_id`
+
+---
+
+##### GET /api/v1/leave/applications
+
+**Description:** List all leave applications (HR can filter by user_id)
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `status`, `leave_type_id`, `user_id`
+
+---
+
+##### GET /api/v1/leave/applications/:id
+
+**Description:** Get leave application details
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/leave/applications
+
+**Description:** Apply for leave
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| leave_type_id | number | Yes | Leave type ID |
+| start_date | string | Yes | YYYY-MM-DD |
+| end_date | string | Yes | YYYY-MM-DD |
+| reason | string | Yes | Reason for leave |
+| is_half_day | boolean | No | Half day leave |
+| half_day_period | string | No | "first_half" or "second_half" |
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 456,
+    "user_id": 522,
+    "leave_type_id": 1,
+    "start_date": "2026-04-10",
+    "end_date": "2026-04-11",
+    "days": 2,
+    "status": "pending",
+    "reason": "Family event"
+  }
+}
+```
+
+---
+
+##### PUT /api/v1/leave/applications/:id/approve
+
+**Description:** Approve a leave application
+
+**Auth Required:** Yes (Manager/HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| remarks | string | No | Approval remarks |
+
+---
+
+##### PUT /api/v1/leave/applications/:id/reject
+
+**Description:** Reject a leave application
+
+**Auth Required:** Yes (Manager/HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| remarks | string | No | Rejection reason |
+
+---
+
+##### PUT /api/v1/leave/applications/:id/cancel
+
+**Description:** Cancel a leave application (by the applicant)
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/leave/calendar
+
+**Description:** Leave calendar showing who is on leave
+
+**Auth Required:** Yes
+
+**Query Parameters:** `month`, `year`
+
+---
+
+#### Comp-Off
+
+##### GET /api/v1/leave/comp-off
+
+**Description:** List comp-off requests
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `user_id`, `status`
+
+---
+
+##### GET /api/v1/leave/comp-off/my
+
+**Description:** My comp-off requests
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/leave/comp-off/pending
+
+**Description:** Pending comp-off approvals
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/leave/comp-off/balance
+
+**Description:** My comp-off leave balance
+
+**Auth Required:** Yes
+
+**Query Parameters:** `year`
+
+---
+
+##### POST /api/v1/leave/comp-off
+
+**Description:** Request compensatory off
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| worked_date | string | Yes | Date worked (YYYY-MM-DD) |
+| reason | string | Yes | Why comp-off is requested |
+| hours_worked | number | No | Hours worked on that day |
+
+---
+
+##### PUT /api/v1/leave/comp-off/:id/approve
+
+**Description:** Approve comp-off request
+
+**Auth Required:** Yes (Manager/HR)
+
+---
+
+##### PUT /api/v1/leave/comp-off/:id/reject
+
+**Description:** Reject comp-off request
+
+**Auth Required:** Yes (Manager/HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| reason | string | No | Rejection reason |
+
+---
+
+### 2.10 Documents
+
+#### GET /api/v1/documents/categories
+
+**Description:** List document categories
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/documents/categories
+
+**Description:** Create a document category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/documents/categories/:id
+
+**Description:** Update a category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/documents/categories/:id
+
+**Description:** Deactivate a category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/documents
+
+**Description:** List documents. HR sees all; employees see only their own.
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `category_id`, `user_id` (HR only)
+
+---
+
+#### POST /api/v1/documents/upload
+
+**Description:** Upload a document
+
+**Auth Required:** Yes
+
+**Content-Type:** multipart/form-data
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| file | file | Yes | Document file |
+| category_id | number | Yes | Category ID |
+| name | string | No | Document name (defaults to filename) |
+| user_id | number | No | Employee ID (HR can upload for others) |
+| expires_at | string | No | Expiry date (YYYY-MM-DD) |
+
+---
+
+#### GET /api/v1/documents/my
+
+**Description:** Current user's documents
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`
+
+---
+
+#### GET /api/v1/documents/expiring
+
+**Description:** Documents expiring within N days
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `days` (default: 30)
+
+---
+
+#### GET /api/v1/documents/mandatory-status
+
+**Description:** Mandatory document compliance tracking
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/documents/tracking/mandatory
+
+**Description:** Mandatory document tracking (alias)
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/documents/tracking/expiry
+
+**Description:** Document expiry tracking
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/documents/:id
+
+**Description:** Get document details
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/documents/:id/download
+
+**Description:** Download document file
+
+**Auth Required:** Yes
+
+---
+
+#### DELETE /api/v1/documents/:id
+
+**Description:** Delete a document
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/documents/:id/verify
+
+**Description:** Verify a document
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/documents/:id/reject
+
+**Description:** Reject a document with reason
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| rejection_reason | string | Yes | Why the document is rejected |
+
+---
+
+### 2.11 Announcements
+
+#### GET /api/v1/announcements
+
+**Description:** List announcements (filtered by user's department/role visibility)
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`
+
+---
+
+#### GET /api/v1/announcements/unread-count
+
+**Description:** Count of unread announcements
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/announcements
+
+**Description:** Create an announcement
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| title | string | Yes | Announcement title |
+| content | string | Yes | Announcement body (HTML supported) |
+| priority | string | No | "low", "medium", "high" |
+| target_roles | string[] | No | Target specific roles |
+| target_departments | number[] | No | Target specific departments |
+| publish_at | string | No | Scheduled publish date |
+
+---
+
+#### PUT /api/v1/announcements/:id
+
+**Description:** Update an announcement
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/announcements/:id
+
+**Description:** Delete an announcement
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/announcements/:id/read
+
+**Description:** Mark announcement as read
+
+**Auth Required:** Yes
+
+---
+
+### 2.12 Policies
+
+#### GET /api/v1/policies
+
+**Description:** List company policies
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `category`
+
+---
+
+#### GET /api/v1/policies/pending
+
+**Description:** Policies the current user has not yet acknowledged
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/policies/:id
+
+**Description:** Get policy details
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/policies
+
+**Description:** Create a company policy
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| title | string | Yes | Policy title |
+| content | string | Yes | Policy body (HTML) |
+| category | string | No | Policy category |
+| version | string | No | Version number |
+| requires_acknowledgment | boolean | No | Employees must acknowledge |
+| effective_date | string | No | YYYY-MM-DD |
+
+---
+
+#### PUT /api/v1/policies/:id
+
+**Description:** Update a policy
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/policies/:id
+
+**Description:** Deactivate a policy
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/policies/:id/acknowledge
+
+**Description:** Acknowledge a policy
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/policies/:id/acknowledgments
+
+**Description:** List who has acknowledged a policy
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.13 Notifications
+
+#### GET /api/v1/notifications
+
+**Description:** List notifications for current user
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `unread_only` (boolean)
+
+---
+
+#### GET /api/v1/notifications/unread-count
+
+**Description:** Unread notification count
+
+**Auth Required:** Yes
+
+**Response (200):**
+```json
+{ "success": true, "data": { "count": 7 } }
+```
+
+---
+
+#### PUT /api/v1/notifications/:id/read
+
+**Description:** Mark a notification as read
+
+**Auth Required:** Yes
+
+---
+
+#### PUT /api/v1/notifications/read-all
+
+**Description:** Mark all notifications as read
+
+**Auth Required:** Yes
+
+---
+
+### 2.14 Dashboard
+
+#### GET /api/v1/dashboard/widgets
+
+**Description:** Dashboard widget data for all subscribed modules
+
+**Auth Required:** Yes
+
+---
+
+### 2.15 Biometrics
+
+#### Face Enrollment
+
+##### POST /api/v1/biometrics/face/enroll
+
+**Description:** Enroll a user's face for biometric attendance
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| user_id | number | Yes | Employee ID |
+| face_encoding | string | Yes | Base64 face encoding |
+| thumbnail_path | string | No | Path to face thumbnail |
+| enrollment_method | string | No | "photo", "live" |
+| quality_score | number | No | 0-100 quality score |
+
+---
+
+##### GET /api/v1/biometrics/face/enrollments
+
+**Description:** List face enrollments
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `user_id`
+
+---
+
+##### DELETE /api/v1/biometrics/face/enrollments/:id
+
+**Description:** Remove a face enrollment
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/biometrics/face/verify
+
+**Description:** Verify a face against enrolled data
+
+**Auth Required:** Yes
+
+---
+
+#### QR Codes
+
+##### POST /api/v1/biometrics/qr/generate
+
+**Description:** Generate a QR code for a user
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### GET /api/v1/biometrics/qr/my-code
+
+**Description:** Get or auto-generate my QR code
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/biometrics/qr/scan
+
+**Description:** Validate a scanned QR code
+
+**Auth Required:** Yes
+
+---
+
+#### Biometric Check-In/Out
+
+##### POST /api/v1/biometrics/check-in
+
+**Description:** Biometric check-in (face, QR, fingerprint)
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| method | string | Yes | "face", "qr", "fingerprint" |
+| device_id | string | No | Device identifier |
+| confidence_score | number | No | Match confidence |
+| liveness_passed | boolean | No | Anti-spoofing check |
+| latitude | number | No | GPS latitude |
+| longitude | number | No | GPS longitude |
+| image_path | string | No | Captured image path |
+| qr_code | string | No | QR code value (if method=qr) |
+
+---
+
+##### POST /api/v1/biometrics/check-out
+
+**Description:** Biometric check-out
+
+**Auth Required:** Yes
+
+**Request Body:** Same as check-in
+
+---
+
+#### Devices
+
+##### GET /api/v1/biometrics/devices
+
+**Description:** List biometric devices
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `status`, `type`
+
+---
+
+##### POST /api/v1/biometrics/devices
+
+**Description:** Register a new biometric device
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### PUT /api/v1/biometrics/devices/:id
+
+**Description:** Update device settings
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/biometrics/devices/:id
+
+**Description:** Decommission a device
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/biometrics/devices/:id/heartbeat
+
+**Description:** Device heartbeat (uses `X-Device-API-Key` header instead of JWT)
+
+**Auth Required:** Device API Key
+
+---
+
+#### Settings
+
+##### GET /api/v1/biometrics/settings
+
+**Description:** Get biometric settings for the organization
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### PUT /api/v1/biometrics/settings
+
+**Description:** Update biometric settings
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Logs & Dashboard
+
+##### GET /api/v1/biometrics/logs
+
+**Description:** Biometric verification logs
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `method`, `user_id`, `result`, `date_from`, `date_to`
+
+---
+
+##### GET /api/v1/biometrics/dashboard
+
+**Description:** Biometric dashboard stats
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.16 Helpdesk
+
+#### Tickets
+
+##### POST /api/v1/helpdesk/tickets
+
+**Description:** Create a support ticket
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| subject | string | Yes | Ticket subject |
+| description | string | Yes | Ticket description |
+| category | string | Yes | "hr", "it", "finance", "general" |
+| priority | string | No | "low", "medium", "high", "urgent" |
+
+---
+
+##### GET /api/v1/helpdesk/tickets/my
+
+**Description:** My tickets
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `status`, `category`
+
+---
+
+##### GET /api/v1/helpdesk/tickets
+
+**Description:** List all tickets (HR sees all; employees see own)
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `status`, `category`, `priority`, `assigned_to`, `raised_by`, `search`
+
+---
+
+##### GET /api/v1/helpdesk/tickets/:id
+
+**Description:** Get ticket detail with comments
+
+**Auth Required:** Yes
+
+---
+
+##### PUT /api/v1/helpdesk/tickets/:id
+
+**Description:** Update ticket (status, priority, etc.)
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/helpdesk/tickets/:id/assign
+
+**Description:** Assign ticket to an HR agent
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/helpdesk/tickets/:id/comment
+
+**Description:** Add a comment to a ticket
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| comment | string | Yes | Comment text |
+| is_internal | boolean | No | Internal note (HR only) |
+| attachments | string[] | No | Attachment URLs |
+
+---
+
+##### POST /api/v1/helpdesk/tickets/:id/resolve
+
+**Description:** Resolve ticket
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/helpdesk/tickets/:id/close
+
+**Description:** Close ticket
+
+**Auth Required:** Yes (HR or ticket owner)
+
+---
+
+##### POST /api/v1/helpdesk/tickets/:id/reopen
+
+**Description:** Reopen a closed ticket
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/helpdesk/tickets/:id/rate
+
+**Description:** Rate a resolved ticket
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| rating | number | Yes | 1-5 rating |
+| comment | string | No | Feedback |
+
+---
+
+#### Knowledge Base
+
+##### GET /api/v1/helpdesk/kb
+
+**Description:** List published knowledge base articles
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `category`, `search`, `all` (HR: show drafts)
+
+---
+
+##### GET /api/v1/helpdesk/kb/:idOrSlug
+
+**Description:** Get article (increments view count)
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/helpdesk/kb
+
+**Description:** Create a knowledge base article
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### PUT /api/v1/helpdesk/kb/:id
+
+**Description:** Update an article
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/helpdesk/kb/:id
+
+**Description:** Unpublish an article
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### GET /api/v1/helpdesk/kb/:id/my-rating
+
+**Description:** Get current user's rating on an article
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/helpdesk/kb/:id/helpful
+
+**Description:** Rate article helpfulness
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| helpful | boolean | Yes | Whether the article was helpful |
+
+---
+
+##### GET /api/v1/helpdesk/dashboard
+
+**Description:** Helpdesk stats dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.17 Surveys
+
+#### GET /api/v1/surveys
+
+**Description:** List surveys
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `status`, `type`
+
+---
+
+#### GET /api/v1/surveys/active
+
+**Description:** Active surveys the employee can respond to
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/surveys/dashboard
+
+**Description:** Survey analytics dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/surveys/my-responses
+
+**Description:** Employee's past survey responses
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/surveys/:id
+
+**Description:** Get survey detail with questions
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/surveys
+
+**Description:** Create a survey
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/surveys/:id
+
+**Description:** Update a draft survey
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/surveys/:id/publish
+
+**Description:** Publish a survey
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/surveys/:id/close
+
+**Description:** Close a survey
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/surveys/:id
+
+**Description:** Delete a draft survey
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/surveys/:id/respond
+
+**Description:** Submit survey response
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| answers | object[] | Yes | Array of { question_id, answer } |
+
+---
+
+#### GET /api/v1/surveys/:id/results
+
+**Description:** Aggregated survey results
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.18 Assets
+
+#### GET /api/v1/assets/categories
+
+**Description:** List asset categories (Laptop, Phone, etc.)
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/assets/categories
+
+**Description:** Create asset category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/assets/categories/:id
+
+**Description:** Update category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/assets/categories/:id
+
+**Description:** Deactivate category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/assets
+
+**Description:** List assets (HR sees all; employees see their assigned assets)
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `status`, `category_id`, `assigned_to`, `condition_status`, `search`
+
+---
+
+#### POST /api/v1/assets
+
+**Description:** Register a new asset
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/assets/my
+
+**Description:** My assigned assets
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/assets/dashboard
+
+**Description:** Asset management dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/assets/expiring-warranties
+
+**Description:** Assets with warranties expiring soon
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `days` (default: 30)
+
+---
+
+#### GET /api/v1/assets/:id
+
+**Description:** Asset detail with assignment history
+
+**Auth Required:** Yes
+
+---
+
+#### PUT /api/v1/assets/:id
+
+**Description:** Update asset details
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/assets/:id/assign
+
+**Description:** Assign asset to employee
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| assigned_to | number | Yes | Employee ID |
+| notes | string | No | Assignment notes |
+
+---
+
+#### POST /api/v1/assets/:id/return
+
+**Description:** Return an asset
+
+**Auth Required:** Yes (HR or assigned user)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| condition | string | Yes | "good", "damaged", "needs_repair" |
+| notes | string | No | Return notes |
+
+---
+
+#### POST /api/v1/assets/:id/retire
+
+**Description:** Retire an asset from service
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/assets/:id/report-lost
+
+**Description:** Report an asset as lost
+
+**Auth Required:** Yes
+
+---
+
+### 2.19 Positions
+
+#### GET /api/v1/positions
+
+**Description:** List positions
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `department_id`, `status`, `employment_type`, `search`
+
+---
+
+#### GET /api/v1/positions/dashboard
+
+**Description:** Position management dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/positions/vacancies
+
+**Description:** Open vacancies
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/positions/hierarchy
+
+**Description:** Position hierarchy tree
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/positions
+
+**Description:** Create a position
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/positions/:id
+
+**Description:** Get position details
+
+**Auth Required:** Yes
+
+---
+
+#### PUT /api/v1/positions/:id
+
+**Description:** Update position
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/positions/:id
+
+**Description:** Close/delete a position
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/positions/:id/assign
+
+**Description:** Assign a user to a position
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/positions/assignments/:id
+
+**Description:** Remove user from position
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Headcount Plans
+
+##### POST /api/v1/positions/headcount-plans
+
+**Description:** Create a headcount plan
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### GET /api/v1/positions/headcount-plans
+
+**Description:** List headcount plans
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `fiscal_year`, `status`, `department_id`
+
+---
+
+##### PUT /api/v1/positions/headcount-plans/:id
+
+**Description:** Update a headcount plan
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/positions/headcount-plans/:id/approve
+
+**Description:** Approve a headcount plan
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.20 Anonymous Feedback
+
+#### POST /api/v1/feedback
+
+**Description:** Submit anonymous feedback (user identity is hashed, never exposed to HR)
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| category | string | Yes | "workplace", "management", "culture", "suggestion" |
+| content | string | Yes | Feedback content |
+| is_urgent | boolean | No | Flag as urgent |
+| sentiment | string | No | "positive", "neutral", "negative" |
+
+---
+
+#### GET /api/v1/feedback/my
+
+**Description:** My submitted feedback (matched by hash)
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/feedback/dashboard
+
+**Description:** Feedback analytics dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/feedback
+
+**Description:** All feedback (HR only -- no user identity shown)
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `category`, `status`, `sentiment`, `is_urgent`, `search`
+
+---
+
+#### GET /api/v1/feedback/:id
+
+**Description:** Single feedback detail
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/feedback/:id/respond
+
+**Description:** Respond to anonymous feedback
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| admin_response | string | Yes | Response text |
+
+---
+
+#### PUT /api/v1/feedback/:id/status
+
+**Description:** Update feedback status
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| status | string | Yes | "new", "reviewed", "in_progress", "resolved", "closed" |
+
+---
+
+### 2.21 Events
+
+#### GET /api/v1/events
+
+**Description:** List events
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `event_type`, `status`, `start_date`, `end_date`
+
+---
+
+#### GET /api/v1/events/upcoming
+
+**Description:** Upcoming events
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/events/my
+
+**Description:** Events I have RSVPd to
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/events/dashboard
+
+**Description:** Event statistics
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/events/:id
+
+**Description:** Event detail with RSVPs
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/events
+
+**Description:** Create an event
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/events/:id
+
+**Description:** Update an event
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### DELETE /api/v1/events/:id
+
+**Description:** Delete an event
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/events/:id/cancel
+
+**Description:** Cancel an event
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/events/:id/rsvp
+
+**Description:** RSVP to an event
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| status | string | Yes | "attending", "maybe", "declined" |
+
+---
+
+### 2.22 Wellness
+
+#### GET /api/v1/wellness/programs
+
+**Description:** List wellness programs
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/wellness/programs/:id
+
+**Description:** Program detail
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/wellness/programs
+
+**Description:** Create a wellness program
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/wellness/programs/:id
+
+**Description:** Update a program
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/wellness/programs/:id/enroll
+
+**Description:** Enroll in a program
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/wellness/programs/:id/complete
+
+**Description:** Mark program as completed
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/wellness/my
+
+**Description:** My enrolled programs
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/wellness/summary
+
+**Description:** My wellness summary
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/wellness/dashboard
+
+**Description:** Organization wellness dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/wellness/check-in
+
+**Description:** Daily wellness check-in
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| mood | string | Yes | "great", "good", "okay", "low", "stressed" |
+| energy_level | number | No | 1-5 |
+| stress_level | number | No | 1-5 |
+| notes | string | No | Personal notes |
+
+---
+
+#### GET /api/v1/wellness/check-ins
+
+**Description:** My check-in history
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `start_date`, `end_date`
+
+---
+
+#### POST /api/v1/wellness/goals
+
+**Description:** Create a wellness goal
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/wellness/goals
+
+**Description:** My wellness goals
+
+**Auth Required:** Yes
+
+**Query Parameters:** `status`
+
+---
+
+#### PUT /api/v1/wellness/goals/:id
+
+**Description:** Update goal progress
+
+**Auth Required:** Yes
+
+---
+
+### 2.23 Forum / Social Intranet
+
+#### Categories
+
+##### GET /api/v1/forum/categories
+
+**Description:** List forum categories
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/forum/categories
+
+**Description:** Create a category
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### PUT /api/v1/forum/categories/:id
+
+**Description:** Update a category
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Posts
+
+##### GET /api/v1/forum/posts
+
+**Description:** List forum posts
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `per_page`, `category_id`, `sort` (recent, popular)
+
+---
+
+##### POST /api/v1/forum/posts
+
+**Description:** Create a forum post
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/forum/posts/:id
+
+**Description:** Get post with replies and like status
+
+**Auth Required:** Yes
+
+---
+
+##### PUT /api/v1/forum/posts/:id
+
+**Description:** Update own post
+
+**Auth Required:** Yes
+
+---
+
+##### DELETE /api/v1/forum/posts/:id
+
+**Description:** Delete post (owner or HR)
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/forum/posts/:id/pin
+
+**Description:** Pin a post
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/forum/posts/:id/lock
+
+**Description:** Lock a post (no more replies)
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### POST /api/v1/forum/posts/:id/reply
+
+**Description:** Reply to a post
+
+**Auth Required:** Yes
+
+---
+
+#### Replies
+
+##### DELETE /api/v1/forum/replies/:id
+
+**Description:** Delete a reply
+
+**Auth Required:** Yes (owner or HR)
+
+---
+
+##### POST /api/v1/forum/replies/:id/accept
+
+**Description:** Accept a reply as best answer (post owner)
+
+**Auth Required:** Yes
+
+---
+
+#### Likes
+
+##### POST /api/v1/forum/like
+
+**Description:** Toggle like on a post or reply
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| target_type | string | Yes | "post" or "reply" |
+| target_id | number | Yes | ID of the post or reply |
+
+---
+
+#### GET /api/v1/forum/dashboard
+
+**Description:** Forum analytics dashboard
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.24 Whistleblowing
+
+#### POST /api/v1/whistleblowing/reports
+
+**Description:** Submit a whistleblower report (can be anonymous)
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| category | string | Yes | "fraud", "harassment", "safety", "ethics", "other" |
+| title | string | Yes | Report title |
+| description | string | Yes | Detailed description |
+| severity | string | No | "low", "medium", "high", "critical" |
+| is_anonymous | boolean | No | Submit anonymously (default: true) |
+| evidence_urls | string[] | No | URLs to evidence files |
+
+---
+
+#### GET /api/v1/whistleblowing/reports/my
+
+**Description:** My submitted reports (matched by hash)
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/whistleblowing/reports/lookup/:case
+
+**Description:** Lookup report by case number
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/whistleblowing/dashboard
+
+**Description:** Whistleblowing dashboard stats
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### GET /api/v1/whistleblowing/reports
+
+**Description:** All reports (HR/investigator only)
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `status`, `category`, `severity`, `search`
+
+---
+
+#### GET /api/v1/whistleblowing/reports/:id
+
+**Description:** Report detail with investigation timeline
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/whistleblowing/reports/:id/assign
+
+**Description:** Assign an investigator
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### POST /api/v1/whistleblowing/reports/:id/update
+
+**Description:** Add an investigation update/note
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### PUT /api/v1/whistleblowing/reports/:id/status
+
+**Description:** Change report status
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| status | string | Yes | "submitted", "under_investigation", "resolved", "closed" |
+| resolution | string | No | Resolution summary |
+
+---
+
+#### POST /api/v1/whistleblowing/reports/:id/escalate
+
+**Description:** Escalate to external authority
+
+**Auth Required:** Yes (HR)
+
+---
+
+### 2.25 Chatbot
+
+#### POST /api/v1/chatbot/conversations
+
+**Description:** Start a new chatbot conversation
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/chatbot/conversations
+
+**Description:** List my conversations
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/chatbot/conversations/:id
+
+**Description:** Get conversation messages
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/chatbot/conversations/:id/send
+
+**Description:** Send a message and get AI response
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| message | string | Yes | User message |
+
+---
+
+#### DELETE /api/v1/chatbot/conversations/:id
+
+**Description:** Archive a conversation
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/chatbot/suggestions
+
+**Description:** Get suggested questions
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/chatbot/ai-status
+
+**Description:** Check if AI engine is active
+
+**Auth Required:** Yes
+
+---
+
+### 2.26 Custom Fields
+
+#### Definitions
+
+##### GET /api/v1/custom-fields/definitions
+
+**Description:** List custom field definitions
+
+**Auth Required:** Yes
+
+**Query Parameters:** `entity_type` (e.g., "employee", "asset", "ticket")
+
+---
+
+##### POST /api/v1/custom-fields/definitions
+
+**Description:** Create a custom field definition
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### GET /api/v1/custom-fields/definitions/:id
+
+**Description:** Get field definition
+
+**Auth Required:** Yes
+
+---
+
+##### PUT /api/v1/custom-fields/definitions/:id
+
+**Description:** Update field definition
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### DELETE /api/v1/custom-fields/definitions/:id
+
+**Description:** Deactivate field definition
+
+**Auth Required:** Yes (HR)
+
+---
+
+##### PUT /api/v1/custom-fields/definitions/reorder
+
+**Description:** Reorder custom fields
+
+**Auth Required:** Yes (HR)
+
+---
+
+#### Values
+
+##### GET /api/v1/custom-fields/values/:entityType/:entityId
+
+**Description:** Get custom field values for an entity
+
+**Auth Required:** Yes
+
+---
+
+##### POST /api/v1/custom-fields/values/:entityType/:entityId
+
+**Description:** Set/update custom field values
+
+**Auth Required:** Yes
+
+---
+
+##### GET /api/v1/custom-fields/values/:entityType
+
+**Description:** Bulk get values for multiple entities
+
+**Auth Required:** Yes
+
+**Query Parameters:** `entityIds` (comma-separated)
+
+---
+
+##### GET /api/v1/custom-fields/search
+
+**Description:** Search entities by custom field value
+
+**Auth Required:** Yes
+
+**Query Parameters:** `entity_type`, `field_id`, `search_value`
+
+---
+
+### 2.27 Manager Self-Service
+
+#### GET /api/v1/manager/team
+
+**Description:** My direct reports
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/manager/attendance
+
+**Description:** Team attendance today
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/manager/leaves/pending
+
+**Description:** Pending leave approvals for my team
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/manager/leaves/calendar
+
+**Description:** Team leave calendar
+
+**Auth Required:** Yes
+
+**Query Parameters:** `start_date`, `end_date`
+
+---
+
+#### GET /api/v1/manager/dashboard
+
+**Description:** Manager dashboard with combined stats
+
+**Auth Required:** Yes
+
+---
+
+### 2.28 Billing (Cloud Proxy)
+
+These endpoints proxy data from the EMP Billing service.
+
+#### GET /api/v1/billing/invoices
+
+**Description:** List invoices
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `perPage`
+
+---
+
+#### GET /api/v1/billing/payments
+
+**Description:** List payments
+
+**Auth Required:** Yes
+
+**Query Parameters:** `page`, `perPage`
+
+---
+
+#### GET /api/v1/billing/summary
+
+**Description:** Billing summary (total due, upcoming charges, etc.)
+
+**Auth Required:** Yes
+
+---
+
+#### GET /api/v1/billing/invoices/:id/pdf
+
+**Description:** Download invoice PDF
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/billing/pay
+
+**Description:** Create a payment checkout session
+
+**Auth Required:** Yes
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| invoiceId | string | Yes | Invoice ID |
+| gateway | string | No | "stripe" (default), "razorpay", "paypal" |
+
+---
+
+#### GET /api/v1/billing/gateways
+
+**Description:** List available payment gateways
+
+**Auth Required:** Yes
+
+---
+
+### 2.29 Onboarding Wizard
+
+#### GET /api/v1/onboarding/status
+
+**Description:** Get onboarding progress status
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/onboarding/step/:step
+
+**Description:** Complete an onboarding step
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/onboarding/complete
+
+**Description:** Mark onboarding as complete
+
+**Auth Required:** Yes
+
+---
+
+#### POST /api/v1/onboarding/skip
+
+**Description:** Skip onboarding
+
+**Auth Required:** Yes
+
+---
+
+### 2.30 Audit Logs
+
+#### GET /api/v1/audit
+
+**Description:** List audit logs for the organization
+
+**Auth Required:** Yes (Admin)
+
+**Query Parameters:** `page`, `per_page`, `action`
+
+---
+
+### 2.31 Webhooks (Inbound)
+
+#### POST /api/v1/webhooks/billing
+
+**Description:** Receives webhooks from EMP Billing (payment confirmed, subscription updated, etc.)
+
+**Auth Required:** No (internal service-to-service)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| event | string | Yes | Event name |
+| data | object | Yes | Event payload |
+| orgId | number | No | Organization ID |
+| timestamp | string | No | ISO timestamp |
+
+---
+
+#### POST /api/v1/webhooks/modules
+
+**Description:** Receives lifecycle webhooks from sub-modules (recruit, exit, etc.)
+
+**Auth Required:** No (internal service-to-service)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| event | string | Yes | Event name |
+| data | object | Yes | Event payload |
+| source | string | No | Module name (e.g., "recruit") |
+| timestamp | string | No | ISO timestamp |
+
+---
+
+### 2.32 Super Admin
+
+All endpoints require `super_admin` role.
+
+#### GET /api/v1/admin/overview
+
+**Description:** Platform overview (total orgs, users, revenue, etc.)
+
+---
+
+#### GET /api/v1/admin/organizations
+
+**Description:** List all organizations on the platform
+
+**Query Parameters:** `page`, `per_page`, `search`, `sort_by`, `sort_order`
+
+---
+
+#### GET /api/v1/admin/organizations/:id
+
+**Description:** Organization detail with users, subscriptions, etc.
+
+---
+
+#### GET /api/v1/admin/modules
+
+**Description:** Module analytics (adoption, revenue per module)
+
+---
+
+#### GET /api/v1/admin/revenue
+
+**Description:** Revenue analytics
+
+**Query Parameters:** `period` (default: "12m")
+
+---
+
+#### GET /api/v1/admin/growth
+
+**Description:** User/org growth metrics
+
+**Query Parameters:** `period` (default: "12m")
+
+---
+
+#### GET /api/v1/admin/subscriptions
+
+**Description:** Subscription metrics (MRR, churn, etc.)
+
+---
+
+#### GET /api/v1/admin/activity
+
+**Description:** Recent platform activity
+
+**Query Parameters:** `limit` (default: 30, max: 100)
+
+---
+
+#### GET /api/v1/admin/health
+
+**Description:** System health check (DB, Redis, queue, etc.)
+
+---
+
+#### GET /api/v1/admin/module-adoption
+
+**Description:** Module adoption stats
+
+---
+
+### 2.33 AI Configuration (Super Admin)
+
+#### GET /api/v1/admin/ai-config
+
+**Description:** Get AI configuration (API keys masked)
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### GET /api/v1/admin/ai-config/status
+
+**Description:** Get active AI provider and status
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### PUT /api/v1/admin/ai-config/:key
+
+**Description:** Update an AI config value
+
+**Auth Required:** Yes (Super Admin)
+
+**Allowed keys:** `anthropic_api_key`, `openai_api_key`, `openai_base_url`, `gemini_api_key`, `ai_model`, `ai_max_tokens`, `active_provider`
+
+---
+
+#### POST /api/v1/admin/ai-config/test
+
+**Description:** Test an AI provider connection
+
+**Auth Required:** Yes (Super Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| provider | string | Yes | "anthropic", "openai", "gemini", etc. |
+| api_key | string | Conditional | Required unless provider is "ollama" |
+| model | string | No | Model name |
+| base_url | string | No | Custom API base URL |
+
+---
+
+### 2.34 Log Dashboard (Super Admin)
+
+#### GET /api/v1/admin/logs/summary
+
+**Description:** Last 24h log summary
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### GET /api/v1/admin/logs/errors
+
+**Description:** Recent errors (paginated)
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### GET /api/v1/admin/logs/slow-queries
+
+**Description:** Slow database queries
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### GET /api/v1/admin/logs/auth-events
+
+**Description:** Authentication events (login, failed, password changes)
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+#### GET /api/v1/admin/logs/health
+
+**Description:** Module health (PM2 process status)
+
+**Auth Required:** Yes (Super Admin)
+
+---
+
+## 3. EMP Recruit
+
+**Base URL:** `https://test-recruit-api.empcloud.com`
+**API Prefix:** `/api/v1`
+
+### 3.1 Auth (SSO)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /auth/login | Direct login | No |
+| POST | /auth/register | Register | No |
+| POST | /auth/refresh-token | Refresh token | No |
+| POST | /auth/sso | SSO from EMP Cloud token | No |
+
+### 3.2 Jobs
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /jobs | List jobs | HR |
+| POST | /jobs | Create job | HR |
+| GET | /jobs/:id | Get job detail | HR |
+| PUT | /jobs/:id | Update job | HR |
+| PATCH | /jobs/:id/status | Change job status (open/closed/on_hold) | HR |
+| GET | /jobs/:id/applications | List applications for a job | HR |
+
+### 3.3 Candidates
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /candidates | List candidates | HR |
+| POST | /candidates | Create candidate | HR |
+| GET | /candidates/:id | Get candidate | HR |
+| PUT | /candidates/:id | Update candidate | HR |
+| DELETE | /candidates/:id | Archive candidate | HR |
+| POST | /candidates/:id/resume | Upload resume (multipart) | HR |
+
+### 3.4 Applications
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /applications | List applications | HR |
+| POST | /applications | Create application | HR |
+| GET | /applications/:id | Get application | HR |
+| PATCH | /applications/:id/stage | Move to next pipeline stage | HR |
+| POST | /applications/:id/notes | Add note | HR |
+
+### 3.5 Interviews
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /interviews | List interviews | Yes |
+| POST | /interviews | Schedule interview | HR |
+| GET | /interviews/:id | Get interview detail | Yes |
+| PUT | /interviews/:id | Update interview | HR |
+| POST | /interviews/:id/cancel | Cancel interview | HR |
+| POST | /interviews/:id/feedback | Submit interview feedback | Yes |
+| GET | /interviews/my-schedule | My upcoming interviews | Yes |
+| POST | /interviews/:id/recording | Upload recording (multipart) | HR |
+
+### 3.6 Offers
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /offers | List offers | Yes |
+| POST | /offers | Create offer | HR |
+| GET | /offers/:id | Get offer detail | Yes |
+| PUT | /offers/:id | Update draft offer | HR |
+| POST | /offers/:id/submit-approval | Submit for approval | HR |
+| POST | /offers/:id/approve | Approve offer | HR |
+| POST | /offers/:id/reject | Reject offer | HR |
+| POST | /offers/:id/send | Send to candidate | HR |
+| POST | /offers/:id/revoke | Revoke offer | HR |
+| POST | /offers/:id/accept | Candidate accepts | Public |
+| POST | /offers/:id/decline | Candidate declines | Public |
+
+### 3.7 Offer Letters
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /offer-letters/templates | List letter templates | Yes |
+| POST | /offer-letters/templates | Create template | Admin |
+| POST | /offer-letters/generate/:offerId | Generate letter | HR |
+| GET | /offer-letters/:offerId | Get generated letter | Yes |
+| POST | /offer-letters/:offerId/send | Email letter to candidate | HR |
+
+### 3.8 Assessments
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /assessments/templates | Create assessment template | HR |
+| GET | /assessments/templates | List templates | HR |
+| GET | /assessments/templates/:id | Get template | HR |
+| POST | /assessments/invite | Invite candidate to assessment | HR |
+| GET | /assessments/take/:token | Get assessment (public) | No |
+| POST | /assessments/submit/:token | Submit answers (public) | No |
+| GET | /assessments/candidate/:candidateId | List candidate assessments | HR |
+| GET | /assessments/:id/results | Get results | HR |
+
+### 3.9 Background Checks
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /background-checks/initiate | Initiate check | HR |
+| GET | /background-checks/packages | List check packages | HR |
+| POST | /background-checks/packages | Create package | HR |
+| GET | /background-checks | List all checks | HR |
+| GET | /background-checks/candidate/:candidateId | Candidate's checks | HR |
+| GET | /background-checks/:id | Get check detail | HR |
+| PUT | /background-checks/:id | Update result | HR |
+
+### 3.10 Pipeline
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /pipeline/stages | Get pipeline stages | Yes |
+| POST | /pipeline/stages | Create custom stage | Admin |
+| PUT | /pipeline/stages/:id | Update stage | Admin |
+| DELETE | /pipeline/stages/:id | Delete stage | Admin |
+| PUT | /pipeline/stages/reorder | Reorder stages | Admin |
+
+### 3.11 Additional Recruit Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /analytics/overview | Recruitment dashboard | HR |
+| GET | /analytics/pipeline | Pipeline funnel | HR |
+| GET | /analytics/time-to-hire | Time-to-hire metrics | HR |
+| GET | /analytics/sources | Source effectiveness | HR |
+| POST | /comparison/compare | Compare candidates | HR |
+| GET | /career-page | Get career page config | HR |
+| PUT | /career-page | Update career page | HR |
+| POST | /career-page/publish | Publish career page | HR |
+| POST | /job-description/generate-description | AI job description generator | HR |
+| GET | /email-templates | List email templates | HR |
+| POST | /email-templates | Create template | HR |
+| PUT | /email-templates/:id | Update template | HR |
+| POST | /email-templates/:id/preview | Preview rendered template | HR |
+| GET | /public/jobs | Public job listings | No |
+| GET | /public/jobs/:id | Public job detail | No |
+| POST | /public/apply | Public application | No |
+| GET | /referrals | List referrals | Yes |
+| POST | /referrals | Create referral | Yes |
+| GET | /scoring/:applicationId | Get scorecard | HR |
+| POST | /scoring/:applicationId | Submit scorecard | HR |
+| GET | /surveys/:applicationId | Get candidate survey | Public |
+| POST | /surveys/:applicationId/submit | Submit survey | Public |
+| GET | /onboarding/templates | List templates | Yes |
+| POST | /onboarding/templates | Create template | HR |
+| POST | /onboarding/checklists | Generate checklist | HR |
+| GET | /onboarding/checklists | List checklists | HR |
+| GET | /onboarding/checklists/:id | Get checklist | Yes |
+| PATCH | /onboarding/tasks/:id | Update task status | Yes |
+| GET | /portal/:candidateId | Candidate self-service portal | Public |
+
+---
+
+## 4. EMP Performance
+
+**Base URL:** `https://test-performance-api.empcloud.com`
+**API Prefix:** `/api/v1`
+
+### 4.1 Auth (SSO)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /auth/login | Direct login | No |
+| POST | /auth/sso | SSO from EMP Cloud token | No |
+
+### 4.2 Review Cycles
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /review-cycles | List review cycles | HR |
+| POST | /review-cycles | Create review cycle | HR |
+| GET | /review-cycles/:id | Get cycle detail | HR |
+| PUT | /review-cycles/:id | Update cycle | HR |
+| POST | /review-cycles/:id/launch | Launch cycle | HR |
+| POST | /review-cycles/:id/close | Close cycle | HR |
+
+### 4.3 Reviews
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /reviews | List reviews | Yes |
+| GET | /reviews/:id | Get review detail | Yes |
+| PUT | /reviews/:id | Update/submit review | Yes |
+| GET | /reviews/my | My reviews (self + as reviewer) | Yes |
+| POST | /reviews/:id/submit | Submit review | Yes |
+
+### 4.4 Goals
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /goals | List goals | Yes |
+| POST | /goals | Create goal | Yes |
+| GET | /goals/:id | Get goal | Yes |
+| PUT | /goals/:id | Update goal | Yes |
+| DELETE | /goals/:id | Delete goal | Yes |
+| PUT | /goals/:id/progress | Update progress | Yes |
+
+### 4.5 Competencies
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /competencies | List competencies | Yes |
+| POST | /competencies | Create competency | HR |
+| PUT | /competencies/:id | Update competency | HR |
+| DELETE | /competencies/:id | Delete competency | HR |
+
+### 4.6 Feedback
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /feedback | List feedback | Yes |
+| POST | /feedback | Give feedback | Yes |
+| GET | /feedback/received | Feedback received by me | Yes |
+| GET | /feedback/given | Feedback given by me | Yes |
+
+### 4.7 One-on-Ones
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /one-on-ones | List meetings | Yes |
+| POST | /one-on-ones | Schedule meeting | Yes |
+| GET | /one-on-ones/:id | Get meeting detail | Yes |
+| PUT | /one-on-ones/:id | Update meeting | Yes |
+| POST | /one-on-ones/:id/notes | Add meeting notes | Yes |
+
+### 4.8 Peer Reviews
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /peer-reviews | List peer review requests | Yes |
+| POST | /peer-reviews | Request peer review | Yes |
+| GET | /peer-reviews/:id | Get peer review | Yes |
+| PUT | /peer-reviews/:id | Submit peer review | Yes |
+
+### 4.9 PIPs (Performance Improvement Plans)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /pips | List PIPs | HR |
+| POST | /pips | Create PIP | HR |
+| GET | /pips/:id | Get PIP detail | Yes |
+| PUT | /pips/:id | Update PIP | HR |
+| POST | /pips/:id/checkin | Add check-in | Yes |
+
+### 4.10 Additional Performance Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /analytics/overview | Performance dashboard | HR |
+| GET | /analytics/ratings-distribution | Ratings distribution | HR |
+| GET | /analytics/goal-completion | Goal completion rates | HR |
+| GET | /ai-summary/review/:reviewId | AI review summary | Yes |
+| GET | /ai-summary/employee/:userId | AI employee summary | HR |
+| GET | /ai-summary/team/:managerId | AI team summary | HR |
+| GET | /career-paths | List career paths | Yes |
+| POST | /career-paths | Create career path | HR |
+| GET | /letters/templates | Letter templates | HR |
+| POST | /letters/generate | Generate letter | HR |
+| GET | /manager-effectiveness/:managerId | Manager stats | HR |
+| GET | /succession | Succession plans | HR |
+| POST | /succession | Create succession plan | HR |
+| GET | /notifications | Performance notifications | Yes |
+
+---
+
+## 5. EMP Rewards
+
+**Base URL:** `https://test-rewards-api.empcloud.com`
+**API Prefix:** `/api/v1`
+
+### 5.1 Auth (SSO)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /auth/sso | SSO from EMP Cloud token | No |
+
+### 5.2 Kudos
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /kudos | List kudos feed | Yes |
+| POST | /kudos | Send kudos | Yes |
+| GET | /kudos/:id | Get kudos detail | Yes |
+| POST | /kudos/:id/react | React to kudos | Yes |
+| GET | /kudos/received | My received kudos | Yes |
+| GET | /kudos/given | My given kudos | Yes |
+
+### 5.3 Points
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /points/balance | My points balance | Yes |
+| GET | /points/history | Points transaction history | Yes |
+| POST | /points/transfer | Transfer points to user | Yes |
+
+### 5.4 Badges
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /badges | List available badges | Yes |
+| POST | /badges | Create badge | HR |
+| PUT | /badges/:id | Update badge | HR |
+| POST | /badges/:id/award | Award badge to user | HR |
+| GET | /badges/my | My earned badges | Yes |
+
+### 5.5 Rewards & Redemption
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /rewards | List reward catalog | Yes |
+| POST | /rewards | Create reward | HR |
+| PUT | /rewards/:id | Update reward | HR |
+| POST | /redemptions | Redeem points for reward | Yes |
+| GET | /redemptions | My redemption history | Yes |
+| GET | /redemptions/pending | Pending redemptions (HR) | HR |
+| PUT | /redemptions/:id | Approve/reject redemption | HR |
+
+### 5.6 Leaderboard
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /leaderboard | Overall leaderboard | Yes |
+| GET | /leaderboard/department | Department leaderboard | Yes |
+| GET | /leaderboard/monthly | Monthly leaderboard | Yes |
+
+### 5.7 Additional Rewards Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /analytics/overview | Rewards dashboard | HR |
+| GET | /analytics/trends | Recognition trends | HR |
+| GET | /budget | Rewards budget | HR |
+| PUT | /budget | Update budget | HR |
+| GET | /celebrations | Auto-celebrations (birthdays, anniversaries) | Yes |
+| POST | /celebrations/settings | Update celebration settings | HR |
+| GET | /challenges | Active challenges | Yes |
+| POST | /challenges | Create challenge | HR |
+| GET | /milestones | Service milestones | Yes |
+| GET | /nominations | List nominations | Yes |
+| POST | /nominations | Create nomination | Yes |
+| GET | /settings | Rewards settings | HR |
+| PUT | /settings | Update settings | HR |
+| GET | /teams | Team recognition stats | Yes |
+
+---
+
+## 6. EMP Exit
+
+**Base URL:** `https://test-exit-api.empcloud.com`
+**API Prefix:** `/api/v1`
+
+### 6.1 Auth (SSO)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /auth/sso | SSO from EMP Cloud token | No |
+
+### 6.2 Exit Requests
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /exit | List exit requests | HR |
+| POST | /exit | Create exit request (resignation/termination) | Yes |
+| GET | /exit/:id | Get exit request detail | Yes |
+| PUT | /exit/:id | Update exit request | HR |
+| POST | /exit/:id/approve | Approve resignation | HR |
+| POST | /exit/:id/reject | Reject resignation | HR |
+
+### 6.3 Exit Interviews
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /interviews | List exit interviews | HR |
+| POST | /interviews | Schedule exit interview | HR |
+| GET | /interviews/:id | Get interview detail | Yes |
+| PUT | /interviews/:id | Submit interview feedback | Yes |
+
+### 6.4 Checklists
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /checklists | List offboarding checklists | HR |
+| POST | /checklists | Create checklist from template | HR |
+| GET | /checklists/:id | Get checklist detail | Yes |
+| PATCH | /checklists/:id/tasks/:taskId | Update task status | Yes |
+
+### 6.5 Clearance
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /clearance | List clearance requests | HR |
+| GET | /clearance/:id | Get clearance detail | Yes |
+| POST | /clearance/:id/approve | Approve clearance item | Yes |
+| GET | /clearance/my-pending | My pending clearances to approve | Yes |
+
+### 6.6 Knowledge Transfer
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /kt | List KT plans | HR |
+| POST | /kt | Create KT plan | HR |
+| GET | /kt/:id | Get KT plan detail | Yes |
+| PUT | /kt/:id | Update KT plan | Yes |
+| POST | /kt/:id/sessions | Add KT session | Yes |
+
+### 6.7 Full & Final Settlement
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /fnf | List FnF records | HR |
+| GET | /fnf/:id | Get FnF detail | HR |
+| PUT | /fnf/:id | Update FnF calculation | HR |
+| POST | /fnf/:id/approve | Approve FnF | HR |
+
+### 6.8 Additional Exit Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /analytics/overview | Exit analytics dashboard | HR |
+| GET | /analytics/trends | Attrition trends | HR |
+| GET | /alumni | Alumni directory | Yes |
+| POST | /alumni/opt-in | Opt into alumni network | Yes |
+| GET | /alumni/:id | Get alumni profile | Yes |
+| PUT | /alumni/my | Update my alumni profile | Yes |
+| GET | /assets | Exit-related asset returns | HR |
+| GET | /buyout | Buyout requests (notice period) | HR |
+| POST | /buyout | Create buyout request | Yes |
+| GET | /letters/templates | Exit letter templates | HR |
+| POST | /letters/generate | Generate exit letter | HR |
+| GET | /prediction | Attrition prediction | HR |
+| GET | /rehire | Rehire eligibility list | HR |
+| GET | /self-service | Employee self-service portal | Yes |
+| GET | /settings | Exit settings | HR |
+| PUT | /settings | Update settings | HR |
+
+---
+
+## 7. EMP Payroll
+
+**Base URL:** `https://testpayroll-api.empcloud.com`
+**API Prefix:** `/api/v1`
+
+### 7.1 Auth (SSO)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /auth/sso | SSO from EMP Cloud token | No |
+
+### 7.2 Payroll Runs
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /payroll | List payroll runs | HR |
+| POST | /payroll | Create payroll run | HR |
+| GET | /payroll/:id | Get run detail | HR |
+| POST | /payroll/:id/process | Process payroll | HR |
+| POST | /payroll/:id/approve | Approve payroll | HR |
+| POST | /payroll/:id/finalize | Finalize and lock | HR |
+
+### 7.3 Salary Structure
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /salary/structures | List salary structures | HR |
+| POST | /salary/structures | Create structure | HR |
+| GET | /salary/structures/:id | Get structure detail | HR |
+| PUT | /salary/structures/:id | Update structure | HR |
+| GET | /salary/employee/:empId | Get employee salary | HR |
+| PUT | /salary/employee/:empId | Set employee salary | HR |
+
+### 7.4 Payslips
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /payslips | List payslips | HR |
+| GET | /payslips/my | My payslips | Yes |
+| GET | /payslips/:id | Get payslip detail | Yes |
+| GET | /payslips/:id/pdf | Download payslip PDF | Yes |
+
+### 7.5 Tax
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /tax/declarations | List tax declarations | Yes |
+| POST | /tax/declarations | Submit declaration | Yes |
+| GET | /tax/employee/:empId | Employee tax details | HR |
+| POST | /tax/compute | Compute tax estimate | HR |
+
+### 7.6 Loans & Advances
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /loans | List loans | HR |
+| POST | /loans | Create loan | HR |
+| GET | /loans/:id | Get loan detail | Yes |
+| POST | /loans/:id/approve | Approve loan | HR |
+| GET | /loans/my | My loans | Yes |
+
+### 7.7 Reimbursements
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /reimbursements | List reimbursements | HR |
+| POST | /reimbursements | Submit reimbursement | Yes |
+| GET | /reimbursements/:id | Get detail | Yes |
+| PUT | /reimbursements/:id | Update | Yes |
+| POST | /reimbursements/:id/approve | Approve | HR |
+| GET | /reimbursements/my | My reimbursements | Yes |
+
+### 7.8 Adjustments
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /adjustments | List adjustments | HR |
+| POST | /adjustments | Create adjustment | HR |
+| GET | /adjustments/employee/:empId | Employee adjustments | HR |
+| GET | /adjustments/employee/:empId/pending | Pending for payroll run | HR |
+| POST | /adjustments/:id/cancel | Cancel adjustment | HR |
+
+### 7.9 Additional Payroll Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /benefits | List benefits | HR |
+| POST | /benefits | Create benefit | HR |
+| GET | /benefits/employee/:empId | Employee benefits | Yes |
+| GET | /compensation-benchmark | Compensation benchmarks | HR |
+| GET | /earned-wage | Earned wage access | Yes |
+| POST | /earned-wage/request | Request earned wage | Yes |
+| GET | /employee | Payroll employee list | HR |
+| GET | /gl-accounting | GL accounting entries | HR |
+| GET | /global-payroll | Global payroll dashboard | HR |
+| GET | /insurance | Insurance plans | HR |
+| POST | /insurance/enroll | Enroll in plan | Yes |
+| GET | /leave | Leave data (proxied from Cloud) | HR |
+| GET | /attendance | Attendance data (proxied from Cloud) | HR |
+| GET | /org | Org settings for payroll | HR |
+| PUT | /org | Update payroll settings | HR |
+| GET | /pay-equity | Pay equity analysis | HR |
+| GET | /self-service | Employee self-service portal | Yes |
+| GET | /total-rewards | Total rewards statement | Yes |
+| POST | /upload | Bulk upload payroll data | HR |
+| POST | /webhook | Inbound webhooks | Internal |
+| GET | /announcements | Payroll announcements | Yes |
+| GET | /exit | Exit payroll data | HR |
+
+---
+
+## 8. EMP LMS
+
+**Base URL:** `https://testlms-api.empcloud.com`
+**API Prefix:** `/api/v1`
+
+### 8.1 Auth (SSO)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /auth/sso | SSO from EMP Cloud token | No |
+
+### 8.2 Courses
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /courses | List courses | Yes |
+| POST | /courses | Create course | HR |
+| GET | /courses/:id | Get course detail | Yes |
+| PUT | /courses/:id | Update course | HR |
+| DELETE | /courses/:id | Delete/archive course | HR |
+| POST | /courses/:id/publish | Publish course | HR |
+| POST | /courses/:id/modules | Add module to course | HR |
+| PUT | /courses/:id/modules/:moduleId | Update module | HR |
+| POST | /courses/:id/modules/:moduleId/lessons | Add lesson | HR |
+
+### 8.3 Enrollments
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /enrollments | List enrollments | HR |
+| POST | /enrollments | Enroll user(s) | HR |
+| GET | /enrollments/my | My enrollments | Yes |
+| GET | /enrollments/:id | Get enrollment detail | Yes |
+| POST | /enrollments/:id/progress | Update lesson progress | Yes |
+| POST | /enrollments/:id/complete | Mark course complete | Yes |
+
+### 8.4 Quizzes
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /quizzes/course/:courseId | List quizzes for course | Yes |
+| POST | /quizzes | Create quiz | HR |
+| GET | /quizzes/:id | Get quiz | Yes |
+| PUT | /quizzes/:id | Update quiz | HR |
+| POST | /quizzes/:id/attempt | Start attempt | Yes |
+| POST | /quizzes/:id/submit | Submit answers | Yes |
+| GET | /quizzes/:id/results | Get results | Yes |
+
+### 8.5 Learning Paths
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /learning-paths | List learning paths | Yes |
+| POST | /learning-paths | Create path | HR |
+| GET | /learning-paths/:id | Get path detail | Yes |
+| PUT | /learning-paths/:id | Update path | HR |
+| POST | /learning-paths/:id/enroll | Enroll in path | Yes |
+
+### 8.6 Certifications
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /certifications | List certifications | Yes |
+| POST | /certifications | Create certification | HR |
+| GET | /certifications/my | My certifications | Yes |
+| GET | /certifications/:id/verify | Verify certification | No |
+
+### 8.7 Additional LMS Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | /analytics/overview | LMS dashboard | HR |
+| GET | /analytics/course/:courseId | Course analytics | HR |
+| GET | /analytics/user/:userId | User analytics | Self/HR |
+| GET | /compliance | Compliance tracking | HR |
+| POST | /compliance/assign | Assign compliance training | HR |
+| GET | /discussions | Course discussions | Yes |
+| POST | /discussions | Create discussion thread | Yes |
+| POST | /discussions/:id/reply | Reply to discussion | Yes |
+| GET | /gamification/leaderboard | Learning leaderboard | Yes |
+| GET | /gamification/badges | Learning badges | Yes |
+| GET | /ilt | Instructor-led trainings | Yes |
+| POST | /ilt | Create ILT session | HR |
+| POST | /ilt/:id/register | Register for ILT | Yes |
+| GET | /marketplace | Course marketplace | Yes |
+| GET | /notifications | LMS notifications | Yes |
+| GET | /ratings/course/:courseId | Course ratings | Yes |
+| POST | /ratings | Submit rating | Yes |
+| GET | /recommendations | AI course recommendations | Yes |
+| GET | /scorm/:courseId | SCORM package info | HR |
+| POST | /scorm/upload | Upload SCORM package | HR |
+| GET | /video/:lessonId | Get video streaming URL | Yes |
+
+---
+
+## 9. EMP Billing
+
+**Base URL:** Internal only (proxied through EMP Cloud `/api/v1/billing/*`)
+
+EMP Billing is an internal service. Mobile apps access billing data through EMP Cloud proxy endpoints (see section 2.28). Direct API access is not available externally.
+
+### Internal Endpoints (for reference)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /invoices | List invoices |
+| POST | /invoices | Create invoice |
+| GET | /invoices/:id | Get invoice detail |
+| GET | /invoices/:id/pdf | Download PDF |
+| GET | /payments | List payments |
+| POST | /payments | Process payment |
+| GET | /subscriptions | List subscriptions |
+| POST | /subscriptions | Create subscription |
+| PUT | /subscriptions/:id | Update subscription |
+| DELETE | /subscriptions/:id | Cancel subscription |
+| GET | /products | List products |
+| POST | /products | Create product |
+| GET | /clients | List billing clients |
+| POST | /clients | Create client |
+| GET | /coupons | List coupons |
+| POST | /coupons | Create coupon |
+| GET | /credit-notes | List credit notes |
+| GET | /currencies | List currencies |
+| GET | /disputes | List disputes |
+| GET | /dunning | Dunning campaigns |
+| GET | /expenses | List expenses |
+| GET | /gateway | Gateway config |
+| GET | /metrics | Business metrics |
+| GET | /notifications | Billing notifications |
+| GET | /org | Org billing config |
+| GET | /portal | Customer portal |
+| GET | /quotes | List quotes |
+| GET | /recurring | Recurring billing |
+| GET | /reports | Financial reports |
+| GET | /scheduled-reports | Scheduled reports |
+| GET | /search | Search across billing |
+| GET | /settings | Billing settings |
+| POST | /upload | Upload billing docs |
+| GET | /usage | Usage-based billing |
+| GET | /vendors | List vendors |
+| POST | /webhooks | Outbound webhooks |
+| GET | /api-keys | API key management |
+| GET | /domains | Domain management |
+
+---
+
+## 10. Webhook Format
+
+### Outbound Webhooks (from sub-modules to EMP Cloud)
+
+Sub-modules send event webhooks to EMP Cloud at:
+
+```
+POST https://test-empcloud-api.empcloud.com/api/v1/webhooks/modules
+```
+
+**Payload format:**
+```json
+{
+  "event": "recruit.candidate_hired",
+  "source": "recruit",
+  "data": {
+    "organization_id": 5,
+    "candidate_id": "uuid-here",
+    "candidate_name": "John Doe",
+    "job_title": "Software Engineer",
+    "start_date": "2026-04-01"
+  },
+  "timestamp": "2026-03-26T10:30:00.000Z"
+}
+```
+
+### Common Webhook Events
+
+| Source | Event | Description |
+|--------|-------|-------------|
+| recruit | `recruit.candidate_hired` | Candidate accepted offer |
+| recruit | `recruit.application_rejected` | Application rejected |
+| exit | `exit.resignation_submitted` | Employee resigned |
+| exit | `exit.clearance_completed` | All clearances done |
+| exit | `exit.fnf_approved` | Full & final approved |
+| performance | `performance.review_completed` | Review cycle completed |
+| performance | `performance.pip_created` | PIP initiated |
+| rewards | `rewards.kudos_sent` | Kudos recognition |
+| rewards | `rewards.milestone_reached` | Service milestone |
+| lms | `lms.course_completed` | Employee completed course |
+| lms | `lms.certification_earned` | Certification earned |
+| payroll | `payroll.run_finalized` | Payroll finalized |
+| billing | `billing.payment_received` | Payment confirmed |
+| billing | `billing.subscription_activated` | Subscription activated |
+| billing | `billing.invoice_overdue` | Invoice overdue |
+
+### Billing Webhooks (from EMP Billing to EMP Cloud)
+
+```
+POST https://test-empcloud-api.empcloud.com/api/v1/webhooks/billing
+```
+
+**Payload format:**
+```json
+{
+  "event": "payment.received",
+  "data": {
+    "invoice_id": "INV-2026-0042",
+    "amount": 50000,
+    "currency": "INR",
+    "gateway": "stripe",
+    "subscription_id": 12
+  },
+  "orgId": 5,
+  "timestamp": "2026-03-26T10:30:00.000Z"
+}
+```
+
+**Note:** Webhooks are acknowledged immediately with `{ "received": true }`. Processing happens asynchronously.
+
+---
+
+*This document covers 500+ API endpoints across 8 modules of the EMP Cloud platform. For questions or clarifications, contact the platform engineering team.*
