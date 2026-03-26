@@ -80,6 +80,14 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Fetch AI status
+  const { data: aiStatus } = useQuery<{ engine: string; provider: string }>({
+    queryKey: ["chatbot-ai-status"],
+    queryFn: () => api.get("/chatbot/ai-status").then((r) => r.data.data),
+    enabled: isOpen,
+    staleTime: 60_000,
+  });
+
   // Fetch suggestions
   const { data: suggestions = [] } = useQuery<string[]>({
     queryKey: ["chatbot-suggestions"],
@@ -169,7 +177,20 @@ export default function ChatWidget() {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white">AI HR Assistant</h3>
-            <p className="text-[10px] text-white/70">Always online</p>
+            <p className="text-[10px] text-white/70">
+              {aiStatus?.engine === "ai" ? "AI-powered" : "Basic mode"}{" "}
+              <span className="inline-block ml-1">
+                {aiStatus?.engine === "ai" ? (
+                  <span className="inline-flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[9px] font-medium">
+                    <Sparkles className="h-2.5 w-2.5" /> AI
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-0.5 bg-white/10 px-1.5 py-0.5 rounded-full text-[9px]">
+                    Basic
+                  </span>
+                )}
+              </span>
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-1">

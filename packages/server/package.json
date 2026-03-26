@@ -17,6 +17,7 @@
     "generate-keys": "tsx src/utils/generate-keys.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@empcloud/shared": "workspace:*",
     "bcryptjs": "^2.4.3",
     "bullmq": "^5.0.0",

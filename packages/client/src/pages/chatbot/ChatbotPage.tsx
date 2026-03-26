@@ -296,6 +296,13 @@ export default function ChatbotPage() {
     enabled: !!activeConvoId,
   });
 
+  // Fetch AI status
+  const { data: aiStatus } = useQuery<{ engine: string; provider: string }>({
+    queryKey: ["chatbot-ai-status"],
+    queryFn: () => api.get("/chatbot/ai-status").then((r) => r.data.data),
+    staleTime: 60_000,
+  });
+
   // Fetch suggestions
   const { data: suggestions = [] } = useQuery<string[]>({
     queryKey: ["chatbot-suggestions"],
@@ -386,7 +393,9 @@ export default function ChatbotPage() {
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-gray-900">AI Assistant</h2>
-                <p className="text-[10px] text-gray-400">Always here to help</p>
+                <p className="text-[10px] text-gray-400">
+                  {aiStatus?.engine === "ai" ? "AI-powered" : "Basic mode"}
+                </p>
               </div>
             </div>
           </div>
@@ -471,7 +480,18 @@ export default function ChatbotPage() {
                 <h3 className="text-sm font-medium text-gray-900">
                   {conversations.find((c) => c.id === activeConvoId)?.title || "New Conversation"}
                 </h3>
-                <p className="text-[10px] text-green-600 font-medium">Online</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-[10px] text-green-600 font-medium">Online</p>
+                  {aiStatus?.engine === "ai" ? (
+                    <span className="inline-flex items-center gap-0.5 bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full text-[9px] font-medium">
+                      <Sparkles className="h-2.5 w-2.5" /> AI-powered
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-0.5 bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full text-[9px]">
+                      Basic mode
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -557,7 +577,9 @@ export default function ChatbotPage() {
                 </button>
               </div>
               <p className="text-[10px] text-gray-400 text-center mt-2">
-                AI HR Assistant can help with HR queries. For complex issues, contact your HR team.
+                {aiStatus?.engine === "ai"
+                  ? "AI-powered HR assistant with real-time data access. For complex issues, contact your HR team."
+                  : "Basic HR assistant. For complex issues, contact your HR team."}
               </p>
             </div>
           </>

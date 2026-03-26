@@ -6,6 +6,7 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { runAgent, detectProvider, type AIProvider } from "./agent.service.js";
 
 // ---------------------------------------------------------------------------
 // Intent definitions
@@ -546,21 +547,58 @@ export async function sendMessage(
     created_at: new Date(),
   });
 
-  // Generate response
+  // Generate response — use AI agent if available, otherwise rule-based
   let response: ChatResponse;
-  try {
-    const intent = detectIntent(message);
-    if (intent) {
-      response = await intent.handler(orgId, userId, message);
-    } else {
-      response = fallbackResponse();
+  const aiProvider = detectProvider();
+
+  if (aiProvider !== "none") {
+    // LLM-powered agent path
+    try {
+      // Load conversation history for context
+      const historyRows = await db("chatbot_messages")
+        .where({ conversation_id: conversationId })
+        .orderBy("created_at", "asc")
+        .select("role", "content")
+        .limit(40);
+
+      const history = historyRows
+        .filter((h: any) => h.role === "user" || h.role === "assistant")
+        .map((h: any) => ({ role: h.role as "user" | "assistant", content: h.content }));
+
+      const aiResponse = await runAgent(orgId, userId, message, history);
+      response = {
+        content: aiResponse,
+        metadata: { engine: "ai", provider: aiProvider },
+      };
+    } catch (err) {
+      logger.error("AI agent error, falling back to rule-based:", err);
+      // Fall back to rule-based on AI failure
+      const intent = detectIntent(message);
+      if (intent) {
+        response = await intent.handler(orgId, userId, message);
+        response.metadata = { ...response.metadata, engine: "rule-based", ai_fallback: true };
+      } else {
+        response = fallbackResponse();
+        response.metadata = { ...response.metadata, engine: "rule-based", ai_fallback: true };
+      }
     }
-  } catch (err) {
-    logger.error("Chatbot intent handler error:", err);
-    response = {
-      content: "I encountered an error while processing your request. Please try again or contact HR for assistance.",
-      metadata: { intent: "error" },
-    };
+  } else {
+    // Rule-based path (no API key configured)
+    try {
+      const intent = detectIntent(message);
+      if (intent) {
+        response = await intent.handler(orgId, userId, message);
+      } else {
+        response = fallbackResponse();
+      }
+      response.metadata = { ...response.metadata, engine: "rule-based" };
+    } catch (err) {
+      logger.error("Chatbot intent handler error:", err);
+      response = {
+        content: "I encountered an error while processing your request. Please try again or contact HR for assistance.",
+        metadata: { intent: "error", engine: "rule-based" },
+      };
+    }
   }
 
   // Save assistant response
@@ -591,6 +629,14 @@ export async function sendMessage(
   return {
     userMessage: userMsg,
     assistantMessage: assistantMsg,
+  };
+}
+
+export function getAIStatus(): { engine: string; provider: AIProvider } {
+  const provider = detectProvider();
+  return {
+    engine: provider !== "none" ? "ai" : "rule-based",
+    provider,
   };
 }
 

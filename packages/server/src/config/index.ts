@@ -90,6 +90,13 @@ export const config = {
     apiKey: process.env.BILLING_API_KEY || "",
   },
 
+  ai: {
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || "",
+    openaiApiKey: process.env.OPENAI_API_KEY || "",
+    model: process.env.AI_MODEL || "claude-sonnet-4-20250514",
+    maxTokens: parseInt(process.env.AI_MAX_TOKENS || "4096", 10),
+  },
+
   log: {
     level: env("LOG_LEVEL", "debug"),
     format: env("LOG_FORMAT", "pretty"),

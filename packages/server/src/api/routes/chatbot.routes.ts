@@ -108,4 +108,18 @@ router.get(
   }
 );
 
+// GET /api/v1/chatbot/ai-status — Check if AI engine is active
+router.get(
+  "/ai-status",
+  authenticate,
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const status = chatbotService.getAIStatus();
+      sendSuccess(res, status);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;
