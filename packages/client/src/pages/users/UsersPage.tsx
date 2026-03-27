@@ -400,8 +400,15 @@ export default function UsersPage() {
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("employee");
+  const [inviteFirstName, setInviteFirstName] = useState("");
+  const [inviteLastName, setInviteLastName] = useState("");
+  const [inviteDesignation, setInviteDesignation] = useState("");
+  const [inviteDeptId, setInviteDeptId] = useState("");
+  const [inviteManagerId, setInviteManagerId] = useState("");
   const [showCsvImport, setShowCsvImport] = useState(false);
+  const [showAdvancedInvite, setShowAdvancedInvite] = useState(false);
   const { data: departmentsData } = useDepartments();
+  const { data: allUsersData } = useUsers({ page: 1, per_page: 200 });
   const { data: pendingInvitations } = usePendingInvitations();
 
   const users = data?.data || [];
@@ -449,34 +456,69 @@ export default function UsersPage() {
 
       {/* Invite form */}
       {showInvite && (
-        <form onSubmit={handleInvite} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 flex items-end gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              placeholder="colleague@company.com"
-              required
-            />
+        <form onSubmit={handleInvite} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+          <div className="flex items-end gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="colleague@company.com" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                <option value="employee">Employee</option>
+                <option value="hr_manager">HR Manager</option>
+                <option value="hr_admin">HR Admin</option>
+                <option value="org_admin">Org Admin</option>
+              </select>
+            </div>
+            <button type="button" onClick={() => setShowAdvancedInvite(!showAdvancedInvite)}
+              className="text-sm text-brand-600 hover:underline whitespace-nowrap pb-2">
+              {showAdvancedInvite ? "Less options" : "More options"}
+            </button>
+            <button type="submit" disabled={inviteUser.isPending}
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50">
+              <Mail className="h-4 w-4" /> Send Invite
+            </button>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-            <select
-              value={inviteRole}
-              onChange={(e) => setInviteRole(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            >
-              <option value="employee">Employee</option>
-              <option value="hr_manager">HR Manager</option>
-              <option value="hr_admin">HR Admin</option>
-              <option value="org_admin">Org Admin</option>
-            </select>
-          </div>
-          <button type="submit" disabled={inviteUser.isPending} className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50">
-            <Mail className="h-4 w-4" /> Send Invite
-          </button>
+          {showAdvancedInvite && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-gray-100">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input type="text" value={inviteFirstName} onChange={(e) => setInviteFirstName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="John" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input type="text" value={inviteLastName} onChange={(e) => setInviteLastName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Doe" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                <input type="text" value={inviteDesignation} onChange={(e) => setInviteDesignation(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Software Engineer" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <select value={inviteDeptId} onChange={(e) => setInviteDeptId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  <option value="">Select department</option>
+                  {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reporting Manager</label>
+                <select value={inviteManagerId} onChange={(e) => setInviteManagerId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  <option value="">No manager (top level)</option>
+                  {(allUsersData?.data || []).map((u: any) => (
+                    <option key={u.id} value={u.id}>{u.first_name} {u.last_name} — {u.designation || u.role}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
         </form>
       )}
 
