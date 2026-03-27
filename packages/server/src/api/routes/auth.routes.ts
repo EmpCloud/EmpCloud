@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { Router, Request, Response, NextFunction } from "express";
+import rateLimit from "express-rate-limit";
 import { register, login, changePassword, forgotPassword, resetPassword } from "../../services/auth/auth.service.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { sendSuccess } from "../../utils/response.js";
@@ -18,8 +19,26 @@ import {
 
 const router = Router();
 
+// Strict rate limit for registration: 5 per hour per IP
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: { code: "RATE_LIMIT", message: "Too many registration attempts. Please try again later." } },
+});
+
+// Strict rate limit for login: 10 attempts per 15 minutes per IP
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: { code: "TOO_MANY_REQUESTS", message: "Too many login attempts. Please try again later." } },
+});
+
 // POST /api/v1/auth/register
-router.post("/register", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/register", registerLimiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = registerSchema.parse(req.body);
     const result = await register({
@@ -52,7 +71,7 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
 });
 
 // POST /api/v1/auth/login
-router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/login", loginLimiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = loginSchema.parse(req.body);
     const result = await login(data);

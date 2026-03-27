@@ -16,6 +16,7 @@ import {
   AuditAction,
 } from "@empcloud/shared";
 import { paramInt, param } from "../../utils/params.js";
+import { ForbiddenError } from "../../utils/errors.js";
 import * as importService from "../../services/import/import.service.js";
 import multer from "multer";
 
@@ -62,6 +63,12 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createUserSchema.parse(req.body);
+
+    // Prevent privilege escalation: only super_admins can assign the super_admin role
+    if (data.role === "super_admin" && req.user!.role !== "super_admin") {
+      throw new ForbiddenError("Only super admins can assign the super_admin role");
+    }
+
     const user = await userService.createUser(req.user!.org_id, data);
 
     await logAudit({
@@ -82,6 +89,12 @@ router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Respon
 router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateUserSchema.parse(req.body);
+
+    // Prevent privilege escalation: only super_admins can assign the super_admin role
+    if (data.role === "super_admin" && req.user!.role !== "super_admin") {
+      throw new ForbiddenError("Only super admins can assign the super_admin role");
+    }
+
     const user = await userService.updateUser(req.user!.org_id, paramInt(req.params.id), data);
 
     await logAudit({

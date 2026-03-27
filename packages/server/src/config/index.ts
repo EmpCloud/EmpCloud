@@ -56,7 +56,14 @@ export const config = {
     refreshTokenExpiry: env("REFRESH_TOKEN_EXPIRY", "7d"),
     authCodeExpiry: env("AUTH_CODE_EXPIRY", "10m"),
     idTokenExpiry: env("ID_TOKEN_EXPIRY", "1h"),
-    issuer: env("BASE_URL", "http://localhost:3000"),
+    // Use JWT_ISSUER if set explicitly; otherwise derive from BASE_URL.
+    // In production, always use the public domain — never leak internal IPs.
+    issuer: env(
+      "JWT_ISSUER",
+      env("NODE_ENV", "development") === "production"
+        ? "https://test-empcloud-api.empcloud.com"
+        : env("BASE_URL", "http://localhost:3000"),
+    ),
   },
 
   cors: {

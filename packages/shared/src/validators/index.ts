@@ -13,6 +13,13 @@ import {
 } from "../types/index.js";
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Strip HTML tags from a string to prevent stored XSS */
+const stripHtml = (val: string) => val.replace(/<[^>]*>/g, "").trim();
+
+// ---------------------------------------------------------------------------
 // Common
 // ---------------------------------------------------------------------------
 
@@ -33,15 +40,15 @@ export const idParamSchema = z.object({
 
 export const registerSchema = z.object({
   // Organization
-  org_name: z.string().min(2).max(100),
-  org_legal_name: z.string().max(255).optional(),
+  org_name: z.string().min(2).max(100).transform(stripHtml),
+  org_legal_name: z.string().max(255).optional().transform(val => val ? stripHtml(val) : val),
   org_country: z.string().min(2).max(55).default("IN"),
-  org_state: z.string().max(55).optional(),
+  org_state: z.string().max(55).optional().transform(val => val ? stripHtml(val) : val),
   org_timezone: z.string().max(50).optional(),
   org_email: z.string().email().optional(),
   // Admin user
-  first_name: z.string().min(1).max(64),
-  last_name: z.string().min(1).max(64),
+  first_name: z.string().min(1).max(64).transform(stripHtml),
+  last_name: z.string().min(1).max(64).transform(stripHtml),
   email: z.string().email().max(128),
   password: z
     .string()
