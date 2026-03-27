@@ -8,8 +8,8 @@ export default defineConfig({
     sequence: { concurrent: false },
     pool: "forks",
     poolOptions: { forks: { singleFork: true } },
-    include: ["src/services/**/*.test.ts", "src/__tests__/services/**/*.test.ts"],
-    exclude: ["src/__tests__/api/**", "src/tests/**"],
+    include: ["src/__tests__/**/*.test.ts"],
+    exclude: ["src/tests/**"],
     retry: 1,
   },
 });
