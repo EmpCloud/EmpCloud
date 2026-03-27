@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError } from "../../utils/errors.js";
+import { NotFoundError, ConflictError } from "../../utils/errors.js";
 import type { Organization, UpdateOrgInput } from "@empcloud/shared";
 
 export async function getOrg(orgId: number): Promise<Organization> {
@@ -49,8 +49,15 @@ export async function listDepartments(orgId: number) {
 
 export async function createDepartment(orgId: number, name: string) {
   const db = getDB();
+
+  const existing = await db("organization_departments")
+    .where({ organization_id: orgId, is_deleted: false })
+    .whereRaw("LOWER(name) = LOWER(?)", [name.trim()])
+    .first();
+  if (existing) throw new ConflictError("A department with this name already exists");
+
   const [id] = await db("organization_departments").insert({
-    name,
+    name: name.trim(),
     organization_id: orgId,
     created_at: new Date(),
     updated_at: new Date(),
@@ -83,8 +90,16 @@ export async function deleteLocation(orgId: number, locationId: number) {
 
 export async function createLocation(orgId: number, data: { name: string; address?: string; timezone?: string }) {
   const db = getDB();
+
+  const existing = await db("organization_locations")
+    .where({ organization_id: orgId, is_active: true })
+    .whereRaw("LOWER(name) = LOWER(?)", [data.name.trim()])
+    .first();
+  if (existing) throw new ConflictError("A location with this name already exists");
+
   const [id] = await db("organization_locations").insert({
     ...data,
+    name: data.name.trim(),
     organization_id: orgId,
     created_at: new Date(),
     updated_at: new Date(),

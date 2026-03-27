@@ -20,6 +20,7 @@ export async function getProfile(orgId: number, userId: number) {
         db.raw("?", [orgId])
       );
     })
+    .leftJoin("users as manager", "users.reporting_manager_id", "manager.id")
     .where({ "users.id": userId, "users.organization_id": orgId })
     .select(
       "users.id",
@@ -41,6 +42,7 @@ export async function getProfile(orgId: number, userId: number) {
       "users.photo_path",
       "users.role",
       "users.status",
+      db.raw("CONCAT(manager.first_name, ' ', manager.last_name) as reporting_manager_name"),
       "employee_profiles.personal_email",
       "employee_profiles.emergency_contact_name",
       "employee_profiles.emergency_contact_phone",

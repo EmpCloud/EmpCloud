@@ -125,6 +125,11 @@ export async function inviteUser(orgId: number, invitedBy: number, data: InviteU
   const existing = await db("users").where({ email: data.email }).first();
   if (existing) throw new ConflictError("User with this email already exists");
 
+  const pendingInvite = await db("invitations")
+    .where({ email: data.email, status: "pending" })
+    .first();
+  if (pendingInvite) throw new ConflictError("An invitation has already been sent to this email");
+
   const token = randomHex(32);
   const expiresAt = new Date(Date.now() + TOKEN_DEFAULTS.INVITATION_EXPIRY * 1000);
 

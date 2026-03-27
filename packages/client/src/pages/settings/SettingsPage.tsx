@@ -4,6 +4,40 @@ import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
 import { Building2, MapPin, Briefcase, Pencil, X, Plus, Trash2, Save } from "lucide-react";
 
+const COUNTRIES = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
+  "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain",
+  "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia",
+  "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso",
+  "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic",
+  "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia",
+  "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica",
+  "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea",
+  "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia",
+  "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea",
+  "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India",
+  "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon",
+  "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar",
+  "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania",
+  "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro",
+  "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands",
+  "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia",
+  "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea",
+  "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia",
+  "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines",
+  "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia",
+  "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands",
+  "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan",
+  "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania",
+  "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey",
+  "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
+  "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela",
+  "Vietnam", "Yemen", "Zambia", "Zimbabwe",
+];
+
+const NAME_ONLY_RE = /^[A-Za-z\s\-'.]+$/;
+
 const TIMEZONES = [
   "UTC",
   "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
@@ -109,8 +143,22 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
     },
   });
 
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: Record<string, string> = {};
+    if (form.city && !NAME_ONLY_RE.test(form.city)) {
+      errors.city = "City must only contain letters, spaces, and hyphens.";
+    }
+    if (form.state && !NAME_ONLY_RE.test(form.state)) {
+      errors.state = "State must only contain letters, spaces, and hyphens.";
+    }
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+    setValidationErrors({});
     updateOrg.mutate(form);
   };
 
@@ -152,13 +200,34 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
                   <option key={tz} value={tz}>{tz}</option>
                 ))}
               </select>
-            ) : (
-              <input
-                type={key === "email" ? "email" : "text"}
+            ) : key === "country" ? (
+              <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              />
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+              >
+                <option value="">Select country</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            ) : (
+              <>
+                <input
+                  type={key === "email" ? "email" : "text"}
+                  value={form[key]}
+                  onChange={(e) => {
+                    setForm({ ...form, [key]: e.target.value });
+                    if (validationErrors[key]) {
+                      setValidationErrors((prev) => { const next = { ...prev }; delete next[key]; return next; });
+                    }
+                  }}
+                  className={`w-full px-3 py-2 border rounded-lg text-sm ${validationErrors[key] ? "border-red-400" : "border-gray-300"}`}
+                />
+                {validationErrors[key] && (
+                  <p className="text-xs text-red-500 mt-1">{validationErrors[key]}</p>
+                )}
+              </>
             )}
           </div>
         ))}
@@ -194,6 +263,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
   const qc = useQueryClient();
   const [newName, setNewName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const [addError, setAddError] = useState("");
 
   const addDept = useMutation({
     mutationFn: (name: string) =>
@@ -202,6 +272,10 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       qc.invalidateQueries({ queryKey: ["departments"] });
       setNewName("");
       setShowAdd(false);
+      setAddError("");
+    },
+    onError: (err: any) => {
+      setAddError(err?.response?.data?.error?.message || "Failed to add department.");
     },
   });
 
@@ -226,29 +300,33 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
         </button>
       </div>
       {showAdd && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (newName.trim()) addDept.mutate(newName.trim());
-          }}
-          className="flex gap-2 mb-3"
-        >
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="Department name"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            required
-          />
-          <button
-            type="submit"
-            disabled={addDept.isPending}
-            className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+        <div className="mb-3">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setAddError("");
+              if (newName.trim()) addDept.mutate(newName.trim());
+            }}
+            className="flex gap-2"
           >
-            Add
-          </button>
-        </form>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
+              placeholder="Department name"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              required
+            />
+            <button
+              type="submit"
+              disabled={addDept.isPending}
+              className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            >
+              Add
+            </button>
+          </form>
+          {addError && <p className="text-xs text-red-500 mt-1">{addError}</p>}
+        </div>
       )}
       <ul className="space-y-2">
         {departments.map((d: any) => (
@@ -276,6 +354,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [locForm, setLocForm] = useState({ name: "", timezone: "" });
+  const [addError, setAddError] = useState("");
 
   const addLoc = useMutation({
     mutationFn: (data: { name: string; timezone?: string }) =>
@@ -284,6 +363,10 @@ function LocationsCard({ locations }: { locations: any[] }) {
       qc.invalidateQueries({ queryKey: ["locations"] });
       setLocForm({ name: "", timezone: "" });
       setShowAdd(false);
+      setAddError("");
+    },
+    onError: (err: any) => {
+      setAddError(err?.response?.data?.error?.message || "Failed to add location.");
     },
   });
 
@@ -308,9 +391,11 @@ function LocationsCard({ locations }: { locations: any[] }) {
         </button>
       </div>
       {showAdd && (
+        <div className="mb-3">
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            setAddError("");
             if (locForm.name.trim()) {
               addLoc.mutate({
                 name: locForm.name.trim(),
@@ -318,12 +403,12 @@ function LocationsCard({ locations }: { locations: any[] }) {
               });
             }
           }}
-          className="flex gap-2 mb-3"
+          className="flex gap-2"
         >
           <input
             type="text"
             value={locForm.name}
-            onChange={(e) => setLocForm({ ...locForm, name: e.target.value })}
+            onChange={(e) => { setLocForm({ ...locForm, name: e.target.value }); setAddError(""); }}
             placeholder="Location name"
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             required
@@ -346,6 +431,8 @@ function LocationsCard({ locations }: { locations: any[] }) {
             Add
           </button>
         </form>
+        {addError && <p className="text-xs text-red-500 mt-1">{addError}</p>}
+        </div>
       )}
       <ul className="space-y-2">
         {locations.map((l: any) => (

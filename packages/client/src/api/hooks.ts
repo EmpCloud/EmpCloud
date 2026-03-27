@@ -80,7 +80,10 @@ export function useInviteUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: object) => api.post("/users/invite", data).then((r) => r.data.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["users"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users"] });
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+    },
   });
 }
 

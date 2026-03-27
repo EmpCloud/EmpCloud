@@ -329,6 +329,9 @@ export default function DashboardPage() {
           {activeSubscriptions.map((sub) => {
             const mod = moduleMap.get(sub.module_id);
             const isExpanded = expandedModule === sub.id;
+            const ssoUrl = mod?.base_url
+              ? `${mod.base_url}?sso_token=${encodeURIComponent(useAuthStore.getState().accessToken || "")}`
+              : null;
             return (
               <div
                 key={sub.id}
@@ -340,7 +343,13 @@ export default function DashboardPage() {
                       <Package className="h-5 w-5 text-brand-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>
+                      {ssoUrl ? (
+                        <a href={ssoUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-gray-900 hover:text-brand-600 transition-colors">
+                          {mod?.name || "Module"}
+                        </a>
+                      ) : (
+                        <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>
+                      )}
                       <p className="text-xs text-gray-400">{mod?.slug}</p>
                     </div>
                   </div>
@@ -383,13 +392,13 @@ export default function DashboardPage() {
                   />
                 </div>
 
-                {mod?.base_url && (
+                {ssoUrl && (
                   <a
                     // ACCEPTED RISK: The JWT is intentionally passed as a query parameter for SSO.
                     // All EMP ecosystem modules use this pattern to establish a session on the target
                     // module. The token is short-lived, transmitted over HTTPS, and the target module
                     // exchanges it for a server-side session immediately on load.
-                    href={`${mod.base_url}?sso_token=${encodeURIComponent(useAuthStore.getState().accessToken || "")}`}
+                    href={ssoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
