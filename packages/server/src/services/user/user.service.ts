@@ -8,8 +8,9 @@ import { ConflictError, NotFoundError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
+/** Strip sensitive fields from user records before sending to client */
 function sanitizeUser(user: any): UserPublic {
-  const { password, ...safe } = user;
+  const { password, password_hash, token_hash, reset_token, ...safe } = user;
   return safe;
 }
 

@@ -6,6 +6,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError, OAuthError } from "../../utils/errors.js";
 import { sendError } from "../../utils/response.js";
 import { logger } from "../../utils/logger.js";
+import { config } from "../../config/index.js";
 import { ZodError } from "zod";
 
 export function errorHandler(err: Error, req: Request, res: Response, _next: NextFunction): void {
@@ -15,9 +16,12 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
     return;
   }
 
-  // Zod validation errors
+  // Zod validation errors — sanitize details in production to avoid leaking schema info
   if (err instanceof ZodError) {
-    sendError(res, 400, "VALIDATION_ERROR", "Invalid request data", err.errors);
+    const details = config.isProd
+      ? undefined
+      : err.errors;
+    sendError(res, 400, "VALIDATION_ERROR", "Invalid request data", details);
     return;
   }
 

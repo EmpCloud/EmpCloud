@@ -42,14 +42,14 @@ export function parseCSV(fileBuffer: Buffer): ImportRow[] {
     });
 
     return {
-      first_name: row.first_name || "",
-      last_name: row.last_name || "",
+      first_name: row.first_name || row.firstname || "",
+      last_name: row.last_name || row.lastname || "",
       email: row.email || "",
-      designation: row.designation || undefined,
-      department_name: row.department_name || undefined,
+      designation: row.designation || row.title || undefined,
+      department_name: row.department_name || row.department || undefined,
       role: row.role || undefined,
-      emp_code: row.emp_code || undefined,
-      contact_number: row.contact_number || undefined,
+      emp_code: row.emp_code || row.employee_code || row.empcode || undefined,
+      contact_number: row.contact_number || row.phone || row.mobile || undefined,
     };
   });
 }

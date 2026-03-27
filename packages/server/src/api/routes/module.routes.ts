@@ -7,16 +7,26 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { requireSuperAdmin } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import * as moduleService from "../../services/module/module.service.js";
-import { createModuleSchema, updateModuleSchema } from "@empcloud/shared";
+import { createModuleSchema, updateModuleSchema, ROLE_HIERARCHY } from "@empcloud/shared";
+import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
 
 const router = Router();
 
+/** Strip internal fields (base_url, webhook_secret) from module data for non-admin users */
+function sanitizeModule(mod: any, userRole: string): any {
+  const adminLevel = ROLE_HIERARCHY["org_admin" as UserRole] ?? 80;
+  const userLevel = ROLE_HIERARCHY[userRole as UserRole] ?? 0;
+  if (userLevel >= adminLevel) return mod;
+  const { base_url, webhook_secret, ...safe } = mod;
+  return safe;
+}
+
 // GET /api/v1/modules — List all active modules (marketplace)
-router.get("/", authenticate, async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const modules = await moduleService.listModules();
-    sendSuccess(res, modules);
+    sendSuccess(res, modules.map((m: any) => sanitizeModule(m, req.user!.role)));
   } catch (err) { next(err); }
 });
 
@@ -24,7 +34,7 @@ router.get("/", authenticate, async (_req: Request, res: Response, next: NextFun
 router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const mod = await moduleService.getModule(paramInt(req.params.id));
-    sendSuccess(res, mod);
+    sendSuccess(res, sanitizeModule(mod, req.user!.role));
   } catch (err) { next(err); }
 });
 

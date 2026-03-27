@@ -105,11 +105,15 @@ async function main() {
 
   // Health check
   app.get("/health", (_req, res) => {
-    sendSuccess(res, {
+    const data: Record<string, string> = {
       status: "healthy",
-      version: "1.0.0",
       timestamp: new Date().toISOString(),
-    });
+    };
+    // Only expose version in non-production environments
+    if (!config.isProd) {
+      data.version = "1.0.0";
+    }
+    sendSuccess(res, data);
   });
 
   // OIDC Discovery (must be at root)
@@ -158,6 +162,14 @@ async function main() {
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);
   app.get("/api/docs/openapi.json", openapiHandler);
+
+  // Catch-all 404 for unmatched API routes (returns JSON instead of HTML)
+  app.use("/api", (_req, res) => {
+    res.status(404).json({
+      success: false,
+      error: { code: "NOT_FOUND", message: "Endpoint not found" },
+    });
+  });
 
   // Error handler (must be last)
   app.use(errorHandler);
