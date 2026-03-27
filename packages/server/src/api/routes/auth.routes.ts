@@ -19,20 +19,21 @@ import {
 
 const router = Router();
 
-// Rate limits — configurable via env vars for test environments
-const isTest = process.env.NODE_ENV === "test" || process.env.RATE_LIMIT_DISABLED === "true";
+// Rate limits — fully disabled when RATE_LIMIT_DISABLED=true
+const disabled = process.env.RATE_LIMIT_DISABLED === "true";
+const noop = (_req: any, _res: any, next: any) => next();
 
-const registerLimiter = rateLimit({
+const registerLimiter = disabled ? noop : rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: isTest ? 1000 : Number(process.env.RATE_LIMIT_REGISTER_MAX || 5),
+  max: Number(process.env.RATE_LIMIT_REGISTER_MAX || 5),
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: { code: "RATE_LIMIT", message: "Too many registration attempts. Please try again later." } },
 });
 
-const loginLimiter = rateLimit({
+const loginLimiter = disabled ? noop : rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isTest ? 1000 : Number(process.env.RATE_LIMIT_LOGIN_MAX || 10),
+  max: Number(process.env.RATE_LIMIT_LOGIN_MAX || 10),
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: { code: "TOO_MANY_REQUESTS", message: "Too many login attempts. Please try again later." } },

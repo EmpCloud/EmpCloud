@@ -88,20 +88,27 @@ async function main() {
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true }));
 
-  // Rate limiting
-  const authLimiter = rateLimit({
-    windowMs: config.rateLimit.auth.windowMs,
-    max: config.rateLimit.auth.max,
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
+  // Rate limiting (disabled when RATE_LIMIT_DISABLED=true)
+  const disabled = process.env.RATE_LIMIT_DISABLED === "true";
+  const authLimiter = disabled
+    ? (_req: any, _res: any, next: any) => next()
+    : rateLimit({
+        windowMs: config.rateLimit.auth.windowMs,
+        max: config.rateLimit.auth.max,
+        standardHeaders: true,
+        legacyHeaders: false,
+      });
 
-  const apiLimiter = rateLimit({
-    windowMs: config.rateLimit.api.windowMs,
-    max: config.rateLimit.api.max,
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
+  const apiLimiter = disabled
+    ? (_req: any, _res: any, next: any) => next()
+    : rateLimit({
+        windowMs: config.rateLimit.api.windowMs,
+        max: config.rateLimit.api.max,
+        standardHeaders: true,
+        legacyHeaders: false,
+      });
+
+  if (disabled) logger.info("Rate limiting DISABLED (RATE_LIMIT_DISABLED=true)");
 
   // Health check
   app.get("/health", (_req, res) => {
