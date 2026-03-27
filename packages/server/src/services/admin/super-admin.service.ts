@@ -111,7 +111,7 @@ export async function getOrgList(params: {
       db("org_subscriptions")
         .select("organization_id")
         .whereIn("status", ["active", "trial"])
-        .sum(db.raw("price_per_seat * used_seats as spend"))
+        .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as spend"))
         .groupBy("organization_id")
         .as("sp"),
       "o.id",
@@ -229,7 +229,7 @@ export async function getModuleAnalytics() {
         .count("id as subscriber_count")
         .sum("total_seats as total_seats")
         .sum("used_seats as used_seats")
-        .sum(db.raw("price_per_seat * used_seats as revenue"))
+        .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as revenue"))
         .groupBy("module_id")
         .as("s"),
       "m.id",
@@ -628,7 +628,7 @@ export async function getModuleAdoption() {
         .select("module_id")
         .count("id as org_count")
         .sum("total_seats as total_seats")
-        .sum(db.raw("price_per_seat * used_seats as revenue"))
+        .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as revenue"))
         .groupBy("module_id")
         .as("s"),
       "m.id",
