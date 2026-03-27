@@ -32,7 +32,7 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
             }`}
           >
             <Icon className="h-5 w-5" />
-            {item.i18nKey ? t(item.i18nKey) : item.label}
+            {item.i18nKey && t(item.i18nKey) !== item.i18nKey ? t(item.i18nKey) : item.label}
           </Link>
         );
       })}
