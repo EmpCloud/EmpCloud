@@ -95,7 +95,24 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   const user = await db("users").where({ id: userId, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
 
-  await db("users").where({ id: userId }).update({ ...data, updated_at: new Date() });
+  // Whitelist allowed fields — prevent mass assignment attacks
+  const allowed: Record<string, unknown> = {};
+  const SAFE_FIELDS = ["first_name", "last_name", "phone", "designation", "department_id", "location_id", "reporting_manager_id", "date_of_birth", "gender", "employee_code"];
+  for (const key of SAFE_FIELDS) {
+    if ((data as Record<string, unknown>)[key] !== undefined) {
+      allowed[key] = (data as Record<string, unknown>)[key];
+    }
+  }
+  // Strip HTML from text fields
+  for (const key of ["first_name", "last_name", "designation"]) {
+    if (typeof allowed[key] === "string") {
+      allowed[key] = (allowed[key] as string).replace(/<[^>]*>/g, "");
+    }
+  }
+
+  if (Object.keys(allowed).length > 0) {
+    await db("users").where({ id: userId, organization_id: orgId }).update({ ...allowed, updated_at: new Date() });
+  }
   return getUser(orgId, userId);
 }
 
