@@ -145,13 +145,13 @@ export const helpdeskHRNavItems: NavItem[] = [
 ];
 
 export const surveyNavItems: NavItem[] = [
-  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "", icon: ClipboardList },
 ];
 
 export const surveyHRNavItems: NavItem[] = [
-  { path: "/surveys/dashboard", label: "Survey Dashboard", i18nKey: "nav.surveys", icon: BarChart3 },
-  { path: "/surveys/list", label: "All Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
-  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.surveys", icon: ClipboardList },
+  { path: "/surveys/dashboard", label: "Survey Dashboard", i18nKey: "", icon: BarChart3 },
+  { path: "/surveys/list", label: "All Surveys", i18nKey: "", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "", icon: ClipboardList },
 ];
 
 export const wellnessNavItems: NavItem[] = [
@@ -168,25 +168,25 @@ export const wellnessHRNavItems: NavItem[] = [
 ];
 
 export const assetNavItems: NavItem[] = [
-  { path: "/assets/my", label: "My Assets", i18nKey: "nav.assets", icon: Laptop },
+  { path: "/assets/my", label: "My Assets", i18nKey: "", icon: Laptop },
 ];
 
 export const assetHRNavItems: NavItem[] = [
-  { path: "/assets/dashboard", label: "Asset Dashboard", i18nKey: "nav.assets", icon: BarChart3 },
-  { path: "/assets", label: "All Assets", i18nKey: "nav.assets", icon: Laptop },
+  { path: "/assets/dashboard", label: "Asset Dashboard", i18nKey: "", icon: BarChart3 },
+  { path: "/assets", label: "All Assets", i18nKey: "", icon: Laptop },
   { path: "/assets/categories", label: "Categories", i18nKey: "", icon: FolderOpen },
 ];
 
 export const feedbackNavItems: NavItem[] = [
-  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.feedback", icon: MessageSquarePlus },
-  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "", icon: MessageSquare },
 ];
 
 export const feedbackHRNavItems: NavItem[] = [
-  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.feedback", icon: MessageSquarePlus },
-  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
-  { path: "/feedback", label: "All Feedback", i18nKey: "nav.feedback", icon: MessageSquare },
-  { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "nav.feedback", icon: BarChart3 },
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "", icon: MessageSquare },
+  { path: "/feedback", label: "All Feedback", i18nKey: "", icon: MessageSquare },
+  { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "", icon: BarChart3 },
 ];
 
 export const biometricsNavItems: NavItem[] = [
