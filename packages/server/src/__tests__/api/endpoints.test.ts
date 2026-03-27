@@ -137,7 +137,7 @@ describe("API Endpoints - Live Server", () => {
         const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
         token = loginData.data.tokens.access_token;
       }
-      const { status, data } = await getWithAuth("/api/v1/employees/directory?page=1&limit=2", token);
+      const { status, data } = await getWithAuth("/api/v1/employees/directory?page=1&per_page=2", token);
       expect(status).toBe(200);
       expect(data.data.length).toBeLessThanOrEqual(2);
     });
