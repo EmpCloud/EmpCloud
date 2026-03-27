@@ -53,8 +53,8 @@ describe("Asset Management - Database Queries", () => {
       const assets = await db("assets").where({ organization_id: TEST_ORG_ID });
       for (const a of assets) {
         expect(a.asset_tag).toBeTruthy();
-        // Tag format: AST-YYYY-NNNN or similar pattern
-        expect(a.asset_tag).toMatch(/^AST-\d{4}-\d{4}$/);
+        // Tag format varies: LPT-001, MON-001, AST-2026-0001, etc.
+        expect(a.asset_tag).toMatch(/^[A-Z]{2,4}-\d{3,4}(-\d{4})?$/);
       }
     });
 

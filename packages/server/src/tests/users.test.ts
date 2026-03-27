@@ -63,17 +63,23 @@ describe("Users Endpoints", () => {
 
   describe("POST /api/v1/users", () => {
     it("creates a new user in the organization", async () => {
-      const newUser = {
+      // Fetch a valid department for the org first
+      const deptRes = await api.get("/api/v1/organizations/me/departments", token);
+      const firstDept = deptRes.body.data?.[0];
+      const deptId = firstDept ? firstDept.id : undefined;
+
+      const newUser: Record<string, any> = {
         first_name: "Sanjay",
         last_name: "Kumar",
         email: `sanjay_${Date.now()}@technova.in`,
         password: "Sanjay@123",
         designation: "QA Engineer",
-        department_id: 1,
         employment_type: "full_time",
         date_of_joining: "2026-03-22",
         role: "employee",
       };
+      if (deptId) newUser.department_id = deptId;
+
       const { status, body } = await api.post("/api/v1/users", newUser, token);
       expect(status).toBe(201);
       expect(body.success).toBe(true);

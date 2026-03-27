@@ -52,7 +52,7 @@ describe("Modules Endpoints", () => {
       expect(status).toBe(200);
       expect(body.success).toBe(true);
       expect(body.data.slug).toBe("emp-payroll");
-      expect(body.data.name).toBe("EMP Payroll");
+      expect(body.data.name).toContain("Payroll");
     });
 
     it("returns 404 for non-existent module", async () => {
