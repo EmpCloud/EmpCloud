@@ -8,9 +8,19 @@ import type { CreateLeaveTypeInput, LeaveType } from "@empcloud/shared";
 
 export async function listLeaveTypes(orgId: number): Promise<LeaveType[]> {
   const db = getDB();
-  return db("leave_types")
+  const types = await db("leave_types")
     .where({ organization_id: orgId })
     .orderBy("name", "asc");
+
+  // Normalize boolean fields — MySQL tinyint(1) may return 0/1 instead of true/false
+  return types.map((t: any) => ({
+    ...t,
+    is_paid: !!t.is_paid,
+    is_carry_forward: !!t.is_carry_forward,
+    is_encashable: !!t.is_encashable,
+    requires_approval: !!t.requires_approval,
+    is_active: !!t.is_active,
+  }));
 }
 
 export async function getLeaveType(orgId: number, id: number): Promise<LeaveType> {

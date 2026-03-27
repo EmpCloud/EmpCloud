@@ -23,19 +23,50 @@ interface ImportError {
   errors: string[];
 }
 
+/** Parse a single CSV line respecting quoted fields (handles commas inside quotes) */
+function parseCsvLine(line: string): string[] {
+  const values: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"' && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ',') {
+        values.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+  }
+  values.push(current.trim());
+  return values;
+}
+
 /**
  * Parse CSV buffer into rows. Expects header row with columns:
- * first_name, last_name, email, designation, department_name
+ * first_name, last_name, email, emp_code, designation, department_name
  */
 export function parseCSV(fileBuffer: Buffer): ImportRow[] {
   const content = fileBuffer.toString("utf-8").trim();
   const lines = content.split(/\r?\n/);
   if (lines.length < 2) return [];
 
-  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const headers = parseCsvLine(lines[0]).map((h) => h.trim().toLowerCase());
 
   return lines.slice(1).filter((line) => line.trim()).map((line) => {
-    const values = line.split(",").map((v) => v.trim());
+    const values = parseCsvLine(line);
     const row: Record<string, string> = {};
     headers.forEach((h, i) => {
       row[h] = values[i] || "";

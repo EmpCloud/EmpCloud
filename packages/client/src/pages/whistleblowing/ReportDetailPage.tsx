@@ -49,7 +49,10 @@ export default function ReportDetailPage() {
   // Fetch users for investigator dropdown
   const { data: usersData, isLoading: usersLoading, isError: usersError } = useQuery({
     queryKey: ["users-for-investigator"],
-    queryFn: () => api.get("/users", { params: { per_page: 100 } }).then((r) => r.data.data),
+    queryFn: () => api.get("/users", { params: { per_page: 100 } }).then((r) => {
+      const users = r.data.data;
+      return Array.isArray(users) ? users : [];
+    }),
   });
 
   const assignMutation = useMutation({
@@ -291,20 +294,24 @@ export default function ReportDetailPage() {
           <div className="bg-white rounded-xl shadow-sm border p-5">
             <h4 className="text-sm font-semibold text-gray-700 mb-3">Assign Investigator</h4>
             {usersError && (
-              <p className="text-xs text-red-600 mb-2">Failed to load users. Please refresh.</p>
+              <p className="text-xs text-red-600 mb-2">Failed to load users. Please refresh the page.</p>
             )}
             <div className="flex gap-2">
               <select
                 value={investigatorId}
                 onChange={(e) => setInvestigatorId(e.target.value)}
-                disabled={usersLoading || usersError}
+                disabled={usersLoading || !!usersError}
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm disabled:opacity-50"
               >
                 <option value="">
-                  {usersLoading ? "Loading users..." : "Select investigator..."}
+                  {usersLoading
+                    ? "Loading users..."
+                    : usersError
+                    ? "Error loading users"
+                    : "Select investigator..."}
                 </option>
-                {Array.isArray(usersData) && usersData.map((u: any) => (
-                  <option key={u.id} value={u.id}>
+                {(usersData || []).map((u: any) => (
+                  <option key={u.id} value={String(u.id)}>
                     {u.first_name} {u.last_name} ({u.email})
                   </option>
                 ))}
@@ -319,8 +326,11 @@ export default function ReportDetailPage() {
             </div>
             {assignMutation.isError && (
               <p className="text-xs text-red-600 mt-2">
-                {(assignMutation.error as any)?.response?.data?.error?.message || "Failed to assign investigator."}
+                {(assignMutation.error as any)?.response?.data?.error?.message || "Failed to assign investigator. Please try again."}
               </p>
+            )}
+            {assignMutation.isSuccess && (
+              <p className="text-xs text-green-600 mt-2">Investigator assigned successfully.</p>
             )}
           </div>
 

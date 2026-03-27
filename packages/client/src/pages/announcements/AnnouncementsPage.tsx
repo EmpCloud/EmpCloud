@@ -78,7 +78,7 @@ export default function AnnouncementsPage() {
   const [targetType, setTargetType] = useState("all");
 
   // Fetch departments for target dropdown (must be after targetType state declaration)
-  const { data: departments } = useQuery({
+  const { data: departments, isLoading: deptLoading } = useQuery({
     queryKey: ["departments"],
     queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
     enabled: !!isHR && targetType === "department",
@@ -201,8 +201,10 @@ export default function AnnouncementsPage() {
                   Select Departments
                 </label>
                 <div className="w-full border border-gray-300 rounded-lg p-2 max-h-40 overflow-y-auto bg-white">
-                  {(departments || []).length === 0 ? (
+                  {deptLoading ? (
                     <p className="text-xs text-gray-400 p-1">Loading departments...</p>
+                  ) : (departments || []).length === 0 ? (
+                    <p className="text-xs text-gray-400 p-1">No departments found. Create departments in Settings first.</p>
                   ) : (
                     (departments || []).map((dept: any) => (
                       <label key={dept.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer">
@@ -217,6 +219,9 @@ export default function AnnouncementsPage() {
                     ))
                   )}
                 </div>
+                {selectedTargetIds.length > 0 && (
+                  <p className="text-xs text-gray-500 mt-1">{selectedTargetIds.length} department(s) selected</p>
+                )}
               </div>
             )}
             {targetType === "role" && (
@@ -237,6 +242,9 @@ export default function AnnouncementsPage() {
                     </label>
                   ))}
                 </div>
+                {selectedTargetIds.length > 0 && (
+                  <p className="text-xs text-gray-500 mt-1">{selectedTargetIds.length} role(s) selected</p>
+                )}
               </div>
             )}
 

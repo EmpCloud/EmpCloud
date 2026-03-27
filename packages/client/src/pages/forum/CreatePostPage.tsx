@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import { ArrowLeft, Send } from "lucide-react";
 
 export default function CreatePostPage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [searchParams] = useSearchParams();
   const preselectedCategory = searchParams.get("category") || "";
 
@@ -23,6 +24,9 @@ export default function CreatePostPage() {
   const createPost = useMutation({
     mutationFn: (data: object) => api.post("/forum/posts", data).then((r) => r.data.data),
     onSuccess: (post) => {
+      // Invalidate forum post lists so they refresh when the user navigates back
+      qc.invalidateQueries({ queryKey: ["forum-posts"] });
+      qc.invalidateQueries({ queryKey: ["forum-categories"] });
       navigate(`/forum/post/${post.id}`);
     },
   });

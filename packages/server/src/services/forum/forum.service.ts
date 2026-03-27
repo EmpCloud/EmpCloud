@@ -22,10 +22,41 @@ const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
 
 export async function listCategories(orgId: number) {
   const db = getDB();
-  return db("forum_categories")
+  const categories = await db("forum_categories")
     .where({ organization_id: orgId, is_active: true })
     .orderBy("sort_order", "asc")
     .orderBy("name", "asc");
+
+  // Auto-seed default categories if none exist for this organization
+  if (categories.length === 0) {
+    const defaults = [
+      { name: "General", description: "General discussions and conversations", icon: "💬", sort_order: 1 },
+      { name: "Questions", description: "Ask questions and get answers from colleagues", icon: "❓", sort_order: 2 },
+      { name: "Ideas", description: "Share ideas and suggestions for improvement", icon: "💡", sort_order: 3 },
+      { name: "Announcements", description: "Important announcements and updates", icon: "📢", sort_order: 4 },
+    ];
+
+    for (const cat of defaults) {
+      await db("forum_categories").insert({
+        organization_id: orgId,
+        name: cat.name,
+        description: cat.description,
+        icon: cat.icon,
+        sort_order: cat.sort_order,
+        is_active: true,
+        post_count: 0,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+    }
+
+    return db("forum_categories")
+      .where({ organization_id: orgId, is_active: true })
+      .orderBy("sort_order", "asc")
+      .orderBy("name", "asc");
+  }
+
+  return categories;
 }
 
 export async function createCategory(orgId: number, data: CreateForumCategoryInput) {

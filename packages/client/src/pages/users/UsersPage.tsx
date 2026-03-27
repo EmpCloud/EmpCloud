@@ -12,6 +12,7 @@ interface CsvRow {
   first_name: string;
   last_name: string;
   email: string;
+  emp_code: string;
   designation: string;
   department: string;
   role: string;
@@ -26,26 +27,52 @@ interface ParsedRow extends CsvRow {
   _valid: boolean;
 }
 
-const CSV_HEADERS = [
-  "first_name", "last_name", "email", "designation", "department",
-  "role", "employment_type", "date_of_joining", "contact_number",
-];
-
-const SAMPLE_CSV = `first_name,last_name,email,designation,department,role,employment_type,date_of_joining,contact_number
-John,Doe,john@company.com,Software Engineer,Engineering,employee,full_time,2026-01-15,+91-9876543210
-Jane,Smith,jane@company.com,Product Manager,Product,manager,full_time,2025-06-01,+91-9876543211
-Raj,Patel,raj@company.com,Senior Designer,Design,employee,full_time,2026-03-01,+91-9876543212`;
+const SAMPLE_CSV = `first_name,last_name,email,emp_code,designation,department,role,employment_type,date_of_joining,contact_number
+John,Doe,john@company.com,EMP001,Software Engineer,Engineering,employee,full_time,2026-01-15,+91-9876543210
+Jane,Smith,jane@company.com,EMP002,Product Manager,Product,manager,full_time,2025-06-01,+91-9876543211
+Raj,Patel,raj@company.com,EMP003,Senior Designer,Design,employee,full_time,2026-03-01,+91-9876543212`;
 
 const VALID_ROLES = ["employee", "hr_manager", "hr_admin", "org_admin", "manager"];
 const VALID_EMPLOYMENT_TYPES = ["full_time", "part_time", "contract", "intern"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** Parse a single CSV line respecting quoted fields (handles commas inside quotes) */
+function parseCsvLine(line: string): string[] {
+  const values: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"' && line[i + 1] === '"') {
+        current += '"';
+        i++; // skip escaped quote
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ",") {
+        values.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+  }
+  values.push(current.trim());
+  return values;
+}
+
 function parseCsv(text: string): CsvRow[] {
   const lines = text.split(/\r?\n/).filter((l) => l.trim());
   if (lines.length < 2) return [];
-  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const headers = parseCsvLine(lines[0]).map((h) => h.trim().toLowerCase());
   return lines.slice(1).map((line) => {
-    const values = line.split(",").map((v) => v.trim());
+    const values = parseCsvLine(line);
     const row: any = {};
     headers.forEach((h, i) => {
       row[h] = values[i] || "";
@@ -157,6 +184,7 @@ function CsvImportModal({
           first_name: row.first_name,
           last_name: row.last_name,
           email: row.email,
+          emp_code: row.emp_code || undefined,
           designation: row.designation || undefined,
           department_id: deptMatch?.id || undefined,
           role: row.role || "employee",
@@ -167,7 +195,7 @@ function CsvImportModal({
         success++;
       } catch (err: any) {
         failed++;
-        const msg = err?.response?.data?.message || err.message || "Unknown error";
+        const msg = err?.response?.data?.error?.message || err?.response?.data?.message || err.message || "Unknown error";
         errors.push(`Row ${row._rowNum} (${row.email}): ${msg}`);
       }
     }
@@ -282,6 +310,7 @@ function CsvImportModal({
                       <th className="px-3 py-2 text-left font-medium text-gray-500">First Name</th>
                       <th className="px-3 py-2 text-left font-medium text-gray-500">Last Name</th>
                       <th className="px-3 py-2 text-left font-medium text-gray-500">Email</th>
+                      <th className="px-3 py-2 text-left font-medium text-gray-500">Emp Code</th>
                       <th className="px-3 py-2 text-left font-medium text-gray-500">Designation</th>
                       <th className="px-3 py-2 text-left font-medium text-gray-500">Department</th>
                       <th className="px-3 py-2 text-left font-medium text-gray-500">Role</th>
@@ -301,6 +330,7 @@ function CsvImportModal({
                         <td className="px-3 py-2">{row.first_name}</td>
                         <td className="px-3 py-2">{row.last_name}</td>
                         <td className="px-3 py-2">{row.email}</td>
+                        <td className="px-3 py-2">{row.emp_code}</td>
                         <td className="px-3 py-2">{row.designation}</td>
                         <td className="px-3 py-2">{row.department}</td>
                         <td className="px-3 py-2">{row.role}</td>

@@ -46,6 +46,7 @@ import {
   Gift,
   SlidersHorizontal,
   Sparkles,
+  UserCircle,
 } from "lucide-react";
 
 export type NavItem = {
@@ -73,6 +74,7 @@ export const employeeNavItems: NavItem[] = [
 // Items visible only to HR Admin, Org Admin, Super Admin
 export const adminNavItems: NavItem[] = [
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/self-service", label: "Self Service", i18nKey: "nav.selfService", icon: UserCircle },
   { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package },
   { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
   { path: "/users", label: "Users", i18nKey: "nav.users", icon: Users },

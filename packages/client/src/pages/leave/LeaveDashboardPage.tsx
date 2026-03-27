@@ -88,7 +88,7 @@ export default function LeaveDashboardPage() {
           <p className="text-gray-500 mt-1">View your leave balances and apply for leave.</p>
         </div>
         <button
-          onClick={() => setShowApply(!showApply)}
+          onClick={() => setShowApply(true)}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
           <PlusCircle className="h-4 w-4" /> Apply Leave
@@ -165,7 +165,7 @@ export default function LeaveDashboardPage() {
               >
                 <option value={0} disabled>Select type</option>
                 {leaveTypes
-                  .filter((t: any) => t.is_active !== false && t.is_active !== 0)
+                  .filter((t) => Boolean(t.is_active))
                   .map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}

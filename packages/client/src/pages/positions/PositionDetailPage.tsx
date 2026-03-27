@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save } from "lucide-react";
@@ -13,6 +13,7 @@ export default function PositionDetailPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [assignForm, setAssignForm] = useState({ user_id: "", start_date: "", is_primary: true });
   const [userSearch, setUserSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [editForm, setEditForm] = useState({
     title: "",
     department_id: "",
@@ -27,6 +28,12 @@ export default function PositionDetailPage() {
 
   const { data: departments } = useDepartments();
 
+  // Debounce the user search to avoid excessive API calls (especially with full name typing)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(userSearch), 300);
+    return () => clearTimeout(timer);
+  }, [userSearch]);
+
   const { data, isLoading } = useQuery({
     queryKey: ["position", id],
     queryFn: () => api.get(`/positions/${id}`).then((r) => r.data.data),
@@ -34,8 +41,8 @@ export default function PositionDetailPage() {
   });
 
   const { data: usersData } = useQuery({
-    queryKey: ["users-search", userSearch],
-    queryFn: () => api.get("/users", { params: { search: userSearch, per_page: 20 } }).then((r) => r.data.data),
+    queryKey: ["users-search", debouncedSearch],
+    queryFn: () => api.get("/users", { params: { search: debouncedSearch || undefined, per_page: 50 } }).then((r) => r.data.data),
     enabled: showAssign,
   });
 
