@@ -1,5 +1,6 @@
 import { lazy } from "react";
-import { Route } from "react-router-dom";
+import { Route, Navigate } from "react-router-dom";
+import { useAuthStore } from "@/lib/auth-store";
 
 const SuperAdminDashboard = lazy(() => import("@/pages/admin/SuperAdminDashboard"));
 const OrgListPage = lazy(() => import("@/pages/admin/OrgListPage"));
@@ -13,18 +14,26 @@ const AuditPage = lazy(() => import("@/pages/audit/AuditPage"));
 const UsersPage = lazy(() => import("@/pages/users/UsersPage"));
 const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
 
+const HR_ROLES = ["org_admin", "hr_admin", "hr_manager"];
+
+function RequireRole({ roles, children }: { roles: string[]; children: React.ReactNode }) {
+  const user = useAuthStore((s) => s.user);
+  if (!user || !roles.includes(user.role)) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 export const adminRoutes = (
   <>
-    <Route path="/users" element={<UsersPage />} />
-    <Route path="/settings" element={<SettingsPage />} />
-    <Route path="/audit" element={<AuditPage />} />
-    <Route path="/admin" element={<SuperAdminDashboard />} />
-    <Route path="/admin/organizations" element={<OrgListPage />} />
-    <Route path="/admin/organizations/:id" element={<OrgDetailPage />} />
-    <Route path="/admin/modules" element={<ModuleAnalyticsPage />} />
-    <Route path="/admin/revenue" element={<RevenueAnalyticsPage />} />
-    <Route path="/admin/subscriptions" element={<SubscriptionMetricsPage />} />
-    <Route path="/admin/ai-config" element={<AIConfigPage />} />
-    <Route path="/admin/logs" element={<LogDashboardPage />} />
+    <Route path="/users" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><UsersPage /></RequireRole>} />
+    <Route path="/settings" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><SettingsPage /></RequireRole>} />
+    <Route path="/audit" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><AuditPage /></RequireRole>} />
+    <Route path="/admin" element={<RequireRole roles={["super_admin"]}><SuperAdminDashboard /></RequireRole>} />
+    <Route path="/admin/organizations" element={<RequireRole roles={["super_admin"]}><OrgListPage /></RequireRole>} />
+    <Route path="/admin/organizations/:id" element={<RequireRole roles={["super_admin"]}><OrgDetailPage /></RequireRole>} />
+    <Route path="/admin/modules" element={<RequireRole roles={["super_admin"]}><ModuleAnalyticsPage /></RequireRole>} />
+    <Route path="/admin/revenue" element={<RequireRole roles={["super_admin"]}><RevenueAnalyticsPage /></RequireRole>} />
+    <Route path="/admin/subscriptions" element={<RequireRole roles={["super_admin"]}><SubscriptionMetricsPage /></RequireRole>} />
+    <Route path="/admin/ai-config" element={<RequireRole roles={["super_admin"]}><AIConfigPage /></RequireRole>} />
+    <Route path="/admin/logs" element={<RequireRole roles={["super_admin"]}><LogDashboardPage /></RequireRole>} />
   </>
 );
