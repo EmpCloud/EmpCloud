@@ -199,7 +199,7 @@ export async function getOrgDetail(orgId: number) {
       .where({ organization_id: orgId })
       .orderBy("created_at", "desc")
       .limit(50)
-      .select("id", "action", "entity_type", "entity_id", "user_id", "ip_address", "created_at");
+      .select("id", "action", "resource_type", "resource_id", "user_id", "ip_address", "created_at");
   } catch {
     // audit_logs table may not exist
   }
@@ -532,8 +532,8 @@ export async function getRecentActivity(limit: number = 30) {
       .select(
         "a.id",
         "a.action",
-        "a.entity_type",
-        "a.entity_id",
+        "a.resource_type",
+        "a.resource_id",
         "a.ip_address",
         "a.created_at",
         "u.first_name",
@@ -545,8 +545,8 @@ export async function getRecentActivity(limit: number = 30) {
     return logs.map((l: any) => ({
       id: l.id,
       action: l.action,
-      entity_type: l.entity_type,
-      entity_id: l.entity_id,
+      resource_type: l.resource_type,
+      resource_id: l.resource_id,
       ip_address: l.ip_address,
       created_at: l.created_at,
       user_name: l.first_name ? `${l.first_name} ${l.last_name}` : null,
