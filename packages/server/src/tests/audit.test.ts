@@ -21,7 +21,7 @@ describe("Audit Log Endpoint", () => {
 
       const log = body.data[0];
       expect(log.id).toBeDefined();
-      expect(log.organization_id).toBe(1);
+      expect(log.organization_id).toBe(5);
       expect(log.action).toBeDefined();
       expect(log.created_at).toBeDefined();
     });

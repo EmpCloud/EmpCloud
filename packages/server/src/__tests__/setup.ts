@@ -2,6 +2,14 @@ import knex, { Knex } from "knex";
 
 let db: Knex;
 
+/**
+ * Returns a Knex connection to the test database.
+ *
+ * Default host is "localhost" — intended to be run ON the test server (163.227.174.141).
+ * MySQL 3306 is not open to the internet, so from a local machine you must either:
+ *   1. SSH tunnel:  ssh -L 3306:localhost:3306 empcloud-development@163.227.174.141
+ *   2. Override:    TEST_DB_HOST=127.0.0.1 npx vitest run
+ */
 export function getTestDB(): Knex {
   if (!db) {
     db = knex({

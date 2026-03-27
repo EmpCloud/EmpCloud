@@ -31,7 +31,8 @@ describe("Users Endpoints", () => {
       const { status, body } = await api.get("/api/v1/users?search=Ananya", token);
       expect(status).toBe(200);
       expect(body.data.length).toBeGreaterThanOrEqual(1);
-      expect(body.data[0].first_name).toBe("Ananya");
+      const names = body.data.map((u: any) => u.first_name);
+      expect(names).toContain("Ananya");
     });
 
     it("rejects without auth", async () => {
@@ -41,8 +42,13 @@ describe("Users Endpoints", () => {
   });
 
   describe("GET /api/v1/users/:id", () => {
-    it("returns a specific user", async () => {
-      const { status, body } = await api.get("/api/v1/users/1", token);
+    it("returns a specific user by searching first", async () => {
+      // Find Ananya's actual user ID via search
+      const searchRes = await api.get("/api/v1/users?search=Ananya", token);
+      const ananya = searchRes.body.data.find((u: any) => u.email === "ananya@technova.in");
+      expect(ananya).toBeDefined();
+
+      const { status, body } = await api.get(`/api/v1/users/${ananya.id}`, token);
       expect(status).toBe(200);
       expect(body.success).toBe(true);
       expect(body.data.email).toBe("ananya@technova.in");
@@ -78,8 +84,13 @@ describe("Users Endpoints", () => {
 
   describe("PUT /api/v1/users/:id", () => {
     it("updates a user's info", async () => {
+      // Find a user to update (use the second user in the list)
+      const listRes = await api.get("/api/v1/users?page=1&per_page=5", token);
+      const targetUser = listRes.body.data.find((u: any) => u.email !== "ananya@technova.in") || listRes.body.data[1];
+      expect(targetUser).toBeDefined();
+
       const { status, body } = await api.put(
-        "/api/v1/users/2",
+        `/api/v1/users/${targetUser.id}`,
         { designation: "Senior Engineering Lead" },
         token
       );
@@ -87,7 +98,7 @@ describe("Users Endpoints", () => {
       expect(body.success).toBe(true);
 
       // Verify
-      const getRes = await api.get("/api/v1/users/2", token);
+      const getRes = await api.get(`/api/v1/users/${targetUser.id}`, token);
       expect(getRes.body.data.designation).toBe("Senior Engineering Lead");
     });
   });

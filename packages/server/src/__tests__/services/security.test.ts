@@ -19,7 +19,7 @@ describe("Security - Database Verification", () => {
       "shift_assignments",
       "attendance_regularizations",
       "announcements",
-      "announcement_reads",
+      // announcement_reads uses user_id + announcement_id for isolation, no organization_id column
       "employee_profiles",
       "employee_addresses",
       "employee_education",

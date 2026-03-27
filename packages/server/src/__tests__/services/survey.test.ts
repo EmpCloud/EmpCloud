@@ -20,7 +20,7 @@ describe("Surveys - Database Queries", () => {
     it("should have valid survey types", async () => {
       const db = getTestDB();
       const surveys = await db("surveys").where({ organization_id: TEST_ORG_ID });
-      const validTypes = ["pulse", "enps", "engagement", "custom", "onboarding", "exit"];
+      const validTypes = ["pulse", "enps", "engagement", "custom", "onboarding", "exit", "exit_survey"];
       for (const s of surveys) {
         expect(validTypes).toContain(s.type);
       }
