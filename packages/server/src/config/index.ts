@@ -95,6 +95,7 @@ export const config = {
   billing: {
     moduleUrl: env("BILLING_MODULE_URL", "http://localhost:4001"),
     apiKey: process.env.BILLING_API_KEY || "",
+    gracePeriodDays: envInt("BILLING_GRACE_PERIOD_DAYS", 0),
   },
 
   ai: {

@@ -350,20 +350,54 @@ export async function checkModuleAccess(params: {
 }
 
 // ---------------------------------------------------------------------------
+// Grace Period Configuration (#981)
+// Organizations can be given a grace period (in days) after the billing period
+// ends before overdue enforcement kicks in. Default is 0 (no grace).
+// ---------------------------------------------------------------------------
+
+/** Default grace period in days. Override per-org via org settings or env. */
+const DEFAULT_GRACE_PERIOD_DAYS = parseInt(
+  process.env.BILLING_GRACE_PERIOD_DAYS || "0",
+  10,
+);
+
+/**
+ * Get the grace period for a specific organization.
+ * Checks org_settings table first, then falls back to the global default.
+ */
+async function getGracePeriodDays(orgId: number): Promise<number> {
+  const db = getDB();
+  const setting = await db("organizations")
+    .where({ id: orgId })
+    .select("grace_period_days")
+    .first();
+
+  // If the org has a custom grace period, use it; otherwise use the default
+  if (setting && setting.grace_period_days !== null && setting.grace_period_days !== undefined) {
+    return Number(setting.grace_period_days);
+  }
+
+  return DEFAULT_GRACE_PERIOD_DAYS;
+}
+
+// ---------------------------------------------------------------------------
 // Overdue Invoice Enforcement (#1016)
-// After 15 days overdue: suspend subscription.
-// After 30 days overdue: deactivate subscription.
+// After 15 days overdue (post-grace): suspend subscription.
+// After 30 days overdue (post-grace): deactivate subscription.
+// Grace period (#981): overdue counting starts AFTER the grace period expires.
 // Call this periodically (e.g., daily cron) or on-demand.
 // ---------------------------------------------------------------------------
 
 export async function enforceOverdueInvoices(): Promise<{
   suspended: number;
   deactivated: number;
+  gracePeriodSkipped: number;
 }> {
   const db = getDB();
   const now = new Date();
   let suspended = 0;
   let deactivated = 0;
+  let gracePeriodSkipped = 0;
 
   // Fetch all overdue invoices from the billing module for all orgs.
   // We check every active/past_due subscription that has a billing mapping.
@@ -381,27 +415,43 @@ export async function enforceOverdueInvoices(): Promise<{
   for (const mapping of mappings) {
     // Check if current_period_end is past (invoice would be overdue)
     const periodEnd = new Date(mapping.current_period_end);
-    const overdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
+    const rawOverdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
 
-    if (overdueDays >= 30 && mapping.current_status !== "deactivated") {
-      // 30+ days overdue -> deactivate
+    // Apply grace period — overdue counting starts after grace expires
+    const graceDays = await getGracePeriodDays(mapping.organization_id);
+    const effectiveOverdueDays = rawOverdueDays - graceDays;
+
+    if (effectiveOverdueDays <= 0) {
+      // Still within grace period — skip enforcement
+      if (rawOverdueDays > 0) {
+        gracePeriodSkipped++;
+        logger.debug(
+          `Subscription ${mapping.cloud_subscription_id} (org ${mapping.organization_id}) ` +
+          `is ${Math.floor(rawOverdueDays)} days past period end but within ${graceDays}-day grace period`
+        );
+      }
+      continue;
+    }
+
+    if (effectiveOverdueDays >= 30 && mapping.current_status !== "deactivated") {
+      // 30+ days overdue (post-grace) -> deactivate
       await db("org_subscriptions")
         .where({ id: mapping.cloud_subscription_id })
         .update({ status: "deactivated", updated_at: now });
       deactivated++;
       logger.warn(
         `Subscription ${mapping.cloud_subscription_id} (org ${mapping.organization_id}) ` +
-        `deactivated — ${Math.floor(overdueDays)} days overdue`
+        `deactivated — ${Math.floor(effectiveOverdueDays)} days overdue (after ${graceDays}-day grace)`
       );
-    } else if (overdueDays >= 15 && mapping.current_status === "active") {
-      // 15-29 days overdue -> suspend (read-only, limited access)
+    } else if (effectiveOverdueDays >= 15 && mapping.current_status === "active") {
+      // 15-29 days overdue (post-grace) -> suspend (read-only, limited access)
       await db("org_subscriptions")
         .where({ id: mapping.cloud_subscription_id })
         .update({ status: "suspended", updated_at: now });
       suspended++;
       logger.warn(
         `Subscription ${mapping.cloud_subscription_id} (org ${mapping.organization_id}) ` +
-        `suspended — ${Math.floor(overdueDays)} days overdue`
+        `suspended — ${Math.floor(effectiveOverdueDays)} days overdue (after ${graceDays}-day grace)`
       );
     }
   }
@@ -414,32 +464,182 @@ export async function enforceOverdueInvoices(): Promise<{
 
   for (const sub of pastDueSubs) {
     const periodEnd = new Date(sub.current_period_end);
-    const overdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
+    const rawOverdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
 
-    if (overdueDays >= 30) {
+    // Apply grace period
+    const graceDays = await getGracePeriodDays(sub.organization_id);
+    const effectiveOverdueDays = rawOverdueDays - graceDays;
+
+    if (effectiveOverdueDays <= 0) {
+      if (rawOverdueDays > 0) gracePeriodSkipped++;
+      continue;
+    }
+
+    if (effectiveOverdueDays >= 30) {
       await db("org_subscriptions")
         .where({ id: sub.id })
         .update({ status: "deactivated", updated_at: now });
       deactivated++;
       logger.warn(
-        `Subscription ${sub.id} (org ${sub.organization_id}) deactivated — past_due for ${Math.floor(overdueDays)} days`
+        `Subscription ${sub.id} (org ${sub.organization_id}) deactivated — past_due for ${Math.floor(effectiveOverdueDays)} days (after ${graceDays}-day grace)`
       );
-    } else if (overdueDays >= 15) {
+    } else if (effectiveOverdueDays >= 15) {
       await db("org_subscriptions")
         .where({ id: sub.id })
         .update({ status: "suspended", updated_at: now });
       suspended++;
       logger.warn(
-        `Subscription ${sub.id} (org ${sub.organization_id}) suspended — past_due for ${Math.floor(overdueDays)} days`
+        `Subscription ${sub.id} (org ${sub.organization_id}) suspended — past_due for ${Math.floor(effectiveOverdueDays)} days (after ${graceDays}-day grace)`
       );
     }
   }
 
-  if (suspended > 0 || deactivated > 0) {
-    logger.info(`Overdue enforcement complete: ${suspended} suspended, ${deactivated} deactivated`);
+  if (suspended > 0 || deactivated > 0 || gracePeriodSkipped > 0) {
+    logger.info(
+      `Overdue enforcement complete: ${suspended} suspended, ${deactivated} deactivated, ${gracePeriodSkipped} skipped (grace period)`
+    );
   }
 
-  return { suspended, deactivated };
+  return { suspended, deactivated, gracePeriodSkipped };
+}
+
+// ---------------------------------------------------------------------------
+// Dunning Workflow (#982)
+// Progressive collection process for overdue invoices:
+//   Day 1  (post-grace) → friendly email reminder
+//   Day 7  (post-grace) → warning email (payment required)
+//   Day 15 (post-grace) → suspend subscription (read-only access)
+//   Day 30 (post-grace) → deactivate subscription (no access)
+//
+// Each dunning action is logged and tracked via dunning_stage on the
+// subscription to avoid sending duplicate notifications.
+//
+// Call this daily from a cron job (separate from enforceOverdueInvoices).
+// ---------------------------------------------------------------------------
+
+export type DunningStage = "current" | "reminder" | "warning" | "suspended" | "deactivated";
+
+export interface DunningAction {
+  subscriptionId: number;
+  organizationId: number;
+  stage: DunningStage;
+  overdueDays: number;
+  gracePeriodDays: number;
+  action: string;
+}
+
+export async function processDunning(): Promise<{
+  actions: DunningAction[];
+  totalProcessed: number;
+}> {
+  const db = getDB();
+  const now = new Date();
+  const actions: DunningAction[] = [];
+
+  // Fetch all subscriptions that are active, past_due, or suspended
+  // (deactivated ones are already terminal — no further dunning needed)
+  const subscriptions = await db("org_subscriptions")
+    .whereIn("status", ["active", "past_due", "suspended"])
+    .select(
+      "id",
+      "organization_id",
+      "status",
+      "current_period_end",
+      "dunning_stage"
+    );
+
+  for (const sub of subscriptions) {
+    const periodEnd = new Date(sub.current_period_end);
+    const rawOverdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
+
+    // Not yet past the period end — skip
+    if (rawOverdueDays <= 0) continue;
+
+    // Apply grace period
+    const graceDays = await getGracePeriodDays(sub.organization_id);
+    const effectiveOverdueDays = rawOverdueDays - graceDays;
+
+    // Still within grace period — no dunning action
+    if (effectiveOverdueDays <= 0) continue;
+
+    const currentStage: DunningStage = sub.dunning_stage || "current";
+
+    // Determine the target dunning stage based on overdue days
+    let targetStage: DunningStage;
+    let actionDescription: string;
+
+    if (effectiveOverdueDays >= 30) {
+      targetStage = "deactivated";
+      actionDescription = "Deactivate subscription — 30+ days overdue";
+    } else if (effectiveOverdueDays >= 15) {
+      targetStage = "suspended";
+      actionDescription = "Suspend subscription — 15+ days overdue";
+    } else if (effectiveOverdueDays >= 7) {
+      targetStage = "warning";
+      actionDescription = "Send payment warning email — 7+ days overdue";
+    } else {
+      // 1-6 days overdue (post-grace)
+      targetStage = "reminder";
+      actionDescription = "Send friendly payment reminder email — 1+ day overdue";
+    }
+
+    // Only act if we're moving to a new (more severe) stage
+    const stageOrder: Record<DunningStage, number> = {
+      current: 0,
+      reminder: 1,
+      warning: 2,
+      suspended: 3,
+      deactivated: 4,
+    };
+
+    if (stageOrder[targetStage] <= stageOrder[currentStage]) {
+      // Already at or past this stage — no action needed
+      continue;
+    }
+
+    // Execute the dunning action
+    const updateData: Record<string, any> = {
+      dunning_stage: targetStage,
+      dunning_last_action_at: now,
+      updated_at: now,
+    };
+
+    if (targetStage === "suspended") {
+      updateData.status = "suspended";
+    } else if (targetStage === "deactivated") {
+      updateData.status = "deactivated";
+    } else if (sub.status === "active") {
+      // For reminder/warning stages, mark as past_due if still active
+      updateData.status = "past_due";
+    }
+
+    await db("org_subscriptions")
+      .where({ id: sub.id })
+      .update(updateData);
+
+    const action: DunningAction = {
+      subscriptionId: sub.id,
+      organizationId: sub.organization_id,
+      stage: targetStage,
+      overdueDays: Math.floor(effectiveOverdueDays),
+      gracePeriodDays: graceDays,
+      action: actionDescription,
+    };
+
+    actions.push(action);
+
+    logger.info(
+      `Dunning [${targetStage}] for subscription ${sub.id} (org ${sub.organization_id}): ` +
+      `${Math.floor(effectiveOverdueDays)} days overdue (${graceDays}-day grace). ` +
+      `Action: ${actionDescription}`
+    );
+  }
+
+  if (actions.length > 0) {
+    logger.info(`Dunning complete: ${actions.length} actions taken across ${subscriptions.length} subscriptions`);
+  }
+
+  return { actions, totalProcessed: subscriptions.length };
 }
 
 // ---------------------------------------------------------------------------
