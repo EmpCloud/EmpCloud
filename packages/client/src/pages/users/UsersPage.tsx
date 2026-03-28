@@ -455,7 +455,7 @@ export default function UsersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
           <p className="text-gray-500 mt-1">Manage your organization's team members.</p>
@@ -463,15 +463,15 @@ export default function UsersPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowCsvImport(true)}
-            className="flex items-center gap-2 border border-brand-200 text-brand-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-50"
+            className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50"
           >
             <FileSpreadsheet className="h-4 w-4" /> Import CSV
           </button>
           <button
             onClick={() => setShowInvite(!showInvite)}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm shadow-brand-200 transition-all"
           >
-            <UserPlus className="h-4 w-4" /> Invite User
+            <UserPlus className="h-5 w-5" /> Invite Employee
           </button>
         </div>
       </div>

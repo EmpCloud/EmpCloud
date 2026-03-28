@@ -16,12 +16,16 @@ router.get("/", authenticate, requireOrgAdmin, async (req: Request, res: Respons
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const action = req.query.action as string | undefined;
+    const startDate = req.query.start_date as string | undefined;
+    const endDate = req.query.end_date as string | undefined;
 
     const result = await getAuditLogs({
       organizationId: req.user!.org_id,
       page,
       perPage: per_page,
       action,
+      startDate,
+      endDate,
     });
 
     sendPaginated(res, result.logs, result.total, page, per_page);

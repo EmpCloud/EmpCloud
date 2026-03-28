@@ -227,6 +227,7 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
       "users.first_name as first_name",
       "users.last_name as last_name",
       "users.designation as designation",
+      "users.role as role",
       "users.reporting_manager_id as reporting_manager_id",
       "users.photo_path as photo",
       "organization_departments.name as department"
@@ -234,6 +235,8 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
 
   // Build a map of nodes (use Number() to handle potential BigInt from MySQL)
   const nodeMap = new Map<number, OrgChartNode>();
+  const childToParent = new Map<number, number>();
+
   for (const u of users) {
     const uid = Number(u.id);
     nodeMap.set(uid, {
@@ -244,20 +247,32 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
       photo: u.photo || null,
       children: [],
     });
+
+    const managerId = u.reporting_manager_id != null ? Number(u.reporting_manager_id) : null;
+    if (managerId && managerId !== 0 && managerId !== uid) {
+      childToParent.set(uid, managerId);
+    }
   }
 
-  // Build tree
+  // Build tree: attach children to parents
   const roots: OrgChartNode[] = [];
-  for (const u of users) {
-    const uid = Number(u.id);
-    const managerId = u.reporting_manager_id ? Number(u.reporting_manager_id) : null;
-    const node = nodeMap.get(uid)!;
-    if (managerId && nodeMap.has(managerId)) {
-      nodeMap.get(managerId)!.children.push(node);
+  for (const [uid, node] of nodeMap) {
+    const parentId = childToParent.get(uid);
+    if (parentId !== undefined && nodeMap.has(parentId)) {
+      nodeMap.get(parentId)!.children.push(node);
     } else {
       roots.push(node);
     }
   }
+
+  // Sort children alphabetically at each level for consistent display
+  function sortChildren(nodes: OrgChartNode[]) {
+    nodes.sort((a, b) => a.name.localeCompare(b.name));
+    for (const node of nodes) {
+      if (node.children.length > 0) sortChildren(node.children);
+    }
+  }
+  sortChildren(roots);
 
   return roots;
 }

@@ -66,7 +66,7 @@ export function NotificationDropdown() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+        <div className="fixed right-4 top-14 w-96 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden" style={{ zIndex: 9999 }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
             <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
             {unreadCount > 0 && (

@@ -188,7 +188,7 @@ export function useBillingOverviewSummary() {
 
 // --- Audit ---
 
-export function useAuditLogs(params?: { page?: number; action?: string }) {
+export function useAuditLogs(params?: { page?: number; action?: string; start_date?: string; end_date?: string }) {
   return useQuery({
     queryKey: ["audit-logs", params],
     queryFn: () => api.get("/audit", { params }).then((r) => r.data),

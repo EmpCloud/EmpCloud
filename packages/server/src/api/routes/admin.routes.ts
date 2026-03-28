@@ -7,6 +7,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { requireSuperAdmin } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
+import { config } from "../../config/index.js";
 import {
   getPlatformOverview,
   getOrgList,
@@ -130,6 +131,39 @@ router.get("/module-adoption", async (req: Request, res: Response, next: NextFun
   try {
     const adoption = await getModuleAdoption();
     sendSuccess(res, adoption);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/admin/platform-info — non-sensitive platform configuration
+router.get("/platform-info", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const uptimeSeconds = Math.floor(process.uptime());
+    const smtpConfigured = !!(config.smtp.host && config.smtp.host !== "localhost");
+
+    const info = {
+      server: {
+        version: "1.0.0",
+        node_version: process.version,
+        uptime_seconds: uptimeSeconds,
+        environment: config.nodeEnv,
+      },
+      email: {
+        configured: smtpConfigured,
+        host: config.smtp.host || "-",
+        from: config.smtp.from || "-",
+      },
+      security: {
+        bcrypt_rounds: 12,
+        access_token_expiry: config.oauth.accessTokenExpiry,
+        refresh_token_expiry: config.oauth.refreshTokenExpiry,
+        rate_limit_auth: `${config.rateLimit.auth.max} req / ${Math.round(config.rateLimit.auth.windowMs / 60000)}min`,
+        rate_limit_api: `${config.rateLimit.api.max} req / ${Math.round(config.rateLimit.api.windowMs / 60000)}min`,
+      },
+    };
+
+    sendSuccess(res, info);
   } catch (err) {
     next(err);
   }

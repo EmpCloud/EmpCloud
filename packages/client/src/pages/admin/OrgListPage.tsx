@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
@@ -11,6 +11,8 @@ import {
   ArrowUp,
   ArrowDown,
   ExternalLink,
+  PlusCircle,
+  X,
 } from "lucide-react";
 
 function formatINR(value: number): string {
@@ -23,11 +25,47 @@ function formatINR(value: number): string {
 type SortField = "name" | "created_at" | "user_count" | "subscription_count" | "monthly_spend";
 
 export default function OrgListPage() {
+  const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [sortBy, setSortBy] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    org_name: "",
+    email: "",
+    first_name: "",
+    last_name: "",
+    password: "",
+    org_country: "IN",
+    org_timezone: "Asia/Kolkata",
+  });
+  const [createError, setCreateError] = useState("");
+
+  const createOrg = useMutation({
+    mutationFn: (data: typeof createForm) =>
+      api.post("/auth/register", data).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-orgs"] });
+      setShowCreateModal(false);
+      setCreateForm({
+        org_name: "",
+        email: "",
+        first_name: "",
+        last_name: "",
+        password: "",
+        org_country: "IN",
+        org_timezone: "Asia/Kolkata",
+      });
+      setCreateError("");
+    },
+    onError: (err: any) => {
+      setCreateError(
+        err?.response?.data?.error?.message || "Failed to create organization. Please check all fields."
+      );
+    },
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-orgs", page, search, sortBy, sortOrder],
@@ -78,18 +116,157 @@ export default function OrgListPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-blue-600" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">All Organizations</h1>
+              <p className="text-gray-500 mt-0.5 text-sm">
+                {meta.total} organization{meta.total !== 1 ? "s" : ""} registered on the platform.
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">All Organizations</h1>
-            <p className="text-gray-500 mt-0.5 text-sm">
-              {meta.total} organization{meta.total !== 1 ? "s" : ""} registered on the platform.
-            </p>
-          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
+          >
+            <PlusCircle className="h-4 w-4" /> Create Organization
+          </button>
         </div>
       </div>
+
+      {/* Create Organization Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setShowCreateModal(false)} />
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 z-50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Create New Organization</h2>
+              <button
+                onClick={() => { setShowCreateModal(false); setCreateError(""); }}
+                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setCreateError("");
+                createOrg.mutate(createForm);
+              }}
+              className="p-6 space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
+                <input
+                  type="text"
+                  value={createForm.org_name}
+                  onChange={(e) => setCreateForm({ ...createForm, org_name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  placeholder="Acme Corp"
+                  required
+                  minLength={2}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Admin First Name *</label>
+                  <input
+                    type="text"
+                    value={createForm.first_name}
+                    onChange={(e) => setCreateForm({ ...createForm, first_name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    placeholder="John"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Admin Last Name *</label>
+                  <input
+                    type="text"
+                    value={createForm.last_name}
+                    onChange={(e) => setCreateForm({ ...createForm, last_name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    placeholder="Doe"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Email *</label>
+                <input
+                  type="email"
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  placeholder="admin@acme.com"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Password *</label>
+                <input
+                  type="password"
+                  value={createForm.password}
+                  onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  placeholder="Min 8 chars, uppercase, lowercase, digit, special"
+                  required
+                  minLength={8}
+                />
+                <p className="text-xs text-gray-400 mt-1">Must contain uppercase, lowercase, digit, and special character.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <input
+                    type="text"
+                    value={createForm.org_country}
+                    onChange={(e) => setCreateForm({ ...createForm, org_country: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    placeholder="IN"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                  <input
+                    type="text"
+                    value={createForm.org_timezone}
+                    onChange={(e) => setCreateForm({ ...createForm, org_timezone: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    placeholder="Asia/Kolkata"
+                  />
+                </div>
+              </div>
+              {createError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+                  {createError}
+                </div>
+              )}
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowCreateModal(false); setCreateError(""); }}
+                  className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createOrg.isPending}
+                  className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+                >
+                  <Building2 className="h-4 w-4" />
+                  {createOrg.isPending ? "Creating..." : "Create Organization"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <form onSubmit={handleSearch} className="mb-6">

@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
+
+const HR_ROLES = ["hr_admin", "hr_manager", "org_admin"];
 
 type Tab = "personal" | "education" | "experience" | "dependents" | "addresses" | "custom";
 
@@ -33,6 +36,11 @@ export default function EmployeeProfilePage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<Tab>("personal");
   const [editing, setEditing] = useState(false);
+  const currentUser = useAuthStore((s) => s.user);
+
+  const isOwnProfile = currentUser?.id === userId;
+  const isHR = currentUser ? HR_ROLES.includes(currentUser.role) : false;
+  const canEdit = isOwnProfile || isHR;
 
   const isValidId = !!id && !isNaN(userId);
 
@@ -143,13 +151,13 @@ export default function EmployeeProfilePage() {
                 <p>Joined: {new Date(profile.date_of_joining).toLocaleDateString()}</p>
               )}
             </div>
-            {activeTab === "personal" && (
+            {activeTab === "personal" && canEdit && (
               <button
                 onClick={() => setEditing(!editing)}
                 className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
               >
                 <Pencil className="h-3.5 w-3.5" />
-                {editing ? "Cancel" : "Edit Profile"}
+                {editing ? "Cancel" : isOwnProfile && !isHR ? "Edit My Info" : "Edit Profile"}
               </button>
             )}
           </div>
@@ -187,6 +195,7 @@ export default function EmployeeProfilePage() {
             error={updateProfile.isError ? ((updateProfile.error as any)?.response?.data?.error?.message || "Failed to save") : null}
             allUsers={allUsers || []}
             userId={userId}
+            selfService={isOwnProfile && !isHR}
           />
         )}
         {activeTab === "education" && <EducationTab data={education} />}
@@ -212,7 +221,7 @@ function FieldRow({ label, value }: { label: string; value?: string | number | n
   );
 }
 
-function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; userId?: number }) {
+function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; userId?: number; selfService?: boolean }) {
   const [form, setForm] = useState<Record<string, string>>({});
 
   // Populate form when entering edit mode (via useEffect to avoid setState during render)
@@ -246,22 +255,36 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
   if (editing) {
     const set = (key: string, val: string) => setForm((prev) => ({ ...prev, [key]: val }));
     const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+    const disabledClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-not-allowed";
+
+    // Self-service employees can only edit personal/contact fields, not admin fields
+    const SELF_SERVICE_FIELDS = [
+      "personal_email", "contact_number", "gender", "date_of_birth",
+      "blood_group", "marital_status", "nationality",
+      "emergency_contact_name", "emergency_contact_phone", "emergency_contact_relation",
+    ];
+    const canEditField = (field: string) => !selfService || SELF_SERVICE_FIELDS.includes(field);
 
     return (
       <div>
         {error && <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">{error}</div>}
+        {selfService && (
+          <div className="bg-blue-50 border border-blue-200 text-blue-700 text-sm p-3 rounded-lg mb-4">
+            You can edit your personal and emergency contact information. Contact HR to update administrative fields.
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Personal Email</label>
-            <input type="email" value={form.personal_email} onChange={(e) => set("personal_email", e.target.value)} className={inputClass} />
+            <input type="email" value={form.personal_email} onChange={(e) => set("personal_email", e.target.value)} className={canEditField("personal_email") ? inputClass : disabledClass} disabled={!canEditField("personal_email")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-            <input type="text" value={form.contact_number} onChange={(e) => set("contact_number", e.target.value)} className={inputClass} />
+            <input type="text" value={form.contact_number} onChange={(e) => set("contact_number", e.target.value)} className={canEditField("contact_number") ? inputClass : disabledClass} disabled={!canEditField("contact_number")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-            <select value={form.gender} onChange={(e) => set("gender", e.target.value)} className={inputClass}>
+            <select value={form.gender} onChange={(e) => set("gender", e.target.value)} className={canEditField("gender") ? inputClass : disabledClass} disabled={!canEditField("gender")}>
               <option value="">Select</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -270,15 +293,15 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-            <input type="date" value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} className={inputClass} />
+            <input type="date" value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} className={canEditField("date_of_birth") ? inputClass : disabledClass} disabled={!canEditField("date_of_birth")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
-            <input type="text" value={form.blood_group} onChange={(e) => set("blood_group", e.target.value)} className={inputClass} />
+            <input type="text" value={form.blood_group} onChange={(e) => set("blood_group", e.target.value)} className={canEditField("blood_group") ? inputClass : disabledClass} disabled={!canEditField("blood_group")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
-            <select value={form.marital_status} onChange={(e) => set("marital_status", e.target.value)} className={inputClass}>
+            <select value={form.marital_status} onChange={(e) => set("marital_status", e.target.value)} className={canEditField("marital_status") ? inputClass : disabledClass} disabled={!canEditField("marital_status")}>
               <option value="">Select</option>
               <option value="single">Single</option>
               <option value="married">Married</option>
@@ -288,51 +311,51 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
-            <input type="text" value={form.nationality} onChange={(e) => set("nationality", e.target.value)} className={inputClass} />
+            <input type="text" value={form.nationality} onChange={(e) => set("nationality", e.target.value)} className={canEditField("nationality") ? inputClass : disabledClass} disabled={!canEditField("nationality")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
-            <input type="text" value={form.aadhar_number} onChange={(e) => set("aadhar_number", e.target.value)} className={inputClass} />
+            <input type="text" value={form.aadhar_number} onChange={(e) => set("aadhar_number", e.target.value)} className={canEditField("aadhar_number") ? inputClass : disabledClass} disabled={!canEditField("aadhar_number")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
-            <input type="text" value={form.pan_number} onChange={(e) => set("pan_number", e.target.value)} className={inputClass} />
+            <input type="text" value={form.pan_number} onChange={(e) => set("pan_number", e.target.value)} className={canEditField("pan_number") ? inputClass : disabledClass} disabled={!canEditField("pan_number")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
-            <input type="text" value={form.passport_number} onChange={(e) => set("passport_number", e.target.value)} className={inputClass} />
+            <input type="text" value={form.passport_number} onChange={(e) => set("passport_number", e.target.value)} className={canEditField("passport_number") ? inputClass : disabledClass} disabled={!canEditField("passport_number")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Passport Expiry</label>
-            <input type="date" value={form.passport_expiry} onChange={(e) => set("passport_expiry", e.target.value)} className={inputClass} />
+            <input type="date" value={form.passport_expiry} onChange={(e) => set("passport_expiry", e.target.value)} className={canEditField("passport_expiry") ? inputClass : disabledClass} disabled={!canEditField("passport_expiry")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Visa Status</label>
-            <input type="text" value={form.visa_status} onChange={(e) => set("visa_status", e.target.value)} className={inputClass} />
+            <input type="text" value={form.visa_status} onChange={(e) => set("visa_status", e.target.value)} className={canEditField("visa_status") ? inputClass : disabledClass} disabled={!canEditField("visa_status")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Visa Expiry</label>
-            <input type="date" value={form.visa_expiry} onChange={(e) => set("visa_expiry", e.target.value)} className={inputClass} />
+            <input type="date" value={form.visa_expiry} onChange={(e) => set("visa_expiry", e.target.value)} className={canEditField("visa_expiry") ? inputClass : disabledClass} disabled={!canEditField("visa_expiry")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
-            <input type="text" value={form.emergency_contact_name} onChange={(e) => set("emergency_contact_name", e.target.value)} className={inputClass} />
+            <input type="text" value={form.emergency_contact_name} onChange={(e) => set("emergency_contact_name", e.target.value)} className={canEditField("emergency_contact_name") ? inputClass : disabledClass} disabled={!canEditField("emergency_contact_name")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Phone</label>
-            <input type="text" value={form.emergency_contact_phone} onChange={(e) => set("emergency_contact_phone", e.target.value)} className={inputClass} />
+            <input type="text" value={form.emergency_contact_phone} onChange={(e) => set("emergency_contact_phone", e.target.value)} className={canEditField("emergency_contact_phone") ? inputClass : disabledClass} disabled={!canEditField("emergency_contact_phone")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Relation</label>
-            <input type="text" value={form.emergency_contact_relation} onChange={(e) => set("emergency_contact_relation", e.target.value)} className={inputClass} />
+            <input type="text" value={form.emergency_contact_relation} onChange={(e) => set("emergency_contact_relation", e.target.value)} className={canEditField("emergency_contact_relation") ? inputClass : disabledClass} disabled={!canEditField("emergency_contact_relation")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notice Period (days)</label>
-            <input type="number" value={form.notice_period_days} onChange={(e) => set("notice_period_days", e.target.value)} className={inputClass} />
+            <input type="number" value={form.notice_period_days} onChange={(e) => set("notice_period_days", e.target.value)} className={canEditField("notice_period_days") ? inputClass : disabledClass} disabled={!canEditField("notice_period_days")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Reporting Manager</label>
-            <select value={form.reporting_manager_id} onChange={(e) => set("reporting_manager_id", e.target.value)} className={inputClass}>
+            <select value={form.reporting_manager_id} onChange={(e) => set("reporting_manager_id", e.target.value)} className={canEditField("reporting_manager_id") ? inputClass : disabledClass} disabled={!canEditField("reporting_manager_id")}>
               <option value="">No Manager</option>
               {(allUsers || []).filter((u: any) => u.id !== userId).map((u: any) => (
                 <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.email})</option>
@@ -342,7 +365,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <button
-            onClick={() => onSave?.(Object.fromEntries(Object.entries(form).map(([k, v]) => [k, v || null])))}
+            onClick={() => onSave?.(Object.fromEntries(Object.entries(form).filter(([k]) => canEditField(k)).map(([k, v]) => [k, v || null])))}
             disabled={saving}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
           >

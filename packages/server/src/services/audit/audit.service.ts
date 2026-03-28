@@ -35,6 +35,8 @@ export async function getAuditLogs(params: {
   page?: number;
   perPage?: number;
   action?: string;
+  startDate?: string;
+  endDate?: string;
 }): Promise<{ logs: object[]; total: number }> {
   const db = getDB();
   const page = params.page || 1;
@@ -43,6 +45,15 @@ export async function getAuditLogs(params: {
   let query = db("audit_logs").where({ organization_id: params.organizationId });
   if (params.action) {
     query = query.where({ action: params.action });
+  }
+  if (params.startDate) {
+    query = query.where("created_at", ">=", params.startDate);
+  }
+  if (params.endDate) {
+    // End date is inclusive — add 1 day so it includes the full end day
+    const nextDay = new Date(params.endDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    query = query.where("created_at", "<", nextDay.toISOString().slice(0, 10));
   }
 
   const [{ count }] = await query.clone().count("* as count");

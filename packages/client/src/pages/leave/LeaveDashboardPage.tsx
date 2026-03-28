@@ -367,6 +367,9 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   const qc = useQueryClient();
   const [remarks, setRemarks] = useState("");
   const [actionId, setActionId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [bulkResult, setBulkResult] = useState<{ type: string; success: number; failed: number } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["leave-applications-pending"],
@@ -402,20 +405,110 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   const applications = data?.data || [];
   const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
 
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === applications.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(applications.map((a: any) => a.id)));
+    }
+  };
+
+  const handleBulkAction = async (action: "approve" | "reject") => {
+    if (selectedIds.size === 0) return;
+    setBulkProcessing(true);
+    setBulkResult(null);
+    let success = 0;
+    let failed = 0;
+
+    const ids = Array.from(selectedIds);
+    for (const id of ids) {
+      try {
+        if (action === "approve") {
+          await api.put(`/leave/applications/${id}/approve`, { remarks: "" });
+        } else {
+          await api.put(`/leave/applications/${id}/reject`, { remarks: "" });
+        }
+        success++;
+      } catch {
+        failed++;
+      }
+    }
+
+    setBulkProcessing(false);
+    setBulkResult({ type: action, success, failed });
+    setSelectedIds(new Set());
+    qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
+    qc.invalidateQueries({ queryKey: ["leave-balances"] });
+    qc.invalidateQueries({ queryKey: ["leave-applications"] });
+
+    // Auto-clear result after 5 seconds
+    setTimeout(() => setBulkResult(null), 5000);
+  };
+
   if (isLoading) return null;
   if (applications.length === 0) return null;
+
+  const allSelected = applications.length > 0 && selectedIds.size === applications.length;
 
   return (
     <div className="bg-white rounded-xl border border-amber-200 overflow-hidden mb-6">
       <div className="px-6 py-4 border-b border-amber-200 bg-amber-50">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-amber-500" />
-          Pending Leave Requests ({applications.length})
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-amber-500" />
+            Pending Leave Requests ({applications.length})
+          </h2>
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">{selectedIds.size} selected</span>
+              <button
+                onClick={() => handleBulkAction("approve")}
+                disabled={bulkProcessing}
+                className="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
+              >
+                {bulkProcessing ? "Processing..." : "Approve Selected"}
+              </button>
+              <button
+                onClick={() => handleBulkAction("reject")}
+                disabled={bulkProcessing}
+                className="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"
+              >
+                {bulkProcessing ? "Processing..." : "Reject Selected"}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {bulkResult && (
+        <div className={`px-6 py-3 text-sm font-medium ${
+          bulkResult.type === "approve" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+        }`}>
+          {bulkResult.type === "approve" ? "Approved" : "Rejected"} {bulkResult.success} request{bulkResult.success !== 1 ? "s" : ""} successfully.
+          {bulkResult.failed > 0 && ` ${bulkResult.failed} failed.`}
+        </div>
+      )}
+
       <table className="min-w-full">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 w-10">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={toggleSelectAll}
+                className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+              />
+            </th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
@@ -426,7 +519,15 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         </thead>
         <tbody className="divide-y divide-gray-100">
           {applications.map((app: any) => (
-            <tr key={app.id} className="hover:bg-gray-50">
+            <tr key={app.id} className={`hover:bg-gray-50 ${selectedIds.has(app.id) ? "bg-brand-50/50" : ""}`}>
+              <td className="px-6 py-4">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(app.id)}
+                  onChange={() => toggleSelect(app.id)}
+                  className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                />
+              </td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">
                 {app.user_first_name ? `${app.user_first_name} ${app.user_last_name || ""}` : `User #${app.user_id}`}
               </td>

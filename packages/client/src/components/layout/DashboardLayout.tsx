@@ -94,7 +94,7 @@ export default function DashboardLayout() {
 
       {/* Close button on mobile */}
       <button
-        className="lg:hidden absolute top-4 right-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        className="md:hidden absolute top-4 right-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         onClick={() => setSidebarOpen(false)}
       >
         <X className="h-5 w-5" />
@@ -159,15 +159,18 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Desktop sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden md:block">
         {sidebarContent}
       </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* Mobile sidebar overlay with slide-in animation */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed left-0 top-0 z-50 h-full">
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="fixed inset-0 bg-black/50 transition-opacity duration-300"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div className="fixed left-0 top-0 z-50 h-full transform transition-transform duration-300 ease-in-out translate-x-0 animate-slide-in-left">
             {sidebarContent}
           </div>
         </div>
@@ -176,18 +179,20 @@ export default function DashboardLayout() {
       {/* Main content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Top header bar */}
-        <div className="flex items-center justify-between px-4 lg:px-8 py-3 border-b border-gray-200 bg-white shrink-0">
+        <div className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200 bg-white shrink-0 relative z-20">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 lg:hidden"
+            className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 md:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
-          <LanguageSwitcher />
-          <NotificationDropdown />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <NotificationDropdown />
+          </div>
         </div>
-        <div className="flex-1 overflow-auto p-4 lg:p-8">
+        <div className="flex-1 overflow-auto p-4 md:p-8">
           <Outlet />
         </div>
       </div>

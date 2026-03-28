@@ -208,6 +208,7 @@ export const platformAdminNavItems: NavItem[] = [
   { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
   { path: "/admin/logs", label: "Log Dashboard", icon: ScrollText },
+  { path: "/admin/settings", label: "Platform Settings", icon: Settings },
 ];
 
 export const HR_ROLES = ["hr_admin", "hr_manager", "org_admin"];

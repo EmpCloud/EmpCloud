@@ -268,16 +268,24 @@ export async function listApplications(
   const page = params.page || 1;
   const perPage = params.perPage || 20;
 
-  let query = db("leave_applications").where({ organization_id: orgId });
+  let query = db("leave_applications")
+    .join("users", "leave_applications.user_id", "users.id")
+    .where("leave_applications.organization_id", orgId);
 
-  if (params.status) query = query.where({ status: params.status });
-  if (params.leaveTypeId) query = query.where({ leave_type_id: params.leaveTypeId });
-  if (params.userId) query = query.where({ user_id: params.userId });
+  if (params.status) query = query.where("leave_applications.status", params.status);
+  if (params.leaveTypeId) query = query.where("leave_applications.leave_type_id", params.leaveTypeId);
+  if (params.userId) query = query.where("leave_applications.user_id", params.userId);
 
   const [{ count }] = await query.clone().count("* as count");
   const applications = await query
-    .select()
-    .orderBy("created_at", "desc")
+    .select(
+      "leave_applications.*",
+      "users.first_name as user_first_name",
+      "users.last_name as user_last_name",
+      "users.email as user_email",
+      "users.emp_code as user_emp_code",
+    )
+    .orderBy("leave_applications.created_at", "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 

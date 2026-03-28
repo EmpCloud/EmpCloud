@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter } from "lucide-react";
 import { useAuthStore } from "@/lib/auth-store";
 
 const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
@@ -16,6 +16,24 @@ export default function AttendanceDashboardPage() {
     return <Navigate to="/attendance/my" replace />;
   }
   const [page, setPage] = useState(1);
+  const now = new Date();
+  const [month, setMonth] = useState(() => now.getMonth() + 1);
+  const [year, setYear] = useState(() => now.getFullYear());
+  const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
+  const months = Array.from({ length: 12 }, (_, i) => ({
+    value: i + 1,
+    label: new Date(2000, i).toLocaleString("default", { month: "long" }),
+  }));
+
+  // Fetch departments for the dropdown filter
+  const { data: departments = [] } = useQuery({
+    queryKey: ["org-departments"],
+    queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
+    staleTime: 60000,
+  });
 
   const { data: dashboard, isLoading: dashLoading } = useQuery({
     queryKey: ["attendance-dashboard"],
@@ -23,9 +41,38 @@ export default function AttendanceDashboardPage() {
   });
 
   const { data: recordsData, isLoading: recLoading } = useQuery({
-    queryKey: ["attendance-records", page],
-    queryFn: () => api.get("/attendance/records", { params: { page } }).then((r) => r.data),
+    queryKey: ["attendance-records", page, month, year, departmentId],
+    queryFn: () =>
+      api
+        .get("/attendance/records", {
+          params: {
+            page,
+            month,
+            year,
+            department_id: departmentId || undefined,
+          },
+        })
+        .then((r) => r.data),
   });
+
+  const handleDateRangeApply = () => {
+    if (dateFrom) {
+      const d = new Date(dateFrom);
+      setMonth(d.getMonth() + 1);
+      setYear(d.getFullYear());
+      setPage(1);
+    }
+  };
+
+  const handleClearFilters = () => {
+    const n = new Date();
+    setMonth(n.getMonth() + 1);
+    setYear(n.getFullYear());
+    setDepartmentId(undefined);
+    setDateFrom("");
+    setDateTo("");
+    setPage(1);
+  };
 
   const records = recordsData?.data || [];
   const meta = recordsData?.meta;
@@ -62,10 +109,93 @@ export default function AttendanceDashboardPage() {
         ))}
       </div>
 
-      {/* Today's Records Table */}
+      {/* Date & Department Filters */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Filter className="h-4 w-4 text-gray-500" />
+          <h3 className="text-sm font-semibold text-gray-700">Filters</h3>
+        </div>
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Month</label>
+            <select
+              value={month}
+              onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              {months.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Year</label>
+            <select
+              value={year}
+              onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
+            <select
+              value={departmentId ?? ""}
+              onChange={(e) => { setDepartmentId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">All Departments</option>
+              {departments.map((d: any) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="border-l border-gray-200 pl-3 flex items-end gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Date From</label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Date To</label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <button
+              onClick={handleDateRangeApply}
+              disabled={!dateFrom}
+              className="flex items-center gap-1.5 px-3 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700 disabled:opacity-50"
+            >
+              <CalendarDays className="h-4 w-4" /> Apply
+            </button>
+          </div>
+          <button
+            onClick={handleClearFilters}
+            className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      {/* Attendance Records Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Today's Attendance</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Attendance Records &mdash; {months.find((m) => m.value === month)?.label} {year}
+            {departmentId ? ` (Filtered)` : ""}
+          </h2>
         </div>
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
