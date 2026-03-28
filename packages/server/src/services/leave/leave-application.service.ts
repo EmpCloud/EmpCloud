@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
+import { logger } from "../../utils/logger.js";
 import * as balanceService from "./leave-balance.service.js";
 import type { LeaveApplication, ApplyLeaveInput } from "@empcloud/shared";
 
@@ -205,12 +206,12 @@ export async function approveLeave(
     }
 
     // Auto-create on_leave attendance records for each day of the leave
+    const txnNow = new Date();
     try {
       const startDate = new Date(application.start_date);
       const endDate = new Date(application.end_date);
       // Safety: skip if dates are invalid or too far in the future
       if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && startDate.getFullYear() > 1999 && startDate.getFullYear() < 2100) {
-        const now = new Date();
         const maxDays = 60; // safety limit
         let count = 0;
         for (let d = new Date(startDate); d <= endDate && count < maxDays; d.setDate(d.getDate() + 1)) {
@@ -228,10 +229,10 @@ export async function approveLeave(
             await trx("attendance_records").insert({
               organization_id: orgId, user_id: application.user_id,
               date: dateStr, status: "on_leave", source: "system",
-              created_at: now, updated_at: now,
+              created_at: txnNow, updated_at: txnNow,
             });
           } else if (existing.status !== "on_leave") {
-            await trx("attendance_records").where({ id: existing.id }).update({ status: "on_leave", updated_at: now });
+            await trx("attendance_records").where({ id: existing.id }).update({ status: "on_leave", updated_at: txnNow });
           }
         }
       }
@@ -250,7 +251,7 @@ export async function approveLeave(
       reference_type: "leave_application",
       reference_id: String(applicationId),
       is_read: false,
-      created_at: now,
+      created_at: txnNow,
     });
   });
 
