@@ -99,6 +99,28 @@ export async function deleteLocation(orgId: number, locationId: number) {
     .update({ is_active: false, updated_at: new Date() });
 }
 
+// ---------------------------------------------------------------------------
+// #1038 — Flag departments without a manager assigned
+// ---------------------------------------------------------------------------
+
+export async function getDepartmentsWithoutManager(orgId: number) {
+  const db = getDB();
+
+  // Return departments that have no user with role 'manager' or 'hr_manager' assigned
+  const departments = await db("organization_departments as d")
+    .leftJoin("users as u", function () {
+      this.on("u.department_id", "=", "d.id")
+        .andOn("u.organization_id", "=", "d.organization_id")
+        .andOn("u.status", "=", db.raw("1"))
+        .andOnIn("u.role", ["manager", "hr_manager"]);
+    })
+    .where({ "d.organization_id": orgId, "d.is_deleted": false })
+    .whereNull("u.id")
+    .select("d.id", "d.name", "d.created_at");
+
+  return departments;
+}
+
 export async function createLocation(orgId: number, data: { name: string; address?: string; timezone?: string }) {
   const db = getDB();
 

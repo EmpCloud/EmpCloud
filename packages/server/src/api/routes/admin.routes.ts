@@ -20,6 +20,7 @@ import {
   getUserGrowth,
   getSubscriptionMetrics,
   getRecentActivity,
+  getOverdueOrganizations,
 } from "../../services/admin/super-admin.service.js";
 import {
   getServiceHealth,
@@ -156,6 +157,16 @@ router.post("/service-health/check", async (req: Request, res: Response, next: N
   try {
     const health = await forceHealthCheck();
     sendSuccess(res, health);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/admin/overdue-organizations — #984 orgs with overdue subscriptions
+router.get("/overdue-organizations", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await getOverdueOrganizations();
+    sendSuccess(res, data);
   } catch (err) {
     next(err);
   }

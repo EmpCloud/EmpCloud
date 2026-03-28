@@ -36,6 +36,14 @@ router.get("/billing-summary", authenticate, requireHR, async (req: Request, res
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/subscriptions/billing-status — #983 overdue/payment warning for org admins
+router.get("/billing-status", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const status = await subService.getBillingStatus(req.user!.org_id);
+    sendSuccess(res, status);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/subscriptions/:id (HR+ only)
 router.get("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {

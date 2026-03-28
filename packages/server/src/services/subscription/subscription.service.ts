@@ -350,6 +350,82 @@ export async function checkModuleAccess(params: {
 }
 
 // ---------------------------------------------------------------------------
+// #983 — Billing Status (overdue/payment warning for org admins)
+// ---------------------------------------------------------------------------
+
+export async function getBillingStatus(orgId: number) {
+  const db = getDB();
+  const now = new Date();
+
+  // Find subscriptions that are overdue or problematic
+  const overdueSubs = await db("org_subscriptions as s")
+    .join("modules as m", "s.module_id", "m.id")
+    .where({ "s.organization_id": orgId })
+    .whereIn("s.status", ["past_due", "suspended", "deactivated"])
+    .select(
+      "s.id",
+      "m.name as module_name",
+      "s.status",
+      "s.current_period_end",
+      "s.dunning_stage",
+    );
+
+  if (overdueSubs.length === 0) {
+    return {
+      has_overdue: false,
+      days_overdue: 0,
+      warning_level: "none" as const,
+      overdue_subscriptions: [],
+      message: null,
+    };
+  }
+
+  // Calculate the worst overdue across all subscriptions
+  let maxOverdueDays = 0;
+  const subs = overdueSubs.map((s: any) => {
+    const periodEnd = new Date(s.current_period_end);
+    const days = Math.max(
+      0,
+      Math.floor((now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24)),
+    );
+    if (days > maxOverdueDays) maxOverdueDays = days;
+    return {
+      subscription_id: s.id,
+      module_name: s.module_name,
+      status: s.status,
+      current_period_end: s.current_period_end,
+      days_overdue: days,
+    };
+  });
+
+  // Determine warning level based on worst overdue
+  let warningLevel: "info" | "warning" | "critical";
+  let message: string;
+
+  if (maxOverdueDays >= 30) {
+    warningLevel = "critical";
+    message = "Your subscription has been deactivated due to non-payment. Please update your payment method immediately to restore access.";
+  } else if (maxOverdueDays >= 15) {
+    warningLevel = "critical";
+    message = "Your subscription has been suspended due to overdue payment. Please pay immediately to avoid losing access.";
+  } else if (maxOverdueDays >= 7) {
+    warningLevel = "warning";
+    message = "Your payment is overdue. Please update your payment method to avoid service interruption.";
+  } else {
+    warningLevel = "info";
+    message = "You have an outstanding invoice. Please complete payment at your earliest convenience.";
+  }
+
+  return {
+    has_overdue: true,
+    days_overdue: maxOverdueDays,
+    warning_level: warningLevel,
+    overdue_subscriptions: subs,
+    message,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Grace Period Configuration (#981)
 // Organizations can be given a grace period (in days) after the billing period
 // ends before overdue enforcement kicks in. Default is 0 (no grace).

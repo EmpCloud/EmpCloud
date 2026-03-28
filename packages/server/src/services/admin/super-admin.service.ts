@@ -615,6 +615,61 @@ export async function getSystemHealth() {
 }
 
 // ---------------------------------------------------------------------------
+// #984 — Overdue Organizations (past_due / suspended subscriptions)
+// ---------------------------------------------------------------------------
+
+export async function getOverdueOrganizations() {
+  const db = getDB();
+
+  const orgs = await db("org_subscriptions as s")
+    .join("organizations as o", "s.organization_id", "o.id")
+    .join("modules as m", "s.module_id", "m.id")
+    .whereIn("s.status", ["past_due", "suspended", "deactivated"])
+    .select(
+      "o.id as org_id",
+      "o.name as org_name",
+      "o.email as org_email",
+      "s.id as subscription_id",
+      "m.name as module_name",
+      "m.slug as module_slug",
+      "s.status",
+      "s.plan_tier",
+      "s.total_seats",
+      "s.price_per_seat",
+      "s.current_period_end",
+      "s.dunning_stage",
+      "s.updated_at",
+    )
+    .orderBy("s.current_period_end", "asc");
+
+  const now = new Date();
+  return orgs.map((row: any) => {
+    const periodEnd = new Date(row.current_period_end);
+    const overdueDays = Math.max(
+      0,
+      Math.floor((now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24)),
+    );
+    return {
+      org_id: row.org_id,
+      org_name: row.org_name,
+      org_email: row.org_email,
+      subscription_id: row.subscription_id,
+      module_name: row.module_name,
+      module_slug: row.module_slug,
+      status: row.status,
+      plan_tier: row.plan_tier,
+      total_seats: row.total_seats,
+      price_per_seat: Number(row.price_per_seat),
+      monthly_amount: Number(row.price_per_seat) * row.total_seats,
+      current_period_end: row.current_period_end,
+      overdue_days: overdueDays,
+      dunning_stage: row.dunning_stage || "current",
+      last_updated: row.updated_at,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Module Adoption (kept for backward compat)
 // ---------------------------------------------------------------------------
 

@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
+import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { createNotification } from "../notification/notification.service.js";
 
@@ -394,6 +394,14 @@ export async function closeTicket(orgId: number, ticketId: number) {
     .where({ id: ticketId, organization_id: orgId })
     .first();
   if (!ticket) throw new NotFoundError("Ticket");
+
+  // #979 — Require at least one resolution comment before closing
+  const [{ count }] = await db("ticket_comments")
+    .where({ ticket_id: ticketId, organization_id: orgId })
+    .count("id as count");
+  if (Number(count) === 0) {
+    throw new ValidationError("A resolution comment is required to close this ticket");
+  }
 
   const now = new Date();
   const updateData: Record<string, any> = {
