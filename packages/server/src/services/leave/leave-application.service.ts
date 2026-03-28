@@ -205,36 +205,39 @@ export async function approveLeave(
     }
 
     // Auto-create on_leave attendance records for each day of the leave
-    const startDate = new Date(application.start_date);
-    const endDate = new Date(application.end_date);
-    const now = new Date();
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().slice(0, 10);
-      // Check if attendance record already exists for this date
-      const existing = await trx("attendance_records")
-        .where({
-          organization_id: orgId,
-          user_id: application.user_id,
-          date: dateStr,
-        })
-        .first();
+    try {
+      const startDate = new Date(application.start_date);
+      const endDate = new Date(application.end_date);
+      // Safety: skip if dates are invalid or too far in the future
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && startDate.getFullYear() > 1999 && startDate.getFullYear() < 2100) {
+        const now = new Date();
+        const maxDays = 60; // safety limit
+        let count = 0;
+        for (let d = new Date(startDate); d <= endDate && count < maxDays; d.setDate(d.getDate() + 1)) {
+          count++;
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          const dateStr = `${y}-${m}-${day}`;
 
-      if (!existing) {
-        await trx("attendance_records").insert({
-          organization_id: orgId,
-          user_id: application.user_id,
-          date: dateStr,
-          status: "on_leave",
-          source: "system",
-          created_at: now,
-          updated_at: now,
-        });
-      } else if (existing.status !== "on_leave") {
-        // Update existing record to on_leave if it was absent or missing
-        await trx("attendance_records")
-          .where({ id: existing.id })
-          .update({ status: "on_leave", updated_at: now });
+          const existing = await trx("attendance_records")
+            .where({ organization_id: orgId, user_id: application.user_id, date: dateStr })
+            .first();
+
+          if (!existing) {
+            await trx("attendance_records").insert({
+              organization_id: orgId, user_id: application.user_id,
+              date: dateStr, status: "on_leave", source: "system",
+              created_at: now, updated_at: now,
+            });
+          } else if (existing.status !== "on_leave") {
+            await trx("attendance_records").where({ id: existing.id }).update({ status: "on_leave", updated_at: now });
+          }
+        }
       }
+    } catch (err) {
+      // Don't fail the approval if attendance creation fails
+      logger.warn("Failed to create on_leave attendance records", { error: (err as Error).message });
     }
 
     // Create notification for the employee
