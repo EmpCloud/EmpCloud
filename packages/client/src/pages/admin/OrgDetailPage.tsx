@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
   ArrowLeft,
@@ -12,6 +13,11 @@ import {
   Calendar,
   Mail,
   Globe,
+  X,
+  UserX,
+  UserCheck,
+  KeyRound,
+  ShieldCheck,
 } from "lucide-react";
 
 function formatINR(value: number): string {
@@ -21,13 +27,49 @@ function formatINR(value: number): string {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
+const VALID_ROLES = ["employee", "manager", "hr_manager", "hr_admin", "org_admin"];
+
 export default function OrgDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+  const [resetPasswordModal, setResetPasswordModal] = useState<any>(null);
+  const [changeRoleModal, setChangeRoleModal] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [newRole, setNewRole] = useState("");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-org-detail", id],
     queryFn: () => api.get(`/admin/organizations/${id}`).then((r) => r.data.data),
     enabled: !!id,
+  });
+
+  const deactivateUserMut = useMutation({
+    mutationFn: (userId: number) => api.put(`/admin/organizations/${id}/users/${userId}/deactivate`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-org-detail", id] }),
+  });
+
+  const activateUserMut = useMutation({
+    mutationFn: (userId: number) => api.put(`/admin/organizations/${id}/users/${userId}/activate`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-org-detail", id] }),
+  });
+
+  const resetPasswordMut = useMutation({
+    mutationFn: ({ userId, new_password }: { userId: number; new_password: string }) =>
+      api.put(`/admin/organizations/${id}/users/${userId}/reset-password`, { new_password }),
+    onSuccess: () => {
+      setResetPasswordModal(null);
+      setNewPassword("");
+    },
+  });
+
+  const changeRoleMut = useMutation({
+    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
+      api.put(`/admin/organizations/${id}/users/${userId}/role`, { role }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-org-detail", id] });
+      setChangeRoleModal(null);
+      setNewRole("");
+    },
   });
 
   if (isLoading) {
@@ -167,56 +209,103 @@ export default function OrgDetailPage() {
                 <th className="text-left py-3 px-4 font-medium text-gray-500">Role</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-500">Joined</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user: any) => (
-                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50/50">
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-semibold text-brand-700">
-                          {user.first_name?.[0]}{user.last_name?.[0]}
+              {users.map((user: any) => {
+                const isActive = user.is_active || user.status === 1;
+                return (
+                  <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50/50">
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
+                          <span className="text-xs font-semibold text-brand-700">
+                            {user.first_name?.[0]}{user.last_name?.[0]}
+                          </span>
+                        </div>
+                        <span className="font-medium text-gray-900">
+                          {user.first_name} {user.last_name}
                         </span>
                       </div>
-                      <span className="font-medium text-gray-900">
-                        {user.first_name} {user.last_name}
+                    </td>
+                    <td className="py-3 px-4 text-gray-600">{user.email}</td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                          user.role === "org_admin"
+                            ? "bg-purple-100 text-purple-700"
+                            : user.role === "hr_admin" || user.role === "hr_manager"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {user.role}
                       </span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-gray-600">{user.email}</td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        user.role === "org_admin"
-                          ? "bg-purple-100 text-purple-700"
-                          : user.role === "hr_admin" || user.role === "hr_manager"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                        user.is_active || user.status === 1
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {user.is_active || user.status === 1 ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-gray-600 text-xs">
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                          isActive
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-gray-600 text-xs">
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {isActive ? (
+                          <button
+                            onClick={() => deactivateUserMut.mutate(user.id)}
+                            disabled={deactivateUserMut.isPending}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Deactivate user"
+                          >
+                            <UserX className="h-4 w-4" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => activateUserMut.mutate(user.id)}
+                            disabled={activateUserMut.isPending}
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Activate user"
+                          >
+                            <UserCheck className="h-4 w-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            setResetPasswordModal(user);
+                            setNewPassword("");
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                          title="Reset password"
+                        >
+                          <KeyRound className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setChangeRoleModal(user);
+                            setNewRole(user.role);
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Change role"
+                        >
+                          <ShieldCheck className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-400">
+                  <td colSpan={6} className="py-8 text-center text-gray-400">
                     No users in this organization
                   </td>
                 </tr>
@@ -341,6 +430,93 @@ export default function OrgDetailPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {resetPasswordModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Reset Password</h3>
+              <button onClick={() => setResetPasswordModal(null)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Reset password for <strong>{resetPasswordModal.first_name} {resetPasswordModal.last_name}</strong> ({resetPasswordModal.email}).
+            </p>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <input
+                type="text"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Minimum 8 characters"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setResetPasswordModal(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => resetPasswordMut.mutate({ userId: resetPasswordModal.id, new_password: newPassword })}
+                disabled={newPassword.length < 8 || resetPasswordMut.isPending}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {resetPasswordMut.isPending ? "Resetting..." : "Reset Password"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Role Modal */}
+      {changeRoleModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Change Role</h3>
+              <button onClick={() => setChangeRoleModal(null)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Change role for <strong>{changeRoleModal.first_name} {changeRoleModal.last_name}</strong>.
+              Current role: <span className="font-medium">{changeRoleModal.role}</span>
+            </p>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Role</label>
+              <select
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+              >
+                {VALID_ROLES.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setChangeRoleModal(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => changeRoleMut.mutate({ userId: changeRoleModal.id, role: newRole })}
+                disabled={!newRole || newRole === changeRoleModal.role || changeRoleMut.isPending}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {changeRoleMut.isPending ? "Updating..." : "Update Role"}
+              </button>
+            </div>
           </div>
         </div>
       )}

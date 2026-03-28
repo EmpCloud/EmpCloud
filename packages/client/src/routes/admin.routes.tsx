@@ -13,6 +13,7 @@ const LogDashboardPage = lazy(() => import("@/pages/admin/LogDashboardPage"));
 const PlatformSettingsPage = lazy(() => import("@/pages/admin/PlatformSettingsPage"));
 const HealthDashboardPage = lazy(() => import("@/pages/admin/HealthDashboardPage"));
 const DataSanityPage = lazy(() => import("@/pages/admin/DataSanityPage"));
+const SystemNotificationsPage = lazy(() => import("@/pages/admin/SystemNotificationsPage"));
 const AuditPage = lazy(() => import("@/pages/audit/AuditPage"));
 const UsersPage = lazy(() => import("@/pages/users/UsersPage"));
 const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
@@ -40,6 +41,7 @@ export const adminRoutes = (
     <Route path="/admin/logs" element={<RequireRole roles={["super_admin"]}><LogDashboardPage /></RequireRole>} />
     <Route path="/admin/health" element={<RequireRole roles={["super_admin"]}><HealthDashboardPage /></RequireRole>} />
     <Route path="/admin/data-sanity" element={<RequireRole roles={["super_admin"]}><DataSanityPage /></RequireRole>} />
+    <Route path="/admin/notifications" element={<RequireRole roles={["super_admin"]}><SystemNotificationsPage /></RequireRole>} />
     <Route path="/admin/settings" element={<RequireRole roles={["super_admin"]}><PlatformSettingsPage /></RequireRole>} />
   </>
 );

@@ -21,11 +21,13 @@ const MyDocumentsPage = lazy(() => import("@/pages/documents/MyDocumentsPage"));
 const AnnouncementsPage = lazy(() => import("@/pages/announcements/AnnouncementsPage"));
 const PoliciesPage = lazy(() => import("@/pages/policies/PoliciesPage"));
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
+const ProbationPage = lazy(() => import("@/pages/employees/ProbationPage"));
 
 export const hrmsRoutes = (
   <>
     <Route path="/self-service" element={<SelfServiceDashboardPage />} />
     <Route path="/employees" element={<EmployeeDirectoryPage />} />
+    <Route path="/employees/probation" element={<ProbationPage />} />
     <Route path="/employees/:id" element={<EmployeeProfilePage />} />
     <Route path="/employees/import" element={<ImportEmployeesPage />} />
     <Route path="/org-chart" element={<OrgChartPage />} />

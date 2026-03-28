@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
   Package,
   Users,
   TrendingUp,
   Layers,
+  Power,
 } from "lucide-react";
 import {
   BarChart,
@@ -32,9 +33,20 @@ function formatINR(value: number): string {
 }
 
 export default function ModuleAnalyticsPage() {
+  const queryClient = useQueryClient();
+
   const { data: modules, isLoading } = useQuery({
     queryKey: ["admin-modules"],
     queryFn: () => api.get("/admin/modules").then((r) => r.data.data),
+  });
+
+  const toggleModuleMut = useMutation({
+    mutationFn: ({ id, is_active }: { id: number; is_active: boolean }) =>
+      api.put(`/admin/modules/${id}`, { is_active }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-modules"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-modules"] });
+    },
   });
 
   if (isLoading) {
@@ -185,15 +197,25 @@ export default function ModuleAnalyticsPage() {
                 <h3 className="font-semibold text-gray-900">{mod.name}</h3>
                 <p className="text-xs text-gray-400 font-mono">{mod.slug}</p>
               </div>
-              <span
-                className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                  mod.subscriber_count > 0
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-gray-500"
-                }`}
-              >
-                {mod.subscriber_count > 0 ? `${mod.subscriber_count} orgs` : "No subscribers"}
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                    mod.subscriber_count > 0
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  {mod.subscriber_count > 0 ? `${mod.subscriber_count} orgs` : "No subscribers"}
+                </span>
+                <button
+                  onClick={() => toggleModuleMut.mutate({ id: mod.id, is_active: false })}
+                  disabled={toggleModuleMut.isPending}
+                  className="p-1 text-green-500 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                  title="Disable module"
+                >
+                  <Power className="h-4 w-4" />
+                </button>
+              </div>
             </div>
             {mod.description && (
               <p className="text-sm text-gray-500 mb-4 line-clamp-2">{mod.description}</p>
@@ -270,6 +292,7 @@ export default function ModuleAnalyticsPage() {
                 <th className="text-right py-3 px-4 font-medium text-gray-500">Used Seats</th>
                 <th className="text-right py-3 px-4 font-medium text-gray-500">Utilization</th>
                 <th className="text-right py-3 px-4 font-medium text-gray-500">Revenue</th>
+                <th className="text-center py-3 px-4 font-medium text-gray-500">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -295,6 +318,16 @@ export default function ModuleAnalyticsPage() {
                   </td>
                   <td className="py-3 px-4 text-right font-medium text-gray-900">
                     {formatINR(mod.revenue)}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      onClick={() => toggleModuleMut.mutate({ id: mod.id, is_active: false })}
+                      disabled={toggleModuleMut.isPending}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-green-700 bg-green-50 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors"
+                    >
+                      <Power className="h-3.5 w-3.5" />
+                      Active
+                    </button>
                   </td>
                 </tr>
               ))}

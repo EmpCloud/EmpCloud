@@ -7,6 +7,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { requireSuperAdmin } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
+import { getDB } from "../../db/connection.js";
 import { config } from "../../config/index.js";
 import {
   getPlatformOverview,
@@ -28,6 +29,12 @@ import {
   runSanityCheck,
   runAutoFix,
 } from "../../services/admin/data-sanity.service.js";
+import {
+  createSystemNotification,
+  listSystemNotifications,
+  deactivateSystemNotification,
+} from "../../services/admin/system-notification.service.js";
+import { hashPassword } from "../../utils/crypto.js";
 
 const router = Router();
 
@@ -212,6 +219,187 @@ router.post("/data-sanity/fix", async (req: Request, res: Response, next: NextFu
   try {
     const report = await runAutoFix();
     sendSuccess(res, report);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// =========================================================================
+// User Management across orgs (super_admin)
+// =========================================================================
+
+// PUT /api/v1/admin/organizations/:orgId/users/:userId/deactivate — deactivate a user
+router.put("/organizations/:orgId/users/:userId/deactivate", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const orgId = parseInt(String(req.params.orgId), 10);
+    const userId = parseInt(String(req.params.userId), 10);
+
+    const user = await db("users").where({ id: userId, organization_id: orgId }).first();
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: "User not found" } });
+    }
+
+    await db("users").where({ id: userId }).update({ status: 0, updated_at: new Date() });
+    sendSuccess(res, { message: "User deactivated" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/v1/admin/organizations/:orgId/users/:userId/activate — activate a user
+router.put("/organizations/:orgId/users/:userId/activate", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const orgId = parseInt(String(req.params.orgId), 10);
+    const userId = parseInt(String(req.params.userId), 10);
+
+    const user = await db("users").where({ id: userId, organization_id: orgId }).first();
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: "User not found" } });
+    }
+
+    await db("users").where({ id: userId }).update({ status: 1, updated_at: new Date() });
+    sendSuccess(res, { message: "User activated" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/v1/admin/organizations/:orgId/users/:userId/reset-password — reset password
+router.put("/organizations/:orgId/users/:userId/reset-password", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const orgId = parseInt(String(req.params.orgId), 10);
+    const userId = parseInt(String(req.params.userId), 10);
+    const { new_password } = req.body;
+
+    if (!new_password || new_password.length < 8) {
+      return res.status(400).json({ success: false, error: { message: "Password must be at least 8 characters" } });
+    }
+
+    const user = await db("users").where({ id: userId, organization_id: orgId }).first();
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: "User not found" } });
+    }
+
+    const hashed = await hashPassword(new_password);
+    await db("users").where({ id: userId }).update({ password: hashed, updated_at: new Date() });
+    sendSuccess(res, { message: "Password reset successfully" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/v1/admin/organizations/:orgId/users/:userId/role — change role
+router.put("/organizations/:orgId/users/:userId/role", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const orgId = parseInt(String(req.params.orgId), 10);
+    const userId = parseInt(String(req.params.userId), 10);
+    const { role } = req.body;
+
+    const validRoles = ["employee", "manager", "hr_manager", "hr_admin", "org_admin"];
+    if (!role || !validRoles.includes(role)) {
+      return res.status(400).json({ success: false, error: { message: `Role must be one of: ${validRoles.join(", ")}` } });
+    }
+
+    const user = await db("users").where({ id: userId, organization_id: orgId }).first();
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: "User not found" } });
+    }
+
+    await db("users").where({ id: userId }).update({ role, updated_at: new Date() });
+    sendSuccess(res, { message: "Role updated", role });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// =========================================================================
+// System Notifications (super_admin)
+// =========================================================================
+
+// GET /api/v1/admin/notifications — list system notifications
+router.get("/notifications", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const perPage = parseInt(req.query.per_page as string, 10) || 20;
+    const activeOnly = req.query.active_only === "true";
+    const result = await listSystemNotifications({ page, perPage, activeOnly });
+    sendPaginated(res, result.notifications, result.total, page, perPage);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/admin/notifications — create system notification
+router.post("/notifications", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { title, message, target_type, target_org_id, notification_type, scheduled_at, expires_at } = req.body;
+
+    if (!title || !message) {
+      return res.status(400).json({ success: false, error: { message: "title and message are required" } });
+    }
+    if (target_type && !["all", "org"].includes(target_type)) {
+      return res.status(400).json({ success: false, error: { message: "target_type must be 'all' or 'org'" } });
+    }
+    if (target_type === "org" && !target_org_id) {
+      return res.status(400).json({ success: false, error: { message: "target_org_id is required when target_type is 'org'" } });
+    }
+
+    const notification = await createSystemNotification({
+      title,
+      message,
+      target_type: target_type || "all",
+      target_org_id: target_org_id || null,
+      notification_type: notification_type || "info",
+      created_by: req.user!.sub,
+      scheduled_at: scheduled_at || null,
+      expires_at: expires_at || null,
+    });
+
+    sendSuccess(res, notification, 201);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/v1/admin/notifications/:id/deactivate — deactivate notification
+router.put("/notifications/:id/deactivate", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    const result = await deactivateSystemNotification(id);
+    sendSuccess(res, result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// =========================================================================
+// Module Management (super_admin)
+// =========================================================================
+
+// PUT /api/v1/admin/modules/:id — enable/disable module
+router.put("/modules/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const moduleId = parseInt(String(req.params.id), 10);
+    const { is_active } = req.body;
+
+    if (typeof is_active !== "boolean") {
+      return res.status(400).json({ success: false, error: { message: "is_active must be a boolean" } });
+    }
+
+    const mod = await db("modules").where({ id: moduleId }).first();
+    if (!mod) {
+      return res.status(404).json({ success: false, error: { message: "Module not found" } });
+    }
+
+    await db("modules").where({ id: moduleId }).update({ is_active, updated_at: new Date() });
+
+    const updated = await db("modules").where({ id: moduleId }).first();
+    sendSuccess(res, updated);
   } catch (err) {
     next(err);
   }

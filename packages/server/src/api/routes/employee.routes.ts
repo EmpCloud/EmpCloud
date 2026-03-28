@@ -24,6 +24,7 @@ import {
 } from "@empcloud/shared";
 import * as profileService from "../../services/employee/employee-profile.service.js";
 import * as detailService from "../../services/employee/employee-detail.service.js";
+import * as probationService from "../../services/employee/probation.service.js";
 
 // Photo upload multer config
 const photoStorage = multer.diskStorage({
@@ -88,6 +89,86 @@ router.get("/headcount", authenticate, requireHR, async (req: Request, res: Resp
   try {
     const data = await profileService.getHeadcount(req.user!.org_id);
     sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
+// =========================================================================
+// Probation Tracking (HR only)
+// =========================================================================
+
+// GET /api/v1/employees/probation — list on probation
+router.get("/probation", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await probationService.getEmployeesOnProbation(req.user!.org_id);
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/employees/probation/dashboard — stats
+router.get("/probation/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await probationService.getProbationDashboard(req.user!.org_id);
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/employees/probation/upcoming — upcoming confirmations
+router.get("/probation/upcoming", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const days = parseInt(req.query.days as string, 10) || 30;
+    const data = await probationService.getUpcomingConfirmations(req.user!.org_id, days);
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/employees/:id/probation/confirm — confirm probation
+router.put("/:id/probation/confirm", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await probationService.confirmProbation(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.sub
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.PROFILE_UPDATED,
+      resourceType: "probation",
+      resourceId: String(paramInt(req.params.id)),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/employees/:id/probation/extend — extend probation
+router.put("/:id/probation/extend", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { new_end_date, reason } = req.body;
+    if (!new_end_date) throw new ValidationError("new_end_date is required");
+    if (!reason) throw new ValidationError("reason is required");
+
+    const result = await probationService.extendProbation(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      new_end_date,
+      reason
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.PROFILE_UPDATED,
+      resourceType: "probation",
+      resourceId: String(paramInt(req.params.id)),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result);
   } catch (err) { next(err); }
 });
 

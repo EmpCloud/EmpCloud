@@ -49,6 +49,8 @@ import {
   UserCircle,
   Activity,
   DatabaseZap,
+  Bell,
+  UserCheck,
 } from "lucide-react";
 
 export type NavItem = {
@@ -81,6 +83,7 @@ export const adminNavItems: NavItem[] = [
   { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
   { path: "/users", label: "Users", i18nKey: "nav.users", icon: Users },
   { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact },
+  { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck },
   { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
@@ -208,6 +211,7 @@ export const platformAdminNavItems: NavItem[] = [
   { path: "/admin/modules", label: "Module Analytics", icon: Package },
   { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
   { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
+  { path: "/admin/notifications", label: "System Notifications", icon: Bell },
   { path: "/admin/health", label: "Service Health", icon: Activity },
   { path: "/admin/data-sanity", label: "Data Sanity", icon: DatabaseZap },
   { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },

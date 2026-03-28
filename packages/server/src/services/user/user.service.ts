@@ -86,6 +86,12 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     if (!loc) locationId = null;
   }
 
+  // Calculate probation end date (6 months from join date)
+  const joinDate = data.date_of_joining || new Date().toISOString().slice(0, 10);
+  const probationEnd = new Date(joinDate);
+  probationEnd.setMonth(probationEnd.getMonth() + 6);
+  const probationEndDate = probationEnd.toISOString().slice(0, 10);
+
   const [id] = await db("users").insert({
     organization_id: orgId,
     first_name: data.first_name,
@@ -97,12 +103,14 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     contact_number: data.contact_number || null,
     date_of_birth: data.date_of_birth || null,
     gender: data.gender || null,
-    date_of_joining: data.date_of_joining || new Date().toISOString().slice(0, 10),
+    date_of_joining: joinDate,
     designation: data.designation || null,
     department_id: departmentId,
     location_id: locationId,
     reporting_manager_id: data.reporting_manager_id || null,
     employment_type: data.employment_type || "full_time",
+    probation_end_date: probationEndDate,
+    probation_status: "on_probation",
     status: 1,
     created_at: new Date(),
     updated_at: new Date(),
@@ -449,6 +457,11 @@ export async function acceptInvitation(params: {
   const passwordHash = await hashPassword(params.password);
 
   const user = await db.transaction(async (trx) => {
+    // Calculate probation end date (6 months from today)
+    const inviteJoinDate = new Date().toISOString().slice(0, 10);
+    const inviteProbationEnd = new Date();
+    inviteProbationEnd.setMonth(inviteProbationEnd.getMonth() + 6);
+
     const [userId] = await trx("users").insert({
       organization_id: invitation.organization_id,
       first_name: params.firstName || invitation.first_name,
@@ -457,7 +470,9 @@ export async function acceptInvitation(params: {
       password: passwordHash,
       role: invitation.role,
       status: 1,
-      date_of_joining: new Date().toISOString().slice(0, 10),
+      date_of_joining: inviteJoinDate,
+      probation_end_date: inviteProbationEnd.toISOString().slice(0, 10),
+      probation_status: "on_probation",
       created_at: new Date(),
       updated_at: new Date(),
     });
