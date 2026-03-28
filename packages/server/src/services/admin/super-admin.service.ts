@@ -19,10 +19,11 @@ export async function getPlatformOverview() {
     .whereIn("status", ["active", "trial"])
     .count("id as count");
 
-  // MRR = SUM(price_per_seat * used_seats) for active subscriptions
+  // MRR = SUM(price_per_seat * total_seats) for active subscriptions
+  // Uses total_seats (purchased) not used_seats (assigned) — revenue is based on what the customer pays for
   const [mrrResult] = await db("org_subscriptions")
     .whereIn("status", ["active", "trial"])
-    .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as mrr"));
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as mrr"));
 
   const mrr = Number(mrrResult.mrr);
 
@@ -111,7 +112,7 @@ export async function getOrgList(params: {
       db("org_subscriptions")
         .select("organization_id")
         .whereIn("status", ["active", "trial"])
-        .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as spend"))
+        .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as spend"))
         .groupBy("organization_id")
         .as("sp"),
       "o.id",
@@ -180,16 +181,16 @@ export async function getOrgDetail(orgId: number) {
     )
     .orderBy("s.created_at", "desc");
 
-  // Revenue from this org
+  // Revenue from this org (based on total_seats purchased, not just assigned)
   const [revenueResult] = await db("org_subscriptions")
     .where({ organization_id: orgId })
     .whereIn("status", ["active", "trial"])
-    .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as monthly_revenue"));
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as monthly_revenue"));
 
   // Total all-time revenue estimate (all subs including cancelled)
   const [totalSpendResult] = await db("org_subscriptions")
     .where({ organization_id: orgId })
-    .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as total_spend"));
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as total_spend"));
 
   // Audit log for this org (last 50)
   let auditLogs: any[] = [];
@@ -228,7 +229,7 @@ export async function getModuleAnalytics() {
         .count("id as subscriber_count")
         .sum("total_seats as total_seats")
         .sum("used_seats as used_seats")
-        .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as revenue"))
+        .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue"))
         .groupBy("module_id")
         .as("s"),
       "m.id",
@@ -285,17 +286,17 @@ export async function getModuleAnalytics() {
 export async function getRevenueAnalytics(period: string = "12m") {
   const db = getDB();
 
-  // MRR
+  // MRR = SUM(price_per_seat * total_seats) — revenue is based on purchased seats
   const [mrrResult] = await db("org_subscriptions")
     .whereIn("status", ["active", "trial"])
-    .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as mrr"));
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as mrr"));
   const mrr = Number(mrrResult.mrr);
 
   // Previous month MRR for growth calculation
   const [prevMrrResult] = await db("org_subscriptions")
     .whereIn("status", ["active", "trial"])
     .where("created_at", "<", db.raw("DATE_FORMAT(NOW(), '%Y-%m-01')"))
-    .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as mrr"));
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as mrr"));
   const prevMrr = Number(prevMrrResult.mrr);
   const mrrGrowth = prevMrr > 0 ? Math.round(((mrr - prevMrr) / prevMrr) * 100) : 0;
 
@@ -307,7 +308,7 @@ export async function getRevenueAnalytics(period: string = "12m") {
     .select(
       "m.name",
       "m.slug",
-      db.raw("COALESCE(SUM(s.price_per_seat * s.used_seats), 0) as revenue")
+      db.raw("COALESCE(SUM(s.price_per_seat * s.total_seats), 0) as revenue")
     )
     .orderBy("revenue", "desc");
 
@@ -318,7 +319,7 @@ export async function getRevenueAnalytics(period: string = "12m") {
     .where("s.created_at", ">=", db.raw(`DATE_SUB(NOW(), INTERVAL ${months} MONTH)`))
     .select(
       db.raw("DATE_FORMAT(s.created_at, '%Y-%m') as month"),
-      db.raw("COALESCE(SUM(s.price_per_seat * s.used_seats), 0) as revenue")
+      db.raw("COALESCE(SUM(s.price_per_seat * s.total_seats), 0) as revenue")
     )
     .groupByRaw("DATE_FORMAT(s.created_at, '%Y-%m')")
     .orderBy("month", "asc");
@@ -329,7 +330,7 @@ export async function getRevenueAnalytics(period: string = "12m") {
     .groupBy("plan_tier")
     .select(
       "plan_tier",
-      db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as revenue"),
+      db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue"),
       db.raw("COUNT(id) as count")
     )
     .orderBy("revenue", "desc");
@@ -341,7 +342,7 @@ export async function getRevenueAnalytics(period: string = "12m") {
     .select(
       "billing_cycle",
       db.raw("COUNT(id) as count"),
-      db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as revenue")
+      db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue")
     );
 
   // Top 10 customers by spend
@@ -353,7 +354,7 @@ export async function getRevenueAnalytics(period: string = "12m") {
       "o.id",
       "o.name",
       "o.email",
-      db.raw("COALESCE(SUM(s.price_per_seat * s.used_seats), 0) as total_spend"),
+      db.raw("COALESCE(SUM(s.price_per_seat * s.total_seats), 0) as total_spend"),
       db.raw("COUNT(s.id) as subscription_count")
     )
     .orderBy("total_spend", "desc")
@@ -627,7 +628,7 @@ export async function getModuleAdoption() {
         .select("module_id")
         .count("id as org_count")
         .sum("total_seats as total_seats")
-        .select(db.raw("COALESCE(SUM(price_per_seat * used_seats), 0) as revenue"))
+        .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue"))
         .groupBy("module_id")
         .as("s"),
       "m.id",

@@ -4,7 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
-import { ConflictError, NotFoundError } from "../../utils/errors.js";
+import { ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
@@ -58,7 +58,33 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
   const existing = await db("users").where({ email: data.email }).first();
   if (existing) throw new ConflictError("Email already in use");
 
+  // Validate employee_code uniqueness within org
+  if (data.emp_code) {
+    const existingCode = await db("users")
+      .where({ organization_id: orgId, emp_code: data.emp_code })
+      .first();
+    if (existingCode) throw new ConflictError("Employee code already in use within this organization");
+  }
+
   const passwordHash = data.password ? await hashPassword(data.password) : null;
+
+  // Validate department_id exists in this org
+  let departmentId = data.department_id || null;
+  if (departmentId) {
+    const dept = await db("organization_departments")
+      .where({ id: departmentId, organization_id: orgId })
+      .first();
+    if (!dept) departmentId = null;
+  }
+
+  // Validate location_id exists in this org
+  let locationId = data.location_id || null;
+  if (locationId) {
+    const loc = await db("organization_locations")
+      .where({ id: locationId, organization_id: orgId })
+      .first();
+    if (!loc) locationId = null;
+  }
 
   const [id] = await db("users").insert({
     organization_id: orgId,
@@ -73,8 +99,8 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     gender: data.gender || null,
     date_of_joining: data.date_of_joining || new Date().toISOString().slice(0, 10),
     designation: data.designation || null,
-    department_id: data.department_id || null,
-    location_id: data.location_id || null,
+    department_id: departmentId,
+    location_id: locationId,
     reporting_manager_id: data.reporting_manager_id || null,
     employment_type: data.employment_type || "full_time",
     status: 1,
@@ -97,11 +123,16 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
 
   // Whitelist allowed fields — prevent mass assignment attacks
   const allowed: Record<string, unknown> = {};
-  const SAFE_FIELDS = ["first_name", "last_name", "phone", "designation", "department_id", "location_id", "reporting_manager_id", "date_of_birth", "gender", "employee_code"];
+  const SAFE_FIELDS = ["first_name", "last_name", "phone", "designation", "department_id", "location_id", "reporting_manager_id", "date_of_birth", "gender", "emp_code", "employee_code", "date_of_joining", "date_of_exit", "contact_number", "employment_type"];
   for (const key of SAFE_FIELDS) {
     if ((data as Record<string, unknown>)[key] !== undefined) {
       allowed[key] = (data as Record<string, unknown>)[key];
     }
+  }
+  // Map employee_code -> emp_code (DB column)
+  if (allowed.employee_code !== undefined && allowed.emp_code === undefined) {
+    allowed.emp_code = allowed.employee_code;
+    delete allowed.employee_code;
   }
   // Strip HTML from text fields
   for (const key of ["first_name", "last_name", "designation"]) {
@@ -128,6 +159,30 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   if (allowed.gender !== undefined && !["male", "female", "other", "prefer_not_to_say"].includes(String(allowed.gender))) {
     delete allowed.gender;
   }
+  // Validate department_id — must exist in organization_departments for this org
+  if (allowed.department_id !== undefined) {
+    const deptId = Number(allowed.department_id);
+    if (deptId) {
+      const dept = await db("organization_departments")
+        .where({ id: deptId, organization_id: orgId })
+        .first();
+      if (!dept) {
+        delete allowed.department_id; // department doesn't exist in this org
+      }
+    }
+  }
+  // Validate location_id — must exist in organization_locations for this org
+  if (allowed.location_id !== undefined) {
+    const locId = Number(allowed.location_id);
+    if (locId) {
+      const loc = await db("organization_locations")
+        .where({ id: locId, organization_id: orgId })
+        .first();
+      if (!loc) {
+        delete allowed.location_id; // location doesn't exist in this org
+      }
+    }
+  }
   // Validate reporting_manager_id — cannot be self, must exist in same org
   if (allowed.reporting_manager_id !== undefined) {
     const mgId = Number(allowed.reporting_manager_id);
@@ -141,6 +196,31 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
       } else if (manager.reporting_manager_id === userId) {
         delete allowed.reporting_manager_id; // circular: A->B->A
       }
+    }
+  }
+
+  // Validate emp_code uniqueness within org (exclude self)
+  if (allowed.emp_code !== undefined && allowed.emp_code !== null && allowed.emp_code !== "") {
+    const existingCode = await db("users")
+      .where({ organization_id: orgId, emp_code: String(allowed.emp_code) })
+      .whereNot({ id: userId })
+      .first();
+    if (existingCode) {
+      throw new ConflictError("Employee code already in use within this organization");
+    }
+  }
+
+  // Validate date_of_exit — must be after date_of_joining
+  if (allowed.date_of_exit !== undefined && allowed.date_of_exit !== null) {
+    const exitDate = new Date(allowed.date_of_exit as string);
+    const joiningDate = allowed.date_of_joining
+      ? new Date(allowed.date_of_joining as string)
+      : (user.date_of_joining ? new Date(user.date_of_joining) : null);
+
+    if (isNaN(exitDate.getTime())) {
+      delete allowed.date_of_exit;
+    } else if (joiningDate && !isNaN(joiningDate.getTime()) && exitDate <= joiningDate) {
+      throw new ValidationError("Date of exit must be after date of joining");
     }
   }
 
