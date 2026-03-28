@@ -48,6 +48,7 @@ import {
   Sparkles,
   UserCircle,
   Activity,
+  DatabaseZap,
 } from "lucide-react";
 
 export type NavItem = {
@@ -208,6 +209,7 @@ export const platformAdminNavItems: NavItem[] = [
   { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
   { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { path: "/admin/health", label: "Service Health", icon: Activity },
+  { path: "/admin/data-sanity", label: "Data Sanity", icon: DatabaseZap },
   { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
   { path: "/admin/logs", label: "Log Dashboard", icon: ScrollText },
   { path: "/admin/settings", label: "Platform Settings", icon: Settings },
