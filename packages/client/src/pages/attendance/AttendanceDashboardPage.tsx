@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download } from "lucide-react";
 import { useAuthStore } from "@/lib/auth-store";
 
 const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
@@ -76,6 +76,31 @@ export default function AttendanceDashboardPage() {
 
   const records = recordsData?.data || [];
   const meta = recordsData?.meta;
+
+  const handleExportCSV = () => {
+    if (!records || records.length === 0) return;
+    const headers = ["Employee", "Emp Code", "Date", "Check In", "Check Out", "Worked", "Status", "Late (min)"];
+    const rows = records.map((r: any) => [
+      `${r.first_name || ""} ${r.last_name || ""}`.trim(),
+      r.emp_code || r.email || "",
+      r.date ? new Date(r.date).toLocaleDateString() : "",
+      r.check_in ? new Date(r.check_in).toLocaleTimeString() : "",
+      r.check_out ? new Date(r.check_out).toLocaleTimeString() : "",
+      r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "",
+      r.status?.replace(/_/g, " ") || "",
+      r.late_minutes || "0",
+    ]);
+    const csvContent = [headers, ...rows].map((row) => row.map((cell: string) => `"${cell}"`).join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `attendance_${months.find((m) => m.value === month)?.label}_${year}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const stats = [
     { label: "Total Employees", value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700" },
@@ -185,6 +210,13 @@ export default function AttendanceDashboardPage() {
             className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Clear Filters
+          </button>
+          <button
+            onClick={handleExportCSV}
+            disabled={!records || records.length === 0}
+            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
+          >
+            <Download className="h-4 w-4" /> Export CSV
           </button>
         </div>
       </div>

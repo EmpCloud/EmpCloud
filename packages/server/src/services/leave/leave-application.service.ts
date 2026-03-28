@@ -203,6 +203,52 @@ export async function approveLeave(
           updated_at: new Date(),
         });
     }
+
+    // Auto-create on_leave attendance records for each day of the leave
+    const startDate = new Date(application.start_date);
+    const endDate = new Date(application.end_date);
+    const now = new Date();
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().slice(0, 10);
+      // Check if attendance record already exists for this date
+      const existing = await trx("attendance_records")
+        .where({
+          organization_id: orgId,
+          user_id: application.user_id,
+          date: dateStr,
+        })
+        .first();
+
+      if (!existing) {
+        await trx("attendance_records").insert({
+          organization_id: orgId,
+          user_id: application.user_id,
+          date: dateStr,
+          status: "on_leave",
+          source: "system",
+          created_at: now,
+          updated_at: now,
+        });
+      } else if (existing.status !== "on_leave") {
+        // Update existing record to on_leave if it was absent or missing
+        await trx("attendance_records")
+          .where({ id: existing.id })
+          .update({ status: "on_leave", updated_at: now });
+      }
+    }
+
+    // Create notification for the employee
+    await trx("notifications").insert({
+      organization_id: orgId,
+      user_id: application.user_id,
+      type: "leave_update",
+      title: "Leave Application Approved",
+      body: `Your leave from ${application.start_date} to ${application.end_date} has been approved.${remarks ? ` Remarks: ${remarks}` : ""}`,
+      reference_type: "leave_application",
+      reference_id: String(applicationId),
+      is_read: false,
+      created_at: now,
+    });
   });
 
   return getApplication(orgId, applicationId);
@@ -249,6 +295,19 @@ export async function rejectLeave(
         created_at: new Date(),
       });
     }
+
+    // Create notification for the employee about rejection
+    await trx("notifications").insert({
+      organization_id: orgId,
+      user_id: application.user_id,
+      type: "leave_update",
+      title: "Leave Application Rejected",
+      body: `Your leave from ${application.start_date} to ${application.end_date} has been rejected.${remarks ? ` Reason: ${remarks}` : ""}`,
+      reference_type: "leave_application",
+      reference_id: String(applicationId),
+      is_read: false,
+      created_at: new Date(),
+    });
   });
 
   return getApplication(orgId, applicationId);

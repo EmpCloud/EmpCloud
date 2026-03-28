@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -12,6 +12,7 @@ import {
   Pencil,
   Check,
   X,
+  Camera,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -90,6 +91,35 @@ export default function EmployeeProfilePage() {
     },
   });
 
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  // Load photo on mount
+  useEffect(() => {
+    if (isValidId) {
+      setPhotoUrl(`${api.defaults.baseURL}/employees/${userId}/photo?t=${Date.now()}`);
+    }
+  }, [userId, isValidId]);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPhoto(true);
+    try {
+      const formData = new FormData();
+      formData.append("photo", file);
+      await api.post(`/employees/${userId}/photo`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setPhotoUrl(`${api.defaults.baseURL}/employees/${userId}/photo?t=${Date.now()}`);
+    } catch {
+      // silently fail — photo not critical
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
   // Guard against missing or invalid id parameter (placed after all hooks to satisfy Rules of Hooks)
   if (!isValidId) {
     return (
@@ -133,9 +163,39 @@ export default function EmployeeProfilePage() {
       {/* Header */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-full bg-brand-100 flex items-center justify-center text-xl font-bold text-brand-700">
-            {profile.first_name?.[0]}
-            {profile.last_name?.[0]}
+          <div
+            className="relative h-16 w-16 rounded-full bg-brand-100 flex items-center justify-center text-xl font-bold text-brand-700 overflow-hidden group cursor-pointer"
+            onClick={() => canEdit && photoInputRef.current?.click()}
+          >
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt="Profile"
+                className="h-full w-full object-cover"
+                onError={() => setPhotoUrl(null)}
+              />
+            ) : (
+              <>
+                {profile.first_name?.[0]}
+                {profile.last_name?.[0]}
+              </>
+            )}
+            {canEdit && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                {uploadingPhoto ? (
+                  <span className="text-white text-xs">...</span>
+                ) : (
+                  <Camera className="h-5 w-5 text-white" />
+                )}
+              </div>
+            )}
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handlePhotoUpload}
+            />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">

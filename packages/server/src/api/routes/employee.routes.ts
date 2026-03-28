@@ -3,12 +3,17 @@
 // =============================================================================
 
 import { Router, Request, Response, NextFunction } from "express";
+import multer from "multer";
+import path from "node:path";
+import fs from "node:fs";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { requireSelfOrHR, requireHR } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { AuditAction } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
+import { ValidationError } from "../../utils/errors.js";
+import { getDB } from "../../db/connection.js";
 import {
   upsertEmployeeProfileSchema,
   createAddressSchema,
@@ -19,6 +24,33 @@ import {
 } from "@empcloud/shared";
 import * as profileService from "../../services/employee/employee-profile.service.js";
 import * as detailService from "../../services/employee/employee-detail.service.js";
+
+// Photo upload multer config
+const photoStorage = multer.diskStorage({
+  destination: (req: Request, _file, cb) => {
+    const orgId = req.user?.org_id ?? "unknown";
+    const uploadDir = path.join(process.cwd(), "uploads", "photos", String(orgId));
+    fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `${uniqueSuffix}${ext}`);
+  },
+});
+
+const photoUpload = multer({
+  storage: photoStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (_req, file, cb) => {
+    if (["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new ValidationError("Only JPEG, PNG, and WebP images are allowed."));
+    }
+  },
+});
 
 const router = Router();
 
@@ -88,6 +120,41 @@ router.put("/:id/profile", authenticate, requireSelfOrHR("id"), async (req: Requ
     });
 
     sendSuccess(res, profile);
+  } catch (err) { next(err); }
+});
+
+// =========================================================================
+// Profile Photo Upload
+// =========================================================================
+
+// POST /api/v1/employees/:id/photo
+router.post("/:id/photo", authenticate, requireSelfOrHR("id"), photoUpload.single("photo"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.file) throw new ValidationError("No photo file provided");
+    const userId = paramInt(req.params.id);
+    const orgId = req.user!.org_id;
+    const relativePath = `uploads/photos/${orgId}/${req.file.filename}`;
+    const db = getDB();
+    await db("users").where({ id: userId, organization_id: orgId }).update({ photo_path: relativePath, updated_at: new Date() });
+    sendSuccess(res, { photo_url: `/api/v1/employees/${userId}/photo`, photo_path: relativePath });
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/employees/:id/photo
+router.get("/:id/photo", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = paramInt(req.params.id);
+    const orgId = req.user!.org_id;
+    const db = getDB();
+    const user = await db("users").where({ id: userId, organization_id: orgId }).select("photo_path").first();
+    if (!user || !user.photo_path) {
+      return res.status(404).json({ success: false, error: { message: "No photo found" } });
+    }
+    const filePath = path.join(process.cwd(), user.photo_path);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, error: { message: "Photo file not found" } });
+    }
+    res.sendFile(filePath);
   } catch (err) { next(err); }
 });
 

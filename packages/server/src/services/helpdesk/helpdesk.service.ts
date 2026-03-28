@@ -5,6 +5,7 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { createNotification } from "../notification/notification.service.js";
 
 // ---------------------------------------------------------------------------
 // SLA Configuration by Priority
@@ -217,6 +218,24 @@ export async function updateTicket(
   }
 
   await db("helpdesk_tickets").where({ id: ticketId }).update(updateData);
+
+  // Notify ticket creator when status changes
+  if (data.status !== undefined && data.status !== existing.status) {
+    try {
+      await createNotification(
+        orgId,
+        existing.raised_by,
+        "helpdesk_update",
+        `Ticket Updated: ${existing.subject}`,
+        `Your helpdesk ticket #${ticketId} status changed from "${existing.status}" to "${data.status}".`,
+        "helpdesk_ticket",
+        String(ticketId),
+      );
+    } catch (err) {
+      logger.warn(`Failed to create notification for ticket #${ticketId} status change`, err);
+    }
+  }
+
   return db("helpdesk_tickets").where({ id: ticketId }).first();
 }
 
@@ -247,6 +266,21 @@ export async function assignTicket(orgId: number, ticketId: number, assignedTo: 
   }
 
   await db("helpdesk_tickets").where({ id: ticketId }).update(updateData);
+
+  // Notify ticket creator about assignment
+  try {
+    await createNotification(
+      orgId,
+      existing.raised_by,
+      "helpdesk_update",
+      `Ticket Assigned: ${existing.subject}`,
+      `Your helpdesk ticket #${ticketId} has been assigned to ${assignee.first_name} ${assignee.last_name}.`,
+      "helpdesk_ticket",
+      String(ticketId),
+    );
+  } catch (err) {
+    logger.warn(`Failed to create notification for ticket #${ticketId} assignment`, err);
+  }
 
   logger.info(`Ticket #${ticketId} assigned to user ${assignedTo} in org ${orgId}`);
   return db("helpdesk_tickets").where({ id: ticketId }).first();
@@ -330,6 +364,21 @@ export async function resolveTicket(orgId: number, ticketId: number, userId: num
       updated_at: now,
     });
 
+  // Notify ticket creator about resolution
+  try {
+    await createNotification(
+      orgId,
+      ticket.raised_by,
+      "helpdesk_update",
+      `Ticket Resolved: ${ticket.subject}`,
+      `Your helpdesk ticket #${ticketId} has been resolved.`,
+      "helpdesk_ticket",
+      String(ticketId),
+    );
+  } catch (err) {
+    logger.warn(`Failed to create notification for ticket #${ticketId} resolution`, err);
+  }
+
   logger.info(`Ticket #${ticketId} resolved by user ${userId} in org ${orgId}`);
   return db("helpdesk_tickets").where({ id: ticketId }).first();
 }
@@ -359,6 +408,22 @@ export async function closeTicket(orgId: number, ticketId: number) {
   }
 
   await db("helpdesk_tickets").where({ id: ticketId }).update(updateData);
+
+  // Notify ticket creator about closure
+  try {
+    await createNotification(
+      orgId,
+      ticket.raised_by,
+      "helpdesk_update",
+      `Ticket Closed: ${ticket.subject}`,
+      `Your helpdesk ticket #${ticketId} has been closed.`,
+      "helpdesk_ticket",
+      String(ticketId),
+    );
+  } catch (err) {
+    logger.warn(`Failed to create notification for ticket #${ticketId} closure`, err);
+  }
+
   return db("helpdesk_tickets").where({ id: ticketId }).first();
 }
 

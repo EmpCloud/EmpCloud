@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState, useEffect } from "react";
-import { LogIn, LogOut, Clock } from "lucide-react";
+import { LogIn, LogOut, Clock, AlertCircle, PlusCircle } from "lucide-react";
 
 function useToday() {
   const [today, setToday] = useState(() => new Date());
@@ -50,6 +50,35 @@ export default function AttendancePage() {
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
     },
   });
+
+  const [showRegForm, setShowRegForm] = useState(false);
+  const [regForm, setRegForm] = useState({
+    date: "",
+    check_in: "",
+    check_out: "",
+    reason: "",
+  });
+
+  const submitRegularization = useMutation({
+    mutationFn: (data: typeof regForm) =>
+      api.post("/attendance/regularizations", {
+        date: data.date,
+        requested_check_in: `${data.date}T${data.check_in}:00`,
+        requested_check_out: `${data.date}T${data.check_out}:00`,
+        reason: data.reason,
+      }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      setShowRegForm(false);
+      setRegForm({ date: "", check_in: "", check_out: "", reason: "" });
+    },
+  });
+
+  const handleRegSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regForm.date || !regForm.check_in || !regForm.check_out || !regForm.reason) return;
+    submitRegularization.mutate(regForm);
+  };
 
   const records = historyData?.data || [];
   const meta = historyData?.meta;
@@ -132,6 +161,86 @@ export default function AttendancePage() {
           </div>
         </div>
       </div>
+
+      {/* Request Regularization */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => setShowRegForm(!showRegForm)}
+          className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700"
+        >
+          {showRegForm ? <AlertCircle className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
+          {showRegForm ? "Cancel" : "Request Regularization"}
+        </button>
+      </div>
+
+      {showRegForm && (
+        <form onSubmit={handleRegSubmit} className="bg-white rounded-xl border border-amber-200 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-amber-500" />
+            Request Attendance Regularization
+          </h2>
+          <p className="text-sm text-gray-500 mb-4">Submit a request to correct a missed or incorrect check-in/check-out.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input
+                type="date"
+                value={regForm.date}
+                onChange={(e) => setRegForm({ ...regForm, date: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Check In Time</label>
+              <input
+                type="time"
+                value={regForm.check_in}
+                onChange={(e) => setRegForm({ ...regForm, check_in: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Check Out Time</label>
+              <input
+                type="time"
+                value={regForm.check_out}
+                onChange={(e) => setRegForm({ ...regForm, check_out: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <input
+                type="text"
+                value={regForm.reason}
+                onChange={(e) => setRegForm({ ...regForm, reason: e.target.value })}
+                placeholder="e.g. Forgot to check in"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
+              />
+            </div>
+          </div>
+          {submitRegularization.isError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
+              {(submitRegularization.error && typeof submitRegularization.error === "object" && "response" in submitRegularization.error
+                ? (submitRegularization.error as any).response?.data?.error?.message
+                : null) || "Failed to submit regularization request."}
+            </div>
+          )}
+          <div className="flex justify-end mt-4">
+            <button
+              type="submit"
+              disabled={submitRegularization.isPending}
+              className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 disabled:opacity-50"
+            >
+              {submitRegularization.isPending ? "Submitting..." : "Submit Request"}
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Month/Year Filters */}
       <div className="flex items-center gap-3 mb-4">

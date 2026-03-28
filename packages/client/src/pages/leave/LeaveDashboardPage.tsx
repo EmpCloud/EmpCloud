@@ -112,38 +112,49 @@ export default function LeaveDashboardPage() {
             No leave balances found. Ask HR to initialize balances.
           </div>
         ) : (
-          balances.map((bal) => (
-            <div
-              key={bal.id}
-              className="bg-white rounded-xl border border-gray-200 p-5"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: getTypeColor(bal.leave_type_id) }}
-                />
-                <h3 className="text-sm font-semibold text-gray-700">
-                  {getTypeName(bal.leave_type_id)}
-                </h3>
+          balances.map((bal) => {
+            const typeName = getTypeName(bal.leave_type_id);
+            const typeColor = getTypeColor(bal.leave_type_id);
+            const isPaid = leaveTypes.find((t) => t.id === bal.leave_type_id)?.is_paid;
+            return (
+              <div
+                key={bal.id}
+                className="bg-white rounded-xl border border-gray-200 p-5"
+              >
+                <div className="flex items-center gap-3 mb-1">
+                  <div
+                    className="h-3 w-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: typeColor }}
+                  />
+                  <h3 className="text-sm font-bold text-gray-900 truncate">
+                    {typeName}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 mb-3 ml-6">
+                  <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${isPaid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"}`}>
+                    {isPaid ? "Paid" : "Unpaid"}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider font-medium text-gray-400">Leave Balance</span>
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {Number(bal.balance)} <span className="text-sm font-normal text-gray-400">days</span>
+                </div>
+                <p className="text-xs text-gray-500">
+                  {Number(bal.total_used)} used of {Number(bal.total_allocated)} allocated
+                  {Number(bal.total_carry_forward) > 0 && ` (+${Number(bal.total_carry_forward)} carry forward)`}
+                </p>
+                <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${(Number(bal.total_allocated) + Number(bal.total_carry_forward)) > 0 ? Math.min(100, (Number(bal.total_used) / (Number(bal.total_allocated) + Number(bal.total_carry_forward))) * 100) : 0}%`,
+                      backgroundColor: typeColor,
+                    }}
+                  />
+                </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">
-                {Number(bal.balance)}
-              </div>
-              <p className="text-xs text-gray-500">
-                {Number(bal.total_used)} used of {Number(bal.total_allocated)} allocated
-                {Number(bal.total_carry_forward) > 0 && ` (+${Number(bal.total_carry_forward)} carry forward)`}
-              </p>
-              <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
-                <div
-                  className="h-2 rounded-full"
-                  style={{
-                    width: `${(Number(bal.total_allocated) + Number(bal.total_carry_forward)) > 0 ? Math.min(100, (Number(bal.total_used) / (Number(bal.total_allocated) + Number(bal.total_carry_forward))) * 100) : 0}%`,
-                    backgroundColor: getTypeColor(bal.leave_type_id),
-                  }}
-                />
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

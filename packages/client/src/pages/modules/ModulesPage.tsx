@@ -1,6 +1,9 @@
 import { useModules, useSubscriptions, useCreateSubscription, useCancelSubscription } from "@/api/hooks";
 import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar } from "lucide-react";
 import { useState } from "react";
+import { useAuthStore } from "@/lib/auth-store";
+
+const ADMIN_ROLES = ["org_admin", "hr_admin", "hr_manager"];
 
 interface SubscribeModalProps {
   module: any;
@@ -194,6 +197,8 @@ export default function ModulesPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [subscribeModule, setSubscribeModule] = useState<any>(null);
   const [confirmUnsubscribe, setConfirmUnsubscribe] = useState<number | null>(null);
+  const user = useAuthStore((s) => s.user);
+  const canManageSubscriptions = user ? ADMIN_ROLES.includes(user.role) : false;
 
   const activeSubscriptions = subscriptions?.filter((s: any) => s.status !== "cancelled") || [];
   const subscribedModuleIds = new Set(activeSubscriptions.map((s: any) => s.module_id));
@@ -333,33 +338,35 @@ export default function ModulesPage() {
                       <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
                         <Check className="h-4 w-4" /> Subscribed
                       </span>
-                      {confirmUnsubscribe === mod.id ? (
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">Are you sure?</span>
+                      {canManageSubscriptions && (
+                        confirmUnsubscribe === mod.id ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">Are you sure?</span>
+                            <button
+                              onClick={() => handleUnsubscribe(mod.id)}
+                              disabled={cancelSub.isPending}
+                              className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
+                            >
+                              {cancelSub.isPending ? "Cancelling..." : "Yes, Cancel"}
+                            </button>
+                            <button
+                              onClick={() => setConfirmUnsubscribe(null)}
+                              className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
+                            >
+                              No
+                            </button>
+                          </div>
+                        ) : (
                           <button
-                            onClick={() => handleUnsubscribe(mod.id)}
-                            disabled={cancelSub.isPending}
-                            className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
+                            onClick={() => setConfirmUnsubscribe(mod.id)}
+                            className="text-xs text-red-500 hover:text-red-700 font-medium"
                           >
-                            {cancelSub.isPending ? "Cancelling..." : "Yes, Cancel"}
+                            Unsubscribe
                           </button>
-                          <button
-                            onClick={() => setConfirmUnsubscribe(null)}
-                            className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
-                          >
-                            No
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setConfirmUnsubscribe(mod.id)}
-                          className="text-xs text-red-500 hover:text-red-700 font-medium"
-                        >
-                          Unsubscribe
-                        </button>
+                        )
                       )}
                     </div>
-                  ) : (
+                  ) : canManageSubscriptions ? (
                     <button
                       onClick={() => setSubscribeModule(mod)}
                       disabled={!mod.is_active}
@@ -368,6 +375,8 @@ export default function ModulesPage() {
                       <Plus className="h-4 w-4" />
                       Subscribe
                     </button>
+                  ) : (
+                    <span className="text-xs text-gray-400">Not subscribed</span>
                   )}
                 </div>
               </div>

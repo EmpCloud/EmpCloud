@@ -460,6 +460,33 @@ const spec = {
         responses: { "200": { description: "Updated profile" } },
       },
     },
+    "/api/v1/employees/{id}/photo": {
+      get: {
+        tags: ["Employees"],
+        summary: "Get employee profile photo",
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        responses: { "200": { description: "Photo file (image/jpeg, image/png, or image/webp)" }, "404": { description: "No photo found" } },
+      },
+      post: {
+        tags: ["Employees"],
+        summary: "Upload employee profile photo (self or HR)",
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  photo: { type: "string", format: "binary", description: "Photo file (JPEG, PNG, or WebP, max 5MB)" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "200": { description: "Photo uploaded successfully" }, "400": { description: "Invalid file type or no file provided" } },
+      },
+    },
     "/api/v1/employees/{id}/addresses": {
       get: {
         tags: ["Employees"],
@@ -604,7 +631,28 @@ const spec = {
     },
     "/api/v1/attendance/regularizations": {
       get: { tags: ["Attendance"], summary: "List regularization requests (HR)", responses: { "200": { description: "Paginated regularizations" } } },
-      post: { tags: ["Attendance"], summary: "Submit regularization request", responses: { "201": { description: "Regularization submitted" } } },
+      post: {
+        tags: ["Attendance"],
+        summary: "Submit regularization request",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["date", "requested_check_in", "requested_check_out", "reason"],
+                properties: {
+                  date: { type: "string", format: "date", description: "Date to regularize (YYYY-MM-DD)" },
+                  requested_check_in: { type: "string", format: "date-time", description: "Requested check-in time" },
+                  requested_check_out: { type: "string", format: "date-time", description: "Requested check-out time" },
+                  reason: { type: "string", minLength: 1, description: "Reason for regularization" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "201": { description: "Regularization submitted" }, "400": { description: "Validation error" } },
+      },
     },
     "/api/v1/attendance/regularizations/me": {
       get: { tags: ["Attendance"], summary: "Get my regularization requests", responses: { "200": { description: "My regularizations" } } },
@@ -685,7 +733,31 @@ const spec = {
     },
     "/api/v1/leave/applications": {
       get: { tags: ["Leave"], summary: "List leave applications", responses: { "200": { description: "Paginated leave applications" } } },
-      post: { tags: ["Leave"], summary: "Apply for leave", responses: { "201": { description: "Leave application created" } } },
+      post: {
+        tags: ["Leave"],
+        summary: "Apply for leave",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["leave_type_id", "start_date", "end_date", "days_count", "reason"],
+                properties: {
+                  leave_type_id: { type: "integer", description: "ID of the leave type" },
+                  start_date: { type: "string", format: "date", description: "Start date (YYYY-MM-DD)" },
+                  end_date: { type: "string", format: "date", description: "End date (YYYY-MM-DD)" },
+                  days_count: { type: "number", minimum: 0.5, description: "Number of days (supports half-day: 0.5)" },
+                  is_half_day: { type: "boolean", default: false, description: "Whether this is a half-day leave" },
+                  half_day_type: { type: "string", enum: ["first_half", "second_half"], description: "Which half of the day (only when is_half_day=true)" },
+                  reason: { type: "string", minLength: 1, description: "Reason for leave" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "201": { description: "Leave application created" }, "400": { description: "Validation error or insufficient balance" } },
+      },
     },
     "/api/v1/leave/applications/{id}": {
       get: {
@@ -700,7 +772,20 @@ const spec = {
         tags: ["Leave"],
         summary: "Approve leave application",
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
-        responses: { "200": { description: "Leave approved" } },
+        requestBody: {
+          required: false,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  remarks: { type: "string", description: "Optional remarks from the approver" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "200": { description: "Leave approved" }, "403": { description: "Not authorized to approve" } },
       },
     },
     "/api/v1/leave/applications/{id}/reject": {
@@ -708,7 +793,20 @@ const spec = {
         tags: ["Leave"],
         summary: "Reject leave application",
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
-        responses: { "200": { description: "Leave rejected" } },
+        requestBody: {
+          required: false,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  remarks: { type: "string", description: "Reason for rejection" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "200": { description: "Leave rejected" }, "403": { description: "Not authorized to reject" } },
       },
     },
     "/api/v1/leave/applications/{id}/cancel": {
@@ -829,7 +927,31 @@ const spec = {
     // =========================================================================
     "/api/v1/announcements": {
       get: { tags: ["Announcements"], summary: "List announcements (paginated)", responses: { "200": { description: "Paginated announcements" } } },
-      post: { tags: ["Announcements"], summary: "Create announcement (HR)", responses: { "201": { description: "Announcement created" } } },
+      post: {
+        tags: ["Announcements"],
+        summary: "Create announcement (HR)",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["title", "content"],
+                properties: {
+                  title: { type: "string", minLength: 1, maxLength: 255, description: "Announcement title" },
+                  content: { type: "string", minLength: 1, description: "Announcement content (supports HTML)" },
+                  priority: { type: "string", enum: ["low", "normal", "high", "urgent"], default: "normal", description: "Priority level" },
+                  target_type: { type: "string", enum: ["all", "department", "role"], default: "all", description: "Target audience type" },
+                  target_ids: { type: "string", description: "Comma-separated target IDs (department IDs or role names)" },
+                  published_at: { type: "string", format: "date-time", description: "Schedule publish date (null = immediate)" },
+                  expires_at: { type: "string", format: "date-time", description: "Expiry date (null = never)" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "201": { description: "Announcement created" }, "400": { description: "Validation error" } },
+      },
     },
     "/api/v1/announcements/unread-count": {
       get: { tags: ["Announcements"], summary: "Get unread announcement count", responses: { "200": { description: "Unread count" } } },
@@ -939,7 +1061,28 @@ const spec = {
     // =========================================================================
     "/api/v1/subscriptions": {
       get: { tags: ["Subscriptions"], summary: "List organization subscriptions", responses: { "200": { description: "Subscription list" } } },
-      post: { tags: ["Subscriptions"], summary: "Subscribe to a module (admin)", responses: { "201": { description: "Subscription created" } } },
+      post: {
+        tags: ["Subscriptions"],
+        summary: "Subscribe to a module (admin)",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["module_id", "plan_tier", "total_seats", "billing_cycle"],
+                properties: {
+                  module_id: { type: "integer", description: "ID of the module to subscribe to" },
+                  plan_tier: { type: "string", enum: ["basic", "professional", "enterprise"], description: "Plan tier" },
+                  total_seats: { type: "integer", minimum: 1, description: "Number of seats (licenses)" },
+                  billing_cycle: { type: "string", enum: ["monthly", "quarterly", "annual"], description: "Billing cycle" },
+                },
+              },
+            },
+          },
+        },
+        responses: { "201": { description: "Subscription created" }, "400": { description: "Validation error" } },
+      },
     },
     "/api/v1/subscriptions/billing-summary": {
       get: { tags: ["Subscriptions"], summary: "Get billing summary", responses: { "200": { description: "Billing summary" } } },
