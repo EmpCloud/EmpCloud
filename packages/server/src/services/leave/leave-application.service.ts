@@ -15,8 +15,16 @@ export async function applyLeave(
 ): Promise<LeaveApplication> {
   const db = getDB();
 
-  // Validate dates
-  if (new Date(data.end_date) < new Date(data.start_date)) {
+  // Validate dates are valid
+  const startDate = new Date(data.start_date);
+  const endDate = new Date(data.end_date);
+  if (isNaN(startDate.getTime())) {
+    throw new ValidationError("Invalid start_date format");
+  }
+  if (isNaN(endDate.getTime())) {
+    throw new ValidationError("Invalid end_date format");
+  }
+  if (endDate < startDate) {
     throw new ValidationError("End date must not be before start date");
   }
 

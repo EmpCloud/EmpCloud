@@ -228,14 +228,14 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   if (allowed.reporting_manager_id !== undefined) {
     const mgId = Number(allowed.reporting_manager_id);
     if (mgId === userId) {
-      delete allowed.reporting_manager_id; // cannot report to self
+      throw new ValidationError("Employee cannot be their own reporting manager");
     } else if (mgId) {
       // Check for circular chain (A->B->A)
       const manager = await db("users").where({ id: mgId, organization_id: orgId, status: 1 }).first();
       if (!manager) {
-        delete allowed.reporting_manager_id; // manager doesn't exist
+        throw new ValidationError("Reporting manager does not exist in this organization");
       } else if (manager.reporting_manager_id === userId) {
-        delete allowed.reporting_manager_id; // circular: A->B->A
+        throw new ValidationError("Circular reporting chain detected");
       }
     }
   }
