@@ -339,7 +339,7 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                     {app.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {app.start_date} &mdash; {app.end_date}
+                    {new Date(app.start_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 font-medium">
                     {Number(app.days_count)}
@@ -435,7 +435,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                 {app.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
               </td>
               <td className="px-6 py-4 text-sm text-gray-500">
-                {app.start_date} &mdash; {app.end_date}
+                {new Date(app.start_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
               </td>
               <td className="px-6 py-4 text-sm text-gray-700 font-medium">{Number(app.days_count)}</td>
               <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{app.reason}</td>
