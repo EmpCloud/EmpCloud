@@ -28,8 +28,9 @@ export const hrmsRoutes = (
     <Route path="/self-service" element={<SelfServiceDashboardPage />} />
     <Route path="/employees" element={<EmployeeDirectoryPage />} />
     <Route path="/employees/probation" element={<ProbationPage />} />
-    <Route path="/employees/:id" element={<EmployeeProfilePage />} />
     <Route path="/employees/import" element={<ImportEmployeesPage />} />
+    <Route path="/employees/add" element={<ImportEmployeesPage />} />
+    <Route path="/employees/:id" element={<EmployeeProfilePage />} />
     <Route path="/org-chart" element={<OrgChartPage />} />
     <Route path="/attendance" element={<AttendanceDashboardPage />} />
     <Route path="/attendance/my" element={<AttendancePage />} />

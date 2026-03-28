@@ -171,10 +171,14 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
     allowed.emp_code = allowed.employee_code;
     delete allowed.employee_code;
   }
-  // Strip HTML from text fields
+  // Strip HTML and trim whitespace from text fields
   for (const key of ["first_name", "last_name", "designation"]) {
     if (typeof allowed[key] === "string") {
-      allowed[key] = (allowed[key] as string).replace(/<[^>]*>/g, "");
+      allowed[key] = (allowed[key] as string).replace(/<[^>]*>/g, "").trim();
+      // Reject empty or whitespace-only names
+      if ((key === "first_name" || key === "last_name") && !(allowed[key] as string)) {
+        delete allowed[key];
+      }
     }
   }
   // Validate phone/contact_number — digits, spaces, +, -, () only

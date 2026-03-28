@@ -1025,7 +1025,8 @@ export const submitFeedbackSchema = z.object({
   subject: z.string().min(1).max(255),
   message: z.string().min(1),
   sentiment: feedbackSentimentEnum.optional().nullable(),
-  is_urgent: z.boolean().default(false),
+  is_anonymous: z.preprocess((v) => v === 1 || v === "1" || v === "true" || v === true, z.boolean()).default(false),
+  is_urgent: z.preprocess((v) => v === 1 || v === "1" || v === "true" || v === true, z.boolean()).default(false),
 });
 
 export const respondFeedbackSchema = z.object({
