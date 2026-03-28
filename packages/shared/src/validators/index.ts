@@ -194,7 +194,7 @@ export const createUserSchema = z.object({
   employee_code: z.string().max(50).optional(),
 });
 
-export const updateUserSchema = createUserSchema.partial().omit({ password: true });
+export const updateUserSchema = createUserSchema.partial().omit({ password: true }).strict();
 
 export const inviteUserSchema = z.object({
   email: z.string().email().max(128),
