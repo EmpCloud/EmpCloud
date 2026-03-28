@@ -13,6 +13,7 @@ import { loadKeys } from "./services/oauth/jwt.service.js";
 import { errorHandler } from "./api/middleware/error.middleware.js";
 import { requestIdMiddleware } from "./api/middleware/request-id.middleware.js";
 import { sendSuccess } from "./utils/response.js";
+import { startHealthCheckInterval, stopHealthCheckInterval } from "./services/admin/health-check.service.js";
 
 // Docs
 import { swaggerUIHandler, openapiHandler } from "./api/docs/index.js";
@@ -181,6 +182,9 @@ async function main() {
   // Error handler (must be last)
   app.use(errorHandler);
 
+  // Start background health check interval (every 60s)
+  startHealthCheckInterval();
+
   // Start server
   const server = app.listen(config.port, () => {
     logger.info(`EMP Cloud server running on port ${config.port}`);
@@ -194,6 +198,7 @@ async function main() {
   const shutdown = async (signal: string) => {
     logger.info(`${signal} received, shutting down gracefully...`);
     server.close(async () => {
+      stopHealthCheckInterval();
       await closeDB();
       process.exit(0);
     });

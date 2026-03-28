@@ -20,6 +20,14 @@ import {
   getSubscriptionMetrics,
   getRecentActivity,
 } from "../../services/admin/super-admin.service.js";
+import {
+  getServiceHealth,
+  forceHealthCheck,
+} from "../../services/admin/health-check.service.js";
+import {
+  runSanityCheck,
+  runAutoFix,
+} from "../../services/admin/data-sanity.service.js";
 
 const router = Router();
 
@@ -116,10 +124,30 @@ router.get("/activity", async (req: Request, res: Response, next: NextFunction) 
   }
 });
 
-// GET /api/v1/admin/health — system health check
+// GET /api/v1/admin/health — system health check (basic, backward compat)
 router.get("/health", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const health = await getSystemHealth();
+    sendSuccess(res, health);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/admin/service-health — detailed service health dashboard
+router.get("/service-health", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const health = await getServiceHealth();
+    sendSuccess(res, health);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/admin/service-health/check — force immediate health check
+router.post("/service-health/check", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const health = await forceHealthCheck();
     sendSuccess(res, health);
   } catch (err) {
     next(err);
@@ -164,6 +192,26 @@ router.get("/platform-info", async (req: Request, res: Response, next: NextFunct
     };
 
     sendSuccess(res, info);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/admin/data-sanity — run cross-module data sanity check
+router.get("/data-sanity", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const report = await runSanityCheck();
+    sendSuccess(res, report);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/admin/data-sanity/fix — auto-fix data issues
+router.post("/data-sanity/fix", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const report = await runAutoFix();
+    sendSuccess(res, report);
   } catch (err) {
     next(err);
   }
