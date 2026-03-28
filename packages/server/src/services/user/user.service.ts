@@ -220,14 +220,14 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
 
   // Validate date_of_exit — must be after date_of_joining
   if (allowed.date_of_exit !== undefined && allowed.date_of_exit !== null) {
-    const exitDate = new Date(allowed.date_of_exit as string);
-    const joiningDate = allowed.date_of_joining
-      ? new Date(allowed.date_of_joining as string)
-      : (user.date_of_joining ? new Date(user.date_of_joining) : null);
+    const exitStr = String(allowed.date_of_exit).slice(0, 10); // YYYY-MM-DD
+    const joinStr = allowed.date_of_joining
+      ? String(allowed.date_of_joining).slice(0, 10)
+      : (user.date_of_joining ? String(user.date_of_joining).slice(0, 10) : null);
 
-    if (isNaN(exitDate.getTime())) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(exitStr)) {
       delete allowed.date_of_exit;
-    } else if (joiningDate && !isNaN(joiningDate.getTime()) && exitDate <= joiningDate) {
+    } else if (joinStr && exitStr <= joinStr) {
       throw new ValidationError("Date of exit must be after date of joining");
     }
   }
