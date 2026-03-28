@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError } from "../../utils/errors.js";
+import { NotFoundError, ValidationError } from "../../utils/errors.js";
 import type { CreateEventInput } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -16,6 +16,11 @@ export async function createEvent(
   data: CreateEventInput
 ) {
   const db = getDB();
+
+  // Validate date range
+  if (data.end_date && data.start_date && new Date(data.end_date) < new Date(data.start_date)) {
+    throw new ValidationError("End date cannot be before start date");
+  }
 
   const [id] = await db("company_events").insert({
     organization_id: orgId,

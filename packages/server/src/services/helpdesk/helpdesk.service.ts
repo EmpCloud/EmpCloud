@@ -232,6 +232,10 @@ export async function assignTicket(orgId: number, ticketId: number, assignedTo: 
     .first();
   if (!existing) throw new NotFoundError("Ticket");
 
+  // Verify assignee exists in the same org
+  const assignee = await db("users").where({ id: assignedTo, organization_id: orgId, status: 1 }).first();
+  if (!assignee) throw new NotFoundError("Assignee user not found in this organization");
+
   const updateData: Record<string, any> = {
     assigned_to: assignedTo,
     updated_at: new Date(),

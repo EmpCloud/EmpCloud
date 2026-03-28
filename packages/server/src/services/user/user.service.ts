@@ -128,6 +128,21 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   if (allowed.gender !== undefined && !["male", "female", "other", "prefer_not_to_say"].includes(String(allowed.gender))) {
     delete allowed.gender;
   }
+  // Validate reporting_manager_id — cannot be self, must exist in same org
+  if (allowed.reporting_manager_id !== undefined) {
+    const mgId = Number(allowed.reporting_manager_id);
+    if (mgId === userId) {
+      delete allowed.reporting_manager_id; // cannot report to self
+    } else if (mgId) {
+      // Check for circular chain (A->B->A)
+      const manager = await db("users").where({ id: mgId, organization_id: orgId, status: 1 }).first();
+      if (!manager) {
+        delete allowed.reporting_manager_id; // manager doesn't exist
+      } else if (manager.reporting_manager_id === userId) {
+        delete allowed.reporting_manager_id; // circular: A->B->A
+      }
+    }
+  }
 
   if (Object.keys(allowed).length > 0) {
     await db("users").where({ id: userId, organization_id: orgId }).update({ ...allowed, updated_at: new Date() });
