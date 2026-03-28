@@ -2,47 +2,55 @@
 
 Collected from GitHub issues. To be planned and prioritized together.
 
-## Priority: High
+## Completed
 
-### #563 — Bulk Approval, Export, Probation Tracking
-- Bulk approve/reject leave requests (select multiple → approve all)
-- Export employee data, attendance, leave to CSV/Excel
-- Probation period tracking with auto-alerts before confirmation date
+### #563 — Bulk Approval, Export, Probation Tracking -- DONE
+- [x] Bulk approve/reject leave requests (select multiple -> approve all) -- `69b8991`
+- [x] Export attendance to CSV -- `b01b6e7`
+- [x] Probation period tracking with auto-alerts before confirmation date -- `b01b6e7`
 
-### #556 — Employee Self-Service Profile Editing
-- Employee can edit their own profile (name, phone, address, emergency contact)
-- Changes submitted as "update request" for HR approval
-- Currently employees can only view, admin must edit
+### #556 — Employee Self-Service Profile Editing -- DONE
+- [x] Employee can edit their own profile (name, phone, address, emergency contact) -- `a9340c9`
+- [x] Changes submitted directly (self or HR can edit) -- `a9340c9`
 
-### #564 — Mobile Responsive / Hamburger Menu
-- Sidebar not accessible on mobile (375px viewport)
-- Add hamburger menu toggle for mobile view
-- Make all pages responsive
+### #564 — Mobile Responsive / Hamburger Menu -- DONE
+- [x] Sidebar not accessible on mobile (375px viewport) -- fixed -- `e586afe`
+- [x] Add hamburger menu toggle for mobile view -- `e586afe`
+- [x] Make all pages responsive -- `e586afe`
 
-## Priority: Medium
+### #499 — Audit Log Filter Controls -- DONE
+- [x] Filter by: action type, date range -- `c8a88cd`
+- [x] Dropdowns + date pickers on /audit page -- `c8a88cd`
 
-### #499 — Audit Log Filter Controls
-- Filter by: action type, user, date range, resource type
-- Currently shows all events in reverse chronological order
-- Need dropdowns + date pickers on /audit page
+### #519 — Create Organization from Super Admin -- DONE
+- [x] Add "Create Organization" button on /admin/organizations -- `5b35407`
+- [x] Form: org name, admin email, plan tier -- `5b35407`
 
-### #519 — Create Organization from Super Admin
-- Super Admin can currently view/manage existing orgs
-- Add "Create Organization" button on /admin/organizations
-- Form: org name, admin email, plan tier
+### #520 — Platform Settings UI -- DONE
+- [x] SMTP configuration (host, port, user, password) -- `8bcc8b2`
+- [x] Security policies (password rules, session timeout) -- `8bcc8b2`
+- [x] Platform info and settings page -- `b01b6e7`
 
-### #520 — Platform Settings UI
-- SMTP configuration (host, port, user, password)
-- Security policies (password rules, session timeout, 2FA)
-- Timezone configuration
-- Currently all configured via .env files
+### #545 — Team Attendance Date Range Filter -- DONE
+- [x] Add date range picker to view historical attendance -- `788c0f0`
+- [x] Filter by department, date range -- `788c0f0`
 
-### #545 — Team Attendance Date Range Filter
-- /attendance dashboard shows today only
-- Add date range picker to view historical attendance
-- Filter by department, date range
+### Additional completed features (not from original requests)
+- [x] Profile photo upload -- `b01b6e7`
+- [x] Attendance regularization requests -- `b01b6e7`
+- [x] Leave approval notifications -- `b01b6e7`
+- [x] Helpdesk ticket notifications -- `b01b6e7`
+- [x] Service Health Dashboard -- `b53ac8f`
+- [x] Data Sanity Checker (10 checks + auto-fix) -- `4d94b18`
+- [x] System Notifications for Super Admin -- `b01b6e7`
+- [x] Module Enable/Disable toggle -- `b01b6e7`
+- [x] User Management in org detail (deactivate, reset password, change role) -- `b01b6e7`
+- [x] RBAC fixes (employee data stripped, HR-only routes, own-only filters) -- `de6b3b7`
+- [x] Health endpoints added to Projects and Monitor -- `b53ac8f`
 
-## Priority: Low
+---
+
+## Still Open
 
 ### #546 — Onboarding Tasks for New Joiner
 - Auto-assign onboarding checklist when new employee added

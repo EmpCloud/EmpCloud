@@ -39,11 +39,15 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - `subscription/` — Subscription & seat management
 - `billing/` — Internal billing integration (NOT a sellable module)
 - `employee/` — Employee profiles, directory, extended data (addresses, education, experience, dependents)
+- `employee/probation.service.ts` — Probation tracking, confirmation, extension
 - `attendance/` — Shifts, check-in/out, geo-fencing, regularization requests
 - `leave/` — Leave types, policies, balances, applications, approvals, comp-off
 - `document/` — Document categories, uploads, verification, expiry tracking
 - `announcement/` — Company announcements, read tracking
 - `policy/` — Company policies, versioning, acknowledgments
+- `admin/health-check.service.ts` — Cross-module health monitoring
+- `admin/data-sanity.service.ts` — Cross-module data consistency checks
+- `admin/system-notification.service.ts` — Super Admin system notifications
 
 ### Server Routes (packages/server/src/api/routes/)
 - `employee.routes.ts` — /api/v1/employees
@@ -55,11 +59,16 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 
 ### Client Pages (packages/client/src/pages/)
 - `employees/` — Employee Directory, Employee Profile (tabbed: personal, addresses, education, experience, dependents)
+- `employees/ProbationPage.tsx` — Probation tracking dashboard and management
 - `attendance/` — Dashboard, Records, Shifts, Regularizations
 - `leave/` — Dashboard, Applications, Calendar, Types/Policies
 - `documents/` — Documents Overview, Document Categories
 - `announcements/` — Announcements list & detail
 - `policies/` — Policies list & acknowledgment
+- `admin/HealthDashboardPage.tsx` — Service health monitoring dashboard
+- `admin/DataSanityPage.tsx` — Cross-module data sanity checker
+- `admin/SystemNotificationsPage.tsx` — Super Admin system notifications
+- `admin/PlatformSettingsPage.tsx` — Platform settings and info
 
 ### Database Migrations (packages/server/src/db/migrations/)
 - `001_identity_schema.ts` — organizations, users, roles, departments, locations
@@ -72,6 +81,7 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - `008_documents.ts` — document_categories, employee_documents
 - `009_announcements.ts` — announcements, announcement_reads
 - `010_policies.ts` — company_policies, policy_acknowledgments
+- `030_probation.ts` — probation fields on employee_profiles (start/end dates, status, notes)
 
 ## Coding Conventions
 - Use `async/await` everywhere, no raw promises

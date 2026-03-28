@@ -1,7 +1,7 @@
 # EMP Cloud Platform -- Complete API Documentation
 
 **Version:** 1.0.0
-**Last Updated:** 2026-03-26
+**Last Updated:** 2026-03-28
 **Audience:** Mobile App Developers, Third-Party Integrators
 
 ---
@@ -53,6 +53,13 @@
    - [Super Admin](#232-super-admin)
    - [AI Configuration (Super Admin)](#233-ai-configuration-super-admin)
    - [Log Dashboard (Super Admin)](#234-log-dashboard-super-admin)
+   - [Probation Tracking](#235-probation-tracking)
+   - [Service Health Dashboard (Super Admin)](#236-service-health-dashboard-super-admin)
+   - [Data Sanity Checker (Super Admin)](#237-data-sanity-checker-super-admin)
+   - [System Notifications (Super Admin)](#238-system-notifications-super-admin)
+   - [Module Management (Super Admin)](#239-module-management-super-admin)
+   - [User Management (Super Admin)](#240-user-management-super-admin)
+   - [Platform Info (Super Admin)](#241-platform-info-super-admin)
 3. [EMP Recruit](#3-emp-recruit)
 4. [EMP Performance](#4-emp-performance)
 5. [EMP Rewards](#5-emp-rewards)
@@ -1200,6 +1207,31 @@ Rate-limited responses return `429 Too Many Requests` with a `Retry-After` heade
 **Description:** Delete a dependent
 
 **Auth Required:** Yes (Self or HR)
+
+---
+
+#### POST /api/v1/employees/:id/photo
+
+**Description:** Upload a profile photo for an employee (multipart/form-data)
+
+**Auth Required:** Yes (Self or HR)
+
+**Request:** `multipart/form-data` with field `photo` (JPEG/PNG, max 2 MB)
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Photo uploaded successfully", "photo_url": "/uploads/orgs/5/photos/522.jpg" } }
+```
+
+---
+
+#### GET /api/v1/employees/:id/photo
+
+**Description:** Get employee profile photo
+
+**Auth Required:** Yes
+
+**Response:** Binary image (JPEG/PNG) with appropriate Content-Type header. Returns 404 if no photo uploaded.
 
 ---
 
@@ -4020,6 +4052,341 @@ All endpoints require `super_admin` role.
 
 ---
 
+### 2.35 Probation Tracking
+
+#### GET /api/v1/employees/probation
+
+**Description:** List employees currently on probation
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `page`, `per_page`, `search`, `department_id`, `status`
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "user_id": 522,
+      "first_name": "Ananya",
+      "last_name": "Gupta",
+      "department": "Engineering",
+      "probation_start_date": "2026-01-15",
+      "probation_end_date": "2026-07-15",
+      "probation_status": "on_probation"
+    }
+  ],
+  "meta": { "total": 5, "page": 1, "per_page": 20 }
+}
+```
+
+---
+
+#### GET /api/v1/employees/probation/dashboard
+
+**Description:** Probation statistics dashboard (total on probation, upcoming confirmations, recently confirmed, extended)
+
+**Auth Required:** Yes (HR)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "on_probation": 12,
+    "upcoming_confirmations": 3,
+    "recently_confirmed": 5,
+    "extended": 2
+  }
+}
+```
+
+---
+
+#### GET /api/v1/employees/probation/upcoming
+
+**Description:** Employees with upcoming probation confirmation dates (within next 30 days)
+
+**Auth Required:** Yes (HR)
+
+**Query Parameters:** `days` (default: 30)
+
+---
+
+#### PUT /api/v1/employees/:id/probation/confirm
+
+**Description:** Confirm an employee's probation (mark as confirmed)
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| notes | string | No | Confirmation notes from HR |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Probation confirmed successfully" } }
+```
+
+---
+
+#### PUT /api/v1/employees/:id/probation/extend
+
+**Description:** Extend an employee's probation period
+
+**Auth Required:** Yes (HR)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| new_end_date | string | Yes | New probation end date (YYYY-MM-DD) |
+| reason | string | Yes | Reason for extension |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Probation extended successfully" } }
+```
+
+---
+
+### 2.36 Service Health Dashboard (Super Admin)
+
+#### GET /api/v1/admin/service-health
+
+**Description:** Get health status of all modules and infrastructure (MySQL, Redis)
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "overall_status": "operational",
+    "modules": [
+      { "name": "EMP Cloud", "status": "operational", "response_time_ms": 45, "last_checked": "2026-03-28T10:00:00Z" },
+      { "name": "EMP Recruit", "status": "operational", "response_time_ms": 120, "last_checked": "2026-03-28T10:00:00Z" }
+    ],
+    "infrastructure": {
+      "mysql": { "status": "operational", "response_time_ms": 5 },
+      "redis": { "status": "operational", "response_time_ms": 2 }
+    }
+  }
+}
+```
+
+---
+
+#### POST /api/v1/admin/service-health/check
+
+**Description:** Force an immediate health check of all modules (bypasses cache)
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):** Same format as GET /api/v1/admin/service-health
+
+---
+
+### 2.37 Data Sanity Checker (Super Admin)
+
+#### GET /api/v1/admin/data-sanity
+
+**Description:** Run cross-module data consistency checks (10 checks across all databases)
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "overall_status": "warnings",
+    "summary": { "passed": 8, "warnings": 2, "failed": 0 },
+    "checks": [
+      { "name": "Orphan employee profiles", "status": "pass", "count": 0 },
+      { "name": "Users without profiles", "status": "warn", "count": 3, "items": [ { "id": 101, "description": "User 101 has no employee profile" } ] }
+    ]
+  }
+}
+```
+
+---
+
+#### POST /api/v1/admin/data-sanity/fix
+
+**Description:** Auto-fix known data consistency issues
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "fixes_applied": 3,
+    "details": [
+      { "check": "Users without profiles", "action": "Created missing profiles", "count": 3 }
+    ]
+  }
+}
+```
+
+---
+
+### 2.38 System Notifications (Super Admin)
+
+#### GET /api/v1/admin/notifications
+
+**Description:** List system notifications for Super Admin (platform alerts, maintenance notices, etc.)
+
+**Auth Required:** Yes (Super Admin)
+
+**Query Parameters:** `page`, `per_page`, `status` (active, dismissed)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Database maintenance scheduled",
+      "message": "MySQL maintenance window on March 30, 2026 at 2:00 AM UTC",
+      "type": "info",
+      "status": "active",
+      "created_at": "2026-03-28T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+#### POST /api/v1/admin/notifications
+
+**Description:** Create a system notification
+
+**Auth Required:** Yes (Super Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| title | string | Yes | Notification title |
+| message | string | Yes | Notification body |
+| type | string | No | "info", "warning", "error", "success" (default: "info") |
+
+---
+
+### 2.39 Module Management (Super Admin)
+
+#### PUT /api/v1/admin/modules/:id
+
+**Description:** Enable or disable a module across the platform
+
+**Auth Required:** Yes (Super Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| is_active | boolean | Yes | Enable (true) or disable (false) the module |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Module updated successfully", "module": { "id": 3, "name": "EMP Recruit", "is_active": false } } }
+```
+
+---
+
+### 2.40 User Management (Super Admin)
+
+#### PUT /api/v1/admin/organizations/:orgId/users/:userId/deactivate
+
+**Description:** Deactivate a user account within an organization
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "User deactivated successfully" } }
+```
+
+---
+
+#### PUT /api/v1/admin/organizations/:orgId/users/:userId/activate
+
+**Description:** Reactivate a previously deactivated user account
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "User activated successfully" } }
+```
+
+---
+
+#### PUT /api/v1/admin/organizations/:orgId/users/:userId/reset-password
+
+**Description:** Force reset a user's password (generates a temporary password or sends reset email)
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Password reset email sent" } }
+```
+
+---
+
+#### PUT /api/v1/admin/organizations/:orgId/users/:userId/role
+
+**Description:** Change a user's role within their organization
+
+**Auth Required:** Yes (Super Admin)
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| role | string | Yes | New role: "org_admin", "hr_admin", "hr_manager", "manager", "employee" |
+
+**Response (200):**
+```json
+{ "success": true, "data": { "message": "Role updated successfully", "new_role": "hr_admin" } }
+```
+
+---
+
+### 2.41 Platform Info (Super Admin)
+
+#### GET /api/v1/admin/platform-info
+
+**Description:** Get platform information (version, uptime, node version, database stats, module count)
+
+**Auth Required:** Yes (Super Admin)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "version": "1.0.0",
+    "node_version": "v20.11.0",
+    "uptime_seconds": 86400,
+    "database": { "total_organizations": 15, "total_users": 450, "total_modules": 10 },
+    "environment": "production"
+  }
+}
+```
+
+---
+
 ## 3. EMP Recruit
 
 **Base URL:** `https://test-recruit-api.empcloud.com`
@@ -4789,4 +5156,4 @@ POST https://test-empcloud-api.empcloud.com/api/v1/webhooks/billing
 
 ---
 
-*This document covers 500+ API endpoints across 8 modules of the EMP Cloud platform. For questions or clarifications, contact the platform engineering team.*
+*This document covers 530+ API endpoints across 8 modules of the EMP Cloud platform. For questions or clarifications, contact the platform engineering team.*

@@ -7,7 +7,7 @@
 
 EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, company policies, org chart visualization, notification center, bulk CSV import, employee self-service dashboard, unified dashboard widgets, super admin dashboard, onboarding wizard, and online payment processing. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2, SSO token exchange, and subdomain routing.
 
-The platform also includes a built-in AI Agent with 41 tools across 7 providers, a production-grade log pipeline with correlation IDs and dashboard, a service health dashboard with cross-module monitoring, a cross-module data sanity checker, and comprehensive security hardening.
+The platform also includes a built-in AI Agent with 41 tools across 7 providers, a production-grade log pipeline with correlation IDs and dashboard, a service health dashboard with cross-module monitoring, a cross-module data sanity checker, probation tracking with auto-confirmation alerts, system notifications for Super Admin, module enable/disable management, and comprehensive security hardening.
 
 **GitHub:** https://github.com/EmpCloud/empcloud
 
@@ -17,11 +17,11 @@ The platform also includes a built-in AI Agent with 41 tools across 7 providers,
 
 | Metric | Count |
 |--------|-------|
-| Database migrations | 29 |
+| Database migrations | 30 |
 | API route files | 35 |
-| Frontend pages | 90+ |
-| Service modules | 50+ |
-| Automated tests | 700+ (277 E2E + 161 API + 285 service/unit) |
+| Frontend pages | 95+ |
+| Service modules | 55+ |
+| Automated tests | 1,670+ (235 E2E + 833 API + 602 unit) |
 | Security tests | 109 |
 | AI agent tools | 41 |
 | Languages supported | 9 |
@@ -40,7 +40,8 @@ empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 |             Super Admin Dashboard, Onboarding Wizard, AI Agent,
 |             Service Health, Data Sanity, Log Pipeline, API Docs,
 |             Helpdesk, Surveys, Assets, Positions, Forum, Events,
-|             Wellness, Whistleblowing, Anonymous Feedback, Custom Fields
+|             Wellness, Whistleblowing, Anonymous Feedback, Custom Fields,
+|             Probation Tracking, System Notifications, Platform Settings
 |
 |- payroll.empcloud.com         <- EMP Payroll (sellable module)
 |- monitor.empcloud.com         <- EMP Monitor (sellable module)
@@ -125,7 +126,7 @@ empcloud/
 │   │       │   │   ├── module.routes.ts
 │   │       │   │   ├── subscription.routes.ts
 │   │       │   │   ├── audit.routes.ts
-│   │       │   │   ├── employee.routes.ts       # Employee directory, profiles, photo upload
+│   │       │   │   ├── employee.routes.ts       # Employee directory, profiles, photo upload, probation
 │   │       │   │   ├── attendance.routes.ts     # Attendance management, CSV export
 │   │       │   │   ├── leave.routes.ts          # Leave management, bulk approval
 │   │       │   │   ├── document.routes.ts       # Document management
@@ -138,7 +139,7 @@ empcloud/
 │   │       │   │   ├── billing-webhook.routes.ts # Payment webhook handlers
 │   │       │   │   ├── chatbot.routes.ts        # AI agent chat
 │   │       │   │   ├── ai-config.routes.ts      # AI provider configuration
-│   │       │   │   ├── admin.routes.ts          # Super admin, health, data sanity
+│   │       │   │   ├── admin.routes.ts          # Super admin, health, data sanity, notifications, modules, user mgmt
 │   │       │   │   ├── logs.routes.ts           # Log pipeline dashboard API
 │   │       │   │   ├── helpdesk.routes.ts       # IT helpdesk & knowledge base
 │   │       │   │   ├── survey.routes.ts         # Employee surveys
@@ -163,7 +164,7 @@ empcloud/
 │   │       │   ├── module/        # Module registry
 │   │       │   ├── subscription/  # Subscription & seat management
 │   │       │   ├── billing/       # Billing integration, webhook handlers
-│   │       │   ├── employee/      # Employee profiles, directory, extended data, photo upload
+│   │       │   ├── employee/      # Employee profiles, directory, extended data, photo upload, probation
 │   │       │   ├── attendance/    # Shifts, check-in/out, geo-fencing, regularization
 │   │       │   ├── leave/         # Leave types, policies, balances, approvals, comp-off
 │   │       │   ├── document/      # Document categories, uploads, verification
@@ -173,7 +174,7 @@ empcloud/
 │   │       │   ├── dashboard/     # Unified dashboard widgets with Redis caching
 │   │       │   ├── onboarding/    # Onboarding wizard
 │   │       │   ├── chatbot/       # AI agent service, tools (41), multi-provider
-│   │       │   ├── admin/         # Super admin, health checks, data sanity, AI config, log analysis
+│   │       │   ├── admin/         # Super admin, health checks, data sanity, AI config, log analysis, system notifications
 │   │       │   ├── helpdesk/      # IT helpdesk & knowledge base
 │   │       │   ├── survey/        # Employee surveys
 │   │       │   ├── asset/         # Asset management
@@ -190,7 +191,7 @@ empcloud/
 │   │       │   ├── webhook/       # Inbound module webhooks
 │   │       │   └── audit/         # Audit logging
 │   │       ├── db/
-│   │       │   ├── migrations/    # 29 migration files
+│   │       │   ├── migrations/    # 30 migration files
 │   │       │   └── seed.ts        # Demo data
 │   │       ├── config/            # Environment config
 │   │       ├── swagger/           # OpenAPI spec & Swagger UI setup
@@ -200,14 +201,14 @@ empcloud/
 │   │       ├── pages/              # 90+ page components
 │   │       │   ├── auth/              # Login, Register
 │   │       │   ├── dashboard/         # Central dashboard with unified widgets
-│   │       │   ├── employees/         # Directory, Profile (tabbed), Import, Org Chart
+│   │       │   ├── employees/         # Directory, Profile (tabbed), Import, Org Chart, Probation
 │   │       │   ├── attendance/        # Dashboard, Records, Shifts, Regularizations, Schedule
 │   │       │   ├── leave/             # Dashboard, Applications, Calendar, Types, Comp-off
 │   │       │   ├── documents/         # Documents, Categories, My Documents
 │   │       │   ├── announcements/     # Announcements list & detail
 │   │       │   ├── policies/          # Policies list & acknowledgment
 │   │       │   ├── self-service/      # Employee Self-Service Dashboard
-│   │       │   ├── admin/             # Super Admin, Health Dashboard, Data Sanity, Log Dashboard, AI Config
+│   │       │   ├── admin/             # Super Admin, Health Dashboard, Data Sanity, Log Dashboard, AI Config, System Notifications, Platform Settings
 │   │       │   ├── onboarding/        # Onboarding Wizard
 │   │       │   ├── chatbot/           # AI Agent chat interface
 │   │       │   ├── billing/           # Billing management
@@ -289,6 +290,13 @@ empcloud/
 | Whistleblowing | Built |
 | Custom Fields | Built |
 | Biometric Attendance | Built |
+| Probation Tracking | Built |
+| System Notifications (Super Admin) | Built |
+| Module Enable/Disable Toggle | Built |
+| User Management (deactivate, reset password, change role) | Built |
+| Leave Approval Notifications | Built |
+| Helpdesk Ticket Notifications | Built |
+| Attendance Regularization Requests | Built |
 | Mobile Responsive Navigation | Built |
 | Internationalization (9 languages) | Built |
 
@@ -379,12 +387,24 @@ empcloud/
 - Zoom/pan navigation
 - Click-through to employee profiles
 
+### Probation Tracking
+
+- Probation period tracking for new hires (migration 030)
+- Auto-set probation on new employee creation
+- Dashboard with probation statistics (on probation, upcoming confirmations, extended)
+- List employees on probation with search and filter
+- Upcoming confirmation date alerts
+- Confirm or extend probation with reason tracking
+- Probation management page at `/employees/probation`
+
 ### Notification Center
 
 - In-app bell icon with unread count badge
 - Dropdown notification list with real-time updates
 - Mark as read / mark all as read
-- Notification types: leave approvals, announcements, document expiry, attendance alerts
+- Notification types: leave approvals, announcements, document expiry, attendance alerts, helpdesk tickets
+- Leave approval notifications (auto-notify on approve/reject)
+- Helpdesk ticket notifications (assignment, status changes, comments)
 - Click-through navigation to relevant pages
 
 ### Bulk Employee CSV Import
@@ -417,9 +437,12 @@ empcloud/
 - System-wide overview across all organizations
 - Module health and subscription metrics
 - User and organization management at platform level
-- Organization detail drill-down with analytics
+- Organization detail drill-down with analytics (deactivate users, reset passwords, change roles)
 - Revenue analytics and subscription metrics
 - Platform-level settings and configuration
+- System notifications management (create, view, dismiss notifications for all admins)
+- Module enable/disable toggle (activate or deactivate modules across the platform)
+- Platform info and settings page at `/admin/platform-settings`
 
 ### Onboarding Wizard
 
@@ -513,7 +536,7 @@ Production-grade logging infrastructure for monitoring, debugging, and auditing.
 
 Cross-module health monitoring available at `/admin/health`.
 
-- **Module health polling** -- Checks all 10+ module APIs every 60 seconds with response time tracking
+- **Module health polling** -- Checks all 10+ module APIs (including Projects and Monitor health endpoints) every 60 seconds with response time tracking
 - **Infrastructure checks** -- MySQL connection health, Redis connection health with detailed metrics
 - **Endpoint-level monitoring** -- Individual endpoint status checks per module
 - **Status classification** -- Overall status: operational / degraded / major_outage per module
@@ -527,7 +550,7 @@ Cross-module health monitoring available at `/admin/health`.
 Cross-module data consistency verification available at `/admin/data-sanity`.
 
 - **Cross-database validation** -- Verifies referential integrity across all module databases on the same MySQL server
-- **Automated checks** -- Orphan record detection, missing foreign key references, status inconsistencies
+- **10 automated checks** -- Orphan record detection, missing foreign key references, status inconsistencies, cross-module data consistency
 - **Status classification** -- Each check reports pass / warn / fail with item counts
 - **Summary report** -- Overall health status (healthy / warnings / critical) with totals
 - **Auto-fix capability** -- `FixReport` interface supports applying automated fixes for known data issues
@@ -589,7 +612,7 @@ This approach avoids the full OAuth2 redirect dance for cross-module navigation,
 
 ## Database Schema (empcloud DB)
 
-29 migration files covering all platform tables:
+30 migration files covering all platform tables:
 
 ### Identity & Platform Tables (migrations 001-004)
 - `organizations` -- Registered companies / tenants
@@ -670,6 +693,13 @@ This approach avoids the full OAuth2 redirect dance for cross-module navigation,
 - `ai_provider_configs` -- AI provider API key storage (AES-256-GCM encrypted)
 - `kb_article_ratings` -- Knowledge base article ratings
 
+### Probation Tables (migration 030)
+- `employee_profiles.probation_start_date` -- Probation start date
+- `employee_profiles.probation_end_date` -- Probation confirmation due date
+- `employee_profiles.probation_status` -- Status: on_probation, confirmed, extended
+- `employee_profiles.probation_confirmed_at` -- Confirmation timestamp
+- `employee_profiles.probation_notes` -- Notes from HR on probation outcome
+
 ---
 
 ## API Overview
@@ -682,7 +712,7 @@ This approach avoids the full OAuth2 redirect dance for cross-module navigation,
 | Users | `/api/v1/users` | User management & invitations |
 | Modules | `/api/v1/modules` | Module registry |
 | Subscriptions | `/api/v1/subscriptions` | Module subscriptions & seats |
-| Employees | `/api/v1/employees` | Directory, profiles, addresses, education, experience, dependents, photo upload |
+| Employees | `/api/v1/employees` | Directory, profiles, addresses, education, experience, dependents, photo upload, probation tracking |
 | Attendance | `/api/v1/attendance` | Check-in/out, shifts, geo-fences, regularizations, dashboard, reports, CSV export |
 | Leave | `/api/v1/leave` | Types, policies, balances, applications, approvals, calendar, comp-off, bulk approve |
 | Documents | `/api/v1/documents` | Categories, upload, download, verify, mandatory tracking, expiry alerts |
@@ -693,7 +723,7 @@ This approach avoids the full OAuth2 redirect dance for cross-module navigation,
 | Billing | `/api/v1/billing` | Invoice management, payment processing, webhooks |
 | AI Agent | `/api/v1/chatbot` | Chat interface, tool-calling, conversation history |
 | AI Config | `/api/v1/ai-config` | Provider configuration, API key management |
-| Admin | `/api/v1/admin` | Super admin, health checks, data sanity, org management |
+| Admin | `/api/v1/admin` | Super admin, health checks, data sanity, org management, system notifications, module toggle, user management |
 | Logs | `/api/v1/logs` | Log pipeline queries, analysis, filtering |
 | Helpdesk | `/api/v1/helpdesk` | Tickets, categories, knowledge base, article ratings |
 | Surveys | `/api/v1/surveys` | Survey builder, distribution, responses, results |
@@ -751,6 +781,8 @@ Once running, visit:
 - **Health Dashboard**: http://localhost:5173/admin/health
 - **Log Dashboard**: http://localhost:5173/admin/logs
 - **Data Sanity**: http://localhost:5173/admin/data-sanity
+- **System Notifications**: http://localhost:5173/admin/notifications
+- **Probation Tracking**: http://localhost:5173/employees/probation
 
 ### Environment Variables
 
@@ -811,11 +843,14 @@ SMTP_PASS=
 
 | Suite | Count | Description |
 |-------|-------|-------------|
-| E2E Playwright tests | 277 | Full browser tests: page navigation, workflows, SSO, screenshots |
-| Security tests | 109 | Auth bypass, injection, XSS, CSRF, tenant isolation, RBAC |
-| API endpoint tests | 161 | Full API coverage (137 full-api + 24 endpoint) |
-| Service unit tests | 285 | Individual service logic: auth, employee, attendance, leave, org, helpdesk, survey, asset, position, data-integrity |
-| **Total** | **700+** | All automated via Vitest and Playwright |
+| Unit tests (mocked) | 602 | All modules via Vitest: auth, employee, attendance, leave, helpdesk, survey, asset, position, chatbot, payroll, performance, rewards, exit, billing, LMS |
+| API integration tests | 833 | Real HTTP calls: empcloud (137), recruit (106), performance (128), rewards (88), exit (86), payroll (89), billing (89), LMS (110) |
+| E2E functional tests | 44 | Playwright: page navigation, auth, modules, billing, helpdesk |
+| E2E workflow tests | 20 | Playwright: onboarding, leave lifecycle, attendance, helpdesk, surveys |
+| E2E deep lifecycle tests | 15 | Playwright: apply->approve->balance, ticket lifecycle, billing |
+| Security tests | 109 | Playwright: SQL injection, XSS, CSRF, tenant isolation, RBAC, path traversal |
+| NexGen verification | 47 | Playwright: 5 roles, all features, mobile responsive, Super Admin |
+| **Total** | **1,670+** | All automated via Vitest and Playwright |
 
 ### Running Tests
 
@@ -920,7 +955,7 @@ EMP Payroll includes global payroll and Employer of Record (EOR) capabilities:
 - **Rate limiting on auth endpoints** -- Aggressive rate limits on login, register, password reset
 - **AES-256-GCM encrypted API keys** -- All stored API keys (payment gateways, AI providers) encrypted at rest
 - **Mass assignment protection** -- User service whitelists allowed fields to prevent privilege escalation via request body manipulation
-- **RBAC guards** -- Role-based access control middleware on all admin and sensitive endpoints
+- **RBAC guards** -- Role-based access control middleware on all admin and sensitive endpoints; employee data stripped to own-only, HR-only routes enforced, 16 RBAC bugs fixed
 - **Input validation** -- Zod schema validation on all request bodies, params, and query strings
 - CORS allowlisting per module
 - Audit logging for all sensitive operations
