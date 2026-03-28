@@ -145,35 +145,41 @@ function QuickLinkCard({
 }
 
 export default function SuperAdminDashboard() {
-  const { data: overview, isLoading: overviewLoading } = useQuery({
+  const { data: overview, isLoading: overviewLoading, isError: overviewError } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => api.get("/admin/overview").then((r) => r.data.data),
+    retry: 2,
   });
 
   const { data: revenue } = useQuery({
     queryKey: ["admin-revenue"],
     queryFn: () => api.get("/admin/revenue").then((r) => r.data.data),
+    retry: 2,
   });
 
   const { data: health } = useQuery({
     queryKey: ["admin-health"],
     queryFn: () => api.get("/admin/health").then((r) => r.data.data),
     refetchInterval: 30000,
+    retry: 2,
   });
 
   const { data: adoption } = useQuery({
     queryKey: ["admin-module-adoption"],
     queryFn: () => api.get("/admin/module-adoption").then((r) => r.data.data),
+    retry: 2,
   });
 
   const { data: activity } = useQuery({
     queryKey: ["admin-activity"],
     queryFn: () => api.get("/admin/activity", { params: { limit: 20 } }).then((r) => r.data.data),
+    retry: 2,
   });
 
   const { data: growth } = useQuery({
     queryKey: ["admin-growth"],
     queryFn: () => api.get("/admin/growth").then((r) => r.data.data),
+    retry: 2,
   });
 
   if (overviewLoading) {
@@ -182,6 +188,18 @@ export default function SuperAdminDashboard() {
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
           <div className="text-gray-400 text-sm">Loading platform data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (overviewError && !overview) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <Activity className="h-8 w-8 text-red-400" />
+          <div className="text-gray-600 font-medium">Failed to load dashboard data</div>
+          <div className="text-gray-400 text-sm">Please try refreshing the page</div>
         </div>
       </div>
     );

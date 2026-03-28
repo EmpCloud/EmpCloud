@@ -880,7 +880,7 @@ export async function rateArticle(orgId: number, articleId: number, helpful: boo
         return db("knowledge_base_articles").where({ id: articleId }).first();
       }
 
-      // First vote — record it
+      // First vote — record it and increment count
       await db("kb_article_ratings").insert({
         article_id: articleId,
         user_id: userId,
@@ -889,9 +889,18 @@ export async function rateArticle(orgId: number, articleId: number, helpful: boo
         created_at: new Date(),
         updated_at: new Date(),
       });
+
+      if (helpful) {
+        await db("knowledge_base_articles").where({ id: articleId }).increment("helpful_count", 1);
+      } else {
+        await db("knowledge_base_articles").where({ id: articleId }).increment("not_helpful_count", 1);
+      }
+
+      return db("knowledge_base_articles").where({ id: articleId }).first();
     }
   }
 
+  // Fallback for anonymous votes (no userId or no ratings table)
   if (helpful) {
     await db("knowledge_base_articles").where({ id: articleId }).increment("helpful_count", 1);
   } else {

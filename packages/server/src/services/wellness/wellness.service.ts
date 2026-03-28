@@ -25,6 +25,11 @@ export async function createProgram(
 ) {
   const db = getDB();
 
+  // Validate end_date is not before start_date
+  if (data.start_date && data.end_date && new Date(data.end_date) < new Date(data.start_date)) {
+    throw new ValidationError("End date cannot be before start date");
+  }
+
   const [id] = await db("wellness_programs").insert({
     organization_id: orgId,
     title: data.title,
@@ -99,6 +104,13 @@ export async function updateProgram(
     .where({ id: programId, organization_id: orgId })
     .first();
   if (!existing) throw new NotFoundError("Wellness program");
+
+  // Validate end_date is not before start_date (considering existing values)
+  const effectiveStartDate = data.start_date !== undefined ? data.start_date : existing.start_date;
+  const effectiveEndDate = data.end_date !== undefined ? data.end_date : existing.end_date;
+  if (effectiveStartDate && effectiveEndDate && new Date(effectiveEndDate) < new Date(effectiveStartDate)) {
+    throw new ValidationError("End date cannot be before start date");
+  }
 
   const updateData: Record<string, any> = { updated_at: new Date() };
   if (data.title !== undefined) updateData.title = data.title;
@@ -326,6 +338,11 @@ export async function createGoal(
   data: CreateWellnessGoalInput
 ) {
   const db = getDB();
+
+  // Validate end_date is not before start_date
+  if (data.start_date && data.end_date && new Date(data.end_date) < new Date(data.start_date)) {
+    throw new ValidationError("End date cannot be before start date");
+  }
 
   const [id] = await db("wellness_goals").insert({
     organization_id: orgId,

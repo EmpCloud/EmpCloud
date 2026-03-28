@@ -66,6 +66,35 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     if (existingCode) throw new ConflictError("Employee code already in use within this organization");
   }
 
+  // Validate date_of_birth — must be at least 18 years old
+  if (data.date_of_birth) {
+    const dob = new Date(data.date_of_birth);
+    const now = new Date();
+    if (!isNaN(dob.getTime())) {
+      const age = now.getFullYear() - dob.getFullYear();
+      const monthDiff = now.getMonth() - dob.getMonth();
+      const actualAge = monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate()) ? age - 1 : age;
+      if (actualAge < 18) throw new ValidationError("Employee must be at least 18 years old");
+    }
+  }
+
+  // Validate date_of_exit — must be after date_of_joining
+  if ((data as any).date_of_exit) {
+    const joinDate = data.date_of_joining || new Date().toISOString().slice(0, 10);
+    const exitMs = new Date(String((data as any).date_of_exit)).getTime();
+    const joinMs = new Date(String(joinDate)).getTime();
+    if (!isNaN(exitMs) && !isNaN(joinMs) && exitMs <= joinMs) {
+      throw new ValidationError("Date of exit must be after date of joining");
+    }
+  }
+
+  // Validate self-manager
+  // (cannot validate at create time since ID doesn't exist yet, but validate reporting_manager exists)
+  if (data.reporting_manager_id) {
+    const manager = await db("users").where({ id: data.reporting_manager_id, organization_id: orgId, status: 1 }).first();
+    if (!manager) data.reporting_manager_id = null as any;
+  }
+
   const passwordHash = data.password ? await hashPassword(data.password) : null;
 
   // Validate department_id exists in this org
@@ -159,7 +188,7 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   if (allowed.date_of_birth !== undefined) {
     const dob = new Date(allowed.date_of_birth as string);
     const now = new Date();
-    if (isNaN(dob.getTime()) || dob > now || dob.getFullYear() < 1900 || dob.getFullYear() > now.getFullYear() - 16) {
+    if (isNaN(dob.getTime()) || dob > now || dob.getFullYear() < 1900 || dob.getFullYear() > now.getFullYear() - 18) {
       delete allowed.date_of_birth;
     }
   }
