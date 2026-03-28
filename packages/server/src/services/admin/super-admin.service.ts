@@ -120,9 +120,8 @@ export async function getOrgList(params: {
     .select(
       "o.id",
       "o.name",
-      "o.slug",
       "o.email",
-      "o.status",
+      "o.is_active",
       "o.created_at",
       db.raw("COALESCE(uc.user_count, 0) as user_count"),
       db.raw("COALESCE(sc.sub_count, 0) as subscription_count"),
@@ -158,7 +157,7 @@ export async function getOrgDetail(orgId: number) {
 
   const users = await db("users")
     .where({ organization_id: orgId })
-    .select("id", "first_name", "last_name", "email", "role", "is_active", "status", "created_at")
+    .select("id", "first_name", "last_name", "email", "role", "status", "created_at")
     .orderBy("created_at", "desc");
 
   const subscriptions = await db("org_subscriptions as s")
@@ -433,8 +432,8 @@ export async function getUserGrowth(period: string = "12m") {
     .orderBy("month", "asc");
 
   // Active vs inactive users
-  const [activeUsers] = await db("users").where({ is_active: true }).count("id as count");
-  const [inactiveUsers] = await db("users").where({ is_active: false }).count("id as count");
+  const [activeUsers] = await db("users").where({ status: 1 }).count("id as count");
+  const [inactiveUsers] = await db("users").whereNot({ status: 1 }).count("id as count");
 
   return {
     org_growth: orgGrowth.map((r: any) => ({ month: r.month, count: Number(r.count) })),

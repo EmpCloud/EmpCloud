@@ -35,6 +35,13 @@ export async function createSurvey(
 ) {
   const db = getDB();
 
+  // Validate end_date is not before start_date
+  if (data.start_date && data.end_date) {
+    if (new Date(data.end_date) < new Date(data.start_date)) {
+      throw new ValidationError("end_date cannot be before start_date");
+    }
+  }
+
   const [id] = await db("surveys").insert({
     organization_id: orgId,
     title: data.title,
@@ -163,6 +170,15 @@ export async function updateSurvey(
   if (!existing) throw new NotFoundError("Survey");
   if (existing.status !== "draft") {
     throw new ForbiddenError("Only draft surveys can be edited");
+  }
+
+  // Validate end_date is not before start_date (considering existing values)
+  const effectiveStartDate = data.start_date !== undefined ? data.start_date : existing.start_date;
+  const effectiveEndDate = data.end_date !== undefined ? data.end_date : existing.end_date;
+  if (effectiveStartDate && effectiveEndDate) {
+    if (new Date(effectiveEndDate) < new Date(effectiveStartDate)) {
+      throw new ValidationError("end_date cannot be before start_date");
+    }
   }
 
   const updateData: Record<string, any> = { updated_at: new Date() };

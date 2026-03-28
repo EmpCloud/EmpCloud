@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
+import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 
 // ---------------------------------------------------------------------------
@@ -142,6 +142,14 @@ export async function createAsset(
   }
 ) {
   const db = getDB();
+
+  // Validate warranty_expiry is not before purchase_date
+  if (data.purchase_date && data.warranty_expiry) {
+    if (new Date(data.warranty_expiry) < new Date(data.purchase_date)) {
+      throw new ValidationError("warranty_expiry cannot be before purchase_date");
+    }
+  }
+
   const now = new Date();
   const assetTag = await generateAssetTag(orgId);
 
@@ -301,6 +309,15 @@ export async function updateAsset(
     .where({ id: assetId, organization_id: orgId })
     .first();
   if (!existing) throw new NotFoundError("Asset");
+
+  // Validate warranty_expiry is not before purchase_date (considering existing values)
+  const effectivePurchaseDate = data.purchase_date !== undefined ? data.purchase_date : existing.purchase_date;
+  const effectiveWarrantyExpiry = data.warranty_expiry !== undefined ? data.warranty_expiry : existing.warranty_expiry;
+  if (effectivePurchaseDate && effectiveWarrantyExpiry) {
+    if (new Date(effectiveWarrantyExpiry) < new Date(effectivePurchaseDate)) {
+      throw new ValidationError("warranty_expiry cannot be before purchase_date");
+    }
+  }
 
   const updateData: Record<string, any> = { updated_at: new Date() };
   if (data.name !== undefined) updateData.name = data.name;
