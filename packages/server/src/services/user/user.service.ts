@@ -175,9 +175,9 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   for (const key of ["first_name", "last_name", "designation"]) {
     if (typeof allowed[key] === "string") {
       allowed[key] = (allowed[key] as string).replace(/<[^>]*>/g, "").trim();
-      // Reject empty or whitespace-only names
+      // Reject empty or whitespace-only names with a validation error
       if ((key === "first_name" || key === "last_name") && !(allowed[key] as string)) {
-        delete allowed[key];
+        throw new ValidationError(`${key.replace("_", " ")} cannot be empty or whitespace only`);
       }
     }
   }
@@ -194,6 +194,13 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
     const now = new Date();
     if (isNaN(dob.getTime()) || dob > now || dob.getFullYear() < 1900 || dob.getFullYear() > now.getFullYear() - 18) {
       delete allowed.date_of_birth;
+    }
+  }
+  // Validate date_of_joining — must be a valid date
+  if (allowed.date_of_joining !== undefined && allowed.date_of_joining !== null) {
+    const doj = new Date(allowed.date_of_joining as string);
+    if (isNaN(doj.getTime())) {
+      throw new ValidationError("Invalid date_of_joining format");
     }
   }
   // Validate gender — enum

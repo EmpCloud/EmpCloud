@@ -7,6 +7,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { requireHR } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
+import { ValidationError } from "../../utils/errors.js";
 import * as leaveTypeService from "../../services/leave/leave-type.service.js";
 import * as leavePolicyService from "../../services/leave/leave-policy.service.js";
 import * as leaveBalanceService from "../../services/leave/leave-balance.service.js";
@@ -237,6 +238,36 @@ router.post("/applications", authenticate, async (req: Request, res: Response, n
     });
 
     sendSuccess(res, application, 201);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/leave/applications/:id — update (cancel) a leave application
+router.put("/applications/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status } = req.body;
+    if (status !== "cancelled") {
+      throw new ValidationError(
+        "Only status 'cancelled' is supported via this endpoint",
+      );
+    }
+
+    const application = await leaveApplicationService.cancelLeave(
+      req.user!.org_id,
+      req.user!.sub,
+      paramInt(req.params.id),
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.LEAVE_CANCELLED,
+      resourceType: "leave_application",
+      resourceId: String(application.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, application);
   } catch (err) { next(err); }
 });
 

@@ -124,13 +124,23 @@ export async function cancelLeave(
 ): Promise<LeaveApplication> {
   const db = getDB();
 
+  // Fetch the application by org + id (without filtering by user_id yet)
   const application = await db("leave_applications")
-    .where({ id: applicationId, organization_id: orgId, user_id: userId })
+    .where({ id: applicationId, organization_id: orgId })
     .first();
   if (!application) throw new NotFoundError("Leave application");
 
-  if (application.status === "cancelled") {
-    throw new ValidationError("Leave already cancelled");
+  // Verify ownership: allow if the user owns the leave, or if the user is HR
+  if (application.user_id !== userId) {
+    const actingUser = await db("users").where({ id: userId, organization_id: orgId }).first();
+    const isHR = actingUser && ["hr_admin", "hr_manager", "org_admin"].includes(actingUser.role);
+    if (!isHR) throw new ForbiddenError("Not authorized to cancel this leave application");
+  }
+
+  if (!["pending", "approved"].includes(application.status)) {
+    throw new ValidationError(
+      `Cannot cancel a leave application with status '${application.status}'`,
+    );
   }
 
   const wasApproved = application.status === "approved";
@@ -144,7 +154,7 @@ export async function cancelLeave(
     const year = new Date(application.start_date).getFullYear();
     await balanceService.creditBalance(
       orgId,
-      userId,
+      application.user_id,
       application.leave_type_id,
       Number(application.days_count),
       year,
