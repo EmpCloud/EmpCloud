@@ -254,6 +254,28 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
     }
   }
 
+  // Detect and break circular chains before building tree
+  // A circular chain is A->B->...->A. Break by making the highest-role user a root.
+  const visited = new Set<number>();
+  for (const uid of childToParent.keys()) {
+    if (visited.has(uid)) continue;
+    // Walk the chain from uid upward
+    const chain: number[] = [];
+    const inChain = new Set<number>();
+    let current: number | undefined = uid;
+    while (current !== undefined && !visited.has(current)) {
+      if (inChain.has(current)) {
+        // Found a cycle — break it by removing the parent link of `current`
+        childToParent.delete(current);
+        break;
+      }
+      inChain.add(current);
+      chain.push(current);
+      current = childToParent.get(current);
+    }
+    for (const c of chain) visited.add(c);
+  }
+
   // Build tree: attach children to parents
   const roots: OrgChartNode[] = [];
   for (const [uid, node] of nodeMap) {
