@@ -28,7 +28,10 @@
     "customFields": "\u81ea\u5b9a\u4e49\u5b57\u6bb5",
     "compOff": "\u8c03\u4f11",
     "signOut": "\u9000\u51fa",
-    "platformAdmin": "\u5e73\u53f0\u7ba1\u7406"
+    "platformAdmin": "\u5e73\u53f0\u7ba1\u7406",
+    "myProfile": "\u6211\u7684\u6863\u6848",
+    "selfService": "\u81ea\u52a9\u670d\u52a1",
+    "probation": "\u8bd5\u7528\u671f"
   },
   "common": {
     "save": "\u4fdd\u5b58",

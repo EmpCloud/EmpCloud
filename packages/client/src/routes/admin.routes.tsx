@@ -43,5 +43,6 @@ export const adminRoutes = (
     <Route path="/admin/data-sanity" element={<RequireRole roles={["super_admin"]}><DataSanityPage /></RequireRole>} />
     <Route path="/admin/notifications" element={<RequireRole roles={["super_admin"]}><SystemNotificationsPage /></RequireRole>} />
     <Route path="/admin/settings" element={<RequireRole roles={["super_admin"]}><PlatformSettingsPage /></RequireRole>} />
+    <Route path="/admin/audit" element={<RequireRole roles={["super_admin"]}><AuditPage /></RequireRole>} />
   </>
 );

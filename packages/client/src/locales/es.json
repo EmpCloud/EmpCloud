@@ -28,7 +28,10 @@
     "customFields": "Campos personalizados",
     "compOff": "Compensatorio",
     "signOut": "Cerrar sesi\u00f3n",
-    "platformAdmin": "Admin. Plataforma"
+    "platformAdmin": "Admin. Plataforma",
+    "myProfile": "Mi Perfil",
+    "selfService": "Autoservicio",
+    "probation": "Per\u00edodo de prueba"
   },
   "common": {
     "save": "Guardar",

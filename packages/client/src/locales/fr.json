@@ -28,7 +28,10 @@
     "customFields": "Champs personnalis\u00e9s",
     "compOff": "Repos compensatoire",
     "signOut": "Se d\u00e9connecter",
-    "platformAdmin": "Admin. Plateforme"
+    "platformAdmin": "Admin. Plateforme",
+    "myProfile": "Mon Profil",
+    "selfService": "Libre-service",
+    "probation": "P\u00e9riode d'essai"
   },
   "common": {
     "save": "Enregistrer",

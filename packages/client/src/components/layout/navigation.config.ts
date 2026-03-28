@@ -216,6 +216,7 @@ export const platformAdminNavItems: NavItem[] = [
   { path: "/admin/data-sanity", label: "Data Sanity", icon: DatabaseZap },
   { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
   { path: "/admin/logs", label: "Log Dashboard", icon: ScrollText },
+  { path: "/admin/audit", label: "Audit Log", icon: Shield },
   { path: "/admin/settings", label: "Platform Settings", icon: Settings },
 ];
 

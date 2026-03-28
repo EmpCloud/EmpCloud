@@ -28,7 +28,10 @@
     "customFields": "Campos personalizados",
     "compOff": "Folga compensat\u00f3ria",
     "signOut": "Sair",
-    "platformAdmin": "Admin. Plataforma"
+    "platformAdmin": "Admin. Plataforma",
+    "myProfile": "Meu Perfil",
+    "selfService": "Autoatendimento",
+    "probation": "Período probatório"
   },
   "common": {
     "save": "Salvar",

@@ -28,7 +28,10 @@
     "customFields": "Benutzerdefinierte Felder",
     "compOff": "Freizeitausgleich",
     "signOut": "Abmelden",
-    "platformAdmin": "Plattform-Admin"
+    "platformAdmin": "Plattform-Admin",
+    "myProfile": "Mein Profil",
+    "selfService": "Self-Service",
+    "probation": "Probezeit"
   },
   "common": {
     "save": "Speichern",
