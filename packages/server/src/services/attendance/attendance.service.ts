@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
+import { calculateOvertime } from "../../utils/payroll-rules.js";
 import type { CheckInInput, CheckOutInput } from "@empcloud/shared";
 
 export async function checkIn(orgId: number, userId: number, data: CheckInInput) {
@@ -104,12 +105,28 @@ export async function checkOut(orgId: number, userId: number, data: CheckOutInpu
       const [eh, em] = shift.end_time.split(":").map(Number);
       const shiftEnd = new Date(now);
       shiftEnd.setHours(eh, em, 0, 0);
+
+      // For night shifts, shift end is the next day
+      if (shift.is_night_shift || shiftEnd.getTime() <= checkInTime.getTime()) {
+        shiftEnd.setDate(shiftEnd.getDate() + 1);
+      }
+
       const graceStart = new Date(shiftEnd.getTime() - (shift.grace_minutes_early || 0) * 60000);
 
       if (now < graceStart) {
         earlyDepartureMinutes = Math.round((shiftEnd.getTime() - now.getTime()) / 60000);
       } else if (now > shiftEnd) {
-        overtimeMinutes = Math.round((now.getTime() - shiftEnd.getTime()) / 60000);
+        // Rule 5 (#1057): OT only counts after full shift hours are completed
+        // Rule 6 (#1058): Auto-calculate OT from check-out vs shift end time
+        const otResult = calculateOvertime(
+          checkInTime,
+          now,
+          shift.start_time,
+          shift.end_time,
+          !!shift.is_night_shift,
+          shift.break_minutes || 0,
+        );
+        overtimeMinutes = otResult.overtime_minutes;
       }
     }
   }
