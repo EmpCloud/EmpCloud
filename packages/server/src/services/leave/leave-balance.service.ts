@@ -15,8 +15,18 @@ export async function getBalances(
   const currentYear = year ?? new Date().getFullYear();
 
   return db("leave_balances")
-    .where({ organization_id: orgId, user_id: userId, year: currentYear })
-    .orderBy("leave_type_id", "asc");
+    .leftJoin("leave_types", "leave_balances.leave_type_id", "leave_types.id")
+    .where({
+      "leave_balances.organization_id": orgId,
+      "leave_balances.user_id": userId,
+      "leave_balances.year": currentYear,
+    })
+    .select(
+      "leave_balances.*",
+      "leave_types.name as leave_type_name",
+      "leave_types.color as leave_type_color",
+    )
+    .orderBy("leave_balances.leave_type_id", "asc");
 }
 
 export async function initializeBalances(orgId: number, year: number): Promise<number> {

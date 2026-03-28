@@ -32,8 +32,9 @@ export async function applyLeave(
   const balance = balances.find((b) => b.leave_type_id === data.leave_type_id);
 
   if (balance && Number(balance.balance) < data.days_count) {
+    const typeName = (balance as any).leave_type_name || leaveType.name || "this leave type";
     throw new ValidationError(
-      `Insufficient balance. Available: ${balance.balance}, Requested: ${data.days_count}`,
+      `Insufficient balance for ${typeName}. Available: ${balance.balance} day(s), Requested: ${data.days_count} day(s).`,
     );
   }
 

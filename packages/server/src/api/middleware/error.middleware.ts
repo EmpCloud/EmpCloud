@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { Request, Response, NextFunction } from "express";
+import multer from "multer";
 import { AppError, OAuthError } from "../../utils/errors.js";
 import { sendError } from "../../utils/response.js";
 import { logger } from "../../utils/logger.js";
@@ -13,6 +14,22 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
   // OAuth errors use a different response format (RFC 6749)
   if (err instanceof OAuthError) {
     res.status(err.statusCode).json(err.toJSON());
+    return;
+  }
+
+  // Multer file-upload errors — return 400 with a helpful message
+  if (err instanceof multer.MulterError) {
+    const messages: Record<string, string> = {
+      LIMIT_FILE_SIZE: "File too large. Maximum allowed size is 10 MB.",
+      LIMIT_UNEXPECTED_FILE: "File is required. Use field name 'file' for upload.",
+      LIMIT_FILE_COUNT: "Too many files uploaded.",
+      LIMIT_FIELD_KEY: "Field name too long.",
+      LIMIT_FIELD_VALUE: "Field value too long.",
+      LIMIT_FIELD_COUNT: "Too many fields.",
+      LIMIT_PART_COUNT: "Too many parts.",
+    };
+    const message = messages[err.code] || `Upload error: ${err.message}`;
+    sendError(res, 400, "VALIDATION_ERROR", message);
     return;
   }
 
