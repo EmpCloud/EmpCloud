@@ -503,4 +503,24 @@ router.get(
   }
 );
 
+// GET /api/v1/helpdesk/my-tickets — Alias for /tickets/my (#671)
+router.get(
+  "/my-tickets",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, per_page } = paginationSchema.parse(req.query);
+      const status = req.query.status as string | undefined;
+      const category = req.query.category as string | undefined;
+      const result = await helpdeskService.getMyTickets(
+        req.user!.org_id, req.user!.sub,
+        { page, perPage: per_page, status, category }
+      );
+      sendPaginated(res, result.tickets, result.total, page, per_page);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;
