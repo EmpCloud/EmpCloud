@@ -1,0 +1,62 @@
+{
+  "results": [
+    {
+      "test": "Login",
+      "status": "PASS",
+      "details": "Logged in, URL: https://test-empcloud.empcloud.com/"
+    },
+    {
+      "test": "Profile Page Load",
+      "status": "FAIL",
+      "details": "Got 404 or Not Found"
+    },
+    {
+      "test": "Edit Button Click",
+      "status": "PASS",
+      "details": "Edit button found and clicked"
+    },
+    {
+      "test": "Edit Form Opens",
+      "status": "FAIL",
+      "details": "No editable fields found after clicking Edit"
+    },
+    {
+      "test": "Reporting Manager",
+      "status": "PASS",
+      "details": "Found near: -|Reporting Manager|Priya Patel"
+    },
+    {
+      "test": "Department Assignment",
+      "status": "WARN",
+      "details": "Could not find explicit department label on page"
+    },
+    {
+      "test": "API - GET users/522",
+      "status": "FAIL",
+      "details": "Could not retrieve employee data from any API endpoint"
+    },
+    {
+      "test": "GitHub Upload",
+      "status": "PASS",
+      "details": "8/8 files uploaded"
+    }
+  ],
+  "bugs": [
+    {
+      "title": "Employee 522 profile returns 404",
+      "details": "URL: https://test-empcloud.empcloud.com/employees/522, page shows not found",
+      "screenshot": null
+    },
+    {
+      "title": "Employee 522 Edit button doesn't open editable form",
+      "details": "Clicking Edit doesn't reveal any input fields",
+      "screenshot": null
+    },
+    {
+      "title": "Cannot fetch Employee 522 via API",
+      "details": "Tried multiple endpoint patterns, none returned valid data",
+      "screenshot": null
+    }
+  ],
+  "timestamp": "2026-03-28 09:01:24.038901"
+}
