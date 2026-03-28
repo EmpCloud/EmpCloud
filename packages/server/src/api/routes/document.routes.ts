@@ -103,7 +103,7 @@ router.post("/upload", authenticate, upload.single("file"), async (req: Request,
   try {
     const file = req.file;
     if (!file) {
-      res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "File is required" } });
+      res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "File is required. Use field name 'file' for upload." } });
       return;
     }
 

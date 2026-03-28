@@ -478,11 +478,11 @@ export const createLeavePolicySchema = z.object({
 });
 
 export const applyLeaveSchema = z.object({
-  leave_type_id: z.number().int().positive(),
+  leave_type_id: z.coerce.number().int().positive(),
   start_date: z.string(),
   end_date: z.string(),
-  days_count: z.number().min(0.5),
-  is_half_day: z.boolean().default(false),
+  days_count: z.coerce.number().min(0.5),
+  is_half_day: z.preprocess((v) => v === "true" || v === true, z.boolean()).default(false),
   half_day_type: z.enum(["first_half", "second_half"]).optional().nullable(),
   reason: z.string().min(1),
 });
