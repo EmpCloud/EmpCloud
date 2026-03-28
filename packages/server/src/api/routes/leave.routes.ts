@@ -22,8 +22,16 @@ import {
   leaveQuerySchema,
   initializeBalancesSchema,
   AuditAction,
+  ROLE_HIERARCHY,
 } from "@empcloud/shared";
+import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
+
+/** Check if user role is plain employee (below manager level) */
+function isEmployeeRole(role: string): boolean {
+  const level = ROLE_HIERARCHY[role as UserRole] ?? 0;
+  return level < (ROLE_HIERARCHY["manager" as UserRole] ?? 20);
+}
 
 const router = Router();
 
@@ -189,12 +197,16 @@ router.get("/applications/me", authenticate, async (req: Request, res: Response,
 router.get("/applications", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page, status, leave_type_id, user_id } = leaveQuerySchema.parse(req.query);
+
+    // RBAC: employees can only view their own leave applications
+    const effectiveUserId = isEmployeeRole(req.user!.role) ? req.user!.sub : user_id;
+
     const result = await leaveApplicationService.listApplications(req.user!.org_id, {
       page,
       perPage: per_page,
       status,
       leaveTypeId: leave_type_id,
-      userId: user_id,
+      userId: effectiveUserId,
     });
     sendPaginated(res, result.applications, result.total, page, per_page);
   } catch (err) { next(err); }
@@ -326,12 +338,16 @@ router.get("/comp-off/my", authenticate, async (req: Request, res: Response, nex
   } catch (err) { next(err); }
 });
 
-// GET /api/v1/leave/comp-off/pending — Pending comp-off approvals (HR/manager)
+// GET /api/v1/leave/comp-off/pending — Pending comp-off approvals (HR/manager only)
 router.get("/comp-off/pending", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.per_page) || 20;
-    const result = await compOffService.listCompOffs(req.user!.org_id, { page, perPage, status: "pending" });
+
+    // RBAC: employees can only see their own pending comp-offs
+    const effectiveUserId = isEmployeeRole(req.user!.role) ? req.user!.sub : undefined;
+
+    const result = await compOffService.listCompOffs(req.user!.org_id, { page, perPage, status: "pending", userId: effectiveUserId });
     sendPaginated(res, result.requests, result.total, page, perPage);
   } catch (err) { next(err); }
 });
@@ -367,7 +383,11 @@ router.get("/comp-off", authenticate, async (req: Request, res: Response, next: 
     const perPage = Number(req.query.per_page) || 20;
     const userId = req.query.user_id ? Number(req.query.user_id) : undefined;
     const status = req.query.status as string | undefined;
-    const result = await compOffService.listCompOffs(req.user!.org_id, { page, perPage, userId, status });
+
+    // RBAC: employees can only see their own comp-off requests
+    const effectiveUserId = isEmployeeRole(req.user!.role) ? req.user!.sub : userId;
+
+    const result = await compOffService.listCompOffs(req.user!.org_id, { page, perPage, userId: effectiveUserId, status });
     sendPaginated(res, result.requests, result.total, page, perPage);
   } catch (err) { next(err); }
 });

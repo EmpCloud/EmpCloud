@@ -15,8 +15,17 @@ import {
   surveyQuerySchema,
   paginationSchema,
   AuditAction,
+  ROLE_HIERARCHY,
 } from "@empcloud/shared";
+import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
+import { ForbiddenError } from "../../utils/errors.js";
+
+/** Check if user role is plain employee (below manager level) */
+function isEmployeeRole(role: string): boolean {
+  const level = ROLE_HIERARCHY[role as UserRole] ?? 0;
+  return level < (ROLE_HIERARCHY["manager" as UserRole] ?? 20);
+}
 
 const router = Router();
 
@@ -54,10 +63,43 @@ router.get("/my-responses", authenticate, async (req: Request, res: Response, ne
 router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page, status, type } = surveyQuerySchema.parse(req.query);
+
+    // RBAC: employees can only see active/published surveys, not draft/closed
+    let effectiveStatus = status;
+    if (isEmployeeRole(req.user!.role)) {
+      if (status && !["active", "published"].includes(status)) {
+        // Employee trying to filter by draft/closed — return empty
+        sendPaginated(res, [], 0, page, per_page);
+        return;
+      }
+      // If no status filter, default to showing active + published only
+      // We'll pass undefined and filter after, or use 'active' as default
+      if (!effectiveStatus) effectiveStatus = "active";
+    }
+
     const result = await surveyService.listSurveys(
       req.user!.org_id,
-      { page, perPage: per_page, status, type }
+      { page, perPage: per_page, status: effectiveStatus, type }
     );
+
+    // If employee requested no filter, also include published surveys
+    if (isEmployeeRole(req.user!.role) && !status) {
+      const publishedResult = await surveyService.listSurveys(
+        req.user!.org_id,
+        { page, perPage: per_page, status: "published", type }
+      );
+      // Merge and deduplicate
+      const allSurveys = [...result.surveys, ...publishedResult.surveys];
+      const seen = new Set<number>();
+      const unique = allSurveys.filter((s: any) => {
+        if (seen.has(s.id)) return false;
+        seen.add(s.id);
+        return true;
+      });
+      sendPaginated(res, unique, unique.length, page, per_page);
+      return;
+    }
+
     sendPaginated(res, result.surveys, result.total, page, per_page);
   } catch (err) { next(err); }
 });
@@ -69,6 +111,12 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
       req.user!.org_id,
       paramInt(req.params.id)
     );
+
+    // RBAC: employees cannot view draft or closed surveys
+    if (isEmployeeRole(req.user!.role) && (survey as any).status && !["active", "published"].includes((survey as any).status)) {
+      throw new ForbiddenError("You do not have access to this survey");
+    }
+
     sendSuccess(res, survey);
   } catch (err) { next(err); }
 });

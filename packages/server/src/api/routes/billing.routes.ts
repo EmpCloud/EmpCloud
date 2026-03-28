@@ -5,6 +5,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { requireHR } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { sendError } from "../../utils/response.js";
 import * as billingIntegration from "../../services/billing/billing-integration.service.js";
@@ -12,8 +13,8 @@ import { param } from "../../utils/params.js";
 
 const router = Router();
 
-// GET /api/v1/billing/invoices
-router.get("/invoices", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/billing/invoices (HR+ only)
+router.get("/invoices", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const perPage = parseInt(req.query.perPage as string) || 20;
@@ -25,8 +26,8 @@ router.get("/invoices", authenticate, async (req: Request, res: Response, next: 
   }
 });
 
-// GET /api/v1/billing/payments
-router.get("/payments", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/billing/payments (HR+ only)
+router.get("/payments", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const perPage = parseInt(req.query.perPage as string) || 20;
@@ -38,8 +39,8 @@ router.get("/payments", authenticate, async (req: Request, res: Response, next: 
   }
 });
 
-// GET /api/v1/billing/summary
-router.get("/summary", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/billing/summary (HR+ only)
+router.get("/summary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const summary = await billingIntegration.getBillingSummary(req.user!.org_id);
     sendSuccess(res, summary);
@@ -48,8 +49,8 @@ router.get("/summary", authenticate, async (req: Request, res: Response, next: N
   }
 });
 
-// GET /api/v1/billing/invoices/:id/pdf
-router.get("/invoices/:id/pdf", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/billing/invoices/:id/pdf (HR+ only)
+router.get("/invoices/:id/pdf", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const invoiceId = param(req.params.id);
     const pdfResponse = await billingIntegration.getInvoicePdfStream(invoiceId);
@@ -78,8 +79,8 @@ router.get("/invoices/:id/pdf", authenticate, async (req: Request, res: Response
   }
 });
 
-// POST /api/v1/billing/pay — Create a payment checkout session
-router.post("/pay", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// POST /api/v1/billing/pay — Create a payment checkout session (HR+ only)
+router.post("/pay", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { invoiceId, gateway = "stripe" } = req.body;
     if (!invoiceId) {
@@ -99,8 +100,8 @@ router.post("/pay", authenticate, async (req: Request, res: Response, next: Next
   }
 });
 
-// GET /api/v1/billing/gateways — List available payment gateways
-router.get("/gateways", authenticate, async (_req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/billing/gateways — List available payment gateways (HR+ only)
+router.get("/gateways", authenticate, requireHR, async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const gateways = await billingIntegration.listPaymentGateways();
     sendSuccess(res, gateways);

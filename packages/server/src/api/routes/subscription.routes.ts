@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireOrgAdmin } from "../middleware/rbac.middleware.js";
+import { requireOrgAdmin, requireHR } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as subService from "../../services/subscription/subscription.service.js";
@@ -20,24 +20,24 @@ import { paramInt, param } from "../../utils/params.js";
 
 const router = Router();
 
-// GET /api/v1/subscriptions — List org subscriptions
-router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions — List org subscriptions (HR+ only)
+router.get("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const subs = await subService.listSubscriptions(req.user!.org_id);
     sendSuccess(res, subs);
   } catch (err) { next(err); }
 });
 
-// GET /api/v1/subscriptions/billing-summary
-router.get("/billing-summary", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions/billing-summary (HR+ only)
+router.get("/billing-summary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const summary = await billingService.getBillingSummary(req.user!.org_id);
     sendSuccess(res, summary);
   } catch (err) { next(err); }
 });
 
-// GET /api/v1/subscriptions/:id
-router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions/:id (HR+ only)
+router.get("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sub = await subService.getSubscription(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, sub);
@@ -113,8 +113,8 @@ router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: R
 
 // --- Seats ---
 
-// GET /api/v1/subscriptions/:id/seats
-router.get("/:id/seats", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions/:id/seats (HR+ only)
+router.get("/:id/seats", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sub = await subService.getSubscription(req.user!.org_id, paramInt(req.params.id));
     const seats = await subService.listSeats(req.user!.org_id, sub.module_id);

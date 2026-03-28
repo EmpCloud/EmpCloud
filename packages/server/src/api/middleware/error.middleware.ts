@@ -31,7 +31,27 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
     return;
   }
 
-  // Unknown errors
+  // Catch common DB/input errors that bubble up as unhandled exceptions
+  // These are typically caused by bad input (invalid types, constraint violations, etc.)
+  const msg = err.message || "";
+  if (
+    msg.includes("ER_BAD_FIELD_ERROR") ||
+    msg.includes("ER_TRUNCATED_WRONG_VALUE") ||
+    msg.includes("ER_DATA_TOO_LONG") ||
+    msg.includes("ER_DUP_ENTRY") ||
+    msg.includes("Cannot read properties") ||
+    msg.includes("is not a function") ||
+    msg.includes("WARN_DATA_TRUNCATED") ||
+    err.name === "TypeError" ||
+    err.name === "RangeError" ||
+    err.name === "SyntaxError"
+  ) {
+    logger.warn("Bad request caught by error handler", { message: msg });
+    sendError(res, 400, "BAD_REQUEST", "Invalid request — please check your input and try again");
+    return;
+  }
+
+  // Unknown errors — log full details server-side but return generic message to client
   logger.error("Unhandled error", { message: err.message, stack: err.stack });
   sendError(res, 500, "INTERNAL_ERROR", "An unexpected error occurred");
 }

@@ -14,11 +14,29 @@ import {
   inviteUserSchema,
   paginationSchema,
   AuditAction,
+  ROLE_HIERARCHY,
 } from "@empcloud/shared";
+import type { UserRole } from "@empcloud/shared";
 import { paramInt, param } from "../../utils/params.js";
 import { ForbiddenError } from "../../utils/errors.js";
 import * as importService from "../../services/import/import.service.js";
 import multer from "multer";
+
+/** Directory-safe fields visible to employees — strips sensitive admin data */
+const EMPLOYEE_VISIBLE_FIELDS = ["id", "first_name", "last_name", "email", "designation", "department_id", "location_id", "photo_path", "emp_code"];
+
+function stripSensitiveForEmployee(user: Record<string, unknown>): Record<string, unknown> {
+  const safe: Record<string, unknown> = {};
+  for (const key of EMPLOYEE_VISIBLE_FIELDS) {
+    if (key in user) safe[key] = user[key];
+  }
+  return safe;
+}
+
+function isEmployeeRole(role: string): boolean {
+  const level = ROLE_HIERARCHY[role as UserRole] ?? 0;
+  return level < (ROLE_HIERARCHY["manager" as UserRole] ?? 20);
+}
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
@@ -30,7 +48,13 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
     const { page, per_page } = paginationSchema.parse(req.query);
     const search = req.query.search as string | undefined;
     const result = await userService.listUsers(req.user!.org_id, { page, perPage: per_page, search });
-    sendPaginated(res, result.users, result.total, page, per_page);
+
+    // RBAC: employees only see directory-safe fields (no role, status, phone, employee_code)
+    const users = isEmployeeRole(req.user!.role)
+      ? result.users.map((u: any) => stripSensitiveForEmployee(u))
+      : result.users;
+
+    sendPaginated(res, users, result.total, page, per_page);
   } catch (err) { next(err); }
 });
 
@@ -55,7 +79,14 @@ router.get("/org-chart", authenticate, async (req: Request, res: Response, next:
 router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await userService.getUser(req.user!.org_id, paramInt(req.params.id));
-    sendSuccess(res, user);
+
+    // RBAC: employees only see directory-safe fields (unless viewing themselves)
+    const isSelf = req.user!.sub === paramInt(req.params.id);
+    const data = (!isSelf && isEmployeeRole(req.user!.role))
+      ? stripSensitiveForEmployee(user as any)
+      : user;
+
+    sendSuccess(res, data);
   } catch (err) { next(err); }
 });
 

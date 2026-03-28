@@ -38,7 +38,8 @@ export async function applyLeave(
   }
 
   // Check for overlapping applications
-  const overlap = await db("leave_applications")
+  // Allow same-day half-day leaves (first_half + second_half) on the same date
+  const overlaps = await db("leave_applications")
     .where({ organization_id: orgId, user_id: userId })
     .whereIn("status", ["pending", "approved"])
     .where(function () {
@@ -47,10 +48,22 @@ export async function applyLeave(
         ">=",
         data.start_date,
       );
-    })
-    .first();
+    });
 
-  if (overlap) {
+  for (const overlap of overlaps) {
+    // If both the existing and new are half-day leaves on the same single day,
+    // allow if they cover different halves (first_half vs second_half)
+    const isSameSingleDay =
+      data.start_date === data.end_date &&
+      overlap.start_date === overlap.end_date &&
+      data.start_date === overlap.start_date;
+
+    if (isSameSingleDay && data.is_half_day && overlap.is_half_day) {
+      if (data.half_day_type && overlap.half_day_type && data.half_day_type !== overlap.half_day_type) {
+        continue; // Different halves — no conflict
+      }
+    }
+
     throw new ValidationError("Overlapping leave application exists");
   }
 
