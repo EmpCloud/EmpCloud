@@ -189,6 +189,9 @@ export const createUserSchema = z.object({
   location_id: z.number().int().positive().optional(),
   reporting_manager_id: z.number().int().positive().optional(),
   employment_type: z.nativeEnum(EmploymentType).default(EmploymentType.FULL_TIME),
+  date_of_exit: z.string().optional(),
+  phone: z.string().max(20).optional(),
+  employee_code: z.string().max(50).optional(),
 });
 
 export const updateUserSchema = createUserSchema.partial().omit({ password: true });
