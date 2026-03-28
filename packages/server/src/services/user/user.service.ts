@@ -220,13 +220,19 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
 
   // Validate date_of_exit — must be after date_of_joining
   if (allowed.date_of_exit !== undefined && allowed.date_of_exit !== null) {
-    const exitDate = new Date(String(allowed.date_of_exit));
-    const joinRaw = allowed.date_of_joining || user.date_of_joining;
-    const joinDate = joinRaw ? new Date(joinRaw instanceof Date ? joinRaw.toISOString() : String(joinRaw)) : null;
+    const exitMs = new Date(String(allowed.date_of_exit)).getTime();
+    // Get joining date from update payload or existing DB record
+    let joinMs = 0;
+    if (allowed.date_of_joining) {
+      joinMs = new Date(String(allowed.date_of_joining)).getTime();
+    } else if (user.date_of_joining) {
+      // MySQL returns Date object or string — handle both
+      joinMs = new Date(user.date_of_joining).getTime();
+    }
 
-    if (isNaN(exitDate.getTime())) {
-      delete allowed.date_of_exit;
-    } else if (joinDate && !isNaN(joinDate.getTime()) && exitDate.getTime() <= joinDate.getTime()) {
+    if (isNaN(exitMs)) {
+      throw new ValidationError("Invalid date_of_exit format");
+    } else if (joinMs > 0 && exitMs <= joinMs) {
       throw new ValidationError("Date of exit must be after date of joining");
     }
   }
