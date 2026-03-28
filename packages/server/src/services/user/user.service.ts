@@ -109,6 +109,25 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
       allowed[key] = (allowed[key] as string).replace(/<[^>]*>/g, "");
     }
   }
+  // Validate phone/contact_number — digits, spaces, +, -, () only
+  if (allowed.phone !== undefined) {
+    const phone = String(allowed.phone);
+    if (!/^[+\d\s\-()]{0,20}$/.test(phone)) {
+      delete allowed.phone;
+    }
+  }
+  // Validate date_of_birth — must be a real past date
+  if (allowed.date_of_birth !== undefined) {
+    const dob = new Date(allowed.date_of_birth as string);
+    const now = new Date();
+    if (isNaN(dob.getTime()) || dob > now || dob.getFullYear() < 1900 || dob.getFullYear() > now.getFullYear() - 16) {
+      delete allowed.date_of_birth;
+    }
+  }
+  // Validate gender — enum
+  if (allowed.gender !== undefined && !["male", "female", "other", "prefer_not_to_say"].includes(String(allowed.gender))) {
+    delete allowed.gender;
+  }
 
   if (Object.keys(allowed).length > 0) {
     await db("users").where({ id: userId, organization_id: orgId }).update({ ...allowed, updated_at: new Date() });
