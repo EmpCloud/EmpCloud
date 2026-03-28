@@ -5,6 +5,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { ExternalLink } from "lucide-react";
+import { useAuthStore } from "@/lib/auth-store";
 
 // ---------------------------------------------------------------------------
 // Color presets
@@ -46,6 +47,12 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; heade
     icon: "text-purple-600",
     border: "border-purple-200",
     header: "text-purple-900",
+  },
+  cyan: {
+    bg: "bg-cyan-50",
+    icon: "text-cyan-600",
+    border: "border-cyan-200",
+    header: "text-cyan-900",
   },
 };
 
@@ -156,16 +163,23 @@ export default function WidgetCard({
       {/* Metrics */}
       <div className="divide-y divide-gray-200/60">{children}</div>
 
-      {/* View Details link */}
-      {moduleUrl && (
-        <a
-          href={moduleUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`mt-4 flex items-center gap-1.5 text-xs font-medium ${c.icon} hover:underline`}
-        >
-          View Details <ExternalLink className="h-3 w-3" />
-        </a>
+      {/* View Details link — include SSO token so user lands authenticated */}
+      {moduleUrl && (() => {
+        const token = useAuthStore.getState().accessToken;
+        const ssoUrl = token
+          ? `${moduleUrl}?sso_token=${encodeURIComponent(token)}`
+          : moduleUrl;
+        return (
+          <a
+            href={ssoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`mt-4 flex items-center gap-1.5 text-xs font-medium ${c.icon} hover:underline`}
+          >
+            View Details <ExternalLink className="h-3 w-3" />
+          </a>
+        );
+      })()
       )}
     </div>
   );
