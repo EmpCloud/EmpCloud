@@ -1,0 +1,62 @@
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 522,
+      "organization_id": 5,
+      "first_name": "Ananya",
+      "last_name": "Gupta",
+      "email": "ananya@technova.in",
+      "emp_code": "TN-001",
+      "contact_number": "+91 7885781382",
+      "date_of_birth": "1990-05-15T00:00:00.000Z",
+      "gender": "female",
+      "date_of_joining": "2022-01-10T00:00:00.000Z",
+      "date_of_exit": null,
+      "designation": "Tech Lead",
+      "department_id": 20,
+      "location_id": null,
+      "reporting_manager_id": 524,
+      "employment_type": "full_time",
+      "photo_path": null,
+      "address": null,
+      "role": "org_admin",
+      "status": 1,
+      "language": "en",
+      "created_at": "2026-03-24T12:16:03.000Z",
+      "updated_at": "2026-03-28T01:09:40.000Z"
+    },
+    "org": {
+      "id": 5,
+      "name": "TechNova Solutions",
+      "legal_name": "TechNova Solutions Pvt. Ltd.",
+      "email": "hr@technova.in",
+      "contact_number": "8976856743",
+      "website": "https://technova-updated.in",
+      "logo": null,
+      "timezone": "Asia/Kolkata",
+      "country": "577534",
+      "state": "karnataka",
+      "city": "656774",
+      "zipcode": null,
+      "address": "123 Tech Park, Bangalore, Karnataka 560001",
+      "language": "English",
+      "weekday_start": "monday",
+      "current_user_count": 8,
+      "total_allowed_user_count": 0,
+      "is_active": 1,
+      "created_at": "2026-03-24T12:16:03.000Z",
+      "updated_at": "2026-03-28T01:38:10.000Z",
+      "onboarding_completed": 1,
+      "onboarding_step": 0
+    },
+    "tokens": {
+      "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1qam5BRUFQU1FvTzA0Y0QifQ.eyJzdWIiOjUyMiwib3JnX2lkIjo1LCJlbWFpbCI6ImFuYW55YUB0ZWNobm92YS5pbiIsInJvbGUiOiJvcmdfYWRtaW4iLCJmaXJzdF9uYW1lIjoiQW5hbnlhIiwibGFzdF9uYW1lIjoiR3VwdGEiLCJvcmdfbmFtZSI6IlRlY2hOb3ZhIFNvbHV0aW9ucyIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJjbGllbnRfaWQiOiJlbXBjbG91ZC1kYXNoYm9hcmQiLCJqdGkiOiIwMDQ3ZmIzMy0yZDNkLTQ4YWYtYjY3ZC1lOWQzOGFmMzhlMjQiLCJpYXQiOjE3NzQ2NjkwMjEsImV4cCI6MTc3NDY2OTkyMSwiaXNzIjoiaHR0cHM6Ly90ZXN0LWVtcGNsb3VkLWFwaS5lbXBjbG91ZC5jb20ifQ.QYekijZq_N55W0V1FqHnIRAwh7t5dFD-m7tUlz2dFwqxIQ7LlcfaqwWrRc8j1zqQvtTbZPBtYLTdJ5Q9qIW_l182owXvVG-01bezokFGblePROG4y6g4XnjXB9iVnuyjTlLhqMNSPpPZg05m_Eplg1UVHbzvGfIbE1ZS4juCT6DNKx974L1LdNKfbIwbd4PamODaU4uvTcguz1w233Oo8vTirWqT5yJdpsrIG8K8J7cFBXdTo1ZEiONhuwsetIz1YcZ4w36X377lWhoi8K2DQz_z9tqI465ZorhCB4CckC1rhZf-VRmrObAfx1wzy1_4ksGzbcP9wn-dtVPSQNerVw",
+      "refresh_token": "cTV99dWial1tWsZpLDvBR0bzuowo77iqqRLWzIegP9AE4c3dS5hPUBcnJS9-s_mU",
+      "expires_in": 900,
+      "token_type": "Bearer",
+      "scope": "openid profile email",
+      "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1qam5BRUFQU1FvTzA0Y0QifQ.eyJzdWIiOjUyMiwiZW1haWwiOiJhbmFueWFAdGVjaG5vdmEuaW4iLCJuYW1lIjoiQW5hbnlhIEd1cHRhIiwiZ2l2ZW5fbmFtZSI6IkFuYW55YSIsImZhbWlseV9uYW1lIjoiR3VwdGEiLCJvcmdfaWQiOjUsIm9yZ19uYW1lIjoiVGVjaE5vdmEgU29sdXRpb25zIiwicm9sZSI6Im9yZ19hZG1pbiIsImF1ZCI6ImVtcGNsb3VkLWRhc2hib2FyZCIsImlhdCI6MTc3NDY2OTAyMSwiZXhwIjoxNzc0NjcyNjIxLCJpc3MiOiJodHRwczovL3Rlc3QtZW1wY2xvdWQtYXBpLmVtcGNsb3VkLmNvbSJ9.JZjlAKqJWo6HQALwySB5qmXMXfVWVbuWors6kfEY3mei4OCY5x8UeR1w1MqNRe3JeXM4stPOGRLS7kcc_YhfoRlqa2hNIFpqi7cuq2pyD4PuvBtvYvyyef8RkjU0OyXwIDMAUxt7V9QJqxWqGzswRd4tei6Vy2urkTVkL_MOnRVggfNIOyIuzZl6rNZzih0UOs6Atv_vBTOyN1Tae9dd6cGUPWl7YFF4S8W7v74ZdZqLJkvQaKi6yODad56SSDoJzwtlqHsTtfEMjlLsvfTdmgGmFbZPGLlHvM2JMSUJQHrp86xHD9_LhM7qeiuj_B77b3J-KX9jRHwCh4iKS1_WEg"
+    }
+  }
+}
