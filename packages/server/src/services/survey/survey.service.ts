@@ -383,13 +383,22 @@ export async function submitResponse(
 // Get Survey Results (aggregated)
 // ---------------------------------------------------------------------------
 
-export async function getSurveyResults(orgId: number, surveyId: number) {
+export async function getSurveyResults(orgId: number, surveyId: number, requestingUserRole?: string) {
   const db = getDB();
 
   const survey = await db("surveys")
     .where({ id: surveyId, organization_id: orgId })
     .first();
   if (!survey) throw new NotFoundError("Survey");
+
+  // #1052 — Results not available while survey is still active (unless closed or user is admin)
+  if (survey.status === "active") {
+    const ADMIN_ROLES = ["org_admin", "super_admin"];
+    const isAdmin = requestingUserRole ? ADMIN_ROLES.includes(requestingUserRole) : false;
+    if (!isAdmin) {
+      throw new ForbiddenError("Survey results are not available until the survey ends");
+    }
+  }
 
   const questions = await db("survey_questions")
     .where({ survey_id: surveyId })

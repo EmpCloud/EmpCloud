@@ -157,6 +157,15 @@ export async function cancelLeave(
     );
   }
 
+  // #1017 — Prevent cancelling leave that has already started
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const leaveStart = new Date(application.start_date);
+  leaveStart.setHours(0, 0, 0, 0);
+  if (leaveStart < today) {
+    throw new ValidationError("Cannot cancel leave that has already started");
+  }
+
   const wasApproved = application.status === "approved";
 
   await db("leave_applications")

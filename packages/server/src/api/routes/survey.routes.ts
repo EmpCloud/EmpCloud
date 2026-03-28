@@ -243,7 +243,8 @@ router.get("/:id/results", authenticate, requireHR, async (req: Request, res: Re
   try {
     const results = await surveyService.getSurveyResults(
       req.user!.org_id,
-      paramInt(req.params.id)
+      paramInt(req.params.id),
+      req.user!.role
     );
     sendSuccess(res, results);
   } catch (err) { next(err); }

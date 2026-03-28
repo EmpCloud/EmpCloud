@@ -7,8 +7,9 @@ import { getDB } from "../../db/connection.js";
 import { hashPassword, verifyPassword, randomHex, hashToken } from "../../utils/crypto.js";
 import { UnauthorizedError, ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { logAudit } from "../audit/audit.service.js";
 import { issueTokens } from "../oauth/oauth.service.js";
-import { TOKEN_DEFAULTS } from "@empcloud/shared";
+import { TOKEN_DEFAULTS, AuditAction } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 
 // Internal client_id used for direct auth (login/register via EMP Cloud itself)
@@ -111,6 +112,13 @@ export async function login(params: {
 
   const valid = await verifyPassword(params.password, user.password);
   if (!valid) {
+    // #1049 — Record failed login attempt in audit log
+    await logAudit({
+      organizationId: user.organization_id,
+      userId: user.id,
+      action: AuditAction.LOGIN_FAILED,
+      details: { email: params.email, reason: "invalid_password" },
+    });
     throw new UnauthorizedError("Invalid email or password");
   }
 

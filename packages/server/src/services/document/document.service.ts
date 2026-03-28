@@ -4,7 +4,7 @@
 
 import fs from "node:fs";
 import { getDB } from "../../db/connection.js";
-import { NotFoundError } from "../../utils/errors.js";
+import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 
 // ---------------------------------------------------------------------------
 // Categories
@@ -58,6 +58,16 @@ export async function deleteCategory(orgId: number, categoryId: number) {
     .where({ id: categoryId, organization_id: orgId })
     .first();
   if (!category) throw new NotFoundError("Document category");
+
+  // #1037 — Prevent deleting category that still has documents
+  const [{ count }] = await db("employee_documents")
+    .where({ organization_id: orgId, category_id: categoryId })
+    .count("* as count");
+  if (Number(count) > 0) {
+    throw new ValidationError(
+      `Cannot delete category with ${count} existing document(s). Remove or reassign them first.`,
+    );
+  }
 
   // Soft delete — mark as inactive
   await db("document_categories")
@@ -149,12 +159,27 @@ export async function listDocuments(
   return { documents, total: Number(count) };
 }
 
-export async function getDocument(orgId: number, docId: number) {
+export async function getDocument(
+  orgId: number,
+  docId: number,
+  requestingUserId?: number,
+  requestingUserRole?: string,
+) {
   const db = getDB();
   const doc = await db("employee_documents")
     .where({ id: docId, organization_id: orgId })
     .first();
   if (!doc) throw new NotFoundError("Document");
+
+  // #1059 — Non-HR users can only view their own documents
+  if (requestingUserId !== undefined) {
+    const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+    const isHR = requestingUserRole ? HR_ROLES.includes(requestingUserRole) : false;
+    if (doc.user_id !== requestingUserId && !isHR) {
+      throw new ForbiddenError("You do not have permission to view this document");
+    }
+  }
+
   return doc;
 }
 

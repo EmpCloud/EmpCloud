@@ -201,7 +201,7 @@ router.get("/tracking/expiry", authenticate, requireHR, async (req: Request, res
 // GET /api/v1/documents/:id
 router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const doc = await documentService.getDocument(req.user!.org_id, paramInt(req.params.id));
+    const doc = await documentService.getDocument(req.user!.org_id, paramInt(req.params.id), req.user!.sub, req.user!.role);
     sendSuccess(res, doc);
   } catch (err) { next(err); }
 });
@@ -209,7 +209,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 // GET /api/v1/documents/:id/download
 router.get("/:id/download", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const doc = await documentService.getDocument(req.user!.org_id, paramInt(req.params.id));
+    const doc = await documentService.getDocument(req.user!.org_id, paramInt(req.params.id), req.user!.sub, req.user!.role);
     const absolutePath = path.resolve(doc.file_path);
     res.download(absolutePath, doc.name);
   } catch (err) { next(err); }

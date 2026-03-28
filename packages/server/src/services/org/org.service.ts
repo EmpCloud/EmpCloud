@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ConflictError } from "../../utils/errors.js";
+import { NotFoundError, ConflictError, ValidationError } from "../../utils/errors.js";
 import type { Organization, UpdateOrgInput } from "@empcloud/shared";
 
 export async function getOrg(orgId: number): Promise<Organization> {
@@ -67,6 +67,17 @@ export async function createDepartment(orgId: number, name: string) {
 
 export async function deleteDepartment(orgId: number, deptId: number) {
   const db = getDB();
+
+  // #1039 — Prevent deleting department with active employees
+  const [{ count }] = await db("users")
+    .where({ organization_id: orgId, department_id: deptId, status: 1 })
+    .count("* as count");
+  if (Number(count) > 0) {
+    throw new ValidationError(
+      `Cannot delete department with ${count} active employee(s). Reassign them first.`,
+    );
+  }
+
   await db("organization_departments")
     .where({ id: deptId, organization_id: orgId })
     .update({ is_deleted: true, updated_at: new Date() });

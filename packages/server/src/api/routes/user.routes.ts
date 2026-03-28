@@ -47,7 +47,8 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const search = req.query.search as string | undefined;
-    const result = await userService.listUsers(req.user!.org_id, { page, perPage: per_page, search });
+    const include_inactive = req.query.include_inactive === "true";
+    const result = await userService.listUsers(req.user!.org_id, { page, perPage: per_page, search, include_inactive });
 
     // RBAC: employees only see directory-safe fields (no role, status, phone, employee_code)
     const users = isEmployeeRole(req.user!.role)

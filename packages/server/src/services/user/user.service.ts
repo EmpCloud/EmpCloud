@@ -4,7 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
-import { ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
+import { ConflictError, NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 import { checkFreeTierUserLimit } from "../subscription/subscription.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
@@ -15,12 +15,17 @@ function sanitizeUser(user: any): UserPublic {
   return safe;
 }
 
-export async function listUsers(orgId: number, params?: { page?: number; perPage?: number; search?: string }) {
+export async function listUsers(orgId: number, params?: { page?: number; perPage?: number; search?: string; include_inactive?: boolean }) {
   const db = getDB();
   const page = params?.page || 1;
   const perPage = params?.perPage || 20;
 
   let query = db("users").where({ organization_id: orgId });
+
+  // #1021 — Only show active employees by default
+  if (!params?.include_inactive) {
+    query = query.where("status", 1);
+  }
 
   if (params?.search) {
     const s = `%${params.search}%`;
@@ -58,6 +63,14 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
 
   // --- Free-tier user limit check (#1015) ---
   await checkFreeTierUserLimit(orgId);
+
+  // #1013 — Check org seat limit before adding user
+  const org = await db("organizations").where({ id: orgId }).first();
+  if (org && org.total_allowed_user_count > 0 && org.current_user_count >= org.total_allowed_user_count) {
+    throw new ForbiddenError(
+      `Organization has reached its user limit (${org.current_user_count}/${org.total_allowed_user_count}). Upgrade your subscription to add more users.`,
+    );
+  }
 
   const existing = await db("users").where({ email: data.email }).first();
   if (existing) throw new ConflictError("Email already in use");
@@ -388,6 +401,21 @@ export async function listInvitations(orgId: number, status: string = "pending")
 export async function inviteUser(orgId: number, invitedBy: number, data: InviteUserInput): Promise<{ token: string; invitation: object }> {
   const db = getDB();
 
+  // #1013 — Check org seat limit before inviting user
+  const org = await db("organizations").where({ id: orgId }).first();
+  if (org && org.total_allowed_user_count > 0) {
+    // Count active users + pending invitations against the limit
+    const [{ count: pendingInvitations }] = await db("invitations")
+      .where({ organization_id: orgId, status: "pending" })
+      .count("* as count");
+    const totalCommitted = org.current_user_count + Number(pendingInvitations);
+    if (totalCommitted >= org.total_allowed_user_count) {
+      throw new ForbiddenError(
+        `Organization has reached its user limit (${org.current_user_count} active + ${pendingInvitations} pending invites / ${org.total_allowed_user_count} allowed). Upgrade your subscription to add more users.`,
+      );
+    }
+  }
+
   const existing = await db("users").where({ email: data.email }).first();
   if (existing) throw new ConflictError("User with this email already exists");
 
@@ -491,14 +519,33 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
   }
 
   // Build tree: attach children to parents
+  // #1060 — Collect employees without a valid manager into a virtual "No Manager" group
   const roots: OrgChartNode[] = [];
+  const noManagerChildren: OrgChartNode[] = [];
+
   for (const [uid, node] of nodeMap) {
     const parentId = childToParent.get(uid);
     if (parentId !== undefined && nodeMap.has(parentId)) {
       nodeMap.get(parentId)!.children.push(node);
+    } else if (childToParent.has(uid)) {
+      // Has a reporting_manager_id but manager is not in the active user set
+      noManagerChildren.push(node);
     } else {
       roots.push(node);
     }
+  }
+
+  // If there are orphaned employees whose managers are missing, group them
+  if (noManagerChildren.length > 0) {
+    const noManagerRoot: OrgChartNode = {
+      id: 0,
+      name: "No Manager",
+      designation: null,
+      department: null,
+      photo: null,
+      children: noManagerChildren,
+    };
+    roots.push(noManagerRoot);
   }
 
   // Sort children alphabetically at each level for consistent display
