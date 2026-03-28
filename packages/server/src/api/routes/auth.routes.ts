@@ -154,4 +154,40 @@ router.post("/reset-password", async (req: Request, res: Response, next: NextFun
   }
 });
 
+// POST /api/v1/auth/sso/validate — Validate an SSO/JWT token (#750)
+router.post("/sso/validate", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      sendSuccess(res, { valid: false, error: "Token is required" }, 400);
+      return;
+    }
+    const { verifyAccessToken } = await import("../../services/oauth/jwt.service.js");
+    const payload = verifyAccessToken(token);
+    sendSuccess(res, { valid: true, user: payload });
+  } catch (err: any) {
+    sendSuccess(res, { valid: false, error: err.message || "Invalid token" });
+  }
+});
+
+// POST /api/v1/auth/sso/token — Generate SSO token for module access (#750)
+router.post("/sso/token", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { module_id } = req.body;
+    const { signAccessToken } = await import("../../services/oauth/jwt.service.js");
+    const ssoToken = signAccessToken({
+      sub: req.user!.sub,
+      email: req.user!.email,
+      first_name: req.user!.first_name,
+      last_name: req.user!.last_name,
+      role: req.user!.role,
+      org_id: req.user!.org_id,
+      org_name: req.user!.org_name,
+    });
+    sendSuccess(res, { token: ssoToken, module_id });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

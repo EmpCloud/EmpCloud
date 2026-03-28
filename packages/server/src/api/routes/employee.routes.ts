@@ -25,6 +25,7 @@ import {
 import * as profileService from "../../services/employee/employee-profile.service.js";
 import * as detailService from "../../services/employee/employee-detail.service.js";
 import * as probationService from "../../services/employee/probation.service.js";
+import * as userService from "../../services/user/user.service.js";
 
 // Photo upload multer config
 const photoStorage = multer.diskStorage({
@@ -58,6 +59,15 @@ const router = Router();
 // =========================================================================
 // Directory & Insights (HR or any authenticated user for directory)
 // =========================================================================
+
+// GET /api/v1/employees — alias for /directory (#751)
+router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const params = employeeDirectoryQuerySchema.parse(req.query);
+    const result = await profileService.getDirectory(req.user!.org_id, params);
+    sendPaginated(res, result.users, result.total, params.page, params.per_page);
+  } catch (err) { next(err); }
+});
 
 // GET /api/v1/employees/directory
 router.get("/directory", authenticate, async (req: Request, res: Response, next: NextFunction) => {
@@ -175,6 +185,24 @@ router.put("/:id/probation/extend", authenticate, requireHR, async (req: Request
 // =========================================================================
 // Profile (self or HR)
 // =========================================================================
+
+// GET /api/v1/employees/:id — Employee detail (alias for /users/:id) (#752)
+router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await userService.getUser(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, user);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/employees — Create employee (alias for POST /users) (#753)
+router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { createUserSchema } = await import("@empcloud/shared");
+    const data = createUserSchema.parse(req.body);
+    const user = await userService.createUser(req.user!.org_id, data);
+    sendSuccess(res, user, 201);
+  } catch (err) { next(err); }
+});
 
 // GET /api/v1/employees/:id/profile
 router.get("/:id/profile", authenticate, requireSelfOrHR("id"), async (req: Request, res: Response, next: NextFunction) => {
