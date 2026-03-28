@@ -25,6 +25,7 @@ import {
 import * as profileService from "../../services/employee/employee-profile.service.js";
 import * as detailService from "../../services/employee/employee-detail.service.js";
 import * as probationService from "../../services/employee/probation.service.js";
+import * as salaryService from "../../services/employee/salary.service.js";
 import * as userService from "../../services/user/user.service.js";
 
 // Photo upload multer config
@@ -264,6 +265,59 @@ router.get("/:id/photo", authenticate, async (req: Request, res: Response, next:
       return res.status(404).json({ success: false, error: { message: "Photo file not found" } });
     }
     res.sendFile(filePath);
+  } catch (err) { next(err); }
+});
+
+// =========================================================================
+// Salary Structure (self or HR)
+// =========================================================================
+
+// GET /api/v1/employees/:id/salary
+router.get("/:id/salary", authenticate, requireSelfOrHR("id"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await salaryService.getSalaryStructure(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/employees/:id/salary
+router.put("/:id/salary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { ctc, basic, hra, da, special_allowance, gross, employer_pf, employer_esi, gratuity } = req.body;
+
+    // Basic presence checks
+    const requiredFields = { ctc, basic, hra, da, special_allowance, gross, employer_pf, employer_esi, gratuity };
+    const missing = Object.entries(requiredFields)
+      .filter(([, v]) => v === undefined || v === null)
+      .map(([k]) => k);
+    if (missing.length > 0) {
+      throw new ValidationError(`Missing required fields: ${missing.join(", ")}`);
+    }
+
+    // Type checks — all must be non-negative numbers
+    for (const [key, val] of Object.entries(requiredFields)) {
+      if (typeof val !== "number" || val < 0) {
+        throw new ValidationError(`${key} must be a non-negative number`);
+      }
+    }
+
+    const result = await salaryService.upsertSalaryStructure(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      { ctc, basic, hra, da, special_allowance, gross, employer_pf, employer_esi, gratuity }
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.PROFILE_UPDATED,
+      resourceType: "salary_structure",
+      resourceId: String(paramInt(req.params.id)),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result);
   } catch (err) { next(err); }
 });
 
