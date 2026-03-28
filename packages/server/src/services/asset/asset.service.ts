@@ -411,6 +411,7 @@ export async function returnAsset(
     assigned_to: null,
     assigned_at: null,
     assigned_by: null,
+    returned_at: now,
     updated_at: now,
   };
   if (condition) updateData.condition_status = condition;
@@ -498,6 +499,43 @@ export async function reportLost(
 
   logger.info(`Asset #${assetId} reported lost by user ${userId} in org ${orgId}`);
   return db("assets").where({ id: assetId }).first();
+}
+
+// ---------------------------------------------------------------------------
+// Delete Asset (soft — retire; blocks if currently assigned)
+// ---------------------------------------------------------------------------
+
+export async function deleteAsset(
+  orgId: number,
+  assetId: number,
+  userId: number,
+) {
+  const db = getDB();
+
+  const asset = await db("assets")
+    .where({ id: assetId, organization_id: orgId })
+    .first();
+  if (!asset) throw new NotFoundError("Asset");
+
+  // Rule: Cannot delete an asset that is currently assigned
+  if (asset.status === "assigned") {
+    throw new ValidationError(
+      "Cannot delete an asset that is currently assigned. Return or unassign the asset first.",
+    );
+  }
+
+  // Soft delete — mark as retired
+  const now = new Date();
+  await db("assets").where({ id: assetId }).update({
+    status: "retired",
+    updated_at: now,
+  });
+
+  await logHistory(assetId, orgId, "retired", userId, {
+    notes: "Asset deleted (soft-retired)",
+  });
+
+  logger.info(`Asset #${assetId} soft-deleted by user ${userId} in org ${orgId}`);
 }
 
 // ---------------------------------------------------------------------------

@@ -56,17 +56,19 @@ export async function register(params: {
   });
 
   // Create admin user
+  const now = new Date();
   const [userId] = await db("users").insert({
     organization_id: orgId,
     first_name: params.firstName,
     last_name: params.lastName,
     email: params.email,
     password: passwordHash,
+    password_changed_at: now,
     role: "org_admin",
     status: 1,
-    date_of_joining: new Date().toISOString().slice(0, 10),
-    created_at: new Date(),
-    updated_at: new Date(),
+    date_of_joining: now.toISOString().slice(0, 10),
+    created_at: now,
+    updated_at: now,
   });
 
   const user = await db("users").where({ id: userId }).first();
@@ -99,7 +101,7 @@ export async function register(params: {
 export async function login(params: {
   email: string;
   password: string;
-}): Promise<{ user: object; org: object; tokens: object }> {
+}): Promise<{ user: object; org: object; tokens: object; password_expired?: boolean }> {
   const db = getDB();
 
   const user = await db("users").where({ email: params.email, status: 1 }).first();
@@ -117,6 +119,22 @@ export async function login(params: {
     throw new UnauthorizedError("Organization is inactive");
   }
 
+  // --- Password expiry check ---
+  // If the org has a password_expiry_days policy (> 0), check if the user's
+  // password is older than that many days and flag it in the response.
+  let passwordExpired = false;
+  const expiryDays = org.password_expiry_days ?? 0;
+  if (expiryDays > 0) {
+    const changedAt = user.password_changed_at
+      ? new Date(user.password_changed_at)
+      : new Date(user.created_at);
+    const ageMs = Date.now() - changedAt.getTime();
+    const ageDays = ageMs / (1000 * 60 * 60 * 24);
+    if (ageDays >= expiryDays) {
+      passwordExpired = true;
+    }
+  }
+
   const tokens = await issueTokens({
     userId: user.id,
     orgId: org.id,
@@ -130,7 +148,7 @@ export async function login(params: {
   });
 
   const { password: _, ...safeUser } = user;
-  return { user: safeUser, org, tokens };
+  return { user: safeUser, org, tokens, password_expired: passwordExpired };
 }
 
 // ---------------------------------------------------------------------------
@@ -155,9 +173,11 @@ export async function changePassword(params: {
   }
 
   const newHash = await hashPassword(params.newPassword);
+  const now = new Date();
   await db("users").where({ id: params.userId }).update({
     password: newHash,
-    updated_at: new Date(),
+    password_changed_at: now,
+    updated_at: now,
   });
 }
 
@@ -212,13 +232,15 @@ export async function resetPassword(params: {
 
   const newHash = await hashPassword(params.newPassword);
 
+  const now = new Date();
   await db.transaction(async (trx) => {
     await trx("users").where({ id: tokenRecord.user_id }).update({
       password: newHash,
-      updated_at: new Date(),
+      password_changed_at: now,
+      updated_at: now,
     });
     await trx("password_reset_tokens")
       .where({ id: tokenRecord.id })
-      .update({ used_at: new Date() });
+      .update({ used_at: now });
   });
 }

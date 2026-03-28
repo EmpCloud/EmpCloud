@@ -76,6 +76,7 @@ export async function up(knex: Knex): Promise<void> {
         .references("id")
         .inTable("users")
         .onDelete("SET NULL");
+      t.datetime("returned_at").nullable();
       t.text("notes").nullable();
       t.timestamp("created_at").defaultTo(knex.fn.now());
       t.timestamp("updated_at").defaultTo(knex.fn.now());

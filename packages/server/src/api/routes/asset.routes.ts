@@ -350,6 +350,25 @@ router.post(
   }
 );
 
+// DELETE /api/v1/assets/:id — Delete asset (HR, blocks if assigned)
+router.delete(
+  "/:id",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await assetService.deleteAsset(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        req.user!.sub
+      );
+      sendSuccess(res, { message: "Asset deleted" });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // POST /api/v1/assets/:id/report-lost — Report lost (HR or assigned user)
 router.post(
   "/:id/report-lost",

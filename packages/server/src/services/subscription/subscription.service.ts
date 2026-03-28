@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ConflictError, ValidationError } from "../../utils/errors.js";
+import { NotFoundError, ConflictError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { getAccessibleFeatures } from "../module/module.service.js";
 import { logger } from "../../utils/logger.js";
 import * as billingIntegration from "../billing/billing-integration.service.js";
@@ -13,6 +13,13 @@ import type {
   UpdateSubscriptionInput,
   ModuleAccessResult,
 } from "@empcloud/shared";
+
+// ---------------------------------------------------------------------------
+// Free-tier limits
+// ---------------------------------------------------------------------------
+
+const FREE_TIER_MAX_USERS = 5;
+const FREE_TIER_MAX_MODULES = 1;
 
 // ---------------------------------------------------------------------------
 // Subscriptions
@@ -39,6 +46,21 @@ export async function createSubscription(
   data: CreateSubscriptionInput
 ): Promise<OrgSubscription> {
   const db = getDB();
+
+  // --- Free-tier module limit ---
+  // If the org is subscribing to a free-tier plan, enforce max module count
+  if (data.plan_tier === "free") {
+    const activeFreeSubs = await db("org_subscriptions")
+      .where({ organization_id: orgId, plan_tier: "free" })
+      .whereIn("status", ["active", "trial"])
+      .count("* as count")
+      .first();
+    if (Number(activeFreeSubs?.count ?? 0) >= FREE_TIER_MAX_MODULES) {
+      throw new ForbiddenError(
+        `Free tier is limited to ${FREE_TIER_MAX_MODULES} module(s). Upgrade to a paid plan to add more.`
+      );
+    }
+  }
 
   // Check if already subscribed (active or trial)
   const existing = await db("org_subscriptions")
@@ -295,7 +317,23 @@ export async function checkModuleAccess(params: {
     .whereIn("status", ["active", "trial"])
     .first();
 
-  if (!sub) return { has_access: false, seat_assigned: false, features: [] };
+  // Also deny access if the subscription is suspended or deactivated (overdue invoices)
+  if (!sub) {
+    // Check if there is a suspended subscription — give a clear reason
+    const suspendedSub = await db("org_subscriptions")
+      .where({ organization_id: params.orgId, module_id: mod.id })
+      .whereIn("status", ["suspended", "deactivated"])
+      .first();
+    if (suspendedSub) {
+      return {
+        has_access: false,
+        seat_assigned: false,
+        features: [],
+        subscription: suspendedSub,
+      };
+    }
+    return { has_access: false, seat_assigned: false, features: [] };
+  }
 
   const seat = await db("org_module_seats")
     .where({ module_id: mod.id, user_id: params.userId })
@@ -309,4 +347,137 @@ export async function checkModuleAccess(params: {
     seat_assigned: !!seat,
     features,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Overdue Invoice Enforcement (#1016)
+// After 15 days overdue: suspend subscription.
+// After 30 days overdue: deactivate subscription.
+// Call this periodically (e.g., daily cron) or on-demand.
+// ---------------------------------------------------------------------------
+
+export async function enforceOverdueInvoices(): Promise<{
+  suspended: number;
+  deactivated: number;
+}> {
+  const db = getDB();
+  const now = new Date();
+  let suspended = 0;
+  let deactivated = 0;
+
+  // Fetch all overdue invoices from the billing module for all orgs.
+  // We check every active/past_due subscription that has a billing mapping.
+  const mappings = await db("billing_subscription_mappings as bsm")
+    .join("org_subscriptions as os", "bsm.cloud_subscription_id", "os.id")
+    .whereIn("os.status", ["active", "past_due", "suspended"])
+    .select(
+      "bsm.organization_id",
+      "bsm.cloud_subscription_id",
+      "bsm.billing_subscription_id",
+      "os.status as current_status",
+      "os.current_period_end"
+    );
+
+  for (const mapping of mappings) {
+    // Check if current_period_end is past (invoice would be overdue)
+    const periodEnd = new Date(mapping.current_period_end);
+    const overdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (overdueDays >= 30 && mapping.current_status !== "deactivated") {
+      // 30+ days overdue -> deactivate
+      await db("org_subscriptions")
+        .where({ id: mapping.cloud_subscription_id })
+        .update({ status: "deactivated", updated_at: now });
+      deactivated++;
+      logger.warn(
+        `Subscription ${mapping.cloud_subscription_id} (org ${mapping.organization_id}) ` +
+        `deactivated — ${Math.floor(overdueDays)} days overdue`
+      );
+    } else if (overdueDays >= 15 && mapping.current_status === "active") {
+      // 15-29 days overdue -> suspend (read-only, limited access)
+      await db("org_subscriptions")
+        .where({ id: mapping.cloud_subscription_id })
+        .update({ status: "suspended", updated_at: now });
+      suspended++;
+      logger.warn(
+        `Subscription ${mapping.cloud_subscription_id} (org ${mapping.organization_id}) ` +
+        `suspended — ${Math.floor(overdueDays)} days overdue`
+      );
+    }
+  }
+
+  // Also handle subscriptions without billing mappings: use current_period_end
+  // directly for subscriptions that are past_due (set by payment failure webhook).
+  const pastDueSubs = await db("org_subscriptions")
+    .whereIn("status", ["past_due"])
+    .select("id", "organization_id", "current_period_end");
+
+  for (const sub of pastDueSubs) {
+    const periodEnd = new Date(sub.current_period_end);
+    const overdueDays = (now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (overdueDays >= 30) {
+      await db("org_subscriptions")
+        .where({ id: sub.id })
+        .update({ status: "deactivated", updated_at: now });
+      deactivated++;
+      logger.warn(
+        `Subscription ${sub.id} (org ${sub.organization_id}) deactivated — past_due for ${Math.floor(overdueDays)} days`
+      );
+    } else if (overdueDays >= 15) {
+      await db("org_subscriptions")
+        .where({ id: sub.id })
+        .update({ status: "suspended", updated_at: now });
+      suspended++;
+      logger.warn(
+        `Subscription ${sub.id} (org ${sub.organization_id}) suspended — past_due for ${Math.floor(overdueDays)} days`
+      );
+    }
+  }
+
+  if (suspended > 0 || deactivated > 0) {
+    logger.info(`Overdue enforcement complete: ${suspended} suspended, ${deactivated} deactivated`);
+  }
+
+  return { suspended, deactivated };
+}
+
+// ---------------------------------------------------------------------------
+// Free-Tier Limit Check — called by user.service before creating users
+// ---------------------------------------------------------------------------
+
+export async function checkFreeTierUserLimit(orgId: number): Promise<void> {
+  const db = getDB();
+
+  // Check if org has ONLY free-tier subscriptions (or no paid subscriptions at all)
+  const paidSub = await db("org_subscriptions")
+    .where({ organization_id: orgId })
+    .whereIn("status", ["active", "trial"])
+    .whereNot({ plan_tier: "free" })
+    .first();
+
+  // If there's at least one paid subscription, no user limit applies
+  if (paidSub) return;
+
+  // Check if org has any free subscription (meaning they're on the free tier)
+  const freeSub = await db("org_subscriptions")
+    .where({ organization_id: orgId, plan_tier: "free" })
+    .whereIn("status", ["active", "trial"])
+    .first();
+
+  // If no subscriptions at all, check the org's default user count
+  // (new orgs get total_allowed_user_count = 10 by default, so only enforce
+  // the stricter free-tier limit when there's an explicit free subscription)
+  if (!freeSub) return;
+
+  // Count current active users in this org
+  const [{ count }] = await db("users")
+    .where({ organization_id: orgId, status: 1 })
+    .count("* as count");
+
+  if (Number(count) >= FREE_TIER_MAX_USERS) {
+    throw new ForbiddenError(
+      `Free tier is limited to ${FREE_TIER_MAX_USERS} users. Upgrade to a paid plan to add more.`
+    );
+  }
 }

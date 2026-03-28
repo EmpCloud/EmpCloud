@@ -6,6 +6,7 @@ import { getDB } from "../../db/connection.js";
 import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
 import { ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
+import { checkFreeTierUserLimit } from "../subscription/subscription.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
 /** Strip sensitive fields from user records before sending to client */
@@ -54,6 +55,9 @@ export async function getUser(orgId: number, userId: number): Promise<UserPublic
 
 export async function createUser(orgId: number, data: CreateUserInput): Promise<UserPublic> {
   const db = getDB();
+
+  // --- Free-tier user limit check (#1015) ---
+  await checkFreeTierUserLimit(orgId);
 
   const existing = await db("users").where({ email: data.email }).first();
   if (existing) throw new ConflictError("Email already in use");
@@ -115,18 +119,44 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     if (!loc) locationId = null;
   }
 
+  // Rule: Cannot hire more than department position headcount
+  if (departmentId) {
+    const positions = await db("positions")
+      .where({ organization_id: orgId, department_id: departmentId })
+      .whereIn("status", ["active", "filled"])
+      .select(
+        db.raw("COALESCE(SUM(headcount_budget), 0) as total_budget"),
+        db.raw("COALESCE(SUM(headcount_filled), 0) as total_filled"),
+      )
+      .first();
+
+    if (positions && Number(positions.total_budget) > 0) {
+      const [{ count: activeInDept }] = await db("users")
+        .where({ organization_id: orgId, department_id: departmentId, status: 1 })
+        .count("* as count");
+
+      if (Number(activeInDept) >= Number(positions.total_budget)) {
+        throw new ValidationError(
+          `Department headcount limit reached (${activeInDept}/${positions.total_budget}). Cannot add more employees.`,
+        );
+      }
+    }
+  }
+
   // Calculate probation end date (6 months from join date)
   const joinDate = data.date_of_joining || new Date().toISOString().slice(0, 10);
   const probationEnd = new Date(joinDate);
   probationEnd.setMonth(probationEnd.getMonth() + 6);
   const probationEndDate = probationEnd.toISOString().slice(0, 10);
 
+  const nowTs = new Date();
   const [id] = await db("users").insert({
     organization_id: orgId,
     first_name: data.first_name,
     last_name: data.last_name,
     email: data.email,
     password: passwordHash,
+    password_changed_at: passwordHash ? nowTs : null,
     role: data.role || "employee",
     emp_code: data.emp_code || null,
     contact_number: data.contact_number || null,
@@ -141,8 +171,8 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     probation_end_date: probationEndDate,
     probation_status: "on_probation",
     status: 1,
-    created_at: new Date(),
-    updated_at: new Date(),
+    created_at: nowTs,
+    updated_at: nowTs,
   });
 
   // Update org user count
@@ -275,6 +305,26 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
     } else if (joinMs > 0 && exitMs <= joinMs) {
       throw new ValidationError("Date of exit must be after date of joining");
     }
+
+    // Rule: Notice period enforcement
+    // Check employee_profiles for notice_period_days; if set, date_of_exit must be
+    // at least that many days from today.
+    const profile = await db("employee_profiles")
+      .where({ user_id: userId, organization_id: orgId })
+      .select("notice_period_days")
+      .first();
+    if (profile && profile.notice_period_days && profile.notice_period_days > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const exitDate = new Date(String(allowed.date_of_exit));
+      exitDate.setHours(0, 0, 0, 0);
+      const diffDays = Math.ceil((exitDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays < profile.notice_period_days) {
+        throw new ValidationError(
+          `Notice period of ${profile.notice_period_days} days is required. Exit date must be at least ${profile.notice_period_days} days from today (${diffDays} days provided).`,
+        );
+      }
+    }
   }
 
   if (Object.keys(allowed).length > 0) {
@@ -287,6 +337,37 @@ export async function deactivateUser(orgId: number, userId: number): Promise<voi
   const db = getDB();
   const user = await db("users").where({ id: userId, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
+
+  // Rule: Cannot deactivate employee with pending items
+  const pendingItems: string[] = [];
+
+  const [{ count: pendingLeaves }] = await db("leave_applications")
+    .where({ organization_id: orgId, user_id: userId, status: "pending" })
+    .count("* as count");
+  if (Number(pendingLeaves) > 0) {
+    pendingItems.push(`${pendingLeaves} pending leave application(s)`);
+  }
+
+  const [{ count: assignedAssets }] = await db("assets")
+    .where({ organization_id: orgId, assigned_to: userId, status: "assigned" })
+    .count("* as count");
+  if (Number(assignedAssets) > 0) {
+    pendingItems.push(`${assignedAssets} assigned asset(s)`);
+  }
+
+  const [{ count: openTickets }] = await db("helpdesk_tickets")
+    .where({ organization_id: orgId, raised_by: userId })
+    .whereIn("status", ["open", "in_progress", "awaiting_response"])
+    .count("* as count");
+  if (Number(openTickets) > 0) {
+    pendingItems.push(`${openTickets} open helpdesk ticket(s)`);
+  }
+
+  if (pendingItems.length > 0) {
+    throw new ValidationError(
+      `Cannot deactivate employee with pending items: ${pendingItems.join(", ")}. Please resolve these first.`
+    );
+  }
 
   await db("users").where({ id: userId }).update({ status: 2, updated_at: new Date() });
   await db("organizations").where({ id: orgId }).decrement("current_user_count", 1);
@@ -507,19 +588,21 @@ export async function acceptInvitation(params: {
     const inviteProbationEnd = new Date();
     inviteProbationEnd.setMonth(inviteProbationEnd.getMonth() + 6);
 
+    const inviteNow = new Date();
     const [userId] = await trx("users").insert({
       organization_id: invitation.organization_id,
       first_name: params.firstName || invitation.first_name,
       last_name: params.lastName || invitation.last_name,
       email: invitation.email,
       password: passwordHash,
+      password_changed_at: inviteNow,
       role: invitation.role,
       status: 1,
       date_of_joining: inviteJoinDate,
       probation_end_date: inviteProbationEnd.toISOString().slice(0, 10),
       probation_status: "on_probation",
-      created_at: new Date(),
-      updated_at: new Date(),
+      created_at: inviteNow,
+      updated_at: inviteNow,
     });
 
     await trx("invitations")

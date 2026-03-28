@@ -34,6 +34,20 @@ export async function applyLeave(
     .first();
   if (!leaveType) throw new NotFoundError("Leave type");
 
+  // Rule: Probation period leave restrictions — only sick and emergency leave allowed
+  const applicant = await db("users")
+    .where({ id: userId, organization_id: orgId })
+    .select("probation_status")
+    .first();
+  if (applicant && applicant.probation_status === "on_probation") {
+    const allowedCodes = ["sl", "sick", "eml", "emergency"];
+    if (!allowedCodes.includes(leaveType.code.toLowerCase())) {
+      throw new ValidationError(
+        "Employees on probation can only apply for Sick Leave or Emergency Leave",
+      );
+    }
+  }
+
   // Validate balance
   const year = new Date(data.start_date).getFullYear();
   const balances = await balanceService.getBalances(orgId, userId, year);

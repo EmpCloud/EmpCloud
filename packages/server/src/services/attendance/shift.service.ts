@@ -80,6 +80,26 @@ export async function assignShift(
   const user = await db("users").where({ id: data.user_id, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
 
+  // Rule: Prevent overlapping shift assignments for the same employee
+  const overlapQuery = db("shift_assignments")
+    .where({ organization_id: orgId, user_id: data.user_id })
+    .where("effective_from", "<=", data.effective_to || "9999-12-31");
+  if (data.effective_to) {
+    overlapQuery.where(function () {
+      this.whereNull("effective_to").orWhere("effective_to", ">=", data.effective_from);
+    });
+  } else {
+    overlapQuery.where(function () {
+      this.whereNull("effective_to").orWhere("effective_to", ">=", data.effective_from);
+    });
+  }
+  const overlapping = await overlapQuery.first();
+  if (overlapping) {
+    throw new ValidationError(
+      "Employee already has an overlapping shift assignment for this date range",
+    );
+  }
+
   const [id] = await db("shift_assignments").insert({
     organization_id: orgId,
     user_id: data.user_id,
