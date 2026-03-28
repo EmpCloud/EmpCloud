@@ -523,4 +523,35 @@ router.get(
   }
 );
 
+// GET /api/v1/helpdesk/knowledge-base — Alias for /kb (#719)
+router.get(
+  "/knowledge-base",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, per_page } = paginationSchema.parse(req.query);
+      const category = req.query.category as string | undefined;
+      const search = req.query.search as string | undefined;
+      const result = await helpdeskService.listArticles(req.user!.org_id, {
+        page, perPage: per_page, category, search, published_only: true,
+      });
+      sendPaginated(res, result.articles, result.total, page, per_page);
+    } catch (err) { next(err); }
+  }
+);
+
+// POST /api/v1/helpdesk/knowledge-base — Alias for POST /kb (#719)
+router.post(
+  "/knowledge-base",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = createArticleSchema.parse(req.body);
+      const article = await helpdeskService.createArticle(req.user!.org_id, req.user!.sub, data);
+      sendSuccess(res, article, 201);
+    } catch (err) { next(err); }
+  }
+);
+
 export default router;

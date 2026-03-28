@@ -21,6 +21,23 @@ import { paramInt, param } from "../../utils/params.js";
 
 const router = Router();
 
+// GET /api/v1/whistleblowing — Alias for /reports (any authenticated user) (#720)
+router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const results = await wbService.getMyReports(req.user!.org_id, req.user!.sub);
+    sendSuccess(res, results);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/whistleblowing — Alias for /reports (#721)
+router.post("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = submitWhistleblowerReportSchema.parse(req.body);
+    const result = await wbService.submitReport(req.user!.org_id, req.user!.sub, data);
+    sendSuccess(res, result, 201);
+  } catch (err) { next(err); }
+});
+
 // POST /api/v1/whistleblowing/reports — Submit report (any authenticated user)
 router.post("/reports", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
