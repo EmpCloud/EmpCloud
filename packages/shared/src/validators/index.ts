@@ -996,6 +996,7 @@ export type AssetQueryInput = z.infer<typeof assetQuerySchema>;
 // ---------------------------------------------------------------------------
 
 const feedbackCategoryEnum = z.enum([
+  "general",
   "workplace",
   "management",
   "process",
