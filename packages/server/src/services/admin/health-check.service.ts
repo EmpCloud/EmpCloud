@@ -68,7 +68,7 @@ const MODULES = [
   { name: "EMP Billing", slug: "emp-billing", url: "http://localhost:4001/health", port: 4001 },
   { name: "EMP LMS", slug: "emp-lms", url: "http://localhost:4700/health", port: 4700 },
   { name: "EMP Payroll", slug: "emp-payroll", url: "http://localhost:4000/health", port: 4000 },
-  { name: "EMP Projects", slug: "emp-projects", url: "http://localhost:3100/health", port: 3100 },
+  { name: "EMP Projects", slug: "emp-projects", url: "http://localhost:9000/health", port: 9000 },
   { name: "EMP Monitor", slug: "emp-monitor", url: "http://localhost:5000/health", port: 5000 },
 ];
 
@@ -82,7 +82,7 @@ const KEY_ENDPOINTS = [
   { module: "EMP Billing", endpoint: "/health", method: "GET", url: "http://localhost:4001/health" },
   { module: "EMP LMS", endpoint: "/health", method: "GET", url: "http://localhost:4700/health" },
   { module: "EMP Payroll", endpoint: "/health", method: "GET", url: "http://localhost:4000/health" },
-  { module: "EMP Projects", endpoint: "/health", method: "GET", url: "http://localhost:3100/health" },
+  { module: "EMP Projects", endpoint: "/health", method: "GET", url: "http://localhost:9000/health" },
   { module: "EMP Monitor", endpoint: "/health", method: "GET", url: "http://localhost:5000/health" },
 ];
 

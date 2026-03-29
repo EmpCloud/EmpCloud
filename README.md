@@ -86,7 +86,6 @@ All modules are deployed to the test environment:
 | EMP Payroll | https://testpayroll.empcloud.com | https://testpayroll-api.empcloud.com |
 | EMP Project | https://test-project.empcloud.com | https://test-project-api.empcloud.com |
 | EMP Monitor | https://test-empmonitor.empcloud.com | https://test-empmonitor-api.empcloud.com |
-| EMP Billing | (internal, port 4001) | (internal, port 4001) |
 
 ---
 
