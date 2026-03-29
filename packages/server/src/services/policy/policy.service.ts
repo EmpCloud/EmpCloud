@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError } from "../../utils/errors.js";
+import { sanitizeHtml } from "../../utils/sanitize-html.js";
 import type { CreatePolicyInput } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -19,8 +20,8 @@ export async function createPolicy(
 
   const [id] = await db("company_policies").insert({
     organization_id: orgId,
-    title: data.title,
-    content: data.content,
+    title: sanitizeHtml(data.title),
+    content: sanitizeHtml(data.content),
     version: 1,
     category: data.category || null,
     effective_date: data.effective_date || null,
@@ -104,10 +105,14 @@ export async function updatePolicy(
 
   if (!existing) throw new NotFoundError("Policy");
 
+  const sanitizedData = { ...data };
+  if (sanitizedData.title) sanitizedData.title = sanitizeHtml(sanitizedData.title);
+  if (sanitizedData.content) sanitizedData.content = sanitizeHtml(sanitizedData.content);
+
   await db("company_policies")
     .where({ id: policyId })
     .update({
-      ...data,
+      ...sanitizedData,
       version: existing.version + 1,
       updated_at: new Date(),
     });

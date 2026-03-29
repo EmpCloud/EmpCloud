@@ -33,7 +33,7 @@ export async function createEvent(
     location: data.location || null,
     virtual_link: data.virtual_link || null,
     target_type: data.target_type || "all",
-    target_ids: data.target_ids || null,
+    target_ids: data.target_ids ? JSON.stringify(data.target_ids) : null,
     max_attendees: data.max_attendees || null,
     is_mandatory: data.is_mandatory || false,
     status: "upcoming",
@@ -178,9 +178,14 @@ export async function updateEvent(
     .first();
   if (!existing) throw new NotFoundError("Event");
 
+  const updateData: Record<string, unknown> = { ...data, updated_at: new Date() };
+  if (data.target_ids !== undefined) {
+    updateData.target_ids = data.target_ids ? JSON.stringify(data.target_ids) : null;
+  }
+
   await db("company_events")
     .where({ id: eventId })
-    .update({ ...data, updated_at: new Date() });
+    .update(updateData);
 
   return db("company_events").where({ id: eventId }).first();
 }

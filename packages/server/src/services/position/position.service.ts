@@ -316,21 +316,24 @@ export async function assignUserToPosition(
     updated_at: new Date(),
   });
 
-  // Increment headcount_filled
+  // Increment headcount_filled and update timestamp
   await db("positions")
     .where({ id: positionId })
-    .increment("headcount_filled", 1)
-    .update({ updated_at: new Date() });
+    .update({
+      headcount_filled: db.raw("headcount_filled + 1"),
+      updated_at: new Date(),
+    });
 
-  // Auto-update status to "filled" when headcount_filled reaches headcount_budget
+  // Auto-update status to "frozen" when headcount_filled reaches headcount_budget
   const updated = await db("positions").where({ id: positionId }).first();
   if (updated && updated.headcount_filled >= updated.headcount_budget) {
     await db("positions")
       .where({ id: positionId })
-      .update({ status: "filled", updated_at: new Date() });
+      .update({ status: "frozen", updated_at: new Date() });
   }
 
-  return db("position_assignments").where({ id }).first();
+  const assignment = await db("position_assignments").where({ id }).first();
+  return assignment;
 }
 
 // ---------------------------------------------------------------------------
@@ -354,12 +357,14 @@ export async function removeUserFromPosition(orgId: number, assignmentId: number
   await db("positions")
     .where({ id: assignment.position_id })
     .where("headcount_filled", ">", 0)
-    .decrement("headcount_filled", 1)
-    .update({ updated_at: new Date() });
+    .update({
+      headcount_filled: db.raw("headcount_filled - 1"),
+      updated_at: new Date(),
+    });
 
-  // If position was "filled", revert to "active" since there's now a vacancy
+  // If position was "frozen" (fully staffed), revert to "active" since there's now a vacancy
   const pos = await db("positions").where({ id: assignment.position_id }).first();
-  if (pos && pos.status === "filled" && pos.headcount_filled < pos.headcount_budget) {
+  if (pos && pos.status === "frozen" && pos.headcount_filled < pos.headcount_budget) {
     await db("positions")
       .where({ id: assignment.position_id })
       .update({ status: "active", updated_at: new Date() });
@@ -391,18 +396,19 @@ export async function getPositionHierarchy(orgId: number) {
     .leftJoin("organization_departments", "positions.department_id", "organization_departments.id")
     .orderBy("positions.title", "asc");
 
-  // Build tree
+  // Build tree — cast is_critical from MySQL TINYINT(1) 0/1 to boolean
   const positionMap = new Map<number, any>();
   const roots: any[] = [];
 
   for (const p of positions) {
-    positionMap.set(p.id, { ...p, children: [] });
+    positionMap.set(Number(p.id), { ...p, id: Number(p.id), reports_to_position_id: p.reports_to_position_id ? Number(p.reports_to_position_id) : null, is_critical: Boolean(p.is_critical), children: [] });
   }
 
   for (const p of positions) {
-    const node = positionMap.get(p.id)!;
-    if (p.reports_to_position_id && positionMap.has(p.reports_to_position_id)) {
-      positionMap.get(p.reports_to_position_id)!.children.push(node);
+    const node = positionMap.get(Number(p.id))!;
+    const parentId = p.reports_to_position_id ? Number(p.reports_to_position_id) : null;
+    if (parentId && positionMap.has(parentId)) {
+      positionMap.get(parentId)!.children.push(node);
     } else {
       roots.push(node);
     }

@@ -415,8 +415,12 @@ export async function getSurveyResults(orgId: number, surveyId: number, requesti
       try { options = JSON.parse(options); } catch { /* ignore */ }
     }
 
-    const answers = await db("survey_answers")
-      .where({ question_id: q.id, organization_id: orgId });
+    const answers = await db("survey_answers as sa")
+      .join("survey_responses as sr", "sa.response_id", "sr.id")
+      .where("sr.survey_id", surveyId)
+      .where("sa.question_id", q.id)
+      .where("sa.organization_id", orgId)
+      .select("sa.rating_value", "sa.text_value");
 
     const result: any = {
       question_id: q.id,
@@ -427,7 +431,9 @@ export async function getSurveyResults(orgId: number, surveyId: number, requesti
     };
 
     if (["rating_1_5", "rating_1_10", "enps_0_10", "scale"].includes(q.question_type)) {
-      const ratings = answers.filter((a) => a.rating_value !== null).map((a) => a.rating_value);
+      const ratings = answers
+        .map((a) => a.rating_value)
+        .filter((v): v is number => v !== null && v !== undefined);
       result.avg_rating = ratings.length > 0
         ? Math.round((ratings.reduce((s: number, v: number) => s + v, 0) / ratings.length) * 100) / 100
         : null;
@@ -472,9 +478,15 @@ export async function getSurveyResults(orgId: number, surveyId: number, requesti
   if (survey.type === "enps") {
     const enpsQuestion = questions.find((q: any) => q.question_type === "enps_0_10");
     if (enpsQuestion) {
-      const enpsAnswers = await db("survey_answers")
-        .where({ question_id: enpsQuestion.id, organization_id: orgId });
-      const ratings = enpsAnswers.filter((a) => a.rating_value !== null).map((a) => a.rating_value);
+      const enpsAnswers = await db("survey_answers as sa")
+        .join("survey_responses as sr", "sa.response_id", "sr.id")
+        .where("sr.survey_id", surveyId)
+        .where("sa.question_id", enpsQuestion.id)
+        .where("sa.organization_id", orgId)
+        .select("sa.rating_value");
+      const ratings = enpsAnswers
+        .map((a) => a.rating_value)
+        .filter((v): v is number => v !== null && v !== undefined);
       overallENPS = calculateENPSFromRatings(ratings);
     }
   }

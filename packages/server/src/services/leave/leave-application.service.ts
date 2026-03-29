@@ -335,6 +335,23 @@ export async function rejectLeave(
     throw new ValidationError("Only pending applications can be rejected");
   }
 
+  // Block self-rejection
+  if (approverId === application.user_id) {
+    throw new ForbiddenError("Cannot reject your own leave application");
+  }
+
+  // Verify the approver is authorized
+  const approval = await db("leave_approvals")
+    .where({ leave_application_id: applicationId, approver_id: approverId, status: "pending" })
+    .first();
+
+  // Allow HR/managers even if not listed as specific approver
+  if (!approval) {
+    const approverUser = await db("users").where({ id: approverId }).first();
+    const isHR = approverUser && ["hr_admin", "hr_manager", "org_admin"].includes(approverUser.role);
+    if (!isHR) throw new ForbiddenError("Not authorized to reject this application");
+  }
+
   await db.transaction(async (trx) => {
     await trx("leave_applications")
       .where({ id: applicationId })

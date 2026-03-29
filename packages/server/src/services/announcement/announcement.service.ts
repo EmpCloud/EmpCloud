@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
+import { sanitizeHtml } from "../../utils/sanitize-html.js";
 import type { CreateAnnouncementInput } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -19,8 +20,8 @@ export async function createAnnouncement(
 
   const [id] = await db("announcements").insert({
     organization_id: orgId,
-    title: data.title,
-    content: data.content,
+    title: sanitizeHtml(data.title),
+    content: sanitizeHtml(data.content),
     priority: data.priority || "normal",
     target_type: data.target_type || "all",
     target_ids: data.target_ids || null,
@@ -165,9 +166,13 @@ export async function updateAnnouncement(
     .first();
   if (!existing) throw new NotFoundError("Announcement");
 
+  const sanitizedData = { ...data };
+  if (sanitizedData.title) sanitizedData.title = sanitizeHtml(sanitizedData.title);
+  if (sanitizedData.content) sanitizedData.content = sanitizeHtml(sanitizedData.content);
+
   await db("announcements")
     .where({ id: announcementId })
-    .update({ ...data, updated_at: new Date() });
+    .update({ ...sanitizedData, updated_at: new Date() });
 
   return db("announcements").where({ id: announcementId }).first();
 }

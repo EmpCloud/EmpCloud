@@ -56,6 +56,7 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
     msg.includes("ER_TRUNCATED_WRONG_VALUE") ||
     msg.includes("ER_DATA_TOO_LONG") ||
     msg.includes("ER_DUP_ENTRY") ||
+    msg.includes("ER_INVALID_JSON_TEXT") ||
     msg.includes("Cannot read properties") ||
     msg.includes("is not a function") ||
     msg.includes("WARN_DATA_TRUNCATED") ||

@@ -119,7 +119,7 @@ async function handleLeaveBalance(orgId: number, userId: number): Promise<ChatRe
       "lt.name as leave_type",
       "lb.total_allocated",
       "lb.total_used",
-      "lb.total_pending",
+      "lb.total_carry_forward",
       "lb.balance"
     );
 
@@ -132,11 +132,11 @@ async function handleLeaveBalance(orgId: number, userId: number): Promise<ChatRe
   }
 
   let table = "Here are your current leave balances:\n\n";
-  table += "| Leave Type | Allocated | Used | Pending | Balance |\n";
+  table += "| Leave Type | Allocated | Used | Carry Forward | Balance |\n";
   table += "|---|---|---|---|---|\n";
 
   for (const b of balances) {
-    table += `| ${b.leave_type} | ${b.total_allocated} | ${b.total_used} | ${b.total_pending} | **${b.balance}** |\n`;
+    table += `| ${b.leave_type} | ${b.total_allocated} | ${b.total_used} | ${b.total_carry_forward} | **${b.balance}** |\n`;
   }
 
   table += "\nYou can view full details on the [Leave Dashboard](/leave).";
@@ -347,6 +347,47 @@ async function handleWhoIs(orgId: number, _userId: number, message: string): Pro
     .replace(/who is|contact|email of|phone of|find employee|employee details/gi, "")
     .trim();
 
+  // Handle "my manager" / "my reporting manager" queries
+  const managerPattern = /^(my\s+)?(reporting\s+)?manager\??$/i;
+  if (managerPattern.test(cleaned)) {
+    const user = await db("users").where({ id: _userId, organization_id: orgId }).first();
+    if (!user || !user.reporting_manager_id) {
+      return {
+        content: "You don't have a reporting manager assigned yet. Please contact HR to update your profile.",
+        metadata: { intent: "who_is" },
+      };
+    }
+    const manager = await db("users as u")
+      .leftJoin("organization_departments as od", "od.id", "u.department_id")
+      .where({ "u.id": user.reporting_manager_id, "u.organization_id": orgId })
+      .select(
+        "u.id",
+        "u.first_name",
+        "u.last_name",
+        "u.email",
+        "u.contact_number as phone",
+        "u.designation",
+        "od.name as department"
+      )
+      .first();
+    if (!manager) {
+      return {
+        content: "Your reporting manager could not be found. Please contact HR.",
+        metadata: { intent: "who_is" },
+      };
+    }
+    let response = `Your reporting manager is **${manager.first_name} ${manager.last_name}**\n\n`;
+    if (manager.designation) response += `- Title: ${manager.designation}\n`;
+    if (manager.department) response += `- Department: ${manager.department}\n`;
+    response += `- Email: ${manager.email}\n`;
+    if (manager.phone) response += `- Phone: ${manager.phone}\n`;
+    response += `- [View Profile](/employees/${manager.id})\n`;
+    return {
+      content: response,
+      metadata: { intent: "who_is", manager, link: `/employees/${manager.id}` },
+    };
+  }
+
   if (!cleaned || cleaned.length < 2) {
     return {
       content:
@@ -356,9 +397,7 @@ async function handleWhoIs(orgId: number, _userId: number, message: string): Pro
   }
 
   const employees = await db("users as u")
-    .leftJoin("employee_profiles as ep", function () {
-      this.on("ep.user_id", "=", "u.id").andOn("ep.organization_id", "=", "u.organization_id");
-    })
+    .leftJoin("organization_departments as od", "od.id", "u.department_id")
     .where("u.organization_id", orgId)
     .where(function () {
       this.whereRaw("LOWER(u.first_name) LIKE ?", [`%${cleaned}%`])
@@ -371,9 +410,9 @@ async function handleWhoIs(orgId: number, _userId: number, message: string): Pro
       "u.first_name",
       "u.last_name",
       "u.email",
-      "ep.phone",
-      "ep.designation",
-      "ep.department"
+      "u.contact_number as phone",
+      "u.designation",
+      "od.name as department"
     );
 
   if (employees.length === 0) {
