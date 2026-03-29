@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmpCloud — The Control Tower for Digital Labor in HR</title>
+<meta name="description" content="EmpCloud orchestrates people, policies, workflows, and AI agents across the entire employee lifecycle. 41 AI tools, 10 modules, one platform.">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #914CFF;
+    --blue: #3D84FF;
+    --pink: #E79FFF;
+    --sky: #84C8FF;
+    --dark: #1a1a2e;
+    --text: #434549;
+    --text-light: #5e5e5e;
+    --text-muted: #8a8d93;
+    --bg: #f9f9fb;
+    --white: #ffffff;
+    --card-shadow: 0 2px 12px rgba(183,183,183,0.18);
+    --card-hover: #F7F2FF;
+    --gradient: linear-gradient(90deg, var(--purple), var(--blue));
+    --gradient-soft: linear-gradient(90deg, rgba(145,76,255,0.08), rgba(61,132,255,0.08));
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Comfortaa', sans-serif; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .container-wide { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 24px; font-weight: 700; text-decoration: none;
+  }
+  .nav-logo .emp { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-logo .cloud { color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--purple); }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--gradient); color: white;
+    box-shadow: 0 4px 16px rgba(145,76,255,0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(145,76,255,0.35); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--purple);
+    border: 2px solid var(--purple);
+  }
+  .btn-outline:hover { background: var(--card-hover); }
+  .btn-white {
+    background: white; color: var(--purple); font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-white:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+  .btn-sm { padding: 10px 22px; font-size: 13px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 160px 0 100px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    width: 1000px; height: 600px;
+    background: radial-gradient(ellipse, rgba(145,76,255,0.06) 0%, rgba(61,132,255,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gradient); border-radius: 100px;
+    padding: 8px 22px; font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    color: white; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 28px;
+  }
+  .hero-badge .dot { width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+    50% { opacity:0.7; box-shadow: 0 0 0 6px rgba(255,255,255,0); }
+  }
+  .hero h1 { font-size: 52px; font-weight: 700; letter-spacing: -1px; margin-bottom: 20px; color: var(--dark); line-height: 1.15; }
+  .hero h1 .gradient { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p.hero-sub { font-size: 19px; color: var(--text-light); max-width: 720px; margin: 0 auto 36px; line-height: 1.7; }
+  .hero-ctas { display: flex; gap: 16px; justify-content: center; margin-bottom: 48px; }
+
+  /* Stats row */
+  .stats-row { display: flex; justify-content: center; gap: 56px; flex-wrap: wrap; }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Comfortaa'; font-size: 36px; font-weight: 700;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  /* ─── SECTION SHARED ─── */
+  .section { padding: 100px 0; }
+  .section-alt { background: var(--bg); }
+  .section-dark { background: var(--dark); color: white; }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-header h2 { font-size: 36px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
+  .section-dark .section-header h2 { color: white; }
+  .section-header p { font-size: 17px; color: var(--text-light); max-width: 640px; margin: 0 auto; }
+  .section-dark .section-header p { color: rgba(255,255,255,0.7); }
+  .section-tag {
+    display: inline-block; font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ─── TRUSTED BY / SOCIAL PROOF ─── */
+  .logos-strip {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 36px 48px;
+    opacity: 0.55;
+  }
+  .logos-strip span {
+    font-family: 'Comfortaa'; font-size: 15px; font-weight: 700; color: var(--text);
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── THREE ROLES (NEW) ─── */
+  .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .role-card {
+    background: var(--white); border-radius: 16px; padding: 36px 28px;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow);
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .role-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--gradient); border-radius: 16px 16px 0 0;
+  }
+  .role-card:hover { background: var(--card-hover); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(145,76,255,0.1); }
+  .role-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--gradient-soft); display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 18px;
+  }
+  .role-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--dark); }
+  .role-card p { font-size: 14px; color: var(--text-light); line-height: 1.65; }
+
+  /* ─── PRODUCT SUITE ─── */
+  .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .product-card {
+    background: var(--white); border-radius: 14px; padding: 28px 24px;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow);
+    transition: all 0.3s; display: flex; gap: 18px; align-items: flex-start;
+  }
+  .product-card:hover { background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 6px 24px rgba(145,76,255,0.1); }
+  .product-icon {
+    width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    background: var(--gradient-soft); display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .product-card h4 { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+  .product-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+  .product-card .btn-link {
+    display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700;
+    color: var(--purple); text-decoration: none; letter-spacing: 0.3px;
+  }
+  .product-card .btn-link:hover { text-decoration: underline; }
+
+  /* ─── ACHIEVEMENTS ─── */
+  .achievements-grid { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+  .achievement { text-align: center; }
+  .achievement-num {
+    font-family: 'Comfortaa'; font-size: 48px; font-weight: 700;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .achievement-lbl { font-size: 14px; color: var(--text-light); font-weight: 500; }
+
+  /* ─── BENEFITS ─── */
+  .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .benefit-card {
+    background: var(--white); border-radius: 14px; padding: 28px 24px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: all 0.3s;
+  }
+  .benefit-card:hover { background: var(--card-hover); transform: translateY(-3px); }
+  .benefit-icon { font-size: 28px; margin-bottom: 14px; }
+  .benefit-card h4 { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+  .benefit-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+  /* ─── FEATURES (12-grid) ─── */
+  .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .feature-card {
+    background: var(--white); border-radius: 12px; padding: 22px 18px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: all 0.3s;
+  }
+  .feature-card:hover { background: var(--card-hover); transform: translateY(-2px); }
+  .feature-card .fi { font-size: 26px; margin-bottom: 10px; }
+  .feature-card h4 { font-size: 13px; font-weight: 700; color: var(--dark); }
+
+  /* ─── INDUSTRY VERTICALS ─── */
+  .verticals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .vertical-card {
+    background: var(--white); border-radius: 12px; padding: 24px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: all 0.3s;
+  }
+  .vertical-card:hover { background: var(--card-hover); transform: translateY(-2px); }
+  .vertical-card .vi { font-size: 30px; margin-bottom: 10px; }
+  .vertical-card h4 { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+  /* ─── BUSINESS SIZE ─── */
+  .biz-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .biz-card {
+    background: var(--white); border-radius: 12px; padding: 24px 18px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: all 0.3s;
+  }
+  .biz-card:hover { background: var(--card-hover); transform: translateY(-2px); }
+  .biz-card .bi { font-size: 28px; margin-bottom: 10px; }
+  .biz-card h4 { font-size: 13px; font-weight: 700; color: var(--dark); }
+
+  /* ─── TESTIMONIALS ─── */
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .testimonial-card {
+    background: var(--white); border-radius: 14px; padding: 28px 24px;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow); transition: all 0.3s;
+  }
+  .testimonial-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(145,76,255,0.1); }
+  .testimonial-stars { color: #f59e0b; font-size: 16px; margin-bottom: 14px; letter-spacing: 2px; }
+  .testimonial-card blockquote {
+    font-size: 13px; color: var(--text-light); line-height: 1.7;
+    font-style: italic; margin-bottom: 18px;
+  }
+  .testimonial-author { font-size: 14px; font-weight: 700; color: var(--dark); }
+  .testimonial-role { font-size: 12px; color: var(--text-muted); }
+
+  /* ─── AI TOOLS (DARK) ─── */
+  .tools-stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 48px; }
+  .tool-stat {
+    text-align: center; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 16px 24px;
+  }
+  .tool-stat-val {
+    font-family: 'Comfortaa'; font-size: 28px; font-weight: 700;
+    background: linear-gradient(90deg, var(--pink), var(--sky));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .tool-stat-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: rgba(255,255,255,0.5); }
+
+  .tools-grid-core { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 40px; }
+  .tools-grid-cross { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+
+  .tool-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 20px; transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .tool-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--blue)); opacity: 0.6;
+    border-radius: 12px 12px 0 0;
+  }
+  .tool-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+  .tool-card .tc-icon { font-size: 20px; margin-bottom: 10px; }
+  .tool-card .tc-title {
+    font-family: 'Comfortaa'; font-size: 12px; font-weight: 700; color: white;
+    margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .tool-card .tc-count {
+    font-family: 'Inter'; font-size: 10px; font-weight: 600;
+    background: rgba(145,76,255,0.25); padding: 2px 8px; border-radius: 100px; color: var(--pink);
+  }
+  .tool-card ul { list-style: none; }
+  .tool-card ul li {
+    font-size: 11px; color: rgba(255,255,255,0.6); padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tool-card ul li:last-child { border-bottom: none; }
+  .tool-card ul li .td { width: 4px; height: 4px; border-radius: 50%; background: var(--purple); flex-shrink: 0; }
+  .tool-card ul li strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+  .tools-divider { text-align: center; margin: 12px 0 32px; position: relative; }
+  .tools-divider::before, .tools-divider::after {
+    content: ''; position: absolute; top: 50%; width: calc(50% - 140px); height: 1px;
+  }
+  .tools-divider::before { left: 0; background: linear-gradient(90deg, transparent, rgba(231,159,255,0.3)); }
+  .tools-divider::after { right: 0; background: linear-gradient(270deg, transparent, rgba(132,200,255,0.3)); }
+  .tools-divider span {
+    font-family: 'Comfortaa'; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--pink); background: var(--dark); padding: 0 16px; position: relative;
+  }
+
+  .providers { display: flex; justify-content: center; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .prov-tag {
+    font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+    padding: 6px 16px; border-radius: 100px;
+  }
+
+  /* ─── CTA BANNER ─── */
+  .cta-banner {
+    padding: 80px 0; text-align: center;
+    background: var(--gradient); color: white; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent); pointer-events: none;
+  }
+  .cta-banner h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+  .cta-banner p { font-size: 17px; opacity: 0.9; max-width: 550px; margin: 0 auto 32px; }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 0 30px; }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 14px; }
+  .footer-brand .nav-logo .cloud { color: white; }
+  .footer-brand p { font-size: 13px; line-height: 1.7; }
+  .footer-col h4 { font-family: 'Comfortaa'; font-size: 13px; font-weight: 700; color: white; margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--pink); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+  }
+  .footer-social { display: flex; gap: 16px; }
+  .footer-social a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; transition: color 0.2s; }
+  .footer-social a:hover { color: var(--pink); }
+
+  .span-2 { grid-column: span 2; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .hero h1 { font-size: 38px; }
+    .roles-grid, .testimonials-grid { grid-template-columns: 1fr; }
+    .products-grid { grid-template-columns: 1fr; }
+    .features-grid, .biz-grid { grid-template-columns: repeat(2, 1fr); }
+    .tools-grid-core { grid-template-columns: repeat(2, 1fr); }
+    .tools-grid-cross { grid-template-columns: repeat(3, 1fr); }
+    .benefits-grid, .verticals-grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 28px; }
+    .hero-ctas { flex-direction: column; align-items: center; }
+    .products-grid, .benefits-grid, .verticals-grid, .tools-grid-core { grid-template-columns: 1fr; }
+    .tools-grid-cross, .features-grid, .biz-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-row, .achievements-grid { gap: 24px; }
+    .footer-top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#products">Products</a>
+      <a href="#ai-tools">AI Agent</a>
+      <a href="#features">Features</a>
+      <a href="https://empcloud.com/pricing" target="_blank">Pricing</a>
+      <a href="https://empcloud.com/blog" target="_blank">Blog</a>
+      <a href="https://empcloud.com/contact" target="_blank">Contact</a>
+      <a href="https://empcloud.com" class="btn btn-primary btn-sm">Start For Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge"><span class="dot"></span> The Future of HRMS</div>
+    <h1>Shift From Complexity<br>to <span class="gradient">Clarity</span></h1>
+    <p class="hero-sub">Get agile solutions with a dynamic workforce management suite. EMP Cloud is the <strong>control tower</strong> for digital labor in HR — orchestrating people, policies, workflows, and AI agents from onboarding through exit.</p>
+    <div class="hero-ctas">
+      <a href="https://empcloud.com" class="btn btn-primary">Free Trial</a>
+      <a href="https://empcloud.com/contact" class="btn btn-outline">Book a Demo</a>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">41</div><div class="stat-lbl">AI Tools</div></div>
+      <div class="stat-item"><div class="stat-num">10</div><div class="stat-lbl">Modules</div></div>
+      <div class="stat-item"><div class="stat-num">95+</div><div class="stat-lbl">Pages</div></div>
+      <div class="stat-item"><div class="stat-num">250+</div><div class="stat-lbl">API Endpoints</div></div>
+      <div class="stat-item"><div class="stat-num">9</div><div class="stat-lbl">Languages</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ TRUSTED BY ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Social Proof</div>
+      <h2>Trusted By Businesses Worldwide</h2>
+      <p>From startups to industry leaders, we are setting the standard for excellence and reliability.</p>
+    </div>
+    <div class="logos-strip">
+      <span>Wipro</span><span>Cognizant</span><span>TimesPro</span><span>Airtel</span>
+      <span>Tata Projects</span><span>Chingari</span><span>AffirmData</span><span>Sri Lankan Airlines</span>
+      <span>Silah</span><span>Netscribes</span><span>Vistaprint</span><span>FreeCharge</span>
+      <span>ICICI</span><span>PSR Group</span><span>Value Point</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ THREE ROLES (NEW) ════════════════ -->
+<section class="section section-alt" id="about">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Why EmpCloud</div>
+      <h2>Three Roles, One Platform</h2>
+      <p>EMP Cloud is the central nervous system of your HR ecosystem — serving as identity hub, HRMS engine, and AI orchestrator simultaneously.</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card">
+        <div class="role-icon">&#128274;</div>
+        <h3>Identity & Access Hub</h3>
+        <p>OAuth2/OIDC authorization server with SSO across all modules, seat-based licensing, RBAC, and multi-tenant isolation. One login, every module.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">&#9881;</div>
+        <h3>Core HRMS Engine</h3>
+        <p>Employee profiles, attendance, leave, documents, announcements, policies, org chart, onboarding, helpdesk, surveys, assets, wellness, and more — all built in, not bolted on.</p>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">&#129302;</div>
+        <h3>AI-Powered Orchestrator</h3>
+        <p>41 AI tools across 7 providers that query any module, run reports, answer employee questions, and take action — turning natural language into real HR operations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ PRODUCT SUITE ════════════════ -->
+<section class="section" id="products">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Product Suite</div>
+      <h2>Our Versatile Product Suite</h2>
+      <p>Unlock workforce analytics and tackle challenges head-on with our comprehensive suite of tailored solutions.</p>
+    </div>
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-icon">&#128188;</div>
+        <div>
+          <h4>Recruitment & Onboarding</h4>
+          <p>Streamline your hiring process with top job platform integration, seamless onboarding, and virtual interviews to attract and onboard top talent effortlessly.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#128187;</div>
+        <div>
+          <h4>EmpMonitor</h4>
+          <p>Maximize employee efficiency with real-time insights into their productivity and internet activities, enabling proactive management for improved performance.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#128205;</div>
+        <div>
+          <h4>Field Force Management</h4>
+          <p>Improve your mobile workforce operations with geo-location tracking and activity monitoring, enhancing field performance and operational efficiency.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#128176;</div>
+        <div>
+          <h4>Payroll Management</h4>
+          <p>Optimize financial operations with a robust payroll system that ensures seamless employee pay, account management, and taxation for organizational success.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#128274;</div>
+        <div>
+          <h4>Emp Biometrics</h4>
+          <p>Ensure accurate attendance tracking with an advanced biometric system based on facial recognition technology, minimizing buddy punching and ensuring accountability.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#9881;</div>
+        <div>
+          <h4>HRMS</h4>
+          <p>Enhance HR operations with accurate attendance tracking, streamlined leave management, and compliant policy documentation to empower your HR team for peak performance.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#11088;</div>
+        <div>
+          <h4>Reward & Recognition</h4>
+          <p>Boost employee motivation with AI-powered Reward & Recognition system that automatically identifies high performers who can be rewarded with incentives & coupons.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#127942;</div>
+        <div>
+          <h4>Performance Management</h4>
+          <p>Foster employee growth with our platform offering skill enhancement, certifications, and performance-based appraisals, driving impactful career development.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#128682;</div>
+        <div>
+          <h4>Exit Management</h4>
+          <p>Manage employee exit formalities effortlessly while keeping portfolios with professional records, recognitions, projects, and performance metrics.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-icon">&#128203;</div>
+        <div>
+          <h4>Project Management</h4>
+          <p>Keep a tab on all assigned tasks and projects with Gantt charts and Kanban boards to stay on top of deadlines and optimize team performance for timely delivery.</p>
+          <a href="https://empcloud.com" class="btn-link">Book a Demo &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ AI TOOLS (NEW — DARK) ════════════════ -->
+<section class="section section-dark" id="ai-tools">
+  <div class="container-wide" style="padding: 0 50px;">
+    <div class="section-header">
+      <div style="font-family:Comfortaa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;color:var(--pink);">AI Agent</div>
+      <h2 style="color:white;">The Orchestration Brain</h2>
+      <p style="color:rgba(255,255,255,0.6);">One conversation to query, analyze, and act across your entire HR ecosystem. The AI agent reaches into every module — from attendance to attrition.</p>
+    </div>
+
+    <div class="tools-stats">
+      <div class="tool-stat"><div class="tool-stat-val">41</div><div class="tool-stat-lbl">Tools</div></div>
+      <div class="tool-stat"><div class="tool-stat-val">7</div><div class="tool-stat-lbl">AI Providers</div></div>
+      <div class="tool-stat"><div class="tool-stat-val">6</div><div class="tool-stat-lbl">Cross-Module</div></div>
+      <div class="tool-stat"><div class="tool-stat-val">26</div><div class="tool-stat-lbl">Core Tools</div></div>
+      <div class="tool-stat"><div class="tool-stat-val">15</div><div class="tool-stat-lbl">Modules</div></div>
+    </div>
+
+    <div class="tools-grid-core">
+      <div class="tool-card">
+        <div class="tc-icon">&#128101;</div>
+        <div class="tc-title">Employee & Org <span class="tc-count">3</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Employee Headcount</strong> — Active employees</li>
+          <li><span class="td"></span><strong>Employee Lookup</strong> — Find by name or email</li>
+          <li><span class="td"></span><strong>Department Directory</strong> — Teams & sizes</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#9201;</div>
+        <div class="tc-title">Attendance <span class="tc-count">4</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Today's Pulse</strong> — Present, absent, late</li>
+          <li><span class="td"></span><strong>Individual History</strong> — Employee trail</li>
+          <li><span class="td"></span><strong>Team Snapshot</strong> — Dept summary</li>
+          <li><span class="td"></span><strong>My Status</strong> — Your check-in/out</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128197;</div>
+        <div class="tc-title">Leave <span class="tc-count">3</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Balance Check</strong> — Remaining leave</li>
+          <li><span class="td"></span><strong>Pending Approvals</strong> — Awaiting action</li>
+          <li><span class="td"></span><strong>Leave Calendar</strong> — Who's out</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128227;</div>
+        <div class="tc-title">Company Info <span class="tc-count">3</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Announcements</strong> — Latest updates</li>
+          <li><span class="td"></span><strong>Policy Finder</strong> — Active policies</li>
+          <li><span class="td"></span><strong>Knowledge Search</strong> — HR articles</li>
+        </ul>
+      </div>
+      <div class="tool-card span-2">
+        <div class="tc-icon">&#128150;</div>
+        <div class="tc-title">Employee Engagement <span class="tc-count">4</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Survey Insights</strong> — eNPS & participation</li>
+          <li><span class="td"></span><strong>Wellness Pulse</strong> — Mood & well-being</li>
+          <li><span class="td"></span><strong>Feedback Stream</strong> — Anonymous feedback</li>
+          <li><span class="td"></span><strong>Whistleblower Reports</strong> — Confidential tracking</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128187;</div>
+        <div class="tc-title">Assets & Positions <span class="tc-count">2</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Asset Inventory</strong> — Assigned & available</li>
+          <li><span class="td"></span><strong>Open Vacancies</strong> — Positions to fill</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128179;</div>
+        <div class="tc-title">Billing <span class="tc-count">2</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Seat Usage</strong> — Subscriptions & seats</li>
+          <li><span class="td"></span><strong>Revenue Snapshot</strong> — MRR & invoices</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#127899;</div>
+        <div class="tc-title">Helpdesk <span class="tc-count">1</span></div>
+        <ul><li><span class="td"></span><strong>Ticket Overview</strong> — Open, resolved, overdue</li></ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#127881;</div>
+        <div class="tc-title">Events <span class="tc-count">1</span></div>
+        <ul><li><span class="td"></span><strong>Upcoming Events</strong> — What's happening</li></ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128200;</div>
+        <div class="tc-title">Org Analytics <span class="tc-count">1</span></div>
+        <ul><li><span class="td"></span><strong>Org Overview</strong> — Users, depts, modules</li></ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#127796;</div>
+        <div class="tc-title">Holidays <span class="tc-count">1</span></div>
+        <ul><li><span class="td"></span><strong>Holiday Calendar</strong> — Upcoming holidays</li></ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128270;</div>
+        <div class="tc-title">Custom Query <span class="tc-count">1</span></div>
+        <ul><li><span class="td"></span><strong>Smart SQL</strong> — Ask anything, get live data</li></ul>
+      </div>
+    </div>
+
+    <div class="tools-divider"><span>Cross-Module Tools — 15 tools reaching into 6 modules</span></div>
+
+    <div class="tools-grid-cross">
+      <div class="tool-card">
+        <div class="tc-icon">&#128176;</div>
+        <div class="tc-title">Payroll <span class="tc-count">3</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Payroll Summary</strong> — Gross & net pay</li>
+          <li><span class="td"></span><strong>Salary Lookup</strong> — CTC breakdown</li>
+          <li><span class="td"></span><strong>Cost Analytics</strong> — Dept spend</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128188;</div>
+        <div class="tc-title">Recruitment <span class="tc-count">3</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Open Roles</strong> — Active postings</li>
+          <li><span class="td"></span><strong>Hiring Pipeline</strong> — Funnel stages</li>
+          <li><span class="td"></span><strong>Recruiting Metrics</strong> — Time-to-hire</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#127942;</div>
+        <div class="tc-title">Performance <span class="tc-count">3</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Review Cycles</strong> — Completion rates</li>
+          <li><span class="td"></span><strong>Goals Tracker</strong> — OKR progress</li>
+          <li><span class="td"></span><strong>Team Ratings</strong> — Top talent</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#11088;</div>
+        <div class="tc-title">Rewards <span class="tc-count">2</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Recognition Feed</strong> — Recent kudos</li>
+          <li><span class="td"></span><strong>Leaderboard</strong> — Top employees</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#128682;</div>
+        <div class="tc-title">Exit <span class="tc-count">2</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Offboarding Tracker</strong> — Active exits</li>
+          <li><span class="td"></span><strong>Attrition Insights</strong> — Trends & reasons</li>
+        </ul>
+      </div>
+      <div class="tool-card">
+        <div class="tc-icon">&#127891;</div>
+        <div class="tc-title">LMS <span class="tc-count">2</span></div>
+        <ul>
+          <li><span class="td"></span><strong>Course Catalog</strong> — Enrollment rates</li>
+          <li><span class="td"></span><strong>Compliance Check</strong> — Overdue alerts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="providers">
+      <span class="prov-tag">Claude</span>
+      <span class="prov-tag">OpenAI</span>
+      <span class="prov-tag">Gemini</span>
+      <span class="prov-tag">DeepSeek</span>
+      <span class="prov-tag">Groq</span>
+      <span class="prov-tag">Ollama</span>
+      <span class="prov-tag">OpenAI-Compatible</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ ACHIEVEMENTS ════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Impact</div>
+      <h2>Our Achievements: Transforming Workforces Globally</h2>
+      <p>Join the growing list of businesses thriving with EmpCloud.</p>
+    </div>
+    <div class="achievements-grid">
+      <div class="achievement"><div class="achievement-num">15+</div><div class="achievement-lbl">Countries</div></div>
+      <div class="achievement"><div class="achievement-num">50K+</div><div class="achievement-lbl">Employees Managed</div></div>
+      <div class="achievement"><div class="achievement-num">200+</div><div class="achievement-lbl">Companies Served</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ BENEFITS ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Advantages</div>
+      <h2>Streamline to Success: Achieve Peak Workforce Efficiency</h2>
+      <p>Unmatched performance, seamless integration, and proven results.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">&#9889;</div>
+        <h4>Easy to Deploy</h4>
+        <p>Seamless deployment with minimal downtime. Docker Compose, auto-migrations on startup — up and running in minutes.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">&#9881;</div>
+        <h4>Automated & Accurate</h4>
+        <p>Ensures efficiency and accuracy with automated processes across attendance, payroll, leave, and compliance.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">&#128171;</div>
+        <h4>Intuitive Interface</h4>
+        <p>Easy to use navigation with minimal training needed. 95+ pages, all consistently designed.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">&#128274;</div>
+        <h4>Secure & Reliable</h4>
+        <p>Advanced security measures and SOC 2 compliance. RS256 JWT, PKCE, refresh token rotation, audit logging.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">&#128295;</div>
+        <h4>Versatile & Customizable</h4>
+        <p>Flexible features to meet diverse business needs. Custom fields, custom roles, 9 languages, multi-tenant.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">&#128178;</div>
+        <h4>Cost-Effective</h4>
+        <p>Competitive pricing options with flexible plans. Seat-based licensing — pay only for what you use.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FEATURES (12 cards) ════════════════ -->
+<section class="section section-alt" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Capabilities</div>
+      <h2>State-of-the-Art Features</h2>
+      <p>Take a glimpse into the advanced capabilities of the workforce management tools.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="fi">&#128100;</div><h4>Employee Onboarding</h4></div>
+      <div class="feature-card"><div class="fi">&#9201;</div><h4>Time Tracking</h4></div>
+      <div class="feature-card"><div class="fi">&#128197;</div><h4>Leave & Attendance</h4></div>
+      <div class="feature-card"><div class="fi">&#128205;</div><h4>Geo-Location Tracking</h4></div>
+      <div class="feature-card"><div class="fi">&#128200;</div><h4>Productivity Tracking</h4></div>
+      <div class="feature-card"><div class="fi">&#128203;</div><h4>Project Management</h4></div>
+      <div class="feature-card"><div class="fi">&#128274;</div><h4>Data Loss Prevention</h4></div>
+      <div class="feature-card"><div class="fi">&#128276;</div><h4>Alerts & Notifications</h4></div>
+      <div class="feature-card"><div class="fi">&#128202;</div><h4>Report Generation</h4></div>
+      <div class="feature-card"><div class="fi">&#128176;</div><h4>Payroll Management</h4></div>
+      <div class="feature-card"><div class="fi">&#128220;</div><h4>Policy & Compliance</h4></div>
+      <div class="feature-card"><div class="fi">&#128682;</div><h4>Exit Management</h4></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ INDUSTRY VERTICALS ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Industries</div>
+      <h2>Specialized for Varied Business Verticals</h2>
+      <p>Advanced solutions enhancing efficiency and innovation across diverse business sectors.</p>
+    </div>
+    <div class="verticals-grid">
+      <div class="vertical-card"><div class="vi">&#128187;</div><h4>IT Industry</h4></div>
+      <div class="vertical-card"><div class="vi">&#127974;</div><h4>Banking</h4></div>
+      <div class="vertical-card"><div class="vi">&#127973;</div><h4>Healthcare</h4></div>
+      <div class="vertical-card"><div class="vi">&#128722;</div><h4>Retail</h4></div>
+      <div class="vertical-card"><div class="vi">&#128222;</div><h4>Call Center</h4></div>
+      <div class="vertical-card"><div class="vi">&#127959;</div><h4>Construction</h4></div>
+      <div class="vertical-card"><div class="vi">&#128666;</div><h4>Logistics</h4></div>
+      <div class="vertical-card"><div class="vi">&#127891;</div><h4>Education</h4></div>
+      <div class="vertical-card"><div class="vi">&#128270;</div><h4>Forensics</h4></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ BUSINESS SIZE ════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">For Everyone</div>
+      <h2>Tailored Workforce Management for All</h2>
+      <p>Empowering businesses of every size and sector.</p>
+    </div>
+    <div class="biz-grid">
+      <div class="biz-card"><div class="bi">&#128640;</div><h4>Startups</h4></div>
+      <div class="biz-card"><div class="bi">&#127970;</div><h4>SMBs & MSMEs</h4></div>
+      <div class="biz-card"><div class="bi">&#128205;</div><h4>Field Workforce</h4></div>
+      <div class="biz-card"><div class="bi">&#127968;</div><h4>Remote Workforce</h4></div>
+      <div class="biz-card"><div class="bi">&#128203;</div><h4>Project Managers</h4></div>
+      <div class="biz-card"><div class="bi">&#128101;</div><h4>HR Departments</h4></div>
+      <div class="biz-card"><div class="bi">&#128176;</div><h4>Finance Industry</h4></div>
+      <div class="biz-card"><div class="bi">&#128274;</div><h4>IT & Security Teams</h4></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ TESTIMONIALS ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">Testimonials</div>
+      <h2>Voices of Success: Hear From Our Customers</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <blockquote>"Thanks to their recruitment & onboarding solutions, we have streamlined our hiring process, making it quick and more efficient. Its seamless integration with top job platforms has significantly reduced our time-to-hire."</blockquote>
+        <div class="testimonial-author">Emily White</div>
+        <div class="testimonial-role">President, InnovateTech Corp</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <blockquote>"Emp Biometrics has been a game-changer for us. The facial recognition feature is both secure and reliable, eliminating buddy punching with accurate attendance tracking."</blockquote>
+        <div class="testimonial-author">Laura Thompson</div>
+        <div class="testimonial-role">COO, Precision Manufacturing</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <blockquote>"EmpMonitor has been a game-changer for us, providing real-time insights into employee productivity. Coupled with the Project Management tool, we've seen a marked improvement."</blockquote>
+        <div class="testimonial-author">Karen Martinez</div>
+        <div class="testimonial-role">HR Manager, Global Inc.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CTA BANNER ════════════════ -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Turn Workforce Challenges Into Opportunities</h2>
+    <p>Start with EmpCloud today. Efficiency, compliance, and growth — all orchestrated from one control tower.</p>
+    <a href="https://empcloud.com" class="btn btn-white">Book Your Demo Now</a>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+        <p>Empowering businesses with seamless, unified workforce solutions that drive success and engagement — from onboarding to exit and beyond.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="https://empcloud.com">HRMS</a>
+        <a href="https://empcloud.com">EmpMonitor</a>
+        <a href="https://empcloud.com">Payroll Management</a>
+        <a href="https://empcloud.com">Project Management</a>
+        <a href="https://empcloud.com">Rewards & Recognition</a>
+      </div>
+      <div class="footer-col">
+        <h4>More Products</h4>
+        <a href="https://empcloud.com">Recruitment & Onboarding</a>
+        <a href="https://empcloud.com">Field Force Management</a>
+        <a href="https://empcloud.com">Biometric Attendance</a>
+        <a href="https://empcloud.com">Exit & Portfolio</a>
+        <a href="https://empcloud.com">Performance Management</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="https://empcloud.com/about">About Us</a>
+        <a href="https://empcloud.com/features">Features</a>
+        <a href="https://empcloud.com/pricing">Pricing</a>
+        <a href="https://empcloud.com/blog">Blog</a>
+        <a href="https://empcloud.com/use-cases">Use Cases</a>
+      </div>
+      <div class="footer-col">
+        <h4>Comparison</h4>
+        <a href="https://empcloud.com">EmpCloud vs Keka</a>
+        <a href="https://empcloud.com">EmpCloud vs HROne</a>
+        <a href="https://empcloud.com">EmpCloud vs Zoho</a>
+        <a href="https://empcloud.com">EmpCloud vs Zimyo</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 EmpCloud India Private Limited. All rights reserved. &middot; <a href="https://empcloud.com/privacy-policy" style="color:rgba(255,255,255,0.4);text-decoration:none;">Privacy Policy</a> &middot; <a href="https://empcloud.com/terms-of-service" style="color:rgba(255,255,255,0.4);text-decoration:none;">Terms of Service</a></span>
+      <div class="footer-social">
+        <a href="https://facebook.com/empcloud" target="_blank">f</a>
+        <a href="https://twitter.com/empcloud" target="_blank">X</a>
+        <a href="https://youtube.com/@empcloud" target="_blank">YT</a>
+        <a href="https://linkedin.com/company/empcloud" target="_blank">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
