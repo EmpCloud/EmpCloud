@@ -80,7 +80,7 @@ function RootRedirect() {
   }
 
   // Super admin goes straight to Platform Admin dashboard
-  if (user?.role === "super_admin") return <Navigate to="/admin/super" replace />;
+  if (user?.role === "super_admin") return <Navigate to="/admin" replace />;
 
   const isAdmin = user?.role === "org_admin" || user?.role === "hr_admin" || user?.role === "hr_manager";
   if (isAdmin) return <DashboardPage />;
