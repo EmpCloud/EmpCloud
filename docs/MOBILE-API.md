@@ -1,7 +1,7 @@
 # EMP Cloud Platform -- Complete API Documentation
 
 **Version:** 1.0.0
-**Last Updated:** 2026-03-28
+**Last Updated:** 2026-03-30
 **Audience:** Mobile App Developers, Third-Party Integrators
 
 ---
@@ -1382,6 +1382,14 @@ Rate-limited responses return `429 Too Many Requests` with a `Retry-After` heade
 **Description:** Reject a shift swap request
 
 **Auth Required:** Yes (HR)
+
+---
+
+##### GET /api/v1/attendance/shifts/:id
+
+**Description:** Get a single shift by ID
+
+**Auth Required:** Yes
 
 ---
 
