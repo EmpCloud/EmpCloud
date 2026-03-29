@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — EmpCloud</title>
+<meta name="description" content="Get in touch with EmpCloud. Contact our team for demos, pricing, and support for the complete workforce management suite.">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #914CFF;
+    --blue: #3D84FF;
+    --pink: #E79FFF;
+    --sky: #84C8FF;
+    --dark: #1a1a2e;
+    --text: #434549;
+    --text-light: #5e5e5e;
+    --text-muted: #8a8d93;
+    --bg: #f9f9fb;
+    --white: #ffffff;
+    --card-shadow: 0 2px 12px rgba(183,183,183,0.18);
+    --card-hover: #F7F2FF;
+    --gradient: linear-gradient(90deg, var(--purple), var(--blue));
+    --gradient-soft: linear-gradient(90deg, rgba(145,76,255,0.08), rgba(61,132,255,0.08));
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Comfortaa', sans-serif; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 24px; font-weight: 700; text-decoration: none;
+  }
+  .nav-logo .emp { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-logo .cloud { color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--purple); }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--gradient); color: white;
+    box-shadow: 0 4px 16px rgba(145,76,255,0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(145,76,255,0.35); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--purple);
+    border: 2px solid var(--purple);
+  }
+  .btn-outline:hover { background: var(--card-hover); }
+  .btn-white {
+    background: white; color: var(--purple); font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-white:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+  .btn-sm { padding: 10px 22px; font-size: 13px; }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    padding: 160px 0 80px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .page-header::before {
+    content: ''; position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(145,76,255,0.06) 0%, rgba(61,132,255,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header h1 {
+    font-size: 44px; font-weight: 700; color: var(--dark); margin-bottom: 16px;
+  }
+  .page-header h1 .gradient {
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header p {
+    font-size: 18px; color: var(--text-light); max-width: 600px; margin: 0 auto;
+  }
+
+  /* ─── CONTACT SECTION ─── */
+  .contact-section {
+    padding: 60px 0 100px;
+  }
+  .contact-grid {
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: flex-start;
+  }
+
+  /* ─── CONTACT FORM ─── */
+  .contact-form-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  .contact-form-card h3 {
+    font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 8px;
+  }
+  .contact-form-card > p {
+    font-size: 14px; color: var(--text-muted); margin-bottom: 28px;
+  }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full-width { grid-column: span 2; }
+  .form-group label {
+    font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px;
+  }
+  .form-group label .req { color: #e53e3e; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 16px; border-radius: 8px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: var(--text); background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(145,76,255,0.1);
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: var(--text-muted);
+  }
+  .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23434549' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  .form-group textarea { resize: vertical; min-height: 110px; }
+  .form-submit {
+    margin-top: 28px;
+  }
+  .form-submit .btn-primary {
+    width: 100%; justify-content: center;
+    padding: 14px 32px; font-size: 15px;
+  }
+
+  /* ─── CONTACT INFO ─── */
+  .contact-info-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  .contact-info-card h3 {
+    font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 8px;
+  }
+  .contact-info-card > p {
+    font-size: 14px; color: var(--text-muted); margin-bottom: 28px;
+  }
+  .info-item {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .info-item:last-of-type { border-bottom: none; }
+  .info-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--gradient-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .info-details h4 {
+    font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 4px;
+  }
+  .info-details p,
+  .info-details a {
+    font-size: 14px; color: var(--text-light); text-decoration: none;
+  }
+  .info-details a:hover { color: var(--purple); }
+
+  .social-section {
+    margin-top: 32px; padding-top: 24px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  .social-section h4 {
+    font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 16px;
+  }
+  .social-links {
+    display: flex; gap: 12px;
+  }
+  .social-link {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--gradient-soft);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; font-size: 14px; font-weight: 700;
+    color: var(--purple); transition: all 0.2s;
+  }
+  .social-link:hover {
+    background: var(--gradient); color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(145,76,255,0.3);
+  }
+
+  /* ─── CTA BANNER ─── */
+  .cta-banner {
+    padding: 80px 0; text-align: center;
+    background: var(--gradient); color: white; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent); pointer-events: none;
+  }
+  .cta-banner h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+  .cta-banner p { font-size: 17px; opacity: 0.9; max-width: 550px; margin: 0 auto 32px; }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 0 30px; }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 14px; }
+  .footer-brand .nav-logo .cloud { color: white; }
+  .footer-brand p { font-size: 13px; line-height: 1.7; }
+  .footer-col h4 { font-family: 'Comfortaa'; font-size: 13px; font-weight: 700; color: white; margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--pink); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+  }
+  .footer-social { display: flex; gap: 16px; }
+  .footer-social a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; transition: color 0.2s; }
+  .footer-social a:hover { color: var(--pink); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 640px) {
+    .page-header h1 { font-size: 30px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
+    .contact-form-card, .contact-info-card { padding: 24px; }
+    .footer-top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+    <div class="nav-links">
+      <a href="index.html#about">About</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#ai-tools">AI Agent</a>
+      <a href="index.html#features">Features</a>
+      <a href="https://empcloud.com/pricing" target="_blank">Pricing</a>
+      <a href="https://empcloud.com/blog" target="_blank">Blog</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://empcloud.com" class="btn btn-primary btn-sm">Start For Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════ PAGE HEADER ════════════════ -->
+<section class="page-header">
+  <div class="container">
+    <h1><span class="gradient">Contact</span> Us</h1>
+    <p>Have questions or need a demo? Our team is here to help you find the perfect workforce management solution.</p>
+  </div>
+</section>
+
+<!-- ════════════════ CONTACT SECTION ════════════════ -->
+<section class="contact-section">
+  <div class="container">
+    <div class="contact-grid">
+
+      <!-- Left: Contact Form -->
+      <div class="contact-form-card">
+        <h3>Send Us a Message</h3>
+        <p>Fill out the form below and our team will get back to you within 24 hours.</p>
+        <form id="contactForm" action="https://empcloud.com/api/contact" method="POST" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fullName">Full Name <span class="req">*</span></label>
+              <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label for="orgName">Organization Name <span class="req">*</span></label>
+              <input type="text" id="orgName" name="orgName" placeholder="Acme Inc.">
+            </div>
+            <div class="form-group">
+              <label for="workEmail">Work Email <span class="req">*</span></label>
+              <input type="email" id="workEmail" name="workEmail" placeholder="john@acme.com" required>
+            </div>
+            <div class="form-group">
+              <label for="employees">Total Employees <span class="req">*</span></label>
+              <select id="employees" name="employees" required>
+                <option value="" disabled selected>Select range</option>
+                <option value="1-10">1-10</option>
+                <option value="11-50">11-50</option>
+                <option value="51-200">51-200</option>
+                <option value="201-500">201-500</option>
+                <option value="500-1000">500-1000</option>
+                <option value="1000+">1000+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="product">Product <span class="req">*</span></label>
+              <select id="product" name="product" required>
+                <option value="" disabled selected>Select product</option>
+                <option value="complete-suite">Complete Suite</option>
+                <option value="hrms">HRMS</option>
+                <option value="recruitment">Recruitment</option>
+                <option value="empmonitor">EmpMonitor</option>
+                <option value="field-force">Field Force</option>
+                <option value="payroll">Payroll</option>
+                <option value="biometrics">Biometrics</option>
+                <option value="projects">Projects</option>
+                <option value="rewards">Rewards</option>
+                <option value="performance">Performance</option>
+                <option value="exit">Exit</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="mobile">Mobile Number</label>
+              <input type="tel" id="mobile" name="mobile" placeholder="+91 98765 43210">
+            </div>
+            <div class="form-group">
+              <label for="country">Country <span class="req">*</span></label>
+              <input type="text" id="country" name="country" placeholder="India" required>
+            </div>
+            <div class="form-group full-width">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Tell us about your requirements, team size, or any questions you have..."></textarea>
+            </div>
+          </div>
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right: Contact Info -->
+      <div class="contact-info-card">
+        <h3>Get in Touch</h3>
+        <p>Reach out to us directly through any of the channels below.</p>
+
+        <div class="info-item">
+          <div class="info-icon">&#9993;</div>
+          <div class="info-details">
+            <h4>Email</h4>
+            <a href="mailto:support@empcloud.com">support@empcloud.com</a>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">&#9742;</div>
+          <div class="info-details">
+            <h4>Phone</h4>
+            <a href="tel:+918287331331">+91 8287331331</a>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">&#128172;</div>
+          <div class="info-details">
+            <h4>Skype</h4>
+            <a href="skype:empmonitorsupport?chat">empmonitorsupport</a>
+          </div>
+        </div>
+
+        <div class="social-section">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a href="https://facebook.com/empcloud" target="_blank" class="social-link" aria-label="Facebook" title="Facebook">f</a>
+            <a href="https://twitter.com/empcloud" target="_blank" class="social-link" aria-label="X (Twitter)" title="X">X</a>
+            <a href="https://youtube.com/@empcloud" target="_blank" class="social-link" aria-label="YouTube" title="YouTube">YT</a>
+            <a href="https://linkedin.com/company/empcloud" target="_blank" class="social-link" aria-label="LinkedIn" title="LinkedIn">in</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CTA BANNER ════════════════ -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Turn Workforce Challenges Into Opportunities</h2>
+    <p>Start with EmpCloud today. Efficiency, compliance, and growth — all orchestrated from one control tower.</p>
+    <a href="https://empcloud.com" class="btn btn-white">Book Your Demo Now</a>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+        <p>Empowering businesses with seamless, unified workforce solutions that drive success and engagement — from onboarding to exit and beyond.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="https://empcloud.com">HRMS</a>
+        <a href="https://empcloud.com">EmpMonitor</a>
+        <a href="https://empcloud.com">Payroll Management</a>
+        <a href="https://empcloud.com">Project Management</a>
+        <a href="https://empcloud.com">Rewards &amp; Recognition</a>
+      </div>
+      <div class="footer-col">
+        <h4>More Products</h4>
+        <a href="https://empcloud.com">Recruitment &amp; Onboarding</a>
+        <a href="https://empcloud.com">Field Force Management</a>
+        <a href="https://empcloud.com">Biometric Attendance</a>
+        <a href="https://empcloud.com">Exit &amp; Portfolio</a>
+        <a href="https://empcloud.com">Performance Management</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="https://empcloud.com/about">About Us</a>
+        <a href="https://empcloud.com/features">Features</a>
+        <a href="https://empcloud.com/pricing">Pricing</a>
+        <a href="https://empcloud.com/blog">Blog</a>
+        <a href="https://empcloud.com/use-cases">Use Cases</a>
+      </div>
+      <div class="footer-col">
+        <h4>Comparison</h4>
+        <a href="https://empcloud.com">EmpCloud vs Keka</a>
+        <a href="https://empcloud.com">EmpCloud vs HROne</a>
+        <a href="https://empcloud.com">EmpCloud vs Zoho</a>
+        <a href="https://empcloud.com">EmpCloud vs Zimyo</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 EmpCloud India Private Limited. All rights reserved. &middot; <a href="https://empcloud.com/privacy-policy" style="color:rgba(255,255,255,0.4);text-decoration:none;">Privacy Policy</a> &middot; <a href="https://empcloud.com/terms-of-service" style="color:rgba(255,255,255,0.4);text-decoration:none;">Terms of Service</a></span>
+      <div class="footer-social">
+        <a href="https://facebook.com/empcloud" target="_blank">f</a>
+        <a href="https://twitter.com/empcloud" target="_blank">X</a>
+        <a href="https://youtube.com/@empcloud" target="_blank">YT</a>
+        <a href="https://linkedin.com/company/empcloud" target="_blank">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

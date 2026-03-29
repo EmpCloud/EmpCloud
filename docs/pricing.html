@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — EmpCloud</title>
+<meta name="description" content="Simple, transparent pricing for EmpCloud products. EmpMonitor, Biometrics, Field Force, and Project Management plans to fit every team size.">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #914CFF;
+    --blue: #3D84FF;
+    --pink: #E79FFF;
+    --sky: #84C8FF;
+    --dark: #1a1a2e;
+    --text: #434549;
+    --text-light: #5e5e5e;
+    --text-muted: #8a8d93;
+    --bg: #f9f9fb;
+    --white: #ffffff;
+    --card-shadow: 0 2px 12px rgba(183,183,183,0.18);
+    --card-hover: #F7F2FF;
+    --gradient: linear-gradient(90deg, var(--purple), var(--blue));
+    --gradient-soft: linear-gradient(90deg, rgba(145,76,255,0.08), rgba(61,132,255,0.08));
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Comfortaa', sans-serif; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 24px; font-weight: 700; text-decoration: none;
+  }
+  .nav-logo .emp { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-logo .cloud { color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--purple); }
+  .nav-links a.active { color: var(--purple); font-weight: 600; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--gradient); color: white;
+    box-shadow: 0 4px 16px rgba(145,76,255,0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(145,76,255,0.35); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--purple);
+    border: 2px solid var(--purple);
+  }
+  .btn-outline:hover { background: var(--card-hover); }
+  .btn-white {
+    background: white; color: var(--purple); font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-white:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+  .btn-sm { padding: 10px 22px; font-size: 13px; }
+  .btn-block { width: 100%; justify-content: center; }
+
+  /* ─── SECTION SHARED ─── */
+  .section { padding: 100px 0; }
+  .section-alt { background: var(--bg); }
+  .section-dark { background: var(--dark); color: white; }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-header h2 { font-size: 36px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
+  .section-dark .section-header h2 { color: white; }
+  .section-header p { font-size: 17px; color: var(--text-light); max-width: 640px; margin: 0 auto; }
+  .section-dark .section-header p { color: rgba(255,255,255,0.7); }
+  .section-tag {
+    display: inline-block; font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    padding: 160px 0 80px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .page-header::before {
+    content: ''; position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    width: 1000px; height: 600px;
+    background: radial-gradient(ellipse, rgba(145,76,255,0.06) 0%, rgba(61,132,255,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header h1 {
+    font-size: 48px; font-weight: 700; letter-spacing: -1px; margin-bottom: 16px;
+    color: var(--dark); line-height: 1.15;
+  }
+  .page-header h1 .gradient {
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header p {
+    font-size: 19px; color: var(--text-light); max-width: 600px; margin: 0 auto;
+  }
+
+  /* ─── BILLING TOGGLE ─── */
+  .billing-toggle {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    margin-top: 36px;
+  }
+  .billing-toggle span {
+    font-size: 15px; font-weight: 600; color: var(--text-muted);
+    transition: color 0.3s; cursor: pointer;
+  }
+  .billing-toggle span.active { color: var(--dark); }
+  .toggle-switch {
+    position: relative; width: 56px; height: 30px;
+    background: #ddd; border-radius: 30px; cursor: pointer;
+    transition: background 0.3s;
+  }
+  .toggle-switch.yearly { background: var(--purple); }
+  .toggle-switch .toggle-knob {
+    position: absolute; top: 3px; left: 3px;
+    width: 24px; height: 24px; background: white; border-radius: 50%;
+    transition: transform 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .toggle-switch.yearly .toggle-knob { transform: translateX(26px); }
+  .billing-save {
+    display: inline-block; background: rgba(145,76,255,0.1); color: var(--purple);
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    margin-left: 8px;
+  }
+
+  /* ─── PRODUCT TABS ─── */
+  .product-tabs {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .product-tab {
+    padding: 10px 24px; border-radius: 100px; font-size: 14px; font-weight: 600;
+    color: var(--text-light); background: var(--white); border: 1px solid rgba(0,0,0,0.08);
+    cursor: pointer; transition: all 0.3s; font-family: 'Inter', sans-serif;
+  }
+  .product-tab:hover { border-color: var(--purple); color: var(--purple); }
+  .product-tab.active {
+    background: var(--gradient); color: white; border-color: transparent;
+  }
+
+  /* ─── PRICING CARDS ─── */
+  .pricing-product { display: none; }
+  .pricing-product.active { display: block; }
+
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px; max-width: 1100px; margin: 0 auto;
+  }
+
+  .pricing-card {
+    background: var(--white); border-radius: 16px; padding: 36px 28px;
+    border: 1px solid rgba(0,0,0,0.06); box-shadow: var(--card-shadow);
+    transition: all 0.3s; position: relative; display: flex; flex-direction: column;
+  }
+  .pricing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(145,76,255,0.1);
+  }
+
+  /* Featured / Gold card */
+  .pricing-card.featured {
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), var(--gradient);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    box-shadow: 0 4px 24px rgba(145,76,255,0.15);
+  }
+  .pricing-card.featured::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--gradient); border-radius: 14px 14px 0 0;
+  }
+  .pricing-card.featured:hover {
+    box-shadow: 0 12px 40px rgba(145,76,255,0.2);
+  }
+
+  .pricing-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--gradient); color: white; font-size: 11px; font-weight: 700;
+    padding: 4px 16px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .pricing-plan {
+    font-family: 'Comfortaa'; font-size: 20px; font-weight: 700; color: var(--dark);
+    margin-bottom: 8px;
+  }
+  .pricing-users {
+    font-size: 13px; color: var(--text-muted); margin-bottom: 20px;
+  }
+  .pricing-amount {
+    display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px;
+  }
+  .pricing-currency {
+    font-size: 20px; font-weight: 700; color: var(--dark);
+  }
+  .pricing-value {
+    font-family: 'Comfortaa'; font-size: 44px; font-weight: 700; color: var(--dark);
+    line-height: 1;
+  }
+  .pricing-period {
+    font-size: 14px; color: var(--text-muted); font-weight: 500;
+  }
+  .pricing-note {
+    font-size: 12px; color: var(--text-muted); margin-bottom: 24px;
+  }
+  .pricing-custom {
+    font-family: 'Comfortaa'; font-size: 28px; font-weight: 700;
+    color: var(--dark); margin-bottom: 8px;
+  }
+
+  .pricing-features {
+    list-style: none; margin: 24px 0; flex: 1;
+  }
+  .pricing-features li {
+    font-size: 13px; color: var(--text-light); padding: 6px 0;
+    display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
+  }
+  .pricing-features li::before {
+    content: '\2713'; color: var(--purple); font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .pricing-card .btn { margin-top: auto; }
+
+  /* ─── FREE TRIAL CALLOUT ─── */
+  .trial-callout {
+    text-align: center; margin: 56px auto 0; padding: 28px 36px;
+    background: var(--gradient-soft); border-radius: 16px;
+    max-width: 600px;
+  }
+  .trial-callout h3 {
+    font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 8px;
+  }
+  .trial-callout p {
+    font-size: 15px; color: var(--text-light);
+  }
+  .trial-callout .trial-days {
+    display: inline-block; background: var(--gradient); color: white;
+    font-family: 'Comfortaa'; font-size: 13px; font-weight: 700;
+    padding: 6px 18px; border-radius: 20px; margin-bottom: 12px;
+  }
+
+  /* ─── FAQ ACCORDION ─── */
+  .faq-list { max-width: 720px; margin: 0 auto; }
+  .faq-item {
+    border-bottom: 1px solid rgba(0,0,0,0.07); overflow: hidden;
+  }
+  .faq-question {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0; cursor: pointer; gap: 16px;
+    font-size: 16px; font-weight: 600; color: var(--dark);
+    background: none; border: none; width: 100%; text-align: left;
+    font-family: 'Inter', sans-serif; transition: color 0.2s;
+  }
+  .faq-question:hover { color: var(--purple); }
+  .faq-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--gradient-soft); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; transition: transform 0.3s;
+    font-size: 18px; color: var(--purple); font-weight: 300;
+  }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-answer {
+    max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease;
+  }
+  .faq-item.open .faq-answer { max-height: 200px; }
+  .faq-answer p {
+    padding: 0 0 22px; font-size: 14px; color: var(--text-light); line-height: 1.7;
+  }
+
+  /* ─── CTA BANNER ─── */
+  .cta-banner {
+    background: var(--gradient); color: white; text-align: center;
+    padding: 72px 24px; border-radius: 20px; margin: 0 24px;
+  }
+  .cta-banner h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+  .cta-banner p { font-size: 17px; opacity: 0.9; max-width: 550px; margin: 0 auto 32px; }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 0 30px; }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 14px; }
+  .footer-brand .nav-logo .cloud { color: white; }
+  .footer-brand p { font-size: 13px; line-height: 1.7; }
+  .footer-col h4 { font-family: 'Comfortaa'; font-size: 13px; font-weight: 700; color: white; margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--pink); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+  }
+  .footer-social { display: flex; gap: 16px; }
+  .footer-social a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; transition: color 0.2s; }
+  .footer-social a:hover { color: var(--pink); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .page-header h1 { font-size: 36px; }
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 640px) {
+    .page-header h1 { font-size: 28px; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 380px; }
+    .product-tabs { gap: 6px; }
+    .product-tab { padding: 8px 16px; font-size: 13px; }
+    .cta-banner { margin: 0 12px; padding: 48px 20px; }
+    .cta-banner h2 { font-size: 26px; }
+    .footer-top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+    <div class="nav-links">
+      <a href="index.html#about">About</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#ai-tools">AI Agent</a>
+      <a href="index.html#features">Features</a>
+      <a href="pricing.html" class="active">Pricing</a>
+      <a href="https://empcloud.com/blog" target="_blank">Blog</a>
+      <a href="https://empcloud.com/contact" target="_blank">Contact</a>
+      <a href="https://empcloud.com" class="btn btn-primary btn-sm">Start For Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════ PAGE HEADER ════════════════ -->
+<section class="page-header">
+  <div class="container">
+    <div class="section-tag">Pricing</div>
+    <h1>Simple, Transparent <span class="gradient">Pricing</span></h1>
+    <p>Choose the plan that fits your team. No hidden fees, no surprises. Scale up or down as your workforce grows.</p>
+
+    <!-- Billing Toggle -->
+    <div class="billing-toggle">
+      <span id="toggle-monthly" class="active">Monthly</span>
+      <div class="toggle-switch" id="billing-toggle" role="switch" aria-checked="false" aria-label="Toggle between monthly and yearly billing" tabindex="0">
+        <div class="toggle-knob"></div>
+      </div>
+      <span id="toggle-yearly">Yearly</span>
+      <span class="billing-save">Save up to 20%</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ PRICING SECTIONS ════════════════ -->
+<section class="section">
+  <div class="container">
+
+    <!-- Product Tabs -->
+    <div class="product-tabs" role="tablist" aria-label="Product pricing tabs">
+      <button class="product-tab active" role="tab" aria-selected="true" aria-controls="tab-empmonitor" data-tab="empmonitor">EmpMonitor</button>
+      <button class="product-tab" role="tab" aria-selected="false" aria-controls="tab-biometrics" data-tab="biometrics">Biometrics</button>
+      <button class="product-tab" role="tab" aria-selected="false" aria-controls="tab-fieldforce" data-tab="fieldforce">Field Force</button>
+      <button class="product-tab" role="tab" aria-selected="false" aria-controls="tab-projects" data-tab="projects">Project Management</button>
+    </div>
+
+    <!-- ── EmpMonitor ── -->
+    <div class="pricing-product active" id="tab-empmonitor" role="tabpanel">
+      <div class="pricing-grid">
+
+        <!-- Bronze -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Bronze</div>
+          <div class="pricing-users">1 - 10 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">4.66</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed yearly</div>
+          <ul class="pricing-features">
+            <li>Real-time screenshots</li>
+            <li>App & website tracking</li>
+            <li>Productivity analysis</li>
+            <li>Activity timeline</li>
+            <li>Email support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Silver -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Silver</div>
+          <div class="pricing-users">11 - 50 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">3.83</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed yearly</div>
+          <ul class="pricing-features">
+            <li>Everything in Bronze</li>
+            <li>Advanced reporting</li>
+            <li>Stealth mode</li>
+            <li>Project & task tracking</li>
+            <li>Priority email support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Gold (Featured) -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-plan">Gold</div>
+          <div class="pricing-users">51 - 200 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">3.00</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed yearly</div>
+          <ul class="pricing-features">
+            <li>Everything in Silver</li>
+            <li>AI-powered insights</li>
+            <li>Custom alerts & rules</li>
+            <li>Department-level analytics</li>
+            <li>Dedicated account manager</li>
+            <li>Phone & chat support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-primary btn-block">Get Started</a>
+        </div>
+
+        <!-- Diamond -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Diamond</div>
+          <div class="pricing-users">200+ users</div>
+          <div class="pricing-custom">Custom</div>
+          <div class="pricing-note">Tailored for your organization</div>
+          <ul class="pricing-features">
+            <li>Everything in Gold</li>
+            <li>White-label options</li>
+            <li>Custom integrations</li>
+            <li>On-premise deployment</li>
+            <li>SLA guarantee</li>
+            <li>24/7 dedicated support</li>
+          </ul>
+          <a href="https://empcloud.com/contact" class="btn btn-outline btn-block">Contact Sales</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Biometrics ── -->
+    <div class="pricing-product" id="tab-biometrics" role="tabpanel">
+      <div class="pricing-grid" style="max-width:1200px;">
+
+        <!-- Bronze -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Bronze</div>
+          <div class="pricing-users">1 - 10 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">5.90</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed annually</div>
+          <ul class="pricing-features">
+            <li>Fingerprint attendance</li>
+            <li>Basic reporting</li>
+            <li>Cloud sync</li>
+            <li>Email support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Silver -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Silver</div>
+          <div class="pricing-users">11 - 50 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">4.90</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed annually</div>
+          <ul class="pricing-features">
+            <li>Everything in Bronze</li>
+            <li>Face recognition</li>
+            <li>Shift management</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Gold (Featured) -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-plan">Gold</div>
+          <div class="pricing-users">51 - 200 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">3.90</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed annually</div>
+          <ul class="pricing-features">
+            <li>Everything in Silver</li>
+            <li>Multi-location support</li>
+            <li>Geo-fencing</li>
+            <li>Custom reports</li>
+            <li>Dedicated manager</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-primary btn-block">Get Started</a>
+        </div>
+
+        <!-- Diamond -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Diamond</div>
+          <div class="pricing-users">200+ users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">2.90</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed annually</div>
+          <ul class="pricing-features">
+            <li>Everything in Gold</li>
+            <li>Unlimited devices</li>
+            <li>API access</li>
+            <li>Advanced analytics</li>
+            <li>Phone & chat support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Enterprise</div>
+          <div class="pricing-users">500+ users</div>
+          <div class="pricing-custom">Custom</div>
+          <div class="pricing-note">Tailored for large organizations</div>
+          <ul class="pricing-features">
+            <li>Everything in Diamond</li>
+            <li>On-premise deployment</li>
+            <li>Custom integrations</li>
+            <li>SLA guarantee</li>
+            <li>24/7 dedicated support</li>
+          </ul>
+          <a href="https://empcloud.com/contact" class="btn btn-outline btn-block">Contact Sales</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Field Force ── -->
+    <div class="pricing-product" id="tab-fieldforce" role="tabpanel">
+      <div class="pricing-grid">
+
+        <!-- Bronze -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Bronze</div>
+          <div class="pricing-users">1 - 10 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">7.90</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed monthly</div>
+          <ul class="pricing-features">
+            <li>GPS location tracking</li>
+            <li>Route management</li>
+            <li>Task assignment</li>
+            <li>Basic reporting</li>
+            <li>Email support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Silver -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Silver</div>
+          <div class="pricing-users">11 - 50 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">7.30</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed monthly</div>
+          <ul class="pricing-features">
+            <li>Everything in Bronze</li>
+            <li>Geo-fenced check-in</li>
+            <li>Live field dashboard</li>
+            <li>Expense tracking</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Gold (Featured) -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-plan">Gold</div>
+          <div class="pricing-users">51 - 200 users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">6.50</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed monthly</div>
+          <ul class="pricing-features">
+            <li>Everything in Silver</li>
+            <li>Custom workflows</li>
+            <li>Offline mode</li>
+            <li>Advanced analytics</li>
+            <li>Client visit reports</li>
+            <li>Dedicated manager</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-primary btn-block">Get Started</a>
+        </div>
+
+        <!-- Diamond -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Diamond</div>
+          <div class="pricing-users">200+ users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">5.50</span>
+          </div>
+          <div class="pricing-period">/user/month</div>
+          <div class="pricing-note">Billed monthly</div>
+          <ul class="pricing-features">
+            <li>Everything in Gold</li>
+            <li>API integrations</li>
+            <li>White-label options</li>
+            <li>Custom SLA</li>
+            <li>24/7 phone support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Project Management ── -->
+    <div class="pricing-product" id="tab-projects" role="tabpanel">
+      <div class="pricing-grid" style="max-width:1200px;">
+
+        <!-- Free -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Free</div>
+          <div class="pricing-users">Get started at no cost</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">0</span>
+          </div>
+          <div class="pricing-period">forever</div>
+          <div class="pricing-note">No credit card required</div>
+          <ul class="pricing-features">
+            <li>2 seats included</li>
+            <li>1 project</li>
+            <li>20 tasks</li>
+            <li>Basic Kanban board</li>
+            <li>Community support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Start Free</a>
+        </div>
+
+        <!-- Standard -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Standard</div>
+          <div class="pricing-users">For growing teams</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">60</span>
+          </div>
+          <div class="pricing-period">/seat/year</div>
+          <div class="pricing-note">Billed yearly</div>
+          <ul class="pricing-features">
+            <li>Unlimited projects</li>
+            <li>Unlimited tasks</li>
+            <li>Gantt charts</li>
+            <li>Time tracking</li>
+            <li>Email support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Premium (Featured) -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-plan">Premium</div>
+          <div class="pricing-users">For scaling organizations</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">95</span>
+          </div>
+          <div class="pricing-period">/seat/year</div>
+          <div class="pricing-note">Billed yearly</div>
+          <ul class="pricing-features">
+            <li>Everything in Standard</li>
+            <li>Resource management</li>
+            <li>Custom workflows</li>
+            <li>Advanced reporting</li>
+            <li>Integrations (Slack, Jira)</li>
+            <li>Priority support</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-primary btn-block">Get Started</a>
+        </div>
+
+        <!-- Pro -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Pro</div>
+          <div class="pricing-users">For power users</div>
+          <div class="pricing-amount">
+            <span class="pricing-currency">$</span>
+            <span class="pricing-value">119</span>
+          </div>
+          <div class="pricing-period">/seat/year</div>
+          <div class="pricing-note">Billed yearly</div>
+          <ul class="pricing-features">
+            <li>Everything in Premium</li>
+            <li>AI task suggestions</li>
+            <li>Portfolio management</li>
+            <li>Automation rules</li>
+            <li>Dedicated manager</li>
+          </ul>
+          <a href="https://empcloud.com" class="btn btn-outline btn-block">Get Started</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Enterprise</div>
+          <div class="pricing-users">Unlimited scale</div>
+          <div class="pricing-custom">Custom</div>
+          <div class="pricing-note">Tailored for your organization</div>
+          <ul class="pricing-features">
+            <li>Everything in Pro</li>
+            <li>SSO & SCIM provisioning</li>
+            <li>Audit logs</li>
+            <li>On-premise deployment</li>
+            <li>Custom SLA</li>
+            <li>24/7 dedicated support</li>
+          </ul>
+          <a href="https://empcloud.com/contact" class="btn btn-outline btn-block">Contact Sales</a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Free Trial Callout -->
+    <div class="trial-callout">
+      <span class="trial-days">15 Day Free Trial</span>
+      <h3>Try any plan free for 15 days</h3>
+      <p>No credit card required. Full access to all features. Cancel anytime during the trial period.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════ FAQ ════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">FAQ</div>
+      <h2>Frequently Asked Questions</h2>
+      <p>Everything you need to know about our pricing and plans.</p>
+    </div>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Can I switch between plans at any time?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes, you can upgrade or downgrade your plan at any time. When upgrading, the difference is prorated for the remaining billing period. When downgrading, the new rate applies at the next billing cycle.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          What happens after the 15-day free trial?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>After your trial ends, you can choose a paid plan to continue using all features. If you do not select a plan, your account will revert to limited access. No charges are made during the trial, and no credit card is required to start.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Do you offer discounts for annual billing?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes, annual billing saves you up to 20% compared to monthly plans. EmpMonitor, Biometrics, and Project Management are billed annually by default. Field Force is billed monthly with volume discounts available for larger teams.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Can I use multiple products together?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Absolutely. All EmpCloud products are designed to work seamlessly together through a unified dashboard. You can subscribe to any combination of products, and your data flows across modules automatically. Contact our sales team for bundled pricing on multi-product subscriptions.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CTA BANNER ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="cta-banner">
+      <h2>Ready to Get Started?</h2>
+      <p>Join thousands of businesses using EmpCloud to streamline their workforce management.</p>
+      <a href="https://empcloud.com" class="btn btn-white">Start Your Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+        <p>Empowering businesses with seamless, unified workforce solutions that drive success and engagement — from onboarding to exit and beyond.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="https://empcloud.com">HRMS</a>
+        <a href="https://empcloud.com">EmpMonitor</a>
+        <a href="https://empcloud.com">Payroll Management</a>
+        <a href="https://empcloud.com">Project Management</a>
+        <a href="https://empcloud.com">Rewards & Recognition</a>
+      </div>
+      <div class="footer-col">
+        <h4>More Products</h4>
+        <a href="https://empcloud.com">Recruitment & Onboarding</a>
+        <a href="https://empcloud.com">Field Force Management</a>
+        <a href="https://empcloud.com">Biometric Attendance</a>
+        <a href="https://empcloud.com">Exit & Portfolio</a>
+        <a href="https://empcloud.com">Performance Management</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="https://empcloud.com/about">About Us</a>
+        <a href="https://empcloud.com/features">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="https://empcloud.com/blog">Blog</a>
+        <a href="https://empcloud.com/use-cases">Use Cases</a>
+      </div>
+      <div class="footer-col">
+        <h4>Comparison</h4>
+        <a href="https://empcloud.com">EmpCloud vs Keka</a>
+        <a href="https://empcloud.com">EmpCloud vs HROne</a>
+        <a href="https://empcloud.com">EmpCloud vs Zoho</a>
+        <a href="https://empcloud.com">EmpCloud vs Zimyo</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 EmpCloud India Private Limited. All rights reserved. &middot; <a href="https://empcloud.com/privacy-policy" style="color:rgba(255,255,255,0.4);text-decoration:none;">Privacy Policy</a> &middot; <a href="https://empcloud.com/terms-of-service" style="color:rgba(255,255,255,0.4);text-decoration:none;">Terms of Service</a></span>
+      <div class="footer-social">
+        <a href="https://facebook.com/empcloud" target="_blank">f</a>
+        <a href="https://twitter.com/empcloud" target="_blank">X</a>
+        <a href="https://youtube.com/@empcloud" target="_blank">YT</a>
+        <a href="https://linkedin.com/company/empcloud" target="_blank">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Product Tab Switching ──
+  var tabs = document.querySelectorAll('.product-tab');
+  var panels = document.querySelectorAll('.pricing-product');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.getAttribute('data-tab');
+
+      tabs.forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
+
+      panels.forEach(function(p) {
+        p.classList.remove('active');
+      });
+      var targetPanel = document.getElementById('tab-' + target);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+    });
+  });
+
+  // ── Billing Toggle ──
+  var toggleSwitch = document.getElementById('billing-toggle');
+  var monthlyLabel = document.getElementById('toggle-monthly');
+  var yearlyLabel = document.getElementById('toggle-yearly');
+
+  function setBilling(isYearly) {
+    if (isYearly) {
+      toggleSwitch.classList.add('yearly');
+      toggleSwitch.setAttribute('aria-checked', 'true');
+      monthlyLabel.classList.remove('active');
+      yearlyLabel.classList.add('active');
+    } else {
+      toggleSwitch.classList.remove('yearly');
+      toggleSwitch.setAttribute('aria-checked', 'false');
+      monthlyLabel.classList.add('active');
+      yearlyLabel.classList.remove('active');
+    }
+  }
+
+  toggleSwitch.addEventListener('click', function() {
+    var isCurrentlyYearly = this.classList.contains('yearly');
+    setBilling(!isCurrentlyYearly);
+  });
+
+  toggleSwitch.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      var isCurrentlyYearly = this.classList.contains('yearly');
+      setBilling(!isCurrentlyYearly);
+    }
+  });
+
+  monthlyLabel.addEventListener('click', function() { setBilling(false); });
+  yearlyLabel.addEventListener('click', function() { setBilling(true); });
+
+  // ── FAQ Accordion ──
+  var faqItems = document.querySelectorAll('.faq-item');
+
+  faqItems.forEach(function(item) {
+    var question = item.querySelector('.faq-question');
+    question.addEventListener('click', function() {
+      var isOpen = item.classList.contains('open');
+
+      // Close all
+      faqItems.forEach(function(other) {
+        other.classList.remove('open');
+        other.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+        question.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

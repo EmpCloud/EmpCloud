@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — EmpCloud India Private Limited</title>
+<meta name="description" content="Learn about EmpCloud's vision, mission, and values. Over three decades of experience transforming the employee journey from onboarding to exit.">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #914CFF;
+    --blue: #3D84FF;
+    --pink: #E79FFF;
+    --sky: #84C8FF;
+    --dark: #1a1a2e;
+    --text: #434549;
+    --text-light: #5e5e5e;
+    --text-muted: #8a8d93;
+    --bg: #f9f9fb;
+    --white: #ffffff;
+    --card-shadow: 0 2px 12px rgba(183,183,183,0.18);
+    --card-hover: #F7F2FF;
+    --gradient: linear-gradient(90deg, var(--purple), var(--blue));
+    --gradient-soft: linear-gradient(90deg, rgba(145,76,255,0.08), rgba(61,132,255,0.08));
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Comfortaa', sans-serif; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 24px; font-weight: 700; text-decoration: none;
+  }
+  .nav-logo .emp { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-logo .cloud { color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--purple); }
+  .nav-links a.active { color: var(--purple); font-weight: 600; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--gradient); color: white;
+    box-shadow: 0 4px 16px rgba(145,76,255,0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(145,76,255,0.35); transform: translateY(-1px); }
+  .btn-white {
+    background: white; color: var(--purple); font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-white:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+  .btn-sm { padding: 10px 22px; font-size: 13px; }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    padding: 140px 0 60px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .page-header::before {
+    content: ''; position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(145,76,255,0.06) 0%, rgba(61,132,255,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header h1 {
+    font-size: 44px; font-weight: 700; color: var(--dark); margin-bottom: 16px;
+  }
+  .page-header h1 .gradient {
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .breadcrumb {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .breadcrumb a {
+    color: var(--purple); text-decoration: none; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .breadcrumb a:hover { color: var(--blue); }
+  .breadcrumb .separator { color: var(--text-muted); }
+
+  /* ─── SECTION SHARED ─── */
+  .section { padding: 100px 0; }
+  .section-alt { background: var(--bg); }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-header h2 { font-size: 36px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
+  .section-header p { font-size: 17px; color: var(--text-light); max-width: 640px; margin: 0 auto; }
+  .section-tag {
+    display: inline-block; font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ─── VISION & MISSION CARDS ─── */
+  .vm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .vm-card {
+    background: var(--white); border-radius: 16px; padding: 40px 32px;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow);
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .vm-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--gradient); border-radius: 16px 16px 0 0;
+  }
+  .vm-card:hover { background: var(--card-hover); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(145,76,255,0.1); }
+  .vm-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--gradient-soft); display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin-bottom: 20px;
+  }
+  .vm-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
+  .vm-card p { font-size: 15px; color: var(--text-light); line-height: 1.75; }
+
+  /* ─── VALUES CARDS ─── */
+  .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .value-card {
+    background: var(--white); border-radius: 16px; padding: 36px 28px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow);
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .value-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--gradient); border-radius: 16px 16px 0 0;
+  }
+  .value-card:hover { background: var(--card-hover); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(145,76,255,0.1); }
+  .value-icon {
+    width: 60px; height: 60px; border-radius: 16px;
+    background: var(--gradient-soft); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 18px;
+  }
+  .value-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--dark); }
+  .value-card p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+
+  /* ─── ACHIEVEMENTS ─── */
+  .achievements-grid { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+  .achievement { text-align: center; }
+  .achievement-num {
+    font-family: 'Comfortaa'; font-size: 48px; font-weight: 700;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .achievement-lbl { font-size: 14px; color: var(--text-light); font-weight: 500; margin-top: 4px; }
+
+  /* ─── PRODUCT SUITE GRID ─── */
+  .suite-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+  .suite-card {
+    background: var(--white); border-radius: 14px; padding: 28px 16px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow);
+    transition: all 0.3s;
+  }
+  .suite-card:hover { background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 6px 24px rgba(145,76,255,0.1); }
+  .suite-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--gradient-soft); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 12px;
+  }
+  .suite-card h4 { font-size: 13px; font-weight: 700; color: var(--dark); line-height: 1.4; }
+
+  /* ─── CTA BANNER ─── */
+  .cta-banner {
+    padding: 80px 0; text-align: center;
+    background: var(--gradient); color: white; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent); pointer-events: none;
+  }
+  .cta-banner h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+  .cta-banner p { font-size: 17px; opacity: 0.9; max-width: 550px; margin: 0 auto 32px; }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 0 30px; }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 14px; }
+  .footer-brand .nav-logo .cloud { color: white; }
+  .footer-brand p { font-size: 13px; line-height: 1.7; }
+  .footer-col h4 { font-family: 'Comfortaa'; font-size: 13px; font-weight: 700; color: white; margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--pink); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+  }
+  .footer-social { display: flex; gap: 16px; }
+  .footer-social a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; transition: color 0.2s; }
+  .footer-social a:hover { color: var(--pink); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .page-header h1 { font-size: 34px; }
+    .vm-grid { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: 1fr; }
+    .suite-grid { grid-template-columns: repeat(3, 1fr); }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 640px) {
+    .page-header h1 { font-size: 28px; }
+    .suite-grid { grid-template-columns: repeat(2, 1fr); }
+    .achievements-grid { gap: 32px; }
+    .footer-top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+    <div class="nav-links">
+      <a href="about.html" class="active">About</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#ai-tools">AI Agent</a>
+      <a href="index.html#features">Features</a>
+      <a href="https://empcloud.com/pricing" target="_blank">Pricing</a>
+      <a href="https://empcloud.com/blog" target="_blank">Blog</a>
+      <a href="https://empcloud.com/contact" target="_blank">Contact</a>
+      <a href="https://empcloud.com" class="btn btn-primary btn-sm">Start For Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════ PAGE HEADER ════════════════ -->
+<section class="page-header">
+  <div class="container">
+    <h1><span class="gradient">About</span> Us</h1>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="separator" aria-hidden="true">&rsaquo;</span>
+      <span aria-current="page">About</span>
+    </nav>
+  </div>
+</section>
+
+<!-- ════════════════ VISION & MISSION ════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Who We Are</span>
+      <h2>Our Vision &amp; Mission</h2>
+      <p>Built by EmpCloud India Private Limited with a commitment to transforming the way businesses manage their workforce.</p>
+    </div>
+    <div class="vm-grid">
+      <div class="vm-card">
+        <div class="vm-icon" aria-hidden="true">&#128065;</div>
+        <h3>Our Vision</h3>
+        <p>Provide a seamless solution for businesses, transforming the employee journey from onboarding to exit. We envision a world where every organization, regardless of size, has access to powerful, intuitive HR technology that puts people first.</p>
+      </div>
+      <div class="vm-card">
+        <div class="vm-icon" aria-hidden="true">&#127919;</div>
+        <h3>Our Mission</h3>
+        <p>Simplify and optimize every employee lifecycle stage through integrated solutions. From recruitment to retirement, we build tools that reduce complexity, eliminate silos, and empower HR teams to focus on what matters most — their people.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ COMPANY VALUES ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">What Drives Us</span>
+      <h2>Our Core Values</h2>
+      <p>The principles that guide every decision we make and every product we build.</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon" aria-hidden="true">&#128161;</div>
+        <h3>Innovation-Driven</h3>
+        <p>Over three decades of experience in workforce management. We continuously push boundaries, leveraging cutting-edge technology and AI to deliver smarter HR solutions that stay ahead of the curve.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" aria-hidden="true">&#129309;</div>
+        <h3>Community &amp; Collaboration</h3>
+        <p>Mutual respect, genuine care, and shared victories. We believe that the best solutions emerge when diverse perspectives come together in an environment built on trust and transparency.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" aria-hidden="true">&#11088;</div>
+        <h3>Customer-Centric</h3>
+        <p>Customizable for startups, growing businesses, and corporations. Every feature we build starts with a real customer need, and we adapt our platform to fit your workflow — not the other way around.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ ACHIEVEMENTS ════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Our Impact</span>
+      <h2>Trusted Worldwide</h2>
+      <p>Numbers that reflect our commitment to empowering businesses across the globe.</p>
+    </div>
+    <div class="achievements-grid">
+      <div class="achievement">
+        <div class="achievement-num">15+</div>
+        <div class="achievement-lbl">Countries</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-num">50K+</div>
+        <div class="achievement-lbl">Employees Managed</div>
+      </div>
+      <div class="achievement">
+        <div class="achievement-num">200+</div>
+        <div class="achievement-lbl">Companies</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ PRODUCT SUITE ════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Our Ecosystem</span>
+      <h2>10 Products, One Platform</h2>
+      <p>A comprehensive suite of HR tools designed to cover every stage of the employee lifecycle.</p>
+    </div>
+    <div class="suite-grid">
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128101;</div>
+        <h4>Core HRMS</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128176;</div>
+        <h4>Payroll</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128421;</div>
+        <h4>EmpMonitor</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128270;</div>
+        <h4>Recruit</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128205;</div>
+        <h4>Field Force</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128274;</div>
+        <h4>Biometrics</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128195;</div>
+        <h4>Projects</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#127942;</div>
+        <h4>Rewards</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128200;</div>
+        <h4>Performance</h4>
+      </div>
+      <div class="suite-card">
+        <div class="suite-icon" aria-hidden="true">&#128682;</div>
+        <h4>Exit</h4>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CTA BANNER ════════════════ -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Ready to Transform Your HR?</h2>
+    <p>Join 200+ companies across 15+ countries who trust EmpCloud to manage their entire employee lifecycle.</p>
+    <a href="https://empcloud.com" class="btn btn-white">Start For Free</a>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+        <p>Empowering businesses with seamless, unified workforce solutions that drive success and engagement — from onboarding to exit and beyond.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="https://empcloud.com">HRMS</a>
+        <a href="https://empcloud.com">EmpMonitor</a>
+        <a href="https://empcloud.com">Payroll Management</a>
+        <a href="https://empcloud.com">Project Management</a>
+        <a href="https://empcloud.com">Rewards &amp; Recognition</a>
+      </div>
+      <div class="footer-col">
+        <h4>More Products</h4>
+        <a href="https://empcloud.com">Recruitment &amp; Onboarding</a>
+        <a href="https://empcloud.com">Field Force Management</a>
+        <a href="https://empcloud.com">Biometric Attendance</a>
+        <a href="https://empcloud.com">Exit &amp; Portfolio</a>
+        <a href="https://empcloud.com">Performance Management</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="about.html">About Us</a>
+        <a href="https://empcloud.com/features">Features</a>
+        <a href="https://empcloud.com/pricing">Pricing</a>
+        <a href="https://empcloud.com/blog">Blog</a>
+        <a href="https://empcloud.com/use-cases">Use Cases</a>
+      </div>
+      <div class="footer-col">
+        <h4>Comparison</h4>
+        <a href="https://empcloud.com">EmpCloud vs Keka</a>
+        <a href="https://empcloud.com">EmpCloud vs HROne</a>
+        <a href="https://empcloud.com">EmpCloud vs Zoho</a>
+        <a href="https://empcloud.com">EmpCloud vs Zimyo</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 EmpCloud India Private Limited. All rights reserved. &middot; <a href="https://empcloud.com/privacy-policy" style="color:rgba(255,255,255,0.4);text-decoration:none;">Privacy Policy</a> &middot; <a href="https://empcloud.com/terms-of-service" style="color:rgba(255,255,255,0.4);text-decoration:none;">Terms of Service</a></span>
+      <div class="footer-social">
+        <a href="https://facebook.com/empcloud" target="_blank">f</a>
+        <a href="https://twitter.com/empcloud" target="_blank">X</a>
+        <a href="https://youtube.com/@empcloud" target="_blank">YT</a>
+        <a href="https://linkedin.com/company/empcloud" target="_blank">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

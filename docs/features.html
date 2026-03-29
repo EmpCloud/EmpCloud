@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Features — EmpCloud | State-of-the-Art HR Capabilities</title>
+<meta name="description" content="Explore EmpCloud features: time tracking, geo-location, task management, face recognition attendance, payroll, and 41 AI agent tools across 7 providers.">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #914CFF;
+    --blue: #3D84FF;
+    --pink: #E79FFF;
+    --sky: #84C8FF;
+    --dark: #1a1a2e;
+    --text: #434549;
+    --text-light: #5e5e5e;
+    --text-muted: #8a8d93;
+    --bg: #f9f9fb;
+    --white: #ffffff;
+    --card-shadow: 0 2px 12px rgba(183,183,183,0.18);
+    --card-hover: #F7F2FF;
+    --gradient: linear-gradient(90deg, var(--purple), var(--blue));
+    --gradient-soft: linear-gradient(90deg, rgba(145,76,255,0.08), rgba(61,132,255,0.08));
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Comfortaa', sans-serif; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 16px 0;
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 24px; font-weight: 700; text-decoration: none;
+  }
+  .nav-logo .emp { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-logo .cloud { color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--text-light);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--purple); }
+  .nav-links a.active { color: var(--purple); font-weight: 600; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--gradient); color: white;
+    box-shadow: 0 4px 16px rgba(145,76,255,0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(145,76,255,0.35); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--purple);
+    border: 2px solid var(--purple);
+  }
+  .btn-outline:hover { background: var(--card-hover); }
+  .btn-white {
+    background: white; color: var(--purple); font-weight: 700;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  .btn-white:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+  .btn-sm { padding: 10px 22px; font-size: 13px; }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    padding: 160px 0 80px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .page-header::before {
+    content: ''; position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    width: 1000px; height: 500px;
+    background: radial-gradient(ellipse, rgba(145,76,255,0.06) 0%, rgba(61,132,255,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .page-header-tag {
+    display: inline-block; font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header h1 {
+    font-size: 52px; font-weight: 700; letter-spacing: -1px;
+    margin-bottom: 18px; color: var(--dark); line-height: 1.15;
+  }
+  .page-header h1 .gradient {
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header p {
+    font-size: 19px; color: var(--text-light); max-width: 640px;
+    margin: 0 auto; line-height: 1.7;
+  }
+
+  /* ─── SECTION SHARED ─── */
+  .section { padding: 100px 0; }
+  .section-alt { background: var(--bg); }
+  .section-dark { background: var(--dark); color: white; }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-header h2 { font-size: 36px; font-weight: 700; margin-bottom: 14px; color: var(--dark); }
+  .section-dark .section-header h2 { color: white; }
+  .section-header p { font-size: 17px; color: var(--text-light); max-width: 640px; margin: 0 auto; }
+  .section-dark .section-header p { color: rgba(255,255,255,0.7); }
+  .section-tag {
+    display: inline-block; font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+    background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* ─── FEATURE CATEGORY GRID ─── */
+  .features-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .feature-card {
+    background: var(--white); border-radius: 14px; padding: 32px 24px;
+    border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--card-shadow);
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--gradient); opacity: 0; transition: opacity 0.3s;
+    border-radius: 14px 14px 0 0;
+  }
+  .feature-card:hover {
+    background: var(--card-hover); transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(145,76,255,0.1);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--gradient-soft); display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 18px;
+  }
+  .feature-card h4 {
+    font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 13px; color: var(--text-light); line-height: 1.65;
+  }
+
+  /* ─── AI CALLOUT SECTION ─── */
+  .ai-callout {
+    padding: 100px 0; position: relative; overflow: hidden;
+    background: var(--dark);
+  }
+  .ai-callout::before {
+    content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 1200px; height: 800px;
+    background: radial-gradient(ellipse, rgba(145,76,255,0.15) 0%, rgba(61,132,255,0.08) 30%, transparent 60%);
+    pointer-events: none;
+  }
+  .ai-callout .section-header h2 { color: white; }
+  .ai-callout .section-header p { color: rgba(255,255,255,0.7); }
+  .ai-callout .section-tag {
+    background: linear-gradient(90deg, var(--pink), var(--sky));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .ai-new-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(90deg, var(--pink), var(--sky));
+    border-radius: 100px; padding: 6px 18px;
+    font-family: 'Comfortaa'; font-size: 11px; font-weight: 700;
+    color: var(--dark); letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .ai-new-badge .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--dark); animation: ai-pulse 2s infinite;
+  }
+  @keyframes ai-pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(26,26,46,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(26,26,46,0); }
+  }
+
+  .ai-features-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+    max-width: 900px; margin: 0 auto 48px;
+  }
+  .ai-feature-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 28px 24px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .ai-feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--pink), var(--sky)); opacity: 0.6;
+    border-radius: 14px 14px 0 0;
+  }
+  .ai-feature-card:hover {
+    background: rgba(255,255,255,0.1); transform: translateY(-3px);
+  }
+  .ai-feature-card .ai-icon {
+    font-size: 24px; margin-bottom: 14px;
+  }
+  .ai-feature-card h4 {
+    font-family: 'Comfortaa'; font-size: 14px; font-weight: 700;
+    color: white; margin-bottom: 8px;
+  }
+  .ai-feature-card p {
+    font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.65;
+  }
+
+  .ai-stats-row {
+    display: flex; justify-content: center; gap: 40px;
+    margin-bottom: 48px; flex-wrap: wrap;
+  }
+  .ai-stat {
+    text-align: center; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 18px 28px;
+  }
+  .ai-stat-val {
+    font-family: 'Comfortaa'; font-size: 32px; font-weight: 700;
+    background: linear-gradient(90deg, var(--pink), var(--sky));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .ai-stat-lbl {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    font-weight: 600; color: rgba(255,255,255,0.5);
+  }
+
+  .ai-cta-row {
+    text-align: center;
+  }
+  .btn-glow {
+    background: linear-gradient(90deg, var(--pink), var(--sky));
+    color: var(--dark); font-weight: 700; padding: 14px 32px;
+    border-radius: 8px; font-size: 14px; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.3s; border: none; cursor: pointer;
+    box-shadow: 0 4px 24px rgba(231,159,255,0.3);
+  }
+  .btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(231,159,255,0.45);
+  }
+
+  /* ─── CTA BANNER ─── */
+  .cta-banner {
+    padding: 80px 0; text-align: center;
+    background: var(--gradient); color: white; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent); pointer-events: none;
+  }
+  .cta-banner h2 { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+  .cta-banner p { font-size: 17px; opacity: 0.9; max-width: 550px; margin: 0 auto 32px; }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 0 30px; }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; }
+  .footer-brand { max-width: 320px; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 14px; }
+  .footer-brand .nav-logo .cloud { color: white; }
+  .footer-brand p { font-size: 13px; line-height: 1.7; }
+  .footer-col h4 { font-family: 'Comfortaa'; font-size: 13px; font-weight: 700; color: white; margin-bottom: 14px; }
+  .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; padding: 4px 0; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--pink); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+  }
+  .footer-social { display: flex; gap: 16px; }
+  .footer-social a { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; transition: color 0.2s; }
+  .footer-social a:hover { color: var(--pink); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .page-header h1 { font-size: 38px; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .ai-features-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 640px) {
+    .page-header h1 { font-size: 28px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .ai-features-grid { grid-template-columns: 1fr; }
+    .ai-stats-row { gap: 16px; }
+    .ai-stat { padding: 14px 20px; }
+    .footer-top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+    <div class="nav-links">
+      <a href="index.html#about">About</a>
+      <a href="index.html#products">Products</a>
+      <a href="index.html#ai-tools">AI Agent</a>
+      <a href="features.html" class="active">Features</a>
+      <a href="https://empcloud.com/pricing" target="_blank">Pricing</a>
+      <a href="https://empcloud.com/blog" target="_blank">Blog</a>
+      <a href="https://empcloud.com/contact" target="_blank">Contact</a>
+      <a href="https://empcloud.com" class="btn btn-primary btn-sm">Start For Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════ PAGE HEADER ════════════════ -->
+<section class="page-header">
+  <div class="container">
+    <span class="page-header-tag">EmpCloud Platform</span>
+    <h1><span class="gradient">Features</span></h1>
+    <p>State-of-the-Art Capabilities that empower managers, HR teams, and your entire workforce with intelligent, unified tools.</p>
+  </div>
+</section>
+
+<!-- ════════════════ MANAGER-CENTRIC FEATURES ════════════════ -->
+<section class="section" id="manager-features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Manager-Centric</span>
+      <h2>Built for Operational Excellence</h2>
+      <p>Give managers the visibility and control they need to drive productivity, manage teams, and make data-driven decisions.</p>
+    </div>
+    <div class="features-grid" role="list" aria-label="Manager-centric features">
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#9200;</div>
+        <h4>Time Tracking</h4>
+        <p>Optimize productivity with precise monitoring of work hours and activities across your entire workforce.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#127758;</div>
+        <h4>Geo-Location Tracking</h4>
+        <p>Keep track of field team locations in real time for efficient operations and resource allocation.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#9745;</div>
+        <h4>Task Management</h4>
+        <p>Assign tasks to field teams and monitor real-time progress to keep projects on track.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128101;</div>
+        <h4>Client Management</h4>
+        <p>Manage client information and track all interactions from a single, centralized dashboard.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128200;</div>
+        <h4>Productivity Tracking</h4>
+        <p>Actionable insights into employee performance in real time to identify and reward top performers.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128203;</div>
+        <h4>Project Management</h4>
+        <p>Strategically plan and oversee projects for on-time delivery with milestones and resource tracking.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128274;</div>
+        <h4>Data Loss Prevention</h4>
+        <p>Safeguard critical business information with enterprise-grade security measures and monitoring.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128202;</div>
+        <h4>Report Generation</h4>
+        <p>Access in-depth, customizable reports for informed business decisions and compliance requirements.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ HR-CENTRIC FEATURES ════════════════ -->
+<section class="section section-alt" id="hr-features">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">HR-Centric</span>
+      <h2>Streamline Every HR Process</h2>
+      <p>From attendance to payroll, automate the entire employee lifecycle with tools designed for modern HR teams.</p>
+    </div>
+    <div class="features-grid" role="list" aria-label="HR-centric features">
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128247;</div>
+        <h4>Face Recognition Attendance</h4>
+        <p>Contactless attendance and access control powered by advanced facial recognition technology.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128197;</div>
+        <h4>Leave &amp; Attendance Tracking</h4>
+        <p>Simplify leave management with accurate, automated records and approval workflows.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128196;</div>
+        <h4>Policy &amp; Document Management</h4>
+        <p>Upload, manage, and securely store company policies with version control and acknowledgment tracking.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128336;</div>
+        <h4>Automated Timesheets</h4>
+        <p>Track work hours automatically for accurate scheduling, resource management, and payroll integration.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128682;</div>
+        <h4>Employee Access History</h4>
+        <p>Track employee access records across all office locations for security and compliance.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#9997;</div>
+        <h4>Employee Requests</h4>
+        <p>Track attendance corrections, comp-offs, and work-from-home requests with streamlined approval flows.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128682;</div>
+        <h4>Exit Management</h4>
+        <p>Streamline offboarding with organized processes covering handovers, clearances, and final settlements.</p>
+      </div>
+      <div class="feature-card" role="listitem">
+        <div class="feature-icon" aria-hidden="true">&#128176;</div>
+        <h4>Payroll Management</h4>
+        <p>Automated, hassle-free payroll systems with tax calculations, compliance, and direct deposit support.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ AI-POWERED CALLOUT ════════════════ -->
+<section class="ai-callout" id="ai-powered">
+  <div class="container">
+    <div class="section-header">
+      <div class="ai-new-badge" aria-label="New feature"><span class="pulse-dot"></span> NEW</div>
+      <span class="section-tag">AI-Powered Intelligence</span>
+      <h2>Your Workforce, Supercharged by AI</h2>
+      <p>EmpCloud integrates cutting-edge AI agents directly into your HR workflows, giving you insights and automation that were never possible before.</p>
+    </div>
+
+    <div class="ai-stats-row" role="list" aria-label="AI capabilities summary">
+      <div class="ai-stat" role="listitem">
+        <div class="ai-stat-val">41</div>
+        <div class="ai-stat-lbl">AI Agent Tools</div>
+      </div>
+      <div class="ai-stat" role="listitem">
+        <div class="ai-stat-val">7</div>
+        <div class="ai-stat-lbl">AI Providers</div>
+      </div>
+      <div class="ai-stat" role="listitem">
+        <div class="ai-stat-val">10+</div>
+        <div class="ai-stat-lbl">Modules Connected</div>
+      </div>
+    </div>
+
+    <div class="ai-features-grid" role="list" aria-label="AI-powered features">
+      <div class="ai-feature-card" role="listitem">
+        <div class="ai-icon" aria-hidden="true">&#129302;</div>
+        <h4>41 AI Agent Tools Across 7 Providers</h4>
+        <p>Access a powerful suite of AI tools spanning multiple providers, purpose-built for every HR and workforce management scenario.</p>
+      </div>
+      <div class="ai-feature-card" role="listitem">
+        <div class="ai-icon" aria-hidden="true">&#128172;</div>
+        <h4>Natural Language Queries</h4>
+        <p>Ask questions in plain English across all modules. No training required — just type what you need and get instant answers.</p>
+      </div>
+      <div class="ai-feature-card" role="listitem">
+        <div class="ai-icon" aria-hidden="true">&#128279;</div>
+        <h4>Cross-Module Data Access</h4>
+        <p>Pull data from attendance, leave, payroll, and performance in a single conversation. No switching between dashboards.</p>
+      </div>
+      <div class="ai-feature-card" role="listitem">
+        <div class="ai-icon" aria-hidden="true">&#128290;</div>
+        <h4>Smart SQL for Custom Analytics</h4>
+        <p>Generate complex analytical queries through natural language. Get custom reports and insights without writing a single line of SQL.</p>
+      </div>
+    </div>
+
+    <div class="ai-cta-row">
+      <a href="ai-tools-visual.html" class="btn-glow">Explore All 41 AI Tools &#8594;</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CTA BANNER ════════════════ -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Ready to Transform Your Workforce?</h2>
+    <p>Experience every feature firsthand. Start your free trial today and see why teams trust EmpCloud to run their operations.</p>
+    <a href="https://empcloud.com" class="btn btn-white">Book Your Demo Now</a>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><span class="emp">EMP</span><span class="cloud">Cloud</span></a>
+        <p>Empowering businesses with seamless, unified workforce solutions that drive success and engagement — from onboarding to exit and beyond.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <a href="https://empcloud.com">HRMS</a>
+        <a href="https://empcloud.com">EmpMonitor</a>
+        <a href="https://empcloud.com">Payroll Management</a>
+        <a href="https://empcloud.com">Project Management</a>
+        <a href="https://empcloud.com">Rewards &amp; Recognition</a>
+      </div>
+      <div class="footer-col">
+        <h4>More Products</h4>
+        <a href="https://empcloud.com">Recruitment &amp; Onboarding</a>
+        <a href="https://empcloud.com">Field Force Management</a>
+        <a href="https://empcloud.com">Biometric Attendance</a>
+        <a href="https://empcloud.com">Exit &amp; Portfolio</a>
+        <a href="https://empcloud.com">Performance Management</a>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="https://empcloud.com/about">About Us</a>
+        <a href="features.html">Features</a>
+        <a href="https://empcloud.com/pricing">Pricing</a>
+        <a href="https://empcloud.com/blog">Blog</a>
+        <a href="https://empcloud.com/use-cases">Use Cases</a>
+      </div>
+      <div class="footer-col">
+        <h4>Comparison</h4>
+        <a href="https://empcloud.com">EmpCloud vs Keka</a>
+        <a href="https://empcloud.com">EmpCloud vs HROne</a>
+        <a href="https://empcloud.com">EmpCloud vs Zoho</a>
+        <a href="https://empcloud.com">EmpCloud vs Zimyo</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 EmpCloud India Private Limited. All rights reserved. &middot; <a href="https://empcloud.com/privacy-policy" style="color:rgba(255,255,255,0.4);text-decoration:none;">Privacy Policy</a> &middot; <a href="https://empcloud.com/terms-of-service" style="color:rgba(255,255,255,0.4);text-decoration:none;">Terms of Service</a></span>
+      <div class="footer-social">
+        <a href="https://facebook.com/empcloud" target="_blank" aria-label="Facebook">f</a>
+        <a href="https://twitter.com/empcloud" target="_blank" aria-label="X (Twitter)">X</a>
+        <a href="https://youtube.com/@empcloud" target="_blank" aria-label="YouTube">YT</a>
+        <a href="https://linkedin.com/company/empcloud" target="_blank" aria-label="LinkedIn">in</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
