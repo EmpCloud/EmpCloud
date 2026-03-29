@@ -13,12 +13,13 @@ import { paramInt } from "../../utils/params.js";
 
 const router = Router();
 
-/** Strip internal fields (base_url, webhook_secret) from module data for non-admin users */
+/** Strip internal fields (webhook_secret) from module data for non-admin users.
+ *  base_url is kept for all authenticated users — needed for SSO redirect. */
 function sanitizeModule(mod: any, userRole: string): any {
   const adminLevel = ROLE_HIERARCHY["org_admin" as UserRole] ?? 80;
   const userLevel = ROLE_HIERARCHY[userRole as UserRole] ?? 0;
   if (userLevel >= adminLevel) return mod;
-  const { base_url, webhook_secret, ...safe } = mod;
+  const { webhook_secret, ...safe } = mod;
   return safe;
 }
 
