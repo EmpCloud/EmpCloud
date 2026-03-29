@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMP Cloud AI Agent — 41 Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #f9f9fb;
+    color: #434549;
+    min-height: 100vh;
+  }
+
+  .canvas {
+    width: 1400px;
+    margin: 0 auto;
+    padding: 60px 50px 70px;
+    position: relative;
+  }
+
+  /* Ambient glow */
+  .canvas::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 500px;
+    background: radial-gradient(ellipse, rgba(145, 76, 255, 0.06) 0%, rgba(61, 132, 255, 0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, #914CFF, #3D84FF);
+    border-radius: 100px;
+    padding: 8px 22px;
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  .badge .dot {
+    width: 8px;
+    height: 8px;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+  }
+
+  .header h1 {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 46px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .header h1 .gradient {
+    background: linear-gradient(90deg, #914CFF 0%, #3D84FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    font-size: 17px;
+    color: #5e5e5e;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #914CFF, #3D84FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: #8a8d93;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* Divider */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(145, 76, 255, 0.2), rgba(61, 132, 255, 0.2), transparent);
+    margin-bottom: 42px;
+  }
+
+  /* Section label */
+  .section-label {
+    text-align: center;
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8a8d93;
+    margin-bottom: 28px;
+  }
+
+  /* Grid */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  /* Category card */
+  .category {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 14px;
+    padding: 22px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(183, 183, 183, 0.15);
+  }
+
+  .category::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .category:hover {
+    background: #F7F2FF;
+    box-shadow: 0 4px 20px rgba(145, 76, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Color themes — using empcloud purple-blue gradient tones */
+  .cat-employee::before { background: linear-gradient(90deg, #914CFF, #a66dff); }
+  .cat-attendance::before { background: linear-gradient(90deg, #3D84FF, #5e9bff); }
+  .cat-leave::before { background: linear-gradient(90deg, #7c3aed, #9f67ff); }
+  .cat-company::before { background: linear-gradient(90deg, #E79FFF, #c47aed); }
+  .cat-helpdesk::before { background: linear-gradient(90deg, #3D84FF, #69a3ff); }
+  .cat-events::before { background: linear-gradient(90deg, #E79FFF, #f0b8ff); }
+  .cat-analytics::before { background: linear-gradient(90deg, #5a6dff, #3D84FF); }
+  .cat-assets::before { background: linear-gradient(90deg, #84C8FF, #5eb0f5); }
+  .cat-engagement::before { background: linear-gradient(90deg, #c47aed, #914CFF); }
+  .cat-billing::before { background: linear-gradient(90deg, #3D84FF, #914CFF); }
+  .cat-holidays::before { background: linear-gradient(90deg, #E79FFF, #84C8FF); }
+  .cat-sql::before { background: linear-gradient(90deg, #914CFF, #3D84FF); }
+  .cat-payroll::before { background: linear-gradient(90deg, #3D84FF, #5a6dff); }
+  .cat-recruit::before { background: linear-gradient(90deg, #914CFF, #7c3aed); }
+  .cat-performance::before { background: linear-gradient(90deg, #c47aed, #E79FFF); }
+  .cat-rewards::before { background: linear-gradient(90deg, #E79FFF, #914CFF); }
+  .cat-exit::before { background: linear-gradient(90deg, #7c3aed, #5a6dff); }
+  .cat-lms::before { background: linear-gradient(90deg, #84C8FF, #3D84FF); }
+
+  .cat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .cat-employee .cat-icon { background: rgba(145, 76, 255, 0.1); }
+  .cat-attendance .cat-icon { background: rgba(61, 132, 255, 0.1); }
+  .cat-leave .cat-icon { background: rgba(124, 58, 237, 0.1); }
+  .cat-company .cat-icon { background: rgba(231, 159, 255, 0.15); }
+  .cat-helpdesk .cat-icon { background: rgba(61, 132, 255, 0.1); }
+  .cat-events .cat-icon { background: rgba(231, 159, 255, 0.15); }
+  .cat-analytics .cat-icon { background: rgba(90, 109, 255, 0.1); }
+  .cat-assets .cat-icon { background: rgba(132, 200, 255, 0.15); }
+  .cat-engagement .cat-icon { background: rgba(196, 122, 237, 0.1); }
+  .cat-billing .cat-icon { background: rgba(61, 132, 255, 0.1); }
+  .cat-holidays .cat-icon { background: rgba(231, 159, 255, 0.12); }
+  .cat-sql .cat-icon { background: rgba(145, 76, 255, 0.1); }
+  .cat-payroll .cat-icon { background: rgba(61, 132, 255, 0.1); }
+  .cat-recruit .cat-icon { background: rgba(145, 76, 255, 0.1); }
+  .cat-performance .cat-icon { background: rgba(196, 122, 237, 0.1); }
+  .cat-rewards .cat-icon { background: rgba(231, 159, 255, 0.15); }
+  .cat-exit .cat-icon { background: rgba(124, 58, 237, 0.1); }
+  .cat-lms .cat-icon { background: rgba(132, 200, 255, 0.15); }
+
+  .cat-title {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cat-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #914CFF;
+    background: rgba(145, 76, 255, 0.08);
+    padding: 2px 9px;
+    border-radius: 100px;
+  }
+
+  .tool-list {
+    list-style: none;
+  }
+
+  .tool-list li {
+    font-size: 12px;
+    color: #5e5e5e;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    line-height: 1.4;
+  }
+
+  .tool-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .tool-list li .tool-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  /* All dots use brand gradient colors */
+  .cat-employee .tool-dot { background: #914CFF; }
+  .cat-attendance .tool-dot { background: #3D84FF; }
+  .cat-leave .tool-dot { background: #7c3aed; }
+  .cat-company .tool-dot { background: #E79FFF; }
+  .cat-helpdesk .tool-dot { background: #3D84FF; }
+  .cat-events .tool-dot { background: #E79FFF; }
+  .cat-analytics .tool-dot { background: #5a6dff; }
+  .cat-assets .tool-dot { background: #84C8FF; }
+  .cat-engagement .tool-dot { background: #c47aed; }
+  .cat-billing .tool-dot { background: #3D84FF; }
+  .cat-holidays .tool-dot { background: #E79FFF; }
+  .cat-sql .tool-dot { background: #914CFF; }
+  .cat-payroll .tool-dot { background: #3D84FF; }
+  .cat-recruit .tool-dot { background: #914CFF; }
+  .cat-performance .tool-dot { background: #c47aed; }
+  .cat-rewards .tool-dot { background: #E79FFF; }
+  .cat-exit .tool-dot { background: #7c3aed; }
+  .cat-lms .tool-dot { background: #84C8FF; }
+
+  .tool-name {
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* Cross-module section */
+  .cross-module-label {
+    text-align: center;
+    margin: 10px 0 28px;
+    position: relative;
+  }
+
+  .cross-module-label::before,
+  .cross-module-label::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 140px);
+    height: 1px;
+  }
+
+  .cross-module-label::before {
+    left: 0;
+    background: linear-gradient(90deg, transparent, rgba(145, 76, 255, 0.2));
+  }
+
+  .cross-module-label::after {
+    right: 0;
+    background: linear-gradient(270deg, transparent, rgba(61, 132, 255, 0.2));
+  }
+
+  .cross-module-label span {
+    background: #f9f9fb;
+    padding: 0 16px;
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #914CFF, #3D84FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cross-module-label span.bg-mask {
+    -webkit-text-fill-color: initial;
+    background: #f9f9fb;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    padding: 0 16px;
+  }
+
+  .cross-module-inner {
+    background: #f9f9fb;
+    padding: 0 16px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .cross-module-inner .gradient-text {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #914CFF, #3D84FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cross-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 50px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding-top: 28px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .footer-logo {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .footer-logo .emp {
+    background: linear-gradient(90deg, #914CFF, #3D84FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .footer-logo .cloud {
+    color: #434549;
+  }
+
+  .footer p {
+    font-size: 13px;
+    color: #8a8d93;
+  }
+
+  /* Providers bar */
+  .providers {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 14px;
+    margin-bottom: 0;
+  }
+
+  .provider-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8a8d93;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 5px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+
+  /* Span helpers */
+  .span-2 { grid-column: span 2; }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge"><span class="dot"></span> AI-Powered HR Orchestration</div>
+    <h1><span class="gradient">41 AI Agent Tools</span></h1>
+    <p>One conversation to query, analyze, and act across your entire HR ecosystem. The AI agent reaches into every module — from attendance to attrition.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-value">41</div>
+      <div class="stat-label">Tools</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">7</div>
+      <div class="stat-label">AI Providers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Cross-Module</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">26</div>
+      <div class="stat-label">Core Tools</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">15</div>
+      <div class="stat-label">Modules</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Core Tools -->
+  <div class="section-label">Core HRMS Tools — 26 tools built into EMP Cloud</div>
+
+  <div class="tools-grid">
+
+    <!-- Employee & Organization -->
+    <div class="category cat-employee">
+      <div class="cat-icon">&#128101;</div>
+      <div class="cat-title">Employee & Org <span class="cat-count">3</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Employee Headcount</span> — Instant count of active employees</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Employee Lookup</span> — Find anyone by name or email</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Department Directory</span> — All departments with team sizes</span></li>
+      </ul>
+    </div>
+
+    <!-- Attendance -->
+    <div class="category cat-attendance">
+      <div class="cat-icon">&#9201;</div>
+      <div class="cat-title">Attendance <span class="cat-count">4</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Today's Pulse</span> — Live present, absent, late & on-leave</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Individual History</span> — Any employee's attendance trail</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Team Snapshot</span> — Department attendance for any date</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">My Status</span> — Your check-in/out at a glance</span></li>
+      </ul>
+    </div>
+
+    <!-- Leave -->
+    <div class="category cat-leave">
+      <div class="cat-icon">&#128197;</div>
+      <div class="cat-title">Leave <span class="cat-count">3</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Balance Check</span> — Remaining leave for any employee</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Pending Approvals</span> — Requests waiting for action</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Leave Calendar</span> — Who's out on any date range</span></li>
+      </ul>
+    </div>
+
+    <!-- Company Info -->
+    <div class="category cat-company">
+      <div class="cat-icon">&#128227;</div>
+      <div class="cat-title">Company Info <span class="cat-count">3</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Announcements</span> — Latest company updates</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Policy Finder</span> — Search active company policies</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Knowledge Search</span> — Find answers in the HR knowledge base</span></li>
+      </ul>
+    </div>
+
+    <!-- Employee Engagement -->
+    <div class="category cat-engagement span-2">
+      <div class="cat-icon">&#128150;</div>
+      <div class="cat-title">Employee Engagement <span class="cat-count">4</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Survey Insights</span> — eNPS scores & participation rates</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Wellness Pulse</span> — Team mood scores & well-being data</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Feedback Stream</span> — Anonymous employee feedback</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Whistleblower Reports</span> — Confidential report tracking</span></li>
+      </ul>
+    </div>
+
+    <!-- Assets & Positions -->
+    <div class="category cat-assets">
+      <div class="cat-icon">&#128187;</div>
+      <div class="cat-title">Assets & Positions <span class="cat-count">2</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Asset Inventory</span> — Assigned, available & under repair</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Open Vacancies</span> — Positions waiting to be filled</span></li>
+      </ul>
+    </div>
+
+    <!-- Billing -->
+    <div class="category cat-billing">
+      <div class="cat-icon">&#128179;</div>
+      <div class="cat-title">Subscriptions & Billing <span class="cat-count">2</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Seat Usage</span> — Active module subscriptions & seats</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Revenue Snapshot</span> — MRR, invoices & billing health</span></li>
+      </ul>
+    </div>
+
+    <!-- Helpdesk -->
+    <div class="category cat-helpdesk">
+      <div class="cat-icon">&#127899;</div>
+      <div class="cat-title">Helpdesk <span class="cat-count">1</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Ticket Overview</span> — Open, in-progress, resolved & overdue</span></li>
+      </ul>
+    </div>
+
+    <!-- Events -->
+    <div class="category cat-events">
+      <div class="cat-icon">&#127881;</div>
+      <div class="cat-title">Events <span class="cat-count">1</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Upcoming Events</span> — What's happening & where</span></li>
+      </ul>
+    </div>
+
+    <!-- Org Analytics -->
+    <div class="category cat-analytics">
+      <div class="cat-icon">&#128200;</div>
+      <div class="cat-title">Org Analytics <span class="cat-count">1</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Org Overview</span> — Users, departments, locations & modules</span></li>
+      </ul>
+    </div>
+
+    <!-- Holidays -->
+    <div class="category cat-holidays">
+      <div class="cat-icon">&#127796;</div>
+      <div class="cat-title">Holidays <span class="cat-count">1</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Holiday Calendar</span> — Upcoming public holidays</span></li>
+      </ul>
+    </div>
+
+    <!-- Custom SQL -->
+    <div class="category cat-sql">
+      <div class="cat-icon">&#128270;</div>
+      <div class="cat-title">Custom Query <span class="cat-count">1</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Smart SQL</span> — Ask anything, get live database answers</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Cross-Module Section -->
+  <div class="cross-module-label">
+    <span class="cross-module-inner">
+      <span class="gradient-text">Cross-Module Tools — 15 tools reaching into 6 modules</span>
+    </span>
+  </div>
+
+  <div class="cross-grid">
+
+    <!-- Payroll -->
+    <div class="category cat-payroll">
+      <div class="cat-icon">&#128176;</div>
+      <div class="cat-title">Payroll <span class="cat-count">3</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Payroll Summary</span> — Gross, deductions & net pay</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Salary Lookup</span> — CTC breakdown per employee</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Cost Analytics</span> — Trends & department spend</span></li>
+      </ul>
+    </div>
+
+    <!-- Recruitment -->
+    <div class="category cat-recruit">
+      <div class="cat-icon">&#128188;</div>
+      <div class="cat-title">Recruitment <span class="cat-count">3</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Open Roles</span> — Active job postings & applicants</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Hiring Pipeline</span> — Candidates by funnel stage</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Recruiting Metrics</span> — Time-to-hire & offer rates</span></li>
+      </ul>
+    </div>
+
+    <!-- Performance -->
+    <div class="category cat-performance">
+      <div class="cat-icon">&#127942;</div>
+      <div class="cat-title">Performance <span class="cat-count">3</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Review Cycles</span> — Completion rates & pending reviews</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Goals Tracker</span> — OKR progress & at-risk flags</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Team Ratings</span> — Performance distribution & top talent</span></li>
+      </ul>
+    </div>
+
+    <!-- Rewards -->
+    <div class="category cat-rewards">
+      <div class="cat-icon">&#11088;</div>
+      <div class="cat-title">Rewards <span class="cat-count">2</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Recognition Feed</span> — Recent kudos & trending categories</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Leaderboard</span> — Top recognized employees by points</span></li>
+      </ul>
+    </div>
+
+    <!-- Exit -->
+    <div class="category cat-exit">
+      <div class="cat-icon">&#128682;</div>
+      <div class="cat-title">Exit <span class="cat-count">2</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Offboarding Tracker</span> — Active exits & status</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Attrition Insights</span> — Rates, reasons & trends</span></li>
+      </ul>
+    </div>
+
+    <!-- LMS -->
+    <div class="category cat-lms">
+      <div class="cat-icon">&#127891;</div>
+      <div class="cat-title">LMS <span class="cat-count">2</span></div>
+      <ul class="tool-list">
+        <li><span class="tool-dot"></span><span><span class="tool-name">Course Catalog</span> — Enrollment & completion rates</span></li>
+        <li><span class="tool-dot"></span><span><span class="tool-name">Compliance Check</span> — Mandatory training & overdue alerts</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-logo"><span class="emp">EMP</span> <span class="cloud">Cloud</span></div>
+    <p>The control tower for digital labor in HR — orchestrating people, policies, workflows, and AI agents.</p>
+    <div class="providers">
+      <span class="provider-tag">Claude</span>
+      <span class="provider-tag">OpenAI</span>
+      <span class="provider-tag">Gemini</span>
+      <span class="provider-tag">DeepSeek</span>
+      <span class="provider-tag">Groq</span>
+      <span class="provider-tag">Ollama</span>
+      <span class="provider-tag">OpenAI-Compatible</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
