@@ -49,6 +49,18 @@ router.get("/unread-count", authenticate, async (req: Request, res: Response, ne
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/announcements/:id
+router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const announcement = await announcementService.getAnnouncement(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.sub
+    );
+    sendSuccess(res, announcement);
+  } catch (err) { next(err); }
+});
+
 // POST /api/v1/announcements
 router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {

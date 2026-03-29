@@ -105,9 +105,21 @@ export async function login(params: {
 }): Promise<{ user: object; org: object; tokens: object; password_expired?: boolean }> {
   const db = getDB();
 
-  const user = await db("users").where({ email: params.email, status: 1 }).first();
+  const user = await db("users").where({ email: params.email }).first();
   if (!user || !user.password) {
     throw new UnauthorizedError("Invalid email or password");
+  }
+
+  // Check if account is deactivated (inactive status or past exit date)
+  if (user.status !== 1) {
+    throw new UnauthorizedError("Account is deactivated");
+  }
+  if (user.date_of_exit) {
+    const exitDate = new Date(user.date_of_exit);
+    exitDate.setHours(23, 59, 59, 999);
+    if (exitDate < new Date()) {
+      throw new UnauthorizedError("Account is deactivated");
+    }
   }
 
   const valid = await verifyPassword(params.password, user.password);

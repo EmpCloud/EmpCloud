@@ -124,6 +124,32 @@ export async function listAnnouncements(
 }
 
 // ---------------------------------------------------------------------------
+// Get Single
+// ---------------------------------------------------------------------------
+
+export async function getAnnouncement(
+  orgId: number,
+  announcementId: number,
+  userId?: number
+) {
+  const db = getDB();
+  const announcement = await db("announcements")
+    .where({ id: announcementId, organization_id: orgId, is_active: true })
+    .first();
+  if (!announcement) throw new NotFoundError("Announcement");
+
+  // Attach read status if userId is provided
+  if (userId) {
+    const readRecord = await db("announcement_reads")
+      .where({ announcement_id: announcementId, user_id: userId })
+      .first();
+    (announcement as any).read_at = readRecord?.read_at || null;
+  }
+
+  return announcement;
+}
+
+// ---------------------------------------------------------------------------
 // Update
 // ---------------------------------------------------------------------------
 

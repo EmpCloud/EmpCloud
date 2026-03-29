@@ -192,6 +192,14 @@ router.post("/shifts/swap-requests/:id/reject", authenticate, requireHR, async (
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/attendance/shifts/:id
+router.get("/shifts/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const shift = await shiftService.getShift(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, shift);
+  } catch (err) { next(err); }
+});
+
 // =============================================================================
 // GEO-FENCES
 // =============================================================================

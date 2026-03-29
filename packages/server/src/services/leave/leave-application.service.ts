@@ -204,6 +204,11 @@ export async function approveLeave(
     throw new ValidationError("Only pending applications can be approved");
   }
 
+  // Block self-approval
+  if (approverId === application.user_id) {
+    throw new ForbiddenError("Cannot approve your own leave application");
+  }
+
   // Verify the approver is authorized
   const approval = await db("leave_approvals")
     .where({ leave_application_id: applicationId, approver_id: approverId, status: "pending" })

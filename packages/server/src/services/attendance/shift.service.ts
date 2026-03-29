@@ -50,6 +50,15 @@ export async function updateShift(orgId: number, shiftId: number, data: Partial<
   return db("shifts").where({ id: shiftId }).first();
 }
 
+export async function getShift(orgId: number, shiftId: number) {
+  const db = getDB();
+  const shift = await db("shifts")
+    .where({ id: shiftId, organization_id: orgId, is_active: true })
+    .first();
+  if (!shift) throw new NotFoundError("Shift");
+  return shift;
+}
+
 export async function listShifts(orgId: number) {
   const db = getDB();
   return db("shifts")
