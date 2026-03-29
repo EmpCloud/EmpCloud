@@ -1253,7 +1253,10 @@ const wellnessProgramTypeEnum = z.enum([
   "other",
 ]);
 
-const wellnessMoodEnum = z.enum(["great", "good", "okay", "low", "stressed"]);
+const wellnessMoodEnum = z.enum([
+  "great", "good", "okay", "low", "stressed",
+  "happy", "sad", "bad", "tired", "anxious", "calm", "energetic", "neutral", "frustrated", "motivated",
+]);
 const wellnessGoalTypeEnum = z.enum(["steps", "exercise", "meditation", "water", "sleep", "custom"]);
 const wellnessGoalFrequencyEnum = z.enum(["daily", "weekly", "monthly"]);
 const wellnessGoalStatusEnum = z.enum(["active", "completed", "abandoned"]);

@@ -47,11 +47,12 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarNavRef = useRef<HTMLElement>(null);
 
-  // Fetch org subscriptions to conditionally show module nav items
+  // Fetch org subscriptions to conditionally show module nav items (HR+ only)
   const { data: subscriptions } = useQuery({
     queryKey: ["subscriptions"],
     queryFn: () => api.get("/subscriptions").then((r) => r.data.data),
     staleTime: 60000,
+    enabled: !!(user && HR_ROLES.includes(user.role)),
   });
 
   const hasBiometrics = (subscriptions || []).some(

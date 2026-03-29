@@ -297,16 +297,21 @@ router.get("/me/history", authenticate, async (req: Request, res: Response, next
 });
 
 // GET /api/v1/attendance/records
-router.get("/records", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+// HR+ sees all records; employees/managers only see their own
+router.get("/records", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = attendanceQuerySchema.parse(req.query);
+    const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    const user_id = isHR ? params.user_id : req.user!.sub;
+    const department_id = isHR ? params.department_id : undefined;
     const result = await attendanceService.listRecords(req.user!.org_id, {
       page: params.page,
       perPage: params.per_page,
       month: params.month,
       year: params.year,
-      user_id: params.user_id,
-      department_id: params.department_id,
+      user_id,
+      department_id,
     });
     sendPaginated(res, result.records, result.total, params.page, params.per_page);
   } catch (err) { next(err); }
