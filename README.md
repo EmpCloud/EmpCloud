@@ -1,13 +1,19 @@
 # EMP Cloud
 
-**The core HRMS platform, identity server, and module gateway for the EMP ecosystem.**
+**The control tower for digital labor in HR — orchestrating people, policies, workflows, and AI agents.**
 
 [![Status: Built](https://img.shields.io/badge/Status-Built-green)]()
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
-EMP Cloud is both the central identity/subscription platform AND the core HRMS application. It provides centralized authentication (OAuth2/OIDC), organization management, module subscriptions with seat-based licensing, and built-in HRMS features including employee profiles, attendance, leave, documents, announcements, company policies, org chart visualization, notification center, bulk CSV import, employee self-service dashboard, unified dashboard widgets, super admin dashboard, onboarding wizard, and online payment processing. Sellable modules (Payroll, Monitor, Recruit, etc.) connect via OAuth2, SSO token exchange, and subdomain routing.
+> HRMS is no longer a record-keeping system. EMP Cloud reimagines it as an **orchestration layer** — a single control tower where people data, company policies, operational workflows, and AI agents converge to run HR autonomously.
 
-The platform also includes a built-in AI Agent with 41 tools across 7 providers, a production-grade log pipeline with correlation IDs and dashboard, a service health dashboard with cross-module monitoring, a cross-module data sanity checker, probation tracking with auto-confirmation alerts, system notifications for Super Admin, module enable/disable management, and comprehensive security hardening.
+EMP Cloud is the central nervous system of the EMP ecosystem. It serves three roles simultaneously:
+
+1. **Identity & Access Hub** — OAuth2/OIDC authorization server with SSO across all modules, seat-based licensing, and multi-tenant isolation.
+2. **Core HRMS Engine** — Employee profiles, attendance, leave, documents, announcements, policies, org chart, onboarding, helpdesk, surveys, assets, wellness, forum, events, whistleblowing, custom fields, probation tracking, and more — all built in, not bolted on.
+3. **AI-Powered Orchestrator** — A built-in AI agent with 41 tools across 7 providers that can query any module, run reports, answer employee questions, and take action across the entire HR surface — turning natural language into real operations.
+
+Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Projects, Field, Biometrics) plug in via OAuth2, SSO token exchange, and subdomain routing. EMP Cloud doesn't just connect them — it **orchestrates** them: unified dashboards aggregate live data, cross-module webhooks trigger workflows, the AI agent reaches across module boundaries, and the data sanity checker keeps everything consistent.
 
 **GitHub:** https://github.com/EmpCloud/empcloud
 
@@ -33,15 +39,16 @@ The platform also includes a built-in AI Agent with 41 tools across 7 providers,
 ## Architecture
 
 ```
-empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
-|   Built-in: Employee Profiles, Attendance, Leave, Documents,
-|             Announcements, Policies, Org Chart, Notifications,
-|             Bulk Import, Self-Service Dashboard, Unified Widgets,
-|             Super Admin Dashboard, Onboarding Wizard, AI Agent,
-|             Service Health, Data Sanity, Log Pipeline, API Docs,
-|             Helpdesk, Surveys, Assets, Positions, Forum, Events,
-|             Wellness, Whistleblowing, Anonymous Feedback, Custom Fields,
-|             Probation Tracking, System Notifications, Platform Settings
+empcloud.com                    <- EMP Cloud (control tower: orchestrator + identity + core HRMS + AI agents)
+|   Orchestration: AI Agent (41 tools), Cross-Module Webhooks,
+|                  Unified Dashboard, Service Health, Data Sanity
+|   Core HRMS:    Employee Profiles, Attendance, Leave, Documents,
+|                 Announcements, Policies, Org Chart, Notifications,
+|                 Bulk Import, Self-Service Dashboard, Onboarding Wizard,
+|                 Helpdesk, Surveys, Assets, Positions, Forum, Events,
+|                 Wellness, Whistleblowing, Anonymous Feedback, Custom Fields,
+|                 Probation Tracking, System Notifications, Platform Settings
+|   Identity:     OAuth2/OIDC, SSO, RBAC, Seat Licensing, Audit Trail
 |
 |- payroll.empcloud.com         <- EMP Payroll (sellable module)
 |- monitor.empcloud.com         <- EMP Monitor (sellable module)
@@ -57,7 +64,10 @@ empcloud.com                    <- EMP Cloud (core HRMS + identity + gateway)
 
 ### Design Principles
 
+- **Control tower, not just a database** -- EMP Cloud orchestrates people, policies, workflows, and AI agents across the entire HR ecosystem — modules don't just store data, they respond to it
 - **EMP Cloud IS the core HRMS** -- Attendance, Leave, Employee Profiles, Documents, Announcements, and Policies are built directly into EMP Cloud, not separate modules
+- **AI agents are first-class citizens** -- 41 tools across 7 providers allow the AI agent to query, analyze, and act across every module boundary through natural language
+- **Cross-module orchestration** -- Unified dashboards, inbound webhooks, data sanity checks, and service health monitoring keep the entire ecosystem coherent and observable
 - **EMP Billing is internal** -- It powers subscription invoicing behind the scenes; it is NOT a sellable module in the marketplace
 - **10 sellable modules** in the marketplace -- Payroll, Monitor, Recruit, Field, Biometrics, Projects, Rewards, Performance, Exit, LMS
 - **OAuth2/OIDC Authorization Server** -- SOC 2 compliant, RS256 asymmetric signing, PKCE for SPAs
@@ -502,16 +512,16 @@ empcloud/
 
 ---
 
-## AI Agent
+## AI Agent — The Orchestration Brain
 
-EMP Cloud includes a built-in AI agent with tool-calling capabilities for natural language interaction with the platform.
+The AI agent is what transforms EMP Cloud from a record-keeping system into an orchestrator. It doesn't just answer questions — it reaches across every module, queries live data, and surfaces insights that would otherwise require navigating dozens of screens.
 
 - **41 tools** -- 26 core tools (employee lookup, attendance, leave, reports, helpdesk, surveys, assets, positions, knowledge base, wellness, feedback, billing, holidays, run_sql_query) + 15 cross-module tools (payroll summary, salary lookup, payroll analytics, open jobs, hiring pipeline, recruitment stats, review cycles, goals summary, team performance, kudos summary, recognition leaderboard, active exits, attrition analytics, course catalog, training compliance)
 - **7 provider support** -- Claude (Anthropic), OpenAI, Gemini, DeepSeek, Groq, Ollama, OpenAI-compatible endpoints
 - **Super Admin configurable** -- API keys and provider selection at `/admin/ai-config`, stored encrypted with AES-256-GCM
 - **Tool-calling loop** -- Real-time database queries with structured tool responses, automatic function invocation
 - **SQL query tool** -- Read-only SELECT queries with safety validation (forbidden keyword detection, single-statement enforcement)
-- **Cross-module fetching** -- Tools call other module APIs via internal HTTP with service headers
+- **Cross-module fetching** -- Tools call other module APIs via internal HTTP with service headers, enabling a single conversation to span Payroll, Recruit, Performance, Rewards, Exit, and LMS
 - **Tenant-isolated** -- All tool queries scoped to the user's organization via `organization_id`
 - **Result truncation** -- Large results automatically truncated to 5KB to stay within context limits
 
