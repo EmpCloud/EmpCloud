@@ -179,8 +179,7 @@ export default function WidgetCard({
             View Details <ExternalLink className="h-3 w-3" />
           </a>
         );
-      })()
-      )}
+      })()}
     </div>
   );
 }
