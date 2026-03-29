@@ -383,7 +383,7 @@ async function checkAttendanceConsistency(): Promise<SanityCheck> {
       WHERE ar.check_in IS NOT NULL
         AND ar.check_out IS NOT NULL
         AND ar.worked_minutes IS NOT NULL
-        AND ABS(ar.worked_minutes - TIMESTAMPDIFF(MINUTE, ar.check_in, ar.check_out)) > 2
+        AND ABS(CAST(ar.worked_minutes AS SIGNED) - TIMESTAMPDIFF(MINUTE, ar.check_in, ar.check_out)) > 2
       LIMIT 20
     `);
 
