@@ -83,16 +83,23 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
     if (existingCode) throw new ConflictError("Employee code already in use within this organization");
   }
 
-  // Validate date_of_birth — must be at least 18 years old
+  // Validate date_of_birth — must be a valid past date, employee must be at least 18
   if (data.date_of_birth) {
     const dob = new Date(data.date_of_birth);
     const now = new Date();
-    if (!isNaN(dob.getTime())) {
-      const age = now.getFullYear() - dob.getFullYear();
-      const monthDiff = now.getMonth() - dob.getMonth();
-      const actualAge = monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate()) ? age - 1 : age;
-      if (actualAge < 18) throw new ValidationError("Employee must be at least 18 years old");
+    if (isNaN(dob.getTime())) {
+      throw new ValidationError("Invalid date of birth format");
     }
+    if (dob > now) {
+      throw new ValidationError("Date of birth cannot be in the future");
+    }
+    if (dob.getFullYear() < 1900) {
+      throw new ValidationError("Invalid date of birth");
+    }
+    const age = now.getFullYear() - dob.getFullYear();
+    const monthDiff = now.getMonth() - dob.getMonth();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate()) ? age - 1 : age;
+    if (actualAge < 18) throw new ValidationError("Employee must be at least 18 years old");
   }
 
   // Validate date_of_exit — must be after date_of_joining
@@ -224,19 +231,36 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
       }
     }
   }
-  // Validate phone/contact_number — digits, spaces, +, -, () only
-  if (allowed.phone !== undefined) {
-    const phone = String(allowed.phone);
+  // Map phone -> contact_number (DB column)
+  if (allowed.phone !== undefined && allowed.contact_number === undefined) {
+    allowed.contact_number = allowed.phone;
+    delete allowed.phone;
+  }
+  // Validate contact_number — digits, spaces, +, -, () only
+  if (allowed.contact_number !== undefined) {
+    const phone = String(allowed.contact_number);
     if (!/^[+\d\s\-()]{0,20}$/.test(phone)) {
-      delete allowed.phone;
+      throw new ValidationError("Invalid phone number format");
     }
   }
-  // Validate date_of_birth — must be a real past date
-  if (allowed.date_of_birth !== undefined) {
+  // Validate date_of_birth — must be a valid past date, employee must be at least 18
+  if (allowed.date_of_birth !== undefined && allowed.date_of_birth !== null) {
     const dob = new Date(allowed.date_of_birth as string);
     const now = new Date();
-    if (isNaN(dob.getTime()) || dob > now || dob.getFullYear() < 1900 || dob.getFullYear() > now.getFullYear() - 18) {
-      delete allowed.date_of_birth;
+    if (isNaN(dob.getTime())) {
+      throw new ValidationError("Invalid date of birth format");
+    }
+    if (dob > now) {
+      throw new ValidationError("Date of birth cannot be in the future");
+    }
+    if (dob.getFullYear() < 1900) {
+      throw new ValidationError("Invalid date of birth");
+    }
+    const age = now.getFullYear() - dob.getFullYear();
+    const monthDiff = now.getMonth() - dob.getMonth();
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate()) ? age - 1 : age;
+    if (actualAge < 18) {
+      throw new ValidationError("Employee must be at least 18 years old");
     }
   }
   // Validate date_of_joining — must be a valid date
