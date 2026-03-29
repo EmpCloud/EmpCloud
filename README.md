@@ -516,7 +516,7 @@ empcloud/
 
 The AI agent is what transforms EMP Cloud from a record-keeping system into an orchestrator. It doesn't just answer questions — it reaches across every module, queries live data, and surfaces insights that would otherwise require navigating dozens of screens.
 
-- **41 tools** -- 26 core tools (employee lookup, attendance, leave, reports, helpdesk, surveys, assets, positions, knowledge base, wellness, feedback, billing, holidays, run_sql_query) + 15 cross-module tools (payroll summary, salary lookup, payroll analytics, open jobs, hiring pipeline, recruitment stats, review cycles, goals summary, team performance, kudos summary, recognition leaderboard, active exits, attrition analytics, course catalog, training compliance)
+- **41 tools** across 7 categories (see full list below)
 - **7 provider support** -- Claude (Anthropic), OpenAI, Gemini, DeepSeek, Groq, Ollama, OpenAI-compatible endpoints
 - **Super Admin configurable** -- API keys and provider selection at `/admin/ai-config`, stored encrypted with AES-256-GCM
 - **Tool-calling loop** -- Real-time database queries with structured tool responses, automatic function invocation
@@ -524,6 +524,70 @@ The AI agent is what transforms EMP Cloud from a record-keeping system into an o
 - **Cross-module fetching** -- Tools call other module APIs via internal HTTP with service headers, enabling a single conversation to span Payroll, Recruit, Performance, Rewards, Exit, and LMS
 - **Tenant-isolated** -- All tool queries scoped to the user's organization via `organization_id`
 - **Result truncation** -- Large results automatically truncated to 5KB to stay within context limits
+
+### All 41 Tools
+
+| # | Tool | Description |
+|---|------|-------------|
+| | **Employee & Organization** | |
+| 1 | `get_employee_count` | Total active employees in the organization |
+| 2 | `get_employee_details` | Search employees by name or email — returns profile, designation, department |
+| 3 | `get_department_list` | All departments with employee counts |
+| | **Attendance** | |
+| 4 | `get_attendance_today` | Today's attendance summary — present, absent, late, on leave |
+| 5 | `get_attendance_for_employee` | Attendance records for a specific employee over N days |
+| 6 | `get_attendance_by_department` | Department attendance summary for a given date |
+| 7 | `get_my_attendance` | Current user's attendance today — check-in/out times, status |
+| | **Leave** | |
+| 8 | `get_leave_balance` | Leave balance for an employee or the current user |
+| 9 | `get_pending_leave_requests` | All pending leave requests awaiting approval |
+| 10 | `get_leave_calendar` | Employees on leave for a date range |
+| | **Company Info** | |
+| 11 | `get_announcements` | Recent company announcements — title, priority, date |
+| 12 | `get_company_policies` | Active policies, optionally filtered by category |
+| 13 | `search_knowledge_base` | Search HR knowledge base articles by keyword |
+| | **Helpdesk & Support** | |
+| 14 | `get_helpdesk_stats` | Ticket stats — open, in progress, resolved, overdue |
+| | **Events** | |
+| 15 | `get_upcoming_events` | Upcoming company events — title, date, location |
+| | **Organization Analytics** | |
+| 16 | `get_org_stats` | Org overview — users, departments, locations, active modules |
+| | **Assets & Positions** | |
+| 17 | `get_asset_summary` | Asset inventory — total, assigned, available, under maintenance |
+| 18 | `get_position_vacancies` | Open positions — title, department, number of openings |
+| | **Employee Engagement** | |
+| 19 | `get_survey_results` | Survey results including eNPS scores and participation rates |
+| 20 | `get_wellness_dashboard` | Wellness metrics — average mood score, participation data |
+| 21 | `get_recent_feedback` | Recent anonymous feedback submissions (admin only) |
+| 22 | `get_whistleblower_stats` | Whistleblower report stats — total, open, investigating, resolved |
+| | **Subscriptions & Billing** | |
+| 23 | `get_module_subscriptions` | Active module subscriptions with seat usage |
+| 24 | `get_billing_summary` | Billing summary — active subscriptions, total MRR, recent invoices |
+| | **Holidays** | |
+| 25 | `get_upcoming_holidays` | Upcoming holidays from the leave calendar |
+| | **Custom Query** | |
+| 26 | `run_sql_query` | Read-only SQL SELECT on the empcloud database for custom analytics |
+| | **Cross-Module: Payroll** | |
+| 27 | `get_payroll_summary` | Latest payroll run — total gross, deductions, net pay, headcount |
+| 28 | `get_employee_salary` | Salary details for an employee — CTC, components, deductions |
+| 29 | `get_payroll_analytics` | Payroll cost analytics — trends, department-wise breakdown |
+| | **Cross-Module: Recruitment** | |
+| 30 | `get_open_jobs` | Open job postings — title, department, applicant count |
+| 31 | `get_hiring_pipeline` | Recruitment pipeline — candidates by stage |
+| 32 | `get_recruitment_stats` | Recruitment metrics — time to hire, source effectiveness, offer rate |
+| | **Cross-Module: Performance** | |
+| 33 | `get_review_cycle_status` | Active review cycles — completion %, pending reviews |
+| 34 | `get_goals_summary` | OKR/goals — total, completion rate, on-track vs at-risk |
+| 35 | `get_team_performance` | Team performance — average ratings, top performers, distribution |
+| | **Cross-Module: Rewards** | |
+| 36 | `get_kudos_summary` | Recent recognition — total kudos, top employees, trending categories |
+| 37 | `get_recognition_leaderboard` | Employee recognition leaderboard by points |
+| | **Cross-Module: Exit** | |
+| 38 | `get_active_exits` | Employees in offboarding — status, reason |
+| 39 | `get_attrition_analytics` | Attrition analytics — rate, top reasons, department trends |
+| | **Cross-Module: LMS** | |
+| 40 | `get_course_catalog` | Training courses — enrollment counts, completion rates |
+| 41 | `get_training_compliance` | Compliance training — mandatory courses, overdue, completion % |
 
 ---
 
