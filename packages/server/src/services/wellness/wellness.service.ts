@@ -517,16 +517,6 @@ export async function getWellnessDashboard(orgId: number) {
     okay: 60,
     low: 40,
     stressed: 20,
-    happy: 90,
-    sad: 30,
-    bad: 20,
-    tired: 35,
-    anxious: 25,
-    calm: 75,
-    energetic: 90,
-    neutral: 50,
-    frustrated: 25,
-    motivated: 85,
   };
   const totalMoodCheckins = Object.values(moodDist).reduce((s, v) => s + v, 0);
   let avgMoodScore = 0;

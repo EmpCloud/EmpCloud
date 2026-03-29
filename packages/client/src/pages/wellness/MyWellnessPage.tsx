@@ -54,7 +54,7 @@ export default function MyWellnessPage() {
     end_date: "",
   });
 
-  const { data: summary, isLoading } = useQuery({
+  const { data: summary, isLoading, isError } = useQuery({
     queryKey: ["wellness-summary"],
     queryFn: () => api.get("/wellness/summary").then((r) => r.data.data),
   });
@@ -141,6 +141,20 @@ export default function MyWellnessPage() {
           <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
           <div className="h-4 w-full bg-gray-200 rounded mb-2" />
           <div className="h-4 w-3/4 bg-gray-200 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Wellness</h1>
+          <p className="text-gray-500 mt-1">Track your health journey and personal goals</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+          <p className="text-gray-500">Failed to load wellness data. Please try again later.</p>
         </div>
       </div>
     );

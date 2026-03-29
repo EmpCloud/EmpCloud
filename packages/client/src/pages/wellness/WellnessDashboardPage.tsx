@@ -48,7 +48,7 @@ export default function WellnessDashboardPage() {
     points_reward: "0",
   });
 
-  const { data: dashboard, isLoading } = useQuery({
+  const { data: dashboard, isLoading, isError } = useQuery({
     queryKey: ["wellness-dashboard"],
     queryFn: () => api.get("/wellness/dashboard").then((r) => r.data.data),
   });
@@ -91,6 +91,14 @@ export default function WellnessDashboardPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-400">Loading wellness dashboard...</div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Failed to load wellness dashboard. Please try again later.</div>
       </div>
     );
   }
