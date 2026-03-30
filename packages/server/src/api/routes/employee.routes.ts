@@ -19,6 +19,7 @@ import {
   createAddressSchema,
   createEducationSchema,
   createExperienceSchema,
+  createExperienceBaseSchema,
   createDependentSchema,
   employeeDirectoryQuerySchema,
 } from "@empcloud/shared";
@@ -421,7 +422,7 @@ router.post("/:id/experience", authenticate, requireSelfOrHR("id"), async (req: 
 // PUT /api/v1/employees/:id/experience/:experienceId
 router.put("/:id/experience/:experienceId", authenticate, requireSelfOrHR("id"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const body = createExperienceSchema.partial().parse(req.body);
+    const body = createExperienceBaseSchema.partial().parse(req.body);
     const record = await detailService.updateExperience(req.user!.org_id, paramInt(req.params.id), paramInt(req.params.experienceId), body);
     sendSuccess(res, record);
   } catch (err) { next(err); }

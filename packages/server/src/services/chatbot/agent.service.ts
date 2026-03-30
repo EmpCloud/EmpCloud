@@ -554,7 +554,7 @@ async function runGeminiAgent(
       const { name, args } = fc.functionCall!;
       logger.info(`Gemini tool call: ${name}(${JSON.stringify(args).substring(0, 100)})`);
       try {
-        const result = await executeTool(name, orgId, args || {});
+        const result = await executeTool(name, orgId, userId, args || {});
         functionResponses.push({
           functionResponse: { name, response: { result: typeof result === "string" ? result : JSON.stringify(result) } },
         });

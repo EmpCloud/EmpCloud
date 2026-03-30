@@ -455,7 +455,7 @@ router.get(
         return;
       }
       const rating = await db("kb_article_ratings")
-        .where({ article_id: paramInt(req.params.id), user_id: req.user!.id })
+        .where({ article_id: paramInt(req.params.id), user_id: req.user!.sub })
         .first();
       sendSuccess(res, rating ? { rated: true, helpful: rating.helpful } : { rated: false, helpful: null });
     } catch (err) {
@@ -475,7 +475,7 @@ router.post(
         req.user!.org_id,
         paramInt(req.params.id),
         helpful === true,
-        req.user!.id
+        req.user!.sub
       );
       sendSuccess(res, article);
     } catch (err) {

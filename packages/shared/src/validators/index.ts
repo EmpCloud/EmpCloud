@@ -352,14 +352,16 @@ export const createEducationSchema = z.object({
   grade: z.string().max(20).optional().nullable(),
 });
 
-export const createExperienceSchema = z.object({
+export const createExperienceBaseSchema = z.object({
   company_name: z.string().min(1).max(255),
   designation: z.string().min(1).max(100),
   start_date: z.string(),
   end_date: z.string().optional().nullable(),
   is_current: z.boolean().default(false),
   description: z.string().optional().nullable(),
-}).refine(
+});
+
+export const createExperienceSchema = createExperienceBaseSchema.refine(
   (data) => {
     if (data.end_date && data.start_date) {
       return new Date(data.end_date) >= new Date(data.start_date);

@@ -2,6 +2,7 @@
 // EMP CLOUD — Auth Routes
 // =============================================================================
 
+import crypto from "node:crypto";
 import { Router, Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import { register, login, changePassword, forgotPassword, resetPassword } from "../../services/auth/auth.service.js";
@@ -201,6 +202,9 @@ router.post("/sso/token", authenticate, async (req: Request, res: Response, next
       role: req.user!.role,
       org_id: req.user!.org_id,
       org_name: req.user!.org_name,
+      scope: req.user!.scope || "openid profile",
+      client_id: req.user!.client_id || "empcloud",
+      jti: req.user!.jti || crypto.randomUUID(),
     });
     sendSuccess(res, { token: ssoToken, module_id });
   } catch (err) {
