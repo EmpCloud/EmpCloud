@@ -422,16 +422,21 @@ export async function getSurveyResults(orgId: number, surveyId: number, requesti
       .where("sa.organization_id", orgId)
       .select("sa.rating_value", "sa.text_value");
 
+    // Filter out completely empty answers (both rating_value and text_value are null)
+    const validAnswers = answers.filter(
+      (a) => a.rating_value !== null || (a.text_value !== null && a.text_value !== "")
+    );
+
     const result: any = {
       question_id: q.id,
       question_text: q.question_text,
       question_type: q.question_type,
       options,
-      total_answers: answers.length,
+      total_answers: validAnswers.length,
     };
 
     if (["rating_1_5", "rating_1_10", "enps_0_10", "scale"].includes(q.question_type)) {
-      const ratings = answers
+      const ratings = validAnswers
         .map((a) => a.rating_value)
         .filter((v): v is number => v !== null && v !== undefined);
       result.avg_rating = ratings.length > 0
@@ -453,19 +458,19 @@ export async function getSurveyResults(orgId: number, surveyId: number, requesti
         result.enps = enps;
       }
     } else if (q.question_type === "yes_no") {
-      const yesCount = answers.filter((a) => a.text_value === "yes").length;
-      const noCount = answers.filter((a) => a.text_value === "no").length;
+      const yesCount = validAnswers.filter((a) => a.text_value === "yes").length;
+      const noCount = validAnswers.filter((a) => a.text_value === "no").length;
       result.distribution = { yes: yesCount, no: noCount };
     } else if (q.question_type === "multiple_choice") {
       const choiceDist: Record<string, number> = {};
-      for (const a of answers) {
+      for (const a of validAnswers) {
         if (a.text_value) {
           choiceDist[a.text_value] = (choiceDist[a.text_value] || 0) + 1;
         }
       }
       result.distribution = choiceDist;
     } else if (q.question_type === "text") {
-      result.text_responses = answers
+      result.text_responses = validAnswers
         .filter((a) => a.text_value)
         .map((a) => a.text_value);
     }

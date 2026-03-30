@@ -892,7 +892,10 @@ export const submitSurveyResponseSchema = z.object({
       question_id: z.number().int().positive(),
       rating_value: z.number().int().optional().nullable(),
       text_value: z.string().optional().nullable(),
-    })
+    }).refine(
+      (a) => a.rating_value != null || (a.text_value != null && a.text_value !== ""),
+      { message: "Each answer must have either a rating_value or text_value" }
+    )
   ),
 });
 
