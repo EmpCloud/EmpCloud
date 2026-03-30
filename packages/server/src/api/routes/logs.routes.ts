@@ -6,6 +6,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { requireSuperAdmin } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
+import { logger } from "../../utils/logger.js";
 import {
   getLogSummary,
   getRecentErrors,
@@ -16,7 +17,33 @@ import {
 
 const router = Router();
 
-// All routes require super_admin
+// POST /api/v1/admin/logs/client-error — Receive frontend errors (PUBLIC, no auth)
+// Errors may happen before login, so this must be accessible without authentication.
+router.post("/client-error", (req: Request, res: Response) => {
+  const { message, stack, url, component, userId, userAgent, timestamp, level } = req.body;
+
+  if (!message) {
+    res.status(400).json({ success: false, error: "message is required" });
+    return;
+  }
+
+  logger.error(`CLIENT_ERROR: ${String(message).substring(0, 500)}`, {
+    source: "frontend",
+    errorMessage: String(message).substring(0, 1000),
+    stack: stack ? String(stack).substring(0, 2000) : undefined,
+    url: url || undefined,
+    component: component || undefined,
+    userId: userId || null,
+    userAgent: userAgent || req.headers["user-agent"],
+    clientTimestamp: timestamp || new Date().toISOString(),
+    errorLevel: level || "error",
+    ip: req.ip,
+  });
+
+  res.json({ success: true });
+});
+
+// All routes below require super_admin
 router.use(authenticate, requireSuperAdmin);
 
 // GET /api/v1/admin/logs/summary — Last 24h summary

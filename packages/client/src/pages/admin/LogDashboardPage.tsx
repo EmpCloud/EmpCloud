@@ -34,6 +34,9 @@ interface LogError {
   timestamp: string;
   stack?: string;
   sql?: string;
+  source?: "frontend" | "backend";
+  url?: string;
+  component?: string;
 }
 
 interface SlowQuery {
@@ -319,7 +322,7 @@ export default function LogDashboardPage() {
           <div className="p-5 border-b border-gray-200">
             <h3 className="font-semibold text-gray-900">Recent Errors</h3>
             <p className="text-sm text-gray-500 mt-1">
-              From PM2 error logs across all modules
+              From PM2 error logs and frontend client errors across all modules
             </p>
           </div>
           <div className="divide-y divide-gray-100">
@@ -336,9 +339,15 @@ export default function LogDashboardPage() {
                   ) : (
                     <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                   )}
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium flex-shrink-0">
-                    {err.module}
-                  </span>
+                  {err.source === "frontend" ? (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium flex-shrink-0">
+                      Frontend
+                    </span>
+                  ) : (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium flex-shrink-0">
+                      {err.module}
+                    </span>
+                  )}
                   <span className="text-sm text-gray-900 truncate flex-1">
                     {err.message}
                   </span>
@@ -348,10 +357,20 @@ export default function LogDashboardPage() {
                       : ""}
                   </span>
                 </div>
-                {expandedError === idx && err.stack && (
-                  <pre className="mt-3 ml-7 text-xs text-gray-600 bg-gray-50 p-3 rounded overflow-x-auto max-h-48">
-                    {err.stack}
-                  </pre>
+                {expandedError === idx && (
+                  <div className="mt-3 ml-7 space-y-2">
+                    {err.source === "frontend" && (err.url || err.component) && (
+                      <div className="text-xs text-gray-500">
+                        {err.url && <span className="mr-4">Page: {err.url}</span>}
+                        {err.component && <span>Component: {err.component}</span>}
+                      </div>
+                    )}
+                    {err.stack && (
+                      <pre className="text-xs text-gray-600 bg-gray-50 p-3 rounded overflow-x-auto max-h-48">
+                        {err.stack}
+                      </pre>
+                    )}
+                  </div>
                 )}
               </div>
             ))}

@@ -4,7 +4,6 @@
 
 import axios from "axios";
 import { useAuthStore } from "@/lib/auth-store";
-import { showToast } from "@/components/ui/Toast";
 
 const api = axios.create({
   baseURL: "/api/v1",
@@ -69,9 +68,45 @@ api.interceptors.response.use(
       const status = error.response.status;
       const url = error.config?.url || "unknown";
       const msg = error.response.data?.error?.message || error.response.data?.message || "";
-      console.warn(`[API ${status}] ${error.config?.method?.toUpperCase()} ${url}: ${msg}`);
+      const errorSummary = `[API ${status}] ${error.config?.method?.toUpperCase()} ${url}: ${msg}`;
+      console.warn(errorSummary);
+
+      // Forward to server for Log Dashboard (skip if this IS the client-error endpoint)
+      if (!url.includes("client-error")) {
+        fetch("/api/v1/admin/logs/client-error", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: errorSummary,
+            url: window.location.href,
+            component: `API ${error.config?.method?.toUpperCase()} ${url}`,
+            level: status >= 500 ? "error" : "warn",
+            userId: useAuthStore.getState().user?.id || null,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(() => {});
+      }
     } else if (!error.response && error.message) {
-      console.warn(`[API Network Error] ${error.config?.url}: ${error.message}`);
+      const errorSummary = `[API Network Error] ${error.config?.url}: ${error.message}`;
+      console.warn(errorSummary);
+
+      // Forward network errors to server
+      if (!error.config?.url?.includes("client-error")) {
+        fetch("/api/v1/admin/logs/client-error", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: errorSummary,
+            url: window.location.href,
+            component: `API Network ${error.config?.url}`,
+            level: "error",
+            userId: useAuthStore.getState().user?.id || null,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(() => {});
+      }
     }
 
     return Promise.reject(error);

@@ -103,6 +103,16 @@ export async function getLogSummary() {
     totalFileErrors += recentErrors.length;
   }
 
+  // Count frontend (client-side) errors from server out log
+  const frontendEntries = readRecentLogLines("empcloud-server-out.log", 1000);
+  const frontendErrors = frontendEntries.filter((e) => {
+    if (!e.message?.startsWith("CLIENT_ERROR")) return false;
+    if (!e.timestamp) return true;
+    return new Date(e.timestamp).getTime() >= since.getTime();
+  });
+  moduleErrors["frontend"] = frontendErrors.length;
+  totalFileErrors += frontendErrors.length;
+
   return {
     period: "last_24h",
     since: since.toISOString(),
@@ -128,6 +138,9 @@ export async function getRecentErrors(page = 1, perPage = 20) {
     timestamp: string;
     stack?: string;
     sql?: string;
+    source?: string;
+    url?: string;
+    component?: string;
   }> = [];
 
   for (const mod of MODULES) {
@@ -140,6 +153,24 @@ export async function getRecentErrors(page = 1, perPage = 20) {
         timestamp: entry.timestamp || "",
         stack: entry.stack,
         sql: entry.sql,
+        source: "backend",
+      });
+    }
+  }
+
+  // Include frontend (client-side) errors from empcloud-server-out.log
+  const outEntries = readRecentLogLines("empcloud-server-out.log", 1000);
+  for (const entry of outEntries) {
+    if (entry.message?.startsWith("CLIENT_ERROR") && entry.source === "frontend") {
+      allErrors.push({
+        module: "frontend",
+        level: entry.errorLevel || entry.level || "error",
+        message: entry.errorMessage || entry.message || "Unknown frontend error",
+        timestamp: entry.timestamp || "",
+        stack: entry.stack,
+        source: "frontend",
+        url: entry.url,
+        component: entry.component,
       });
     }
   }
