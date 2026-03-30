@@ -53,7 +53,7 @@ describe("Auth - Database Queries", () => {
   it("should have valid role values", async () => {
     const db = getTestDB();
     const users = await db("users").where({ organization_id: TEST_ORG_ID }).select("role");
-    const validRoles = ["super_admin", "org_admin", "admin", "hr", "hr_admin", "hr_manager", "manager", "employee"];
+    const validRoles = ["super_admin", "org_admin", "admin", "hr", "hr_admin", "manager", "employee"];
     for (const u of users) {
       expect(validRoles).toContain(u.role);
     }

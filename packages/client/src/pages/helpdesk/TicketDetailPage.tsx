@@ -16,7 +16,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 const PRIORITY_COLORS: Record<string, string> = {
   low: "bg-gray-100 text-gray-600 border-gray-200",

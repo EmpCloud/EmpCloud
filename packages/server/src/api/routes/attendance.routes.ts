@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requireHR, requireRole } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
@@ -27,6 +27,7 @@ import {
   paginationSchema,
   AuditAction,
 } from "@empcloud/shared";
+import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
 
 const router = Router();
@@ -155,7 +156,7 @@ router.get("/shifts/swap-requests", authenticate, requireHR, async (req: Request
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/approve
-router.post("/shifts/swap-requests/:id/approve", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.approveSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -174,7 +175,7 @@ router.post("/shifts/swap-requests/:id/approve", authenticate, requireHR, async 
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/reject
-router.post("/shifts/swap-requests/:id/reject", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.rejectSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -309,7 +310,7 @@ router.get("/me/history", authenticate, async (req: Request, res: Response, next
 router.get("/records", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = attendanceQuerySchema.parse(req.query);
-    const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
     const isHR = HR_ROLES.includes(req.user!.role);
     const user_id = isHR ? (params.user_id || params.employee_id) : req.user!.sub;
     const department_id = isHR ? params.department_id : undefined;

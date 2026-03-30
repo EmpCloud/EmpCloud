@@ -167,13 +167,13 @@ export async function deleteLocation(orgId: number, locationId: number) {
 export async function getDepartmentsWithoutManager(orgId: number) {
   const db = getDB();
 
-  // Return departments that have no user with role 'manager' or 'hr_manager' assigned
+  // Return departments that have no user with role 'manager' or 'hr_admin' assigned
   const departments = await db("organization_departments as d")
     .leftJoin("users as u", function () {
       this.on("u.department_id", "=", "d.id")
         .andOn("u.organization_id", "=", "d.organization_id")
         .andOn("u.status", "=", db.raw("1"))
-        .andOnIn("u.role", ["manager", "hr_manager"]);
+        .andOnIn("u.role", ["manager", "hr_admin"]);
     })
     .where({ "d.organization_id": orgId, "d.is_deleted": false })
     .whereNull("u.id")

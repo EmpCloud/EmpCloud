@@ -75,7 +75,6 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
   [UserRole.SUPER_ADMIN]: 100,
   [UserRole.ORG_ADMIN]: 80,
   [UserRole.HR_ADMIN]: 60,
-  [UserRole.HR_MANAGER]: 40,
   [UserRole.MANAGER]: 20,
   [UserRole.EMPLOYEE]: 0,
 };

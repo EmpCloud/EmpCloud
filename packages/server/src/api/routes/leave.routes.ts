@@ -4,8 +4,8 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
-import { sendSuccess, sendPaginated } from "../../utils/response.js";
+import { requireHR, requireRole } from "../middleware/rbac.middleware.js";
+import { sendSuccess, sendPaginated, sendError } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { ValidationError } from "../../utils/errors.js";
 import * as leaveTypeService from "../../services/leave/leave-type.service.js";
@@ -146,9 +146,17 @@ router.delete("/policies/:id", authenticate, requireHR, async (req: Request, res
 // GET /api/v1/leave/balances
 router.get("/balances", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.query.user_id ? Number(req.query.user_id) : req.user!.sub;
+    const requestedUserId = req.query.user_id ? Number(req.query.user_id) : req.user!.sub;
+    // RBAC: if requesting another user's balance, require HR+ role
+    if (requestedUserId !== req.user!.sub) {
+      const userRoleLevel = ROLE_HIERARCHY[req.user!.role as UserRole] ?? 0;
+      const hrLevel = ROLE_HIERARCHY["hr_admin" as UserRole] ?? 60;
+      if (userRoleLevel < hrLevel) {
+        return sendError(res, 403, "FORBIDDEN", "Only HR or above can view other users' leave balances");
+      }
+    }
     const year = req.query.year ? Number(req.query.year) : undefined;
-    const balances = await leaveBalanceService.getBalances(req.user!.org_id, userId, year);
+    const balances = await leaveBalanceService.getBalances(req.user!.org_id, requestedUserId, year);
     sendSuccess(res, balances);
   } catch (err) { next(err); }
 });
@@ -272,7 +280,7 @@ router.put("/applications/:id", authenticate, async (req: Request, res: Response
 });
 
 // PUT /api/v1/leave/applications/:id/approve
-router.put("/applications/:id/approve", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/applications/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { remarks } = approveLeaveSchema.parse({ ...req.body, status: "approved" });
     const application = await leaveApplicationService.approveLeave(
@@ -297,7 +305,7 @@ router.put("/applications/:id/approve", authenticate, async (req: Request, res: 
 });
 
 // PUT /api/v1/leave/applications/:id/reject
-router.put("/applications/:id/reject", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/applications/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { remarks } = approveLeaveSchema.parse({ ...req.body, status: "rejected" });
     const application = await leaveApplicationService.rejectLeave(
@@ -442,7 +450,7 @@ router.post("/comp-off/request", authenticate, async (req: Request, res: Respons
 });
 
 // PUT /api/v1/leave/comp-off/:id/approve
-router.put("/comp-off/:id/approve", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/comp-off/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const request = await compOffService.approveCompOff(req.user!.org_id, req.user!.sub, paramInt(req.params.id));
     sendSuccess(res, request);
@@ -450,7 +458,7 @@ router.put("/comp-off/:id/approve", authenticate, async (req: Request, res: Resp
 });
 
 // PUT /api/v1/leave/comp-off/:id/reject
-router.put("/comp-off/:id/reject", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/comp-off/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const reason = req.body.reason as string | undefined;
     const request = await compOffService.rejectCompOff(req.user!.org_id, req.user!.sub, paramInt(req.params.id), reason);

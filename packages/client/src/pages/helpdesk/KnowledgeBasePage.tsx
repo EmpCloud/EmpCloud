@@ -16,7 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 const CATEGORIES = [
   "leave", "payroll", "benefits", "it", "facilities", "onboarding", "policy", "general",

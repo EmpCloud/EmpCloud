@@ -68,7 +68,7 @@ async function seed() {
   const adminPassword = await hashPassword("Welcome@123");
   const users = [
     { first_name: "Ananya", last_name: "Gupta", email: "ananya@technova.in", role: "org_admin", dept: 4, designation: "HR Director" },
-    { first_name: "Rahul", last_name: "Sharma", email: "rahul@technova.in", role: "hr_manager", dept: 0, designation: "Engineering Lead" },
+    { first_name: "Rahul", last_name: "Sharma", email: "rahul@technova.in", role: "hr_admin", dept: 0, designation: "Engineering Lead" },
     { first_name: "Priya", last_name: "Patel", email: "priya@technova.in", role: "employee", dept: 1, designation: "Senior Designer" },
     { first_name: "Vikram", last_name: "Reddy", email: "vikram@technova.in", role: "employee", dept: 2, designation: "Product Manager" },
     { first_name: "Meera", last_name: "Nair", email: "meera@technova.in", role: "employee", dept: 3, designation: "Finance Analyst" },

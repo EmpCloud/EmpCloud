@@ -70,7 +70,7 @@ const spec = {
           email: { type: "string" },
           first_name: { type: "string" },
           last_name: { type: "string" },
-          role: { type: "string", enum: ["super_admin", "org_admin", "hr_manager", "manager", "employee"] },
+          role: { type: "string", enum: ["super_admin", "org_admin", "hr_admin", "manager", "employee"] },
           is_active: { type: "boolean" },
         },
       },

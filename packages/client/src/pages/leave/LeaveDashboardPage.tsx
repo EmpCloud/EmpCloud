@@ -4,7 +4,7 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle } from "lucide-react";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin", "manager"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
 
 interface LeaveBalance {
   id: number;

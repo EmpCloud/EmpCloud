@@ -5,7 +5,7 @@ import { useAuthStore } from "@/lib/auth-store";
 const BillingPage = lazy(() => import("@/pages/billing/BillingPage"));
 const ModulesPage = lazy(() => import("@/pages/modules/ModulesPage"));
 
-const HR_ROLES = ["org_admin", "hr_admin", "hr_manager", "super_admin"];
+const HR_ROLES = ["org_admin", "hr_admin", "super_admin"];
 
 function RequireHR({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);

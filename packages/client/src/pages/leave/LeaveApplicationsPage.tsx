@@ -29,7 +29,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
   cancelled: { bg: "bg-gray-50", text: "text-gray-500", icon: Ban },
 };
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin", "manager"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
 
 export default function LeaveApplicationsPage() {
   const qc = useQueryClient();

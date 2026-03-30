@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin"];
+const HR_ROLES = ["hr_admin", "org_admin"];
 
 type Tab = "personal" | "education" | "experience" | "dependents" | "addresses" | "custom";
 

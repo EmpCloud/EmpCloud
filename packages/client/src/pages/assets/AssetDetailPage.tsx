@@ -56,7 +56,7 @@ export default function AssetDetailPage() {
   const [returnCondition, setReturnCondition] = useState("good");
   const [returnNotes, setReturnNotes] = useState("");
 
-  const isHR = user && ["hr_admin", "hr_manager", "org_admin", "super_admin"].includes(user.role);
+  const isHR = user && ["hr_admin", "org_admin", "super_admin"].includes(user.role);
 
   const { data: asset, isLoading } = useQuery({
     queryKey: ["asset", id],

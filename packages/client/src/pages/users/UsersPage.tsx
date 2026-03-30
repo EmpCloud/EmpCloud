@@ -33,7 +33,7 @@ John,Doe,john@company.com,EMP001,Software Engineer,Engineering,employee,full_tim
 Jane,Smith,jane@company.com,EMP002,Product Manager,Product,manager,full_time,2025-06-01,+91-9876543211
 Raj,Patel,raj@company.com,EMP003,Senior Designer,Design,employee,full_time,2026-03-01,+91-9876543212`;
 
-const VALID_ROLES = ["employee", "hr_manager", "hr_admin", "org_admin", "manager"];
+const VALID_ROLES = ["employee", "manager", "hr_admin", "org_admin"];
 const VALID_EMPLOYMENT_TYPES = ["full_time", "part_time", "contract", "intern"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -509,7 +509,7 @@ export default function UsersPage() {
               <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
                 <option value="employee">Employee</option>
-                <option value="hr_manager">HR Manager</option>
+                <option value="manager">Manager</option>
                 <option value="hr_admin">HR Admin</option>
                 <option value="org_admin">Org Admin</option>
               </select>

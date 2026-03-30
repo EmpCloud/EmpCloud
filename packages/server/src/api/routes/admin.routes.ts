@@ -354,7 +354,7 @@ router.put("/organizations/:orgId/users/:userId/role", async (req: Request, res:
     const userId = parseInt(String(req.params.userId), 10);
     const { role } = req.body;
 
-    const validRoles = ["employee", "manager", "hr_manager", "hr_admin", "org_admin"];
+    const validRoles = ["employee", "manager", "hr_admin", "org_admin"];
     if (!role || !validRoles.includes(role)) {
       return res.status(400).json({ success: false, error: { message: `Role must be one of: ${validRoles.join(", ")}` } });
     }

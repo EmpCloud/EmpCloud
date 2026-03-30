@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download } from "lucide-react";
 import { useAuthStore } from "@/lib/auth-store";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function AttendanceDashboardPage() {
   const user = useAuthStore((s) => s.user);

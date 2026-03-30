@@ -30,7 +30,7 @@ const router = Router();
 function isHRUser(req: Request): boolean {
   if (!req.user) return false;
   const userRoleLevel = ROLE_HIERARCHY[req.user.role] ?? 0;
-  const hrLevel = ROLE_HIERARCHY["hr_manager" as UserRole] ?? 40;
+  const hrLevel = ROLE_HIERARCHY["hr_admin" as UserRole] ?? 60;
   return userRoleLevel >= hrLevel;
 }
 

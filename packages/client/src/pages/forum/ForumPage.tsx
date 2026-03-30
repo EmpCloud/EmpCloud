@@ -19,7 +19,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 const POST_TYPE_CONFIG: Record<string, { label: string; color: string; icon: typeof MessageCircle }> = {
   discussion: { label: "Discussion", color: "bg-blue-100 text-blue-700", icon: MessagesSquare },

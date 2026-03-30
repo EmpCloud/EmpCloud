@@ -197,7 +197,7 @@ async function getDocumentRaw(
 
   // #1059 — Non-HR users can only view their own documents
   if (requestingUserId !== undefined) {
-    const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
     const isHR = requestingUserRole ? HR_ROLES.includes(requestingUserRole) : false;
     if (doc.user_id !== requestingUserId && !isHR) {
       throw new ForbiddenError("You do not have permission to view this document");

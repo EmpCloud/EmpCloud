@@ -220,4 +220,4 @@ export const platformAdminNavItems: NavItem[] = [
   { path: "/admin/settings", label: "Platform Settings", icon: Settings },
 ];
 
-export const HR_ROLES = ["hr_admin", "hr_manager", "org_admin"];
+export const HR_ROLES = ["hr_admin", "org_admin"];

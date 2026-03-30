@@ -92,7 +92,7 @@ function useDeleteDocument() {
 
 type DocTab = "all" | "expiring" | "mandatory";
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function DocumentsPage() {
   const user = useAuthStore((s) => s.user);

@@ -27,7 +27,7 @@ function formatINR(value: number): string {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
-const VALID_ROLES = ["employee", "manager", "hr_manager", "hr_admin", "org_admin"];
+const VALID_ROLES = ["employee", "manager", "hr_admin", "org_admin"];
 
 export default function OrgDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -235,7 +235,7 @@ export default function OrgDetailPage() {
                         className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                           user.role === "org_admin"
                             ? "bg-purple-100 text-purple-700"
-                            : user.role === "hr_admin" || user.role === "hr_manager"
+                            : user.role === "hr_admin"
                               ? "bg-blue-100 text-blue-700"
                               : "bg-gray-100 text-gray-700"
                         }`}

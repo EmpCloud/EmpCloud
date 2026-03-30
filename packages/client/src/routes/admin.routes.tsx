@@ -18,7 +18,7 @@ const AuditPage = lazy(() => import("@/pages/audit/AuditPage"));
 const UsersPage = lazy(() => import("@/pages/users/UsersPage"));
 const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
 
-const HR_ROLES = ["org_admin", "hr_admin", "hr_manager"];
+const HR_ROLES = ["org_admin", "hr_admin"];
 
 function RequireRole({ roles, children }: { roles: string[]; children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);

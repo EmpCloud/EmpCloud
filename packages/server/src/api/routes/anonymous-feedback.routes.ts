@@ -132,7 +132,7 @@ router.get(
 
       // Allow HR+ roles to view any feedback
       const userRoleLevel = ROLE_HIERARCHY[req.user!.role as UserRole] ?? 0;
-      const hrLevel = ROLE_HIERARCHY["hr_manager" as UserRole] ?? 40;
+      const hrLevel = ROLE_HIERARCHY["hr_admin" as UserRole] ?? 60;
       const isHR = userRoleLevel >= hrLevel;
 
       // Allow owner to view their own feedback (matched by anonymous hash)

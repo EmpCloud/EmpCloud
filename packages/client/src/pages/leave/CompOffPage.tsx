@@ -23,7 +23,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
   rejected: { bg: "bg-red-50", text: "text-red-700", icon: XCircle },
 };
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function CompOffPage() {
   const qc = useQueryClient();

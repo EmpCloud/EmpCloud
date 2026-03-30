@@ -3,7 +3,7 @@ import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, Cred
 import { useState } from "react";
 import { useAuthStore } from "@/lib/auth-store";
 
-const ADMIN_ROLES = ["org_admin", "hr_admin", "hr_manager"];
+const ADMIN_ROLES = ["org_admin", "hr_admin"];
 
 interface SubscribeModalProps {
   module: any;

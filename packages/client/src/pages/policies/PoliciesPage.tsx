@@ -53,7 +53,7 @@ function useAcknowledgePolicy() {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const HR_ROLES = ["hr_manager", "hr_admin", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 function isHR(role: string) {
   return HR_ROLES.includes(role);

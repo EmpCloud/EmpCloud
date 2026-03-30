@@ -102,7 +102,7 @@ export async function approveCompOff(
 
   // Verify the approver has HR role
   const approver = await db("users").where({ id: approverId }).first();
-  const isHR = approver && ["hr_admin", "hr_manager", "org_admin"].includes(approver.role);
+  const isHR = approver && ["hr_admin", "org_admin"].includes(approver.role);
   const isManager =
     approver &&
     (await db("users")

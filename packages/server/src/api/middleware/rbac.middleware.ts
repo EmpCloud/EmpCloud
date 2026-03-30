@@ -43,9 +43,9 @@ export const requireOrgAdmin = requireRole("org_admin" as UserRole, "super_admin
 export const requireSuperAdmin = requireRole("super_admin" as UserRole);
 
 /**
- * Require HR Admin or HR Manager (or higher).
+ * Require HR Admin or higher.
  */
-export const requireHR = requireRole("hr_admin" as UserRole, "hr_manager" as UserRole);
+export const requireHR = requireRole("hr_admin" as UserRole);
 
 /**
  * Allow access if user is accessing their own resource OR has HR role.
@@ -61,7 +61,7 @@ export function requireSelfOrHR(paramName: string = "id") {
     const targetUserId = parseInt(String(req.params[paramName]), 10);
     const isSelf = req.user.sub === targetUserId;
     const userRoleLevel = ROLE_HIERARCHY[req.user.role] ?? 0;
-    const hrLevel = ROLE_HIERARCHY["hr_manager" as UserRole] ?? 40;
+    const hrLevel = ROLE_HIERARCHY["hr_admin" as UserRole] ?? 60;
 
     if (isSelf || userRoleLevel >= hrLevel) {
       next();

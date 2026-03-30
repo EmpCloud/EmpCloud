@@ -156,7 +156,7 @@ export async function cancelLeave(
   // Verify ownership: allow if the user owns the leave, or if the user is HR
   if (application.user_id !== userId) {
     const actingUser = await db("users").where({ id: userId, organization_id: orgId }).first();
-    const isHR = actingUser && ["hr_admin", "hr_manager", "org_admin"].includes(actingUser.role);
+    const isHR = actingUser && ["hr_admin", "org_admin"].includes(actingUser.role);
     if (!isHR) throw new ForbiddenError("Not authorized to cancel this leave application");
   }
 
@@ -226,7 +226,7 @@ export async function approveLeave(
   // Allow HR/managers even if not listed as specific approver
   if (!approval) {
     const approverUser = await db("users").where({ id: approverId }).first();
-    const isHR = approverUser && ["hr_admin", "hr_manager", "org_admin"].includes(approverUser.role);
+    const isHR = approverUser && ["hr_admin", "org_admin"].includes(approverUser.role);
     if (!isHR) throw new ForbiddenError("Not authorized to approve this application");
   }
 
@@ -357,7 +357,7 @@ export async function rejectLeave(
   // Allow HR/managers even if not listed as specific approver
   if (!approval) {
     const approverUser = await db("users").where({ id: approverId }).first();
-    const isHR = approverUser && ["hr_admin", "hr_manager", "org_admin"].includes(approverUser.role);
+    const isHR = approverUser && ["hr_admin", "org_admin"].includes(approverUser.role);
     if (!isHR) throw new ForbiddenError("Not authorized to reject this application");
   }
 

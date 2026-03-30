@@ -6,10 +6,9 @@ import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, 
 
 const AVAILABLE_ROLES = [
   { value: "employee", label: "Employee" },
-  { value: "hr_admin", label: "HR Admin" },
-  { value: "hr_manager", label: "HR Manager" },
-  { value: "org_admin", label: "Org Admin" },
   { value: "manager", label: "Manager" },
+  { value: "hr_admin", label: "HR Admin" },
+  { value: "org_admin", label: "Org Admin" },
 ];
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string; icon: typeof Info }> = {
@@ -19,7 +18,7 @@ const PRIORITY_CONFIG: Record<string, { label: string; color: string; icon: type
   low: { label: "Low", color: "bg-gray-100 text-gray-600 border-gray-200", icon: Info },
 };
 
-const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 function useAnnouncements(page: number) {
   return useQuery({
