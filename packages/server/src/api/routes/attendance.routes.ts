@@ -311,13 +311,14 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
     const params = attendanceQuerySchema.parse(req.query);
     const HR_ROLES = ["hr_admin", "hr_manager", "org_admin", "super_admin"];
     const isHR = HR_ROLES.includes(req.user!.role);
-    const user_id = isHR ? params.user_id : req.user!.sub;
+    const user_id = isHR ? (params.user_id || params.employee_id) : req.user!.sub;
     const department_id = isHR ? params.department_id : undefined;
     const result = await attendanceService.listRecords(req.user!.org_id, {
       page: params.page,
       perPage: params.per_page,
       month: params.month,
       year: params.year,
+      date: params.date,
       user_id,
       department_id,
     });

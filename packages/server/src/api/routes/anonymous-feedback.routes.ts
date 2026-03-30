@@ -15,8 +15,11 @@ import {
   feedbackQuerySchema,
   paginationSchema,
   AuditAction,
+  ROLE_HIERARCHY,
 } from "@empcloud/shared";
+import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
+import { ForbiddenError } from "../../utils/errors.js";
 
 const router = Router();
 
@@ -116,17 +119,33 @@ router.get(
   }
 );
 
-// GET /api/v1/feedback/:id — Single feedback (HR only)
+// GET /api/v1/feedback/:id — Single feedback (HR or owner)
 router.get(
   "/:id",
   authenticate,
-  requireHR,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const feedback = await feedbackService.getFeedbackById(
         req.user!.org_id,
         paramInt(req.params.id)
       );
+
+      // Allow HR+ roles to view any feedback
+      const userRoleLevel = ROLE_HIERARCHY[req.user!.role as UserRole] ?? 0;
+      const hrLevel = ROLE_HIERARCHY["hr_manager" as UserRole] ?? 40;
+      const isHR = userRoleLevel >= hrLevel;
+
+      // Allow owner to view their own feedback (matched by anonymous hash)
+      const isOwner = await feedbackService.isOwner(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        req.user!.sub
+      );
+
+      if (!isHR && !isOwner) {
+        throw new ForbiddenError("You do not have access to this feedback");
+      }
+
       sendSuccess(res, feedback);
     } catch (err) {
       next(err);

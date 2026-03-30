@@ -329,6 +329,87 @@ export async function getMyCheckIns(
 }
 
 // ---------------------------------------------------------------------------
+// Check-In Trends (#1218)
+// ---------------------------------------------------------------------------
+
+export async function getCheckInTrends(
+  orgId: number,
+  userId: number,
+  period: "daily" | "weekly" = "daily",
+  days = 30
+) {
+  const db = getDB();
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  const startStr = startDate.toISOString().split("T")[0];
+
+  const checkIns = await db("wellness_check_ins")
+    .where({ organization_id: orgId, user_id: userId })
+    .where("check_in_date", ">=", startStr)
+    .orderBy("check_in_date", "asc");
+
+  if (period === "weekly") {
+    // Group by ISO week
+    const weekMap = new Map<string, typeof checkIns>();
+    for (const ci of checkIns) {
+      const d = new Date(ci.check_in_date);
+      // Get Monday of the week
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(d);
+      monday.setDate(diff);
+      const weekKey = monday.toISOString().split("T")[0];
+      if (!weekMap.has(weekKey)) weekMap.set(weekKey, []);
+      weekMap.get(weekKey)!.push(ci);
+    }
+
+    const trends = [];
+    for (const [weekStart, entries] of weekMap) {
+      const moodDist: Record<string, number> = {};
+      let energySum = 0;
+      for (const e of entries) {
+        moodDist[e.mood] = (moodDist[e.mood] || 0) + 1;
+        energySum += e.energy_level;
+      }
+      trends.push({
+        period_start: weekStart,
+        check_in_count: entries.length,
+        mood_distribution: moodDist,
+        avg_energy: Math.round((energySum / entries.length) * 10) / 10,
+      });
+    }
+    return { period: "weekly", days, trends };
+  }
+
+  // Daily — group by date
+  const dayMap = new Map<string, typeof checkIns>();
+  for (const ci of checkIns) {
+    const dateStr = new Date(ci.check_in_date).toISOString().split("T")[0];
+    if (!dayMap.has(dateStr)) dayMap.set(dateStr, []);
+    dayMap.get(dateStr)!.push(ci);
+  }
+
+  const trends = [];
+  for (const [date, entries] of dayMap) {
+    const moodDist: Record<string, number> = {};
+    let energySum = 0;
+    for (const e of entries) {
+      moodDist[e.mood] = (moodDist[e.mood] || 0) + 1;
+      energySum += e.energy_level;
+    }
+    trends.push({
+      date,
+      check_in_count: entries.length,
+      mood_distribution: moodDist,
+      avg_energy: Math.round((energySum / entries.length) * 10) / 10,
+    });
+  }
+
+  return { period: "daily", days, trends };
+}
+
+// ---------------------------------------------------------------------------
 // Goals
 // ---------------------------------------------------------------------------
 
@@ -409,6 +490,17 @@ export async function updateGoalProgress(
   await db("wellness_goals").where({ id: goalId }).update(updateData);
 
   return getGoal(orgId, userId, goalId);
+}
+
+export async function deleteGoal(orgId: number, userId: number, goalId: number) {
+  const db = getDB();
+
+  const goal = await db("wellness_goals")
+    .where({ id: goalId, organization_id: orgId, user_id: userId })
+    .first();
+  if (!goal) throw new NotFoundError("Wellness goal");
+
+  await db("wellness_goals").where({ id: goalId }).delete();
 }
 
 export async function getMyGoals(orgId: number, userId: number, status?: string) {

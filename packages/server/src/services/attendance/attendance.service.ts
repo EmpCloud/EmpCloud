@@ -191,22 +191,27 @@ export async function getMyHistory(
 
 export async function listRecords(
   orgId: number,
-  params?: { page?: number; perPage?: number; month?: number; year?: number; user_id?: number; department_id?: number }
+  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; user_id?: number; department_id?: number }
 ) {
   const db = getDB();
   const page = params?.page || 1;
   const perPage = params?.perPage || 20;
-  const now = new Date();
-  const month = params?.month || now.getMonth() + 1;
-  const year = params?.year || now.getFullYear();
-
-  const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-  const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
 
   let query = db("attendance_records as ar")
     .join("users as u", "ar.user_id", "u.id")
-    .where("ar.organization_id", orgId)
-    .whereBetween("ar.date", [startDate, endDate]);
+    .where("ar.organization_id", orgId);
+
+  if (params?.date) {
+    // Exact date filter takes priority over month/year
+    query = query.where("ar.date", params.date);
+  } else {
+    const now = new Date();
+    const month = params?.month || now.getMonth() + 1;
+    const year = params?.year || now.getFullYear();
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+    const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
+    query = query.whereBetween("ar.date", [startDate, endDate]);
+  }
 
   if (params?.user_id) {
     query = query.where("ar.user_id", params.user_id);

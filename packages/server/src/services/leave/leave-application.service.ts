@@ -28,6 +28,15 @@ export async function applyLeave(
     throw new ValidationError("End date must not be before start date");
   }
 
+  // Reject leave applications with start_date more than 7 days in the past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const gracePeriod = new Date(today);
+  gracePeriod.setDate(gracePeriod.getDate() - 7);
+  if (startDate < gracePeriod) {
+    throw new ValidationError("Start date cannot be more than 7 days in the past");
+  }
+
   // Validate leave type exists and is active
   const leaveType = await db("leave_types")
     .where({ id: data.leave_type_id, organization_id: orgId, is_active: true })

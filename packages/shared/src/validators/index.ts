@@ -211,8 +211,18 @@ export const createDepartmentSchema = z.object({
   name: z.string().min(1).max(100),
 });
 
+export const updateDepartmentSchema = z.object({
+  name: z.string().min(1).max(100),
+});
+
 export const createLocationSchema = z.object({
   name: z.string().min(1).max(100),
+  address: z.string().max(1000).optional(),
+  timezone: z.string().max(50).optional(),
+});
+
+export const updateLocationSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
   address: z.string().max(1000).optional(),
   timezone: z.string().max(50).optional(),
 });
@@ -445,7 +455,9 @@ export const approveRegularizationSchema = z.object({
 export const attendanceQuerySchema = paginationSchema.extend({
   month: z.coerce.number().int().min(1).max(12).optional(),
   year: z.coerce.number().int().min(2020).max(2100).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   user_id: z.coerce.number().int().positive().optional(),
+  employee_id: z.coerce.number().int().positive().optional(),
   department_id: z.coerce.number().int().positive().optional(),
 });
 
@@ -482,7 +494,18 @@ export const createLeavePolicySchema = z.object({
 
 export const applyLeaveSchema = z.object({
   leave_type_id: z.coerce.number().int().positive(),
-  start_date: z.string(),
+  start_date: z.string().refine(
+    (val) => {
+      const d = new Date(val);
+      if (isNaN(d.getTime())) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const gracePeriod = new Date(today);
+      gracePeriod.setDate(gracePeriod.getDate() - 7);
+      return d >= gracePeriod;
+    },
+    { message: "Start date cannot be more than 7 days in the past" },
+  ),
   end_date: z.string(),
   days_count: z.coerce.number().min(0.5),
   is_half_day: z.preprocess((v) => v === "true" || v === true, z.boolean()).default(false),

@@ -65,6 +65,35 @@ export async function createDepartment(orgId: number, name: string) {
   return db("organization_departments").where({ id }).first();
 }
 
+export async function getDepartment(orgId: number, deptId: number) {
+  const db = getDB();
+  const dept = await db("organization_departments")
+    .where({ id: deptId, organization_id: orgId, is_deleted: false })
+    .first();
+  if (!dept) throw new NotFoundError("Department");
+  return dept;
+}
+
+export async function updateDepartment(orgId: number, deptId: number, data: { name: string }) {
+  const db = getDB();
+  const dept = await db("organization_departments")
+    .where({ id: deptId, organization_id: orgId, is_deleted: false })
+    .first();
+  if (!dept) throw new NotFoundError("Department");
+
+  const existing = await db("organization_departments")
+    .where({ organization_id: orgId, is_deleted: false })
+    .whereRaw("LOWER(name) = LOWER(?)", [data.name.trim()])
+    .whereNot({ id: deptId })
+    .first();
+  if (existing) throw new ConflictError("A department with this name already exists");
+
+  await db("organization_departments")
+    .where({ id: deptId, organization_id: orgId })
+    .update({ name: data.name.trim(), updated_at: new Date() });
+  return db("organization_departments").where({ id: deptId }).first();
+}
+
 export async function deleteDepartment(orgId: number, deptId: number) {
   const db = getDB();
 
@@ -90,6 +119,38 @@ export async function deleteDepartment(orgId: number, deptId: number) {
 export async function listLocations(orgId: number) {
   const db = getDB();
   return db("organization_locations").where({ organization_id: orgId, is_active: true });
+}
+
+export async function getLocation(orgId: number, locationId: number) {
+  const db = getDB();
+  const loc = await db("organization_locations")
+    .where({ id: locationId, organization_id: orgId, is_active: true })
+    .first();
+  if (!loc) throw new NotFoundError("Location");
+  return loc;
+}
+
+export async function updateLocation(orgId: number, locationId: number, data: { name?: string; address?: string; timezone?: string }) {
+  const db = getDB();
+  const loc = await db("organization_locations")
+    .where({ id: locationId, organization_id: orgId, is_active: true })
+    .first();
+  if (!loc) throw new NotFoundError("Location");
+
+  if (data.name) {
+    const existing = await db("organization_locations")
+      .where({ organization_id: orgId, is_active: true })
+      .whereRaw("LOWER(name) = LOWER(?)", [data.name.trim()])
+      .whereNot({ id: locationId })
+      .first();
+    if (existing) throw new ConflictError("A location with this name already exists");
+    data.name = data.name.trim();
+  }
+
+  await db("organization_locations")
+    .where({ id: locationId, organization_id: orgId })
+    .update({ ...data, updated_at: new Date() });
+  return db("organization_locations").where({ id: locationId }).first();
 }
 
 export async function deleteLocation(orgId: number, locationId: number) {

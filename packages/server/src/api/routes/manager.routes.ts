@@ -4,16 +4,18 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { requireRole } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import * as managerService from "../../services/manager/manager.service.js";
+import type { UserRole } from "@empcloud/shared";
 
 const router = Router();
 
-// Middleware: ensure user is authenticated (manager role check is implicit — if they
-// have no direct reports, the endpoints simply return empty results).
+// Middleware: ensure user is authenticated AND has at least manager role
+router.use(authenticate, requireRole("manager" as UserRole));
 
 // GET /api/v1/manager/team — My direct reports
-router.get("/team", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/team", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const team = await managerService.getMyTeam(req.user!.org_id, req.user!.sub);
     sendSuccess(res, team);
@@ -21,7 +23,7 @@ router.get("/team", authenticate, async (req: Request, res: Response, next: Next
 });
 
 // GET /api/v1/manager/attendance — Team attendance today
-router.get("/attendance", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/attendance", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await managerService.getTeamAttendanceToday(req.user!.org_id, req.user!.sub);
     sendSuccess(res, data);
@@ -29,7 +31,7 @@ router.get("/attendance", authenticate, async (req: Request, res: Response, next
 });
 
 // GET /api/v1/manager/leaves/pending — Pending leave approvals for my team
-router.get("/leaves/pending", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/leaves/pending", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pending = await managerService.getTeamPendingLeaves(req.user!.org_id, req.user!.sub);
     sendSuccess(res, pending);
@@ -37,7 +39,7 @@ router.get("/leaves/pending", authenticate, async (req: Request, res: Response, 
 });
 
 // GET /api/v1/manager/leaves/calendar — Team leave calendar
-router.get("/leaves/calendar", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/leaves/calendar", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Default to current week (Mon-Sun)
     const now = new Date();
@@ -62,7 +64,7 @@ router.get("/leaves/calendar", authenticate, async (req: Request, res: Response,
 });
 
 // GET /api/v1/manager/dashboard — Combined dashboard stats
-router.get("/dashboard", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dashboard = await managerService.getManagerDashboard(req.user!.org_id, req.user!.sub);
     sendSuccess(res, dashboard);

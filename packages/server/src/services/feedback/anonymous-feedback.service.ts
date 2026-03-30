@@ -182,7 +182,24 @@ export async function listFeedback(
 }
 
 // ---------------------------------------------------------------------------
-// Get Single Feedback (HR only)
+// Check if user owns the feedback (via anonymous hash)
+// ---------------------------------------------------------------------------
+
+export async function isOwner(
+  orgId: number,
+  feedbackId: number,
+  userId: number
+): Promise<boolean> {
+  const db = getDB();
+  const anonymousHash = hashUserId(userId);
+  const row = await db("anonymous_feedback")
+    .where({ id: feedbackId, organization_id: orgId, anonymous_hash: anonymousHash })
+    .first("id");
+  return !!row;
+}
+
+// ---------------------------------------------------------------------------
+// Get Single Feedback (HR or owner)
 // ---------------------------------------------------------------------------
 
 export async function getFeedbackById(orgId: number, feedbackId: number) {

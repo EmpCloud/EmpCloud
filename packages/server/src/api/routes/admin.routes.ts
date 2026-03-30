@@ -236,6 +236,50 @@ router.post("/data-sanity/fix", async (req: Request, res: Response, next: NextFu
 });
 
 // =========================================================================
+// Cross-Org Audit Logs (#1225)
+// =========================================================================
+
+// GET /api/v1/admin/audit — cross-org audit logs with filters
+router.get("/audit", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const perPage = Math.min(parseInt(req.query.per_page as string, 10) || 20, 100);
+
+    let query = db("audit_logs");
+
+    // Filters
+    if (req.query.org_id) {
+      query = query.where("organization_id", Number(req.query.org_id));
+    }
+    if (req.query.user_id) {
+      query = query.where("user_id", Number(req.query.user_id));
+    }
+    if (req.query.action) {
+      query = query.where("action", req.query.action as string);
+    }
+    if (req.query.start_date) {
+      query = query.where("created_at", ">=", req.query.start_date as string);
+    }
+    if (req.query.end_date) {
+      const endDate = new Date(req.query.end_date as string);
+      endDate.setDate(endDate.getDate() + 1);
+      query = query.where("created_at", "<", endDate.toISOString().slice(0, 10));
+    }
+
+    const [{ count }] = await query.clone().count("* as count");
+    const logs = await query
+      .orderBy("created_at", "desc")
+      .limit(perPage)
+      .offset((page - 1) * perPage);
+
+    sendPaginated(res, logs, Number(count), page, perPage);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// =========================================================================
 // User Management across orgs (super_admin)
 // =========================================================================
 

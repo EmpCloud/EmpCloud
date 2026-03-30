@@ -154,6 +154,24 @@ router.post("/reset-password", async (req: Request, res: Response, next: NextFun
   }
 });
 
+// GET /api/v1/auth/me — Current authenticated user profile
+router.get("/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { getDB } = await import("../../db/connection.js");
+    const db = getDB();
+    const user = await db("users").where({ id: req.user!.sub }).first();
+    if (!user) {
+      sendSuccess(res, null, 404);
+      return;
+    }
+    const { password: _, ...safeUser } = user;
+    const org = await db("organizations").where({ id: user.organization_id }).first();
+    sendSuccess(res, { user: safeUser, org });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/v1/auth/sso/validate — Validate an SSO/JWT token (#750)
 router.post("/sso/validate", async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -19,7 +19,7 @@ import {
 } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
-import { ForbiddenError } from "../../utils/errors.js";
+import { ForbiddenError, ValidationError } from "../../utils/errors.js";
 
 /** Check if user role is plain employee (below manager level) */
 function isEmployeeRole(role: string): boolean {
@@ -148,6 +148,13 @@ router.post("/", authenticate, requireHR, async (req: Request, res: Response, ne
 // PUT /api/v1/surveys/:id — Update survey (HR, draft only)
 router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Status changes are not allowed via PUT — use POST /:id/publish or /:id/close instead
+    if (req.body && req.body.status !== undefined) {
+      throw new ValidationError(
+        "Cannot change survey status via PUT. Use POST /surveys/:id/publish to publish or POST /surveys/:id/close to close."
+      );
+    }
+
     const data = updateSurveySchema.parse(req.body);
     const survey = await surveyService.updateSurvey(
       req.user!.org_id,

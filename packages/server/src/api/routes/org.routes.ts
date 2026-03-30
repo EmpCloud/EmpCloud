@@ -7,7 +7,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { requireOrgAdmin } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import * as orgService from "../../services/org/org.service.js";
-import { updateOrgSchema, createDepartmentSchema, createLocationSchema } from "@empcloud/shared";
+import { updateOrgSchema, createDepartmentSchema, updateDepartmentSchema, createLocationSchema, updateLocationSchema } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
 
 const router = Router();
@@ -56,6 +56,23 @@ router.post("/me/departments", authenticate, requireOrgAdmin, async (req: Reques
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/organizations/me/departments/:id
+router.get("/me/departments/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const dept = await orgService.getDepartment(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, dept);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/organizations/me/departments/:id
+router.put("/me/departments/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateDepartmentSchema.parse(req.body);
+    const dept = await orgService.updateDepartment(req.user!.org_id, paramInt(req.params.id), data);
+    sendSuccess(res, dept);
+  } catch (err) { next(err); }
+});
+
 // DELETE /api/v1/organizations/me/departments/:id
 router.delete("/me/departments/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -80,6 +97,23 @@ router.post("/me/locations", authenticate, requireOrgAdmin, async (req: Request,
     const data = createLocationSchema.parse(req.body);
     const loc = await orgService.createLocation(req.user!.org_id, data);
     sendSuccess(res, loc, 201);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/organizations/me/locations/:id
+router.get("/me/locations/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const loc = await orgService.getLocation(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, loc);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/organizations/me/locations/:id
+router.put("/me/locations/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateLocationSchema.parse(req.body);
+    const loc = await orgService.updateLocation(req.user!.org_id, paramInt(req.params.id), data);
+    sendSuccess(res, loc);
   } catch (err) { next(err); }
 });
 

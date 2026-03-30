@@ -80,6 +80,21 @@ router.post("/check-in", authenticate, async (req: Request, res: Response, next:
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/wellness/trends — Aggregated check-in trends
+router.get("/trends", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const period = typeof req.query.period === "string" ? req.query.period : "daily";
+    const days = req.query.days ? Number(req.query.days) : 30;
+    const trends = await wellnessService.getCheckInTrends(
+      req.user!.org_id,
+      req.user!.sub,
+      period as "daily" | "weekly",
+      days
+    );
+    sendSuccess(res, trends);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/wellness/check-ins — My check-in history
 router.get("/check-ins", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -119,6 +134,18 @@ router.get("/goals", authenticate, async (req: Request, res: Response, next: Nex
       status
     );
     sendSuccess(res, goals);
+  } catch (err) { next(err); }
+});
+
+// DELETE /api/v1/wellness/goals/:id — Delete own goal
+router.delete("/goals/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await wellnessService.deleteGoal(
+      req.user!.org_id,
+      req.user!.sub,
+      paramInt(req.params.id)
+    );
+    sendSuccess(res, { message: "Goal deleted" });
   } catch (err) { next(err); }
 });
 

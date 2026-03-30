@@ -7,6 +7,26 @@ import { getDB } from "../../db/connection.js";
 import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Strip server filesystem path from document objects and replace with download URL.
+ * Prevents leaking absolute server paths (#1201).
+ */
+function sanitizeDocPath<T extends Record<string, any>>(doc: T): T {
+  if (doc && doc.file_path) {
+    const { file_path, ...rest } = doc;
+    return { ...rest, download_url: `/api/v1/documents/${doc.id}/download` } as any;
+  }
+  return doc;
+}
+
+function sanitizeDocList<T extends Record<string, any>>(docs: T[]): T[] {
+  return docs.map(sanitizeDocPath);
+}
+
+// ---------------------------------------------------------------------------
 // Categories
 // ---------------------------------------------------------------------------
 
@@ -115,7 +135,8 @@ export async function uploadDocument(
     updated_at: new Date(),
   });
 
-  return db("employee_documents").where({ id }).first();
+  const doc = await db("employee_documents").where({ id }).first();
+  return sanitizeDocPath(doc);
 }
 
 export async function listDocuments(
@@ -156,10 +177,13 @@ export async function listDocuments(
     .limit(perPage)
     .offset((page - 1) * perPage);
 
-  return { documents, total: Number(count) };
+  return { documents: sanitizeDocList(documents), total: Number(count) };
 }
 
-export async function getDocument(
+/**
+ * Internal helper — returns raw doc with file_path (for download route).
+ */
+async function getDocumentRaw(
   orgId: number,
   docId: number,
   requestingUserId?: number,
@@ -181,6 +205,28 @@ export async function getDocument(
   }
 
   return doc;
+}
+
+export async function getDocument(
+  orgId: number,
+  docId: number,
+  requestingUserId?: number,
+  requestingUserRole?: string,
+) {
+  const doc = await getDocumentRaw(orgId, docId, requestingUserId, requestingUserRole);
+  return sanitizeDocPath(doc);
+}
+
+/**
+ * Get document with raw file_path for download/streaming.
+ */
+export async function getDocumentForDownload(
+  orgId: number,
+  docId: number,
+  requestingUserId?: number,
+  requestingUserRole?: string,
+) {
+  return getDocumentRaw(orgId, docId, requestingUserId, requestingUserRole);
 }
 
 export async function deleteDocument(orgId: number, docId: number) {
@@ -224,7 +270,8 @@ export async function verifyDocument(
       updated_at: new Date(),
     });
 
-  return db("employee_documents").where({ id: docId }).first();
+  const updated = await db("employee_documents").where({ id: docId }).first();
+  return sanitizeDocPath(updated);
 }
 
 // ---------------------------------------------------------------------------
@@ -333,7 +380,8 @@ export async function rejectDocument(
       updated_at: new Date(),
     });
 
-  return db("employee_documents").where({ id: docId }).first();
+  const updated = await db("employee_documents").where({ id: docId }).first();
+  return sanitizeDocPath(updated);
 }
 
 // ---------------------------------------------------------------------------
@@ -363,5 +411,5 @@ export async function getMyDocuments(
     .limit(perPage)
     .offset((page - 1) * perPage);
 
-  return { documents, total: Number(count) };
+  return { documents: sanitizeDocList(documents), total: Number(count) };
 }
