@@ -3,8 +3,9 @@ import { useAuthStore } from "@/lib/auth-store";
 import { useTranslation } from "react-i18next";
 import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
+import axios from "axios";
 
 interface Subscription {
   id: number;
@@ -69,6 +70,33 @@ export default function DashboardPage() {
   const moduleBaseUrls = new Map<string, string>(
     modules?.filter((m: Module) => m.base_url).map((m: Module) => [m.slug, m.base_url!]) || []
   );
+
+  // Launch a module with a fresh SSO token. Attempts to refresh the EmpCloud
+  // access token first so the SSO exchange on the target module always succeeds.
+  const launchModule = useCallback(async (baseUrl: string) => {
+    let token = useAuthStore.getState().accessToken || "";
+
+    // Try to refresh so we pass a non-expired token to the module SSO
+    const refreshToken = useAuthStore.getState().refreshToken;
+    if (refreshToken) {
+      try {
+        const { data } = await axios.post("/oauth/token", {
+          grant_type: "refresh_token",
+          refresh_token: refreshToken,
+          client_id: "empcloud-dashboard",
+        });
+        if (data.access_token) {
+          useAuthStore.getState().setTokens(data.access_token, data.refresh_token);
+          token = data.access_token;
+        }
+      } catch {
+        // Refresh failed — use the existing token (backend has a 1-hour grace period)
+      }
+    }
+
+    const ssoUrl = `${baseUrl}?sso_token=${encodeURIComponent(token)}`;
+    window.open(ssoUrl, "_blank", "noopener,noreferrer");
+  }, []);
 
   // Core HRMS is the platform itself — not a module in the DB
   const hrmsModule = {
@@ -329,9 +357,7 @@ export default function DashboardPage() {
           {activeSubscriptions.map((sub) => {
             const mod = moduleMap.get(sub.module_id);
             const isExpanded = expandedModule === sub.id;
-            const ssoUrl = mod?.base_url
-              ? `${mod.base_url}?sso_token=${encodeURIComponent(useAuthStore.getState().accessToken || "")}`
-              : null;
+            const hasBaseUrl = !!mod?.base_url;
             return (
               <div
                 key={sub.id}
@@ -343,10 +369,10 @@ export default function DashboardPage() {
                       <Package className="h-5 w-5 text-brand-600" />
                     </div>
                     <div>
-                      {ssoUrl ? (
-                        <a href={ssoUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-gray-900 hover:text-brand-600 transition-colors">
+                      {hasBaseUrl ? (
+                        <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-gray-900 hover:text-brand-600 transition-colors text-left">
                           {mod?.name || "Module"}
-                        </a>
+                        </button>
                       ) : (
                         <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>
                       )}
@@ -392,19 +418,17 @@ export default function DashboardPage() {
                   />
                 </div>
 
-                {ssoUrl && (
-                  <a
+                {hasBaseUrl && (
+                  <button
                     // ACCEPTED RISK: The JWT is intentionally passed as a query parameter for SSO.
                     // All EMP ecosystem modules use this pattern to establish a session on the target
                     // module. The token is short-lived, transmitted over HTTPS, and the target module
                     // exchanges it for a server-side session immediately on load.
-                    href={ssoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={() => launchModule(mod!.base_url!)}
                     className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
                   >
                     {t('dashboard.launch')} <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
+                  </button>
                 )}
               </div>
             );
