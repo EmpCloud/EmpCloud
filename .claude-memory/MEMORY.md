@@ -1,36 +1,21 @@
 # Memory Index
 
-- [user_role.md](user_role.md) — User builds EMP Cloud ecosystem, works with Suresh (Technical Architect) for infra/keys
-- [feedback_always_approve.md](feedback_always_approve.md) — Always show plans and get explicit user approval before writing any code or making changes
-- [feedback_ssh_paramiko.md](feedback_ssh_paramiko.md) — ALWAYS use paramiko + password for server SSH. No SSH keys exist. Never use ssh -i.
-- [feedback_issue_handling.md](feedback_issue_handling.md) — When fixing GitHub issues, comment fix details + commit ID on issue before closing
-- [project_architecture.md](project_architecture.md) — Full 12-module HRMS ecosystem: 96% complete (235 GREEN / 0 YELLOW / 15 RED), all features, deployments, credentials
-- [reference_production_server.md](reference_production_server.md) — Test server (163.227.174.141), all subdomain URLs, 11 PM2 processes, DB credentials, login credentials
-- [project_billing_gateways.md](project_billing_gateways.md) — Stripe/Razorpay/PayPal test keys, gateway architecture, payment route paths
-- [project_lms_deployment.md](project_lms_deployment.md) — LMS deployed to testlms.empcloud.com, SSO integrated, code fixes applied
-- [reference_deploy_keys.md](reference_deploy_keys.md) — GitHub-only deploy keys (NOT server SSH). No SSH access to test server from local machine
-- [feedback_deploy_purge_cache.md](feedback_deploy_purge_cache.md) — Every deploy must purge PM2/tsx cache (pm2 delete + rm cache, never pm2 restart)
-- [IMPLEMENTATIONS.md](../IMPLEMENTATIONS.md) — Full implementation log: 30+ features, 80+ bug fixes, verified endpoints, agent dispatch rules
-- [feedback_no_rebuild.md](feedback_no_rebuild.md) — Always check IMPLEMENTATIONS.md before coding; never duplicate existing features
-- [feedback_agent_screenshots.md](feedback_agent_screenshots.md) — All agents must include screenshots/evidence in GitHub issue comments
-- [feedback_continuous_learning.md](feedback_continuous_learning.md) — Agents must update BUGFIX_AGENTS.md / IMPLEMENTATIONS.md after every fix
-- [BUGFIX_AGENTS.md](../BUGFIX_AGENTS.md) — Bug fix agent guide: triage rules, 15 learnings, cross-module knowledge, validation inventory
-- [feedback_one_agent_per_module.md](feedback_one_agent_per_module.md) — One agent per module at a time; bugs first, then enhancements; never parallel on same module
-- [feedback_agent_naming.md](feedback_agent_naming.md) — Agents sign comments: "bug fix agent", "implementation agent", or "coding agent"
-- [feedback_never_close_without_proof.md](feedback_never_close_without_proof.md) — CRITICAL: NEVER close a bug without running actual curl test and showing proof. No assumptions.
-- [feedback_orchestrator_role.md](feedback_orchestrator_role.md) — CRITICAL: Main context is ORCHESTRATOR only. Never fix code directly. Use agents for all code work.
-- [feedback_lessons_20260329.md](feedback_lessons_20260329.md) — 10 key lessons: Zod/MySQL sync, code≠working, silent drops, phone mapping, module auth, nginx naming, tsbuildinfo, orchestrator pattern
-- [project_codebase_health.md](project_codebase_health.md) — 78K LOC, 44 hardcoded URLs, 184 raw SQL, 210 any types, 23% test coverage, refactoring targets
-- [project_issue_intelligence.md](project_issue_intelligence.md) — 121 issues: RBAC broken in 3 modules, LMS/Recruit/Payroll down, 58 dupes, fix priorities
-- [project_closed_patterns.md](project_closed_patterns.md) — 200 closed analyzed: RBAC 19%, routes 18%, auth 13%. 31% reopen rate. Performance RBAC worst.
-- [reference_github_admin.md](reference_github_admin.md) — GraphQL deleteIssue mutation, token permissions, bulk delete script pattern
-- [reference_module_pm2_entrypoints.md](reference_module_pm2_entrypoints.md) — Correct PM2 entry points for all 10 modules (Monitor uses adminApi.js not index.js)
-- [reference_module_urls_corrected.md](reference_module_urls_corrected.md) — Verified frontend/API URLs with hyphen gotchas (test-billing-api not testbilling-api)
-- [feedback_service_debugging.md](feedback_service_debugging.md) — 5-step checklist: PM2 status → logs → port check → nginx → local curl before fixing
-- [feedback_no_rate_limits_dev.md](feedback_no_rate_limits_dev.md) — Remove all rate limits during active development; testing gets blocked
-- [feedback_test_deployed_urls.md](feedback_test_deployed_urls.md) — Always test via public HTTPS URLs (test-*.empcloud.com), never localhost
+## User
+- [user_role.md](user_role.md) — Builds EMP Cloud ecosystem, works with Suresh (Technical Architect) for infra/keys
+
+## Rules & Preferences
+- [feedback_rules.md](feedback_rules.md) — All 19 workflow rules: approvals, deploy procedure, testing, SSH, agents, debugging
+- [feedback_lessons.md](feedback_lessons.md) — 25 key lessons from deployment, database, auth, testing, and integration
+
+## Architecture & Infrastructure
+- [reference_infrastructure.md](reference_infrastructure.md) — Test server, all 19 PM2 services with ports, public URLs, deploy procedure, GitHub Actions
+- [project_architecture.md](project_architecture.md) — Full 12-module HRMS ecosystem overview, features, status
 - [project_sso_architecture.md](project_sso_architecture.md) — SSO flow: Cloud passes accessToken as ?sso_token, modules decode+exchange for local HS256
-- [feedback_edit_local_push_pull.md](feedback_edit_local_push_pull.md) — Never edit on server; edit local → push GitHub → pull on server
-- [feedback_playwright_testing.md](feedback_playwright_testing.md) — Always use Playwright for E2E/functional testing, never curl simulations
-- [feedback_e2e_playwright.md](feedback_e2e_playwright.md) — RULE: "end to end test" = Playwright .spec.ts files, never curl
-- [reference_pm2_ecosystem.md](reference_pm2_ecosystem.md) — PM2 ecosystem config, all 12 service port mappings, deploy procedure
+
+## Features & Integration
+- [project_billing_integration_fixed.md](project_billing_integration_fixed.md) — Billing fully wired: API key, webhook endpoint, 3 gateways working
+- [project_back_to_dashboard.md](project_back_to_dashboard.md) — "← EMP Cloud" back button in all 10 module headers
+- [project_lms_deployment.md](project_lms_deployment.md) — LMS deployed to testlms.empcloud.com, SSO integrated
+
+## GitHub & Admin
+- [reference_github_admin.md](reference_github_admin.md) — GraphQL deleteIssue mutation, token permissions, bulk delete pattern
