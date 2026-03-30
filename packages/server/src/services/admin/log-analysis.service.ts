@@ -14,7 +14,7 @@ const PM2_LOG_DIR =
   process.env.PM2_LOG_DIR || path.join(os.homedir(), ".pm2", "logs");
 
 const MODULES = [
-  "empcloud",
+  "empcloud-server",
   "emp-recruit",
   "emp-performance",
   "emp-rewards",
@@ -23,6 +23,9 @@ const MODULES = [
   "emp-lms",
   "emp-payroll",
   "emp-monitor",
+  "emp-field",
+  "emp-project-api",
+  "emp-project-task-api",
 ];
 
 // ---------------------------------------------------------------------------
