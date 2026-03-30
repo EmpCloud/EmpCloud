@@ -159,7 +159,7 @@ async function seed() {
       total_seats: 100,
       used_seats: 5,
       billing_cycle: "monthly",
-      price_per_seat: slug === "emp-payroll" ? 50000 : 30000, // ₹500/seat, ₹300/seat in paise
+      price_per_seat: 10000, // ₹100/seat/month in paise
       currency: "INR",
       current_period_start: now,
       current_period_end: oneMonthLater,
