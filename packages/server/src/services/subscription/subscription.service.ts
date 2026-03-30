@@ -299,6 +299,36 @@ export async function listSeats(orgId: number, moduleId: number) {
 }
 
 // ---------------------------------------------------------------------------
+// Sync Seat Count (#1191) — Recalculate used_seats from actual org_module_seats rows
+// ---------------------------------------------------------------------------
+
+export async function syncUsedSeats(orgId: number, moduleId: number): Promise<void> {
+  const db = getDB();
+
+  const sub = await db("org_subscriptions")
+    .where({ organization_id: orgId, module_id: moduleId })
+    .whereIn("status", ["active", "trial"])
+    .first();
+
+  if (!sub) return;
+
+  const [{ count }] = await db("org_module_seats")
+    .where({ subscription_id: sub.id })
+    .count("* as count");
+
+  const actualCount = Number(count);
+
+  if (sub.used_seats !== actualCount) {
+    logger.info(
+      `Syncing used_seats for subscription ${sub.id} (org ${orgId}): ${sub.used_seats} -> ${actualCount}`
+    );
+    await db("org_subscriptions")
+      .where({ id: sub.id })
+      .update({ used_seats: actualCount, updated_at: new Date() });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Access Check (called by sub-modules)
 // ---------------------------------------------------------------------------
 
@@ -334,6 +364,11 @@ export async function checkModuleAccess(params: {
     }
     return { has_access: false, seat_assigned: false, features: [] };
   }
+
+  // #1191 — Sync used_seats from actual seat assignments (non-blocking)
+  syncUsedSeats(params.orgId, mod.id).catch((err) => {
+    logger.warn(`Failed to sync seat count for org ${params.orgId} module ${mod.id}: ${err.message}`);
+  });
 
   const seat = await db("org_module_seats")
     .where({ module_id: mod.id, user_id: params.userId })
