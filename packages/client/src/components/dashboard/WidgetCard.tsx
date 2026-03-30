@@ -185,7 +185,8 @@ export default function WidgetCard({
                 // Use existing token — backend has a grace period
               }
             }
-            const ssoUrl = `${moduleUrl}?sso_token=${encodeURIComponent(token)}`;
+            const returnUrl = encodeURIComponent(`${window.location.origin}/dashboard`);
+            const ssoUrl = `${moduleUrl}?sso_token=${encodeURIComponent(token)}&return_url=${returnUrl}`;
             window.open(ssoUrl, "_blank", "noopener,noreferrer");
           }}
           className={`mt-4 flex items-center gap-1.5 text-xs font-medium ${c.icon} hover:underline`}

@@ -94,7 +94,8 @@ export default function DashboardPage() {
       }
     }
 
-    const ssoUrl = `${baseUrl}?sso_token=${encodeURIComponent(token)}`;
+    const returnUrl = encodeURIComponent(`${window.location.origin}/dashboard`);
+    const ssoUrl = `${baseUrl}?sso_token=${encodeURIComponent(token)}&return_url=${returnUrl}`;
     window.open(ssoUrl, "_blank", "noopener,noreferrer");
   }, []);
 
