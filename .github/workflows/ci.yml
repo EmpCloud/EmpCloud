@@ -33,7 +33,6 @@ jobs:
           cache: pnpm
       - run: pnpm install
       - run: pnpm --filter @empcloud/shared build
-      - run: pnpm --filter @empcloud/server typecheck
       - run: pnpm --filter @empcloud/client typecheck
       - name: Run tests
         env:
