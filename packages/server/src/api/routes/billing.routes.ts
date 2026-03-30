@@ -101,9 +101,9 @@ router.post("/pay", authenticate, requireHR, async (req: Request, res: Response,
 });
 
 // GET /api/v1/billing/gateways — List available payment gateways (HR+ only)
-router.get("/gateways", authenticate, requireHR, async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/gateways", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const gateways = await billingIntegration.listPaymentGateways();
+    const gateways = await billingIntegration.listPaymentGateways(req.user!.org_id);
     sendSuccess(res, gateways);
   } catch (err) {
     next(err);

@@ -6,6 +6,7 @@
 import { config } from "../../config/index.js";
 import { logger } from "../../utils/logger.js";
 import { getDB } from "../../db/connection.js";
+import { getOrgCurrency } from "../subscription/subscription.service.js";
 
 interface BillingEvent {
   event_type: string;
@@ -178,9 +179,12 @@ export async function getBillingSummary(orgId: number) {
     }
   }, 0);
 
+  // Resolve currency: prefer from subscriptions, fall back to org setting
+  const currency = subscriptions[0]?.currency || await getOrgCurrency(orgId);
+
   return {
     subscriptions,
     total_monthly_cost: totalMonthlyCost,
-    currency: subscriptions[0]?.currency || "USD",
+    currency,
   };
 }

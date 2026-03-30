@@ -8,6 +8,7 @@
 import { config } from "../../config/index.js";
 import { logger } from "../../utils/logger.js";
 import { getDB } from "../../db/connection.js";
+import { getOrgCurrency } from "../subscription/subscription.service.js";
 
 const BILLING_BASE = config.billing.moduleUrl + "/api/v1";
 
@@ -98,6 +99,9 @@ export async function autoProvisionClient(
   orgName: string,
   orgEmail: string
 ): Promise<string | null> {
+  // Resolve the org's currency
+  const currency = await getOrgCurrency(orgId);
+
   // Billing returns { client: { id, ... }, isNew: boolean }
   const result = await billingFetch<{ client?: { id: string }; id?: string }>(
     "POST",
@@ -105,7 +109,7 @@ export async function autoProvisionClient(
     {
       name: orgName,
       email: orgEmail,
-      currency: "INR",
+      currency,
     }
   );
 
@@ -165,13 +169,14 @@ export async function createBillingPlan(
   moduleName: string,
   priceTier: string,
   pricePerSeat: number,
-  billingCycle: string
+  billingCycle: string,
+  currency: string = "INR"
 ): Promise<string | null> {
   const result = await billingFetch<{ id: string }>("POST", "/subscriptions/plans", {
     name: `${moduleName} - ${priceTier}`,
     price: pricePerSeat,
     billingInterval: billingCycle,
-    currency: "INR",
+    currency,
   });
 
   return result?.id ?? null;
@@ -320,13 +325,15 @@ export async function getBillingSummary(orgId: number): Promise<object> {
     .filter((inv: any) => inv.status === "sent" || inv.status === "overdue" || inv.status === "viewed")
     .reduce((sum: number, inv: any) => sum + (Number(inv.amountDue) || Number(inv.total) || 0), 0);
 
+  const currency = await getOrgCurrency(orgId);
+
   return {
     recent_invoices: invoiceList,
     recent_payments: Array.isArray(paymentResult?.payments)
       ? paymentResult.payments
       : [],
     outstanding_amount: outstandingAmount,
-    currency: "INR",
+    currency,
   };
 }
 
@@ -351,12 +358,34 @@ export async function createPaymentOrder(
   return result;
 }
 
-export async function listPaymentGateways(): Promise<Array<{ name: string; displayName: string }>> {
+export async function listPaymentGateways(orgId?: number): Promise<Array<{ name: string; displayName: string }>> {
   const result = await billingFetch<Array<{ name: string; displayName: string }>>(
     "GET",
     "/payments/online/gateways"
   );
-  return result ?? [];
+  const allGateways = result ?? [];
+
+  // If no org context, return all gateways
+  if (!orgId) return allGateways;
+
+  // Filter gateways based on org currency
+  const currency = await getOrgCurrency(orgId);
+
+  // Razorpay only supports INR; Stripe is for international (USD/GBP/EUR)
+  const gatewayFilter: Record<string, string[]> = {
+    INR: ["razorpay", "paypal"],
+    USD: ["stripe", "paypal"],
+    GBP: ["stripe", "paypal"],
+    EUR: ["stripe", "paypal"],
+  };
+
+  const allowed = gatewayFilter[currency] ?? ["stripe", "paypal"];
+  const filtered = allGateways.filter((g) =>
+    allowed.includes(g.name.toLowerCase())
+  );
+
+  // Return filtered list if any match, otherwise return all (graceful fallback)
+  return filtered.length > 0 ? filtered : allGateways;
 }
 
 // ---------------------------------------------------------------------------

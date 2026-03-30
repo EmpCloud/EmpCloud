@@ -22,6 +22,45 @@ const FREE_TIER_MAX_USERS = 5;
 const FREE_TIER_MAX_MODULES = 1;
 
 // ---------------------------------------------------------------------------
+// Multi-currency pricing helpers
+// ---------------------------------------------------------------------------
+
+/** Plan pricing in smallest currency unit, keyed by currency then plan tier. */
+const PLAN_PRICING_BY_CURRENCY: Record<string, Record<string, number>> = {
+  INR: { free: 0, basic: 50000, professional: 100000, enterprise: 175000 },   // paise
+  USD: { free: 0, basic: 500,   professional: 1000,   enterprise: 1750   },   // cents
+  GBP: { free: 0, basic: 500,   professional: 1000,   enterprise: 1750   },   // pence
+  EUR: { free: 0, basic: 500,   professional: 1000,   enterprise: 1750   },   // cents
+};
+
+function getPricePerSeat(planTier: string, currency: string): number {
+  const tierPricing = PLAN_PRICING_BY_CURRENCY[currency] ?? PLAN_PRICING_BY_CURRENCY["USD"];
+  return tierPricing[planTier] ?? tierPricing["basic"] ?? 500;
+}
+
+function getCurrencyForCountry(country: string): string {
+  const inrCountries = ["IN", "India"];
+  const gbpCountries = ["GB", "UK", "United Kingdom"];
+  const eurCountries = ["DE", "FR", "IT", "ES", "NL", "Germany", "France", "Italy", "Spain"];
+
+  if (inrCountries.includes(country)) return "INR";
+  if (gbpCountries.includes(country)) return "GBP";
+  if (eurCountries.includes(country)) return "EUR";
+  return "USD"; // Default for US and everywhere else
+}
+
+/** Resolve the billing currency for an organization. */
+export async function getOrgCurrency(orgId: number): Promise<string> {
+  const db = getDB();
+  const org = await db("organizations")
+    .where({ id: orgId })
+    .select("currency", "country")
+    .first();
+  if (!org) return "USD";
+  return org.currency || getCurrencyForCountry(org.country || "");
+}
+
+// ---------------------------------------------------------------------------
 // Subscriptions
 // ---------------------------------------------------------------------------
 
@@ -83,14 +122,9 @@ export async function createSubscription(
     ? new Date(now.getTime() + data.trial_days * 86400000)
     : null;
 
-  // Compute price per seat based on plan tier (in smallest currency unit — paise)
-  const PLAN_PRICING: Record<string, number> = {
-    free: 0,
-    basic: 50000,         // ₹500/seat/month
-    professional: 100000, // ₹1,000/seat/month
-    enterprise: 175000,   // ₹1,750/seat/month
-  };
-  const pricePerSeat = PLAN_PRICING[data.plan_tier] ?? 50000;
+  // Determine currency from org settings, then compute price per seat
+  const currency = await getOrgCurrency(orgId);
+  const pricePerSeat = getPricePerSeat(data.plan_tier, currency);
 
   // Fetch the module name for the invoice line item
   const mod = await db("modules").where({ id: data.module_id }).first();
@@ -109,7 +143,7 @@ export async function createSubscription(
       used_seats: 0,
       billing_cycle: data.billing_cycle || "monthly",
       price_per_seat: pricePerSeat,
-      currency: "INR",
+      currency,
       trial_ends_at: trialEndsAt,
       current_period_start: now,
       current_period_end: periodEnd,
@@ -127,7 +161,7 @@ export async function createSubscription(
       used_seats: 0,
       billing_cycle: data.billing_cycle || "monthly",
       price_per_seat: pricePerSeat,
-      currency: "INR",
+      currency,
       trial_ends_at: trialEndsAt,
       current_period_start: now,
       current_period_end: periodEnd,
@@ -178,14 +212,9 @@ export async function updateSubscription(
   // Recalculate price if plan tier changed
   const updateData: any = { ...data, updated_at: new Date() };
   if (data.plan_tier) {
-    const PLAN_PRICING: Record<string, number> = {
-      free: 0,
-      basic: 50000,
-      professional: 100000,
-      enterprise: 175000,
-    };
-    updateData.price_per_seat = PLAN_PRICING[data.plan_tier] ?? sub.price_per_seat;
-    updateData.currency = "INR";
+    const currency = await getOrgCurrency(orgId);
+    updateData.price_per_seat = getPricePerSeat(data.plan_tier, currency);
+    updateData.currency = currency;
   }
 
   await db("org_subscriptions")

@@ -75,14 +75,10 @@ const moduleColors: Record<string, { bg: string; text: string }> = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatINR(amountInPaise: number): string {
-  const val = amountInPaise / 100;
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(val);
-}
-
-function formatCurrency(amount: number, currency: string): string {
+function formatCurrency(amount: number, currency: string = "INR"): string {
   const val = amount / 100;
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(val);
+  const locale = currency === "INR" ? "en-IN" : "en-US";
+  return new Intl.NumberFormat(locale, { style: "currency", currency }).format(val);
 }
 
 function formatDate(iso: string): string {
@@ -591,7 +587,7 @@ function OverviewTab() {
           <p className="text-sm text-gray-500">Outstanding Balance</p>
         </div>
         <p className="text-3xl font-bold text-gray-900">
-          {formatINR(summary.outstandingAmount ?? 0)}
+          {formatCurrency(summary.outstandingAmount ?? 0, summary.currency)}
         </p>
       </div>
 
@@ -617,7 +613,7 @@ function OverviewTab() {
           <p className="text-sm text-gray-500">Monthly Recurring</p>
         </div>
         <p className="text-3xl font-bold text-gray-900">
-          {formatINR(summary.monthlyRecurring ?? 0)}
+          {formatCurrency(summary.monthlyRecurring ?? 0, summary.currency)}
         </p>
       </div>
 
@@ -880,7 +876,7 @@ function InvoiceRow({
         <td className="px-4 py-3 text-gray-600">{formatDate(invoice.issueDate)}</td>
         <td className="px-4 py-3 text-gray-600">{formatDate(invoice.dueDate)}</td>
         <td className="px-4 py-3 text-right font-medium text-gray-900">
-          {formatINR(invoiceTotal)}
+          {formatCurrency(invoiceTotal, invoice.currency)}
         </td>
         <td className="px-4 py-3 text-center">
           <StatusBadge status={invoice.status} />
@@ -919,7 +915,7 @@ function InvoiceRow({
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">Currency</p>
-                <p className="text-sm text-gray-900">{invoice.currency || "INR"}</p>
+                <p className="text-sm text-gray-900">{invoice.currency || "USD"}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">Reference</p>
@@ -945,9 +941,9 @@ function InvoiceRow({
                       <tr key={idx} className="border-t border-gray-100">
                         <td className="py-2 text-gray-700">{item.name || item.description}</td>
                         <td className="py-2 text-right text-gray-600">{item.quantity}</td>
-                        <td className="py-2 text-right text-gray-600">{formatINR(item.rate || item.unitPrice || 0)}</td>
+                        <td className="py-2 text-right text-gray-600">{formatCurrency(item.rate || item.unitPrice || 0, invoice.currency)}</td>
                         <td className="py-2 text-right font-medium text-gray-900">
-                          {formatINR(item.amount || (item.quantity * (item.rate || item.unitPrice || 0)))}
+                          {formatCurrency(item.amount || (item.quantity * (item.rate || item.unitPrice || 0)), invoice.currency)}
                         </td>
                       </tr>
                     ))}
@@ -960,31 +956,31 @@ function InvoiceRow({
             <div className="border-t border-gray-200 pt-3 space-y-1">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">{formatINR(invoice.subtotal ?? invoiceTotal)}</span>
+                <span className="text-gray-900">{formatCurrency(invoice.subtotal ?? invoiceTotal, invoice.currency)}</span>
               </div>
               {invoice.discountAmount > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Discount</span>
-                  <span className="text-green-600">-{formatINR(invoice.discountAmount)}</span>
+                  <span className="text-green-600">-{formatCurrency(invoice.discountAmount, invoice.currency)}</span>
                 </div>
               )}
               {invoice.taxAmount > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Tax</span>
-                  <span className="text-gray-900">{formatINR(invoice.taxAmount)}</span>
+                  <span className="text-gray-900">{formatCurrency(invoice.taxAmount, invoice.currency)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm font-bold border-t border-gray-300 pt-2">
                 <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">{formatINR(invoiceTotal)}</span>
+                <span className="text-gray-900">{formatCurrency(invoiceTotal, invoice.currency)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Paid</span>
-                <span className="text-green-600">{formatINR(amountPaid)}</span>
+                <span className="text-green-600">{formatCurrency(amountPaid, invoice.currency)}</span>
               </div>
               <div className="flex justify-between text-sm font-semibold">
                 <span className="text-gray-700">Amount Due</span>
-                <span className={amountDue > 0 ? "text-red-600" : "text-green-600"}>{formatINR(amountDue)}</span>
+                <span className={amountDue > 0 ? "text-red-600" : "text-green-600"}>{formatCurrency(amountDue, invoice.currency)}</span>
               </div>
             </div>
 
@@ -1051,7 +1047,7 @@ function PaymentsTab() {
               <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-3 text-gray-600">{formatDate(p.date)}</td>
                 <td className="px-4 py-3 text-right font-medium text-gray-900">
-                  {formatINR(p.amount)}
+                  {formatCurrency(p.amount, p.currency)}
                 </td>
                 <td className="px-4 py-3 text-gray-600 capitalize">{p.method}</td>
                 <td className="px-4 py-3 text-gray-500 font-mono text-xs">{p.reference}</td>

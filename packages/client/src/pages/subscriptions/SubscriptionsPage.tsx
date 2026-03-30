@@ -168,9 +168,10 @@ export default function SubscriptionsPage() {
 
   const moduleMap = new Map(modules?.map((m: any) => [m.id, m]) || []);
 
-  const formatCurrency = (amount: number, currency: string) => {
+  const formatCurrency = (amount: number, currency: string = "INR") => {
     const val = amount / 100;
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(val);
+    const locale = currency === "INR" ? "en-IN" : "en-US";
+    return new Intl.NumberFormat(locale, { style: "currency", currency }).format(val);
   };
 
   const handleUpdate = async (id: number, data: object) => {
