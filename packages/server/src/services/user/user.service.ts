@@ -22,6 +22,9 @@ export async function listUsers(orgId: number, params?: { page?: number; perPage
 
   let query = db("users").where({ organization_id: orgId });
 
+  // Never show super_admin in org user lists — they are platform-level accounts
+  query = query.where("role", "!=", "super_admin");
+
   // #1021 — Only show active employees by default
   if (!params?.include_inactive) {
     query = query.where("status", 1);
