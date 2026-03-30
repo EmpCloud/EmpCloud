@@ -27,6 +27,9 @@ jobs:
             source ~/.nvm/nvm.sh
             cd /home/empcloud-development/empcloud-projects/empcloud
             git pull origin main
-            cd packages/shared && npx tsc
-            cd ../client && rm -rf dist && VITE_API_URL=/api/v1 npx vite build
-            pm2 restart empcloud
+            cd packages/shared && pnpm build
+            cd ../client && npm run build
+            pm2 delete empcloud-server 2>/dev/null || true
+            rm -rf ~/.cache/tsx
+            pm2 start /home/empcloud-development/ecosystem.config.js --only empcloud-server
+            pm2 save
