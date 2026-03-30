@@ -3,6 +3,7 @@ import api from "@/api/client";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download } from "lucide-react";
+import { AiBadge } from "@/components/AiBadge";
 import { useAuthStore } from "@/lib/auth-store";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
@@ -113,7 +114,7 @@ export default function AttendanceDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Attendance Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">Attendance Dashboard <AiBadge label="AI Insights" /></h1>
         <p className="text-gray-500 mt-1">Today's attendance overview for your organization.</p>
       </div>
 

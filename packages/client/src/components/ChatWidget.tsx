@@ -193,11 +193,17 @@ export default function ChatWidget() {
     return (
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 z-[9999] h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all flex items-center justify-center group"
-        title="AI HR Assistant"
+        className="fixed bottom-6 right-6 z-[9999] flex flex-col items-center gap-1 group"
+        title="EMP AI — Your HR Assistant"
       >
-        <MessageCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
-        <span className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white" />
+        <div className="relative h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all flex items-center justify-center">
+          <MessageCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
+          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full border-2 border-white">
+            <span className="absolute inset-0 rounded-full bg-purple-500 animate-ping opacity-75" />
+            <span className="absolute inset-0 rounded-full bg-purple-500" />
+          </span>
+        </div>
+        <span className="text-[10px] font-semibold text-purple-600 bg-white px-2 py-0.5 rounded-full shadow-sm border border-purple-100">EMP AI</span>
       </button>
     );
   }
@@ -211,7 +217,7 @@ export default function ChatWidget() {
             <Sparkles className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">AI HR Assistant</h3>
+            <h3 className="text-sm font-semibold text-white">EMP AI &mdash; Your HR Assistant</h3>
             <p className="text-[10px] text-white/70">
               {aiStatus?.engine === "ai" ? "AI-powered" : "Basic mode"}{" "}
               <span className="inline-block ml-1">
@@ -313,6 +319,22 @@ export default function ChatWidget() {
 
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Quick Actions */}
+      {messages.length > 0 && (
+        <div className="px-3 py-2 border-t border-gray-100 bg-white shrink-0 flex gap-1.5 overflow-x-auto">
+          {["My leave balance", "Team attendance", "Company policies"].map((q) => (
+            <button
+              key={q}
+              onClick={() => handleSend(q)}
+              disabled={sendMsg.isPending}
+              className="whitespace-nowrap text-[10px] font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-full border border-purple-200 transition-colors disabled:opacity-40"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Input */}
       <div className="px-3 py-2.5 border-t border-gray-200 bg-white shrink-0">

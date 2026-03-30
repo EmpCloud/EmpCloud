@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { NavItem } from "./navigation.config";
+import { AiBadge } from "@/components/AiBadge";
 
 interface NavSectionProps {
   label: string;
@@ -39,7 +40,8 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
             }`}
           >
             <Icon className="h-5 w-5" />
-            {item.i18nKey && t(item.i18nKey) !== item.i18nKey ? t(item.i18nKey) : item.label}
+            <span className="flex-1">{item.i18nKey && t(item.i18nKey) !== item.i18nKey ? t(item.i18nKey) : item.label}</span>
+            {item.badge && <AiBadge label={item.badge} />}
           </Link>
         );
       })}

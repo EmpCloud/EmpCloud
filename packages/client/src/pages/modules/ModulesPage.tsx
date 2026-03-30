@@ -1,5 +1,5 @@
 import { useModules, useSubscriptions, useCreateSubscription, useCancelSubscription } from "@/api/hooks";
-import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar } from "lucide-react";
+import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/auth-store";
 
@@ -263,6 +263,21 @@ export default function ModulesPage() {
           isLoading={subscribing === subscribeModule.id}
         />
       )}
+
+      {/* EMP AI Banner */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 mb-8 text-white">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
+            <Sparkles className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold">All modules include EMP AI</h2>
+            <p className="text-purple-100 text-sm mt-1">
+              Intelligent HR assistant powered by AI &mdash; ask questions, get insights, automate tasks across all your modules.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="space-y-4">
         {sortedModules.map((mod: any) => {

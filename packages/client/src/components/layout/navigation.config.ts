@@ -58,13 +58,14 @@ export type NavItem = {
   label: string;
   i18nKey?: string;
   icon: any;
+  badge?: string;
 };
 
 // Items visible to ALL users (including employees)
 export const employeeNavItems: NavItem[] = [
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
   { path: "/my-profile", label: "My Profile", i18nKey: "nav.myProfile", icon: Contact },
-  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI" },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
   { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
   { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },
@@ -85,7 +86,7 @@ export const adminNavItems: NavItem[] = [
   { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact },
   { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck },
   { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
-  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI" },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
   { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
   { path: "/leave", label: "Leave", i18nKey: "nav.leave", icon: CalendarDays },

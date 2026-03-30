@@ -9,7 +9,9 @@ import {
   ArrowRight,
   CheckCircle2,
   XCircle,
+  Sparkles,
 } from "lucide-react";
+import { AiBadge } from "@/components/AiBadge";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 
@@ -242,6 +244,29 @@ export default function SelfServiceDashboardPage() {
           ) : (
             <p className="text-sm text-gray-400">No policies to review</p>
           )}
+        </div>
+
+        {/* AI Insights */}
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6 lg:col-span-2">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-5 w-5 text-purple-600" />
+            <h2 className="text-lg font-semibold text-gray-900">AI Insights</h2>
+            <AiBadge label="Beta" />
+          </div>
+          <ul className="space-y-3 text-sm text-gray-700">
+            <li className="flex items-start gap-2">
+              <span className="text-purple-500 mt-0.5">&#128161;</span>
+              <span>You have <strong>15 days</strong> of earned leave remaining. Consider planning time off before Q2 ends.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-purple-500 mt-0.5">&#128202;</span>
+              <span>Your attendance this month: <strong>95%</strong> &mdash; above team average of 91%.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-purple-500 mt-0.5">&#128203;</span>
+              <span>2 company policies updated recently. <Link to="/policies" className="text-purple-600 underline">Review them</Link>.</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
