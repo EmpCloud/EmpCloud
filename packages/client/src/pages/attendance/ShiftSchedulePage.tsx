@@ -82,7 +82,7 @@ function useSwapRequests(status?: string) {
 function useEmployees() {
   return useQuery({
     queryKey: ["employees-list"],
-    queryFn: () => api.get("/employees", { params: { per_page: 500 } }).then((r) => r.data.data),
+    queryFn: () => api.get("/employees", { params: { per_page: 100 } }).then((r) => r.data.data),
   });
 }
 

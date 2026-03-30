@@ -29,6 +29,16 @@ router.get("/summary", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
+// GET /api/v1/admin/logs/overview — alias for summary (used by Log Dashboard)
+router.get("/overview", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const summary = await getLogSummary();
+    sendSuccess(res, summary);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/v1/admin/logs/errors — Recent errors (paginated)
 router.get("/errors", async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -411,10 +411,15 @@ export async function returnAsset(
     assigned_to: null,
     assigned_at: null,
     assigned_by: null,
-    returned_at: now,
     updated_at: now,
   };
   if (condition) updateData.condition_status = condition;
+
+  // Set returned_at if the column exists (may be missing if migration 018 ran before the column was added)
+  const hasReturnedAt = await db.schema.hasColumn("assets", "returned_at");
+  if (hasReturnedAt) {
+    updateData.returned_at = now;
+  }
 
   await db("assets").where({ id: assetId }).update(updateData);
 

@@ -31,8 +31,8 @@ export async function createSystemNotification(params: {
     notification_type: params.notification_type || "info",
     created_by: params.created_by,
     is_active: true,
-    scheduled_at: params.scheduled_at || null,
-    expires_at: params.expires_at || null,
+    scheduled_at: params.scheduled_at ? new Date(params.scheduled_at) : null,
+    expires_at: params.expires_at ? new Date(params.expires_at) : null,
     created_at: new Date(),
     updated_at: new Date(),
   });

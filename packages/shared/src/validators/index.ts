@@ -173,9 +173,11 @@ export const updateOrgSchema = z.object({
 // User Management
 // ---------------------------------------------------------------------------
 
+const nameField = z.string().min(1).max(64).regex(/[a-zA-Z]/, "Name must contain at least one letter");
+
 export const createUserSchema = z.object({
-  first_name: z.string().min(1).max(64),
-  last_name: z.string().min(1).max(64),
+  first_name: nameField,
+  last_name: nameField,
   email: z.string().email().max(128),
   password: z.string().min(8).max(128).optional(),
   role: z.nativeEnum(UserRole).default(UserRole.EMPLOYEE),
@@ -199,8 +201,8 @@ export const updateUserSchema = createUserSchema.partial().omit({ password: true
 export const inviteUserSchema = z.object({
   email: z.string().email().max(128),
   role: z.nativeEnum(UserRole).default(UserRole.EMPLOYEE),
-  first_name: z.string().min(1).max(64).optional(),
-  last_name: z.string().min(1).max(64).optional(),
+  first_name: nameField.optional(),
+  last_name: nameField.optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -328,7 +330,7 @@ export const upsertEmployeeProfileSchema = z.object({
   probation_start_date: z.string().optional().nullable(),
   probation_end_date: z.string().optional().nullable(),
   confirmation_date: z.string().optional().nullable(),
-  notice_period_days: z.number().int().min(0).optional().nullable(),
+  notice_period_days: z.coerce.number().int().min(0).optional().nullable(),
 });
 
 export const createAddressSchema = z.object({
@@ -357,7 +359,15 @@ export const createExperienceSchema = z.object({
   end_date: z.string().optional().nullable(),
   is_current: z.boolean().default(false),
   description: z.string().optional().nullable(),
-});
+}).refine(
+  (data) => {
+    if (data.end_date && data.start_date) {
+      return new Date(data.end_date) >= new Date(data.start_date);
+    }
+    return true;
+  },
+  { message: "End date must be after start date", path: ["end_date"] }
+);
 
 export const createDependentSchema = z.object({
   name: z.string().min(1).max(128),
@@ -378,7 +388,7 @@ export const employeeDirectoryQuerySchema = paginationSchema.extend({
 // HRMS — Attendance Validators
 // ---------------------------------------------------------------------------
 
-export const createShiftSchema = z.object({
+const shiftBaseSchema = z.object({
   name: z.string().min(1).max(100),
   start_time: z.string(),
   end_time: z.string(),
@@ -389,7 +399,20 @@ export const createShiftSchema = z.object({
   is_default: z.boolean().default(false),
 });
 
-export const updateShiftSchema = createShiftSchema.partial();
+export const createShiftSchema = shiftBaseSchema.refine(
+  (data) => data.start_time !== data.end_time,
+  { message: "Start time and end time cannot be the same", path: ["end_time"] }
+);
+
+export const updateShiftSchema = shiftBaseSchema.partial().refine(
+  (data) => {
+    if (data.start_time !== undefined && data.end_time !== undefined) {
+      return data.start_time !== data.end_time;
+    }
+    return true;
+  },
+  { message: "Start time and end time cannot be the same", path: ["end_time"] }
+);
 
 export const assignShiftSchema = z.object({
   user_id: z.number().int().positive(),
@@ -913,11 +936,28 @@ export const submitSurveyResponseSchema = z.object({
   answers: z.array(
     z.object({
       question_id: z.number().int().positive(),
-      rating_value: z.number().int().optional().nullable(),
+      rating_value: z.coerce.number().int().optional().nullable(),
       text_value: z.string().optional().nullable(),
-    }).refine(
-      (a) => a.rating_value != null || (a.text_value != null && a.text_value !== ""),
-      { message: "Each answer must have either a rating_value or text_value" }
+      answer: z.union([z.string(), z.number()]).optional().nullable(),
+    }).transform((a) => {
+      // Map generic "answer" to typed fields if specific fields not provided
+      if (a.answer != null && a.rating_value == null && (a.text_value == null || a.text_value === "")) {
+        const numVal = typeof a.answer === "number" ? a.answer : Number(a.answer);
+        if (!isNaN(numVal) && Number.isInteger(numVal)) {
+          return { question_id: a.question_id, rating_value: numVal, text_value: a.text_value ?? null };
+        }
+        return { question_id: a.question_id, rating_value: a.rating_value ?? null, text_value: String(a.answer) };
+      }
+      return { question_id: a.question_id, rating_value: a.rating_value ?? null, text_value: a.text_value ?? null };
+    }).pipe(
+      z.object({
+        question_id: z.number().int().positive(),
+        rating_value: z.number().int().optional().nullable(),
+        text_value: z.string().optional().nullable(),
+      }).refine(
+        (a) => a.rating_value != null || (a.text_value != null && a.text_value !== ""),
+        { message: "Each answer must have either a rating_value or text_value" }
+      )
     )
   ),
 });
@@ -1056,8 +1096,15 @@ export const submitFeedbackSchema = z.object({
 });
 
 export const respondFeedbackSchema = z.object({
-  admin_response: z.string().min(1),
-});
+  admin_response: z.string().min(1).optional(),
+  response: z.string().min(1).optional(),
+  message: z.string().min(1).optional(),
+  reply: z.string().min(1).optional(),
+}).transform((d) => ({
+  admin_response: d.admin_response || d.response || d.message || d.reply || "",
+})).pipe(z.object({
+  admin_response: z.string().min(1, "A response text is required (use admin_response, response, message, or reply)"),
+}));
 
 export const updateFeedbackStatusSchema = z.object({
   status: feedbackStatusEnum,
@@ -1367,7 +1414,9 @@ export const customFieldTypeEnum = z.enum([
 
 export const createCustomFieldDefinitionSchema = z.object({
   entity_type: customFieldEntityTypeEnum,
-  field_name: z.string().min(1).max(100),
+  field_name: z.string().min(1).max(100).optional(),
+  label: z.string().min(1).max(100).optional(),
+  name: z.string().min(1).max(100).optional(),
   field_type: customFieldTypeEnum,
   options: z.array(z.string()).optional().nullable(),
   default_value: z.string().max(5000).optional().nullable(),
@@ -1379,11 +1428,46 @@ export const createCustomFieldDefinitionSchema = z.object({
   max_value: z.number().optional().nullable(),
   section: z.string().max(100).optional(),
   help_text: z.string().max(5000).optional().nullable(),
-});
+}).transform((d) => {
+  const field_name = d.field_name || d.label || d.name;
+  const { label: _l, name: _n, ...rest } = d;
+  return { ...rest, field_name: field_name || "" };
+}).pipe(z.object({
+  entity_type: customFieldEntityTypeEnum,
+  field_name: z.string().min(1, "field_name (or label/name) is required").max(100),
+  field_type: customFieldTypeEnum,
+  options: z.array(z.string()).optional().nullable(),
+  default_value: z.string().max(5000).optional().nullable(),
+  placeholder: z.string().max(200).optional().nullable(),
+  is_required: z.boolean().optional(),
+  is_searchable: z.boolean().optional(),
+  validation_regex: z.string().max(255).optional().nullable(),
+  min_value: z.number().optional().nullable(),
+  max_value: z.number().optional().nullable(),
+  section: z.string().max(100).optional(),
+  help_text: z.string().max(5000).optional().nullable(),
+}));
 
-export const updateCustomFieldDefinitionSchema = createCustomFieldDefinitionSchema
-  .omit({ entity_type: true })
-  .partial();
+export const updateCustomFieldDefinitionSchema = z.object({
+  field_name: z.string().min(1).max(100).optional(),
+  label: z.string().min(1).max(100).optional(),
+  name: z.string().min(1).max(100).optional(),
+  field_type: customFieldTypeEnum.optional(),
+  options: z.array(z.string()).optional().nullable(),
+  default_value: z.string().max(5000).optional().nullable(),
+  placeholder: z.string().max(200).optional().nullable(),
+  is_required: z.boolean().optional(),
+  is_searchable: z.boolean().optional(),
+  validation_regex: z.string().max(255).optional().nullable(),
+  min_value: z.number().optional().nullable(),
+  max_value: z.number().optional().nullable(),
+  section: z.string().max(100).optional(),
+  help_text: z.string().max(5000).optional().nullable(),
+}).transform((d) => {
+  const field_name = d.field_name || d.label || d.name;
+  const { label: _l, name: _n, ...rest } = d;
+  return field_name ? { ...rest, field_name } : rest;
+});
 
 export const setCustomFieldValuesSchema = z.object({
   values: z.array(

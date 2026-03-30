@@ -78,7 +78,7 @@ export default function EmployeeProfilePage() {
   // Fetch users for reporting manager dropdown
   const { data: allUsers } = useQuery({
     queryKey: ["users-for-manager"],
-    queryFn: () => api.get("/users", { params: { per_page: 500 } }).then((r) => r.data.data),
+    queryFn: () => api.get("/users", { params: { per_page: 100 } }).then((r) => r.data.data),
     enabled: editing,
   });
 

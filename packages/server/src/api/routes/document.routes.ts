@@ -107,13 +107,19 @@ router.post("/upload", authenticate, upload.single("file"), async (req: Request,
       return;
     }
 
+    const categoryId = Number(req.body.category_id);
+    if (!req.body.category_id || isNaN(categoryId)) {
+      res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "category_id is required" } });
+      return;
+    }
+
     const userId = req.body.user_id ? Number(req.body.user_id) : req.user!.sub;
     const doc = await documentService.uploadDocument(
       req.user!.org_id,
       userId,
       req.user!.sub,
       {
-        category_id: Number(req.body.category_id),
+        category_id: categoryId,
         name: req.body.name || file.originalname,
         file_path: file.path,
         file_size: file.size,

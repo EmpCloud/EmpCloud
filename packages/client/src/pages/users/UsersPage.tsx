@@ -438,7 +438,7 @@ export default function UsersPage() {
   const [showCsvImport, setShowCsvImport] = useState(false);
   const [showAdvancedInvite, setShowAdvancedInvite] = useState(false);
   const { data: departmentsData } = useDepartments();
-  const { data: allUsersData } = useUsers({ page: 1, per_page: 200 });
+  const { data: allUsersData } = useUsers({ page: 1, per_page: 100 });
   const { data: pendingInvitations } = usePendingInvitations();
 
   const users = data?.data || [];
@@ -450,6 +450,13 @@ export default function UsersPage() {
     e.preventDefault();
     await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
     setInviteEmail("");
+    setInviteRole("employee");
+    setInviteFirstName("");
+    setInviteLastName("");
+    setInviteDesignation("");
+    setInviteDeptId("");
+    setInviteManagerId("");
+    setShowAdvancedInvite(false);
     setShowInvite(false);
   };
 

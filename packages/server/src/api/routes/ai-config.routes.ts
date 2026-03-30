@@ -69,6 +69,7 @@ router.put("/:key", async (req: Request, res: Response, next: NextFunction) => {
         "groq",
         "ollama",
         "openai-compatible",
+        "custom",
         "none",
       ];
       if (!validProviders.includes(value)) {

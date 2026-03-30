@@ -127,6 +127,13 @@ export async function getDirectory(
     .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
     .where({ "users.organization_id": orgId });
 
+  // Default to active employees only (status=1) to match dashboard count
+  if (params.status !== undefined) {
+    query = query.where("users.status", params.status);
+  } else {
+    query = query.where("users.status", 1);
+  }
+
   if (params.search) {
     const s = `%${params.search}%`;
     query = query.where(function () {
@@ -143,10 +150,6 @@ export async function getDirectory(
     query = query.where("users.department_id", params.department_id);
   }
 
-  if (params.status !== undefined) {
-    query = query.where("users.status", params.status);
-  }
-
   const [{ count }] = await query.clone().count("* as count");
   const users = await query
     .select(
@@ -160,7 +163,8 @@ export async function getDirectory(
       "users.location_id",
       "users.photo_path",
       "users.status",
-      "users.date_of_joining"
+      "users.date_of_joining",
+      "organization_departments.name as department_name"
     )
     .orderBy("users.first_name", "asc")
     .limit(perPage)

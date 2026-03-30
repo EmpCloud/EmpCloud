@@ -53,7 +53,7 @@ export function useLocations() {
 
 // --- Users ---
 
-export function useUsers(params?: { page?: number; search?: string }) {
+export function useUsers(params?: { page?: number; search?: string; per_page?: number }) {
   return useQuery({
     queryKey: ["users", params],
     queryFn: () => api.get("/users", { params }).then((r) => r.data),

@@ -25,8 +25,8 @@ export async function createAnnouncement(
     priority: data.priority || "normal",
     target_type: data.target_type || "all",
     target_ids: data.target_ids || null,
-    published_at: data.published_at || new Date(),
-    expires_at: data.expires_at || null,
+    published_at: data.published_at ? new Date(data.published_at) : new Date(),
+    expires_at: data.expires_at ? new Date(data.expires_at) : null,
     created_by: createdBy,
     is_active: true,
     created_at: new Date(),
@@ -166,9 +166,11 @@ export async function updateAnnouncement(
     .first();
   if (!existing) throw new NotFoundError("Announcement");
 
-  const sanitizedData = { ...data };
+  const sanitizedData: Record<string, any> = { ...data };
   if (sanitizedData.title) sanitizedData.title = sanitizeHtml(sanitizedData.title);
   if (sanitizedData.content) sanitizedData.content = sanitizeHtml(sanitizedData.content);
+  if (sanitizedData.expires_at) sanitizedData.expires_at = new Date(sanitizedData.expires_at);
+  if (sanitizedData.published_at) sanitizedData.published_at = new Date(sanitizedData.published_at);
 
   await db("announcements")
     .where({ id: announcementId })

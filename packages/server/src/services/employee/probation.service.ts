@@ -18,8 +18,8 @@ export async function getEmployeesOnProbation(orgId: number) {
     .where({
       "users.organization_id": orgId,
       "users.status": 1,
-      "users.probation_status": "on_probation",
-    })
+      })
+    .whereIn("users.probation_status", ["on_probation", "extended"])
     .whereNotNull("users.probation_end_date")
     .select(
       "users.id",
@@ -51,8 +51,8 @@ export async function getUpcomingConfirmations(orgId: number, days: number = 30)
     .where({
       "users.organization_id": orgId,
       "users.status": 1,
-      "users.probation_status": "on_probation",
     })
+    .whereIn("users.probation_status", ["on_probation", "extended"])
     .whereNotNull("users.probation_end_date")
     .whereRaw("users.probation_end_date <= DATE_ADD(CURDATE(), INTERVAL ? DAY)", [days])
     .whereRaw("users.probation_end_date >= CURDATE()")
