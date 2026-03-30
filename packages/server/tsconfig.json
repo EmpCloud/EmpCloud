@@ -8,10 +8,7 @@
     "target": "ES2022",
     "declaration": false,
     "declarationMap": false,
-    "paths": {
-      "@empcloud/shared": ["../shared/src/index.ts"],
-      "@empcloud/shared/*": ["../shared/src/*"]
-    }
+    "skipLibCheck": true
   },
   "include": ["src"]
 }
