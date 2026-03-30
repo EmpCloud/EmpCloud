@@ -19,7 +19,7 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - **EMP Cloud = Core HRMS** — Attendance, Leave, Employee Profiles, Documents, Announcements, and Policies are built into EMP Cloud, NOT separate modules
 - **EMP Billing is internal** — It powers subscription invoicing; it is NOT a sellable module
 - **Attendance and Leave live in EMP Cloud** — NOT in EMP Payroll. Payroll fetches attendance/leave data from EMP Cloud via service APIs
-- **9 sellable modules** in the marketplace: Payroll, Monitor, Recruit, Field, Biometrics, Projects, Rewards, Performance, Exit
+- **10 sellable modules** in the marketplace: Payroll, Monitor, Recruit, Field, Biometrics, Projects, Rewards, Performance, Exit, LMS
 - EMP Cloud owns the `empcloud` database — all identity AND HRMS tables live here
 - Sub-modules (payroll, monitor, etc.) have their own databases on the same MySQL instance
 - Authentication is centralized — only EMP Cloud issues tokens
@@ -27,6 +27,88 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Every database query MUST filter by `organization_id` for tenant isolation
 - All monetary values stored as BIGINT (smallest currency unit)
 - Adding a new module = DB rows only, zero code changes in EMP Cloud
+
+## Module Ecosystem (12 modules)
+
+| Module | Repo | Port | Database | Tech | Status |
+|--------|------|------|----------|------|--------|
+| **EMP Cloud** (Core) | EmpCloud/EmpCloud | 3000 | empcloud | Express 5 + TypeScript | Live |
+| **EMP Payroll** | EmpCloud/emp-payroll | 4000 | emp_payroll | Express 5 + TypeScript | Live |
+| **EMP Billing** | EmpCloud/emp-billing | 4001 | emp_billing | Express 5 + TypeScript | Live |
+| **EMP Performance** | EmpCloud/emp-performance | 4300 | emp_performance | Express 5 + TypeScript | Live |
+| **EMP Exit** | EmpCloud/emp-exit | 4400 | emp_exit | Express 5 + TypeScript | Live |
+| **EMP Recruit** | EmpCloud/emp-recruit | 4500 | emp_recruit | Express 5 + TypeScript | Live |
+| **EMP Rewards** | EmpCloud/emp-rewards | 4600 | emp_rewards | Express 5 + TypeScript | Live |
+| **EMP LMS** | EmpCloud/emp-lms | 4700 | emp_lms | Express 5 + TypeScript | Live |
+| **EMP Field** | EmpCloud/emp-field | 4800 | emp_field | Express 5 + TypeScript | Live (new) |
+| **EMP Monitor** | EmpCloud/emp-monitor | 5000 | emp_monitor | Express 4 + JavaScript + MongoDB | Live (8 microservices) |
+| **EMP Projects** | EmpCloud/emp-project | 9000/9001/3100 | MongoDB | Express 4 + Next.js | Live |
+| **EMP Biometrics** | — | — | — | — | Planned |
+
+## PM2 Ecosystem & Port Mapping
+
+**Test Server**: 163.227.174.141 (SSH: empcloud-development, sudo available)
+**Ecosystem config**: `/home/empcloud-development/ecosystem.config.js`
+
+### Core Services
+
+| Service | PM2 Name | Port | URL |
+|---------|----------|------|-----|
+| EMP Cloud Core | empcloud-server | 3000 | test-empcloud.empcloud.com / test-empcloud-api.empcloud.com |
+| EMP Payroll | emp-payroll | 4000 | testpayroll.empcloud.com / testpayroll-api.empcloud.com |
+| EMP Billing | emp-billing | 4001 | test-billing.empcloud.com / test-billing-api.empcloud.com |
+| EMP Performance | emp-performance | 4300 | test-performance.empcloud.com / test-performance-api.empcloud.com |
+| EMP Exit | emp-exit | 4400 | test-exit.empcloud.com / test-exit-api.empcloud.com |
+| EMP Recruit | emp-recruit | 4500 | test-recruit.empcloud.com / test-recruit-api.empcloud.com |
+| EMP Rewards | emp-rewards | 4600 | test-rewards.empcloud.com / test-rewards-api.empcloud.com |
+| EMP LMS | emp-lms | 4700 | testlms.empcloud.com / testlms-api.empcloud.com |
+| EMP Field | emp-field | 4800 | test-field.empcloud.com / test-field-api.empcloud.com |
+
+### Monitor Microservices
+
+| Service | PM2 Name | Port |
+|---------|----------|------|
+| Admin API | emp-monitor | 5000 |
+| Desktop API | emp-monitor-desktop | 5002 |
+| Realtime WS | emp-monitor-realtime | 5001 |
+| Store Logs | emp-monitor-store-logs | 5003 |
+| Productivity Report | emp-monitor-productivity | 5004 |
+| WebSocket Server | emp-monitor-websocket | 5005 |
+| Cron Jobs | emp-monitor-cronjobs | 5006 |
+| Remote Socket | emp-monitor-remote | 5007 |
+
+### Project Services
+
+| Service | PM2 Name | Port |
+|---------|----------|------|
+| Project API | emp-project-api | 9000 |
+| Task API | emp-project-task-api | 9001 |
+| Project Client | emp-project-client | 3100 |
+
+## Deploy Procedure
+
+```bash
+# Standard deploy (EMP Cloud or any TypeScript module)
+pm2 delete <name>
+rm -rf ~/.cache/tsx
+pm2 start /home/empcloud-development/ecosystem.config.js --only <name>
+pm2 save
+
+# If shared package changed
+cd packages/shared && pnpm build
+
+# If frontend changed
+cd packages/client && npm run build
+
+# Full deploy (with shared + client rebuild)
+git pull origin main
+cd packages/shared && pnpm build
+cd ../client && npm run build
+pm2 delete empcloud-server && rm -rf ~/.cache/tsx
+pm2 start ecosystem.config.js --only empcloud-server && pm2 save
+```
+
+**GitHub Actions auto-deploy**: Push to `main` → auto-deploys to test server (secrets: DEPLOY_HOST, DEPLOY_USER, DEPLOY_PASSWORD)
 
 ## Key File Paths
 
@@ -37,51 +119,55 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - `user/` — User management, invitations
 - `module/` — Module registry
 - `subscription/` — Subscription & seat management
-- `billing/` — Internal billing integration (NOT a sellable module)
-- `employee/` — Employee profiles, directory, extended data (addresses, education, experience, dependents)
+- `billing/` — Internal billing integration (API key: BILLING_API_KEY)
+- `employee/` — Employee profiles, directory, extended data
 - `employee/probation.service.ts` — Probation tracking, confirmation, extension
-- `attendance/` — Shifts, check-in/out, geo-fencing, regularization requests
-- `leave/` — Leave types, policies, balances, applications, approvals, comp-off
-- `document/` — Document categories, uploads, verification, expiry tracking
-- `announcement/` — Company announcements, read tracking
+- `attendance/` — Shifts, check-in/out, geo-fencing, regularization
+- `leave/` — Leave types, policies, balances, applications, approvals
+- `document/` — Document categories, uploads, verification
+- `announcement/` — Company announcements, read tracking, XSS sanitization
 - `policy/` — Company policies, versioning, acknowledgments
-- `admin/health-check.service.ts` — Cross-module health monitoring
-- `admin/data-sanity.service.ts` — Cross-module data consistency checks
-- `admin/system-notification.service.ts` — Super Admin system notifications
-
-### Server Routes (packages/server/src/api/routes/)
-- `employee.routes.ts` — /api/v1/employees
-- `attendance.routes.ts` — /api/v1/attendance
-- `leave.routes.ts` — /api/v1/leave
-- `document.routes.ts` — /api/v1/documents
-- `announcement.routes.ts` — /api/v1/announcements
-- `policy.routes.ts` — /api/v1/policies
+- `admin/` — Health checks, data sanity, system notifications, audit, AI config, log dashboard
 
 ### Client Pages (packages/client/src/pages/)
-- `employees/` — Employee Directory, Employee Profile (tabbed: personal, addresses, education, experience, dependents)
-- `employees/ProbationPage.tsx` — Probation tracking dashboard and management
+- `self-service/` — Employee self-service dashboard (leave balances, attendance, documents, announcements, policies)
+- `employees/` — Employee Directory, Profiles, Probation
 - `attendance/` — Dashboard, Records, Shifts, Regularizations
 - `leave/` — Dashboard, Applications, Calendar, Types/Policies
-- `documents/` — Documents Overview, Document Categories
+- `documents/` — Documents Overview, Categories
 - `announcements/` — Announcements list & detail
-- `policies/` — Policies list & acknowledgment
-- `admin/HealthDashboardPage.tsx` — Service health monitoring dashboard
-- `admin/DataSanityPage.tsx` — Cross-module data sanity checker
-- `admin/SystemNotificationsPage.tsx` — Super Admin system notifications
-- `admin/PlatformSettingsPage.tsx` — Platform settings and info
+- `policies/` — Policies with inline View/Acks floating panels
+- `billing/` — Invoices, payments, gateways (proxied to EMP Billing)
+- `admin/` — Health, Data Sanity, System Notifications, Platform Settings, AI Config
 
-### Database Migrations (packages/server/src/db/migrations/)
-- `001_identity_schema.ts` — organizations, users, roles, departments, locations
-- `002_modules_subscriptions.ts` — modules, subscriptions, seats, features
-- `003_oauth2.ts` — OAuth clients, tokens, codes, scopes, signing keys
-- `004_audit_invitations.ts` — audit_logs, invitations
-- `005_employee_profiles.ts` — employee_profiles, addresses, education, work_experience, dependents
-- `006_attendance.ts` — shifts, shift_assignments, geo_fence_locations, attendance_records, regularizations
-- `007_leave.ts` — leave_types, leave_policies, leave_balances, leave_applications, leave_approvals, comp_off_requests
-- `008_documents.ts` — document_categories, employee_documents
-- `009_announcements.ts` — announcements, announcement_reads
-- `010_policies.ts` — company_policies, policy_acknowledgments
-- `030_probation.ts` — probation fields on employee_profiles (start/end dates, status, notes)
+### Database Migrations (35 total)
+- `001` — Identity (organizations, users, roles, departments, locations)
+- `002` — Modules & subscriptions
+- `003` — OAuth2 (clients, tokens, codes, signing keys)
+- `004` — Audit logs & invitations
+- `005-010` — HRMS (employees, attendance, leave, documents, announcements, policies)
+- `011-034` — Features (notifications, billing, onboarding, helpdesk, surveys, positions, feedback, events, wellness, chatbot, etc.)
+- `035` — **Seed 12 company policy templates** (Indian corporate policies for every new org)
+
+## Cross-Module Integration
+
+### SSO Flow
+1. User clicks "Launch" on module card → `https://test-<module>.empcloud.com?sso_token=<RS256_JWT>&return_url=<dashboard_url>`
+2. Module frontend detects `?sso_token=`, calls `POST /api/v1/auth/sso`
+3. Module backend verifies RS256 signature with EmpCloud public key
+4. Issues local HS256 token, stores in localStorage
+5. Redirects to module dashboard
+6. "← EMP Cloud" back button in header links to `return_url`
+
+### Billing Integration
+- **API Key**: `BILLING_API_KEY` in EmpCloud `.env`, `EMPCLOUD_API_KEY` in Billing `.env`
+- **Webhook**: `POST /api/v1/webhooks/empcloud` in Billing for subscription events
+- **Gateways**: Stripe, Razorpay, PayPal (test keys configured)
+- **Flow**: Cloud creates subscription → notifies Billing → Billing creates invoice → Gateway processes payment → Billing webhooks back to Cloud
+
+### Payroll HRMS Proxy
+- EMP Payroll fetches attendance/leave data from EMP Cloud (`USE_CLOUD_HRMS=true`)
+- Payroll verifies SSO tokens with EmpCloud RS256 public key (`EMPCLOUD_PUBLIC_KEY` env var, must be in ROOT .env, absolute path)
 
 ## Coding Conventions
 - Use `async/await` everywhere, no raw promises
@@ -91,6 +177,7 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Use Winston for logging, never `console.log`
 - Password hashing: bcrypt with 12 rounds
 - Error classes: `AppError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `ValidationError`
+- HTML sanitization on write (announcements, policies) via `packages/server/src/utils/sanitize-html.ts`
 
 ## File Naming
 - kebab-case for files: `auth.service.ts`, `org.controller.ts`
@@ -99,65 +186,31 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Validators in `packages/shared/src/validators/`
 
 ## Testing
-- Vitest for unit and integration tests
-- Test files alongside source: `*.test.ts`
-- Playwright for E2E
+- **Playwright for E2E** (10 spec files, 307+ tests) — `npx playwright test e2e/e2e-*.spec.ts`
+- Vitest for unit tests — `*.test.ts` alongside source
+- **RULE**: Every code change → deploy → test → verify with Playwright before reporting done
+- **RULE**: Browser tests must login via real login page, never localStorage hacks
+- **RULE**: "End to end test" = Playwright .spec.ts files, never curl
 
 ## Working Rules
 - NEVER start building from a plan without explicit user confirmation
-- Present plans/feature lists first, ask for approval, WAIT for "yes" before coding
-- Always show READMEs, code plans, and architecture decisions before executing
-- Always deploy to ngrok before asking user to test — user only tests via ngrok URLs
-- Never commit .pem, .key, .env files or secrets to git — always verify .gitignore before staging
+- Present plans first, ask for approval, WAIT for "yes" before coding
+- Always deploy, test, and verify with Playwright after every code change
+- Use paramiko + password for SSH (no SSH keys exist)
+- Every deploy must purge tsx cache (`rm -rf ~/.cache/tsx`)
+- Never edit on server — edit local → push GitHub → pull on server
+- Always test via public HTTPS URLs (test-*.empcloud.com), never localhost
+- Remove all rate limits during active development (`RATE_LIMIT_DISABLED=true`)
+- Never commit .pem, .key, .env files or secrets to git
 - Never use `git add .` or `git add -A` — always add specific files by name
-
-## PM2 Ecosystem & Port Mapping (Test Server: 163.227.174.141)
-
-Ecosystem config: `/home/empcloud-development/ecosystem.config.js`
-
-| Service | PM2 Name | Port | Start Command |
-|---------|----------|------|---------------|
-| EMP Cloud Core | empcloud-server | 3000 | npx tsx src/index.ts |
-| EMP Payroll | emp-payroll | 4000 | npx tsx src/index.ts |
-| EMP Billing | emp-billing | 4001 | npx tsx src/index.ts |
-| EMP Performance | emp-performance | 4300 | npx tsx src/index.ts |
-| EMP Exit | emp-exit | 4400 | npx tsx src/index.ts |
-| EMP Recruit | emp-recruit | 4500 | npx tsx src/index.ts |
-| EMP Rewards | emp-rewards | 4600 | npx tsx src/index.ts |
-| EMP LMS | emp-lms | 4700 | npx tsx src/index.ts |
-| EMP Monitor | emp-monitor | 5000 | node src/adminApi.js |
-| Project API | emp-project-api | 9000 | node project.server.js |
-| Project Task API | emp-project-task-api | 9001 | node task.server.js |
-| Project Client | emp-project-client | 3100 | npx next dev -p 3100 |
-
-**Deploy procedure**: `pm2 delete <name> && rm -rf ~/.cache/tsx && pm2 start ecosystem.config.js --only <name> && pm2 save`
-
-## Cross-Module Integration Patterns
-
-### Billing Integration
-- EMP Billing is an internal engine — NOT a sellable module, NOT in the marketplace
-- EMP Cloud calls Billing APIs to create invoices, process payments, manage subscription lifecycle
-- Billing has its own database (`emp_billing`) but is tightly coupled to EMP Cloud's subscription service
-- Flow: User subscribes to module in Cloud -> Cloud calls Billing API -> Billing creates invoice -> Billing processes payment -> Cloud activates subscription
-
-### Cross-Module Webhooks
-- Modules send event webhooks to EMP Cloud for unified activity tracking
-- Pattern: Module event occurs -> Module POSTs to `EMP_CLOUD_URL/api/v1/webhooks/inbound` with `{ module, event, payload }`
-- Webhook sources: Recruit (hire events), Exit (offboarding events), Performance (review completions), Rewards (recognition events)
-- EMP Cloud processes webhooks to update unified dashboard, trigger notifications, and maintain audit trail
-- All webhook payloads include `organization_id` for tenant isolation
-
-### Payroll HRMS Proxy
-- EMP Payroll fetches attendance and leave data from EMP Cloud (not its own DB)
-- Controlled by `USE_CLOUD_HRMS=true` environment flag in Payroll
-- When enabled, Payroll calls `EMP_CLOUD_URL/api/v1/attendance` and `/api/v1/leave` instead of local tables
-- This ensures a single source of truth for attendance/leave across the ecosystem
-- Payroll authenticates to Cloud using service-to-service JWT
+- We have full devops access (sudo, nginx, MySQL, PM2) — do it ourselves
 
 ## Security (SOC 2)
 - Never log secrets, tokens, or passwords
 - PKCE required for all public OAuth clients
-- Refresh tokens must be rotated on each use
+- Refresh tokens must be rotated on each use (reuse = revoke all)
 - Token revocation must be instant (check DB, not just JWT expiry)
 - All auth events must be audit-logged
-- Rate limit auth endpoints aggressively
+- HTML/XSS sanitization on all user-generated content (announcements, policies, feedback)
+- Document API strips server filesystem paths (returns download_url instead of file_path)
+- Leave reject endpoint has same auth check as approve (fixed: was missing)
