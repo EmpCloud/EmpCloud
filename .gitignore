@@ -17,3 +17,11 @@ uploads/
 
 .deployment.env
 *.deployment.env
+
+# Screenshots and test artifacts
+screenshots/
+e2e/screenshots/
+testing/screenshots/
+test-artifacts/
+test-screenshots/
+*.png

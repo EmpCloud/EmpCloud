@@ -111,6 +111,27 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Never commit .pem, .key, .env files or secrets to git — always verify .gitignore before staging
 - Never use `git add .` or `git add -A` — always add specific files by name
 
+## PM2 Ecosystem & Port Mapping (Test Server: 163.227.174.141)
+
+Ecosystem config: `/home/empcloud-development/ecosystem.config.js`
+
+| Service | PM2 Name | Port | Start Command |
+|---------|----------|------|---------------|
+| EMP Cloud Core | empcloud-server | 3000 | npx tsx src/index.ts |
+| EMP Payroll | emp-payroll | 4000 | npx tsx src/index.ts |
+| EMP Billing | emp-billing | 4001 | npx tsx src/index.ts |
+| EMP Performance | emp-performance | 4300 | npx tsx src/index.ts |
+| EMP Exit | emp-exit | 4400 | npx tsx src/index.ts |
+| EMP Recruit | emp-recruit | 4500 | npx tsx src/index.ts |
+| EMP Rewards | emp-rewards | 4600 | npx tsx src/index.ts |
+| EMP LMS | emp-lms | 4700 | npx tsx src/index.ts |
+| EMP Monitor | emp-monitor | 5000 | node src/adminApi.js |
+| Project API | emp-project-api | 9000 | node project.server.js |
+| Project Task API | emp-project-task-api | 9001 | node task.server.js |
+| Project Client | emp-project-client | 3100 | npx next dev -p 3100 |
+
+**Deploy procedure**: `pm2 delete <name> && rm -rf ~/.cache/tsx && pm2 start ecosystem.config.js --only <name> && pm2 save`
+
 ## Cross-Module Integration Patterns
 
 ### Billing Integration

@@ -6,6 +6,10 @@ const MODULES = [
   { name: "Performance", url: "https://test-performance.empcloud.com" },
   { name: "Rewards", url: "https://test-rewards.empcloud.com" },
   { name: "Exit", url: "https://test-exit.empcloud.com" },
+  { name: "LMS", url: "https://testlms.empcloud.com" },
+  { name: "Payroll", url: "https://testpayroll.empcloud.com" },
+  { name: "Projects", url: "https://test-project.empcloud.com" },
+  { name: "Monitor", url: "https://test-empmonitor.empcloud.com" },
 ];
 
 test("Login to Cloud dashboard", async ({ page }) => {
@@ -83,8 +87,8 @@ for (const mod of MODULES) {
     }
 
     // Wait for navigation to settle after SSO redirect
-    await page.waitForLoadState("networkidle");
-    await page.waitForTimeout(3000);
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(5000);
 
     // Take screenshot
     await page.screenshot({
