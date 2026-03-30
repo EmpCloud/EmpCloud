@@ -46,7 +46,7 @@ export default function SelfServiceDashboardPage() {
     queryKey: ["my-leave-balance"],
     queryFn: () =>
       api
-        .get("/leave/balances/me")
+        .get("/leave/balances")
         .then((r) => r.data.data)
         .catch(() => []),
   });
@@ -56,7 +56,7 @@ export default function SelfServiceDashboardPage() {
     queryKey: ["my-documents-pending"],
     queryFn: () =>
       api
-        .get("/documents", { params: { page: 1, per_page: 5, status: "pending" } })
+        .get("/documents/my")
         .then((r) => r.data.data)
         .catch(() => []),
   });
@@ -169,7 +169,7 @@ export default function SelfServiceDashboardPage() {
               {pendingDocs.slice(0, 5).map((doc: any) => (
                 <li key={doc.id} className="flex items-center gap-2 text-sm text-gray-600">
                   <FileText className="h-4 w-4 text-gray-400 shrink-0" />
-                  <span className="truncate">{doc.title || doc.file_name || "Document"}</span>
+                  <span className="truncate">{doc.title || doc.original_name || doc.file_name || doc.category_name || "Document"}</span>
                 </li>
               ))}
             </ul>
