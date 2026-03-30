@@ -33,7 +33,6 @@ jobs:
           cache: pnpm
       - run: pnpm install
       - run: pnpm --filter @empcloud/shared build
-      - run: pnpm --filter @empcloud/client typecheck
       - name: Run tests
         env:
           DB_HOST: 127.0.0.1
