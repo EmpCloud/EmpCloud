@@ -17,9 +17,16 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
       )}
       {items.map((item) => {
         const Icon = item.icon;
+        // Check for exact match or prefix match, but avoid matching parent routes
+        // when a more specific sibling route matches (e.g. /employees vs /employees/probation)
+        const isExact = location.pathname === item.path;
+        const isPrefix = location.pathname.startsWith(item.path + "/");
+        const hasMoreSpecificMatch = isPrefix && items.some(
+          (other) => other.path !== item.path && other.path.startsWith(item.path + "/") && (location.pathname === other.path || location.pathname.startsWith(other.path + "/"))
+        );
         const isActive = item.path === "/"
           ? location.pathname === "/"
-          : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
+          : isExact || (isPrefix && !hasMoreSpecificMatch);
         return (
           <Link
             key={item.path}

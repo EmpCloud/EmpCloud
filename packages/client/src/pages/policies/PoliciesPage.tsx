@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
@@ -194,6 +194,14 @@ function HRPoliciesView() {
   const [viewAckFor, setViewAckFor] = useState<number | null>(null);
   const [viewContentFor, setViewContentFor] = useState<number | null>(null);
   const ackQuery = useAcknowledgments(viewAckFor);
+  const detailPanelRef = useRef<HTMLDivElement>(null);
+
+  // Scroll the detail panel into view when opened
+  useEffect(() => {
+    if ((viewContentFor || viewAckFor) && detailPanelRef.current) {
+      detailPanelRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [viewContentFor, viewAckFor]);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -334,14 +342,24 @@ function HRPoliciesView() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => setViewContentFor(viewContentFor === p.id ? null : p.id)}
-                        className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium"
+                        onClick={() => {
+                          setViewAckFor(null);
+                          setViewContentFor(viewContentFor === p.id ? null : p.id);
+                        }}
+                        className={`flex items-center gap-1 text-xs font-medium ${
+                          viewContentFor === p.id ? "text-brand-700 underline" : "text-brand-600 hover:text-brand-700"
+                        }`}
                       >
                         <FileText className="h-3.5 w-3.5" /> View
                       </button>
                       <button
-                        onClick={() => setViewAckFor(viewAckFor === p.id ? null : p.id)}
-                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 font-medium"
+                        onClick={() => {
+                          setViewContentFor(null);
+                          setViewAckFor(viewAckFor === p.id ? null : p.id);
+                        }}
+                        className={`flex items-center gap-1 text-xs font-medium ${
+                          viewAckFor === p.id ? "text-gray-900 underline" : "text-gray-500 hover:text-gray-700"
+                        }`}
                       >
                         <Users className="h-3.5 w-3.5" /> Acks
                       </button>
@@ -384,7 +402,7 @@ function HRPoliciesView() {
         const policy = policies.find((p: any) => p.id === viewContentFor);
         if (!policy) return null;
         return (
-          <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+          <div ref={detailPanelRef} className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">{policy.title}</h3>
               <button
@@ -408,7 +426,7 @@ function HRPoliciesView() {
 
       {/* Acknowledgment detail panel */}
       {viewAckFor && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+        <div ref={detailPanelRef} className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">Acknowledgments</h3>
           {ackQuery.isLoading ? (
             <p className="text-sm text-gray-400">Loading...</p>

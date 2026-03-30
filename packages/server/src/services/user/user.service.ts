@@ -41,6 +41,7 @@ export async function listUsers(orgId: number, params?: { page?: number; perPage
   const [{ count }] = await query.clone().count("* as count");
   const users = await query
     .select()
+    .orderBy("status", "desc")
     .orderBy("created_at", "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);

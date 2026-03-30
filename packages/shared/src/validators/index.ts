@@ -479,6 +479,8 @@ export const attendanceQuerySchema = paginationSchema.extend({
   month: z.coerce.number().int().min(1).max(12).optional(),
   year: z.coerce.number().int().min(2020).max(2100).optional(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   user_id: z.coerce.number().int().positive().optional(),
   employee_id: z.coerce.number().int().positive().optional(),
   department_id: z.coerce.number().int().positive().optional(),

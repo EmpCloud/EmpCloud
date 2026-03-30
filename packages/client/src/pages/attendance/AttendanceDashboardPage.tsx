@@ -41,25 +41,25 @@ export default function AttendanceDashboardPage() {
   });
 
   const { data: recordsData, isLoading: recLoading } = useQuery({
-    queryKey: ["attendance-records", page, month, year, departmentId],
-    queryFn: () =>
-      api
-        .get("/attendance/records", {
-          params: {
-            page,
-            month,
-            year,
-            department_id: departmentId || undefined,
-          },
-        })
-        .then((r) => r.data),
+    queryKey: ["attendance-records", page, month, year, departmentId, dateFrom, dateTo],
+    queryFn: () => {
+      const params: Record<string, any> = {
+        page,
+        department_id: departmentId || undefined,
+      };
+      if (dateFrom) {
+        params.date_from = dateFrom;
+        if (dateTo) params.date_to = dateTo;
+      } else {
+        params.month = month;
+        params.year = year;
+      }
+      return api.get("/attendance/records", { params }).then((r) => r.data);
+    },
   });
 
   const handleDateRangeApply = () => {
     if (dateFrom) {
-      const d = new Date(dateFrom);
-      setMonth(d.getMonth() + 1);
-      setYear(d.getFullYear());
       setPage(1);
     }
   };
@@ -233,6 +233,7 @@ export default function AttendanceDashboardPage() {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Date</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check In</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check Out</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Worked</th>
@@ -246,6 +247,7 @@ export default function AttendanceDashboardPage() {
                 {[1, 2, 3, 4].map((i) => (
                   <tr key={i} className="animate-pulse">
                     <td className="px-6 py-4"><div className="h-4 w-28 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
@@ -255,7 +257,7 @@ export default function AttendanceDashboardPage() {
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No attendance records today</td></tr>
+              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">No attendance records today</td></tr>
             ) : (
               records.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50">
@@ -269,6 +271,9 @@ export default function AttendanceDashboardPage() {
                         <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {r.date ? new Date(r.date).toLocaleDateString() : "-"}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}

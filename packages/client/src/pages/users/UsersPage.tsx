@@ -1,6 +1,7 @@
 import { useUsers, useInviteUser, useCreateUser, useDepartments } from "@/api/hooks";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
 import { useState, useRef, useCallback } from "react";
 import { UserPlus, Search, Mail, Upload, Download, X, CheckCircle2, XCircle, FileSpreadsheet, AlertTriangle, Loader2 } from "lucide-react";
 
@@ -415,14 +416,17 @@ function CsvImportModal({
 // Main UsersPage
 // ---------------------------------------------------------------------------
 
-function usePendingInvitations() {
+function usePendingInvitations(enabled: boolean = true) {
   return useQuery({
     queryKey: ["pending-invitations"],
     queryFn: () => api.get("/users/invitations", { params: { status: "pending" } }).then((r) => r.data.data).catch(() => []),
+    enabled,
   });
 }
 
 export default function UsersPage() {
+  const user = useAuthStore((s) => s.user);
+  const isOrgAdmin = !!user && ["org_admin", "super_admin"].includes(user.role);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { data, isLoading } = useUsers({ page, search: search || undefined });
@@ -439,7 +443,7 @@ export default function UsersPage() {
   const [showAdvancedInvite, setShowAdvancedInvite] = useState(false);
   const { data: departmentsData } = useDepartments();
   const { data: allUsersData } = useUsers({ page: 1, per_page: 100 });
-  const { data: pendingInvitations } = usePendingInvitations();
+  const { data: pendingInvitations } = usePendingInvitations(isOrgAdmin);
 
   const users = data?.data || [];
   const meta = data?.meta;

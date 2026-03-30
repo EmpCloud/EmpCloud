@@ -193,7 +193,7 @@ export default function ChatWidget() {
     return (
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all flex items-center justify-center group"
+        className="fixed bottom-6 right-6 z-[9999] h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all flex items-center justify-center group"
         title="AI HR Assistant"
       >
         <MessageCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -203,7 +203,7 @@ export default function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-[380px] h-[540px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4">
+    <div className="fixed bottom-6 right-6 z-[9999] w-[380px] h-[540px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-600 shrink-0">
         <div className="flex items-center gap-2.5">

@@ -104,6 +104,44 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/surveys/:id/results/export — Export survey results as CSV (HR)
+router.get("/:id/results/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const results = await surveyService.getSurveyResults(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.role
+    );
+
+    const csvRows: string[] = [];
+    csvRows.push(["Question", "Type", "Total Answers", "Avg Rating", "Distribution / Responses"].map((h) => `"${h}"`).join(","));
+
+    for (const q of (results as any).questions || []) {
+      let distOrResponses = "";
+      if (q.distribution) {
+        distOrResponses = Object.entries(q.distribution)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join("; ");
+      } else if (q.text_responses) {
+        distOrResponses = q.text_responses.join("; ");
+      }
+
+      csvRows.push([
+        `"${(q.question_text || "").replace(/"/g, '""')}"`,
+        `"${q.question_type || ""}"`,
+        `"${q.total_answers ?? ""}"`,
+        `"${q.avg_rating ?? ""}"`,
+        `"${distOrResponses.replace(/"/g, '""')}"`,
+      ].join(","));
+    }
+
+    const csv = csvRows.join("\n");
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="survey_${paramInt(req.params.id)}_results.csv"`);
+    res.send(csv);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/surveys/:id — Get survey detail
 router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {

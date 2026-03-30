@@ -319,6 +319,8 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
       month: params.month,
       year: params.year,
       date: params.date,
+      date_from: params.date_from,
+      date_to: params.date_to,
       user_id,
       department_id,
     });

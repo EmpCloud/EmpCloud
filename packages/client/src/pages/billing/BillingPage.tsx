@@ -790,6 +790,39 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
   );
 }
 
+/** Fallback: render a printable invoice in a popup window when PDF service is unavailable */
+function printInvoiceFallback(invoice: any) {
+  const total = invoice.total ?? invoice.amount ?? 0;
+  const amountDue = invoice.amountDue ?? invoice.amount_due ?? total;
+  const amountPaid = invoice.amountPaid ?? invoice.amount_paid ?? 0;
+  const items = invoice.items || invoice.lineItems || [];
+  const html = `<!DOCTYPE html><html><head><title>Invoice ${invoice.invoiceNumber || ""}</title>
+<style>body{font-family:Arial,sans-serif;margin:40px;color:#333}h1{color:#4f46e5;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:8px;text-align:left}
+th{background:#f5f5f5}
+.right{text-align:right}.meta{display:flex;gap:40px;margin:16px 0}.meta div{font-size:14px}
+.total-section{margin-top:20px;text-align:right}.total-section p{margin:4px 0;font-size:14px}
+.total-section .grand{font-size:18px;font-weight:bold}
+@media print{body{margin:20px}}</style></head><body>
+<h1>Invoice</h1><p style="color:#666;margin-top:0">${invoice.invoiceNumber || "N/A"}</p>
+<div class="meta">
+<div><strong>Issue Date:</strong> ${invoice.issueDate || "-"}</div>
+<div><strong>Due Date:</strong> ${invoice.dueDate || "-"}</div>
+<div><strong>Status:</strong> ${(invoice.status || "unknown").toUpperCase()}</div>
+</div>
+${items.length > 0 ? `<table><thead><tr><th>Description</th><th class="right">Qty</th><th class="right">Rate</th><th class="right">Amount</th></tr></thead><tbody>
+${items.map((it: Record<string, any>) => `<tr><td>${it.description || it.name || "-"}</td><td class="right">${it.quantity ?? 1}</td><td class="right">${it.rate ?? it.unitPrice ?? "-"}</td><td class="right">${it.amount ?? it.total ?? "-"}</td></tr>`).join("")}
+</tbody></table>` : ""}
+<div class="total-section">
+<p>Subtotal: ${total}</p><p>Paid: ${amountPaid}</p>
+<p class="grand">Amount Due: ${amountDue}</p>
+</div>
+${invoice.notes ? `<p style="margin-top:20px;font-size:13px;color:#666"><em>Note: ${invoice.notes}</em></p>` : ""}
+<script>window.onload=function(){window.print()}</script></body></html>`;
+  const win = window.open("", "_blank");
+  if (win) { win.document.write(html); win.document.close(); }
+}
+
 function InvoiceRow({
   invoice,
   isExpanded,
@@ -807,7 +840,8 @@ function InvoiceRow({
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) {
-        alert("PDF not available for this invoice");
+        // Fallback: open a printable invoice in a new window
+        printInvoiceFallback(invoice);
         return;
       }
       const blob = await res.blob();
@@ -818,7 +852,8 @@ function InvoiceRow({
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      alert("Failed to download PDF");
+      // Fallback on network error as well
+      printInvoiceFallback(invoice);
     }
   };
 

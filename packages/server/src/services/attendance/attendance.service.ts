@@ -132,8 +132,11 @@ export async function checkOut(orgId: number, userId: number, data: CheckOutInpu
   }
 
   // Determine status based on worked hours
+  // Minimum 5 minutes required to count as any attendance; below that treat as absent
   let status = "present";
-  if (workedMinutes < 240) {
+  if (workedMinutes < 5) {
+    status = "absent";
+  } else if (workedMinutes < 240) {
     status = "half_day";
   }
 
@@ -191,7 +194,7 @@ export async function getMyHistory(
 
 export async function listRecords(
   orgId: number,
-  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; user_id?: number; department_id?: number }
+  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; department_id?: number }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -204,6 +207,14 @@ export async function listRecords(
   if (params?.date) {
     // Exact date filter takes priority over month/year
     query = query.where("ar.date", params.date);
+  } else if (params?.date_from || params?.date_to) {
+    // Date range filter takes priority over month/year
+    if (params.date_from) {
+      query = query.where("ar.date", ">=", params.date_from);
+    }
+    if (params.date_to) {
+      query = query.where("ar.date", "<=", params.date_to);
+    }
   } else {
     const now = new Date();
     const month = params?.month || now.getMonth() + 1;
