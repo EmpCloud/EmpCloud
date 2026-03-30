@@ -8,7 +8,7 @@ import { requireOrgAdmin, requireHR } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as subService from "../../services/subscription/subscription.service.js";
-import * as billingService from "../../services/billing/billing.service.js";
+import * as billingIntegration from "../../services/billing/billing-integration.service.js";
 import {
   createSubscriptionSchema,
   updateSubscriptionSchema,
@@ -31,7 +31,7 @@ router.get("/", authenticate, requireHR, async (req: Request, res: Response, nex
 // GET /api/v1/subscriptions/billing-summary (HR+ only)
 router.get("/billing-summary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const summary = await billingService.getBillingSummary(req.user!.org_id);
+    const summary = await billingIntegration.getLocalBillingSummary(req.user!.org_id);
     sendSuccess(res, summary);
   } catch (err) { next(err); }
 });
@@ -70,7 +70,7 @@ router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Respon
     });
 
     // Notify billing
-    billingService.onSubscriptionCreated(sub.id).catch(() => {});
+    billingIntegration.onSubscriptionCreated(sub.id).catch(() => {});
 
     sendSuccess(res, sub, 201);
   } catch (err) { next(err); }
@@ -92,7 +92,7 @@ router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Resp
       userAgent: req.headers["user-agent"],
     });
 
-    billingService.onSubscriptionUpdated(sub.id).catch(() => {});
+    billingIntegration.onSubscriptionUpdated(sub.id).catch(() => {});
 
     sendSuccess(res, sub);
   } catch (err) { next(err); }
@@ -113,7 +113,7 @@ router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: R
       userAgent: req.headers["user-agent"],
     });
 
-    billingService.onSubscriptionCancelled(sub.id).catch(() => {});
+    billingIntegration.onSubscriptionCancelled(sub.id).catch(() => {});
 
     sendSuccess(res, sub);
   } catch (err) { next(err); }

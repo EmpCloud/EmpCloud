@@ -7,6 +7,7 @@ import { NotFoundError, ConflictError, ValidationError, ForbiddenError } from ".
 import { getAccessibleFeatures } from "../module/module.service.js";
 import { logger } from "../../utils/logger.js";
 import * as billingIntegration from "../billing/billing-integration.service.js";
+import { getPricePerSeat, getOrgCurrency } from "./pricing.js";
 import type {
   OrgSubscription,
   CreateSubscriptionInput,
@@ -14,51 +15,15 @@ import type {
   ModuleAccessResult,
 } from "@empcloud/shared";
 
+// Re-export getOrgCurrency so existing consumers that import from this file still work
+export { getOrgCurrency } from "./pricing.js";
+
 // ---------------------------------------------------------------------------
 // Free-tier limits
 // ---------------------------------------------------------------------------
 
 const FREE_TIER_MAX_USERS = 5;
 const FREE_TIER_MAX_MODULES = 1;
-
-// ---------------------------------------------------------------------------
-// Multi-currency pricing helpers
-// ---------------------------------------------------------------------------
-
-/** Plan pricing in smallest currency unit, keyed by currency then plan tier. */
-const PLAN_PRICING_BY_CURRENCY: Record<string, Record<string, number>> = {
-  INR: { free: 0, basic: 50000, professional: 100000, enterprise: 175000 },   // paise
-  USD: { free: 0, basic: 500,   professional: 1000,   enterprise: 1750   },   // cents
-  GBP: { free: 0, basic: 500,   professional: 1000,   enterprise: 1750   },   // pence
-  EUR: { free: 0, basic: 500,   professional: 1000,   enterprise: 1750   },   // cents
-};
-
-function getPricePerSeat(planTier: string, currency: string): number {
-  const tierPricing = PLAN_PRICING_BY_CURRENCY[currency] ?? PLAN_PRICING_BY_CURRENCY["USD"];
-  return tierPricing[planTier] ?? tierPricing["basic"] ?? 500;
-}
-
-function getCurrencyForCountry(country: string): string {
-  const inrCountries = ["IN", "India"];
-  const gbpCountries = ["GB", "UK", "United Kingdom"];
-  const eurCountries = ["DE", "FR", "IT", "ES", "NL", "Germany", "France", "Italy", "Spain"];
-
-  if (inrCountries.includes(country)) return "INR";
-  if (gbpCountries.includes(country)) return "GBP";
-  if (eurCountries.includes(country)) return "EUR";
-  return "USD"; // Default for US and everywhere else
-}
-
-/** Resolve the billing currency for an organization. */
-export async function getOrgCurrency(orgId: number): Promise<string> {
-  const db = getDB();
-  const org = await db("organizations")
-    .where({ id: orgId })
-    .select("currency", "country")
-    .first();
-  if (!org) return "USD";
-  return org.currency || getCurrencyForCountry(org.country || "");
-}
 
 // ---------------------------------------------------------------------------
 // Subscriptions
@@ -412,6 +377,19 @@ export async function checkModuleAccess(params: {
     features,
   };
 }
+
+// =============================================================================
+// TODO: MOVE TO EMP BILLING MODULE
+// The following dunning/enforcement functions belong in the EMP Billing module,
+// not in EMP Cloud. They are kept here temporarily until EMP Billing's
+// subscription worker is fully integrated with EmpCloud's subscription lifecycle.
+// When migrating:
+// 1. Move enforceOverdueInvoices() → billing subscription.worker.ts
+// 2. Move processDunning() → billing dunning.service.ts
+// 3. Move getGracePeriodDays() → billing config
+// 4. Move getBillingStatus() → billing status.service.ts
+// 5. EmpCloud should only receive webhook events for status changes
+// =============================================================================
 
 // ---------------------------------------------------------------------------
 // #983 — Billing Status (overdue/payment warning for org admins)
