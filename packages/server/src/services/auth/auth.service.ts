@@ -41,7 +41,7 @@ export async function register(params: {
 
   const passwordHash = await hashPassword(params.password);
 
-  // Create organization
+  // Create organization (org_id=0 is reserved for super_admin platform accounts)
   const [orgId] = await db("organizations").insert({
     name: params.orgName,
     legal_name: params.orgLegalName || params.orgName,

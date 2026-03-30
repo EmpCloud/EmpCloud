@@ -25,6 +25,8 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 - Authentication is centralized — only EMP Cloud issues tokens
 - JWT signing uses RS256 (asymmetric) — modules verify with the public key only
 - Every database query MUST filter by `organization_id` for tenant isolation
+- **`organization_id = 0` is RESERVED for super_admin platform accounts** — no real org will ever get id=0 (auto_increment starts at 1). Super admins are invisible to all org user lists.
+- **5 roles only**: employee (0) → manager (20) → hr_admin (60) → org_admin (80) → super_admin (100). No `hr_manager` role.
 - All monetary values stored as BIGINT (smallest currency unit)
 - Adding a new module = DB rows only, zero code changes in EMP Cloud
 
