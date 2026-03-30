@@ -63,17 +63,15 @@ api.interceptors.response.use(
       }
     }
 
-    // Show toast for non-401 server errors so users see feedback instead of blank pages
+    // Log errors to console for debugging — don't show toast for background API calls
+    // Toasts should only be shown by the calling component for user-initiated actions
     if (error.response && error.response.status !== 401) {
       const status = error.response.status;
-      const msg =
-        error.response.data?.error?.message ||
-        error.response.data?.message ||
-        (status >= 500 ? "Something went wrong. Please try again later." : "Request failed.");
-      showToast("error", msg);
+      const url = error.config?.url || "unknown";
+      const msg = error.response.data?.error?.message || error.response.data?.message || "";
+      console.warn(`[API ${status}] ${error.config?.method?.toUpperCase()} ${url}: ${msg}`);
     } else if (!error.response && error.message) {
-      // Network error
-      showToast("error", "Network error. Please check your connection.");
+      console.warn(`[API Network Error] ${error.config?.url}: ${error.message}`);
     }
 
     return Promise.reject(error);
