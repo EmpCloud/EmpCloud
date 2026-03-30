@@ -379,8 +379,8 @@ export async function getPositionHierarchy(orgId: number) {
   const db = getDB();
 
   const positions = await db("positions")
-    .where({ organization_id: orgId })
-    .whereNot({ status: "closed" })
+    .where({ "positions.organization_id": orgId })
+    .whereNot({ "positions.status": "closed" })
     .select(
       "positions.id",
       "positions.title",
