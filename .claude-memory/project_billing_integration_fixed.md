@@ -7,16 +7,16 @@ type: project
 ## Billing Integration — Fixed 2026-03-30
 
 ### What was fixed
-1. **BILLING_API_KEY** set in both EmpCloud root `.env` and Billing root `.env` (value: `<REDACTED - see .env>`)
+1. **BILLING_API_KEY** set in both EmpCloud root `.env` and Billing root `.env` (value: `emp-billing-api-key-2026-secure-integration`)
 2. **POST /api/v1/webhooks/empcloud** endpoint created in Billing (handles subscription.created/updated/cancelled)
 3. **Auth middleware updated** in Billing to accept EmpCloud API key as valid Bearer token (alongside JWT and empb_ API keys)
 4. **Gateway webhook secrets** set (test placeholders)
 5. **Subscription mapping** tables verified working
 
 ### Key Config
-- EmpCloud `.env`: `BILLING_API_KEY=<REDACTED - see .env>`
+- EmpCloud `.env`: `BILLING_API_KEY=emp-billing-api-key-2026-secure-integration`
 - EmpCloud `.env`: `BILLING_MODULE_URL=http://localhost:4001`
-- Billing `.env`: `EMPCLOUD_API_KEY=<REDACTED - see .env>`
+- Billing `.env`: `EMPCLOUD_API_KEY=emp-billing-api-key-2026-secure-integration`
 - Billing port: 4001
 
 ### Files changed

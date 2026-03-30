@@ -19,3 +19,10 @@
 
 ## GitHub & Admin
 - [reference_github_admin.md](reference_github_admin.md) — GraphQL deleteIssue mutation, token permissions, bulk delete pattern
+
+## DevOps
+- [feedback_devops_capabilities.md](feedback_devops_capabilities.md) — RULE: We have full devops (sudo, nginx, MySQL, PM2). Do it ourselves, don't wait.
+
+## Notes
+- EMP Field module fully built and deployed (2026-03-30) — 45 server files, 33 client files, 13 DB tables, port 4800, nginx configured, 16/16 Playwright tests pass.
+- EMP Field uses MySQL (emp_field DB), NOT MongoDB — full rewrite from old team's code.
