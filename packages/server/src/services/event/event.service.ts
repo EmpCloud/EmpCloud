@@ -27,8 +27,8 @@ export async function createEvent(
     title: data.title,
     description: data.description || null,
     event_type: data.event_type || "other",
-    start_date: data.start_date,
-    end_date: data.end_date || null,
+    start_date: new Date(data.start_date),
+    end_date: data.end_date ? new Date(data.end_date) : null,
     is_all_day: data.is_all_day || false,
     location: data.location || null,
     virtual_link: data.virtual_link || null,
@@ -179,6 +179,12 @@ export async function updateEvent(
   if (!existing) throw new NotFoundError("Event");
 
   const updateData: Record<string, unknown> = { ...data, updated_at: new Date() };
+  if (data.start_date) {
+    updateData.start_date = new Date(data.start_date);
+  }
+  if (data.end_date) {
+    updateData.end_date = new Date(data.end_date);
+  }
   if (data.target_ids !== undefined) {
     updateData.target_ids = data.target_ids ? JSON.stringify(data.target_ids) : null;
   }
