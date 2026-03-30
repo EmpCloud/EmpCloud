@@ -11,7 +11,7 @@ async function login(email: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  const data = await res.json().catch(() => ({ success: false, error: { message: "Non-JSON response" } }));
+  const data = await res.json().catch(() => ({ success: false, error: { message: "Non-JSON response" } })) as any;
   return { status: res.status, data };
 }
 
@@ -19,7 +19,7 @@ async function getWithAuth(path: string, token: string) {
   const res = await fetch(`${API}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const data = await res.json().catch(() => ({ success: false, error: { message: "Non-JSON response" } }));
+  const data = await res.json().catch(() => ({ success: false, error: { message: "Non-JSON response" } })) as any;
   return { status: res.status, data };
 }
 
@@ -27,7 +27,7 @@ describe("API Endpoints - Live Server", () => {
   describe("Health Check", () => {
     it("GET /health returns healthy", async () => {
       const res = await fetch(`${API}/health`);
-      const data = await res.json().catch(() => null);
+      const data = await res.json().catch(() => null) as any;
       expect(data).not.toBeNull();
       expect(data.success).toBe(true);
       expect(data.data.status).toBe("healthy");
