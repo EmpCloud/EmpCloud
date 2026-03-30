@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
@@ -194,14 +194,7 @@ function HRPoliciesView() {
   const [viewAckFor, setViewAckFor] = useState<number | null>(null);
   const [viewContentFor, setViewContentFor] = useState<number | null>(null);
   const ackQuery = useAcknowledgments(viewAckFor);
-  const detailPanelRef = useRef<HTMLDivElement>(null);
-
-  // Scroll the detail panel into view when opened
-  useEffect(() => {
-    if ((viewContentFor || viewAckFor) && detailPanelRef.current) {
-      detailPanelRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }, [viewContentFor, viewAckFor]);
+  // Panels are now inline within table rows — no external refs needed
 
   // Form state
   const [title, setTitle] = useState("");
@@ -320,52 +313,134 @@ function HRPoliciesView() {
               <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No policies created yet.</td></tr>
             ) : (
               policies.map((p: any) => (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-brand-600" />
-                      <span className="text-sm font-medium text-gray-900">{p.title}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    {p.category ? (
-                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{p.category}</span>
-                    ) : (
-                      <span className="text-xs text-gray-400">-</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">v{p.version}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{p.effective_date || "-"}</td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-brand-700">{p.acknowledgment_count ?? 0}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => {
-                          setViewAckFor(null);
-                          setViewContentFor(viewContentFor === p.id ? null : p.id);
-                        }}
-                        className={`flex items-center gap-1 text-xs font-medium ${
-                          viewContentFor === p.id ? "text-brand-700 underline" : "text-brand-600 hover:text-brand-700"
-                        }`}
-                      >
-                        <FileText className="h-3.5 w-3.5" /> View
-                      </button>
-                      <button
-                        onClick={() => {
-                          setViewContentFor(null);
-                          setViewAckFor(viewAckFor === p.id ? null : p.id);
-                        }}
-                        className={`flex items-center gap-1 text-xs font-medium ${
-                          viewAckFor === p.id ? "text-gray-900 underline" : "text-gray-500 hover:text-gray-700"
-                        }`}
-                      >
-                        <Users className="h-3.5 w-3.5" /> Acks
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                <React.Fragment key={p.id}>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-brand-600" />
+                        <span className="text-sm font-medium text-gray-900">{p.title}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {p.category ? (
+                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{p.category}</span>
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">v{p.version}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{p.effective_date || "-"}</td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium text-brand-700">{p.acknowledgment_count ?? 0}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => {
+                            setViewAckFor(null);
+                            setViewContentFor(viewContentFor === p.id ? null : p.id);
+                          }}
+                          className={`flex items-center gap-1 text-xs font-medium ${
+                            viewContentFor === p.id ? "text-brand-700 underline" : "text-brand-600 hover:text-brand-700"
+                          }`}
+                        >
+                          <FileText className="h-3.5 w-3.5" /> View
+                        </button>
+                        <button
+                          onClick={() => {
+                            setViewContentFor(null);
+                            setViewAckFor(viewAckFor === p.id ? null : p.id);
+                          }}
+                          className={`flex items-center gap-1 text-xs font-medium ${
+                            viewAckFor === p.id ? "text-gray-900 underline" : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          <Users className="h-3.5 w-3.5" /> Acks
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* Inline floating panel — View Content */}
+                  {viewContentFor === p.id && (
+                    <tr>
+                      <td colSpan={6} className="p-0">
+                        <div className="mx-4 my-2 bg-gray-50 border border-gray-200 rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
+                          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-brand-600" />
+                              <h3 className="text-sm font-semibold text-gray-900">{p.title}</h3>
+                              {p.category && (
+                                <span className="text-xs bg-white text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">{p.category}</span>
+                              )}
+                              <span className="text-xs text-gray-400">v{p.version}</span>
+                            </div>
+                            <button
+                              onClick={() => setViewContentFor(null)}
+                              className="text-gray-400 hover:text-gray-600 text-sm px-2 py-1 rounded hover:bg-gray-200"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="px-5 py-4 max-h-64 overflow-y-auto">
+                            {p.effective_date && (
+                              <p className="text-xs text-gray-400 mb-2">Effective: {p.effective_date}</p>
+                            )}
+                            <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap text-sm leading-relaxed">{p.content}</div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+
+                  {/* Inline floating panel — Acknowledgments */}
+                  {viewAckFor === p.id && (
+                    <tr>
+                      <td colSpan={6} className="p-0">
+                        <div className="mx-4 my-2 bg-gray-50 border border-gray-200 rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
+                          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-gray-600" />
+                              <h3 className="text-sm font-semibold text-gray-900">Acknowledgments — {p.title}</h3>
+                            </div>
+                            <button
+                              onClick={() => setViewAckFor(null)}
+                              className="text-gray-400 hover:text-gray-600 text-sm px-2 py-1 rounded hover:bg-gray-200"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="px-5 py-3 max-h-64 overflow-y-auto">
+                            {ackQuery.isLoading ? (
+                              <p className="text-sm text-gray-400 py-2">Loading...</p>
+                            ) : (ackQuery.data || []).length === 0 ? (
+                              <p className="text-sm text-gray-400 py-2">No acknowledgments yet.</p>
+                            ) : (
+                              <div className="space-y-1">
+                                {(ackQuery.data || []).map((a: any) => (
+                                  <div key={a.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-7 w-7 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700">
+                                        {a.first_name?.[0]}{a.last_name?.[0]}
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-900">{a.first_name} {a.last_name}</p>
+                                        <p className="text-xs text-gray-400">{a.email}</p>
+                                      </div>
+                                    </div>
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(a.acknowledged_at).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             )}
           </tbody>
@@ -397,63 +472,7 @@ function HRPoliciesView() {
         )}
       </div>
 
-      {/* Policy content panel */}
-      {viewContentFor && (() => {
-        const policy = policies.find((p: any) => p.id === viewContentFor);
-        if (!policy) return null;
-        return (
-          <div ref={detailPanelRef} className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{policy.title}</h3>
-              <button
-                onClick={() => setViewContentFor(null)}
-                className="text-xs text-gray-400 hover:text-gray-600"
-              >
-                Close
-              </button>
-            </div>
-            {policy.category && (
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{policy.category}</span>
-            )}
-            <span className="ml-2 text-xs text-gray-400">v{policy.version}</span>
-            {policy.effective_date && (
-              <p className="text-xs text-gray-400 mt-2">Effective: {policy.effective_date}</p>
-            )}
-            <div className="prose prose-sm max-w-none py-4 text-gray-700 whitespace-pre-wrap">{policy.content}</div>
-          </div>
-        );
-      })()}
-
-      {/* Acknowledgment detail panel */}
-      {viewAckFor && (
-        <div ref={detailPanelRef} className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">Acknowledgments</h3>
-          {ackQuery.isLoading ? (
-            <p className="text-sm text-gray-400">Loading...</p>
-          ) : (ackQuery.data || []).length === 0 ? (
-            <p className="text-sm text-gray-400">No acknowledgments yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {(ackQuery.data || []).map((a: any) => (
-                <div key={a.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                  <div className="flex items-center gap-3">
-                    <div className="h-7 w-7 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700">
-                      {a.first_name[0]}{a.last_name[0]}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{a.first_name} {a.last_name}</p>
-                      <p className="text-xs text-gray-400">{a.email}</p>
-                    </div>
-                  </div>
-                  <span className="text-xs text-gray-500">
-                    {new Date(a.acknowledged_at).toLocaleDateString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Panels are now inline within the table rows above */}
     </div>
   );
 }
