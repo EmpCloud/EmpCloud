@@ -19,7 +19,7 @@ function reportClientError(error: {
   level?: string;
 }) {
   const userId = useAuthStore.getState().user?.id;
-  fetch("/api/v1/admin/logs/client-error", {
+  fetch("/api/v1/logs/client-error", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

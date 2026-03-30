@@ -73,7 +73,7 @@ api.interceptors.response.use(
 
       // Forward to server for Log Dashboard (skip if this IS the client-error endpoint)
       if (!url.includes("client-error")) {
-        fetch("/api/v1/admin/logs/client-error", {
+        fetch("/api/v1/logs/client-error", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -93,7 +93,7 @@ api.interceptors.response.use(
 
       // Forward network errors to server
       if (!error.config?.url?.includes("client-error")) {
-        fetch("/api/v1/admin/logs/client-error", {
+        fetch("/api/v1/logs/client-error", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

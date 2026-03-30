@@ -131,6 +131,28 @@ async function main() {
   app.use("/api/v1/webhooks", billingWebhookRoutes);
   app.use("/api/v1/webhooks", moduleWebhookRoutes);
 
+  // Client error reporting (unauthenticated — errors may happen before login)
+  app.post("/api/v1/logs/client-error", apiLimiter, (req, res) => {
+    const { message, stack, url, component, userId, userAgent, timestamp, level } = req.body;
+    if (!message) {
+      res.status(400).json({ success: false, error: "message is required" });
+      return;
+    }
+    logger.error(`CLIENT_ERROR: ${String(message).substring(0, 500)}`, {
+      source: "frontend",
+      errorMessage: String(message).substring(0, 1000),
+      stack: stack ? String(stack).substring(0, 2000) : undefined,
+      url: url || undefined,
+      component: component || undefined,
+      userId: userId || null,
+      userAgent: userAgent || req.headers["user-agent"],
+      clientTimestamp: timestamp || new Date().toISOString(),
+      errorLevel: level || "error",
+      ip: req.ip,
+    });
+    res.json({ success: true });
+  });
+
   // API routes
   app.use("/api/v1/auth", authLimiter, authRoutes);
   app.use("/oauth", authLimiter, oauthRoutes);
