@@ -205,7 +205,7 @@ export default function SubscriptionsPage() {
       {editingSub && (
         <EditSubscriptionModal
           subscription={editingSub}
-          moduleName={moduleMap.get(editingSub.module_id)?.name || "Module"}
+          moduleName={((moduleMap as any).get(editingSub.module_id) as any)?.name || "Module"}
           onClose={() => setEditingSub(null)}
           onSave={handleUpdate}
           isLoading={updateSub.isPending}

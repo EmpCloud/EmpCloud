@@ -105,11 +105,12 @@ function WidgetSkeleton({ color = "indigo" }: { color?: string }) {
 // Offline fallback
 // ---------------------------------------------------------------------------
 
-function WidgetOffline({ title, icon: Icon, color = "indigo" }: {
+function WidgetOffline({ title, icon: Icon, color: _color = "indigo" }: {
   title: string;
   icon: LucideIcon;
   color?: string;
 }) {
+  void _color;
   return (
     <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
       <div className="flex items-center gap-3 mb-4">
