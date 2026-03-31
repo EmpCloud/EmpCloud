@@ -161,11 +161,46 @@ pm2 start ecosystem.config.js --only empcloud-server && pm2 save
 5. Redirects to module dashboard
 6. "← EMP Cloud" back button in header links to `return_url`
 
-### Billing Integration
+### Billing Integration Architecture
+
+**Two databases, zero redundancy — by design:**
+
+```
+empcloud DB (Access Control)          emp_billing DB (Financial Engine)
+─────────────────────────             ──────────────────────────────────
+org_subscriptions                     subscriptions
+ → "Does this org have access         → "What's the billing lifecycle?"
+    to this module?"                   → period dates, auto-renew, coupon
+ → module_id, seats, status
+                                      invoices + invoice_items
+org_module_seats                       → Invoice records, PDF, tax calc
+ → "Which user has a seat?"
+                                      payments + payment_allocations
+billing_client_mappings                → Cash, bank, UPI, Stripe, Razorpay
+ → Maps empcloud org → billing
+   client (bridge table)              clients
+                                       → Who gets invoiced (billing profile,
+billing_subscription_mappings            tax ID, outstanding balance)
+ → Maps cloud sub → billing sub
+   (bridge table)                     plans, products, tax_rates
+                                       → Pricing config, HSN codes, GST
+organizations
+ → Org management (name, domain,     organizations (billing-specific)
+   users, departments)                 → Invoice prefix, tax settings,
+                                         branding, payment terms
+```
+
+**Key principle:** EmpCloud asks "who can access what?" — EMP Billing asks "who owes what?"
+Bridge tables (`billing_client_mappings`, `billing_subscription_mappings`) connect the two.
+Webhooks keep status in sync (Billing → EmpCloud on invoice.paid, payment_failed, etc.)
+
+**Integration details:**
 - **API Key**: `BILLING_API_KEY` in EmpCloud `.env`, `EMPCLOUD_API_KEY` in Billing `.env`
 - **Webhook**: `POST /api/v1/webhooks/empcloud` in Billing for subscription events
-- **Gateways**: Stripe, Razorpay, PayPal (test keys configured)
-- **Flow**: Cloud creates subscription → notifies Billing → Billing creates invoice → Gateway processes payment → Billing webhooks back to Cloud
+- **Gateways**: Stripe + PayPal (international), Razorpay + PayPal (India) — auto-selected by org currency
+- **Multi-currency**: INR (₹100/user), USD ($1/user), GBP (£1/user), EUR (€1/user) — determined by org country
+- **Flow**: Cloud creates subscription → notifies Billing → Billing creates invoice → Gateway processes payment → Billing webhooks back to Cloud → Cloud updates org_subscriptions status
+- **EmpCloud billing code is a THIN PROXY only** — no billing logic, just HTTP calls to EMP Billing APIs
 
 ### Payroll HRMS Proxy
 - EMP Payroll fetches attendance/leave data from EMP Cloud (`USE_CLOUD_HRMS=true`)

@@ -493,12 +493,36 @@ empcloud/
 
 ### Internal Billing Engine
 
-- Auto-generate invoices from subscription data
-- Seat-based pricing (per user/month per module)
-- Subscription lifecycle events trigger billing
-- Usage metering for consumption-based modules
-- Online payment collection via Stripe, Razorpay, PayPal
-- Note: EMP Billing is the internal billing engine, not a sellable module
+EMP Cloud integrates with the separate **EMP Billing** module via a thin proxy layer. The two systems have **distinct responsibilities with zero data redundancy**:
+
+| | EMP Cloud (`empcloud` DB) | EMP Billing (`emp_billing` DB) |
+|---|---|---|
+| **Question answered** | "Who can access what?" | "Who owes what?" |
+| **Subscriptions** | `org_subscriptions` — module access, seats, status | `subscriptions` — billing lifecycle, auto-renew, coupon |
+| **Organizations** | Org management (name, users, departments) | Billing config (invoice prefix, tax ID, branding) |
+| **Users** | HRMS users (employee, manager, HR, admin) | Billing portal users (owner, accountant, viewer) |
+| **Bridge tables** | `billing_client_mappings`, `billing_subscription_mappings` | — |
+
+**Integration flow:**
+```
+EMP Cloud creates subscription
+  → notifies Billing (POST /webhooks/empcloud)
+    → Billing creates invoice + sends to gateway
+      → Gateway confirms payment (webhook)
+        → Billing updates invoice status
+          → Billing notifies Cloud (webhook: invoice.paid)
+            → Cloud updates org_subscriptions.status
+```
+
+**Multi-currency pricing (auto-detected by org country):**
+| Region | Currency | Price/User/Month | Payment Gateways |
+|--------|----------|------------------|-----------------|
+| India | INR ₹ | ₹100 | Razorpay, PayPal |
+| USA & others | USD $ | $1.00 | Stripe, PayPal |
+| UK | GBP £ | £1.00 | Stripe, PayPal |
+| Europe | EUR € | €1.00 | Stripe, PayPal |
+
+**Key rule:** EMP Cloud billing code is a **thin HTTP proxy only** — all invoicing, payment processing, dunning, and financial logic lives in EMP Billing. No duplication.
 
 ### Central Dashboard
 
