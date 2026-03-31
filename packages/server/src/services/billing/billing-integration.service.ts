@@ -257,15 +257,14 @@ export async function getInvoices(
   orgId: number,
   params?: { page?: number; perPage?: number }
 ): Promise<any> {
-  const clientId = await getOrCreateBillingClientId(orgId);
-  if (!clientId) return { invoices: [], total: 0 };
-
-  // Billing uses "limit" not "perPage"
-  const query = new URLSearchParams({ clientId });
+  // Don't filter by clientId — billing scopes by org_id via the API key auth.
+  // See getPayments() comment for rationale.
+  const query = new URLSearchParams();
   if (params?.page) query.set("page", String(params.page));
   if (params?.perPage) query.set("limit", String(params.perPage));
 
-  const result = await billingFetchRaw("GET", `/invoices?${query.toString()}`);
+  const qs = query.toString();
+  const result = await billingFetchRaw("GET", `/invoices${qs ? `?${qs}` : ""}`);
   if (!result) return { invoices: [], total: 0 };
 
   // Billing returns { success, data: [...], meta: { page, limit, total, totalPages } }
@@ -288,15 +287,16 @@ export async function getPayments(
   orgId: number,
   params?: { page?: number; perPage?: number }
 ): Promise<any> {
-  const clientId = await getOrCreateBillingClientId(orgId);
-  if (!clientId) return { payments: [], total: 0 };
-
-  // Billing uses "limit" not "perPage"
-  const query = new URLSearchParams({ clientId });
+  // Build query without clientId — billing scopes by org_id via the API key auth.
+  // The clientId filter caused empty results because the empcloud auto-provisioned
+  // client (via /clients/auto-provision) is a different record from the client
+  // created by the empcloud webhook (findOrCreateClient) that owns the payments.
+  const query = new URLSearchParams();
   if (params?.page) query.set("page", String(params.page));
   if (params?.perPage) query.set("limit", String(params.perPage));
 
-  const result = await billingFetchRaw("GET", `/payments?${query.toString()}`);
+  const qs = query.toString();
+  const result = await billingFetchRaw("GET", `/payments${qs ? `?${qs}` : ""}`);
   if (!result) return { payments: [], total: 0 };
 
   // Billing returns { success, data: [...], meta: { page, limit, total, totalPages } }
