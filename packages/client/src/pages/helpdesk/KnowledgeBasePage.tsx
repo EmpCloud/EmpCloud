@@ -329,8 +329,8 @@ export default function KnowledgeBasePage() {
               </button>
               <button
                 type="submit"
-                disabled={createArticle.isPending}
-                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+                disabled={createArticle.isPending || !formTitle.trim() || !formContent.trim()}
+                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <BookMarked className="h-4 w-4" />
                 {createArticle.isPending ? "Publishing..." : "Publish Article"}
