@@ -144,7 +144,7 @@ export default function AnnouncementsPage() {
           <h2 className="text-lg font-semibold text-gray-900">Create Announcement</h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={title}
@@ -156,7 +156,7 @@ export default function AnnouncementsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Content <span className="text-red-500">*</span></label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -336,9 +336,9 @@ export default function AnnouncementsPage() {
                         {a.content}
                       </p>
 
-                      {a.content.length > 200 && (
+                      {(a.content.length > 120 || (a.content.match(/\n/g) || []).length > 2) && (
                         <button
-                          onClick={() => setExpandedId(isExpanded ? null : a.id)}
+                          onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : a.id); }}
                           className="mt-1 text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1"
                         >
                           {isExpanded ? (

@@ -186,7 +186,7 @@ export default function LeaveTypesPage() {
           <form onSubmit={handleTypeSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={typeForm.name}
@@ -196,7 +196,7 @@ export default function LeaveTypesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Code</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Code <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={typeForm.code}
@@ -267,8 +267,12 @@ export default function LeaveTypesPage() {
                     <input
                       type="number"
                       min={0}
+                      max={365}
                       value={typeForm.max_carry_forward_days}
-                      onChange={(e) => setTypeForm({ ...typeForm, max_carry_forward_days: Number(e.target.value) })}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        if (val >= 0 && val <= 365) setTypeForm({ ...typeForm, max_carry_forward_days: val });
+                      }}
                       className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                     />
                   </div>
@@ -384,7 +388,7 @@ export default function LeaveTypesPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Policy Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Policy Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={policyForm.name}
@@ -394,7 +398,7 @@ export default function LeaveTypesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Annual Quota</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Annual Quota <span className="text-red-500">*</span></label>
                 <input
                   type="number"
                   min={0}

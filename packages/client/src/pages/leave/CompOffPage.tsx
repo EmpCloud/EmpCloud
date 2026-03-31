@@ -186,7 +186,7 @@ export default function CompOffPage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Request Compensatory Off</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date Worked</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date Worked <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.worked_date}
@@ -196,7 +196,7 @@ export default function CompOffPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expires On</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expires On <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.expires_on}
@@ -220,7 +220,7 @@ export default function CompOffPage() {
               </select>
             </div>
             <div className="md:col-span-2 lg:col-span-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reason <span className="text-red-500">*</span></label>
               <textarea
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}

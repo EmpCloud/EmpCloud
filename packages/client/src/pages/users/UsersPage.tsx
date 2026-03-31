@@ -625,9 +625,9 @@ export default function UsersPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
-                        {u.first_name[0]}{u.last_name[0]}
+                        {u.first_name?.[0]}{u.last_name?.[0]}
                       </div>
-                      <span className="text-sm font-medium text-gray-900">{u.first_name} {u.last_name}</span>
+                      <span className="text-sm font-medium text-gray-900">{u.first_name || ""} {u.last_name || ""}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{u.email}</td>

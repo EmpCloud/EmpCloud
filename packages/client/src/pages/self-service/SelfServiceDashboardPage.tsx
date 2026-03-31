@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   XCircle,
   Sparkles,
+  Pencil,
 } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import api from "@/api/client";
@@ -99,8 +100,9 @@ export default function SelfServiceDashboardPage() {
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
         <QuickLink to="/my-profile" icon={FileText} label="My Profile" />
+        <QuickLink to={`/employees/${user?.id}`} icon={Pencil} label="Edit My Details" />
         <QuickLink to="/leave" icon={CalendarDays} label="Apply Leave" />
         <QuickLink to="/attendance/my" icon={Clock} label="Mark Attendance" />
         <QuickLink to="/helpdesk/my-tickets" icon={FileText} label="Request Update" />

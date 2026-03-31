@@ -167,7 +167,7 @@ export default function LeaveDashboardPage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Apply for Leave</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type <span className="text-red-500">*</span></label>
               <select
                 value={form.leave_type_id}
                 onChange={(e) => setForm({ ...form, leave_type_id: Number(e.target.value) })}
@@ -177,13 +177,14 @@ export default function LeaveDashboardPage() {
                 <option value={0} disabled>Select type</option>
                 {leaveTypes
                   .filter((t) => Boolean(t.is_active))
+                  .filter((t, i, arr) => arr.findIndex((x) => x.name === t.name) === i)
                   .map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
                   ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.start_date}
@@ -193,7 +194,7 @@ export default function LeaveDashboardPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.end_date}
@@ -203,13 +204,17 @@ export default function LeaveDashboardPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Number of Days</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Number of Days <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 step="0.5"
                 min="0.5"
+                max="365"
                 value={form.days_count}
-                onChange={(e) => setForm({ ...form, days_count: Number(e.target.value) })}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  if (val >= 0 && val <= 365) setForm({ ...form, days_count: val });
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -236,7 +241,7 @@ export default function LeaveDashboardPage() {
               )}
             </div>
             <div className="md:col-span-2 lg:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reason <span className="text-red-500">*</span></label>
               <textarea
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
