@@ -27,7 +27,7 @@ Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Pr
 | API route files | 35 |
 | Frontend pages | 94 |
 | Service modules | 34 |
-| Playwright E2E tests | 712 (18 spec files) |
+| Playwright E2E tests | 737 (22 spec files) + 1,581 planned |
 | AI agent tools | 41 |
 | Languages supported | 9 |
 | GitHub repositories | 12 |
@@ -251,7 +251,8 @@ empcloud/
 │           ├── types/
 │           ├── validators/
 │           └── constants/
-├── e2e/                            # 18 Playwright E2E spec files
+├── e2e/                            # 22 Playwright E2E spec files
+├── docs/test-plans/                # Master test plan (1,581 test cases across 12 modules)
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
@@ -965,7 +966,24 @@ SMTP_PASS=
 | Super admin income | 19 | Playwright: MRR/ARR, revenue by module/tier, top customers, calculation integrity |
 | Stripe webhook | 2 | Playwright: end-to-end payment loop, webhook endpoint reachability |
 | EMP Billing unit tests | 622 | Vitest: auth, invoice, payment, subscription, dunning, metrics, reports, webhooks |
-| **Total** | **712 E2E + 1,457 unit/API** | All automated via Playwright (18 spec files) + Vitest |
+| Mobile responsive | 13 | Playwright: iPhone 375px + iPad 768px viewports |
+| Email notifications | 9 | Playwright: in-app notifications, billing workers, system alerts |
+| Load / performance | 22 | Playwright: API benchmarks <500ms, 10/20 concurrent, 9 module health checks |
+| Regression bugfixes | 33 | Playwright: all 33 bug fixes (#1190-#1289) verified |
+| **Current Total** | **737 E2E + 1,457 unit/API** | All automated via Playwright (22 spec files) + Vitest |
+
+### Master Test Plan (1,581 additional test cases)
+
+Comprehensive test plans covering every API endpoint across all 12 modules are documented in [`docs/test-plans/`](docs/test-plans/):
+
+| Plan | Modules | Test Cases |
+|------|---------|-----------|
+| [EmpCloud Core](docs/test-plans/01-empcloud-core-test-plan.md) | 35 route files — employees, attendance, leave, documents, admin, biometrics | ~250 |
+| [Payroll](docs/test-plans/02-payroll-test-plan.md) | Salary, payroll runs, tax, benefits, loans, insurance, GL accounting | ~280 |
+| [Performance + Recruit](docs/test-plans/03-performance-recruit-test-plan.md) | Reviews, goals, PIPs, jobs, offers, interviews, assessments | ~350 |
+| [Exit + Rewards + LMS](docs/test-plans/04-exit-rewards-lms-test-plan.md) | Exit workflow, FnF, kudos, badges, courses, certifications | ~392 |
+| [Field + Billing + Monitor](docs/test-plans/05-field-billing-monitor-test-plan.md) | Check-in, geo-fences, quotes, credit notes, screenshots, productivity | ~309 |
+| **Total planned** | **12 modules** | **~1,581** |
 
 ### Running Tests
 
