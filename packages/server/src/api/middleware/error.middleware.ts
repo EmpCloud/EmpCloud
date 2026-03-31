@@ -33,12 +33,14 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
     return;
   }
 
-  // Zod validation errors — sanitize details in production to avoid leaking schema info
+  // Zod validation errors — extract first human-readable message for the client
   if (err instanceof ZodError) {
-    const details = config.isProd
-      ? undefined
-      : err.errors;
-    sendError(res, 400, "VALIDATION_ERROR", "Invalid request data", details);
+    const firstIssue = err.errors[0];
+    const message = firstIssue?.message && firstIssue.message !== "Required"
+      ? firstIssue.message
+      : "Invalid request data";
+    const details = config.isProd ? undefined : err.errors;
+    sendError(res, 400, "VALIDATION_ERROR", message, details);
     return;
   }
 

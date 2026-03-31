@@ -151,6 +151,7 @@ export async function listDocuments(
   params?: {
     user_id?: number;
     category_id?: number;
+    search?: string;
     page?: number;
     perPage?: number;
   },
@@ -173,6 +174,17 @@ export async function listDocuments(
 
   if (params?.user_id) {
     query = query.where("employee_documents.user_id", params.user_id);
+  }
+  if (params?.search) {
+    const s = `%${params.search}%`;
+    query = query.where(function () {
+      this.where("users.first_name", "like", s)
+        .orWhere("users.last_name", "like", s)
+        .orWhere("users.email", "like", s)
+        .orWhere("users.emp_code", "like", s)
+        .orWhere("employee_documents.name", "like", s)
+        .orWhereRaw("CONCAT(users.first_name, ' ', users.last_name) LIKE ?", [s]);
+    });
   }
   if (params?.category_id) {
     query = query.where("employee_documents.category_id", params.category_id);

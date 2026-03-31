@@ -23,6 +23,9 @@ export default function AttendanceDashboardPage() {
   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  // Applied date range — only used in the query after clicking Apply
+  const [appliedDateFrom, setAppliedDateFrom] = useState("");
+  const [appliedDateTo, setAppliedDateTo] = useState("");
 
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
@@ -42,15 +45,15 @@ export default function AttendanceDashboardPage() {
   });
 
   const { data: recordsData, isLoading: recLoading } = useQuery({
-    queryKey: ["attendance-records", page, month, year, departmentId, dateFrom, dateTo],
+    queryKey: ["attendance-records", page, month, year, departmentId, appliedDateFrom, appliedDateTo],
     queryFn: () => {
       const params: Record<string, any> = {
         page,
         department_id: departmentId || undefined,
       };
-      if (dateFrom) {
-        params.date_from = dateFrom;
-        if (dateTo) params.date_to = dateTo;
+      if (appliedDateFrom) {
+        params.date_from = appliedDateFrom;
+        if (appliedDateTo) params.date_to = appliedDateTo;
       } else {
         params.month = month;
         params.year = year;
@@ -61,6 +64,8 @@ export default function AttendanceDashboardPage() {
 
   const handleDateRangeApply = () => {
     if (dateFrom) {
+      setAppliedDateFrom(dateFrom);
+      setAppliedDateTo(dateTo);
       setPage(1);
     }
   };
@@ -72,6 +77,8 @@ export default function AttendanceDashboardPage() {
     setDepartmentId(undefined);
     setDateFrom("");
     setDateTo("");
+    setAppliedDateFrom("");
+    setAppliedDateTo("");
     setPage(1);
   };
 
@@ -258,7 +265,7 @@ export default function AttendanceDashboardPage() {
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">No attendance records today</td></tr>
+              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">No attendance records found for the selected filters</td></tr>
             ) : (
               records.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50">

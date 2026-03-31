@@ -17,7 +17,7 @@ import {
 
 // --- Hooks ---
 
-function useDocuments(params?: { page?: number; user_id?: number; category_id?: number }) {
+function useDocuments(params?: { page?: number; user_id?: number; category_id?: number; search?: string }) {
   return useQuery({
     queryKey: ["documents", params],
     queryFn: () => api.get("/documents", { params }).then((r) => r.data),
@@ -111,14 +111,16 @@ export default function DocumentsPage() {
 
   const [page, setPage] = useState(1);
   const [searchUserId, setSearchUserId] = useState<string>("");
+  const [searchText, setSearchText] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
   const [showUpload, setShowUpload] = useState(false);
   const [activeTab, setActiveTab] = useState<DocTab>("all");
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  const params: Record<string, number> = { page };
+  const params: Record<string, number | string> = { page };
   if (searchUserId) params.user_id = Number(searchUserId);
+  if (searchText) params.search = searchText;
   if (filterCategory) params.category_id = Number(filterCategory);
 
   const { data: docsData, isLoading } = useDocuments(params);
@@ -543,12 +545,11 @@ export default function DocumentsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
-                type="number"
-                value={searchUserId}
-                onChange={(e) => { setSearchUserId(e.target.value); setPage(1); }}
+                type="text"
+                value={searchText}
+                onChange={(e) => { setSearchText(e.target.value); setPage(1); }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Search by employee ID..."
-                min={1}
+                placeholder="Search by employee name, email, or document name..."
               />
             </div>
             <select

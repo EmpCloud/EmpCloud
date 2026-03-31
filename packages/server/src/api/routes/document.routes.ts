@@ -80,6 +80,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const category_id = req.query.category_id ? Number(req.query.category_id) : undefined;
+    const search = req.query.search ? String(req.query.search) : undefined;
 
     // Non-HR users can only see their own documents
     const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
@@ -91,6 +92,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
     const result = await documentService.listDocuments(req.user!.org_id, {
       user_id,
       category_id,
+      search: isHR ? search : undefined,
       page,
       perPage: per_page,
     });
