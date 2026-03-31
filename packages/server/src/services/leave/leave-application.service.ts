@@ -223,11 +223,12 @@ export async function approveLeave(
     .where({ leave_application_id: applicationId, approver_id: approverId, status: "pending" })
     .first();
 
-  // Allow HR/managers even if not listed as specific approver
+  // Allow managers/HR/org_admin/super_admin even if not listed as specific approver
   if (!approval) {
     const approverUser = await db("users").where({ id: approverId }).first();
-    const isHR = approverUser && ["hr_admin", "org_admin"].includes(approverUser.role);
-    if (!isHR) throw new ForbiddenError("Not authorized to approve this application");
+    const allowedRoles = ["manager", "hr_admin", "org_admin", "super_admin"];
+    const isAuthorized = approverUser && allowedRoles.includes(approverUser.role);
+    if (!isAuthorized) throw new ForbiddenError("Not authorized to approve this application");
   }
 
   await db.transaction(async (trx) => {
@@ -354,11 +355,12 @@ export async function rejectLeave(
     .where({ leave_application_id: applicationId, approver_id: approverId, status: "pending" })
     .first();
 
-  // Allow HR/managers even if not listed as specific approver
+  // Allow managers/HR/org_admin/super_admin even if not listed as specific approver
   if (!approval) {
     const approverUser = await db("users").where({ id: approverId }).first();
-    const isHR = approverUser && ["hr_admin", "org_admin"].includes(approverUser.role);
-    if (!isHR) throw new ForbiddenError("Not authorized to reject this application");
+    const allowedRoles = ["manager", "hr_admin", "org_admin", "super_admin"];
+    const isAuthorized = approverUser && allowedRoles.includes(approverUser.role);
+    if (!isAuthorized) throw new ForbiddenError("Not authorized to reject this application");
   }
 
   await db.transaction(async (trx) => {
