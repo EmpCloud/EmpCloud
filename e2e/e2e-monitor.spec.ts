@@ -44,7 +44,7 @@ test.describe('1. SSO Auth', () => {
   });
 
   test('1.2 SSO to Monitor with EmpCloud token', async ({ request }) => {
-    test.skip(!ecAdminToken, 'No EmpCloud token');
+    expect(ecAdminToken, 'Prerequisite failed — No EmpCloud token').toBeTruthy();
     const r = await request.post(`${MONITOR_API}/auth/sso`, {
       data: { token: ecAdminToken },
     });
@@ -79,7 +79,7 @@ test.describe('1. SSO Auth', () => {
       data: { email: EMPLOYEE.email, password: EMPLOYEE.password },
     });
     if (login.status() !== 200) {
-      test.skip(true, 'Employee login failed');
+      expect.fail('Employee login failed');
       return;
     }
     const ecEmpToken = (await login.json()).data.tokens.access_token;
@@ -124,7 +124,7 @@ test.describe('2. User Management', () => {
   });
 
   test('2.3 Get specific user by ID', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/users/${userId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
@@ -165,13 +165,13 @@ test.describe('2. User Management', () => {
   });
 
   test('2.7 Get user activity summary', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/users/${userId}/activity`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('2.8 Employee cannot list all users (RBAC)', async ({ request }) => {
-    test.skip(!employeeToken, 'No employee token');
+    expect(employeeToken, 'Prerequisite failed — No employee token').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/users`, auth(employeeToken));
     // Employee may be forbidden or get limited results
     expect([200, 403, 404]).toContain(r.status());
@@ -196,7 +196,7 @@ test.describe('3. Screenshots', () => {
   });
 
   test('3.2 List screenshots for specific user', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const today = new Date().toISOString().split('T')[0];
     const r = await request.get(`${MONITOR_API}/screenshots?user_id=${userId}&date=${today}`, auth());
     expect([200, 404]).toContain(r.status());
@@ -310,32 +310,32 @@ test.describe('5. Dashboard', () => {
 test.describe('6. Employee Details', () => {
 
   test('6.1 Get employee detail with activity', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/employees/${userId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.2 Employee app usage breakdown', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/employees/${userId}/app-usage`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.3 Employee productivity score', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/employees/${userId}/productivity`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.4 Employee timeline for a date', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const today = new Date().toISOString().split('T')[0];
     const r = await request.get(`${MONITOR_API}/employees/${userId}/timeline?date=${today}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.5 Employee screenshots for a date', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const today = new Date().toISOString().split('T')[0];
     const r = await request.get(`${MONITOR_API}/employees/${userId}/screenshots?date=${today}`, auth());
     expect([200, 404]).toContain(r.status());
@@ -365,7 +365,7 @@ test.describe('7. Timesheet', () => {
   });
 
   test('7.4 Get user-specific timesheet', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const today = new Date().toISOString().split('T')[0];
     const r = await request.get(`${MONITOR_API}/timesheet?user_id=${userId}&date=${today}`, auth());
     expect([200, 404]).toContain(r.status());
@@ -425,7 +425,7 @@ test.describe('9. Location', () => {
   });
 
   test('9.2 Get location for specific user', async ({ request }) => {
-    test.skip(!userId, 'No user ID available');
+    expect(userId, 'Prerequisite failed — No user ID available').toBeTruthy();
     const r = await request.get(`${MONITOR_API}/location?user_id=${userId}`, auth());
     expect([200, 404]).toContain(r.status());
   });

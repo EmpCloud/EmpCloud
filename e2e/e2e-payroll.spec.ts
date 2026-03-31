@@ -140,7 +140,7 @@ test.describe('2. Salary Structures', () => {
   });
 
   test('2.3 Get salary structure by ID', async ({ request }) => {
-    test.skip(!createdStructureId, 'No structure created');
+    expect(createdStructureId, 'Prerequisite failed — No structure created').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/salary-structures/${createdStructureId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -149,7 +149,7 @@ test.describe('2. Salary Structures', () => {
   });
 
   test('2.4 Update salary structure', async ({ request }) => {
-    test.skip(!createdStructureId, 'No structure created');
+    expect(createdStructureId, 'Prerequisite failed — No structure created').toBeTruthy();
     const r = await request.put(`${PAYROLL_API}/salary-structures/${createdStructureId}`, {
       ...auth(),
       data: { description: 'Updated by Playwright' },
@@ -160,7 +160,7 @@ test.describe('2. Salary Structures', () => {
   });
 
   test('2.5 Get structure components', async ({ request }) => {
-    test.skip(!createdStructureId, 'No structure created');
+    expect(createdStructureId, 'Prerequisite failed — No structure created').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/salary-structures/${createdStructureId}/components`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -168,7 +168,7 @@ test.describe('2. Salary Structures', () => {
   });
 
   test('2.6 Add component to structure', async ({ request }) => {
-    test.skip(!createdStructureId, 'No structure created');
+    expect(createdStructureId, 'Prerequisite failed — No structure created').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/salary-structures/${createdStructureId}/components`, {
       ...auth(),
       data: { name: 'Special Allowance', type: 'earning', calculationType: 'fixed', value: 5000, isTaxable: true },
@@ -183,7 +183,7 @@ test.describe('2. Salary Structures', () => {
     const emp = empBody.data?.data?.[0] || empBody.data?.[0];
     if (emp) employeeId = String(emp.empcloud_user_id || emp.id || emp.empcloudUserId);
 
-    test.skip(!employeeId || !createdStructureId, 'No employee or structure');
+    expect(employeeId && createdStructureId, 'Prerequisite failed — No employee or structure').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/salary-structures/assign`, {
       ...auth(),
       data: {
@@ -199,19 +199,19 @@ test.describe('2. Salary Structures', () => {
   });
 
   test('2.8 Get employee salary', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/salary-structures/employee/${employeeId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('2.9 Get employee salary history', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/salary-structures/employee/${employeeId}/history`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('2.10 Delete salary structure', async ({ request }) => {
-    test.skip(!createdStructureId, 'No structure created');
+    expect(createdStructureId, 'Prerequisite failed — No structure created').toBeTruthy();
     const r = await request.delete(`${PAYROLL_API}/salary-structures/${createdStructureId}`, auth());
     // May fail if assigned, which is fine
     expect([200, 400, 409]).toContain(r.status());
@@ -253,7 +253,7 @@ test.describe('3. Payroll Runs', () => {
       const firstRun = listBody.data?.[0];
       if (firstRun) createdRunId = String(firstRun.id);
     }
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${createdRunId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -261,20 +261,20 @@ test.describe('3. Payroll Runs', () => {
   });
 
   test('3.4 Compute payroll run', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payroll/${createdRunId}/compute`, auth());
     // 200 = success, 400/409 = already computed or invalid state
     expect([200, 400, 409]).toContain(r.status());
   });
 
   test('3.5 Get payroll run summary', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${createdRunId}/summary`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('3.6 Get payroll run payslips', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${createdRunId}/payslips`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -282,32 +282,32 @@ test.describe('3. Payroll Runs', () => {
   });
 
   test('3.7 Approve payroll run', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payroll/${createdRunId}/approve`, auth());
     // 200 = success, 400/409 = wrong state
     expect([200, 400, 409]).toContain(r.status());
   });
 
   test('3.8 Mark payroll run as paid', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payroll/${createdRunId}/pay`, auth());
     expect([200, 400, 409]).toContain(r.status());
   });
 
   test('3.9 Revert payroll run to draft', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payroll/${createdRunId}/revert`, auth());
     expect([200, 400, 409]).toContain(r.status());
   });
 
   test('3.10 Cancel payroll run', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payroll/${createdRunId}/cancel`, auth());
     expect([200, 400, 409]).toContain(r.status());
   });
 
   test('3.11 Send payslip emails for run', async ({ request }) => {
-    test.skip(!createdRunId, 'No payroll run available');
+    expect(createdRunId, 'Prerequisite failed — No payroll run available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payroll/${createdRunId}/send-payslips`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
@@ -335,7 +335,7 @@ test.describe('4. Payslips', () => {
   });
 
   test('4.2 Get payslip by ID', async ({ request }) => {
-    test.skip(!payslipId, 'No payslip available');
+    expect(payslipId, 'Prerequisite failed — No payslip available').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payslips/${payslipId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -344,7 +344,7 @@ test.describe('4. Payslips', () => {
   });
 
   test('4.3 Get payslips by employee', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payslips/employee/${employeeId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -352,7 +352,7 @@ test.describe('4. Payslips', () => {
   });
 
   test('4.4 Download payslip PDF (HTML)', async ({ request }) => {
-    test.skip(!payslipId, 'No payslip available');
+    expect(payslipId, 'Prerequisite failed — No payslip available').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payslips/${payslipId}/pdf`, auth());
     expect([200, 404]).toContain(r.status());
     if (r.status() === 200) {
@@ -362,7 +362,7 @@ test.describe('4. Payslips', () => {
   });
 
   test('4.5 Dispute a payslip', async ({ request }) => {
-    test.skip(!payslipId, 'No payslip available');
+    expect(payslipId, 'Prerequisite failed — No payslip available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payslips/${payslipId}/dispute`, {
       ...auth(),
       data: { reason: 'Playwright test dispute - HRA seems incorrect' },
@@ -371,7 +371,7 @@ test.describe('4. Payslips', () => {
   });
 
   test('4.6 Resolve payslip dispute', async ({ request }) => {
-    test.skip(!payslipId, 'No payslip available');
+    expect(payslipId, 'Prerequisite failed — No payslip available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/payslips/${payslipId}/resolve`, {
       ...auth(),
       data: { resolution: 'Verified - amount is correct per salary structure' },
@@ -393,7 +393,7 @@ test.describe('5. Loans', () => {
   });
 
   test('5.2 Create a loan', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/loans`, {
       ...auth(),
       data: {
@@ -412,7 +412,7 @@ test.describe('5. Loans', () => {
   });
 
   test('5.3 Get loans by employee', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/loans/employee/${employeeId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -420,7 +420,7 @@ test.describe('5. Loans', () => {
   });
 
   test('5.4 Record EMI payment', async ({ request }) => {
-    test.skip(!createdLoanId, 'No loan created');
+    expect(createdLoanId, 'Prerequisite failed — No loan created').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/loans/${createdLoanId}/payment`, {
       ...auth(),
       data: { amount: 5000 },
@@ -429,7 +429,7 @@ test.describe('5. Loans', () => {
   });
 
   test('5.5 Cancel loan', async ({ request }) => {
-    test.skip(!createdLoanId, 'No loan created');
+    expect(createdLoanId, 'Prerequisite failed — No loan created').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/loans/${createdLoanId}/cancel`, auth());
     expect([200, 400, 409]).toContain(r.status());
   });
@@ -441,25 +441,25 @@ test.describe('5. Loans', () => {
 test.describe('6. Tax', () => {
 
   test('6.1 Get tax computation for employee', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/tax/computation/${employeeId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.2 Compute tax for employee', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/tax/computation/${employeeId}/compute`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
 
   test('6.3 Get tax declarations', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/tax/declarations/${employeeId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.4 Submit tax declarations', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/tax/declarations/${employeeId}`, {
       ...auth(),
       data: {
@@ -474,7 +474,7 @@ test.describe('6. Tax', () => {
   });
 
   test('6.5 Get and update tax regime', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     // Get current regime
     const getR = await request.get(`${PAYROLL_API}/tax/regime/${employeeId}`, auth());
     expect([200, 404]).toContain(getR.status());
@@ -488,7 +488,7 @@ test.describe('6. Tax', () => {
   });
 
   test('6.6 Generate Form 16 HTML', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/tax/form16/${employeeId}?fy=2025-2026`, auth());
     expect([200, 404]).toContain(r.status());
     if (r.status() === 200) {
@@ -541,7 +541,7 @@ test.describe('7. Benefits', () => {
   });
 
   test('7.4 Enroll employee in benefit plan', async ({ request }) => {
-    test.skip(!employeeId || !createdBenefitPlanId, 'No employee or plan');
+    expect(employeeId && createdBenefitPlanId, 'Prerequisite failed — No employee or plan').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/benefits/enroll`, {
       ...auth(),
       data: {
@@ -563,7 +563,7 @@ test.describe('7. Benefits', () => {
   });
 
   test('7.6 Cancel enrollment', async ({ request }) => {
-    test.skip(!createdEnrollmentId, 'No enrollment created');
+    expect(createdEnrollmentId, 'Prerequisite failed — No enrollment created').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/benefits/enrollments/${createdEnrollmentId}/cancel`, auth());
     expect([200, 400, 409]).toContain(r.status());
   });
@@ -588,7 +588,7 @@ test.describe('8. Reimbursements', () => {
   });
 
   test('8.2 Approve reimbursement', async ({ request }) => {
-    test.skip(!reimbursementId, 'No reimbursement available');
+    expect(reimbursementId, 'Prerequisite failed — No reimbursement available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/reimbursements/${reimbursementId}/approve`, {
       ...auth(),
       data: { amount: 5000 },
@@ -597,13 +597,13 @@ test.describe('8. Reimbursements', () => {
   });
 
   test('8.3 Reject reimbursement', async ({ request }) => {
-    test.skip(!reimbursementId, 'No reimbursement available');
+    expect(reimbursementId, 'Prerequisite failed — No reimbursement available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/reimbursements/${reimbursementId}/reject`, auth());
     expect([200, 400, 409]).toContain(r.status());
   });
 
   test('8.4 Mark reimbursement as paid', async ({ request }) => {
-    test.skip(!reimbursementId, 'No reimbursement available');
+    expect(reimbursementId, 'Prerequisite failed — No reimbursement available').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/reimbursements/${reimbursementId}/pay`, {
       ...auth(),
       data: { month: 3, year: 2026 },
@@ -696,31 +696,31 @@ test.describe('10. Reports', () => {
   });
 
   test('10.1 PF ECR report', async ({ request }) => {
-    test.skip(!reportRunId, 'No payroll run for reports');
+    expect(reportRunId, 'Prerequisite failed — No payroll run for reports').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${reportRunId}/reports/pf`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
 
   test('10.2 ESI return report', async ({ request }) => {
-    test.skip(!reportRunId, 'No payroll run for reports');
+    expect(reportRunId, 'Prerequisite failed — No payroll run for reports').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${reportRunId}/reports/esi`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
 
   test('10.3 TDS summary report', async ({ request }) => {
-    test.skip(!reportRunId, 'No payroll run for reports');
+    expect(reportRunId, 'Prerequisite failed — No payroll run for reports').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${reportRunId}/reports/tds`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
 
   test('10.4 Bank file download', async ({ request }) => {
-    test.skip(!reportRunId, 'No payroll run for reports');
+    expect(reportRunId, 'Prerequisite failed — No payroll run for reports').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${reportRunId}/reports/bank-file`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
 
   test('10.5 Journal CSV export', async ({ request }) => {
-    test.skip(!reportRunId, 'No payroll run for reports');
+    expect(reportRunId, 'Prerequisite failed — No payroll run for reports').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/payroll/${reportRunId}/export/journal-csv`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
@@ -752,7 +752,7 @@ test.describe('11. Employees', () => {
   });
 
   test('11.3 Get employee by ID', async ({ request }) => {
-    test.skip(!testEmpId, 'No employee ID');
+    expect(testEmpId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/employees/${testEmpId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -761,19 +761,19 @@ test.describe('11. Employees', () => {
   });
 
   test('11.4 Get employee bank details', async ({ request }) => {
-    test.skip(!testEmpId, 'No employee ID');
+    expect(testEmpId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/employees/${testEmpId}/bank-details`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('11.5 Get employee tax info', async ({ request }) => {
-    test.skip(!testEmpId, 'No employee ID');
+    expect(testEmpId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/employees/${testEmpId}/tax-info`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('11.6 Get employee PF details', async ({ request }) => {
-    test.skip(!testEmpId, 'No employee ID');
+    expect(testEmpId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/employees/${testEmpId}/pf-details`, auth());
     expect([200, 404]).toContain(r.status());
   });
@@ -881,7 +881,7 @@ test.describe('13. Additional Coverage', () => {
   });
 
   test('13.10 Employee active EMI total', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/loans/employee/${employeeId}/emi-total`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -890,7 +890,7 @@ test.describe('13. Additional Coverage', () => {
   });
 
   test('13.11 Benefit plan by ID', async ({ request }) => {
-    test.skip(!createdBenefitPlanId, 'No benefit plan');
+    expect(createdBenefitPlanId, 'Prerequisite failed — No benefit plan').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/benefits/plans/${createdBenefitPlanId}`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();
@@ -905,19 +905,19 @@ test.describe('13. Additional Coverage', () => {
   });
 
   test('13.13 Employee benefits by ID', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/benefits/employee/${employeeId}`, auth());
     expect(r.status()).toBe(200);
   });
 
   test('13.14 Approve tax declarations', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.post(`${PAYROLL_API}/tax/declarations/${employeeId}/approve`, auth());
     expect([200, 400, 404]).toContain(r.status());
   });
 
   test('13.15 Form 12BB placeholder', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/tax/form12bb/${employeeId}`, auth());
     expect(r.status()).toBe(200);
   });
@@ -933,7 +933,7 @@ test.describe('13. Additional Coverage', () => {
   });
 
   test('13.18 Employee notes', async ({ request }) => {
-    test.skip(!employeeId, 'No employee ID');
+    expect(employeeId, 'Prerequisite failed — No employee ID').toBeTruthy();
     const r = await request.get(`${PAYROLL_API}/employees/${employeeId}/notes`, auth());
     expect(r.status()).toBe(200);
     const body = await r.json();

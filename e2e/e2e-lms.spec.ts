@@ -98,7 +98,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('2.3 Get category by ID', async ({ request }) => {
-      if (!createdCategoryId) test.skip();
+      expect(createdCategoryId, 'Prerequisite failed — createdCategoryId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/categories/${createdCategoryId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -135,7 +135,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('3.3 Get course by ID', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/courses/${createdCourseId}`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
@@ -143,7 +143,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('3.4 Update course title', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/courses/${createdCourseId}`, {
         ...auth(),
         data: { title: `PW Course Updated ${Date.now()}` },
@@ -152,7 +152,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('3.5 Update course description', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/courses/${createdCourseId}`, {
         ...auth(),
         data: { description: 'Updated description from Playwright' },
@@ -161,7 +161,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('3.6 Publish course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/courses/${createdCourseId}`, {
         ...auth(),
         data: { is_published: true },
@@ -191,7 +191,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('3.10 Delete course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       // Create a disposable course to delete
       const create = await request.post(`${LMS_API}/courses`, {
         ...auth(),
@@ -199,7 +199,7 @@ test.describe('EMP LMS Module', () => {
       });
       const cBody = await create.json();
       const delId = cBody.data?.id || cBody.data?.course?.id || 0;
-      if (!delId) test.skip();
+      expect(delId, 'Prerequisite failed — delId was not set').toBeTruthy();
       const r = await request.delete(`${LMS_API}/courses/${delId}`, auth());
       expect([200, 204]).toContain(r.status());
     });
@@ -212,7 +212,7 @@ test.describe('EMP LMS Module', () => {
   test.describe('4. Modules & Lessons', () => {
 
     test('4.1 Create module in course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/courses/${createdCourseId}/modules`, {
         ...auth(),
         data: { title: `PW Module ${Date.now()}`, description: 'Test module', order: 1 },
@@ -223,13 +223,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('4.2 List modules for course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/courses/${createdCourseId}/modules`, auth());
       expect(r.status()).toBe(200);
     });
 
     test('4.3 Create lesson in module', async ({ request }) => {
-      if (!createdModuleId) test.skip();
+      expect(createdModuleId, 'Prerequisite failed — createdModuleId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/modules/${createdModuleId}/lessons`, {
         ...auth(),
         data: {
@@ -246,13 +246,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('4.4 List lessons in module', async ({ request }) => {
-      if (!createdModuleId) test.skip();
+      expect(createdModuleId, 'Prerequisite failed — createdModuleId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/modules/${createdModuleId}/lessons`, auth());
       expect(r.status()).toBe(200);
     });
 
     test('4.5 Update lesson', async ({ request }) => {
-      if (!createdLessonId) test.skip();
+      expect(createdLessonId, 'Prerequisite failed — createdLessonId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/lessons/${createdLessonId}`, {
         ...auth(),
         data: { title: `PW Lesson Updated ${Date.now()}` },
@@ -261,7 +261,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('4.6 Reorder modules', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/courses/${createdCourseId}/modules/reorder`, {
         ...auth(),
         data: { order: [createdModuleId] },
@@ -277,7 +277,7 @@ test.describe('EMP LMS Module', () => {
   test.describe('5. Enrollment', () => {
 
     test('5.1 Enroll in course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/enrollments`, {
         ...auth(),
         data: { course_id: createdCourseId },
@@ -293,13 +293,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('5.3 Get enrollment by ID', async ({ request }) => {
-      if (!createdEnrollmentId) test.skip();
+      expect(createdEnrollmentId, 'Prerequisite failed — createdEnrollmentId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/enrollments/${createdEnrollmentId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('5.4 Update enrollment progress', async ({ request }) => {
-      if (!createdEnrollmentId) test.skip();
+      expect(createdEnrollmentId, 'Prerequisite failed — createdEnrollmentId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/enrollments/${createdEnrollmentId}/progress`, {
         ...auth(),
         data: { progress_percent: 50, lesson_id: createdLessonId || undefined },
@@ -308,7 +308,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('5.5 Mark lesson complete', async ({ request }) => {
-      if (!createdLessonId || !createdEnrollmentId) test.skip();
+      expect(createdLessonId && createdEnrollmentId, 'Prerequisite failed — createdLessonId or createdEnrollmentId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/enrollments/${createdEnrollmentId}/lessons/${createdLessonId}/complete`, auth());
       expect([200, 201, 204, 404]).toContain(r.status());
     });
@@ -346,13 +346,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('6.3 Get certification by ID', async ({ request }) => {
-      if (!createdCertificationId) test.skip();
+      expect(createdCertificationId, 'Prerequisite failed — createdCertificationId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/certifications/${createdCertificationId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('6.4 Issue certification to user', async ({ request }) => {
-      if (!createdCertificationId) test.skip();
+      expect(createdCertificationId, 'Prerequisite failed — createdCertificationId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/certifications/${createdCertificationId}/issue`, {
         ...auth(),
         data: { user_id: 522 }, // Known test user
@@ -392,13 +392,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('7.3 Get learning path by ID', async ({ request }) => {
-      if (!createdLearningPathId) test.skip();
+      expect(createdLearningPathId, 'Prerequisite failed — createdLearningPathId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/learning-paths/${createdLearningPathId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('7.4 Add course to learning path', async ({ request }) => {
-      if (!createdLearningPathId || !createdCourseId) test.skip();
+      expect(createdLearningPathId && createdCourseId, 'Prerequisite failed — createdLearningPathId or createdCourseId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/learning-paths/${createdLearningPathId}/courses`, {
         ...auth(),
         data: { course_id: createdCourseId, order: 1 },
@@ -407,13 +407,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('7.5 Enroll in learning path', async ({ request }) => {
-      if (!createdLearningPathId) test.skip();
+      expect(createdLearningPathId, 'Prerequisite failed — createdLearningPathId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/learning-paths/${createdLearningPathId}/enroll`, auth());
       expect([200, 201, 409]).toContain(r.status());
     });
 
     test('7.6 Update learning path', async ({ request }) => {
-      if (!createdLearningPathId) test.skip();
+      expect(createdLearningPathId, 'Prerequisite failed — createdLearningPathId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/learning-paths/${createdLearningPathId}`, {
         ...auth(),
         data: { title: `PW Path Updated ${Date.now()}` },
@@ -429,7 +429,7 @@ test.describe('EMP LMS Module', () => {
   test.describe('8. Quizzes', () => {
 
     test('8.1 Create quiz for course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/quizzes`, {
         ...auth(),
         data: {
@@ -451,13 +451,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('8.3 Get quiz by ID', async ({ request }) => {
-      if (!createdQuizId) test.skip();
+      expect(createdQuizId, 'Prerequisite failed — createdQuizId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/quizzes/${createdQuizId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.4 Add question to quiz', async ({ request }) => {
-      if (!createdQuizId) test.skip();
+      expect(createdQuizId, 'Prerequisite failed — createdQuizId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/quizzes/${createdQuizId}/questions`, {
         ...auth(),
         data: {
@@ -477,19 +477,19 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('8.5 List quiz questions', async ({ request }) => {
-      if (!createdQuizId) test.skip();
+      expect(createdQuizId, 'Prerequisite failed — createdQuizId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/quizzes/${createdQuizId}/questions`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.6 Start quiz attempt', async ({ request }) => {
-      if (!createdQuizId) test.skip();
+      expect(createdQuizId, 'Prerequisite failed — createdQuizId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/quizzes/${createdQuizId}/attempts`, auth());
       expect([200, 201, 400, 403]).toContain(r.status());
     });
 
     test('8.7 Submit quiz answer', async ({ request }) => {
-      if (!createdQuizId || !createdQuestionId) test.skip();
+      expect(createdQuizId && createdQuestionId, 'Prerequisite failed — createdQuizId or createdQuestionId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/quizzes/${createdQuizId}/submit`, {
         ...auth(),
         data: {
@@ -500,7 +500,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('8.8 Get quiz results', async ({ request }) => {
-      if (!createdQuizId) test.skip();
+      expect(createdQuizId, 'Prerequisite failed — createdQuizId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/quizzes/${createdQuizId}/results`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -513,7 +513,7 @@ test.describe('EMP LMS Module', () => {
   test.describe('9. Discussions', () => {
 
     test('9.1 Create discussion thread', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/discussions`, {
         ...auth(),
         data: {
@@ -528,13 +528,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('9.2 List discussions for course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/discussions?course_id=${createdCourseId}`, auth());
       expect(r.status()).toBe(200);
     });
 
     test('9.3 Reply to discussion', async ({ request }) => {
-      if (!createdDiscussionId) test.skip();
+      expect(createdDiscussionId, 'Prerequisite failed — createdDiscussionId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/discussions/${createdDiscussionId}/replies`, {
         ...auth(),
         data: { body: 'Playwright reply to discussion thread.' },
@@ -543,7 +543,7 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('9.4 Get discussion by ID', async ({ request }) => {
-      if (!createdDiscussionId) test.skip();
+      expect(createdDiscussionId, 'Prerequisite failed — createdDiscussionId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/discussions/${createdDiscussionId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -556,7 +556,7 @@ test.describe('EMP LMS Module', () => {
   test.describe('10. Ratings', () => {
 
     test('10.1 Rate a course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/courses/${createdCourseId}/ratings`, {
         ...auth(),
         data: { rating: 4, review: 'Great Playwright test course!' },
@@ -565,19 +565,19 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('10.2 Get course ratings', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/courses/${createdCourseId}/ratings`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('10.3 Get average rating for course', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/courses/${createdCourseId}/ratings/average`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('10.4 Update my rating', async ({ request }) => {
-      if (!createdCourseId) test.skip();
+      expect(createdCourseId, 'Prerequisite failed — createdCourseId was not set').toBeTruthy();
       const r = await request.put(`${LMS_API}/courses/${createdCourseId}/ratings`, {
         ...auth(),
         data: { rating: 5, review: 'Updated Playwright review!' },
@@ -722,13 +722,13 @@ test.describe('EMP LMS Module', () => {
     });
 
     test('15.3 Register for ILT session', async ({ request }) => {
-      if (!createdIltSessionId) test.skip();
+      expect(createdIltSessionId, 'Prerequisite failed — createdIltSessionId was not set').toBeTruthy();
       const r = await request.post(`${LMS_API}/ilt-sessions/${createdIltSessionId}/register`, auth());
       expect([200, 201, 409]).toContain(r.status());
     });
 
     test('15.4 Get ILT session attendance', async ({ request }) => {
-      if (!createdIltSessionId) test.skip();
+      expect(createdIltSessionId, 'Prerequisite failed — createdIltSessionId was not set').toBeTruthy();
       const r = await request.get(`${LMS_API}/ilt-sessions/${createdIltSessionId}/attendance`, auth());
       expect([200, 404]).toContain(r.status());
     });

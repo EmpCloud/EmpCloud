@@ -144,13 +144,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('2.3 Get exit request by ID', async ({ request }) => {
-      if (!exitRequestId) return test.skip();
+      expect(exitRequestId, 'Prerequisite failed — exitRequestId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/exit-requests/${exitRequestId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('2.4 Update exit request', async ({ request }) => {
-      if (!exitRequestId) return test.skip();
+      expect(exitRequestId, 'Prerequisite failed — exitRequestId was not set').toBeTruthy();
       const r = await request.put(`${EXIT_API}/exit-requests/${exitRequestId}`, {
         ...authJson(),
         data: { reason: `Updated reason ${RUN}` },
@@ -159,7 +159,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('2.5 Approve exit request', async ({ request }) => {
-      if (!exitRequestId) return test.skip();
+      expect(exitRequestId, 'Prerequisite failed — exitRequestId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/exit-requests/${exitRequestId}/approve`, {
         ...authJson(),
         data: { comments: 'Approved by PW test' },
@@ -202,13 +202,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('3.3 Get checklist by ID', async ({ request }) => {
-      if (!checklistId) return test.skip();
+      expect(checklistId, 'Prerequisite failed — checklistId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/checklists/${checklistId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('3.4 Add item to checklist', async ({ request }) => {
-      if (!checklistId) return test.skip();
+      expect(checklistId, 'Prerequisite failed — checklistId was not set').toBeTruthy();
       const r = await request.post(`${EXIT_API}/checklists/${checklistId}/items`, {
         ...authJson(),
         data: { title: `PW item ${RUN}`, department: 'Finance', order: 3 },
@@ -219,7 +219,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('3.5 Update checklist item', async ({ request }) => {
-      if (!checklistId || !checklistItemId) return test.skip();
+      expect(checklistId && checklistItemId, 'Prerequisite failed — checklistId or checklistItemId was not set').toBeTruthy();
       const r = await request.put(`${EXIT_API}/checklists/${checklistId}/items/${checklistItemId}`, {
         ...authJson(),
         data: { title: `Updated PW item ${RUN}`, is_completed: true },
@@ -228,7 +228,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('3.6 Delete checklist item', async ({ request }) => {
-      if (!checklistId || !checklistItemId) return test.skip();
+      expect(checklistId && checklistItemId, 'Prerequisite failed — checklistId or checklistItemId was not set').toBeTruthy();
       const r = await request.delete(`${EXIT_API}/checklists/${checklistId}/items/${checklistItemId}`, auth());
       expect([200, 204, 404]).toContain(r.status());
     });
@@ -265,13 +265,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('4.3 Get FnF by ID', async ({ request }) => {
-      if (!fnfId) return test.skip();
+      expect(fnfId, 'Prerequisite failed — fnfId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/fnf/${fnfId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('4.4 Approve FnF settlement', async ({ request }) => {
-      if (!fnfId) return test.skip();
+      expect(fnfId, 'Prerequisite failed — fnfId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/fnf/${fnfId}/approve`, {
         ...authJson(),
         data: { approved: true, comments: 'Approved by PW' },
@@ -308,7 +308,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('5.3 Mark asset as returned', async ({ request }) => {
-      if (!assetClearanceId) return test.skip();
+      expect(assetClearanceId, 'Prerequisite failed — assetClearanceId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/asset-clearance/${assetClearanceId}`, {
         ...authJson(),
         data: { status: 'returned', return_date: '2026-04-15' },
@@ -349,13 +349,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('6.3 Get knowledge transfer by ID', async ({ request }) => {
-      if (!knowledgeTransferId) return test.skip();
+      expect(knowledgeTransferId, 'Prerequisite failed — knowledgeTransferId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/knowledge-transfer/${knowledgeTransferId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('6.4 Update knowledge transfer status', async ({ request }) => {
-      if (!knowledgeTransferId) return test.skip();
+      expect(knowledgeTransferId, 'Prerequisite failed — knowledgeTransferId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/knowledge-transfer/${knowledgeTransferId}`, {
         ...authJson(),
         data: { status: 'in_progress' },
@@ -393,7 +393,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('7.3 Get alumni by ID', async ({ request }) => {
-      if (!alumniId) return test.skip();
+      expect(alumniId, 'Prerequisite failed — alumniId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/alumni/${alumniId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -428,13 +428,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('8.3 Get exit interview by ID', async ({ request }) => {
-      if (!interviewId) return test.skip();
+      expect(interviewId, 'Prerequisite failed — interviewId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/exit-interviews/${interviewId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.4 Submit interview feedback', async ({ request }) => {
-      if (!interviewId) return test.skip();
+      expect(interviewId, 'Prerequisite failed — interviewId was not set').toBeTruthy();
       const r = await request.post(`${EXIT_API}/exit-interviews/${interviewId}/feedback`, {
         ...authJson(),
         data: {
@@ -452,7 +452,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('8.5 Update interview status to completed', async ({ request }) => {
-      if (!interviewId) return test.skip();
+      expect(interviewId, 'Prerequisite failed — interviewId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/exit-interviews/${interviewId}`, {
         ...authJson(),
         data: { status: 'completed' },
@@ -517,7 +517,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('10.3 Approve department clearance', async ({ request }) => {
-      if (!clearanceId) return test.skip();
+      expect(clearanceId, 'Prerequisite failed — clearanceId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/clearance/${clearanceId}/approve`, {
         ...authJson(),
         data: { department: 'IT', approved: true, comments: 'All assets returned' },
@@ -526,7 +526,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('10.4 Get clearance status', async ({ request }) => {
-      if (!clearanceId) return test.skip();
+      expect(clearanceId, 'Prerequisite failed — clearanceId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/clearance/${clearanceId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -560,13 +560,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('11.3 Get rehire eligibility by ID', async ({ request }) => {
-      if (!rehireId) return test.skip();
+      expect(rehireId, 'Prerequisite failed — rehireId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/rehire/${rehireId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('11.4 Update rehire eligibility', async ({ request }) => {
-      if (!rehireId) return test.skip();
+      expect(rehireId, 'Prerequisite failed — rehireId was not set').toBeTruthy();
       const r = await request.put(`${EXIT_API}/rehire/${rehireId}`, {
         ...authJson(),
         data: { eligible: false, rating: 'not_recommended', comments: 'Updated by PW' },
@@ -613,7 +613,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('12.4 Download letter', async ({ request }) => {
-      if (!letterId) return test.skip();
+      expect(letterId, 'Prerequisite failed — letterId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/letters/${letterId}/download`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -646,7 +646,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('13.3 Approve buyout', async ({ request }) => {
-      if (!buyoutId) return test.skip();
+      expect(buyoutId, 'Prerequisite failed — buyoutId was not set').toBeTruthy();
       const r = await request.patch(`${EXIT_API}/buyout/${buyoutId}/approve`, {
         ...authJson(),
         data: { approved: true, comments: 'Approved by PW' },
@@ -655,7 +655,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('13.4 Get buyout details', async ({ request }) => {
-      if (!buyoutId) return test.skip();
+      expect(buyoutId, 'Prerequisite failed — buyoutId was not set').toBeTruthy();
       const r = await request.get(`${EXIT_API}/buyout/${buyoutId}`, auth());
       expect([200, 404]).toContain(r.status());
     });

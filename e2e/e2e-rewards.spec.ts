@@ -140,13 +140,13 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('2.3 Get catalog item by ID', async ({ request }) => {
-      if (!catalogItemId) return test.skip();
+      expect(catalogItemId, 'Prerequisite failed — catalogItemId was not set').toBeTruthy();
       const r = await request.get(`${REWARDS_API}/catalog/${catalogItemId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('2.4 Update catalog item', async ({ request }) => {
-      if (!catalogItemId) return test.skip();
+      expect(catalogItemId, 'Prerequisite failed — catalogItemId was not set').toBeTruthy();
       const r = await request.put(`${REWARDS_API}/catalog/${catalogItemId}`, {
         ...authJson(),
         data: { description: `Updated PW item ${RUN}`, points_cost: 600 },
@@ -155,7 +155,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('2.5 Deactivate catalog item', async ({ request }) => {
-      if (!catalogItemId) return test.skip();
+      expect(catalogItemId, 'Prerequisite failed — catalogItemId was not set').toBeTruthy();
       const r = await request.patch(`${REWARDS_API}/catalog/${catalogItemId}`, {
         ...authJson(),
         data: { is_active: false },
@@ -191,7 +191,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('3.3 Approve nomination', async ({ request }) => {
-      if (!nominationId) return test.skip();
+      expect(nominationId, 'Prerequisite failed — nominationId was not set').toBeTruthy();
       const r = await request.patch(`${REWARDS_API}/nominations/${nominationId}/approve`, {
         ...authJson(),
         data: { approved: true, comments: 'Well deserved' },
@@ -200,7 +200,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('3.4 Get nomination details', async ({ request }) => {
-      if (!nominationId) return test.skip();
+      expect(nominationId, 'Prerequisite failed — nominationId was not set').toBeTruthy();
       const r = await request.get(`${REWARDS_API}/nominations/${nominationId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -264,13 +264,13 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('5.3 Get badge by ID', async ({ request }) => {
-      if (!badgeId) return test.skip();
+      expect(badgeId, 'Prerequisite failed — badgeId was not set').toBeTruthy();
       const r = await request.get(`${REWARDS_API}/badges/${badgeId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('5.4 Award badge to employee', async ({ request }) => {
-      if (!badgeId) return test.skip();
+      expect(badgeId, 'Prerequisite failed — badgeId was not set').toBeTruthy();
       const r = await request.post(`${REWARDS_API}/badges/${badgeId}/award`, {
         ...authJson(),
         data: {
@@ -282,7 +282,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('5.5 Update badge', async ({ request }) => {
-      if (!badgeId) return test.skip();
+      expect(badgeId, 'Prerequisite failed — badgeId was not set').toBeTruthy();
       const r = await request.put(`${REWARDS_API}/badges/${badgeId}`, {
         ...authJson(),
         data: { description: `Updated PW badge ${RUN}` },
@@ -317,13 +317,13 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('6.3 Get redemption by ID', async ({ request }) => {
-      if (!redemptionId) return test.skip();
+      expect(redemptionId, 'Prerequisite failed — redemptionId was not set').toBeTruthy();
       const r = await request.get(`${REWARDS_API}/redemptions/${redemptionId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('6.4 Update redemption status (fulfill)', async ({ request }) => {
-      if (!redemptionId) return test.skip();
+      expect(redemptionId, 'Prerequisite failed — redemptionId was not set').toBeTruthy();
       const r = await request.patch(`${REWARDS_API}/redemptions/${redemptionId}`, {
         ...authJson(),
         data: { status: 'fulfilled', tracking_info: 'Delivered in office' },
@@ -418,13 +418,13 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('9.3 Join challenge', async ({ request }) => {
-      if (!challengeId) return test.skip();
+      expect(challengeId, 'Prerequisite failed — challengeId was not set').toBeTruthy();
       const r = await request.post(`${REWARDS_API}/challenges/${challengeId}/join`, authJson());
       expect([200, 201, 400, 404, 409]).toContain(r.status());
     });
 
     test('9.4 Get challenge details', async ({ request }) => {
-      if (!challengeId) return test.skip();
+      expect(challengeId, 'Prerequisite failed — challengeId was not set').toBeTruthy();
       const r = await request.get(`${REWARDS_API}/challenges/${challengeId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -458,13 +458,13 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('10.3 Get kudos by ID', async ({ request }) => {
-      if (!kudosId) return test.skip();
+      expect(kudosId, 'Prerequisite failed — kudosId was not set').toBeTruthy();
       const r = await request.get(`${REWARDS_API}/kudos/${kudosId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('10.4 React to kudos (like)', async ({ request }) => {
-      if (!kudosId) return test.skip();
+      expect(kudosId, 'Prerequisite failed — kudosId was not set').toBeTruthy();
       const r = await request.post(`${REWARDS_API}/kudos/${kudosId}/react`, {
         ...authJson(),
         data: { reaction: 'like' },
@@ -516,7 +516,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('11.4 Send celebration wish', async ({ request }) => {
-      if (!celebrationId) return test.skip();
+      expect(celebrationId, 'Prerequisite failed — celebrationId was not set').toBeTruthy();
       const r = await request.post(`${REWARDS_API}/celebrations/${celebrationId}/wish`, {
         ...authJson(),
         data: { message: `Congrats from PW ${RUN}` },
@@ -554,7 +554,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('12.3 Update milestone rule', async ({ request }) => {
-      if (!milestoneId) return test.skip();
+      expect(milestoneId, 'Prerequisite failed — milestoneId was not set').toBeTruthy();
       const r = await request.put(`${REWARDS_API}/milestones/${milestoneId}`, {
         ...authJson(),
         data: { reward_points: 6000 },

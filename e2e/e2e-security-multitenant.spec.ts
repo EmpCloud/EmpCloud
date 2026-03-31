@@ -192,10 +192,7 @@ test.describe("XSS Prevention", () => {
     // Get a category first
     const catRes = await request.get(`${API}/forum/categories`, { headers: auth(token) });
     const cats = (await catRes.json()).data || [];
-    if (cats.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(cats.length, "Prerequisite failed — no data found in cats").toBeGreaterThan(0);
 
     const res = await request.post(`${API}/forum/posts`, {
       headers: auth(token),
@@ -379,10 +376,7 @@ test.describe("RBAC Enforcement", () => {
       headers: auth(adminToken),
     });
     const surveys = (await listRes.json()).data || [];
-    if (surveys.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(surveys.length, "Prerequisite failed — no data found in surveys").toBeGreaterThan(0);
 
     const res = await request.get(`${API}/surveys/${surveys[0].id}/results`, {
       headers: auth(empToken),

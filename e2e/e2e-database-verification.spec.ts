@@ -205,7 +205,7 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     });
 
     test("GET application shows pending status", async ({ request }) => {
-      if (!applicationId) return test.skip();
+      expect(applicationId, 'Prerequisite failed — applicationId was not set').toBeTruthy();
       const res = await request.get(`${API}/leave/applications/${applicationId}`, {
         headers: auth(employeeToken),
       });
@@ -216,7 +216,7 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     });
 
     test("POST approve — status changes to approved in DB", async ({ request }) => {
-      if (!applicationId) return test.skip();
+      expect(applicationId, 'Prerequisite failed — applicationId was not set').toBeTruthy();
       const res = await request.post(`${API}/leave/applications/${applicationId}/approve`, {
         headers: auth(adminToken),
         data: { remarks: "Approved by E2E test" },
@@ -225,7 +225,7 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     });
 
     test("GET application — status is now approved", async ({ request }) => {
-      if (!applicationId) return test.skip();
+      expect(applicationId, 'Prerequisite failed — applicationId was not set').toBeTruthy();
       const res = await request.get(`${API}/leave/applications/${applicationId}`, {
         headers: auth(employeeToken),
       });
@@ -442,7 +442,7 @@ test.describe("DB Verification: Subscription Seat Management", () => {
     });
 
     test("GET seat count — record initial state", async ({ request }) => {
-      if (!subscriptionId) return test.skip();
+      expect(subscriptionId, 'Prerequisite failed — subscriptionId was not set').toBeTruthy();
       const res = await request.get(`${API}/subscriptions/${subscriptionId}`, {
         headers: auth(adminToken),
       });
@@ -452,7 +452,7 @@ test.describe("DB Verification: Subscription Seat Management", () => {
     });
 
     test("GET subscription detail — verify persisted data integrity", async ({ request }) => {
-      if (!subscriptionId) return test.skip();
+      expect(subscriptionId, 'Prerequisite failed — subscriptionId was not set').toBeTruthy();
       const res = await request.get(`${API}/subscriptions/${subscriptionId}`, {
         headers: auth(adminToken),
       });

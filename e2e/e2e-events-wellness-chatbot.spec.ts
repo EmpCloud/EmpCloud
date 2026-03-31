@@ -82,10 +82,7 @@ test.describe("Events", () => {
 
   test("Get event by ID", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!eventId) {
-      test.skip();
-      return;
-    }
+    expect(eventId, 'Prerequisite failed — eventId was not set').toBeTruthy();
     const res = await request.get(`${API}/events/${eventId}`, {
       headers: auth(empToken),
     });
@@ -107,10 +104,7 @@ test.describe("Events", () => {
 
   test("RSVP to event", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!eventId) {
-      test.skip();
-      return;
-    }
+    expect(eventId, 'Prerequisite failed — eventId was not set').toBeTruthy();
     const res = await request.post(`${API}/events/${eventId}/rsvp`, {
       headers: auth(empToken),
       data: { status: "attending" },
@@ -260,10 +254,7 @@ test.describe("Wellness", () => {
 
   test("Update goal progress", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!goalId) {
-      test.skip();
-      return;
-    }
+    expect(goalId, 'Prerequisite failed — goalId was not set').toBeTruthy();
     const res = await request.put(`${API}/wellness/goals/${goalId}`, {
       headers: auth(empToken),
       data: {
@@ -336,10 +327,7 @@ test.describe("Wellness", () => {
       // Get any available program
       const listRes = await request.get(`${API}/wellness/programs`, { headers: auth(empToken) });
       const programs = (await listRes.json()).data || [];
-      if (programs.length === 0) {
-        test.skip();
-        return;
-      }
+      expect(programs.length, "Prerequisite failed — no data found in programs").toBeGreaterThan(0);
       programId = programs[0].id;
     }
     const res = await request.post(`${API}/wellness/programs/${programId}/enroll`, {
@@ -416,10 +404,7 @@ test.describe("Chatbot", () => {
 
   test("Send message and get response", async ({ request }) => {
     test.setTimeout(60_000);
-    if (!conversationId) {
-      test.skip();
-      return;
-    }
+    expect(conversationId, 'Prerequisite failed — conversationId was not set').toBeTruthy();
     const res = await request.post(`${API}/chatbot/conversations/${conversationId}/send`, {
       headers: auth(empToken),
       data: { message: "Hello, what can you help me with?" },
@@ -433,10 +418,7 @@ test.describe("Chatbot", () => {
 
   test("Leave balance query (FIXED)", async ({ request }) => {
     test.setTimeout(60_000);
-    if (!conversationId) {
-      test.skip();
-      return;
-    }
+    expect(conversationId, 'Prerequisite failed — conversationId was not set').toBeTruthy();
     const res = await request.post(`${API}/chatbot/conversations/${conversationId}/send`, {
       headers: auth(empToken),
       data: { message: "What is my leave balance?" },
@@ -449,10 +431,7 @@ test.describe("Chatbot", () => {
 
   test("Manager query (FIXED)", async ({ request }) => {
     test.setTimeout(60_000);
-    if (!conversationId) {
-      test.skip();
-      return;
-    }
+    expect(conversationId, 'Prerequisite failed — conversationId was not set').toBeTruthy();
     const res = await request.post(`${API}/chatbot/conversations/${conversationId}/send`, {
       headers: auth(empToken),
       data: { message: "Who is my manager?" },
@@ -465,10 +444,7 @@ test.describe("Chatbot", () => {
 
   test("Get conversation messages", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!conversationId) {
-      test.skip();
-      return;
-    }
+    expect(conversationId, 'Prerequisite failed — conversationId was not set').toBeTruthy();
     const res = await request.get(`${API}/chatbot/conversations/${conversationId}`, {
       headers: auth(empToken),
     });

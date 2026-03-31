@@ -219,10 +219,7 @@ test.describe("Chatbot Real-Time Features", () => {
 
   test("Cleanup — delete test conversation", async ({ request }) => {
     test.setTimeout(15_000);
-    if (!conversationId) {
-      test.skip();
-      return;
-    }
+    expect(conversationId, 'Prerequisite failed — conversationId was not set').toBeTruthy();
     const res = await request.delete(`${API}/chatbot/conversations/${conversationId}`, {
       headers: auth(employeeToken),
     });

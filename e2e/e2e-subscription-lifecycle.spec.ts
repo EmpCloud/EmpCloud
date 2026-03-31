@@ -419,7 +419,7 @@ test.describe("Phase 6: Module Access Control", () => {
     employeeToken = await getToken(request, EMPLOYEE.email, EMPLOYEE.password);
   });
 
-  test.skip("6.1 Check access endpoint works (server returns 500 — needs investigation)", async ({ request }) => {
+  test("6.1 Check access endpoint works (server returns 500 — needs investigation)", async ({ request }) => {
     // Get a module slug from the modules list
     const modsRes = await request.get(`${API}/modules`, { headers: auth(adminToken) });
     expect(modsRes.status()).toBe(200);

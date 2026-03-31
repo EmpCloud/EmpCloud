@@ -107,7 +107,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('2.3 Update client site', async ({ request }) => {
-      if (!createdClientSiteId) test.skip();
+      expect(createdClientSiteId, 'Prerequisite failed — createdClientSiteId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/client-sites/${createdClientSiteId}`, {
         ...auth(),
         data: { name: `PW Adv Site Updated ${Date.now()}`, radius_meters: 300 },
@@ -116,7 +116,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('2.4 Get client site by ID', async ({ request }) => {
-      if (!createdClientSiteId) test.skip();
+      expect(createdClientSiteId, 'Prerequisite failed — createdClientSiteId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/client-sites/${createdClientSiteId}`, auth());
       expect(r.status()).toBe(200);
     });
@@ -149,13 +149,13 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('3.3 Get checkin by ID', async ({ request }) => {
-      if (!checkinId) test.skip();
+      expect(checkinId, 'Prerequisite failed — checkinId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/checkins/${checkinId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('3.4 Check out', async ({ request }) => {
-      if (!checkinId) test.skip();
+      expect(checkinId, 'Prerequisite failed — checkinId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/checkins/${checkinId}/checkout`, {
         ...auth(),
         data: {
@@ -173,7 +173,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('3.6 Filter checkins by client site', async ({ request }) => {
-      if (!createdClientSiteId) test.skip();
+      expect(createdClientSiteId, 'Prerequisite failed — createdClientSiteId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/checkins?client_site_id=${createdClientSiteId}`, auth());
       expect(r.status()).toBe(200);
     });
@@ -228,7 +228,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('4.4 Update mileage entry', async ({ request }) => {
-      if (!createdMileageId) test.skip();
+      expect(createdMileageId, 'Prerequisite failed — createdMileageId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/mileage/${createdMileageId}`, {
         ...auth(),
         data: { distance_km: 30.0, purpose: 'Updated client visit' },
@@ -266,13 +266,13 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('5.3 Get work order by ID', async ({ request }) => {
-      if (!createdWorkOrderId) test.skip();
+      expect(createdWorkOrderId, 'Prerequisite failed — createdWorkOrderId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/work-orders/${createdWorkOrderId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('5.4 Update work order status', async ({ request }) => {
-      if (!createdWorkOrderId) test.skip();
+      expect(createdWorkOrderId, 'Prerequisite failed — createdWorkOrderId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/work-orders/${createdWorkOrderId}`, {
         ...auth(),
         data: { status: 'in_progress' },
@@ -286,7 +286,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('5.6 Complete work order', async ({ request }) => {
-      if (!createdWorkOrderId) test.skip();
+      expect(createdWorkOrderId, 'Prerequisite failed — createdWorkOrderId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/work-orders/${createdWorkOrderId}`, {
         ...auth(),
         data: { status: 'completed', completion_notes: 'Done via Playwright' },
@@ -324,13 +324,13 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('6.3 Get expense by ID', async ({ request }) => {
-      if (!createdExpenseId) test.skip();
+      expect(createdExpenseId, 'Prerequisite failed — createdExpenseId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/expenses/${createdExpenseId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('6.4 Update expense', async ({ request }) => {
-      if (!createdExpenseId) test.skip();
+      expect(createdExpenseId, 'Prerequisite failed — createdExpenseId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/expenses/${createdExpenseId}`, {
         ...auth(),
         data: { amount: 2000, description: 'Updated PW expense' },
@@ -344,7 +344,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('6.6 Approve/reject expense (admin)', async ({ request }) => {
-      if (!createdExpenseId) test.skip();
+      expect(createdExpenseId, 'Prerequisite failed — createdExpenseId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/expenses/${createdExpenseId}/approve`, {
         ...auth(),
         data: { status: 'approved', remarks: 'Approved via Playwright' },
@@ -383,13 +383,13 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('7.3 Get route by ID', async ({ request }) => {
-      if (!createdRouteId) test.skip();
+      expect(createdRouteId, 'Prerequisite failed — createdRouteId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/routes/${createdRouteId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('7.4 Update route', async ({ request }) => {
-      if (!createdRouteId) test.skip();
+      expect(createdRouteId, 'Prerequisite failed — createdRouteId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/routes/${createdRouteId}`, {
         ...auth(),
         data: { name: `PW Route Updated ${Date.now()}` },
@@ -398,7 +398,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('7.5 Delete route', async ({ request }) => {
-      if (!createdRouteId) test.skip();
+      expect(createdRouteId, 'Prerequisite failed — createdRouteId was not set').toBeTruthy();
       // Create disposable route
       const create = await request.post(`${FIELD_API}/routes`, {
         ...auth(),
@@ -406,7 +406,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       const cBody = await create.json();
       const delId = cBody.data?.id || cBody.data?.route?.id || 0;
-      if (!delId) test.skip();
+      expect(delId, 'Prerequisite failed — delId was not set').toBeTruthy();
       const r = await request.delete(`${FIELD_API}/routes/${delId}`, auth());
       expect([200, 204]).toContain(r.status());
     });
@@ -440,13 +440,13 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('8.3 Get geo-fence by ID', async ({ request }) => {
-      if (!createdGeoFenceId) test.skip();
+      expect(createdGeoFenceId, 'Prerequisite failed — createdGeoFenceId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/geo-fences/${createdGeoFenceId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.4 Update geo-fence radius', async ({ request }) => {
-      if (!createdGeoFenceId) test.skip();
+      expect(createdGeoFenceId, 'Prerequisite failed — createdGeoFenceId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/geo-fences/${createdGeoFenceId}`, {
         ...auth(),
         data: { radius_meters: 750, name: `PW Fence Updated ${Date.now()}` },
@@ -521,7 +521,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('10.3 Update visit status', async ({ request }) => {
-      if (!createdVisitId) test.skip();
+      expect(createdVisitId, 'Prerequisite failed — createdVisitId was not set').toBeTruthy();
       const r = await request.put(`${FIELD_API}/visits/${createdVisitId}`, {
         ...auth(),
         data: { status: 'completed', outcome: 'Successful PW visit' },
@@ -530,7 +530,7 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('10.4 Get visit by ID', async ({ request }) => {
-      if (!createdVisitId) test.skip();
+      expect(createdVisitId, 'Prerequisite failed — createdVisitId was not set').toBeTruthy();
       const r = await request.get(`${FIELD_API}/visits/${createdVisitId}`, auth());
       expect([200, 404]).toContain(r.status());
     });

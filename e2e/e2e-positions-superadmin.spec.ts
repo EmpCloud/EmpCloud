@@ -89,10 +89,7 @@ test.describe("Positions", () => {
 
   test("Get position by ID", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!positionId) {
-      test.skip();
-      return;
-    }
+    expect(positionId, 'Prerequisite failed — positionId was not set').toBeTruthy();
     const res = await request.get(`${API}/positions/${positionId}`, {
       headers: auth(adminToken),
     });
@@ -104,10 +101,7 @@ test.describe("Positions", () => {
 
   test("Update position (HR)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!positionId) {
-      test.skip();
-      return;
-    }
+    expect(positionId, 'Prerequisite failed — positionId was not set').toBeTruthy();
     const res = await request.put(`${API}/positions/${positionId}`, {
       headers: auth(adminToken),
       data: {
@@ -132,20 +126,14 @@ test.describe("Positions", () => {
 
   test("Assign user to position (FIXED)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!positionId) {
-      test.skip();
-      return;
-    }
+    expect(positionId, 'Prerequisite failed — positionId was not set').toBeTruthy();
 
     // Get an employee user to assign
     const empRes = await request.get(`${API}/employees?per_page=5`, {
       headers: auth(adminToken),
     });
     const employees = (await empRes.json()).data || [];
-    if (employees.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(employees.length, "Prerequisite failed — no data found in employees").toBeGreaterThan(0);
     const targetUserId = employees[0].user_id || employees[0].id;
 
     const res = await request.post(`${API}/positions/${positionId}/assign`, {

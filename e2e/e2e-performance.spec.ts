@@ -133,13 +133,13 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('GET /review-cycles/:id — get single cycle', async ({ request }) => {
-      test.skip(!reviewCycleId, 'No review cycle ID available');
+      expect(reviewCycleId, 'Prerequisite failed — No review cycle ID available').toBeTruthy();
       const r = await request.get(`${PERF_API}/review-cycles/${reviewCycleId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('PUT /review-cycles/:id — update cycle', async ({ request }) => {
-      test.skip(!reviewCycleId, 'No review cycle ID available');
+      expect(reviewCycleId, 'Prerequisite failed — No review cycle ID available').toBeTruthy();
       const r = await request.put(`${PERF_API}/review-cycles/${reviewCycleId}`, {
         ...auth(),
         data: { name: 'PW Q1 2026 Review (Updated)', description: 'Updated by Playwright' },
@@ -148,7 +148,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /review-cycles/:id/participants — add participants', async ({ request }) => {
-      test.skip(!reviewCycleId, 'No review cycle ID available');
+      expect(reviewCycleId, 'Prerequisite failed — No review cycle ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/review-cycles/${reviewCycleId}/participants`, {
         ...auth(),
         data: { employee_ids: [522], participants: [{ employee_id: 522 }] },
@@ -157,19 +157,19 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /review-cycles/:id/launch — launch cycle', async ({ request }) => {
-      test.skip(!reviewCycleId, 'No review cycle ID available');
+      expect(reviewCycleId, 'Prerequisite failed — No review cycle ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/review-cycles/${reviewCycleId}/launch`, auth());
       expect([200, 201, 400, 409]).toContain(r.status());
     });
 
     test('POST /review-cycles/:id/close — close cycle', async ({ request }) => {
-      test.skip(!reviewCycleId, 'No review cycle ID available');
+      expect(reviewCycleId, 'Prerequisite failed — No review cycle ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/review-cycles/${reviewCycleId}/close`, auth());
       expect([200, 201, 400, 409]).toContain(r.status());
     });
 
     test('GET /review-cycles/:id/ratings-distribution — ratings', async ({ request }) => {
-      test.skip(!reviewCycleId, 'No review cycle ID available');
+      expect(reviewCycleId, 'Prerequisite failed — No review cycle ID available').toBeTruthy();
       const r = await request.get(
         `${PERF_API}/review-cycles/${reviewCycleId}/ratings-distribution`,
         auth(),
@@ -178,7 +178,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('employee cannot create review cycle (RBAC)', async ({ request }) => {
-      test.skip(!employeeToken, 'No employee token available');
+      expect(employeeToken, 'Prerequisite failed — No employee token available').toBeTruthy();
       const r = await request.post(`${PERF_API}/review-cycles`, {
         ...empAuth(),
         data: {
@@ -192,7 +192,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('employee cannot launch review cycle (RBAC)', async ({ request }) => {
-      test.skip(!employeeToken || !reviewCycleId, 'No employee token or cycle ID');
+      expect(employeeToken && reviewCycleId, 'Prerequisite failed — No employee token or cycle ID').toBeTruthy();
       const r = await request.post(
         `${PERF_API}/review-cycles/${reviewCycleId}/launch`,
         empAuth(),
@@ -232,13 +232,13 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('GET /reviews/:id — get single review', async ({ request }) => {
-      test.skip(!reviewId, 'No review ID available');
+      expect(reviewId, 'Prerequisite failed — No review ID available').toBeTruthy();
       const r = await request.get(`${PERF_API}/reviews/${reviewId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('PUT /reviews/:id — save draft', async ({ request }) => {
-      test.skip(!reviewId, 'No review ID available');
+      expect(reviewId, 'Prerequisite failed — No review ID available').toBeTruthy();
       const r = await request.put(`${PERF_API}/reviews/${reviewId}`, {
         ...auth(),
         data: { status: 'draft', comments: 'Playwright draft save', overall_rating: 3 },
@@ -247,7 +247,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /reviews/:id/ratings — rate competency', async ({ request }) => {
-      test.skip(!reviewId, 'No review ID available');
+      expect(reviewId, 'Prerequisite failed — No review ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/reviews/${reviewId}/ratings`, {
         ...auth(),
         data: {
@@ -260,7 +260,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /reviews/:id/submit — submit review', async ({ request }) => {
-      test.skip(!reviewId, 'No review ID available');
+      expect(reviewId, 'Prerequisite failed — No review ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/reviews/${reviewId}/submit`, auth());
       expect([200, 201, 400, 409]).toContain(r.status());
     });
@@ -311,13 +311,13 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('GET /goals/:id — get single goal', async ({ request }) => {
-      test.skip(!goalId, 'No goal ID available');
+      expect(goalId, 'Prerequisite failed — No goal ID available').toBeTruthy();
       const r = await request.get(`${PERF_API}/goals/${goalId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('PUT /goals/:id — update goal', async ({ request }) => {
-      test.skip(!goalId, 'No goal ID available');
+      expect(goalId, 'Prerequisite failed — No goal ID available').toBeTruthy();
       const r = await request.put(`${PERF_API}/goals/${goalId}`, {
         ...auth(),
         data: { title: 'PW Increase Revenue Q1 (Updated)', target_value: 120 },
@@ -326,7 +326,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /goals/:id/key-results — add key result', async ({ request }) => {
-      test.skip(!goalId, 'No goal ID available');
+      expect(goalId, 'Prerequisite failed — No goal ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/goals/${goalId}/key-results`, {
         ...auth(),
         data: {
@@ -342,7 +342,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('PUT /goals/:id/key-results/:krId — update key result', async ({ request }) => {
-      test.skip(!goalId || !keyResultId, 'No goal or key result ID');
+      expect(goalId && keyResultId, 'Prerequisite failed — No goal or key result ID').toBeTruthy();
       const r = await request.put(
         `${PERF_API}/goals/${goalId}/key-results/${keyResultId}`,
         {
@@ -354,7 +354,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /goals/:id/check-ins — create check-in', async ({ request }) => {
-      test.skip(!goalId, 'No goal ID available');
+      expect(goalId, 'Prerequisite failed — No goal ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/goals/${goalId}/check-ins`, {
         ...auth(),
         data: {
@@ -370,7 +370,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('GET /goals/:id/check-ins — list check-ins', async ({ request }) => {
-      test.skip(!goalId, 'No goal ID available');
+      expect(goalId, 'Prerequisite failed — No goal ID available').toBeTruthy();
       const r = await request.get(`${PERF_API}/goals/${goalId}/check-ins`, auth());
       expect([200, 404]).toContain(r.status());
     });
@@ -381,7 +381,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('DELETE /goals/:id — delete goal', async ({ request }) => {
-      test.skip(!goalId, 'No goal ID available');
+      expect(goalId, 'Prerequisite failed — No goal ID available').toBeTruthy();
       const r = await request.delete(`${PERF_API}/goals/${goalId}`, auth());
       expect([200, 204, 404]).toContain(r.status());
     });
@@ -438,7 +438,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('DELETE /feedback/:id — delete feedback', async ({ request }) => {
-      test.skip(!feedbackId, 'No feedback ID available');
+      expect(feedbackId, 'Prerequisite failed — No feedback ID available').toBeTruthy();
       const r = await request.delete(`${PERF_API}/feedback/${feedbackId}`, auth());
       expect([200, 204, 404]).toContain(r.status());
     });
@@ -475,7 +475,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /peer-reviews/nominations/:id/approve — approve nomination', async ({ request }) => {
-      test.skip(!nominationId, 'No nomination ID available');
+      expect(nominationId, 'Prerequisite failed — No nomination ID available').toBeTruthy();
       const r = await request.post(
         `${PERF_API}/peer-reviews/nominations/${nominationId}/approve`,
         auth(),
@@ -484,7 +484,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /peer-reviews/nominations/:id/decline — decline nomination', async ({ request }) => {
-      test.skip(!nominationId, 'No nomination ID available');
+      expect(nominationId, 'Prerequisite failed — No nomination ID available').toBeTruthy();
       const r = await request.post(
         `${PERF_API}/peer-reviews/nominations/${nominationId}/decline`,
         auth(),
@@ -493,7 +493,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('employee cannot approve nominations (RBAC)', async ({ request }) => {
-      test.skip(!employeeToken || !nominationId, 'No employee token or nomination ID');
+      expect(employeeToken && nominationId, 'Prerequisite failed — No employee token or nomination ID').toBeTruthy();
       const r = await request.post(
         `${PERF_API}/peer-reviews/nominations/${nominationId}/approve`,
         empAuth(),
@@ -535,7 +535,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /one-on-ones/:id/agenda — add agenda item', async ({ request }) => {
-      test.skip(!meetingId, 'No meeting ID available');
+      expect(meetingId, 'Prerequisite failed — No meeting ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/one-on-ones/${meetingId}/agenda`, {
         ...auth(),
         data: {
@@ -550,7 +550,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('PUT /one-on-ones/:id/agenda/:itemId/complete — complete agenda item', async ({ request }) => {
-      test.skip(!meetingId || !agendaItemId, 'No meeting or agenda item ID');
+      expect(meetingId && agendaItemId, 'Prerequisite failed — No meeting or agenda item ID').toBeTruthy();
       const r = await request.put(
         `${PERF_API}/one-on-ones/${meetingId}/agenda/${agendaItemId}/complete`,
         auth(),
@@ -559,7 +559,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /one-on-ones/:id/complete — complete meeting', async ({ request }) => {
-      test.skip(!meetingId, 'No meeting ID available');
+      expect(meetingId, 'Prerequisite failed — No meeting ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/one-on-ones/${meetingId}/complete`, {
         ...auth(),
         data: { summary: 'Discussed Q1 goals. All on track. - Playwright test' },
@@ -568,7 +568,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('DELETE /one-on-ones/:id — delete meeting', async ({ request }) => {
-      test.skip(!meetingId, 'No meeting ID available');
+      expect(meetingId, 'Prerequisite failed — No meeting ID available').toBeTruthy();
       const r = await request.delete(`${PERF_API}/one-on-ones/${meetingId}`, auth());
       expect([200, 204, 404]).toContain(r.status());
     });
@@ -594,7 +594,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /career-paths/:id/levels — add level', async ({ request }) => {
-      test.skip(!careerPathId, 'No career path ID available');
+      expect(careerPathId, 'Prerequisite failed — No career path ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/career-paths/${careerPathId}/levels`, {
         ...auth(),
         data: {
@@ -612,7 +612,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /career-paths/:id/assign — assign employee', async ({ request }) => {
-      test.skip(!careerPathId, 'No career path ID available');
+      expect(careerPathId, 'Prerequisite failed — No career path ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/career-paths/${careerPathId}/assign`, {
         ...auth(),
         data: {
@@ -635,7 +635,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('DELETE /career-paths/:id — delete career path', async ({ request }) => {
-      test.skip(!careerPathId, 'No career path ID available');
+      expect(careerPathId, 'Prerequisite failed — No career path ID available').toBeTruthy();
       const r = await request.delete(`${PERF_API}/career-paths/${careerPathId}`, auth());
       expect([200, 204, 404]).toContain(r.status());
     });
@@ -661,7 +661,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /competency-frameworks/:id/competencies — add competency', async ({ request }) => {
-      test.skip(!frameworkId, 'No framework ID available');
+      expect(frameworkId, 'Prerequisite failed — No framework ID available').toBeTruthy();
       const r = await request.post(
         `${PERF_API}/competency-frameworks/${frameworkId}/competencies`,
         {
@@ -685,7 +685,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('PUT /competency-frameworks/:id — update framework', async ({ request }) => {
-      test.skip(!frameworkId, 'No framework ID available');
+      expect(frameworkId, 'Prerequisite failed — No framework ID available').toBeTruthy();
       const r = await request.put(`${PERF_API}/competency-frameworks/${frameworkId}`, {
         ...auth(),
         data: { name: 'PW Engineering Competencies (Updated)' },
@@ -694,7 +694,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('DELETE /competency-frameworks/:id — delete framework', async ({ request }) => {
-      test.skip(!frameworkId, 'No framework ID available');
+      expect(frameworkId, 'Prerequisite failed — No framework ID available').toBeTruthy();
       const r = await request.delete(
         `${PERF_API}/competency-frameworks/${frameworkId}`,
         auth(),
@@ -736,7 +736,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /pips/:id/objectives — add objective', async ({ request }) => {
-      test.skip(!pipId, 'No PIP ID available');
+      expect(pipId, 'Prerequisite failed — No PIP ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/pips/${pipId}/objectives`, {
         ...auth(),
         data: {
@@ -752,7 +752,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('PUT /pips/:id — update PIP status', async ({ request }) => {
-      test.skip(!pipId, 'No PIP ID available');
+      expect(pipId, 'Prerequisite failed — No PIP ID available').toBeTruthy();
       const r = await request.put(`${PERF_API}/pips/${pipId}`, {
         ...auth(),
         data: { status: 'in_progress', notes: 'First check-in completed - Playwright test' },
@@ -761,7 +761,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /pips/:id/extend — extend PIP', async ({ request }) => {
-      test.skip(!pipId, 'No PIP ID available');
+      expect(pipId, 'Prerequisite failed — No PIP ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/pips/${pipId}/extend`, {
         ...auth(),
         data: {
@@ -774,7 +774,7 @@ test.describe('EMP Performance Module', () => {
     });
 
     test('POST /pips/:id/close — close PIP', async ({ request }) => {
-      test.skip(!pipId, 'No PIP ID available');
+      expect(pipId, 'Prerequisite failed — No PIP ID available').toBeTruthy();
       const r = await request.post(`${PERF_API}/pips/${pipId}/close`, {
         ...auth(),
         data: {

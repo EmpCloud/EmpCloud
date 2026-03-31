@@ -83,10 +83,7 @@ test.describe("Surveys", () => {
     });
     const listBody = await listRes.json();
     const surveys = listBody.data || [];
-    if (surveys.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(surveys.length, "Prerequisite failed — no data found in surveys").toBeGreaterThan(0);
     const id = surveys[0].id;
     const res = await request.get(`${API}/surveys/${id}`, {
       headers: auth(adminToken),
@@ -195,10 +192,7 @@ test.describe("Surveys", () => {
 
     // Pick one to respond to (preferably the one we published)
     const target = activeSurveys.find((s: any) => s.id === surveyId) || activeSurveys[0];
-    if (!target) {
-      test.skip();
-      return;
-    }
+    expect(target, 'Prerequisite failed — target was not set').toBeTruthy();
 
     // Get survey detail to know questions
     const detailRes = await request.get(`${API}/surveys/${target.id}`, {
@@ -229,10 +223,7 @@ test.describe("Surveys", () => {
       headers: auth(adminToken),
     });
     const surveys = (await listRes.json()).data || [];
-    if (surveys.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(surveys.length, "Prerequisite failed — no data found in surveys").toBeGreaterThan(0);
     const sid = surveyId || surveys[0].id;
 
     const res = await request.get(`${API}/surveys/${sid}/results`, {
@@ -357,10 +348,7 @@ test.describe("Anonymous Feedback", () => {
 
   test("Employee views own feedback by ID (FIXED)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!feedbackId) {
-      test.skip();
-      return;
-    }
+    expect(feedbackId, 'Prerequisite failed — feedbackId was not set').toBeTruthy();
     const res = await request.get(`${API}/feedback/${feedbackId}`, {
       headers: auth(empToken),
     });
@@ -401,10 +389,7 @@ test.describe("Anonymous Feedback", () => {
       headers: auth(adminToken),
     });
     const items = (await listRes.json()).data || [];
-    if (items.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(items.length, "Prerequisite failed — no data found in items").toBeGreaterThan(0);
     const id = feedbackId || items[0].id;
 
     const res = await request.post(`${API}/feedback/${id}/respond`, {
@@ -424,10 +409,7 @@ test.describe("Anonymous Feedback", () => {
       headers: auth(adminToken),
     });
     const items = (await listRes.json()).data || [];
-    if (items.length === 0) {
-      test.skip();
-      return;
-    }
+    expect(items.length, "Prerequisite failed — no data found in items").toBeGreaterThan(0);
     const id = feedbackId || items[0].id;
 
     const res = await request.put(`${API}/feedback/${id}/status`, {
@@ -502,10 +484,7 @@ test.describe("Forum", () => {
       // Fetch a category
       const catRes = await request.get(`${API}/forum/categories`, { headers: auth(empToken) });
       const cats = (await catRes.json()).data || [];
-      if (cats.length === 0) {
-        test.skip();
-        return;
-      }
+      expect(cats.length, "Prerequisite failed — no data found in cats").toBeGreaterThan(0);
       categoryId = cats[0].id;
     }
 
@@ -536,10 +515,7 @@ test.describe("Forum", () => {
 
   test("Get forum post by ID", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!postId) {
-      test.skip();
-      return;
-    }
+    expect(postId, 'Prerequisite failed — postId was not set').toBeTruthy();
     const res = await request.get(`${API}/forum/posts/${postId}`, {
       headers: auth(empToken),
     });
@@ -561,10 +537,7 @@ test.describe("Forum", () => {
 
   test("Filter forum posts by category", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!categoryId) {
-      test.skip();
-      return;
-    }
+    expect(categoryId, 'Prerequisite failed — categoryId was not set').toBeTruthy();
     const res = await request.get(`${API}/forum/posts?category_id=${categoryId}`, {
       headers: auth(empToken),
     });
@@ -575,10 +548,7 @@ test.describe("Forum", () => {
 
   test("Reply to forum post", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!postId) {
-      test.skip();
-      return;
-    }
+    expect(postId, 'Prerequisite failed — postId was not set').toBeTruthy();
     const res = await request.post(`${API}/forum/posts/${postId}/reply`, {
       headers: auth(adminToken),
       data: {
@@ -593,10 +563,7 @@ test.describe("Forum", () => {
 
   test("Like a forum post (toggle)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!postId) {
-      test.skip();
-      return;
-    }
+    expect(postId, 'Prerequisite failed — postId was not set').toBeTruthy();
     const res = await request.post(`${API}/forum/like`, {
       headers: auth(empToken),
       data: {
@@ -611,10 +578,7 @@ test.describe("Forum", () => {
 
   test("Like a reply (toggle)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!replyId) {
-      test.skip();
-      return;
-    }
+    expect(replyId, 'Prerequisite failed — replyId was not set').toBeTruthy();
     const res = await request.post(`${API}/forum/like`, {
       headers: auth(empToken),
       data: {
@@ -629,10 +593,7 @@ test.describe("Forum", () => {
 
   test("Moderation: Pin a post (HR)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!postId) {
-      test.skip();
-      return;
-    }
+    expect(postId, 'Prerequisite failed — postId was not set').toBeTruthy();
     const res = await request.post(`${API}/forum/posts/${postId}/pin`, {
       headers: auth(adminToken),
     });
@@ -643,10 +604,7 @@ test.describe("Forum", () => {
 
   test("Moderation: Lock a post (HR)", async ({ request }) => {
     test.setTimeout(30_000);
-    if (!postId) {
-      test.skip();
-      return;
-    }
+    expect(postId, 'Prerequisite failed — postId was not set').toBeTruthy();
     const res = await request.post(`${API}/forum/posts/${postId}/lock`, {
       headers: auth(adminToken),
     });
@@ -668,10 +626,7 @@ test.describe("Forum", () => {
   test("Delete forum post (author)", async ({ request }) => {
     test.setTimeout(30_000);
     // Create a new post to delete
-    if (!categoryId) {
-      test.skip();
-      return;
-    }
+    expect(categoryId, 'Prerequisite failed — categoryId was not set').toBeTruthy();
     const createRes = await request.post(`${API}/forum/posts`, {
       headers: auth(empToken),
       data: {

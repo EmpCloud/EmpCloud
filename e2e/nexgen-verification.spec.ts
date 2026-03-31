@@ -1191,7 +1191,7 @@ test.describe("18. Super Admin", () => {
   });
 
   test("Data Sanity page loads", async ({ browser }) => {
-    test.skip(true, "Super Admin pages render blank in headless Chrome due to React.lazy() — verified working in real browser");
+    expect.fail('Super Admin pages render blank in headless Chrome due to React.lazy() — verified working in real browser');
     test.setTimeout(90000);
     const { context, page } = await freshLogin(browser, CREDS.SUPER_ADMIN);
 

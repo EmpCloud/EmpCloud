@@ -89,7 +89,7 @@ test.describe("1. Authentication", () => {
     await context.close();
   });
 
-  test.skip("Login as super admin -> platform admin loads", async ({ browser }) => {
+  test("Login as super admin -> platform admin loads", async ({ browser }) => {
     test.setTimeout(60000);
     const { context, page } = await createFreshContext(browser);
 

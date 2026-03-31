@@ -67,13 +67,13 @@ test.describe('1. Quotes', () => {
   });
 
   test('1.3 Get single quote', async ({ request }) => {
-    test.skip(!quoteId, 'No quote available');
+    expect(quoteId, 'Prerequisite failed — No quote available').toBeTruthy();
     const r = await request.get(`${BILLING_API}/quotes/${quoteId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('1.4 Update a quote', async ({ request }) => {
-    test.skip(!quoteId, 'No quote available');
+    expect(quoteId, 'Prerequisite failed — No quote available').toBeTruthy();
     const r = await request.put(`${BILLING_API}/quotes/${quoteId}`, {
       ...auth(),
       data: { notes: 'Updated by E2E test' },
@@ -82,19 +82,19 @@ test.describe('1. Quotes', () => {
   });
 
   test('1.5 Send quote (email/notification)', async ({ request }) => {
-    test.skip(!quoteId, 'No quote available');
+    expect(quoteId, 'Prerequisite failed — No quote available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/quotes/${quoteId}/send`, auth());
     expect([200, 201, 204, 404, 422]).toContain(r.status());
   });
 
   test('1.6 Accept a quote', async ({ request }) => {
-    test.skip(!quoteId, 'No quote available');
+    expect(quoteId, 'Prerequisite failed — No quote available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/quotes/${quoteId}/accept`, auth());
     expect([200, 204, 400, 404, 409, 422]).toContain(r.status());
   });
 
   test('1.7 Convert quote to invoice', async ({ request }) => {
-    test.skip(!quoteId, 'No quote available');
+    expect(quoteId, 'Prerequisite failed — No quote available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/quotes/${quoteId}/convert`, auth());
     expect([200, 201, 400, 404, 409, 422]).toContain(r.status());
     const body = await r.json();
@@ -103,7 +103,7 @@ test.describe('1. Quotes', () => {
   });
 
   test('1.8 Download quote PDF', async ({ request }) => {
-    test.skip(!quoteId, 'No quote available');
+    expect(quoteId, 'Prerequisite failed — No quote available').toBeTruthy();
     const r = await request.get(`${BILLING_API}/quotes/${quoteId}/pdf`, auth());
     expect([200, 404, 501]).toContain(r.status());
     if (r.status() === 200) {
@@ -150,13 +150,13 @@ test.describe('2. Credit Notes', () => {
   });
 
   test('2.3 Get single credit note', async ({ request }) => {
-    test.skip(!creditNoteId, 'No credit note available');
+    expect(creditNoteId, 'Prerequisite failed — No credit note available').toBeTruthy();
     const r = await request.get(`${BILLING_API}/credit-notes/${creditNoteId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('2.4 Apply credit note to invoice', async ({ request }) => {
-    test.skip(!creditNoteId, 'No credit note to apply');
+    expect(creditNoteId, 'Prerequisite failed — No credit note to apply').toBeTruthy();
     const r = await request.post(`${BILLING_API}/credit-notes/${creditNoteId}/apply`, {
       ...auth(),
       data: { invoice_id: invoiceIdFromQuote || 1 },
@@ -165,13 +165,13 @@ test.describe('2. Credit Notes', () => {
   });
 
   test('2.5 Void a credit note', async ({ request }) => {
-    test.skip(!creditNoteId, 'No credit note available');
+    expect(creditNoteId, 'Prerequisite failed — No credit note available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/credit-notes/${creditNoteId}/void`, auth());
     expect([200, 204, 400, 404, 409]).toContain(r.status());
   });
 
   test('2.6 Download credit note PDF', async ({ request }) => {
-    test.skip(!creditNoteId, 'No credit note available');
+    expect(creditNoteId, 'Prerequisite failed — No credit note available').toBeTruthy();
     const r = await request.get(`${BILLING_API}/credit-notes/${creditNoteId}/pdf`, auth());
     expect([200, 404, 501]).toContain(r.status());
   });
@@ -218,7 +218,7 @@ test.describe('3. Coupons', () => {
   });
 
   test('3.3 Validate a coupon code', async ({ request }) => {
-    test.skip(!couponCode, 'No coupon code available');
+    expect(couponCode, 'Prerequisite failed — No coupon code available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/coupons/validate`, {
       ...auth(),
       data: { code: couponCode, client_id: 1 },
@@ -227,7 +227,7 @@ test.describe('3. Coupons', () => {
   });
 
   test('3.4 Apply coupon to subscription', async ({ request }) => {
-    test.skip(!couponId, 'No coupon available');
+    expect(couponId, 'Prerequisite failed — No coupon available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/coupons/${couponId}/apply`, {
       ...auth(),
       data: { subscription_id: 1, client_id: 1 },
@@ -236,7 +236,7 @@ test.describe('3. Coupons', () => {
   });
 
   test('3.5 Get coupon redemptions', async ({ request }) => {
-    test.skip(!couponId, 'No coupon available');
+    expect(couponId, 'Prerequisite failed — No coupon available').toBeTruthy();
     const r = await request.get(`${BILLING_API}/coupons/${couponId}/redemptions`, auth());
     expect([200, 404]).toContain(r.status());
   });
@@ -378,19 +378,19 @@ test.describe('6. Recurring Invoices', () => {
   });
 
   test('6.3 Get single recurring invoice', async ({ request }) => {
-    test.skip(!recurringInvoiceId, 'No recurring invoice available');
+    expect(recurringInvoiceId, 'Prerequisite failed — No recurring invoice available').toBeTruthy();
     const r = await request.get(`${BILLING_API}/recurring-invoices/${recurringInvoiceId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.4 Pause recurring invoice', async ({ request }) => {
-    test.skip(!recurringInvoiceId, 'No recurring invoice available');
+    expect(recurringInvoiceId, 'Prerequisite failed — No recurring invoice available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/recurring-invoices/${recurringInvoiceId}/pause`, auth());
     expect([200, 204, 400, 404, 409]).toContain(r.status());
   });
 
   test('6.5 Resume recurring invoice', async ({ request }) => {
-    test.skip(!recurringInvoiceId, 'No recurring invoice available');
+    expect(recurringInvoiceId, 'Prerequisite failed — No recurring invoice available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/recurring-invoices/${recurringInvoiceId}/resume`, auth());
     expect([200, 204, 400, 404, 409]).toContain(r.status());
   });
@@ -500,7 +500,7 @@ test.describe('9. Vendors', () => {
   });
 
   test('9.3 Delete a vendor', async ({ request }) => {
-    test.skip(!vendorId, 'No vendor available');
+    expect(vendorId, 'Prerequisite failed — No vendor available').toBeTruthy();
     const r = await request.delete(`${BILLING_API}/vendors/${vendorId}`, auth());
     expect([200, 204, 404]).toContain(r.status());
   });
@@ -570,7 +570,7 @@ test.describe('11. Webhooks', () => {
   });
 
   test('11.3 Test webhook delivery', async ({ request }) => {
-    test.skip(!webhookId, 'No webhook available');
+    expect(webhookId, 'Prerequisite failed — No webhook available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/webhooks/${webhookId}/test`, auth());
     expect([200, 201, 400, 404, 422, 502]).toContain(r.status());
   });
@@ -638,7 +638,7 @@ test.describe('14. Edge Cases', () => {
   });
 
   test('14.3 Create coupon with duplicate code returns error', async ({ request }) => {
-    test.skip(!couponCode, 'No coupon code to duplicate');
+    expect(couponCode, 'Prerequisite failed — No coupon code to duplicate').toBeTruthy();
     const r = await request.post(`${BILLING_API}/coupons`, {
       ...auth(),
       data: {

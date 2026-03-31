@@ -163,10 +163,7 @@ test.describe("Module Toggle", () => {
   });
 
   test("Super admin can toggle a module", async ({ request }) => {
-    if (!moduleId) {
-      test.skip();
-      return;
-    }
+    expect(moduleId, 'Prerequisite failed — moduleId was not set').toBeTruthy();
     // Disable then re-enable to avoid side effects
     const disableRes = await request.put(`${API}/admin/modules/${moduleId}`, {
       headers: auth(superToken),
@@ -184,10 +181,7 @@ test.describe("Module Toggle", () => {
   });
 
   test("Org admin cannot toggle a module (403)", async ({ request }) => {
-    if (!moduleId) {
-      test.skip();
-      return;
-    }
+    expect(moduleId, 'Prerequisite failed — moduleId was not set').toBeTruthy();
     const res = await request.put(`${API}/admin/modules/${moduleId}`, {
       headers: auth(orgAdminToken),
       data: { is_active: false },
@@ -196,10 +190,7 @@ test.describe("Module Toggle", () => {
   });
 
   test("Invalid is_active value returns 400", async ({ request }) => {
-    if (!moduleId) {
-      test.skip();
-      return;
-    }
+    expect(moduleId, 'Prerequisite failed — moduleId was not set').toBeTruthy();
     const res = await request.put(`${API}/admin/modules/${moduleId}`, {
       headers: auth(superToken),
       data: { is_active: "not_a_boolean" },
@@ -253,10 +244,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Super admin can deactivate a user in another org", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/deactivate`,
       { headers: auth(superToken) },
@@ -267,10 +255,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Super admin can activate a user in another org", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/activate`,
       { headers: auth(superToken) },
@@ -281,10 +266,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Super admin can reset a users password", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/reset-password`,
       {
@@ -298,10 +280,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Super admin password reset requires 8+ chars", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/reset-password`,
       {
@@ -313,10 +292,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Super admin can change a users role", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/role`,
       {
@@ -340,10 +316,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Super admin role change rejects invalid role", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/role`,
       {
@@ -355,10 +328,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Org admin cannot use super admin user management (403)", async ({ request }) => {
-    if (!orgId || !targetUserId) {
-      test.skip();
-      return;
-    }
+    expect(orgId && targetUserId, 'Prerequisite failed — orgId or targetUserId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/${targetUserId}/deactivate`,
       { headers: auth(orgAdminToken) },
@@ -367,10 +337,7 @@ test.describe("Cross-Org User Management", () => {
   });
 
   test("Deactivate non-existent user returns 404", async ({ request }) => {
-    if (!orgId) {
-      test.skip();
-      return;
-    }
+    expect(orgId, 'Prerequisite failed — orgId was not set').toBeTruthy();
     const res = await request.put(
       `${API}/admin/organizations/${orgId}/users/999999/deactivate`,
       { headers: auth(superToken) },
