@@ -254,7 +254,11 @@ export default function LeaveDashboardPage() {
           <div className="flex justify-end gap-3 mt-4">
             <button
               type="button"
-              onClick={() => setShowApply(false)}
+              onClick={() => {
+                setShowApply(false);
+                setForm({ leave_type_id: 0, start_date: "", end_date: "", days_count: 1, is_half_day: false, half_day_type: "", reason: "" });
+                applyLeave.reset();
+              }}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Cancel

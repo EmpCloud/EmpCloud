@@ -28,20 +28,28 @@ export async function requestCompOff(
 ): Promise<CompOffRequest> {
   const db = getDB();
 
-  // Check for duplicate request on same date
+  // Normalize worked_date to YYYY-MM-DD
+  const workedDate = new Date(data.worked_date).toISOString().slice(0, 10);
+
+  // Check for duplicate request on same date (allow re-request only if previous was rejected)
   const existing = await db("comp_off_requests")
-    .where({ organization_id: orgId, user_id: userId, worked_date: data.worked_date })
-    .whereNot({ status: "rejected" })
+    .where({ organization_id: orgId, user_id: userId })
+    .whereRaw("DATE(worked_date) = ?", [workedDate])
+    .whereIn("status", ["pending", "approved"])
     .first();
 
   if (existing) {
-    throw new ValidationError("Comp-off request already exists for this date");
+    throw new ValidationError(
+      existing.status === "pending"
+        ? "A comp-off request for this date is already pending approval"
+        : "A comp-off request for this date has already been approved"
+    );
   }
 
   const [id] = await db("comp_off_requests").insert({
     organization_id: orgId,
     user_id: userId,
-    worked_date: data.worked_date,
+    worked_date: workedDate,
     expires_on: data.expires_on,
     reason: data.reason,
     days: data.days ?? 1,

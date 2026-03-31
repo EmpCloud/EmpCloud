@@ -83,7 +83,7 @@ export default function SelfServiceDashboardPage() {
         .catch(() => []),
   });
 
-  const todayAttendance = Array.isArray(attendanceData) ? attendanceData[0] : null;
+  const todayAttendance = attendanceData ?? null;
   const leaveBalances = Array.isArray(leaveBalance) ? leaveBalance : [];
   const pendingDocs = Array.isArray(documentsData) ? documentsData : [];
   const announcementList = Array.isArray(announcements) ? announcements : [];
@@ -101,7 +101,7 @@ export default function SelfServiceDashboardPage() {
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         <QuickLink to="/my-profile" icon={FileText} label="My Profile" />
-        <QuickLink to="/leave/applications" icon={CalendarDays} label="Apply Leave" />
+        <QuickLink to="/leave" icon={CalendarDays} label="Apply Leave" />
         <QuickLink to="/attendance/my" icon={Clock} label="Mark Attendance" />
         <QuickLink to="/helpdesk/my-tickets" icon={FileText} label="Request Update" />
       </div>

@@ -232,7 +232,11 @@ export default function EventsListPage() {
                       <button
                         onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "attending" })}
                         disabled={rsvpMutation.isPending}
-                        className="flex items-center gap-1 text-xs font-medium border border-green-200 text-green-600 px-2.5 py-1.5 rounded-lg hover:bg-green-50 disabled:opacity-50"
+                        className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                          event.my_rsvp_status === "attending"
+                            ? "bg-green-100 border-green-400 text-green-700"
+                            : "border-green-200 text-green-600 hover:bg-green-50"
+                        }`}
                         title="Attending"
                       >
                         <CheckCircle className="h-3.5 w-3.5" /> Yes
@@ -240,7 +244,11 @@ export default function EventsListPage() {
                       <button
                         onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "maybe" })}
                         disabled={rsvpMutation.isPending}
-                        className="flex items-center gap-1 text-xs font-medium border border-amber-200 text-amber-600 px-2.5 py-1.5 rounded-lg hover:bg-amber-50 disabled:opacity-50"
+                        className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                          event.my_rsvp_status === "maybe"
+                            ? "bg-amber-100 border-amber-400 text-amber-700"
+                            : "border-amber-200 text-amber-600 hover:bg-amber-50"
+                        }`}
                         title="Maybe"
                       >
                         <HelpCircle className="h-3.5 w-3.5" /> Maybe
@@ -248,7 +256,11 @@ export default function EventsListPage() {
                       <button
                         onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "declined" })}
                         disabled={rsvpMutation.isPending}
-                        className="flex items-center gap-1 text-xs font-medium border border-red-200 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                        className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                          event.my_rsvp_status === "declined"
+                            ? "bg-red-100 border-red-400 text-red-700"
+                            : "border-red-200 text-red-600 hover:bg-red-50"
+                        }`}
                         title="Decline"
                       >
                         <XCircle className="h-3.5 w-3.5" /> No

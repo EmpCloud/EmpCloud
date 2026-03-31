@@ -54,6 +54,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
       status: req.query.status as string | undefined,
       start_date: req.query.start_date as string | undefined,
       end_date: req.query.end_date as string | undefined,
+      userId: req.user!.sub,
     });
     sendPaginated(res, result.events, result.total, page, per_page);
   } catch (err) { next(err); }

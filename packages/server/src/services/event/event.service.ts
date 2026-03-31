@@ -58,6 +58,7 @@ export async function listEvents(
     status?: string;
     start_date?: string;
     end_date?: string;
+    userId?: number;
   }
 ) {
   const db = getDB();
@@ -84,14 +85,26 @@ export async function listEvents(
   const countQuery = query.clone().count("company_events.id as count");
   const [{ count }] = await countQuery;
 
+  const selectColumns: any[] = [
+    "company_events.*",
+    db.raw(
+      `(SELECT COUNT(*) FROM event_rsvps WHERE event_rsvps.event_id = company_events.id AND event_rsvps.status = 'attending') as attending_count`
+    ),
+  ];
+
+  // Include current user's RSVP status if userId provided
+  if (params?.userId) {
+    selectColumns.push(
+      db.raw(
+        `(SELECT status FROM event_rsvps WHERE event_rsvps.event_id = company_events.id AND event_rsvps.user_id = ?) as my_rsvp_status`,
+        [params.userId]
+      )
+    );
+  }
+
   const events = await query
     .clone()
-    .select(
-      "company_events.*",
-      db.raw(
-        `(SELECT COUNT(*) FROM event_rsvps WHERE event_rsvps.event_id = company_events.id AND event_rsvps.status = 'attending') as attending_count`
-      )
-    )
+    .select(...selectColumns)
     .orderBy("company_events.start_date", "asc")
     .limit(perPage)
     .offset((page - 1) * perPage);
