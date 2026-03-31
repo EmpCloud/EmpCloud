@@ -9,9 +9,9 @@ import { Knex } from "knex";
 
 const PLAN_PRICING: Record<string, number> = {
   free: 0,
-  basic: 50000,         // 500 INR in paise
-  professional: 100000, // 1,000 INR in paise
-  enterprise: 175000,   // 1,750 INR in paise
+  basic: 10000,         // ₹100 INR in paise
+  professional: 10000,  // ₹100 INR in paise (same flat rate)
+  enterprise: 10000,    // ₹100 INR in paise (same flat rate)
 };
 
 export async function up(knex: Knex): Promise<void> {
