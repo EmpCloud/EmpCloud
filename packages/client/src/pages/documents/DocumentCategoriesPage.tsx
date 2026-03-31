@@ -167,6 +167,7 @@ export default function DocumentCategoriesPage() {
             <tr>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Category</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Description</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Documents</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Mandatory</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
             </tr>
@@ -175,7 +176,7 @@ export default function DocumentCategoriesPage() {
             {isLoading ? (
               <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
             ) : !categories || categories.length === 0 ? (
-              <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400">No categories yet. Create one to get started.</td></tr>
+              <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-400">No categories yet. Create one to get started.</td></tr>
             ) : (
               categories.map((cat: any) => (
                 <tr key={cat.id} className="hover:bg-gray-50">
@@ -188,6 +189,9 @@ export default function DocumentCategoriesPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{cat.description || "--"}</td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-medium text-gray-700">{Number(cat.document_count) || 0}</span>
+                  </td>
                   <td className="px-6 py-4">
                     {cat.is_mandatory ? (
                       <span className="text-xs bg-red-50 text-red-700 px-2 py-1 rounded-full font-medium">Required</span>

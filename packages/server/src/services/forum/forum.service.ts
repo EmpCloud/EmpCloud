@@ -23,9 +23,16 @@ const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 export async function listCategories(orgId: number) {
   const db = getDB();
   const categories = await db("forum_categories")
-    .where({ organization_id: orgId, is_active: true })
-    .orderBy("sort_order", "asc")
-    .orderBy("name", "asc");
+    .where({ "forum_categories.organization_id": orgId, "forum_categories.is_active": true })
+    .select(
+      "forum_categories.*",
+      db.raw(
+        `(SELECT COUNT(*) FROM forum_posts WHERE forum_posts.category_id = forum_categories.id AND forum_posts.organization_id = ?) as post_count`,
+        [orgId]
+      )
+    )
+    .orderBy("forum_categories.sort_order", "asc")
+    .orderBy("forum_categories.name", "asc");
 
   // Auto-seed default categories if none exist for this organization
   if (categories.length === 0) {
@@ -51,9 +58,16 @@ export async function listCategories(orgId: number) {
     }
 
     return db("forum_categories")
-      .where({ organization_id: orgId, is_active: true })
-      .orderBy("sort_order", "asc")
-      .orderBy("name", "asc");
+      .where({ "forum_categories.organization_id": orgId, "forum_categories.is_active": true })
+      .select(
+        "forum_categories.*",
+        db.raw(
+          `(SELECT COUNT(*) FROM forum_posts WHERE forum_posts.category_id = forum_categories.id AND forum_posts.organization_id = ?) as post_count`,
+          [orgId]
+        )
+      )
+      .orderBy("forum_categories.sort_order", "asc")
+      .orderBy("forum_categories.name", "asc");
   }
 
   return categories;
@@ -588,9 +602,16 @@ export async function getForumDashboard(orgId: number) {
     .orderByRaw("(forum_posts.like_count + forum_posts.reply_count) DESC")
     .limit(10);
 
-  // Category stats
+  // Category stats — use live computed post_count
   const categories = await db("forum_categories")
-    .where({ organization_id: orgId, is_active: true })
+    .where({ "forum_categories.organization_id": orgId, "forum_categories.is_active": true })
+    .select(
+      "forum_categories.*",
+      db.raw(
+        `(SELECT COUNT(*) FROM forum_posts WHERE forum_posts.category_id = forum_categories.id AND forum_posts.organization_id = ?) as post_count`,
+        [orgId]
+      )
+    )
     .orderBy("post_count", "desc");
 
   return {

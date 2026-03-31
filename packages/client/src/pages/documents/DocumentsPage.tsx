@@ -52,7 +52,10 @@ function useUploadDocument() {
       api.post("/documents/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       }).then((r) => r.data.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["documents"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["documents"] });
+      qc.invalidateQueries({ queryKey: ["doc-categories"] });
+    },
   });
 }
 
@@ -84,7 +87,10 @@ function useDeleteDocument() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => api.delete(`/documents/${id}`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["documents"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["documents"] });
+      qc.invalidateQueries({ queryKey: ["doc-categories"] });
+    },
   });
 }
 

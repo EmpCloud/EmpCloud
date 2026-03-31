@@ -632,7 +632,14 @@ export async function getHelpdeskDashboard(orgId: number) {
     .whereNotNull("satisfaction_rating")
     .select(db.raw("AVG(satisfaction_rating) as avg_rating, COUNT(*) as rated_count"));
 
+  // Total open = all non-resolved, non-closed statuses
+  const totalOpen = (statusMap.open || 0) +
+    (statusMap.in_progress || 0) +
+    (statusMap.awaiting_response || 0) +
+    (statusMap.reopened || 0);
+
   return {
+    total_open: totalOpen,
     open: statusMap.open || 0,
     in_progress: statusMap.in_progress || 0,
     awaiting_response: statusMap.awaiting_response || 0,

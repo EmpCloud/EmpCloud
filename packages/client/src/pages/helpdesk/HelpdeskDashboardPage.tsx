@@ -60,8 +60,8 @@ export default function HelpdeskDashboardPage() {
 
   const statCards = [
     {
-      label: "Open Tickets",
-      value: stats.open + stats.reopened,
+      label: "Total Open",
+      value: stats.total_open,
       icon: Clock,
       color: "text-blue-600 bg-blue-50",
     },

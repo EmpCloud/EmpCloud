@@ -189,9 +189,12 @@ export default function ForumDashboardPage() {
                       {user.first_name} {user.last_name}
                     </p>
                   </div>
-                  <span className="text-sm font-semibold text-brand-600">
+                  <Link
+                    to={`/forum?author=${user.id}`}
+                    className="text-sm font-semibold text-brand-600 hover:text-brand-800 hover:underline"
+                  >
                     {user.contribution_count} posts
-                  </span>
+                  </Link>
                 </div>
               ))}
             </div>

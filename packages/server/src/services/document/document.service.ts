@@ -50,8 +50,15 @@ export async function createCategory(
 export async function listCategories(orgId: number) {
   const db = getDB();
   return db("document_categories")
-    .where({ organization_id: orgId, is_active: true })
-    .orderBy("name", "asc");
+    .where({ "document_categories.organization_id": orgId, "document_categories.is_active": true })
+    .select(
+      "document_categories.*",
+      db.raw(
+        `(SELECT COUNT(*) FROM employee_documents WHERE employee_documents.category_id = document_categories.id AND employee_documents.organization_id = ?) as document_count`,
+        [orgId]
+      )
+    )
+    .orderBy("document_categories.name", "asc");
 }
 
 export async function updateCategory(
