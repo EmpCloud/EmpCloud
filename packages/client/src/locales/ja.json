@@ -108,7 +108,16 @@
     "seatsUsed": "\u30b7\u30fc\u30c8\u4f7f\u7528\u4e2d",
     "launch": "\u958b\u304f",
     "showLess": "\u5c11\u306a\u304f\u8868\u793a",
-    "readMore": "\u3082\u3063\u3068\u8aad\u3080"
+    "readMore": "\u3082\u3063\u3068\u8aad\u3080",
+    "overdue": "\u671f\u9650\u8d85\u904e",
+    "quickLinks": {
+      "employees": "\u5f93\u696d\u54e1\u30c7\u30a3\u30ec\u30af\u30c8\u30ea",
+      "attendance": "\u52e4\u6020",
+      "leave": "\u4f11\u6687\u7ba1\u7406",
+      "documents": "\u30c9\u30ad\u30e5\u30e1\u30f3\u30c8",
+      "announcements": "\u304a\u77e5\u3089\u305b",
+      "policies": "\u30dd\u30ea\u30b7\u30fc"
+    }
   },
   "leave": {
     "title": "\u4f11\u6687\u7ba1\u7406",

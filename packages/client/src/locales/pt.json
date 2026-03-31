@@ -108,7 +108,16 @@
     "seatsUsed": "vagas usadas",
     "launch": "Abrir",
     "showLess": "Mostrar menos",
-    "readMore": "Ler mais"
+    "readMore": "Ler mais",
+    "overdue": "vencido",
+    "quickLinks": {
+      "employees": "Diret\u00f3rio de Funcion\u00e1rios",
+      "attendance": "Frequ\u00eancia",
+      "leave": "Gest\u00e3o de Licen\u00e7as",
+      "documents": "Documentos",
+      "announcements": "Avisos",
+      "policies": "Pol\u00edticas"
+    }
   },
   "leave": {
     "title": "Gest\u00e3o de licen\u00e7as",

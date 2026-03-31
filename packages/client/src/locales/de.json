@@ -108,7 +108,16 @@
     "seatsUsed": "Pl\u00e4tze belegt",
     "launch": "\u00d6ffnen",
     "showLess": "Weniger anzeigen",
-    "readMore": "Mehr lesen"
+    "readMore": "Mehr lesen",
+    "overdue": "\u00fcberf\u00e4llig",
+    "quickLinks": {
+      "employees": "Mitarbeiterverzeichnis",
+      "attendance": "Anwesenheit",
+      "leave": "Urlaubsverwaltung",
+      "documents": "Dokumente",
+      "announcements": "Ank\u00fcndigungen",
+      "policies": "Richtlinien"
+    }
   },
   "leave": {
     "title": "Urlaubsverwaltung",

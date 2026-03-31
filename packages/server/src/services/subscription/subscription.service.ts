@@ -31,6 +31,22 @@ const FREE_TIER_MAX_MODULES = 1;
 
 export async function listSubscriptions(orgId: number): Promise<OrgSubscription[]> {
   const db = getDB();
+
+  // #1191 — Sync used_seats for all active subscriptions before returning
+  // This ensures the dashboard always shows correct seat counts
+  const activeSubs = await db("org_subscriptions")
+    .where({ organization_id: orgId })
+    .whereIn("status", ["active", "trial"])
+    .select("id", "module_id", "used_seats");
+
+  await Promise.all(
+    activeSubs.map((sub) =>
+      syncUsedSeats(orgId, sub.module_id).catch((err) => {
+        logger.warn(`Failed to sync seat count for org ${orgId} module ${sub.module_id}: ${err.message}`);
+      })
+    )
+  );
+
   return db("org_subscriptions")
     .where({ organization_id: orgId })
     .orderBy("created_at", "desc");

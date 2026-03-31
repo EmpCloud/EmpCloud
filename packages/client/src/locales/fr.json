@@ -108,7 +108,16 @@
     "seatsUsed": "si\u00e8ges utilis\u00e9s",
     "launch": "Ouvrir",
     "showLess": "Voir moins",
-    "readMore": "Lire la suite"
+    "readMore": "Lire la suite",
+    "overdue": "en retard",
+    "quickLinks": {
+      "employees": "Annuaire des employ\u00e9s",
+      "attendance": "Pr\u00e9sence",
+      "leave": "Gestion des cong\u00e9s",
+      "documents": "Documents",
+      "announcements": "Annonces",
+      "policies": "Politiques"
+    }
   },
   "leave": {
     "title": "Gestion des cong\u00e9s",

@@ -38,13 +38,13 @@ function StatCardSkeleton() {
   );
 }
 
-const hrmsQuickLinks = [
-  { path: "/employees", label: "Employee Directory", icon: Users, color: "bg-blue-50 text-blue-600" },
-  { path: "/attendance", label: "Attendance", icon: Clock, color: "bg-green-50 text-green-600" },
-  { path: "/leave", label: "Leave Management", icon: CalendarDays, color: "bg-purple-50 text-purple-600" },
-  { path: "/documents", label: "Documents", icon: FileText, color: "bg-orange-50 text-orange-600" },
-  { path: "/announcements", label: "Announcements", icon: Megaphone, color: "bg-pink-50 text-pink-600" },
-  { path: "/policies", label: "Policies", icon: BookOpen, color: "bg-teal-50 text-teal-600" },
+const hrmsQuickLinkKeys = [
+  { path: "/employees", labelKey: "dashboard.quickLinks.employees", icon: Users, color: "bg-blue-50 text-blue-600" },
+  { path: "/attendance", labelKey: "dashboard.quickLinks.attendance", icon: Clock, color: "bg-green-50 text-green-600" },
+  { path: "/leave", labelKey: "dashboard.quickLinks.leave", icon: CalendarDays, color: "bg-purple-50 text-purple-600" },
+  { path: "/documents", labelKey: "dashboard.quickLinks.documents", icon: FileText, color: "bg-orange-50 text-orange-600" },
+  { path: "/announcements", labelKey: "dashboard.quickLinks.announcements", icon: Megaphone, color: "bg-pink-50 text-pink-600" },
+  { path: "/policies", labelKey: "dashboard.quickLinks.policies", icon: BookOpen, color: "bg-teal-50 text-teal-600" },
 ];
 
 export default function DashboardPage() {
@@ -205,7 +205,7 @@ export default function DashboardPage() {
                     )}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Billing{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} overdue)` : ""}
+                    {t('nav.billing')}{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} ${t('dashboard.overdue')})` : ""}
                   </p>
                 </div>
               </div>
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                     {t('dashboard.includedFree')}
                   </span>
                   <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">
-                    Active
+                    {t('common.active')}
                   </span>
                 </div>
                 <h3 className="text-xl font-bold mb-2">{hrmsModule.name}</h3>
@@ -241,14 +241,14 @@ export default function DashboardPage() {
 
             {/* Quick Links Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {hrmsQuickLinks.map((link) => (
+              {hrmsQuickLinkKeys.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   className="bg-white/10 hover:bg-white/20 rounded-lg p-3 text-center transition-colors group"
                 >
                   <link.icon className="h-5 w-5 mx-auto mb-1.5 text-white/80 group-hover:text-white" />
-                  <span className="text-xs font-medium text-white/90">{link.label}</span>
+                  <span className="text-xs font-medium text-white/90">{t(link.labelKey)}</span>
                 </Link>
               ))}
             </div>
@@ -407,7 +407,7 @@ export default function DashboardPage() {
                 )}
 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                  <span>{sub.used_seats}/{sub.total_seats} seats used</span>
+                  <span>{sub.used_seats}/{sub.total_seats} {t('dashboard.seatsUsed')}</span>
                   <span className="capitalize text-xs bg-gray-100 px-2 py-0.5 rounded-full">{sub.plan_tier}</span>
                 </div>
 

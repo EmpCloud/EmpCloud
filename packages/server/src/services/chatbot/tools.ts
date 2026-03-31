@@ -388,6 +388,71 @@ export const tools: ToolDefinition[] = [
     },
   },
 
+  // ---- Team Attendance (#1264) ----
+  {
+    name: "get_team_attendance",
+    description:
+      "Get today's attendance for the current user's direct reports (team members). Shows each team member's attendance status, check-in/out times.",
+    parameters: [
+      {
+        name: "date",
+        type: "string",
+        description: "Date in YYYY-MM-DD format (default: today)",
+        required: false,
+        default: "today",
+      },
+    ],
+    execute: async (orgId, userId, { date }) => {
+      const db = getDB();
+      const dateStr = date === "today" || !date ? todayStr() : String(date);
+
+      // Find direct reports — users whose reporting_manager_id = current user
+      const teamMembers = await db("users")
+        .where({ organization_id: orgId, reporting_manager_id: userId, status: 1 })
+        .select("id", "first_name", "last_name", "designation");
+
+      if (teamMembers.length === 0) {
+        return {
+          date: dateStr,
+          message: "You don't have any direct reports. Team attendance is available for managers.",
+          team_size: 0,
+        };
+      }
+
+      const userIds = teamMembers.map((m) => m.id);
+      const records = await db("attendance_records")
+        .where({ organization_id: orgId, date: dateStr })
+        .whereIn("user_id", userIds)
+        .select("user_id", "status", "check_in", "check_out", "total_hours");
+
+      const recordMap = new Map(records.map((r) => [r.user_id, r]));
+
+      const details = teamMembers.map((m) => {
+        const rec = recordMap.get(m.id);
+        return {
+          name: `${m.first_name} ${m.last_name}`,
+          designation: m.designation || null,
+          status: rec?.status || "not_checked_in",
+          check_in: rec?.check_in || null,
+          check_out: rec?.check_out || null,
+          hours: rec?.total_hours ? Number(rec.total_hours).toFixed(1) : null,
+        };
+      });
+
+      const statusCounts: Record<string, number> = {};
+      for (const d of details) {
+        statusCounts[d.status] = (statusCounts[d.status] || 0) + 1;
+      }
+
+      return {
+        date: dateStr,
+        team_size: teamMembers.length,
+        status_summary: statusCounts,
+        details,
+      };
+    },
+  },
+
   // ---- Leave ----
   {
     name: "get_leave_balance",
@@ -701,11 +766,11 @@ export const tools: ToolDefinition[] = [
         .where({ organization_id: orgId })
         .count("id as count");
 
-      const modules = await db("subscriptions as s")
+      const modules = await db("org_subscriptions as s")
         .join("modules as m", "m.id", "s.module_id")
         .where({ "s.organization_id": orgId })
         .whereIn("s.status", ["active", "trial"])
-        .select("m.name", "s.status", "s.seats_purchased");
+        .select("m.name", "s.status", "s.total_seats");
 
       return {
         total_users: Number(users.count),
@@ -926,16 +991,16 @@ export const tools: ToolDefinition[] = [
     parameters: [],
     execute: async (orgId) => {
       const db = getDB();
-      const subs = await db("subscriptions as s")
+      const subs = await db("org_subscriptions as s")
         .join("modules as m", "m.id", "s.module_id")
         .where({ "s.organization_id": orgId })
         .select(
           "m.name as module_name",
           "m.slug",
           "s.status",
-          "s.plan",
-          "s.seats_purchased",
-          "s.seats_used",
+          "s.plan_tier",
+          "s.total_seats",
+          "s.used_seats",
           "s.current_period_start",
           "s.current_period_end"
         );
@@ -953,14 +1018,14 @@ export const tools: ToolDefinition[] = [
     execute: async (orgId) => {
       const db = getDB();
 
-      const subs = await db("subscriptions")
+      const subs = await db("org_subscriptions")
         .where({ organization_id: orgId })
         .whereIn("status", ["active", "trial"])
-        .select("plan", "price_per_seat", "seats_purchased", "status");
+        .select("plan_tier", "price_per_seat", "total_seats", "status");
 
       let totalMRR = 0;
       for (const s of subs) {
-        totalMRR += (Number(s.price_per_seat) || 0) * (Number(s.seats_purchased) || 0);
+        totalMRR += (Number(s.price_per_seat) || 0) * (Number(s.total_seats) || 0);
       }
 
       const hasInvoices = await db.schema.hasTable("invoices");

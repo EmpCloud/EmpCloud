@@ -35,6 +35,11 @@ const INTENTS: Intent[] = [
     handler: handleApplyLeave,
   },
   {
+    name: "team_attendance",
+    keywords: ["team attendance", "my team attendance", "team's attendance", "direct reports attendance", "reportees attendance"],
+    handler: handleTeamAttendance,
+  },
+  {
     name: "attendance",
     keywords: ["attendance", "check in", "checked in today", "my attendance", "punch in", "clock in", "today attendance"],
     handler: handleAttendance,
@@ -160,6 +165,65 @@ async function handleApplyLeave(): Promise<ChatResponse> {
   };
 }
 
+async function handleTeamAttendance(orgId: number, userId: number): Promise<ChatResponse> {
+  const db = getDB();
+  const dateStr = new Date().toISOString().split("T")[0];
+
+  // Find direct reports
+  const teamMembers = await db("users")
+    .where({ organization_id: orgId, reporting_manager_id: userId, status: 1 })
+    .select("id", "first_name", "last_name");
+
+  if (teamMembers.length === 0) {
+    return {
+      content:
+        "You don't have any direct reports. Team attendance is available for managers.\n\n" +
+        "You can check your own attendance by asking *\"Show my attendance today\"*.",
+      metadata: { intent: "team_attendance", link: "/attendance" },
+    };
+  }
+
+  const userIds = teamMembers.map((m) => m.id);
+  const records = await db("attendance_records")
+    .where({ organization_id: orgId, date: dateStr })
+    .whereIn("user_id", userIds)
+    .select("user_id", "status", "check_in", "check_out");
+
+  const recordMap = new Map(records.map((r: any) => [r.user_id, r]));
+
+  let present = 0;
+  let absent = 0;
+  let late = 0;
+  let notCheckedIn = 0;
+
+  let table = `Team Attendance for **${dateStr}** (${teamMembers.length} members):\n\n`;
+  table += "| Name | Status | Check-in |\n";
+  table += "|---|---|---|\n";
+
+  for (const m of teamMembers) {
+    const rec = recordMap.get(m.id);
+    const status = rec?.status || "not_checked_in";
+    const checkIn = rec?.check_in
+      ? new Date(rec.check_in).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+      : "--";
+
+    table += `| ${m.first_name} ${m.last_name} | ${status} | ${checkIn} |\n`;
+
+    if (status === "present") present++;
+    else if (status === "absent") absent++;
+    else if (status === "late") late++;
+    else notCheckedIn++;
+  }
+
+  table += `\n**Summary:** ${present} present, ${late} late, ${absent} absent, ${notCheckedIn} not checked in\n\n`;
+  table += "View full team attendance on the [Attendance page](/attendance).";
+
+  return {
+    content: table,
+    metadata: { intent: "team_attendance", team_size: teamMembers.length, link: "/attendance" },
+  };
+}
+
 async function handleAttendance(orgId: number, userId: number): Promise<ChatResponse> {
   const db = getDB();
 
@@ -266,7 +330,7 @@ async function handlePayslip(orgId: number): Promise<ChatResponse> {
   const db = getDB();
 
   // Check if organization has payroll module subscription
-  const payrollSub = await db("subscriptions as s")
+  const payrollSub = await db("org_subscriptions as s")
     .join("modules as m", "m.id", "s.module_id")
     .where({
       "s.organization_id": orgId,
@@ -684,11 +748,15 @@ export function getSuggestions() {
   return [
     "What is my leave balance?",
     "Show my attendance today",
+    "Show team attendance",
     "How do I apply for leave?",
     "What are the company policies?",
     "When is the next holiday?",
     "Show latest announcements",
+    "Who is my manager?",
     "I need help with an issue",
     "Who is in the engineering team?",
+    "Show pending leave requests",
+    "How many employees are there?",
   ];
 }

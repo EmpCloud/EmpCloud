@@ -261,7 +261,7 @@ export default function ChatWidget() {
             <p className="text-sm font-medium text-gray-900 mb-1">Hi there!</p>
             <p className="text-xs text-gray-500 mb-4">How can I help you today?</p>
             <div className="space-y-1.5 w-full">
-              {suggestions.slice(0, 4).map((s, i) => (
+              {suggestions.slice(0, 6).map((s, i) => (
                 <button
                   key={i}
                   onClick={() => handleSend(s)}
@@ -323,7 +323,7 @@ export default function ChatWidget() {
       {/* Quick Actions */}
       {messages.length > 0 && (
         <div className="px-3 py-2 border-t border-gray-100 bg-white shrink-0 flex gap-1.5 overflow-x-auto">
-          {["My leave balance", "Team attendance", "Company policies"].map((q) => (
+          {["My leave balance", "Show team attendance", "Company policies", "Latest announcements", "Upcoming holidays"].map((q) => (
             <button
               key={q}
               onClick={() => handleSend(q)}

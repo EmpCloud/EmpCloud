@@ -108,7 +108,16 @@
     "seatsUsed": "seats used",
     "launch": "Launch",
     "showLess": "Show less",
-    "readMore": "Read more"
+    "readMore": "Read more",
+    "overdue": "overdue",
+    "quickLinks": {
+      "employees": "Employee Directory",
+      "attendance": "Attendance",
+      "leave": "Leave Management",
+      "documents": "Documents",
+      "announcements": "Announcements",
+      "policies": "Policies"
+    }
   },
   "leave": {
     "title": "Leave Management",

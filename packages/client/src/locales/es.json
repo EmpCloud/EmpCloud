@@ -108,7 +108,16 @@
     "seatsUsed": "puestos usados",
     "launch": "Abrir",
     "showLess": "Mostrar menos",
-    "readMore": "Leer m\u00e1s"
+    "readMore": "Leer m\u00e1s",
+    "overdue": "vencido",
+    "quickLinks": {
+      "employees": "Directorio de Empleados",
+      "attendance": "Asistencia",
+      "leave": "Gesti\u00f3n de Licencias",
+      "documents": "Documentos",
+      "announcements": "Anuncios",
+      "policies": "Pol\u00edticas"
+    }
   },
   "leave": {
     "title": "Gesti\u00f3n de licencias",
