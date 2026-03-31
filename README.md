@@ -27,7 +27,7 @@ Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Pr
 | API route files | 35 |
 | Frontend pages | 94 |
 | Service modules | 34 |
-| Playwright E2E tests | 383 (15 spec files) |
+| Playwright E2E tests | 712 (18 spec files) |
 | AI agent tools | 41 |
 | Languages supported | 9 |
 | GitHub repositories | 12 |
@@ -251,7 +251,7 @@ empcloud/
 │           ├── types/
 │           ├── validators/
 │           └── constants/
-├── e2e/                            # 14 Playwright E2E spec files
+├── e2e/                            # 18 Playwright E2E spec files
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
@@ -451,7 +451,9 @@ empcloud/
 - Module health and subscription metrics
 - User and organization management at platform level
 - Organization detail drill-down with analytics (deactivate users, reset passwords, change roles)
-- Revenue analytics and subscription metrics
+- **Revenue Analytics** (`/admin/revenue`): MRR, ARR, growth %, revenue by module, revenue by tier, billing cycle distribution, top 10 customers by revenue
+- **Module Analytics** (`/admin/modules`): per-module revenue, subscriber count, seat utilization, tier distribution
+- **Subscription Metrics** (`/admin/subscriptions`): seat utilization by tier, billing cycle distribution, status breakdown, churn analysis
 - Platform-level settings and configuration
 - System notifications management (create, view, dismiss notifications for all admins)
 - Module enable/disable toggle (activate or deactivate modules across the platform)
@@ -473,11 +475,14 @@ empcloud/
 ### Online Payment (Stripe, Razorpay, PayPal)
 
 - Multi-gateway payment processing for subscription invoices
-- Stripe integration with Payment Intents API
-- Razorpay integration for INR payments
-- PayPal integration for international payments
+- Stripe integration with Checkout Sessions + Payment Intents API
+- Stripe webhook auto-recording (`checkout.session.completed`, `payment_intent.succeeded`, `charge.refunded`)
+- Razorpay integration for INR payments (UPI, Cards, Wallets)
+- PayPal integration with auto-currency conversion (INR → USD via live exchange rates from open.er-api.com)
 - Payment status tracking and webhook handling
 - Automatic invoice status updates on payment completion
+- Duplicate payment prevention via gateway transaction ID deduplication
+- Admin endpoints for accelerated billing testing (force-renew, time-shift, trigger workers)
 
 ### API Documentation
 
@@ -494,6 +499,10 @@ empcloud/
 - Per-module seat assignment (e.g., 100 Payroll seats, 25 Monitor seats)
 - Plan tiers with feature flags (Basic, Professional, Enterprise)
 - Usage tracking & seat utilization reports
+- Subscription lifecycle: create → invoice → pay → renew → cancel
+- Force-renew and time-shift admin endpoints for E2E testing without waiting 30 days
+- Dunning: progressive overdue enforcement (reminder → warning → suspended → deactivated)
+- Grace period support (configurable per org or globally)
 
 ### Internal Billing Engine
 
@@ -951,7 +960,12 @@ SMTP_PASS=
 | E2E deep lifecycle tests | 15 | Playwright: apply->approve->balance, ticket lifecycle, billing |
 | Security tests | 109 | Playwright: SQL injection, XSS, CSRF, tenant isolation, RBAC, path traversal |
 | NexGen verification | 47 | Playwright: 5 roles, all features, mobile responsive, Super Admin |
-| **Total** | **383+ E2E** | All automated via Playwright (15 spec files) |
+| Billing payment tests | 11 | Playwright: Stripe checkout, Razorpay order, PayPal, gateway dropdown, invoice PDF |
+| Subscription lifecycle | 27 | Playwright: create, invoice, pay, force-renew, time-shift, seats, access, cancel, dunning |
+| Super admin income | 19 | Playwright: MRR/ARR, revenue by module/tier, top customers, calculation integrity |
+| Stripe webhook | 2 | Playwright: end-to-end payment loop, webhook endpoint reachability |
+| EMP Billing unit tests | 622 | Vitest: auth, invoice, payment, subscription, dunning, metrics, reports, webhooks |
+| **Total** | **712 E2E + 1,457 unit/API** | All automated via Playwright (18 spec files) + Vitest |
 
 ### Running Tests
 
