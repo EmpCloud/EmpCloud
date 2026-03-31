@@ -23,16 +23,16 @@ Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Pr
 
 | Metric | Count |
 |--------|-------|
-| Database migrations | 30 |
+| Database migrations | 36 |
 | API route files | 35 |
-| Frontend pages | 95+ |
-| Service modules | 55+ |
-| Automated tests | 1,670+ (235 E2E + 833 API + 602 unit) |
-| Security tests | 109 |
+| Frontend pages | 94 |
+| Service modules | 34 |
+| Playwright E2E tests | 383 (15 spec files) |
 | AI agent tools | 41 |
 | Languages supported | 9 |
-| GitHub repositories | 10 |
-| Modules deployed to test server | 10 |
+| GitHub repositories | 12 |
+| Modules deployed to test server | 12 (including 8 Monitor microservices) |
+| Roles | 5 (employee → manager → hr_admin → org_admin → super_admin) |
 
 ---
 
@@ -96,6 +96,10 @@ All modules are deployed to the test environment:
 | EMP Payroll | https://testpayroll.empcloud.com | https://testpayroll-api.empcloud.com |
 | EMP Project | https://test-project.empcloud.com | https://test-project-api.empcloud.com |
 | EMP Monitor | https://test-empmonitor.empcloud.com | https://test-empmonitor-api.empcloud.com |
+| EMP Field | https://test-field.empcloud.com | https://test-field-api.empcloud.com |
+| EMP Billing (internal) | https://test-billing.empcloud.com | https://test-billing-api.empcloud.com |
+
+**Server ports:** Cloud 3000, Payroll 4000, Billing 4001, Performance 4300, Exit 4400, Recruit 4500, Rewards 4600, LMS 4700, Field 4800, Monitor 5000 (+ 7 microservices 5001-5007), Projects 9000/9001/3100
 
 ---
 
@@ -709,7 +713,7 @@ This approach avoids the full OAuth2 redirect dance for cross-module navigation,
 
 ## Database Schema (empcloud DB)
 
-30 migration files covering all platform tables:
+36 migration files covering all platform tables:
 
 ### Identity & Platform Tables (migrations 001-004)
 - `organizations` -- Registered companies / tenants
@@ -947,7 +951,7 @@ SMTP_PASS=
 | E2E deep lifecycle tests | 15 | Playwright: apply->approve->balance, ticket lifecycle, billing |
 | Security tests | 109 | Playwright: SQL injection, XSS, CSRF, tenant isolation, RBAC, path traversal |
 | NexGen verification | 47 | Playwright: 5 roles, all features, mobile responsive, Super Admin |
-| **Total** | **1,670+** | All automated via Vitest and Playwright |
+| **Total** | **383+ E2E** | All automated via Playwright (15 spec files) |
 
 ### Running Tests
 
