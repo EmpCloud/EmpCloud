@@ -36,11 +36,13 @@ const TIER_COLORS: Record<string, string> = {
   enterprise: "#f59e0b",
 };
 
-function formatINR(value: number): string {
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
-  if (value >= 1000) return `₹${(value / 1000).toFixed(1)}K`;
-  return `₹${value.toLocaleString("en-IN")}`;
+/** Format paise → readable INR (all monetary values from the API are in paise) */
+function formatINR(paise: number): string {
+  const rupees = paise / 100;
+  if (rupees >= 10000000) return `₹${(rupees / 10000000).toFixed(2)} Cr`;
+  if (rupees >= 100000) return `₹${(rupees / 100000).toFixed(2)} L`;
+  if (rupees >= 1000) return `₹${(rupees / 1000).toFixed(1)}K`;
+  return `₹${rupees.toLocaleString("en-IN")}`;
 }
 
 export default function RevenueAnalyticsPage() {

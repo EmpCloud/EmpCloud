@@ -25,7 +25,8 @@ const COLORS = [
   "#6d28d9", "#4f46e5", "#7c3aed", "#5b21b6", "#4338ca",
 ];
 
-function formatINR(value: number): string {
+function formatINR(paise: number): string {
+  const value = paise / 100;
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
   if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
   if (value >= 1000) return `₹${(value / 1000).toFixed(1)}K`;
