@@ -27,7 +27,7 @@ Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Pr
 | API route files | 35 |
 | Frontend pages | 94 |
 | Service modules | 34 |
-| Playwright E2E tests | 737 (22 spec files) + 1,581 planned |
+| Playwright E2E tests | 1,216 passing (49 spec files) |
 | AI agent tools | 41 |
 | Languages supported | 9 |
 | GitHub repositories | 12 |
@@ -970,7 +970,15 @@ SMTP_PASS=
 | Email notifications | 9 | Playwright: in-app notifications, billing workers, system alerts |
 | Load / performance | 22 | Playwright: API benchmarks <500ms, 10/20 concurrent, 9 module health checks |
 | Regression bugfixes | 33 | Playwright: all 33 bug fixes (#1190-#1289) verified |
-| **Current Total** | **737 E2E + 1,457 unit/API** | All automated via Playwright (22 spec files) + Vitest |
+| Database verification | 20 | Playwright: round-trip CRUD persistence, state transitions |
+| Webhook integration | 15 | Playwright: EmpCloud↔Billing webhook delivery, Stripe auto-record |
+| File operations | 15 | Playwright: upload/download, Content-Type, auth, validation |
+| Race conditions | 12 | Playwright: concurrent requests, double-submit, token rotation |
+| Edge cases | 20 | Playwright: validation, XSS, Unicode, pagination, zero-amount |
+| Cross-module | 15 | Playwright: SSO exchange, billing sync, MRR validation |
+| Accessibility | 12 | Playwright: ARIA labels, tab order, form labels, contrast |
+| Performance at scale | 15 | Playwright: 50 concurrent, response times, memory leak check |
+| **Current Total** | **1,216 E2E + 1,457 unit/API** | All automated via Playwright (49 spec files) + Vitest |
 
 ### Master Test Plan (1,581 additional test cases)
 
