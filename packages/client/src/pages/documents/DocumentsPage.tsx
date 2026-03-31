@@ -110,7 +110,7 @@ export default function DocumentsPage() {
   }
 
   const [page, setPage] = useState(1);
-  const [searchUserId, setSearchUserId] = useState<string>("");
+  const [searchUserId] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
   const [showUpload, setShowUpload] = useState(false);
