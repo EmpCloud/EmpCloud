@@ -202,6 +202,7 @@ export async function listRecords(
 
   let query = db("attendance_records as ar")
     .join("users as u", "ar.user_id", "u.id")
+    .leftJoin("departments as dept", "u.department_id", "dept.id")
     .where("ar.organization_id", orgId);
 
   if (params?.date) {
@@ -238,7 +239,8 @@ export async function listRecords(
       "u.first_name",
       "u.last_name",
       "u.email",
-      "u.emp_code"
+      "u.emp_code",
+      "dept.name as department_name"
     )
     .orderBy("ar.date", "desc")
     .limit(perPage)

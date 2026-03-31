@@ -87,10 +87,11 @@ export default function AttendanceDashboardPage() {
 
   const handleExportCSV = () => {
     if (!records || records.length === 0) return;
-    const headers = ["Employee", "Emp Code", "Date", "Check In", "Check Out", "Worked", "Status", "Late (min)"];
+    const headers = ["Employee", "Emp Code", "Department", "Date", "Check In", "Check Out", "Worked", "Status", "Late (min)"];
     const rows = records.map((r: any) => [
       `${r.first_name || ""} ${r.last_name || ""}`.trim(),
       r.emp_code || r.email || "",
+      r.department_name || "",
       r.date ? new Date(r.date).toLocaleDateString() : "",
       r.check_in ? new Date(r.check_in).toLocaleTimeString() : "",
       r.check_out ? new Date(r.check_out).toLocaleTimeString() : "",
@@ -241,6 +242,7 @@ export default function AttendanceDashboardPage() {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Date</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check In</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check Out</th>
@@ -256,6 +258,7 @@ export default function AttendanceDashboardPage() {
                   <tr key={i} className="animate-pulse">
                     <td className="px-6 py-4"><div className="h-4 w-28 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
@@ -265,7 +268,7 @@ export default function AttendanceDashboardPage() {
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">No attendance records found for the selected filters</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No attendance records found for the selected filters</td></tr>
             ) : (
               records.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50">
@@ -279,6 +282,9 @@ export default function AttendanceDashboardPage() {
                         <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {r.department_name || "-"}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {r.date ? new Date(r.date).toLocaleDateString() : "-"}
