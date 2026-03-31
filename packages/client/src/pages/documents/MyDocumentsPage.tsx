@@ -76,6 +76,20 @@ function getVerificationBadge(doc: any) {
   }
 }
 
+// --- Download helper ---
+
+async function downloadDocument(docId: number, docName: string) {
+  const response = await api.get(`/documents/${docId}/download`, { responseType: "blob" });
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", docName || "document");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 // --- Component ---
 
 export default function MyDocumentsPage() {
@@ -309,12 +323,18 @@ export default function MyDocumentsPage() {
                   <div className="flex flex-col items-end gap-2">
                     {getVerificationBadge(doc)}
                     <div className="flex items-center gap-2">
-                      <a
-                        href={`/api/v1/documents/${doc.id}/download`}
+                      <button
+                        onClick={async () => {
+                          try {
+                            await downloadDocument(doc.id, doc.name);
+                          } catch {
+                            alert("Failed to download document.");
+                          }
+                        }}
                         className="text-xs text-brand-600 hover:text-brand-800 font-medium"
                       >
                         Download
-                      </a>
+                      </button>
                       {(doc.verification_status === "rejected" || isRejected) && (
                         <button
                           onClick={() => setShowUpload(true)}

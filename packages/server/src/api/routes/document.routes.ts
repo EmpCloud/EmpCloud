@@ -217,7 +217,20 @@ router.get("/:id/download", authenticate, async (req: Request, res: Response, ne
   try {
     const doc = await documentService.getDocumentForDownload(req.user!.org_id, paramInt(req.params.id), req.user!.sub, req.user!.role);
     const absolutePath = path.resolve(doc.file_path);
-    res.download(absolutePath, doc.name);
+
+    // Ensure the download filename has the correct extension from the stored file
+    let downloadName = doc.name || "document";
+    const storedExt = path.extname(doc.file_path);
+    if (storedExt && !path.extname(downloadName)) {
+      downloadName += storedExt;
+    }
+
+    // Set explicit Content-Type from stored mime_type so browsers handle the file correctly
+    if (doc.mime_type) {
+      res.setHeader("Content-Type", doc.mime_type);
+    }
+    res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadName)}"`);
+    res.download(absolutePath, downloadName);
   } catch (err) { next(err); }
 });
 

@@ -841,11 +841,14 @@ function InvoiceRow({
         return;
       }
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
+      const pdfBlob = new Blob([blob], { type: "application/pdf" });
+      const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `${invoice.invoiceNumber || "invoice"}.pdf`;
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(url);
     } catch {
       // Fallback on network error as well
