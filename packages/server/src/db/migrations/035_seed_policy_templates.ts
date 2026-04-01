@@ -81,7 +81,7 @@ const POLICY_TEMPLATES = [
 ];
 
 export async function up(knex: Knex): Promise<void> {
-  const orgs = await knex("organizations").select("id");
+  const orgs = await knex("organizations").select("id", "name");
 
   for (const org of orgs) {
     const existing = await knex("company_policies")
@@ -96,16 +96,24 @@ export async function up(knex: Knex): Promise<void> {
       .first();
     if (!admin) continue;
 
+    // Replace hardcoded company name with the actual org name
+    const orgName = org.name || "the Company";
+
     for (const template of POLICY_TEMPLATES) {
       const exists = await knex("company_policies")
         .where({ organization_id: org.id, title: template.title })
         .first();
       if (exists) continue;
 
+      const content = template.content
+        .replace(/TechNova Solutions Pvt\. Ltd\./g, orgName)
+        .replace(/TechNova/g, orgName.split(/\s/)[0])
+        .replace(/technova\.in/g, "company.com");
+
       await knex("company_policies").insert({
         organization_id: org.id,
         title: template.title,
-        content: template.content,
+        content,
         category: template.category,
         version: 1,
         effective_date: template.effective_date === "null" ? null : template.effective_date,
