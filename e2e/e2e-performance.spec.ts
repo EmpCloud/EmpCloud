@@ -30,40 +30,45 @@ let competencyId: number | string = 0;
 let pipId: number | string = 0;
 let pipObjectiveId: number | string = 0;
 
+async function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)); }
+
+async function loginWithRetry(request: any, creds: { email: string; password: string }): Promise<string> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await request.post(`${EMPCLOUD_API}/auth/login`, { data: creds });
+    if (res.status() === 429) { await sleep(2000); continue; }
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    return body.data.tokens.access_token;
+  }
+  throw new Error('Login failed after 3 retries (rate limited)');
+}
+
+async function ssoWithRetry(request: any, api: string, ecToken: string): Promise<string> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await request.post(`${api}/auth/sso`, { data: { token: ecToken } });
+    if (res.status() === 429) { await sleep(2000); continue; }
+    expect(res.status()).toBe(200);
+    const body = await res.json();
+    return body.data?.tokens?.accessToken || '';
+  }
+  throw new Error('SSO failed after 3 retries (rate limited)');
+}
+
 test.describe('EMP Performance Module', () => {
   // ─── Setup: SSO login ──────────────────────────────────────────────────────
 
   test.beforeAll(async ({ request }) => {
     // Login to EmpCloud as org_admin
-    const login = await request.post(`${EMPCLOUD_API}/auth/login`, {
-      data: { email: 'ananya@technova.in', password: 'Welcome@123' },
-    });
-    expect(login.status()).toBe(200);
-    const ecBody = await login.json();
-    const ecToken = ecBody.data.tokens.access_token;
-
-    // SSO to Performance module
-    const sso = await request.post(`${PERF_API}/auth/sso`, {
-      data: { token: ecToken },
-    });
-    expect(sso.status()).toBe(200);
-    const ssoBody = await sso.json();
-    expect(ssoBody.success).toBe(true);
-    expect(ssoBody.data?.tokens?.accessToken, 'SSO response missing data.tokens.accessToken').toBeTruthy();
-    token = ssoBody.data.tokens.accessToken;
+    const ecToken = await loginWithRetry(request, { email: 'ananya@technova.in', password: 'Welcome@123' });
+    token = await ssoWithRetry(request, PERF_API, ecToken);
+    expect(token.length).toBeGreaterThan(10);
 
     // Login as employee for RBAC tests
-    const empLogin = await request.post(`${EMPCLOUD_API}/auth/login`, {
-      data: { email: 'arjun@technova.in', password: 'Welcome@123' },
-    });
-    if (empLogin.status() === 200) {
-      const empBody = await empLogin.json();
-      const empEcToken = empBody.data.tokens.access_token;
-      const empSso = await request.post(`${PERF_API}/auth/sso`, {
-        data: { token: empEcToken },
-      });
-      const empSsoBody = await empSso.json();
-      employeeToken = empSsoBody.data?.tokens?.accessToken || '';
+    try {
+      const empEcToken = await loginWithRetry(request, { email: 'arjun@technova.in', password: 'Welcome@123' });
+      employeeToken = await ssoWithRetry(request, PERF_API, empEcToken);
+    } catch {
+      employeeToken = '';
     }
   });
 
