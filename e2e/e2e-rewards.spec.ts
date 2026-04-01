@@ -174,14 +174,45 @@ test.describe.serial('EMP Rewards Module', () => {
 
   test.describe('3 - Nominations', () => {
 
-    test('3.1 Create nomination', async ({ request }) => {
+    let programId = '';
+
+    test('3.1 Create nomination program', async ({ request }) => {
+      // First fetch existing programs, or create one
+      const listRes = await request.get(`${REWARDS_API}/nominations/programs`, auth());
+      const listBody = await listRes.json();
+      const programs = listBody.data?.data || listBody.data;
+      if (Array.isArray(programs) && programs.length > 0) {
+        programId = programs[0].id;
+      }
+      if (!programId) {
+        // Create a nomination program
+        const r = await request.post(`${REWARDS_API}/nominations/programs`, {
+          ...authJson(),
+          data: {
+            name: `PW Star Performer ${RUN}`,
+            description: 'Playwright test nomination program',
+            frequency: 'monthly',
+            nominations_per_user: 3,
+            points_awarded: 100,
+            start_date: '2026-04-01',
+            end_date: '2026-12-31',
+          },
+        });
+        expect([200, 201]).toContain(r.status());
+        const body = await r.json();
+        if (body.data?.id) programId = body.data.id;
+      }
+      expect(programId).toBeTruthy();
+    });
+
+    test('3.2 Submit nomination', async ({ request }) => {
+      expect(programId, 'Prerequisite failed — programId was not set').toBeTruthy();
       const r = await request.post(`${REWARDS_API}/nominations`, {
         ...authJson(),
         data: {
-          nominee_email: 'arjun@technova.in',
-          category: 'star_performer',
+          program_id: programId,
+          nominee_id: 527,
           reason: `PW nomination for excellence ${RUN}`,
-          points: 100,
         },
       });
       expect([200, 201, 400]).toContain(r.status());
@@ -189,24 +220,18 @@ test.describe.serial('EMP Rewards Module', () => {
       if (body.data?.id) nominationId = body.data.id;
     });
 
-    test('3.2 List nominations', async ({ request }) => {
+    test('3.3 List nominations', async ({ request }) => {
       const r = await request.get(`${REWARDS_API}/nominations`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
-    test('3.3 Approve nomination', async ({ request }) => {
+    test('3.4 Review nomination (select)', async ({ request }) => {
       expect(nominationId, 'Prerequisite failed — nominationId was not set').toBeTruthy();
-      const r = await request.patch(`${REWARDS_API}/nominations/${nominationId}/approve`, {
+      const r = await request.put(`${REWARDS_API}/nominations/${nominationId}/review`, {
         ...authJson(),
-        data: { approved: true, comments: 'Well deserved' },
+        data: { status: 'selected', review_note: 'Well deserved - PW test' },
       });
       expect([200, 204, 400, 404]).toContain(r.status());
-    });
-
-    test('3.4 Get nomination details', async ({ request }) => {
-      expect(nominationId, 'Prerequisite failed — nominationId was not set').toBeTruthy();
-      const r = await request.get(`${REWARDS_API}/nominations/${nominationId}`, auth());
-      expect([200, 404]).toContain(r.status());
     });
   });
 

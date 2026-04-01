@@ -289,10 +289,10 @@ test.describe.serial('EMP Recruit Module', () => {
       expect(body.data).toHaveProperty('id', applicationId);
     });
 
-    test('4.5 Move application to screening stage', async ({ request }) => {
+    test('4.5 Move application to screened stage', async ({ request }) => {
       const r = await request.patch(`${RECRUIT_API}/applications/${applicationId}/stage`, {
         ...authJson(),
-        data: { stage: 'screening' },
+        data: { stage: 'screened' },
       });
       expect([200, 204]).toContain(r.status());
     });
@@ -309,8 +309,7 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.post(`${RECRUIT_API}/applications/${applicationId}/notes`, {
         ...authJson(),
         data: {
-          content: `Playwright test note ${RUN}`,
-          type: 'general',
+          notes: `Playwright test note ${RUN}`,
         },
       });
       expect([200, 201]).toContain(r.status());
