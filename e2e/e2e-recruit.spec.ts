@@ -53,19 +53,19 @@ function authJson() {
   };
 }
 
-// Shared state across tests
-let jobId: number;
-let candidateId: number;
-let applicationId: number;
-let offerId: number;
-let interviewId: number;
-let referralId: number;
-let bgCheckId: number;
-let bgPackageId: number;
-let onboardingTemplateId: number;
-let onboardingTaskId: number;
-let checklistId: number;
-let pipelineStageId: number;
+// Shared state across tests (Recruit uses UUID strings for all IDs)
+let jobId: string;
+let candidateId: string;
+let applicationId: string;
+let offerId: string;
+let interviewId: string;
+let referralId: string;
+let bgCheckId: string;
+let bgPackageId: string;
+let onboardingTemplateId: string;
+let onboardingTaskId: string;
+let checklistId: string;
+let pipelineStageId: string;
 
 // =============================================================================
 // 1. Auth & Health (4 tests)
@@ -127,7 +127,9 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/jobs`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.jobs || body.data)).toBe(true);
+      // Recruit returns paginated { data: { data: [...], total, page, ... } }
+      const jobs = body.data?.data || body.data?.jobs || body.data;
+      expect(Array.isArray(jobs)).toBe(true);
     });
 
     test('2.3 Get job by ID', async ({ request }) => {
@@ -200,7 +202,8 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/candidates`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.candidates || body.data)).toBe(true);
+      const candidates = body.data?.data || body.data?.candidates || body.data;
+      expect(Array.isArray(candidates)).toBe(true);
     });
 
     test('3.3 Search candidates', async ({ request }) => {
@@ -275,7 +278,8 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/applications`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.applications || body.data)).toBe(true);
+      const apps = body.data?.data || body.data?.applications || body.data;
+      expect(Array.isArray(apps)).toBe(true);
     });
 
     test('4.4 Get application by ID', async ({ request }) => {
@@ -349,7 +353,8 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/offers`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.offers || body.data)).toBe(true);
+      const offers = body.data?.data || body.data?.offers || body.data;
+      expect(Array.isArray(offers)).toBe(true);
     });
 
     test('5.3 Get offer by ID', async ({ request }) => {
@@ -431,7 +436,8 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/interviews`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.interviews || body.data)).toBe(true);
+      const interviews = body.data?.data || body.data?.interviews || body.data;
+      expect(Array.isArray(interviews)).toBe(true);
     });
 
     test('6.3 Get interview by ID', async ({ request }) => {
@@ -513,7 +519,8 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/referrals`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.referrals || body.data)).toBe(true);
+      const referrals = body.data?.data || body.data?.referrals || body.data;
+      expect(Array.isArray(referrals)).toBe(true);
     });
 
     test('7.3 Get referral by ID', async ({ request }) => {
@@ -579,7 +586,8 @@ test.describe.serial('EMP Recruit Module', () => {
       const r = await request.get(`${RECRUIT_API}/background-checks`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
-      expect(Array.isArray(body.data?.checks || body.data)).toBe(true);
+      const checks = body.data?.data || body.data?.checks || body.data;
+      expect(Array.isArray(checks)).toBe(true);
     });
 
     test('8.4 Update background check result', async ({ request }) => {

@@ -91,7 +91,7 @@ test.describe("Whistleblowing", () => {
       data: {
         subject: `E2E Named Report ${RUN}`,
         description: "Reporting a safety concern in the warehouse area.",
-        category: "safety",
+        category: "safety_violation",
         severity: "medium",
         is_anonymous: false,
       },
@@ -190,12 +190,12 @@ test.describe("Whistleblowing", () => {
     expect(body.data).toHaveProperty("id");
   });
 
-  test("HR can change report status to investigating", async ({ request }) => {
+  test("HR can change report status to under_investigation", async ({ request }) => {
     test.setTimeout(30_000);
     const res = await request.put(`${API}/whistleblowing/reports/${reportId}/status`, {
       headers: auth(adminToken),
       data: {
-        status: "investigating",
+        status: "under_investigation",
       },
     });
     expect(res.status()).toBe(200);

@@ -19,15 +19,15 @@ const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
 
 let token = '';
 
-// IDs captured during test execution
-let createdClientSiteId: number | string = 0;
-let createdWorkOrderId: number | string = 0;
-let createdExpenseId: number | string = 0;
-let createdRouteId: number | string = 0;
-let createdGeoFenceId: number | string = 0;
-let createdVisitId: number | string = 0;
-let checkinId: number | string = 0;
-let createdMileageId: number | string = 0;
+// IDs captured during test execution (Field uses UUID strings)
+let createdClientSiteId: string = '';
+let createdWorkOrderId: string = '';
+let createdExpenseId: string = '';
+let createdRouteId: string = '';
+let createdGeoFenceId: string = '';
+let createdVisitId: string = '';
+let checkinId: string = '';
+let createdMileageId: string = '';
 
 // ---------------------------------------------------------------------------
 // Helper: auth header
@@ -92,13 +92,13 @@ test.describe('EMP Field Module — Advanced', () => {
           latitude: 18.5204,
           longitude: 73.8567,
           radius_meters: 200,
-          contact_person: 'PW Tester',
+          contact_name: 'PW Tester',
           contact_phone: '9876543210',
         },
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdClientSiteId = body.data?.id || body.data?.clientSite?.id || body.data?.client_site?.id || 0;
+      createdClientSiteId = body.data?.id || body.data?.clientSite?.id || body.data?.client_site?.id || '';
     });
 
     test('2.2 List client sites with pagination', async ({ request }) => {
@@ -131,18 +131,30 @@ test.describe('EMP Field Module — Advanced', () => {
   test.describe('3. Check-in / Check-out', () => {
 
     test('3.1 Check in at client site', async ({ request }) => {
+      // Check out any active check-in first
+      const active = await request.get(`${FIELD_API}/checkins/active`, auth());
+      if (active.status() === 200) {
+        const activeBody = await active.json();
+        if (activeBody.data?.id && activeBody.data?.status === 'active') {
+          await request.post(`${FIELD_API}/checkins/${activeBody.data.id}/checkout`, {
+            ...auth(),
+            data: { check_out_lat: 18.5204, check_out_lng: 73.8567 },
+          });
+        }
+      }
+
       const r = await request.post(`${FIELD_API}/checkins`, {
         ...auth(),
         data: {
-          client_site_id: createdClientSiteId || undefined,
-          latitude: 18.5204,
-          longitude: 73.8567,
+          client_site_id: createdClientSiteId || null,
+          check_in_lat: 18.5204,
+          check_in_lng: 73.8567,
           notes: 'PW check-in test',
         },
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      checkinId = body.data?.id || body.data?.checkin?.id || body.data?.checkinId || 0;
+      checkinId = body.data?.id || body.data?.checkin?.id || body.data?.checkinId || '';
     });
 
     test('3.2 List checkins', async ({ request }) => {
@@ -158,11 +170,11 @@ test.describe('EMP Field Module — Advanced', () => {
 
     test('3.4 Check out', async ({ request }) => {
       expect(checkinId, 'Prerequisite failed — checkinId was not set').toBeTruthy();
-      const r = await request.put(`${FIELD_API}/checkins/${checkinId}/checkout`, {
+      const r = await request.post(`${FIELD_API}/checkins/${checkinId}/checkout`, {
         ...auth(),
         data: {
-          latitude: 18.5210,
-          longitude: 73.8570,
+          check_out_lat: 18.5210,
+          check_out_lng: 73.8570,
           notes: 'PW check-out test',
         },
       });
@@ -180,13 +192,13 @@ test.describe('EMP Field Module — Advanced', () => {
       expect(r.status()).toBe(200);
     });
 
-    test('3.7 Check in without coordinates fails or warns', async ({ request }) => {
+    test('3.7 Check in without coordinates fails validation', async ({ request }) => {
       const r = await request.post(`${FIELD_API}/checkins`, {
         ...auth(),
         data: { notes: 'No coords test' },
       });
-      // Should either fail validation or create with warning
-      expect([200, 201, 400, 422]).toContain(r.status());
+      // check_in_lat and check_in_lng are required — should fail validation
+      expect([400, 422]).toContain(r.status());
     });
 
     test('3.8 Get today checkins summary', async ({ request }) => {
@@ -216,7 +228,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdMileageId = body.data?.id || body.data?.mileage?.id || 0;
+      createdMileageId = body.data?.id || body.data?.mileage?.id || '';
     });
 
     test('4.2 List mileage entries', async ({ request }) => {
@@ -259,7 +271,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdWorkOrderId = body.data?.id || body.data?.workOrder?.id || body.data?.work_order?.id || 0;
+      createdWorkOrderId = body.data?.id || body.data?.workOrder?.id || body.data?.work_order?.id || '';
     });
 
     test('5.2 List work orders', async ({ request }) => {
@@ -317,7 +329,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdExpenseId = body.data?.id || body.data?.expense?.id || 0;
+      createdExpenseId = body.data?.id || body.data?.expense?.id || '';
     });
 
     test('6.2 List expenses', async ({ request }) => {
@@ -376,7 +388,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdRouteId = body.data?.id || body.data?.route?.id || 0;
+      createdRouteId = body.data?.id || body.data?.route?.id || '';
     });
 
     test('7.2 List routes', async ({ request }) => {
@@ -407,7 +419,7 @@ test.describe('EMP Field Module — Advanced', () => {
         data: { name: `PW Route Del ${Date.now()}`, waypoints: [] },
       });
       const cBody = await create.json();
-      const delId = cBody.data?.id || cBody.data?.route?.id || 0;
+      const delId = cBody.data?.id || cBody.data?.route?.id || '';
       expect(delId, 'Prerequisite failed — delId was not set').toBeTruthy();
       const r = await request.delete(`${FIELD_API}/routes/${delId}`, auth());
       expect([200, 204]).toContain(r.status());
@@ -433,7 +445,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdGeoFenceId = body.data?.id || body.data?.geoFence?.id || body.data?.geo_fence?.id || 0;
+      createdGeoFenceId = body.data?.id || body.data?.geoFence?.id || body.data?.geo_fence?.id || '';
     });
 
     test('8.2 List geo-fences', async ({ request }) => {
@@ -514,7 +526,7 @@ test.describe('EMP Field Module — Advanced', () => {
       });
       expect([200, 201]).toContain(r.status());
       const body = await r.json();
-      createdVisitId = body.data?.id || body.data?.visit?.id || 0;
+      createdVisitId = body.data?.id || body.data?.visit?.id || '';
     });
 
     test('10.2 List visits', async ({ request }) => {

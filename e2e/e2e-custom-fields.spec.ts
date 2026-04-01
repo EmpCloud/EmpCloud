@@ -68,11 +68,10 @@ test.describe("Custom Fields", () => {
       headers: auth(adminToken),
       data: {
         name: `E2E Field ${RUN}`,
-        field_key: `e2e_field_${RUN}`,
         entity_type: "employee",
         field_type: "text",
         is_required: false,
-        description: "E2E test text field",
+        help_text: "E2E test text field",
       },
     });
     expect(res.status()).toBe(201);
@@ -82,17 +81,16 @@ test.describe("Custom Fields", () => {
     fieldId = body.data.id;
   });
 
-  test("HR can create a second custom field definition (select)", async ({ request }) => {
+  test("HR can create a second custom field definition (dropdown)", async ({ request }) => {
     test.setTimeout(30_000);
     const res = await request.post(`${API}/custom-fields/definitions`, {
       headers: auth(adminToken),
       data: {
-        name: `E2E Select ${RUN}`,
-        field_key: `e2e_select_${RUN}`,
+        name: `E2E Dropdown ${RUN}`,
         entity_type: "employee",
-        field_type: "select",
+        field_type: "dropdown",
         is_required: false,
-        description: "E2E test select field",
+        help_text: "E2E test dropdown field",
         options: ["Option A", "Option B", "Option C"],
       },
     });
@@ -125,7 +123,7 @@ test.describe("Custom Fields", () => {
     const body = await res.json();
     expect(body.success).toBe(true);
     expect(body.data).toHaveProperty("id", fieldId);
-    expect(body.data).toHaveProperty("field_type", "text");
+    expect(body.data.field_type).toBe("text");
   });
 
   test("HR can update a custom field definition", async ({ request }) => {
@@ -133,7 +131,7 @@ test.describe("Custom Fields", () => {
     const res = await request.put(`${API}/custom-fields/definitions/${fieldId}`, {
       headers: auth(adminToken),
       data: {
-        description: "Updated description via E2E",
+        help_text: "Updated help text via E2E",
       },
     });
     expect(res.status()).toBe(200);
@@ -149,7 +147,7 @@ test.describe("Custom Fields", () => {
       headers: auth(adminToken),
       data: {
         values: [
-          { field_id: fieldId, value: `E2E value ${RUN}` },
+          { fieldId: fieldId, value: `E2E value ${RUN}` },
         ],
       },
     });

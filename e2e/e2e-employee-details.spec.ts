@@ -312,18 +312,23 @@ test.describe('Employee Details — Profile CRUD', () => {
     });
 
     test('PUT salary — upsert salary structure as HR', async ({ request }) => {
+      // Values must pass payroll-rule validation:
+      // gross = basic + hra + da + special_allowance
+      // employer_pf = 12% of basic, capped at Rs 1800/month equivalent
+      // gratuity = 4.81% of basic
+      // ctc = gross + employer_pf + employer_esi + gratuity
       const resp = await request.put(`${API_BASE}/employees/${employeeUserId}/salary`, {
         headers: { Authorization: `Bearer ${adminToken}` },
         data: {
-          ctc: 1200000,
+          ctc: 984888,
           basic: 480000,
           hra: 240000,
           da: 60000,
           special_allowance: 180000,
           gross: 960000,
-          employer_pf: 57600,
+          employer_pf: 1800,
           employer_esi: 0,
-          gratuity: 23077,
+          gratuity: 23088,
         },
       });
       expect(resp.status()).toBe(200);
@@ -335,15 +340,15 @@ test.describe('Employee Details — Profile CRUD', () => {
       const resp = await request.put(`${API_BASE}/employees/${employeeUserId}/salary`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
         data: {
-          ctc: 9999999,
-          basic: 4000000,
-          hra: 2000000,
-          da: 500000,
-          special_allowance: 1500000,
-          gross: 8000000,
-          employer_pf: 480000,
+          ctc: 984888,
+          basic: 480000,
+          hra: 240000,
+          da: 60000,
+          special_allowance: 180000,
+          gross: 960000,
+          employer_pf: 1800,
           employer_esi: 0,
-          gratuity: 192308,
+          gratuity: 23088,
         },
       });
       expect(resp.status()).toBe(403);
