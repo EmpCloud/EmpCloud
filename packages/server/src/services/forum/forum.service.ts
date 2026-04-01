@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ForbiddenError } from "../../utils/errors.js";
+import { sanitizeHtml } from "../../utils/sanitize-html.js";
 import type {
   CreateForumCategoryInput,
   UpdateForumCategoryInput,
@@ -128,8 +129,8 @@ export async function createPost(
     organization_id: orgId,
     category_id: data.category_id,
     author_id: userId,
-    title: data.title,
-    content: data.content,
+    title: sanitizeHtml(data.title),
+    content: sanitizeHtml(data.content),
     post_type: data.post_type || "discussion",
     tags: data.tags ? JSON.stringify(data.tags) : null,
     is_pinned: false,
@@ -271,8 +272,8 @@ export async function updatePost(
   }
 
   const updateData: Record<string, unknown> = { updated_at: new Date() };
-  if (data.title !== undefined) updateData.title = data.title;
-  if (data.content !== undefined) updateData.content = data.content;
+  if (data.title !== undefined) updateData.title = sanitizeHtml(data.title);
+  if (data.content !== undefined) updateData.content = sanitizeHtml(data.content);
   if (data.tags !== undefined)
     updateData.tags = data.tags ? JSON.stringify(data.tags) : null;
 
@@ -389,7 +390,7 @@ export async function createReply(
     post_id: postId,
     organization_id: orgId,
     author_id: userId,
-    content: data.content,
+    content: sanitizeHtml(data.content),
     parent_reply_id: data.parent_reply_id || null,
     like_count: 0,
     is_accepted: false,
