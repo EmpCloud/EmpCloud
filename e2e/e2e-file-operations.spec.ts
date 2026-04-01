@@ -272,8 +272,8 @@ test.describe("Upload Validation", () => {
       headers: authMultipart(employeeToken),
       multipart: {
         file: {
-          name: "large-file.txt",
-          mimeType: "text/plain",
+          name: "large-file.pdf",
+          mimeType: "application/pdf",
           buffer: largeBuffer,
         },
         category_id: String(categoryId),
@@ -357,9 +357,15 @@ test.describe("Employee Self-Service Documents", () => {
         headers: authMultipart(employeeToken),
         multipart: {
           file: {
-            name: "self-service-doc.txt",
-            mimeType: "text/plain",
-            buffer: Buffer.from(`Self-service document content ${RUN}`),
+            name: "self-service-doc.pdf",
+            mimeType: "application/pdf",
+            buffer: Buffer.from(
+              "%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n" +
+              "2 0 obj\n<< /Type /Pages /Kids [] /Count 0 >>\nendobj\n" +
+              `% Self-service document content ${RUN}\n` +
+              "xref\n0 3\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n" +
+              "trailer\n<< /Size 3 /Root 1 0 R >>\nstartxref\n109\n%%EOF"
+            ),
           },
           category_id: String(categoryId),
           name: `Self-Service Doc ${RUN}`,

@@ -253,7 +253,7 @@ test.describe("DB Verification: Announcement Lifecycle", () => {
     let initialCount: number;
 
     test("GET initial announcement count", async ({ request }) => {
-      const res = await request.get(`${API}/announcements?per_page=500`, {
+      const res = await request.get(`${API}/announcements?per_page=100`, {
         headers: auth(adminToken),
       });
       expect(res.status()).toBe(200);
@@ -279,7 +279,7 @@ test.describe("DB Verification: Announcement Lifecycle", () => {
 
     test("GET announcements — list includes new announcement", async ({ request }) => {
       // Use large page size since announcements are paginated (default 20)
-      const res = await request.get(`${API}/announcements?per_page=500`, {
+      const res = await request.get(`${API}/announcements?per_page=100`, {
         headers: auth(employeeToken),
       });
       expect(res.status()).toBe(200);
@@ -381,9 +381,9 @@ test.describe("DB Verification: Helpdesk Ticket Lifecycle", () => {
     });
 
     test("POST comment — comment persists on ticket", async ({ request }) => {
-      const res = await request.post(`${API}/helpdesk/tickets/${ticketId}/comments`, {
+      const res = await request.post(`${API}/helpdesk/tickets/${ticketId}/comment`, {
         headers: auth(adminToken),
-        data: { content: `E2E verification comment ${RUN}` },
+        data: { comment: `E2E verification comment ${RUN}` },
       });
       expect([200, 201]).toContain(res.status());
     });
@@ -672,7 +672,7 @@ test.describe("DB Verification: Event RSVP", () => {
 
     test("GET events — event appears in employee list", async ({ request }) => {
       // Use large page size since events are paginated (default 20)
-      const res = await request.get(`${API}/events?per_page=200`, {
+      const res = await request.get(`${API}/events?per_page=100`, {
         headers: auth(employeeToken),
       });
       expect(res.status()).toBe(200);
