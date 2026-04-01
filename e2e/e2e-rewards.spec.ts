@@ -119,7 +119,7 @@ test.describe.serial('EMP Rewards Module', () => {
   test.describe('2 - Rewards Catalog', () => {
 
     test('2.1 Create catalog item', async ({ request }) => {
-      const r = await request.post(`${REWARDS_API}/catalog`, {
+      const r = await request.post(`${REWARDS_API}/rewards`, {
         ...authJson(),
         data: {
           name: `PW Gift Card ${RUN}`,
@@ -136,7 +136,7 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('2.2 List catalog items', async ({ request }) => {
-      const r = await request.get(`${REWARDS_API}/catalog`, auth());
+      const r = await request.get(`${REWARDS_API}/rewards`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
       const list = body.data?.items || body.data?.catalog || body.data;
@@ -145,13 +145,13 @@ test.describe.serial('EMP Rewards Module', () => {
 
     test('2.3 Get catalog item by ID', async ({ request }) => {
       expect(catalogItemId, 'Prerequisite failed — catalogItemId was not set').toBeTruthy();
-      const r = await request.get(`${REWARDS_API}/catalog/${catalogItemId}`, auth());
+      const r = await request.get(`${REWARDS_API}/rewards/${catalogItemId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('2.4 Update catalog item', async ({ request }) => {
       expect(catalogItemId, 'Prerequisite failed — catalogItemId was not set').toBeTruthy();
-      const r = await request.put(`${REWARDS_API}/catalog/${catalogItemId}`, {
+      const r = await request.put(`${REWARDS_API}/rewards/${catalogItemId}`, {
         ...authJson(),
         data: { description: `Updated PW item ${RUN}`, points_cost: 600 },
       });
@@ -160,7 +160,7 @@ test.describe.serial('EMP Rewards Module', () => {
 
     test('2.5 Deactivate catalog item', async ({ request }) => {
       expect(catalogItemId, 'Prerequisite failed — catalogItemId was not set').toBeTruthy();
-      const r = await request.patch(`${REWARDS_API}/catalog/${catalogItemId}`, {
+      const r = await request.patch(`${REWARDS_API}/rewards/${catalogItemId}`, {
         ...authJson(),
         data: { is_active: false },
       });
@@ -365,7 +365,7 @@ test.describe.serial('EMP Rewards Module', () => {
   test.describe('8 - Budget', () => {
 
     test('8.1 Set rewards budget', async ({ request }) => {
-      const r = await request.post(`${REWARDS_API}/budget`, {
+      const r = await request.post(`${REWARDS_API}/budgets`, {
         ...authJson(),
         data: {
           period: '2026-Q2',
@@ -382,12 +382,12 @@ test.describe.serial('EMP Rewards Module', () => {
     });
 
     test('8.2 Get budget overview', async ({ request }) => {
-      const r = await request.get(`${REWARDS_API}/budget`, auth());
+      const r = await request.get(`${REWARDS_API}/budgets`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.3 Get budget utilization', async ({ request }) => {
-      const r = await request.get(`${REWARDS_API}/budget/utilization`, auth());
+      const r = await request.get(`${REWARDS_API}/budgets/utilization`, auth());
       expect([200, 404]).toContain(r.status());
     });
   });

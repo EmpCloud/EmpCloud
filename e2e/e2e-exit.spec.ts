@@ -125,7 +125,7 @@ test.describe.serial('EMP Exit Module', () => {
   test.describe('2 - Exit Initiation', () => {
 
     test('2.1 Initiate voluntary resignation', async ({ request }) => {
-      const r = await request.post(`${EXIT_API}/exit-requests`, {
+      const r = await request.post(`${EXIT_API}/exits`, {
         ...authJson(),
         data: {
           type: 'voluntary',
@@ -140,7 +140,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('2.2 List exit requests', async ({ request }) => {
-      const r = await request.get(`${EXIT_API}/exit-requests`, auth());
+      const r = await request.get(`${EXIT_API}/exits`, auth());
       expect(r.status()).toBe(200);
       const body = await r.json();
       const list = body.data?.exit_requests || body.data?.exitRequests || body.data;
@@ -149,13 +149,13 @@ test.describe.serial('EMP Exit Module', () => {
 
     test('2.3 Get exit request by ID', async ({ request }) => {
       expect(exitRequestId, 'Prerequisite failed — exitRequestId was not set').toBeTruthy();
-      const r = await request.get(`${EXIT_API}/exit-requests/${exitRequestId}`, auth());
+      const r = await request.get(`${EXIT_API}/exits/${exitRequestId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('2.4 Update exit request', async ({ request }) => {
       expect(exitRequestId, 'Prerequisite failed — exitRequestId was not set').toBeTruthy();
-      const r = await request.put(`${EXIT_API}/exit-requests/${exitRequestId}`, {
+      const r = await request.put(`${EXIT_API}/exits/${exitRequestId}`, {
         ...authJson(),
         data: { reason: `Updated reason ${RUN}` },
       });
@@ -164,7 +164,7 @@ test.describe.serial('EMP Exit Module', () => {
 
     test('2.5 Approve exit request', async ({ request }) => {
       expect(exitRequestId, 'Prerequisite failed — exitRequestId was not set').toBeTruthy();
-      const r = await request.patch(`${EXIT_API}/exit-requests/${exitRequestId}/approve`, {
+      const r = await request.patch(`${EXIT_API}/exits/${exitRequestId}/approve`, {
         ...authJson(),
         data: { comments: 'Approved by PW test' },
       });
@@ -172,7 +172,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('2.6 Unauthenticated exit request returns 401', async ({ request }) => {
-      const r = await request.get(`${EXIT_API}/exit-requests`);
+      const r = await request.get(`${EXIT_API}/exits`);
       expect(r.status()).toBe(401);
     });
   });
@@ -291,7 +291,7 @@ test.describe.serial('EMP Exit Module', () => {
   test.describe('5 - Asset Clearance', () => {
 
     test('5.1 Create asset clearance record', async ({ request }) => {
-      const r = await request.post(`${EXIT_API}/asset-clearance`, {
+      const r = await request.post(`${EXIT_API}/assets`, {
         ...authJson(),
         data: {
           exit_request_id: exitRequestId || undefined,
@@ -307,13 +307,13 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('5.2 List asset clearances', async ({ request }) => {
-      const r = await request.get(`${EXIT_API}/asset-clearance`, auth());
+      const r = await request.get(`${EXIT_API}/assets`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('5.3 Mark asset as returned', async ({ request }) => {
       expect(assetClearanceId, 'Prerequisite failed — assetClearanceId was not set').toBeTruthy();
-      const r = await request.patch(`${EXIT_API}/asset-clearance/${assetClearanceId}`, {
+      const r = await request.patch(`${EXIT_API}/assets/${assetClearanceId}`, {
         ...authJson(),
         data: { status: 'returned', return_date: '2026-04-15' },
       });
@@ -328,7 +328,7 @@ test.describe.serial('EMP Exit Module', () => {
   test.describe('6 - Knowledge Transfer', () => {
 
     test('6.1 Create knowledge transfer plan', async ({ request }) => {
-      const r = await request.post(`${EXIT_API}/knowledge-transfer`, {
+      const r = await request.post(`${EXIT_API}/kt`, {
         ...authJson(),
         data: {
           exit_request_id: exitRequestId || undefined,
@@ -348,19 +348,19 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('6.2 List knowledge transfer plans', async ({ request }) => {
-      const r = await request.get(`${EXIT_API}/knowledge-transfer`, auth());
+      const r = await request.get(`${EXIT_API}/kt`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('6.3 Get knowledge transfer by ID', async ({ request }) => {
       expect(knowledgeTransferId, 'Prerequisite failed — knowledgeTransferId was not set').toBeTruthy();
-      const r = await request.get(`${EXIT_API}/knowledge-transfer/${knowledgeTransferId}`, auth());
+      const r = await request.get(`${EXIT_API}/kt/${knowledgeTransferId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('6.4 Update knowledge transfer status', async ({ request }) => {
       expect(knowledgeTransferId, 'Prerequisite failed — knowledgeTransferId was not set').toBeTruthy();
-      const r = await request.patch(`${EXIT_API}/knowledge-transfer/${knowledgeTransferId}`, {
+      const r = await request.patch(`${EXIT_API}/kt/${knowledgeTransferId}`, {
         ...authJson(),
         data: { status: 'in_progress' },
       });
@@ -410,7 +410,7 @@ test.describe.serial('EMP Exit Module', () => {
   test.describe('8 - Exit Interviews', () => {
 
     test('8.1 Schedule exit interview', async ({ request }) => {
-      const r = await request.post(`${EXIT_API}/exit-interviews`, {
+      const r = await request.post(`${EXIT_API}/interviews`, {
         ...authJson(),
         data: {
           exit_request_id: exitRequestId || undefined,
@@ -427,19 +427,19 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('8.2 List exit interviews', async ({ request }) => {
-      const r = await request.get(`${EXIT_API}/exit-interviews`, auth());
+      const r = await request.get(`${EXIT_API}/interviews`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.3 Get exit interview by ID', async ({ request }) => {
       expect(interviewId, 'Prerequisite failed — interviewId was not set').toBeTruthy();
-      const r = await request.get(`${EXIT_API}/exit-interviews/${interviewId}`, auth());
+      const r = await request.get(`${EXIT_API}/interviews/${interviewId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('8.4 Submit interview feedback', async ({ request }) => {
       expect(interviewId, 'Prerequisite failed — interviewId was not set').toBeTruthy();
-      const r = await request.post(`${EXIT_API}/exit-interviews/${interviewId}/feedback`, {
+      const r = await request.post(`${EXIT_API}/interviews/${interviewId}/feedback`, {
         ...authJson(),
         data: {
           overall_experience: 4,
@@ -457,7 +457,7 @@ test.describe.serial('EMP Exit Module', () => {
 
     test('8.5 Update interview status to completed', async ({ request }) => {
       expect(interviewId, 'Prerequisite failed — interviewId was not set').toBeTruthy();
-      const r = await request.patch(`${EXIT_API}/exit-interviews/${interviewId}`, {
+      const r = await request.patch(`${EXIT_API}/interviews/${interviewId}`, {
         ...authJson(),
         data: { status: 'completed' },
       });
@@ -465,7 +465,7 @@ test.describe.serial('EMP Exit Module', () => {
     });
 
     test('8.6 Get interview analytics summary', async ({ request }) => {
-      const r = await request.get(`${EXIT_API}/exit-interviews/analytics`, auth());
+      const r = await request.get(`${EXIT_API}/interviews/analytics`, auth());
       expect([200, 404]).toContain(r.status());
     });
   });
