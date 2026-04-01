@@ -1,7 +1,7 @@
 import { test, Page } from "@playwright/test";
 import path from "path";
 
-const BASE = "http://localhost:5173";
+const BASE = "https://test-empcloud.empcloud.com";
 const SCREENSHOTS = path.join(__dirname, "screenshots");
 
 async function login(page: Page) {

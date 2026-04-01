@@ -30,7 +30,7 @@ test.describe('Employee Details — Profile CRUD', () => {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     const adminMeData = await adminMe.json();
-    adminUserId = adminMeData.data.employee_id || adminMeData.data.id;
+    adminUserId = adminMeData.data?.user?.id || adminMeData.data?.employee_id || adminMeData.data?.id;
 
     // Login as employee
     const empResp = await request.post(`${API_BASE}/auth/login`, {
@@ -44,7 +44,7 @@ test.describe('Employee Details — Profile CRUD', () => {
       headers: { Authorization: `Bearer ${employeeToken}` },
     });
     const empMeData = await empMe.json();
-    employeeUserId = empMeData.data.employee_id || empMeData.data.id;
+    employeeUserId = empMeData.data?.user?.id || empMeData.data?.employee_id || empMeData.data?.id;
   });
 
   // ─── Address CRUD ──────────────────────────────────────────────────────────

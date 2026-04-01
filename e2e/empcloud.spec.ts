@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "http://localhost:5174";
+const BASE = "https://test-empcloud.empcloud.com";
 const DEMO_EMAIL = "ananya@technova.in";
 const DEMO_PASSWORD = "Welcome@123";
 

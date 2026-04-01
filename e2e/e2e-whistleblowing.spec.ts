@@ -69,7 +69,7 @@ test.describe("Whistleblowing", () => {
       data: {
         subject: `E2E Anonymous Report ${RUN}`,
         description: "Witnessed policy violation during office hours. Details follow.",
-        category: "misconduct",
+        category: "fraud",
         severity: "high",
         is_anonymous: true,
       },
