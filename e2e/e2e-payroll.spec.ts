@@ -58,11 +58,11 @@ test.describe('1. Auth', () => {
     expect(sso.status()).toBe(200);
     const ssoBody = await sso.json();
     expect(ssoBody.success).toBe(true);
-    expect(ssoBody.data?.tokens?.accessToken || ssoBody.data?.tokens?.access_token).toBeTruthy();
+    expect(ssoBody.data?.tokens?.accessToken, 'SSO response missing data.tokens.accessToken').toBeTruthy();
 
     // Save tokens for subsequent tests
-    token = ssoBody.data?.tokens?.accessToken || ssoBody.data?.tokens?.access_token || ecToken;
-    refreshToken = ssoBody.data?.tokens?.refreshToken || ssoBody.data?.tokens?.refresh_token || '';
+    token = ssoBody.data.tokens.accessToken;
+    refreshToken = ssoBody.data.tokens.refreshToken || '';
   });
 
   test('1.3 SSO fails without token', async ({ request }) => {

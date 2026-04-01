@@ -46,11 +46,11 @@ test.describe('EMP Performance Module', () => {
     const sso = await request.post(`${PERF_API}/auth/sso`, {
       data: { token: ecToken },
     });
+    expect(sso.status()).toBe(200);
     const ssoBody = await sso.json();
-    token = ssoBody.data?.tokens?.accessToken
-      || ssoBody.data?.tokens?.access_token
-      || ssoBody.data?.token
-      || ecToken;
+    expect(ssoBody.success).toBe(true);
+    expect(ssoBody.data?.tokens?.accessToken, 'SSO response missing data.tokens.accessToken').toBeTruthy();
+    token = ssoBody.data.tokens.accessToken;
 
     // Login as employee for RBAC tests
     const empLogin = await request.post(`${EMPCLOUD_API}/auth/login`, {
@@ -63,10 +63,7 @@ test.describe('EMP Performance Module', () => {
         data: { token: empEcToken },
       });
       const empSsoBody = await empSso.json();
-      employeeToken = empSsoBody.data?.tokens?.accessToken
-        || empSsoBody.data?.tokens?.access_token
-        || empSsoBody.data?.token
-        || '';
+      employeeToken = empSsoBody.data?.tokens?.accessToken || '';
     }
   });
 

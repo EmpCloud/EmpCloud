@@ -35,8 +35,12 @@ async function ssoToExit(request: APIRequestContext, ecToken: string): Promise<s
   const res = await request.post(`${EXIT_API}/auth/sso`, {
     data: { token: ecToken },
   });
+  expect(res.status()).toBe(200);
   const body = await res.json();
-  return body.data?.tokens?.accessToken || body.data?.tokens?.access_token || ecToken;
+  expect(body.success).toBe(true);
+  const moduleToken = body.data?.tokens?.accessToken;
+  expect(moduleToken, 'SSO response missing data.tokens.accessToken').toBeTruthy();
+  return moduleToken;
 }
 
 function auth() {

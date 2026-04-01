@@ -50,13 +50,10 @@ test.describe('1. SSO Auth', () => {
     });
     expect([200, 201]).toContain(r.status());
     const body = await r.json();
-    expect(body.success !== false).toBe(true);
-    // Monitor may return tokens in various shapes
-    adminToken = body.data?.tokens?.accessToken
-      || body.data?.tokens?.access_token
-      || body.data?.token
-      || body.data?.accessToken
-      || ecAdminToken;
+    expect(body.code).toBe(200);
+    // Monitor returns { code: 200, data: "<jwt_token_string>", ... }
+    expect(typeof body.data).toBe('string');
+    adminToken = body.data;
     expect(adminToken.length).toBeGreaterThan(10);
   });
 
@@ -89,10 +86,8 @@ test.describe('1. SSO Auth', () => {
     });
     expect([200, 201]).toContain(sso.status());
     const body = await sso.json();
-    employeeToken = body.data?.tokens?.accessToken
-      || body.data?.tokens?.access_token
-      || body.data?.token
-      || ecEmpToken;
+    // Monitor returns { code: 200, data: "<jwt_token_string>", ... }
+    employeeToken = typeof body.data === 'string' ? body.data : ecEmpToken;
   });
 });
 
