@@ -41,11 +41,13 @@ test.describe('1. Quotes', () => {
     const r = await request.post(`${BILLING_API}/quotes`, {
       ...auth(),
       data: {
-        client_id: 1,
+        clientId: '0d9d6836-80c1-4227-9faa-4184d1fa37a9',
+        issueDate: '2026-04-01',
+        expiryDate: '2026-06-30',
+        currency: 'INR',
         items: [
-          { description: 'PW Test — Payroll Module', quantity: 10, unit_price: 10000, currency: 'INR' },
+          { name: 'Payroll Module', description: 'PW Test', quantity: 10, rate: 10000 },
         ],
-        valid_until: '2026-06-30',
         notes: 'E2E test quote',
       },
     });
@@ -60,7 +62,7 @@ test.describe('1. Quotes', () => {
     expect([200, 404]).toContain(r.status());
     const body = await r.json();
     if (r.status() === 200) {
-      const list = body.data?.quotes || body.data || [];
+      const list = Array.isArray(body.data) ? body.data : body.data?.data || [];
       expect(Array.isArray(list)).toBe(true);
       if (list.length > 0 && !quoteId) quoteId = list[0].id;
     }
@@ -123,12 +125,11 @@ test.describe('2. Credit Notes', () => {
     const r = await request.post(`${BILLING_API}/credit-notes`, {
       ...auth(),
       data: {
-        client_id: 1,
-        amount: 5000,
-        currency: 'INR',
+        clientId: '0d9d6836-80c1-4227-9faa-4184d1fa37a9',
+        date: '2026-04-01',
         reason: 'E2E test credit note — overcharge',
         items: [
-          { description: 'Adjustment', quantity: 1, unit_price: 5000 },
+          { name: 'Adjustment', quantity: 1, rate: 5000 },
         ],
       },
     });
@@ -143,7 +144,7 @@ test.describe('2. Credit Notes', () => {
     expect([200, 404]).toContain(r.status());
     const body = await r.json();
     if (r.status() === 200) {
-      const list = body.data?.credit_notes || body.data || [];
+      const list = Array.isArray(body.data) ? body.data : body.data?.data || [];
       expect(Array.isArray(list)).toBe(true);
       if (list.length > 0 && !creditNoteId) creditNoteId = list[0].id;
     }
@@ -159,7 +160,7 @@ test.describe('2. Credit Notes', () => {
     expect(creditNoteId, 'Prerequisite failed — No credit note to apply').toBeTruthy();
     const r = await request.post(`${BILLING_API}/credit-notes/${creditNoteId}/apply`, {
       ...auth(),
-      data: { invoice_id: invoiceIdFromQuote || 1 },
+      data: { invoiceId: invoiceIdFromQuote || '00bfc3ff-49ea-4a79-9d3d-fad05e7cca20' },
     });
     expect([200, 201, 400, 404, 409, 422]).toContain(r.status());
   });
@@ -189,12 +190,12 @@ test.describe('3. Coupons', () => {
       ...auth(),
       data: {
         code: couponCode,
-        discount_type: 'percentage',
-        discount_value: 10,
-        max_redemptions: 100,
-        valid_from: '2026-01-01',
-        valid_until: '2026-12-31',
-        description: 'E2E test coupon',
+        name: 'E2E Test Coupon',
+        type: 'percentage',
+        value: 1000,
+        maxRedemptions: 100,
+        validFrom: '2026-01-01',
+        validUntil: '2026-12-31',
       },
     });
     expect([200, 201, 400, 404]).toContain(r.status());
@@ -208,7 +209,7 @@ test.describe('3. Coupons', () => {
     expect([200, 404]).toContain(r.status());
     const body = await r.json();
     if (r.status() === 200) {
-      const list = body.data?.coupons || body.data || [];
+      const list = Array.isArray(body.data) ? body.data : body.data?.data || [];
       expect(Array.isArray(list)).toBe(true);
       if (list.length > 0 && !couponId) {
         couponId = list[0].id;
@@ -221,16 +222,16 @@ test.describe('3. Coupons', () => {
     expect(couponCode, 'Prerequisite failed — No coupon code available').toBeTruthy();
     const r = await request.post(`${BILLING_API}/coupons/validate`, {
       ...auth(),
-      data: { code: couponCode, client_id: 1 },
+      data: { code: couponCode, invoiceAmount: 100000 },
     });
     expect([200, 400, 404, 422]).toContain(r.status());
   });
 
   test('3.4 Apply coupon to subscription', async ({ request }) => {
     expect(couponId, 'Prerequisite failed — No coupon available').toBeTruthy();
-    const r = await request.post(`${BILLING_API}/coupons/${couponId}/apply`, {
+    const r = await request.post(`${BILLING_API}/coupons/apply`, {
       ...auth(),
-      data: { subscription_id: 1, client_id: 1 },
+      data: { code: couponCode, invoiceId: '00bfc3ff-49ea-4a79-9d3d-fad05e7cca20', clientId: '0d9d6836-80c1-4227-9faa-4184d1fa37a9' },
     });
     expect([200, 201, 400, 404, 409, 422]).toContain(r.status());
   });
@@ -244,7 +245,7 @@ test.describe('3. Coupons', () => {
   test('3.6 Validate invalid coupon returns error', async ({ request }) => {
     const r = await request.post(`${BILLING_API}/coupons/validate`, {
       ...auth(),
-      data: { code: 'INVALID_NONEXISTENT_CODE', client_id: 1 },
+      data: { code: 'INVALID_NONEXISTENT_CODE', invoiceAmount: 100000 },
     });
     expect([400, 404, 422]).toContain(r.status());
   });
@@ -260,11 +261,12 @@ test.describe('4. Usage Billing', () => {
     const r = await request.post(`${BILLING_API}/usage`, {
       ...auth(),
       data: {
-        client_id: 1,
-        subscription_id: 1,
-        metric: 'api_calls',
+        productId: '00000000-0000-0000-0000-000000000001',
+        clientId: '0d9d6836-80c1-4227-9faa-4184d1fa37a9',
         quantity: 150,
-        timestamp: new Date().toISOString(),
+        periodStart: '2026-03-01',
+        periodEnd: '2026-03-31',
+        description: 'API calls for March',
       },
     });
     expect([200, 201, 400, 404]).toContain(r.status());
@@ -315,11 +317,9 @@ test.describe('5. Dunning', () => {
     const r = await request.put(`${BILLING_API}/dunning/config`, {
       ...auth(),
       data: {
-        enabled: true,
-        max_attempts: 3,
-        retry_interval_days: 3,
-        grace_period_days: 7,
-        notify_on_failure: true,
+        maxRetries: 3,
+        retrySchedule: [1, 3, 5],
+        cancelAfterAllRetries: false,
       },
     });
     expect([200, 204, 400, 404]).toContain(r.status());
@@ -330,7 +330,7 @@ test.describe('5. Dunning', () => {
     expect([200, 404]).toContain(r.status());
     const body = await r.json();
     if (r.status() === 200) {
-      const list = body.data?.attempts || body.data || [];
+      const list = Array.isArray(body.data) ? body.data : body.data?.data || [];
       expect(Array.isArray(list)).toBe(true);
     }
   });
@@ -348,16 +348,18 @@ test.describe('5. Dunning', () => {
 test.describe('6. Recurring Invoices', () => {
 
   test('6.1 Create recurring invoice', async ({ request }) => {
-    const r = await request.post(`${BILLING_API}/recurring-invoices`, {
+    const r = await request.post(`${BILLING_API}/recurring`, {
       ...auth(),
       data: {
-        client_id: 1,
+        clientId: '0d9d6836-80c1-4227-9faa-4184d1fa37a9',
+        type: 'invoice',
         frequency: 'monthly',
-        start_date: '2026-04-01',
-        items: [
-          { description: 'Monthly SaaS — E2E test', quantity: 10, unit_price: 10000, currency: 'INR' },
-        ],
-        auto_send: false,
+        startDate: '2026-04-01',
+        autoSend: false,
+        templateData: {
+          items: [{ name: 'Monthly SaaS', quantity: 10, rate: 10000 }],
+          currency: 'INR',
+        },
       },
     });
     expect([200, 201, 400, 404]).toContain(r.status());
@@ -367,11 +369,11 @@ test.describe('6. Recurring Invoices', () => {
   });
 
   test('6.2 List recurring invoices', async ({ request }) => {
-    const r = await request.get(`${BILLING_API}/recurring-invoices`, auth());
+    const r = await request.get(`${BILLING_API}/recurring`, auth());
     expect([200, 404]).toContain(r.status());
     const body = await r.json();
     if (r.status() === 200) {
-      const list = body.data?.recurring_invoices || body.data || [];
+      const list = Array.isArray(body.data) ? body.data : body.data?.data || [];
       expect(Array.isArray(list)).toBe(true);
       if (list.length > 0 && !recurringInvoiceId) recurringInvoiceId = list[0].id;
     }
@@ -379,19 +381,19 @@ test.describe('6. Recurring Invoices', () => {
 
   test('6.3 Get single recurring invoice', async ({ request }) => {
     expect(recurringInvoiceId, 'Prerequisite failed — No recurring invoice available').toBeTruthy();
-    const r = await request.get(`${BILLING_API}/recurring-invoices/${recurringInvoiceId}`, auth());
+    const r = await request.get(`${BILLING_API}/recurring/${recurringInvoiceId}`, auth());
     expect([200, 404]).toContain(r.status());
   });
 
   test('6.4 Pause recurring invoice', async ({ request }) => {
     expect(recurringInvoiceId, 'Prerequisite failed — No recurring invoice available').toBeTruthy();
-    const r = await request.post(`${BILLING_API}/recurring-invoices/${recurringInvoiceId}/pause`, auth());
+    const r = await request.post(`${BILLING_API}/recurring/${recurringInvoiceId}/pause`, auth());
     expect([200, 204, 400, 404, 409]).toContain(r.status());
   });
 
   test('6.5 Resume recurring invoice', async ({ request }) => {
     expect(recurringInvoiceId, 'Prerequisite failed — No recurring invoice available').toBeTruthy();
-    const r = await request.post(`${BILLING_API}/recurring-invoices/${recurringInvoiceId}/resume`, auth());
+    const r = await request.post(`${BILLING_API}/recurring/${recurringInvoiceId}/resume`, auth());
     expect([200, 204, 400, 404, 409]).toContain(r.status());
   });
 });
@@ -460,7 +462,7 @@ test.describe('8. Metrics', () => {
   });
 
   test('8.5 Subscription stats', async ({ request }) => {
-    const r = await request.get(`${BILLING_API}/metrics/subscriptions`, auth());
+    const r = await request.get(`${BILLING_API}/metrics/subscription-stats`, auth());
     expect([200, 404]).toContain(r.status());
   });
 });
