@@ -12,10 +12,10 @@ const BILLING_API = 'https://test-billing-api.empcloud.com/api/v1';
 const BILLING_BASE = 'https://test-billing-api.empcloud.com';
 const API_KEY = 'emp-billing-api-key-2026-secure-integration';
 
-// Helper: API key auth headers
+// Helper: API key auth headers (Bearer token, matching billing API middleware)
 const auth = () => ({
   headers: {
-    'x-api-key': API_KEY,
+    Authorization: `Bearer ${API_KEY}`,
     'Content-Type': 'application/json',
   },
 });
@@ -653,7 +653,7 @@ test.describe('14. Edge Cases', () => {
 
   test('14.4 Invalid API key is rejected', async ({ request }) => {
     const r = await request.get(`${BILLING_API}/reports/dashboard`, {
-      headers: { 'x-api-key': 'invalid-key-12345', 'Content-Type': 'application/json' },
+      headers: { Authorization: 'Bearer invalid-key-12345', 'Content-Type': 'application/json' },
     });
     expect([401, 403, 404]).toContain(r.status());
   });
