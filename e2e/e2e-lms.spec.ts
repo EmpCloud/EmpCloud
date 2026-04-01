@@ -46,15 +46,17 @@ test.describe('EMP LMS Module', () => {
     const ecBody = await login.json();
     const ecToken = ecBody.data.tokens.access_token;
 
-    // SSO to LMS
+    // SSO to LMS — exchange EmpCloud RS256 JWT for LMS HS256 JWT
     const sso = await request.post(`${LMS_API}/auth/sso`, {
       data: { token: ecToken },
     });
+    expect(sso.status(), `SSO to LMS failed with status ${sso.status()}`).toBe(200);
     const ssoBody = await sso.json();
     token = ssoBody.data?.tokens?.accessToken
       || ssoBody.data?.tokens?.access_token
       || ssoBody.data?.token
-      || ecToken;
+      || '';
+    expect(token, 'SSO token extraction failed — check LMS auth response shape').toBeTruthy();
   });
 
   // ═══════════════════════════════════════════════════════════════════════════

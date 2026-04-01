@@ -45,15 +45,17 @@ test.describe('EMP Field Module — Advanced', () => {
     const ecBody = await login.json();
     const ecToken = ecBody.data.tokens.access_token;
 
-    // SSO to Field
+    // SSO to Field — exchange EmpCloud RS256 JWT for Field HS256 JWT
     const sso = await request.post(`${FIELD_API}/auth/sso`, {
       data: { token: ecToken },
     });
+    expect(sso.status(), `SSO to Field failed with status ${sso.status()}`).toBe(200);
     const ssoBody = await sso.json();
     token = ssoBody.data?.tokens?.accessToken
       || ssoBody.data?.tokens?.access_token
       || ssoBody.data?.token
-      || ecToken;
+      || '';
+    expect(token, 'SSO token extraction failed — check Field auth response shape').toBeTruthy();
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
