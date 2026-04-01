@@ -1006,6 +1006,31 @@ npx playwright test
 npx playwright test e2e/security-tests.spec.ts
 ```
 
+### Module API Patterns
+
+Each module has its own response shape and auth method. This table prevents test mismatches:
+
+| Module | Base URL | Auth Method | Response Shape |
+|--------|----------|-------------|----------------|
+| EMP Cloud | test-empcloud-api.empcloud.com/api/v1 | Bearer JWT | `{ success, data }` |
+| EMP Payroll | testpayroll-api.empcloud.com/api/v1 | SSO token | `{ success, data: { data, total, page } }` |
+| EMP Monitor | test-empmonitor-api.empcloud.com/api/v3 | SSO token (encrypted string) | `{ code, data, message }` |
+| EMP LMS | testlms-api.empcloud.com/api/v1 | SSO token | `{ success, data }` |
+| EMP Billing | test-billing-api.empcloud.com/api/v1 | Bearer API_KEY (not JWT) | `{ success, data }` |
+| EMP Performance | test-performance-api.empcloud.com/api/v1 | SSO token | `{ success, data }` |
+| EMP Recruit | test-recruit-api.empcloud.com/api/v1 | SSO token | `{ success, data }` |
+| EMP Exit | test-exit-api.empcloud.com/api/v1 | SSO token | `{ success, data }` |
+| EMP Rewards | test-rewards-api.empcloud.com/api/v1 | SSO token | `{ success, data }` |
+| EMP Field | test-field-api.empcloud.com/api/v1 | SSO token | `{ success, data }` |
+
+**SSO pattern for all modules:** Login to EmpCloud -> get access_token -> POST module's `/api/v1/auth/sso` with `{ "token": "<access_token>" }` -> use returned module token for all calls. Never use EmpCloud token directly on module APIs.
+
+**Key gotchas:**
+- Monitor uses `/api/v3` (not v1), singular route names (`/employee` not `/employees`), and returns `{ code, data, message }` not `{ success, data }`
+- Payroll wraps list data in double nesting: `response.data.data` for the array
+- Billing authenticates with API key (`Bearer <API_KEY>`), not user JWT
+- LMS categories are at `/courses/categories`, certifications at `/certificates`
+
 ---
 
 ## Sellable Modules (Marketplace)
