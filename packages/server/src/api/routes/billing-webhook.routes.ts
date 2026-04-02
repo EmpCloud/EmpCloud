@@ -1,7 +1,7 @@
 // =============================================================================
 // EMP CLOUD — Billing Webhook Routes
-// Receives inbound webhooks from EMP Billing. NO AUTH — Billing sends these
-// directly, so this route must be mounted before auth middleware.
+// Receives inbound webhooks from EMP Billing.
+// Authenticated via BILLING_API_KEY shared secret in x-billing-api-key header.
 // =============================================================================
 
 import { Router, Request, Response, NextFunction } from "express";
@@ -9,12 +9,29 @@ import { logger } from "../../utils/logger.js";
 import { sendSuccess } from "../../utils/response.js";
 import { sendError } from "../../utils/response.js";
 import { handleWebhook } from "../../services/billing/webhook-handler.service.js";
+import { config } from "../../config/index.js";
 
 const router = Router();
 
 // POST /api/v1/webhooks/billing
 router.post("/billing", async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Verify billing API key
+    const apiKey = req.headers["x-billing-api-key"] as string;
+    const expectedKey = config.billing.apiKey;
+
+    if (!expectedKey) {
+      logger.error("BILLING_API_KEY not configured — rejecting webhook");
+      sendError(res, 500, "SERVER_ERROR", "Webhook authentication not configured");
+      return;
+    }
+
+    if (!apiKey || apiKey !== expectedKey) {
+      logger.warn("Billing webhook rejected: invalid or missing API key");
+      sendError(res, 401, "UNAUTHORIZED", "Invalid or missing billing API key");
+      return;
+    }
+
     const { event, data, orgId, timestamp } = req.body;
 
     if (!event || !data) {
