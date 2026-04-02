@@ -220,6 +220,19 @@ router.get("/:id/download", authenticate, async (req: Request, res: Response, ne
     const doc = await documentService.getDocumentForDownload(req.user!.org_id, paramInt(req.params.id), req.user!.sub, req.user!.role);
     const absolutePath = path.resolve(doc.file_path);
 
+    // Path traversal protection: ensure resolved path is within the uploads directory
+    const uploadsBase = path.resolve(process.cwd(), "uploads");
+    if (!absolutePath.startsWith(uploadsBase)) {
+      res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Invalid file path" } });
+      return;
+    }
+
+    // Block paths containing traversal sequences
+    if (doc.file_path.includes("..")) {
+      res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Invalid file path" } });
+      return;
+    }
+
     // Ensure the download filename has the correct extension from the stored file
     let downloadName = doc.name || "document";
     const storedExt = path.extname(doc.file_path);

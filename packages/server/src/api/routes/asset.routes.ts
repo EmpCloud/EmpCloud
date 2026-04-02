@@ -298,7 +298,8 @@ router.post(
         paramInt(req.params.id),
         req.user!.sub,
         data.condition,
-        data.notes
+        data.notes,
+        req.user!.role
       );
 
       await logAudit({

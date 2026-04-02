@@ -46,7 +46,8 @@ router.get(
     try {
       const messages = await chatbotService.getMessages(
         req.user!.org_id,
-        paramInt(req.params.id)
+        paramInt(req.params.id),
+        req.user!.sub
       );
       sendSuccess(res, messages);
     } catch (err) {
@@ -87,7 +88,7 @@ router.delete(
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await chatbotService.deleteConversation(req.user!.org_id, paramInt(req.params.id));
+      await chatbotService.deleteConversation(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
       sendSuccess(res, { message: "Conversation archived" });
     } catch (err) {
       next(err);

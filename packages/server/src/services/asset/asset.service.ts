@@ -392,7 +392,8 @@ export async function returnAsset(
   assetId: number,
   userId: number,
   condition?: string,
-  notes?: string | null
+  notes?: string | null,
+  userRole?: string
 ) {
   const db = getDB();
 
@@ -403,6 +404,13 @@ export async function returnAsset(
 
   if (asset.status !== "assigned") {
     throw new ForbiddenError("Asset is not currently assigned");
+  }
+
+  // Authorization: only the assigned user or HR+ can return an asset
+  const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+  const isHR = userRole ? HR_ROLES.includes(userRole) : false;
+  if (asset.assigned_to !== userId && !isHR) {
+    throw new ForbiddenError("You can only return assets assigned to you");
   }
 
   const now = new Date();

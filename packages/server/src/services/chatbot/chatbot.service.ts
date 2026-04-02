@@ -603,12 +603,16 @@ export async function getConversations(orgId: number, userId: number) {
     .select("id", "title", "message_count", "created_at", "updated_at");
 }
 
-export async function getMessages(orgId: number, conversationId: number) {
+export async function getMessages(orgId: number, conversationId: number, userId?: number) {
   const db = getDB();
 
-  // Verify conversation belongs to org
+  // Verify conversation belongs to org and user
+  const whereClause: Record<string, unknown> = { id: conversationId, organization_id: orgId };
+  if (userId !== undefined) {
+    whereClause.user_id = userId;
+  }
   const convo = await db("chatbot_conversations")
-    .where({ id: conversationId, organization_id: orgId })
+    .where(whereClause)
     .first();
   if (!convo) throw new NotFoundError("Conversation not found");
 
@@ -618,10 +622,14 @@ export async function getMessages(orgId: number, conversationId: number) {
     .select("id", "role", "content", "metadata", "created_at");
 }
 
-export async function deleteConversation(orgId: number, conversationId: number) {
+export async function deleteConversation(orgId: number, conversationId: number, userId?: number) {
   const db = getDB();
+  const whereClause: Record<string, unknown> = { id: conversationId, organization_id: orgId };
+  if (userId !== undefined) {
+    whereClause.user_id = userId;
+  }
   const convo = await db("chatbot_conversations")
-    .where({ id: conversationId, organization_id: orgId })
+    .where(whereClause)
     .first();
   if (!convo) throw new NotFoundError("Conversation not found");
 
