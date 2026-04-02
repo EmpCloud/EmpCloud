@@ -86,7 +86,10 @@ export default function AttendanceDashboardPage() {
   const meta = recordsData?.meta;
 
   const handleExportCSV = () => {
-    if (!records || records.length === 0) return;
+    if (!records || records.length === 0) {
+      alert("No data to export. Please adjust your filters and try again.");
+      return;
+    }
     const headers = ["Employee", "Emp Code", "Department", "Date", "Check In", "Check Out", "Worked", "Status", "Late (min)"];
     const rows = records.map((r: any) => [
       `${r.first_name || ""} ${r.last_name || ""}`.trim(),

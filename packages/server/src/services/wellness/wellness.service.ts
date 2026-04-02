@@ -25,6 +25,17 @@ export async function createProgram(
 ) {
   const db = getDB();
 
+  // Validate start_date is not in the past — challenges must start today or later
+  if (data.start_date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(data.start_date);
+    startDate.setHours(0, 0, 0, 0);
+    if (startDate < today) {
+      throw new ValidationError("Start date cannot be in the past");
+    }
+  }
+
   // Validate end_date is not before start_date
   if (data.start_date && data.end_date && new Date(data.end_date) < new Date(data.start_date)) {
     throw new ValidationError("End date cannot be before start date");

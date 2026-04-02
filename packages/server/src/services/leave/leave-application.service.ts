@@ -70,10 +70,12 @@ export async function applyLeave(
   }
 
   // Check for overlapping applications
+  // Only count pending/approved — cancelled and rejected do NOT block new applications
   // Allow same-day half-day leaves (first_half + second_half) on the same date
   const overlaps = await db("leave_applications")
     .where({ organization_id: orgId, user_id: userId })
     .whereIn("status", ["pending", "approved"])
+    .whereNotIn("status", ["cancelled", "rejected"])
     .where(function () {
       this.where("start_date", "<=", data.end_date).andWhere(
         "end_date",
@@ -83,12 +85,23 @@ export async function applyLeave(
     });
 
   for (const overlap of overlaps) {
+    // Normalize dates to string (YYYY-MM-DD) for safe comparison —
+    // MySQL may return Date objects while data.* are strings
+    const overlapStart = typeof overlap.start_date === "string"
+      ? overlap.start_date.slice(0, 10)
+      : new Date(overlap.start_date).toISOString().slice(0, 10);
+    const overlapEnd = typeof overlap.end_date === "string"
+      ? overlap.end_date.slice(0, 10)
+      : new Date(overlap.end_date).toISOString().slice(0, 10);
+    const reqStart = data.start_date.slice(0, 10);
+    const reqEnd = data.end_date.slice(0, 10);
+
     // If both the existing and new are half-day leaves on the same single day,
     // allow if they cover different halves (first_half vs second_half)
     const isSameSingleDay =
-      data.start_date === data.end_date &&
-      overlap.start_date === overlap.end_date &&
-      data.start_date === overlap.start_date;
+      reqStart === reqEnd &&
+      overlapStart === overlapEnd &&
+      reqStart === overlapStart;
 
     if (isSameSingleDay && data.is_half_day && overlap.is_half_day) {
       if (data.half_day_type && overlap.half_day_type && data.half_day_type !== overlap.half_day_type) {

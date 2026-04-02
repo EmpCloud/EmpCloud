@@ -201,6 +201,15 @@ export default function SurveyBuilderPage() {
 
   const isPending = createMutation.isPending || updateMutation.isPending || publishMutation.isPending;
 
+  // Reset stale mutation states when the user modifies form fields,
+  // so buttons become clickable again after a previous save/error
+  useEffect(() => {
+    if (createMutation.isError) createMutation.reset();
+    if (updateMutation.isError) updateMutation.reset();
+    if (publishMutation.isError) publishMutation.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, description, questions, type, isAnonymous, targetType, startDate, endDate, recurrence]);
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-8">

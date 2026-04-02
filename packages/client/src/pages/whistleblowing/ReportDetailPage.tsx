@@ -296,12 +296,12 @@ export default function ReportDetailPage() {
             {usersError && (
               <p className="text-xs text-red-600 mb-2">Failed to load users. Please refresh the page.</p>
             )}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <select
                 value={investigatorId}
                 onChange={(e) => setInvestigatorId(e.target.value)}
                 disabled={usersLoading || !!usersError}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm disabled:opacity-50"
+                className="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm disabled:opacity-50"
               >
                 <option value="">
                   {usersLoading
@@ -319,7 +319,7 @@ export default function ReportDetailPage() {
               <button
                 onClick={() => assignMutation.mutate()}
                 disabled={!investigatorId || assignMutation.isPending}
-                className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition"
+                className="shrink-0 px-3 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition"
               >
                 <User className="h-4 w-4" />
               </button>

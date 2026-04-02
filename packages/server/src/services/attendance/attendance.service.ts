@@ -201,9 +201,12 @@ export async function listRecords(
   const perPage = params?.perPage || 20;
 
   let query = db("attendance_records as ar")
-    .join("users as u", "ar.user_id", "u.id")
+    .join("users as u", function () {
+      this.on("ar.user_id", "u.id").andOn("ar.organization_id", "u.organization_id");
+    })
     .leftJoin("departments as dept", "u.department_id", "dept.id")
-    .where("ar.organization_id", orgId);
+    .where("ar.organization_id", orgId)
+    .where("u.status", 1); // Only active employees — matches getDashboard filter
 
   if (params?.date) {
     // Exact date filter takes priority over month/year

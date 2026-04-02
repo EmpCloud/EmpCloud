@@ -6,4 +6,43 @@
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
   }
+
+  /* RTL (Arabic) layout support — flip directional properties */
+  [dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+  }
+
+  [dir="rtl"] .border-r {
+    border-right: none;
+    border-left-width: 1px;
+  }
+
+  [dir="rtl"] .border-l {
+    border-left: none;
+    border-right-width: 1px;
+  }
+
+  /* Flip sidebar slide-in animation for RTL */
+  [dir="rtl"] .animate-slide-in-left {
+    left: auto;
+    right: 0;
+  }
+
+  /* Ensure flex layouts align correctly for RTL */
+  [dir="rtl"] .ml-auto {
+    margin-left: unset;
+    margin-right: auto;
+  }
+
+  [dir="rtl"] .mr-auto {
+    margin-right: unset;
+    margin-left: auto;
+  }
+
+  /* Fix left-positioned fixed elements for RTL */
+  [dir="rtl"] .fixed.left-0 {
+    left: auto;
+    right: 0;
+  }
 }
