@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   MessageCircle,
@@ -108,6 +109,7 @@ function renderWidgetMarkdown(text: string, onClickSuggestion?: (text: string) =
 export default function ChatWidget() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [convoId, setConvoId] = useState<number | null>(null);
   const [input, setInput] = useState("");
@@ -150,6 +152,7 @@ export default function ChatWidget() {
     mutationFn: (payload: { conversationId: number; message: string }) =>
       api.post(`/chatbot/conversations/${payload.conversationId}/send`, {
         message: payload.message,
+        language: i18n.language || "en",
       }),
     onMutate: () => setIsTyping(true),
     onSuccess: () => {

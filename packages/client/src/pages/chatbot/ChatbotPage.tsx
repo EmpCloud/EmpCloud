@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   MessageCircle,
@@ -304,6 +305,7 @@ function TypingIndicator() {
 
 export default function ChatbotPage() {
   const queryClient = useQueryClient();
+  const { i18n } = useTranslation();
   const [activeConvoId, setActiveConvoId] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -353,6 +355,7 @@ export default function ChatbotPage() {
     mutationFn: (payload: { conversationId: number; message: string }) =>
       api.post(`/chatbot/conversations/${payload.conversationId}/send`, {
         message: payload.message,
+        language: i18n.language || "en",
       }),
     onMutate: () => {
       setIsTyping(true);

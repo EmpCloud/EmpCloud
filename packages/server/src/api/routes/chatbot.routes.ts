@@ -61,7 +61,7 @@ router.post(
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { message } = req.body;
+      const { message, language } = req.body;
       if (!message || typeof message !== "string" || message.trim().length === 0) {
         sendSuccess(res, { error: "Message is required" }, 400);
         return;
@@ -71,7 +71,8 @@ router.post(
         req.user!.org_id,
         req.user!.sub,
         paramInt(req.params.id),
-        message.trim()
+        message.trim(),
+        typeof language === "string" ? language : "en"
       );
       sendSuccess(res, result);
     } catch (err) {

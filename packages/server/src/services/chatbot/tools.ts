@@ -45,6 +45,21 @@ function todayStr(): string {
   return new Date().toISOString().split("T")[0];
 }
 
+/**
+ * Convert a UTC timestamp to IST (Asia/Kolkata) string for display.
+ * Falls back to UTC string if conversion fails.
+ */
+function toIST(dateInput: string | Date | null | undefined): string | null {
+  if (!dateInput) return null;
+  try {
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
+  } catch {
+    return String(dateInput);
+  }
+}
+
 async function fetchModule(port: number, path: string, orgId: number): Promise<any> {
   try {
     const url = `http://localhost:${port}${path}${path.includes("?") ? "&" : "?"}organization_id=${orgId}`;
@@ -155,7 +170,7 @@ export const tools: ToolDefinition[] = [
     parameters: [],
     execute: async (orgId) => {
       const db = getDB();
-      const departments = await db("departments as d")
+      const departments = await db("organization_departments as d")
         .where("d.organization_id", orgId)
         .leftJoin("users as u", function () {
           this.on("u.organization_id", "=", "d.organization_id")
@@ -272,7 +287,7 @@ export const tools: ToolDefinition[] = [
         .where({ organization_id: orgId, user_id: user.id })
         .where("date", ">=", startDate.toISOString().split("T")[0])
         .orderBy("date", "desc")
-        .select("date", "status", "check_in", "check_out", "total_hours");
+        .select("date", "status", "check_in", "check_out", "worked_minutes");
 
       return {
         employee: `${user.first_name} ${user.last_name}`,
@@ -280,9 +295,9 @@ export const tools: ToolDefinition[] = [
         records: records.map((r) => ({
           date: r.date,
           status: r.status,
-          check_in: r.check_in || null,
-          check_out: r.check_out || null,
-          hours: r.total_hours ? Number(r.total_hours).toFixed(1) : null,
+          check_in: toIST(r.check_in),
+          check_out: toIST(r.check_out),
+          hours: r.worked_minutes != null ? (Number(r.worked_minutes) / 60).toFixed(1) : null,
         })),
         total_records: records.length,
       };
@@ -336,13 +351,15 @@ export const tools: ToolDefinition[] = [
         .whereIn("user_id", userIds)
         .select("user_id", "status", "check_in", "check_out");
 
-      const recordMap = new Map(records.map((r) => [r.user_id, r]));
+      const recordMap = new Map(records.map((r: any) => [r.user_id, r]));
 
       const summary = employees.map((e) => {
         const rec = recordMap.get(e.id);
         return {
           name: `${e.first_name} ${e.last_name}`,
           status: rec?.status || "not_checked_in",
+          check_in: toIST(rec?.check_in),
+          check_out: toIST(rec?.check_out),
         };
       });
 
@@ -381,9 +398,9 @@ export const tools: ToolDefinition[] = [
       return {
         date,
         status: record.status,
-        check_in: record.check_in || null,
-        check_out: record.check_out || null,
-        total_hours: record.total_hours ? Number(record.total_hours).toFixed(1) : "In progress",
+        check_in: toIST(record.check_in),
+        check_out: toIST(record.check_out),
+        total_hours: record.worked_minutes != null ? (Number(record.worked_minutes) / 60).toFixed(1) + " hrs" : "In progress",
       };
     },
   },
@@ -423,7 +440,7 @@ export const tools: ToolDefinition[] = [
       const records = await db("attendance_records")
         .where({ organization_id: orgId, date: dateStr })
         .whereIn("user_id", userIds)
-        .select("user_id", "status", "check_in", "check_out", "total_hours");
+        .select("user_id", "status", "check_in", "check_out", "worked_minutes");
 
       const recordMap = new Map(records.map((r) => [r.user_id, r]));
 
@@ -433,9 +450,9 @@ export const tools: ToolDefinition[] = [
           name: `${m.first_name} ${m.last_name}`,
           designation: m.designation || null,
           status: rec?.status || "not_checked_in",
-          check_in: rec?.check_in || null,
-          check_out: rec?.check_out || null,
-          hours: rec?.total_hours ? Number(rec.total_hours).toFixed(1) : null,
+          check_in: toIST(rec?.check_in),
+          check_out: toIST(rec?.check_out),
+          hours: rec?.worked_minutes != null ? (Number(rec.worked_minutes) / 60).toFixed(1) : null,
         };
       });
 

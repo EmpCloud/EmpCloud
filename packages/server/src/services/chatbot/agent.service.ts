@@ -28,6 +28,22 @@ interface ToolCallRequest {
 }
 
 // ---------------------------------------------------------------------------
+// Language display names for system prompt
+// ---------------------------------------------------------------------------
+
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  hi: "Hindi",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  ar: "Arabic",
+  pt: "Portuguese",
+  ja: "Japanese",
+  zh: "Chinese",
+};
+
+// ---------------------------------------------------------------------------
 // Rate limiter (in-memory, per-user)
 // ---------------------------------------------------------------------------
 
@@ -141,7 +157,8 @@ async function getEffectiveConfig() {
 
 async function buildSystemPrompt(
   orgId: number,
-  userId: number
+  userId: number,
+  language: string = "en"
 ): Promise<string> {
   const db = getDB();
 
@@ -195,7 +212,8 @@ async function buildSystemPrompt(
 - When showing tables with more than a few rows, use markdown table format.
 - Be friendly and professional. Address the user by name when appropriate.
 - If the user asks about their own data (leave balance, attendance), use their user context.
-- For admin queries (org-wide stats, pending approvals), check the user role first.`;
+- For admin queries (org-wide stats, pending approvals), check the user role first.
+- **IMPORTANT: You MUST respond in ${LANGUAGE_NAMES[language] || language} (language code: ${language}).** All your responses — text, explanations, labels — must be in this language. Tool calls and SQL remain in English, but your conversational output to the user must be in ${LANGUAGE_NAMES[language] || language}.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -278,14 +296,15 @@ async function runAnthropicAgent(
   orgId: number,
   userId: number,
   message: string,
-  history: ConversationMessage[]
+  history: ConversationMessage[],
+  language: string = "en"
 ): Promise<string> {
   // Dynamic import to avoid crash if package not installed
   const effectiveConfig = await getEffectiveConfig();
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ apiKey: effectiveConfig.anthropicApiKey });
 
-  const systemPrompt = await buildSystemPrompt(orgId, userId);
+  const systemPrompt = await buildSystemPrompt(orgId, userId, language);
   const anthropicTools = toAnthropicTools();
 
   // Build message history
@@ -332,12 +351,19 @@ async function runAnthropicAgent(
         orgId,
       });
 
-      const result = await executeTool(
-        toolBlock.name,
-        orgId,
-        userId,
-        toolBlock.input || {}
-      );
+      let result: string;
+      try {
+        result = await executeTool(
+          toolBlock.name,
+          orgId,
+          userId,
+          toolBlock.input || {}
+        );
+      } catch (toolErr: unknown) {
+        const errMsg = toolErr instanceof Error ? toolErr.message : String(toolErr);
+        logger.error(`Tool ${toolBlock.name} failed:`, { error: errMsg });
+        result = JSON.stringify({ error: `Tool failed: ${errMsg}` });
+      }
 
       toolResults.push({
         type: "tool_result",
@@ -361,7 +387,8 @@ async function runOpenAIAgent(
   orgId: number,
   userId: number,
   message: string,
-  history: ConversationMessage[]
+  history: ConversationMessage[],
+  language: string = "en"
 ): Promise<string> {
   const effectiveConfig = await getEffectiveConfig();
   const apiKey = effectiveConfig.openaiApiKey;
@@ -369,7 +396,7 @@ async function runOpenAIAgent(
     ? "gpt-4o"
     : effectiveConfig.model;
 
-  const systemPrompt = await buildSystemPrompt(orgId, userId);
+  const systemPrompt = await buildSystemPrompt(orgId, userId, language);
   const openaiTools = toOpenAITools();
 
   // Build messages
@@ -436,7 +463,14 @@ async function runOpenAIAgent(
         orgId,
       });
 
-      const result = await executeTool(fnName, orgId, userId, fnArgs);
+      let result: string;
+      try {
+        result = await executeTool(fnName, orgId, userId, fnArgs);
+      } catch (toolErr: unknown) {
+        const errMsg = toolErr instanceof Error ? toolErr.message : String(toolErr);
+        logger.error(`Tool ${fnName} failed:`, { error: errMsg });
+        result = JSON.stringify({ error: `Tool failed: ${errMsg}` });
+      }
 
       messages.push({
         role: "tool",
@@ -466,12 +500,13 @@ async function runGeminiAgent(
   orgId: number,
   userId: number,
   message: string,
-  history: ConversationMessage[]
+  history: ConversationMessage[],
+  language: string = "en"
 ): Promise<string> {
   const effectiveConfig = await getEffectiveConfig();
   const apiKey = effectiveConfig.geminiApiKey;
   const model = effectiveConfig.model.startsWith("gemini") ? effectiveConfig.model : "gemini-2.0-flash";
-  const systemPrompt = await buildSystemPrompt(orgId, userId);
+  const systemPrompt = await buildSystemPrompt(orgId, userId, language);
 
   // Build Gemini tool declarations
   const geminiTools = [{
@@ -580,7 +615,8 @@ export async function runAgent(
   orgId: number,
   userId: number,
   message: string,
-  conversationHistory: ConversationMessage[]
+  conversationHistory: ConversationMessage[],
+  language: string = "en"
 ): Promise<string> {
   // Rate limit check
   if (!checkRateLimit(userId)) {
@@ -590,16 +626,16 @@ export async function runAgent(
   const provider = await detectProviderAsync();
 
   if (provider === "anthropic") {
-    return runAnthropicAgent(orgId, userId, message, conversationHistory);
+    return runAnthropicAgent(orgId, userId, message, conversationHistory, language);
   }
 
   if (provider === "gemini") {
-    return runGeminiAgent(orgId, userId, message, conversationHistory);
+    return runGeminiAgent(orgId, userId, message, conversationHistory, language);
   }
 
   // OpenAI, DeepSeek, Groq, Ollama, Together, etc. — all use OpenAI-compatible API
   if (provider !== "none") {
-    return runOpenAIAgent(orgId, userId, message, conversationHistory);
+    return runOpenAIAgent(orgId, userId, message, conversationHistory, language);
   }
 
   // Should not reach here -- caller checks provider first

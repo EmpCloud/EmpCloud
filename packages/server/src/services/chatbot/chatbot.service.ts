@@ -8,6 +8,18 @@ import { NotFoundError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { runAgent, detectProvider, detectProviderAsync, type AIProvider } from "./agent.service.js";
 
+/** Convert a UTC timestamp to IST for display */
+function toIST(dateInput: string | Date | null | undefined): string {
+  if (!dateInput) return "--";
+  try {
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "--";
+    return d.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
+  } catch {
+    return "--";
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Intent definitions
 // ---------------------------------------------------------------------------
@@ -203,9 +215,7 @@ async function handleTeamAttendance(orgId: number, userId: number): Promise<Chat
   for (const m of teamMembers) {
     const rec = recordMap.get(m.id);
     const status = rec?.status || "not_checked_in";
-    const checkIn = rec?.check_in
-      ? new Date(rec.check_in).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-      : "--";
+    const checkIn = toIST(rec?.check_in);
 
     table += `| ${m.first_name} ${m.last_name} | ${status} | ${checkIn} |\n`;
 
@@ -247,12 +257,8 @@ async function handleAttendance(orgId: number, userId: number): Promise<ChatResp
     };
   }
 
-  const checkIn = record.check_in
-    ? new Date(record.check_in).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-    : "N/A";
-  const checkOut = record.check_out
-    ? new Date(record.check_out).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-    : "Not yet";
+  const checkIn = record.check_in ? toIST(record.check_in) : "N/A";
+  const checkOut = record.check_out ? toIST(record.check_out) : "Not yet";
 
   let statusEmoji = "";
   switch (record.status) {
@@ -272,7 +278,7 @@ async function handleAttendance(orgId: number, userId: number): Promise<ChatResp
       statusEmoji = record.status || "Unknown";
   }
 
-  const hours = record.total_hours ? `${Number(record.total_hours).toFixed(1)} hrs` : "In progress";
+  const hours = record.worked_minutes != null ? `${(Number(record.worked_minutes) / 60).toFixed(1)} hrs` : "In progress";
 
   return {
     content:
@@ -630,7 +636,8 @@ export async function sendMessage(
   orgId: number,
   userId: number,
   conversationId: number,
-  message: string
+  message: string,
+  language: string = "en"
 ) {
   const db = getDB();
 
@@ -669,7 +676,7 @@ export async function sendMessage(
         .filter((h: any) => h.role === "user" || h.role === "assistant")
         .map((h: any) => ({ role: h.role as "user" | "assistant", content: h.content }));
 
-      const aiResponse = await runAgent(orgId, userId, message, history);
+      const aiResponse = await runAgent(orgId, userId, message, history, language);
       response = {
         content: aiResponse,
         metadata: { engine: "ai", provider: aiProvider },
