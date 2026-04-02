@@ -95,11 +95,24 @@ export default function EmployeeProfilePage() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
-  // Load photo on mount
+  // Load photo via authenticated API and convert to blob URL
   useEffect(() => {
-    if (isValidId) {
-      setPhotoUrl(`${api.defaults.baseURL}/employees/${userId}/photo?t=${Date.now()}`);
-    }
+    if (!isValidId) return;
+    let revoked = false;
+    api
+      .get(`/employees/${userId}/photo`, { responseType: "blob" })
+      .then((res) => {
+        if (!revoked) {
+          const url = URL.createObjectURL(res.data);
+          setPhotoUrl(url);
+        }
+      })
+      .catch(() => {
+        // no photo — ignore
+      });
+    return () => {
+      revoked = true;
+    };
   }, [userId, isValidId]);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +125,10 @@ export default function EmployeeProfilePage() {
       await api.post(`/employees/${userId}/photo`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setPhotoUrl(`${api.defaults.baseURL}/employees/${userId}/photo?t=${Date.now()}`);
+      // Fetch the new photo via authenticated API
+      const res = await api.get(`/employees/${userId}/photo`, { responseType: "blob" });
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+      setPhotoUrl(URL.createObjectURL(res.data));
     } catch {
       // silently fail — photo not critical
     } finally {
