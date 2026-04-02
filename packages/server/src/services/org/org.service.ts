@@ -15,7 +15,16 @@ export async function getOrg(orgId: number): Promise<Organization> {
 
 export async function updateOrg(orgId: number, data: UpdateOrgInput): Promise<Organization> {
   const db = getDB();
-  await db("organizations").where({ id: orgId }).update({ ...data, updated_at: new Date() });
+  // Strip undefined values — only update fields that were actually provided
+  const updateData: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      updateData[key] = value;
+    }
+  }
+  if (Object.keys(updateData).length > 0) {
+    await db("organizations").where({ id: orgId }).update({ ...updateData, updated_at: new Date() });
+  }
   return getOrg(orgId);
 }
 

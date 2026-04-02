@@ -433,9 +433,11 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
             <label className="block text-sm font-medium text-gray-700 mb-1">Reporting Manager</label>
             <select value={form.reporting_manager_id} onChange={(e) => set("reporting_manager_id", e.target.value)} className={canEditField("reporting_manager_id") ? inputClass : disabledClass} disabled={!canEditField("reporting_manager_id")}>
               <option value="">No Manager</option>
-              {(allUsers || []).filter((u: any) => u.id !== userId).map((u: any) => (
-                <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.email})</option>
-              ))}
+              {(allUsers || [])
+                .filter((u: any) => u.id !== userId && ["manager", "hr_admin", "org_admin", "super_admin"].includes(u.role))
+                .map((u: any) => (
+                  <option key={u.id} value={u.id}>{u.first_name} {u.last_name} ({u.role.replace("_", " ")}) - {u.email}</option>
+                ))}
             </select>
           </div>
         </div>

@@ -118,25 +118,32 @@ export default function LeaveApplicationsPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              {canApprove && <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>}
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Reason</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Remarks</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
             ) : applications.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No applications found</td></tr>
+              <tr><td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">No applications found</td></tr>
             ) : (
               applications.map((app) => {
                 const style = STATUS_STYLES[app.status] || STATUS_STYLES.pending;
                 const Icon = style.icon;
                 return (
                   <tr key={app.id} className="hover:bg-gray-50">
+                    {canApprove && (
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {(app as any).user_first_name ? `${(app as any).user_first_name} ${(app as any).user_last_name || ""}` : `User #${app.user_id}`}
+                      </td>
+                    )}
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {getTypeName(app.leave_type_id)}
                       {app.is_half_day && (
@@ -156,6 +163,12 @@ export default function LeaveApplicationsPage() {
                       <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
                         <Icon className="h-3 w-3" /> {app.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                      {(app as any).admin_remarks || "-"}
+                      {(app as any).approver_name && (app as any).admin_remarks && (
+                        <span className="block text-xs text-gray-400">by {(app as any).approver_name}</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">

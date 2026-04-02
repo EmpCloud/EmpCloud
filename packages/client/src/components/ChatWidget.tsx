@@ -209,7 +209,7 @@ export default function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] w-[380px] h-[540px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4">
+    <div className="fixed bottom-6 right-6 z-[9999] w-[380px] max-w-[calc(100vw-2rem)] h-[540px] max-h-[calc(100vh-6rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-600 shrink-0">
         <div className="flex items-center gap-2.5">
@@ -322,7 +322,7 @@ export default function ChatWidget() {
 
       {/* Quick Actions */}
       {messages.length > 0 && (
-        <div className="px-3 py-2 border-t border-gray-100 bg-white shrink-0 flex gap-1.5 overflow-x-auto">
+        <div className="px-3 py-2 border-t border-gray-100 bg-white shrink-0 flex gap-1.5 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           {["My leave balance", "Show team attendance", "Company policies", "Latest announcements", "Upcoming holidays"].map((q) => (
             <button
               key={q}

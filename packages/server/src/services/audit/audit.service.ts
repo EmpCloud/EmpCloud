@@ -42,23 +42,31 @@ export async function getAuditLogs(params: {
   const page = params.page || 1;
   const perPage = params.perPage || 20;
 
-  let query = db("audit_logs").where({ organization_id: params.organizationId });
+  let query = db("audit_logs").where({ "audit_logs.organization_id": params.organizationId });
   if (params.action) {
-    query = query.where({ action: params.action });
+    query = query.where({ "audit_logs.action": params.action });
   }
   if (params.startDate) {
-    query = query.where("created_at", ">=", params.startDate);
+    query = query.where("audit_logs.created_at", ">=", params.startDate);
   }
   if (params.endDate) {
     // End date is inclusive — add 1 day so it includes the full end day
     const nextDay = new Date(params.endDate);
     nextDay.setDate(nextDay.getDate() + 1);
-    query = query.where("created_at", "<", nextDay.toISOString().slice(0, 10));
+    query = query.where("audit_logs.created_at", "<", nextDay.toISOString().slice(0, 10));
   }
 
   const [{ count }] = await query.clone().count("* as count");
   const logs = await query
-    .orderBy("created_at", "desc")
+    .clone()
+    .select(
+      "audit_logs.*",
+      "users.first_name as user_first_name",
+      "users.last_name as user_last_name",
+      "users.email as user_email"
+    )
+    .leftJoin("users", "audit_logs.user_id", "users.id")
+    .orderBy("audit_logs.created_at", "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2 } from "lucide-react";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
 
@@ -87,12 +88,22 @@ export default function LeaveDashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Leave Dashboard</h1>
           <p className="text-gray-500 mt-1">View your leave balances and apply for leave.</p>
         </div>
-        <button
-          onClick={() => setShowApply(true)}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
-        >
-          <PlusCircle className="h-4 w-4" /> Apply Leave
-        </button>
+        <div className="flex gap-2">
+          {isAdmin && (
+            <Link
+              to="/leave/settings"
+              className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200"
+            >
+              <Settings2 className="h-4 w-4" /> Leave Settings
+            </Link>
+          )}
+          <button
+            onClick={() => setShowApply(true)}
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          >
+            <PlusCircle className="h-4 w-4" /> Apply Leave
+          </button>
+        </div>
       </div>
 
       {/* Balance Cards */}
@@ -188,7 +199,15 @@ export default function LeaveDashboardPage() {
               <input
                 type="date"
                 value={form.start_date}
-                onChange={(e) => setForm({ ...form, start_date: e.target.value })}
+                onChange={(e) => {
+                  const startDate = e.target.value;
+                  let days = form.days_count;
+                  if (startDate && form.end_date) {
+                    const diff = Math.ceil((new Date(form.end_date).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                    if (diff > 0) days = form.is_half_day ? 0.5 : diff;
+                  }
+                  setForm({ ...form, start_date: startDate, days_count: days });
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -198,7 +217,15 @@ export default function LeaveDashboardPage() {
               <input
                 type="date"
                 value={form.end_date}
-                onChange={(e) => setForm({ ...form, end_date: e.target.value })}
+                onChange={(e) => {
+                  const endDate = e.target.value;
+                  let days = form.days_count;
+                  if (form.start_date && endDate) {
+                    const diff = Math.ceil((new Date(endDate).getTime() - new Date(form.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                    if (diff > 0) days = form.is_half_day ? 0.5 : diff;
+                  }
+                  setForm({ ...form, end_date: endDate, days_count: days });
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -213,7 +240,7 @@ export default function LeaveDashboardPage() {
                 value={form.days_count}
                 onChange={(e) => {
                   const val = Number(e.target.value);
-                  if (val >= 0 && val <= 365) setForm({ ...form, days_count: val });
+                  if (!isNaN(val) && val >= 0.5 && val <= 365) setForm({ ...form, days_count: val });
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required

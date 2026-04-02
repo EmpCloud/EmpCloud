@@ -1,5 +1,5 @@
 import { useUsers, useInviteUser, useCreateUser, useDepartments } from "@/api/hooks";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { useState, useRef, useCallback } from "react";
@@ -425,6 +425,7 @@ function usePendingInvitations(enabled: boolean = true) {
 }
 
 export default function UsersPage() {
+  const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const isOrgAdmin = !!user && ["org_admin", "super_admin"].includes(user.role);
   const [page, setPage] = useState(1);
@@ -432,6 +433,12 @@ export default function UsersPage() {
   const { data, isLoading } = useUsers({ page, search: search || undefined });
   const inviteUser = useInviteUser();
   const [showInvite, setShowInvite] = useState(false);
+
+  const updateRoleMut = useMutation({
+    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
+      api.put(`/users/${userId}`, { role }).then((r) => r.data.data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+  });
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("employee");
   const [inviteFirstName, setInviteFirstName] = useState("");
@@ -450,18 +457,25 @@ export default function UsersPage() {
   const departments = (departmentsData as any[]) || [];
   const invitations = (pendingInvitations as any[]) || [];
 
+  const [inviteError, setInviteError] = useState("");
+
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
-    setInviteEmail("");
-    setInviteRole("employee");
-    setInviteFirstName("");
-    setInviteLastName("");
-    setInviteDesignation("");
-    setInviteDeptId("");
-    setInviteManagerId("");
-    setShowAdvancedInvite(false);
-    setShowInvite(false);
+    setInviteError("");
+    try {
+      await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
+      setInviteEmail("");
+      setInviteRole("employee");
+      setInviteFirstName("");
+      setInviteLastName("");
+      setInviteDesignation("");
+      setInviteDeptId("");
+      setInviteManagerId("");
+      setShowAdvancedInvite(false);
+      setShowInvite(false);
+    } catch (err: any) {
+      setInviteError(err?.response?.data?.error?.message || "Failed to send invitation");
+    }
   };
 
   return (
@@ -560,6 +574,9 @@ export default function UsersPage() {
               </div>
             </div>
           )}
+          {inviteError && (
+            <p className="text-sm text-red-600 mt-2">{inviteError}</p>
+          )}
         </form>
       )}
 
@@ -632,9 +649,23 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{u.email}</td>
                   <td className="px-6 py-4">
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full capitalize">
-                      {u.role.replace(/_/g, " ")}
-                    </span>
+                    {isOrgAdmin && u.id !== user?.id ? (
+                      <select
+                        value={u.role}
+                        onChange={(e) => updateRoleMut.mutate({ userId: u.id, role: e.target.value })}
+                        className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 capitalize cursor-pointer hover:bg-gray-100"
+                        disabled={updateRoleMut.isPending}
+                      >
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="hr_admin">HR Admin</option>
+                        <option value="org_admin">Org Admin</option>
+                      </select>
+                    ) : (
+                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full capitalize">
+                        {u.role.replace(/_/g, " ")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${

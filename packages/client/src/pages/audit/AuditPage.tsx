@@ -204,7 +204,16 @@ export default function AuditPage() {
                       {log.action}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-sm text-gray-700">{log.user_id || "System"}</td>
+                  <td className="px-6 py-3 text-sm text-gray-700">
+                    {log.user_first_name
+                      ? `${log.user_first_name} ${log.user_last_name || ""}`.trim()
+                      : log.user_id
+                        ? `User #${log.user_id}`
+                        : "System"}
+                    {log.user_email && (
+                      <span className="block text-xs text-gray-400">{log.user_email}</span>
+                    )}
+                  </td>
                   <td className="px-6 py-3 text-sm text-gray-500">
                     {log.resource_type ? (
                       <span className="text-xs">

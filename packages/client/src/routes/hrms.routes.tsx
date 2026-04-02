@@ -15,6 +15,7 @@ const LeaveApplicationsPage = lazy(() => import("@/pages/leave/LeaveApplications
 const LeaveCalendarPage = lazy(() => import("@/pages/leave/LeaveCalendarPage"));
 const LeaveTypesPage = lazy(() => import("@/pages/leave/LeaveTypesPage"));
 const CompOffPage = lazy(() => import("@/pages/leave/CompOffPage"));
+const HolidaysPage = lazy(() => import("@/pages/events/HolidaysPage"));
 const DocumentsPage = lazy(() => import("@/pages/documents/DocumentsPage"));
 const DocumentCategoriesPage = lazy(() => import("@/pages/documents/DocumentCategoriesPage"));
 const MyDocumentsPage = lazy(() => import("@/pages/documents/MyDocumentsPage"));
@@ -42,6 +43,7 @@ export const hrmsRoutes = (
     <Route path="/leave/calendar" element={<LeaveCalendarPage />} />
     <Route path="/leave/comp-off" element={<CompOffPage />} />
     <Route path="/leave/settings" element={<LeaveTypesPage />} />
+    <Route path="/holidays" element={<HolidaysPage />} />
     <Route path="/documents" element={<DocumentsPage />} />
     <Route path="/documents/my" element={<MyDocumentsPage />} />
     <Route path="/documents/categories" element={<DocumentCategoriesPage />} />

@@ -218,7 +218,9 @@ router.get("/:id/profile", authenticate, requireSelfOrHR("id"), async (req: Requ
 router.put("/:id/profile", authenticate, requireSelfOrHR("id"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = upsertEmployeeProfileSchema.parse(req.body);
-    const profile = await profileService.upsertProfile(req.user!.org_id, paramInt(req.params.id), data);
+    // Allow reporting_manager_id to pass through (handled by service, lives on users table)
+    const fullData = { ...data, reporting_manager_id: req.body.reporting_manager_id };
+    const profile = await profileService.upsertProfile(req.user!.org_id, paramInt(req.params.id), fullData);
 
     await logAudit({
       organizationId: req.user!.org_id,

@@ -118,6 +118,31 @@ router.post("/headcount-plans/:id/approve", authenticate, requireHR, async (req:
   } catch (err) { next(err); }
 });
 
+// POST /api/v1/positions/headcount-plans/:id/reject
+router.post("/headcount-plans/:id/reject", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const plan = await positionService.rejectHeadcountPlan(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.sub,
+      req.body.reason
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.HEADCOUNT_PLAN_REJECTED,
+      resourceType: "headcount_plan",
+      resourceId: String(paramInt(req.params.id)),
+      details: req.body.reason ? { reason: req.body.reason } : undefined,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, plan);
+  } catch (err) { next(err); }
+});
+
 // ---- Assignments (must come before /:id) ----
 
 // DELETE /api/v1/positions/assignments/:id

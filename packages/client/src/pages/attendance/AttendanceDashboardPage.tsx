@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download } from "lucide-react";
+import { Navigate, Link } from "react-router-dom";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import { useAuthStore } from "@/lib/auth-store";
 
@@ -144,6 +144,24 @@ export default function AttendanceDashboardPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Quick Links */}
+      <div className="flex gap-3 mb-6">
+        <Link
+          to="/attendance/regularizations"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          <ClipboardCheck className="h-4 w-4 text-amber-600" />
+          Regularization Requests
+        </Link>
+        <Link
+          to="/attendance/shifts"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          <SlidersHorizontal className="h-4 w-4 text-brand-600" />
+          Shift Management
+        </Link>
       </div>
 
       {/* Date & Department Filters */}

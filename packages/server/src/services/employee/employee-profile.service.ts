@@ -74,7 +74,7 @@ export async function getProfile(orgId: number, userId: number) {
 export async function upsertProfile(
   orgId: number,
   userId: number,
-  data: UpsertEmployeeProfileInput
+  data: UpsertEmployeeProfileInput & { reporting_manager_id?: number | string | null }
 ) {
   const db = getDB();
 
@@ -84,6 +84,15 @@ export async function upsertProfile(
     .first();
   if (!user) throw new NotFoundError("Employee");
 
+  // Handle reporting_manager_id separately — it lives on users table, not employee_profiles
+  const { reporting_manager_id, ...profileData } = data as any;
+  if (reporting_manager_id !== undefined) {
+    const mgrId = reporting_manager_id ? Number(reporting_manager_id) : null;
+    await db("users")
+      .where({ id: userId, organization_id: orgId })
+      .update({ reporting_manager_id: mgrId, updated_at: new Date() });
+  }
+
   const existing = await db("employee_profiles")
     .where({ user_id: userId, organization_id: orgId })
     .first();
@@ -91,12 +100,12 @@ export async function upsertProfile(
   if (existing) {
     await db("employee_profiles")
       .where({ id: existing.id })
-      .update({ ...data, updated_at: new Date() });
+      .update({ ...profileData, updated_at: new Date() });
   } else {
     await db("employee_profiles").insert({
       organization_id: orgId,
       user_id: userId,
-      ...data,
+      ...profileData,
       created_at: new Date(),
       updated_at: new Date(),
     });

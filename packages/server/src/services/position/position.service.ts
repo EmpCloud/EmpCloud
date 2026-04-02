@@ -324,12 +324,12 @@ export async function assignUserToPosition(
       updated_at: new Date(),
     });
 
-  // Auto-update status to "frozen" when headcount_filled reaches headcount_budget
+  // Auto-update status to "filled" when headcount_filled reaches headcount_budget
   const updated = await db("positions").where({ id: positionId }).first();
   if (updated && updated.headcount_filled >= updated.headcount_budget) {
     await db("positions")
       .where({ id: positionId })
-      .update({ status: "frozen", updated_at: new Date() });
+      .update({ status: "filled", updated_at: new Date() });
   }
 
   const assignment = await db("position_assignments").where({ id }).first();
@@ -362,9 +362,9 @@ export async function removeUserFromPosition(orgId: number, assignmentId: number
       updated_at: new Date(),
     });
 
-  // If position was "frozen" (fully staffed), revert to "active" since there's now a vacancy
+  // If position was "filled" (fully staffed), revert to "active" since there's now a vacancy
   const pos = await db("positions").where({ id: assignment.position_id }).first();
-  if (pos && pos.status === "frozen" && pos.headcount_filled < pos.headcount_budget) {
+  if (pos && (pos.status === "filled" || pos.status === "frozen") && pos.headcount_filled < pos.headcount_budget) {
     await db("positions")
       .where({ id: assignment.position_id })
       .update({ status: "active", updated_at: new Date() });
@@ -582,6 +582,43 @@ export async function approveHeadcountPlan(
       status: "approved",
       approved_headcount: plan.planned_headcount,
       approved_by: userId,
+      updated_at: new Date(),
+    });
+
+  return db("headcount_plans").where({ id: planId }).first();
+}
+
+// ---------------------------------------------------------------------------
+// Reject Headcount Plan
+// ---------------------------------------------------------------------------
+
+export async function rejectHeadcountPlan(
+  orgId: number,
+  planId: number,
+  userId: number,
+  reason?: string
+) {
+  const db = getDB();
+
+  const plan = await db("headcount_plans")
+    .where({ id: planId, organization_id: orgId })
+    .first();
+
+  if (!plan) throw new NotFoundError("Headcount Plan");
+
+  if (plan.status === "rejected") {
+    throw new ValidationError("Plan is already rejected");
+  }
+  if (plan.status !== "submitted" && plan.status !== "draft") {
+    throw new ValidationError("Only draft or submitted plans can be rejected");
+  }
+
+  await db("headcount_plans")
+    .where({ id: planId })
+    .update({
+      status: "rejected",
+      approved_by: userId,
+      notes: reason ? `Rejected: ${reason}` : plan.notes,
       updated_at: new Date(),
     });
 

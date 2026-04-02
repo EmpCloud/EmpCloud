@@ -153,20 +153,23 @@ export const oauthIntrospectSchema = z.object({
 // Organization
 // ---------------------------------------------------------------------------
 
+/** Helper: treat empty string as undefined so optional fields don't fail validation */
+const emptyToUndefined = z.preprocess((v) => (v === "" ? undefined : v), z.string());
+
 export const updateOrgSchema = z.object({
   name: z.string().min(2).max(100).optional(),
-  legal_name: z.string().max(255).optional(),
-  email: z.string().email().optional(),
-  contact_number: z.string().max(20).optional(),
-  website: z.string().url().max(255).optional(),
-  timezone: z.string().max(50).optional(),
-  country: z.string().max(55).optional(),
-  state: z.string().max(55).optional(),
-  city: z.string().max(55).optional(),
-  zipcode: z.string().max(20).optional(),
-  address: z.string().max(1000).optional(),
-  language: z.string().max(10).optional(),
-  weekday_start: z.string().max(10).optional(),
+  legal_name: emptyToUndefined.pipe(z.string().max(255)).optional(),
+  email: emptyToUndefined.pipe(z.string().email()).optional(),
+  contact_number: emptyToUndefined.pipe(z.string().max(20)).optional(),
+  website: emptyToUndefined.pipe(z.string().url().max(255)).optional(),
+  timezone: emptyToUndefined.pipe(z.string().max(50)).optional(),
+  country: emptyToUndefined.pipe(z.string().max(55)).optional(),
+  state: emptyToUndefined.pipe(z.string().max(55)).optional(),
+  city: emptyToUndefined.pipe(z.string().max(55)).optional(),
+  zipcode: emptyToUndefined.pipe(z.string().max(20)).optional(),
+  address: emptyToUndefined.pipe(z.string().max(1000)).optional(),
+  language: emptyToUndefined.pipe(z.string().max(10)).optional(),
+  weekday_start: emptyToUndefined.pipe(z.string().max(10)).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -724,14 +727,14 @@ const headcountQuarterEnum = z.enum(["Q1", "Q2", "Q3", "Q4", "annual"]);
 
 export const createPositionSchema = z.object({
   title: z.string().min(1).max(200),
-  code: z.string().max(50).optional().nullable(),
-  department_id: z.number().int().positive().optional().nullable(),
-  location_id: z.number().int().positive().optional().nullable(),
-  reports_to_position_id: z.number().int().positive().optional().nullable(),
-  job_description: z.string().optional().nullable(),
-  requirements: z.string().optional().nullable(),
-  min_salary: z.number().int().optional().nullable(),
-  max_salary: z.number().int().optional().nullable(),
+  code: z.preprocess((v) => (v === "" ? undefined : v), z.string().max(50).optional().nullable()),
+  department_id: z.preprocess((v) => (v === "" || v === 0 ? null : v), z.number().int().positive().optional().nullable()),
+  location_id: z.preprocess((v) => (v === "" || v === 0 ? null : v), z.number().int().positive().optional().nullable()),
+  reports_to_position_id: z.preprocess((v) => (v === "" || v === 0 ? null : v), z.number().int().positive().optional().nullable()),
+  job_description: z.preprocess((v) => (v === "" ? null : v), z.string().optional().nullable()),
+  requirements: z.preprocess((v) => (v === "" ? null : v), z.string().optional().nullable()),
+  min_salary: z.preprocess((v) => (v === "" || v === null ? null : v), z.number().min(0, "Salary cannot be negative").optional().nullable()),
+  max_salary: z.preprocess((v) => (v === "" || v === null ? null : v), z.number().min(0, "Salary cannot be negative").optional().nullable()),
   currency: z.string().max(3).default("INR"),
   employment_type: positionEmploymentTypeEnum.default("full_time"),
   headcount_budget: z.number().int().min(1).default(1),
@@ -759,7 +762,7 @@ export const positionQuerySchema = paginationSchema.extend({
 
 export const createHeadcountPlanSchema = z.object({
   title: z.string().min(1).max(200),
-  fiscal_year: z.string().min(4).max(10),
+  fiscal_year: z.string().min(4).max(10).regex(/^\d{4}(-\d{2,4})?$/, "Fiscal year must be in format YYYY or YYYY-YY (e.g. 2026 or 2026-27)"),
   quarter: headcountQuarterEnum.optional().nullable(),
   department_id: z.number().int().positive().optional().nullable(),
   planned_headcount: z.number().int().min(0).default(0),
@@ -771,7 +774,7 @@ export const createHeadcountPlanSchema = z.object({
 
 export const updateHeadcountPlanSchema = z.object({
   title: z.string().min(1).max(200).optional(),
-  fiscal_year: z.string().min(4).max(10).optional(),
+  fiscal_year: z.string().min(4).max(10).regex(/^\d{4}(-\d{2,4})?$/, "Fiscal year must be in format YYYY or YYYY-YY (e.g. 2026 or 2026-27)").optional(),
   quarter: headcountQuarterEnum.optional().nullable(),
   department_id: z.number().int().positive().optional().nullable(),
   planned_headcount: z.number().int().min(0).optional(),

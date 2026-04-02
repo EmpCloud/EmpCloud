@@ -442,12 +442,17 @@ export async function listApplications(
 
   const [{ count }] = await query.clone().count("* as count");
   const applications = await query
+    .leftJoin("leave_approvals", "leave_applications.id", "leave_approvals.leave_application_id")
+    .leftJoin("users as approver", "leave_approvals.approver_id", "approver.id")
     .select(
       "leave_applications.*",
       "users.first_name as user_first_name",
       "users.last_name as user_last_name",
       "users.email as user_email",
       "users.emp_code as user_emp_code",
+      "leave_approvals.remarks as admin_remarks",
+      "leave_approvals.acted_at as approval_date",
+      db.raw("CONCAT(approver.first_name, ' ', approver.last_name) as approver_name"),
     )
     .orderBy("leave_applications.created_at", "desc")
     .limit(perPage)
@@ -459,7 +464,16 @@ export async function listApplications(
 export async function getApplication(orgId: number, id: number): Promise<LeaveApplication> {
   const db = getDB();
   const row = await db("leave_applications")
-    .where({ id, organization_id: orgId })
+    .where({ "leave_applications.id": id, "leave_applications.organization_id": orgId })
+    .leftJoin("leave_approvals", "leave_applications.id", "leave_approvals.leave_application_id")
+    .leftJoin("users as approver", "leave_approvals.approver_id", "approver.id")
+    .select(
+      "leave_applications.*",
+      "leave_approvals.remarks as admin_remarks",
+      "leave_approvals.status as approval_status",
+      "leave_approvals.acted_at as approval_date",
+      db.raw("CONCAT(approver.first_name, ' ', approver.last_name) as approver_name"),
+    )
     .first();
   if (!row) throw new NotFoundError("Leave application");
   return row;

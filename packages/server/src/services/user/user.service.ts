@@ -214,7 +214,7 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
 
   // Whitelist allowed fields — prevent mass assignment attacks
   const allowed: Record<string, unknown> = {};
-  const SAFE_FIELDS = ["first_name", "last_name", "phone", "designation", "department_id", "location_id", "reporting_manager_id", "date_of_birth", "gender", "emp_code", "employee_code", "date_of_joining", "date_of_exit", "contact_number", "employment_type"];
+  const SAFE_FIELDS = ["first_name", "last_name", "phone", "designation", "department_id", "location_id", "reporting_manager_id", "date_of_birth", "gender", "emp_code", "employee_code", "date_of_joining", "date_of_exit", "contact_number", "employment_type", "role"];
   for (const key of SAFE_FIELDS) {
     if ((data as Record<string, unknown>)[key] !== undefined) {
       allowed[key] = (data as Record<string, unknown>)[key];
@@ -365,6 +365,14 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
           `Notice period of ${profile.notice_period_days} days is required. Exit date must be at least ${profile.notice_period_days} days from today (${diffDays} days provided).`,
         );
       }
+    }
+  }
+
+  // Validate role — must be one of the 5 valid roles
+  if (allowed.role !== undefined) {
+    const validRoles = ["employee", "manager", "hr_admin", "org_admin", "super_admin"];
+    if (!validRoles.includes(String(allowed.role))) {
+      throw new ValidationError("Invalid role. Must be one of: employee, manager, hr_admin, org_admin, super_admin");
     }
   }
 

@@ -22,6 +22,9 @@ const router = Router();
 router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
+    // Look up user's department_id from DB since it's not in the JWT payload
+    const { getDB } = await import("../../db/connection.js");
+    const userRecord = await getDB()("users").where({ id: req.user!.sub }).select("department_id").first();
     const result = await announcementService.listAnnouncements(
       req.user!.org_id,
       req.user!.sub,
@@ -29,7 +32,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
         page,
         perPage: per_page,
         userRole: req.user!.role,
-        userDepartmentId: (req.user as any).department_id || null,
+        userDepartmentId: userRecord?.department_id || null,
       }
     );
     sendPaginated(res, result.announcements, result.total, page, per_page);
@@ -39,11 +42,13 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
 // GET /api/v1/announcements/unread-count
 router.get("/unread-count", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { getDB } = await import("../../db/connection.js");
+    const userRecord = await getDB()("users").where({ id: req.user!.sub }).select("department_id").first();
     const count = await announcementService.getUnreadCount(
       req.user!.org_id,
       req.user!.sub,
       req.user!.role,
-      (req.user as any).department_id || null
+      userRecord?.department_id || null
     );
     sendSuccess(res, { count });
   } catch (err) { next(err); }

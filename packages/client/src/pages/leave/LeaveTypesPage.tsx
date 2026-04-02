@@ -56,6 +56,7 @@ export default function LeaveTypesPage() {
   const [showTypeForm, setShowTypeForm] = useState(false);
   const [showPolicyForm, setShowPolicyForm] = useState(false);
   const [editingType, setEditingType] = useState<LeaveType | null>(null);
+  const [editingPolicy, setEditingPolicy] = useState<LeavePolicy | null>(null);
   const [typeForm, setTypeForm] = useState(EMPTY_TYPE);
   const [policyForm, setPolicyForm] = useState(EMPTY_POLICY);
 
@@ -102,6 +103,18 @@ export default function LeaveTypesPage() {
       qc.invalidateQueries({ queryKey: ["leave-policies"] });
       setShowPolicyForm(false);
       setPolicyForm(EMPTY_POLICY);
+      setEditingPolicy(null);
+    },
+  });
+
+  const updatePolicy = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<typeof EMPTY_POLICY> }) =>
+      api.put(`/leave/policies/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leave-policies"] });
+      setEditingPolicy(null);
+      setShowPolicyForm(false);
+      setPolicyForm(EMPTY_POLICY);
     },
   });
 
@@ -142,7 +155,25 @@ export default function LeaveTypesPage() {
 
   const handlePolicySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createPolicy.mutate(policyForm);
+    if (editingPolicy) {
+      updatePolicy.mutate({ id: editingPolicy.id, data: policyForm });
+    } else {
+      createPolicy.mutate(policyForm);
+    }
+  };
+
+  const startEditPolicy = (p: LeavePolicy) => {
+    setEditingPolicy(p);
+    setPolicyForm({
+      leave_type_id: p.leave_type_id,
+      name: p.name,
+      annual_quota: p.annual_quota,
+      accrual_type: p.accrual_type,
+      applicable_from_months: p.applicable_from_months,
+      max_consecutive_days: p.max_consecutive_days,
+      min_days_before_application: p.min_days_before_application,
+    });
+    setShowPolicyForm(true);
   };
 
   return (
@@ -363,7 +394,7 @@ export default function LeaveTypesPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Leave Policies</h2>
           <button
-            onClick={() => setShowPolicyForm(!showPolicyForm)}
+            onClick={() => { setShowPolicyForm(!showPolicyForm); setEditingPolicy(null); setPolicyForm(EMPTY_POLICY); }}
             className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
           >
             <Plus className="h-4 w-4" /> Add Policy
@@ -445,17 +476,21 @@ export default function LeaveTypesPage() {
             <div className="flex justify-end gap-3 mt-4">
               <button
                 type="button"
-                onClick={() => setShowPolicyForm(false)}
+                onClick={() => {
+                  setShowPolicyForm(false);
+                  setPolicyForm(EMPTY_POLICY);
+                  setEditingPolicy(null);
+                }}
                 className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={createPolicy.isPending}
+                disabled={createPolicy.isPending || updatePolicy.isPending}
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
-                Create Policy
+                {editingPolicy ? "Update" : "Create"} Policy
               </button>
             </div>
           </form>
@@ -489,12 +524,17 @@ export default function LeaveTypesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => { if (confirm("Deactivate this policy?")) deletePolicy.mutate(p.id); }}
-                        className="p-1 hover:bg-gray-100 rounded"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => startEditPolicy(p)} className="p-1 hover:bg-gray-100 rounded">
+                          <Pencil className="h-3.5 w-3.5 text-gray-500" />
+                        </button>
+                        <button
+                          onClick={() => { if (confirm("Deactivate this policy?")) deletePolicy.mutate(p.id); }}
+                          className="p-1 hover:bg-gray-100 rounded"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

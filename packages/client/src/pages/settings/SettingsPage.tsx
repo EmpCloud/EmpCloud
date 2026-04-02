@@ -148,6 +148,9 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const errors: Record<string, string> = {};
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errors.email = "Please enter a valid email address (e.g., user@example.com).";
+    }
     if (form.city && !NAME_ONLY_RE.test(form.city)) {
       errors.city = "City must only contain letters, spaces, and hyphens.";
     }
@@ -279,10 +282,18 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
     },
   });
 
+  const [deleteError, setDeleteError] = useState("");
+
   const deleteDept = useMutation({
     mutationFn: (id: number) =>
       api.delete(`/organizations/me/departments/${id}`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["departments"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["departments"] });
+      setDeleteError("");
+    },
+    onError: (err: any) => {
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete department.");
+    },
   });
 
   return (
@@ -333,7 +344,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
           <li key={d.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm">
             {d.name}
             <button
-              onClick={() => deleteDept.mutate(d.id)}
+              onClick={() => { setDeleteError(""); deleteDept.mutate(d.id); }}
               className="text-gray-400 hover:text-red-500"
               title="Delete department"
             >
@@ -342,6 +353,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
           </li>
         ))}
       </ul>
+      {deleteError && <p className="text-xs text-red-500 mt-2">{deleteError}</p>}
     </div>
   );
 }

@@ -68,6 +68,14 @@ export default function HeadcountPlanPage() {
     },
   });
 
+  const rejectMutation = useMutation({
+    mutationFn: ({ planId, reason }: { planId: number; reason?: string }) =>
+      api.post(`/positions/headcount-plans/${planId}/reject`, { reason }).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+    },
+  });
+
   const submitMutation = useMutation({
     mutationFn: (planId: number) =>
       api.put(`/positions/headcount-plans/${planId}`, { status: "submitted" }).then((r) => r.data.data),
@@ -305,13 +313,25 @@ export default function HeadcountPlanPage() {
                         </button>
                       )}
                       {(plan.status === "submitted" || plan.status === "draft") && (
-                        <button
-                          onClick={() => approveMutation.mutate(plan.id)}
-                          disabled={approveMutation.isPending}
-                          className="text-xs text-green-600 hover:underline"
-                        >
-                          Approve
-                        </button>
+                        <>
+                          <button
+                            onClick={() => approveMutation.mutate(plan.id)}
+                            disabled={approveMutation.isPending}
+                            className="text-xs text-green-600 hover:underline"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              const reason = prompt("Rejection reason (optional):");
+                              rejectMutation.mutate({ planId: plan.id, reason: reason || undefined });
+                            }}
+                            disabled={rejectMutation.isPending}
+                            className="text-xs text-red-600 hover:underline"
+                          >
+                            Reject
+                          </button>
+                        </>
                       )}
                     </div>
                   </td>

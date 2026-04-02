@@ -125,6 +125,7 @@ export enum AuditAction {
   POSITION_ASSIGNED = "position_assigned",
   HEADCOUNT_PLAN_CREATED = "headcount_plan_created",
   HEADCOUNT_PLAN_APPROVED = "headcount_plan_approved",
+  HEADCOUNT_PLAN_REJECTED = "headcount_plan_rejected",
   // Helpdesk
   TICKET_CREATED = "ticket_created",
   TICKET_ASSIGNED = "ticket_assigned",

@@ -196,7 +196,21 @@ export default function PositionListPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setShowCreate(false)}
+                onClick={() => {
+                  setShowCreate(false);
+                  setForm({
+                    title: "",
+                    department_id: "",
+                    employment_type: "full_time",
+                    headcount_budget: 1,
+                    is_critical: false,
+                    job_description: "",
+                    min_salary: "",
+                    max_salary: "",
+                    currency: "INR",
+                  });
+                  createMutation.reset();
+                }}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
               >
                 Cancel
