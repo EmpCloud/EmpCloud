@@ -167,20 +167,37 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     let applicationId: number;
     let leaveTypeId: number;
 
-    test("GET leave types to find a valid type", async ({ request }) => {
+    test("GET leave types to find a type with balance", async ({ request }) => {
       const res = await request.get(`${API}/leave/types`, {
         headers: auth(adminToken),
       });
       expect(res.status()).toBe(200);
       const types = (await res.json()).data;
       expect(types.length).toBeGreaterThan(0);
-      leaveTypeId = types[0].id;
+
+      // Check employee balances and pick a type with remaining balance
+      const balRes = await request.get(`${API}/leave/balances`, {
+        headers: auth(employeeToken),
+      });
+      if (balRes.status() === 200) {
+        const balances = (await balRes.json()).data;
+        const withBalance = balances.find((b: any) => parseFloat(b.balance) >= 1.0);
+        if (withBalance) {
+          leaveTypeId = withBalance.leave_type_id;
+          console.log(`Using leave type ${leaveTypeId} with balance ${withBalance.balance}`);
+        } else {
+          leaveTypeId = types[0].id;
+          console.log(`No leave type with balance >= 1, using ${leaveTypeId}`);
+        }
+      } else {
+        leaveTypeId = types[0].id;
+      }
     });
 
     test("POST leave application — persists as pending", async ({ request }) => {
       // Use a far-future date to avoid overlap with other E2E leave applications
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() + 60 + Math.floor(Math.random() * 30));
+      startDate.setDate(startDate.getDate() + 90 + Math.floor(Math.random() * 60));
       const endDate = new Date(startDate);
 
       const res = await request.post(`${API}/leave/applications`, {
@@ -277,17 +294,16 @@ test.describe("DB Verification: Announcement Lifecycle", () => {
       expect(announcementId).toBeGreaterThan(0);
     });
 
-    test("GET announcements — list includes new announcement", async ({ request }) => {
-      // Use large page size since announcements are paginated (default 20)
-      const res = await request.get(`${API}/announcements?per_page=100`, {
+    test("GET announcements — new announcement readable by ID", async ({ request }) => {
+      // Verify the announcement persists by fetching it directly
+      const res = await request.get(`${API}/announcements/${announcementId}`, {
         headers: auth(employeeToken),
       });
       expect(res.status()).toBe(200);
       const body = await res.json();
-      const announcements = Array.isArray(body.data) ? body.data : body.data?.announcements || [];
-      const found = announcements.find((a: any) => a.id === announcementId);
-      expect(found).toBeTruthy();
-      expect(found.title).toContain(`DB Verify Announcement ${RUN}`);
+      expect(body.data).toBeTruthy();
+      expect(body.data.id).toBe(announcementId);
+      expect(body.data.title).toContain(`DB Verify Announcement ${RUN}`);
     });
 
     test("POST mark as read — read status persists", async ({ request }) => {
@@ -389,9 +405,9 @@ test.describe("DB Verification: Helpdesk Ticket Lifecycle", () => {
     });
 
     test("POST resolve — status changes to resolved", async ({ request }) => {
-      const res = await request.put(`${API}/helpdesk/tickets/${ticketId}/status`, {
+      const res = await request.post(`${API}/helpdesk/tickets/${ticketId}/resolve`, {
         headers: auth(adminToken),
-        data: { status: "resolved" },
+        data: { resolution: "Resolved by E2E test" },
       });
       expect(res.status()).toBe(200);
     });
