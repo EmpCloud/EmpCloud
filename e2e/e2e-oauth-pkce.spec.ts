@@ -13,7 +13,7 @@ const ADMIN_CREDS = { email: "ananya@technova.in", password: "Welcome@123" };
 
 // The empcloud-dashboard client is a public (non-confidential) OAuth client
 const PUBLIC_CLIENT_ID = "empcloud-dashboard";
-const REDIRECT_URI = "https://test-empcloud.empcloud.com/oauth/callback";
+const REDIRECT_URI = "https://test-empcloud.empcloud.com/callback";
 
 // =============================================================================
 // Helpers

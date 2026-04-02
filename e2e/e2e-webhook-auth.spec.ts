@@ -9,7 +9,7 @@ const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
 // The BILLING_API_KEY used in test environment
 // This is the shared secret between EMP Cloud and EMP Billing
-const BILLING_API_KEY = "billing-test-api-key-2026";
+const BILLING_API_KEY = "emp-billing-api-key-2026-secure-integration";
 
 const VALID_BILLING_PAYLOAD = {
   event: "invoice.paid",
