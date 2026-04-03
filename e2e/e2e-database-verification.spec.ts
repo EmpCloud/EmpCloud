@@ -175,6 +175,13 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
       const types = (await res.json()).data;
       expect(types.length).toBeGreaterThan(0);
 
+      // Initialize balances for current year to ensure employee has balance
+      const year = new Date().getFullYear();
+      await request.post(`${API}/leave/balances/initialize`, {
+        headers: auth(adminToken),
+        data: { year },
+      });
+
       // Check employee balances and pick a type with remaining balance
       const balRes = await request.get(`${API}/leave/balances`, {
         headers: auth(employeeToken),
@@ -195,9 +202,9 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     });
 
     test("POST leave application — persists as pending", async ({ request }) => {
-      // Use a far-future date to avoid overlap with other E2E leave applications
+      // Use a far-future date with high randomness to avoid overlap with other E2E leave applications
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() + 90 + Math.floor(Math.random() * 60));
+      startDate.setDate(startDate.getDate() + 180 + Math.floor(Math.random() * 180));
       const endDate = new Date(startDate);
 
       const res = await request.post(`${API}/leave/applications`, {
@@ -209,19 +216,14 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
           reason: `DB verify leave ${RUN}`,
         },
       });
-      // 201 for created, 400 if no balance or overlap
-      expect([201, 400]).toContain(res.status());
-      if (res.status() === 201) {
-        const body = await res.json();
-        applicationId = body.data.id;
-        expect(applicationId).toBeGreaterThan(0);
-      } else {
-        console.log(`Leave application returned ${res.status()} — may be balance/overlap issue`);
-      }
+      expect(res.status()).toBe(201);
+      const body = await res.json();
+      applicationId = body.data.id;
+      expect(applicationId).toBeGreaterThan(0);
     });
 
     test("GET application shows pending status", async ({ request }) => {
-      test.skip(!applicationId, 'Leave application was not created — balance/overlap issue');
+      expect(applicationId, 'Leave application must exist from previous test').toBeTruthy();
       const res = await request.get(`${API}/leave/applications/${applicationId}`, {
         headers: auth(employeeToken),
       });
@@ -232,7 +234,7 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     });
 
     test("POST approve — status changes to approved in DB", async ({ request }) => {
-      test.skip(!applicationId, 'Leave application was not created — balance/overlap issue');
+      expect(applicationId, 'Leave application must exist from previous test').toBeTruthy();
       const res = await request.post(`${API}/leave/applications/${applicationId}/approve`, {
         headers: auth(adminToken),
         data: { remarks: "Approved by E2E test" },
@@ -241,7 +243,7 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
     });
 
     test("GET application — status is now approved", async ({ request }) => {
-      test.skip(!applicationId, 'Leave application was not created — balance/overlap issue');
+      expect(applicationId, 'Leave application must exist from previous test').toBeTruthy();
       const res = await request.get(`${API}/leave/applications/${applicationId}`, {
         headers: auth(employeeToken),
       });
@@ -687,14 +689,13 @@ test.describe("DB Verification: Event RSVP", () => {
     });
 
     test("GET events — event appears in employee list", async ({ request }) => {
-      // Use large page size since events are paginated (default 20)
-      const res = await request.get(`${API}/events?per_page=100`, {
+      // Fetch event by ID to verify persistence (avoids pagination issues with 100+ events)
+      const res = await request.get(`${API}/events/${eventId}`, {
         headers: auth(employeeToken),
       });
       expect(res.status()).toBe(200);
       const body = await res.json();
-      const events = Array.isArray(body.data) ? body.data : body.data?.events || [];
-      const found = events.find((e: any) => e.id === eventId);
+      const found = body.data;
       expect(found).toBeTruthy();
       expect(found.title).toContain(`DB Verify Event ${RUN}`);
     });

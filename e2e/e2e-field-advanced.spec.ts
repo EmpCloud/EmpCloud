@@ -385,17 +385,15 @@ test.describe('EMP Field Module — Advanced', () => {
         data: {
           date: '2026-04-15',
           stops: [
-            { client_site_id: createdClientSiteId || undefined, sequence_order: 1, planned_arrival: '09:00' },
-            { sequence_order: 2, planned_arrival: '11:00' },
+            { client_site_id: createdClientSiteId || undefined, sequence_order: 1, planned_arrival: '2026-04-15 09:00:00' },
+            { sequence_order: 2, planned_arrival: '2026-04-15 11:00:00' },
           ],
         },
       });
-      // 500 indicates a server-side DB issue (table may not be migrated)
-      expect([200, 201, 500]).toContain(r.status());
-      if ([200, 201].includes(r.status())) {
-        const body = await r.json();
-        createdRouteId = body.data?.id || body.data?.route?.id || '';
-      }
+      expect([200, 201]).toContain(r.status());
+      const body = await r.json();
+      createdRouteId = body.data?.id || body.data?.route?.id || '';
+      expect(createdRouteId).toBeTruthy();
     });
 
     test('7.2 List routes', async ({ request }) => {
@@ -404,13 +402,13 @@ test.describe('EMP Field Module — Advanced', () => {
     });
 
     test('7.3 Get route by ID', async ({ request }) => {
-      test.skip(!createdRouteId, 'Route creation returned 500 — server-side DB issue');
+      expect(createdRouteId, 'Route must exist from test 7.1').toBeTruthy();
       const r = await request.get(`${FIELD_API}/routes/${createdRouteId}`, auth());
       expect([200, 404]).toContain(r.status());
     });
 
     test('7.4 Update route status', async ({ request }) => {
-      test.skip(!createdRouteId, 'Route creation returned 500 — server-side DB issue');
+      expect(createdRouteId, 'Route must exist from test 7.1').toBeTruthy();
       const r = await request.put(`${FIELD_API}/routes/${createdRouteId}/status`, {
         ...auth(),
         data: { status: 'in_progress' },

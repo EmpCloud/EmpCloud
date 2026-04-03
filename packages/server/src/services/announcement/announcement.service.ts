@@ -80,20 +80,26 @@ export async function listAnnouncements(
       // Department-targeted announcements
       if (params?.userDepartmentId) {
         this.orWhere(function () {
-          this.where("announcements.target_type", "department").whereRaw(
-            "JSON_CONTAINS(announcements.target_ids, ?)",
-            [JSON.stringify(String(params.userDepartmentId))]
-          );
+          this.where("announcements.target_type", "department")
+            .whereNotNull("announcements.target_ids")
+            .whereRaw("JSON_VALID(announcements.target_ids)")
+            .whereRaw(
+              "JSON_CONTAINS(announcements.target_ids, ?)",
+              [JSON.stringify(String(params.userDepartmentId))]
+            );
         });
       }
 
       // Role-targeted announcements
       if (params?.userRole) {
         this.orWhere(function () {
-          this.where("announcements.target_type", "role").whereRaw(
-            "JSON_CONTAINS(announcements.target_ids, ?)",
-            [JSON.stringify(params.userRole)]
-          );
+          this.where("announcements.target_type", "role")
+            .whereNotNull("announcements.target_ids")
+            .whereRaw("JSON_VALID(announcements.target_ids)")
+            .whereRaw(
+              "JSON_CONTAINS(announcements.target_ids, ?)",
+              [JSON.stringify(params.userRole)]
+            );
         });
       }
     });
@@ -293,19 +299,25 @@ export async function getUnreadCount(
 
       if (userDepartmentId) {
         this.orWhere(function () {
-          this.where("announcements.target_type", "department").whereRaw(
-            "JSON_CONTAINS(announcements.target_ids, ?)",
-            [JSON.stringify(String(userDepartmentId))]
-          );
+          this.where("announcements.target_type", "department")
+            .whereNotNull("announcements.target_ids")
+            .whereRaw("JSON_VALID(announcements.target_ids)")
+            .whereRaw(
+              "JSON_CONTAINS(announcements.target_ids, ?)",
+              [JSON.stringify(String(userDepartmentId))]
+            );
         });
       }
 
       if (userRole) {
         this.orWhere(function () {
-          this.where("announcements.target_type", "role").whereRaw(
-            "JSON_CONTAINS(announcements.target_ids, ?)",
-            [JSON.stringify(userRole)]
-          );
+          this.where("announcements.target_type", "role")
+            .whereNotNull("announcements.target_ids")
+            .whereRaw("JSON_VALID(announcements.target_ids)")
+            .whereRaw(
+              "JSON_CONTAINS(announcements.target_ids, ?)",
+              [JSON.stringify(userRole)]
+            );
         });
       }
     });
