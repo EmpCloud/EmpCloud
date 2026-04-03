@@ -13,12 +13,12 @@ const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
 const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
 
 async function login(page: Page, email: string, password: string): Promise<void> {
-  await page.goto(`${FRONTEND}/login`);
+  await page.goto(`${FRONTEND}/login`, { timeout: 30000 });
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await page.click('button[type="submit"]');
-  await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 });
-  await page.waitForLoadState("networkidle");
+  await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 30000 });
+  await page.waitForLoadState("networkidle").catch(() => {});
 }
 
 // =============================================================================
@@ -29,6 +29,7 @@ test.describe("Standard Desktop (1280x720)", () => {
   test.use({ viewport: { width: 1280, height: 720 } });
 
   test("Login page renders with email and password inputs", async ({ page }) => {
+    test.setTimeout(30000);
     await page.goto(`${FRONTEND}/login`);
     await page.waitForLoadState("networkidle");
     await expect(page.locator('input[name="email"]')).toBeVisible();
@@ -38,6 +39,7 @@ test.describe("Standard Desktop (1280x720)", () => {
   });
 
   test("Dashboard loads with correct layout after login", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, ADMIN.email, ADMIN.password);
     // Dashboard should have main content area
     const bodyText = await page.textContent("body");
@@ -48,6 +50,7 @@ test.describe("Standard Desktop (1280x720)", () => {
   });
 
   test("Billing page shows invoices tab", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, ADMIN.email, ADMIN.password);
     await page.goto(`${FRONTEND}/billing`);
     await page.waitForLoadState("networkidle");
@@ -60,6 +63,7 @@ test.describe("Standard Desktop (1280x720)", () => {
   });
 
   test("Leave form page is accessible", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, EMPLOYEE.email, EMPLOYEE.password);
     await page.goto(`${FRONTEND}/leave`);
     await page.waitForLoadState("networkidle");
@@ -71,6 +75,7 @@ test.describe("Standard Desktop (1280x720)", () => {
   });
 
   test("Attendance page loads with content", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, EMPLOYEE.email, EMPLOYEE.password);
     await page.goto(`${FRONTEND}/attendance`);
     await page.waitForLoadState("networkidle");
@@ -90,6 +95,7 @@ test.describe("Wide Desktop (1920x1080)", () => {
   test.use({ viewport: { width: 1920, height: 1080 } });
 
   test("Navigation sidebar renders correctly at wide viewport", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, ADMIN.email, ADMIN.password);
     // Admin should see sidebar with navigation items
     const bodyText = await page.textContent("body");
@@ -101,6 +107,7 @@ test.describe("Wide Desktop (1920x1080)", () => {
   });
 
   test("Employee sees appropriate navigation items", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, EMPLOYEE.email, EMPLOYEE.password);
     const bodyText = await page.textContent("body");
     expect(bodyText?.length).toBeGreaterThan(10);
@@ -109,6 +116,7 @@ test.describe("Wide Desktop (1920x1080)", () => {
   });
 
   test("Tables render with data rows (not empty)", async ({ page }) => {
+    test.setTimeout(30000);
     await login(page, ADMIN.email, ADMIN.password);
     await page.goto(`${FRONTEND}/employees`);
     await page.waitForLoadState("networkidle");

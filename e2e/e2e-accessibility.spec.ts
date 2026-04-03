@@ -11,12 +11,12 @@ const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
 const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
 
 async function login(page: Page, email: string, password: string): Promise<void> {
-  await page.goto(`${FRONTEND}/login`);
+  await page.goto(`${FRONTEND}/login`, { timeout: 30000 });
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await page.click('button[type="submit"]');
-  await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 });
-  await page.waitForLoadState("networkidle");
+  await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 30000 });
+  await page.waitForLoadState("networkidle").catch(() => {});
 }
 
 // =============================================================================

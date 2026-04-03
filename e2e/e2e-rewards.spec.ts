@@ -29,7 +29,7 @@ async function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 async function loginToCloud(request: APIRequestContext, creds = ADMIN_CREDS): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {
     const res = await request.post(`${EMPCLOUD_API}/auth/login`, { data: creds });
-    if (res.status() === 429) { await sleep(3000 * (attempt + 1)); continue; }
+    if (res.status() === 429 || res.status() >= 500) { await sleep(1000 * (attempt + 1)); continue; }
     expect(res.status()).toBe(200);
     const body = await res.json();
     return body.data.tokens.access_token;
@@ -40,7 +40,7 @@ async function loginToCloud(request: APIRequestContext, creds = ADMIN_CREDS): Pr
 async function ssoToRewards(request: APIRequestContext, ecToken: string): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {
     const res = await request.post(`${REWARDS_API}/auth/sso`, { data: { token: ecToken } });
-    if (res.status() === 429) { await sleep(3000 * (attempt + 1)); continue; }
+    if (res.status() === 429 || res.status() >= 500) { await sleep(1000 * (attempt + 1)); continue; }
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);

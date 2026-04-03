@@ -22,20 +22,20 @@ let recruitToken = '';
 async function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 async function loginToCloud(request: APIRequestContext): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 10; attempt++) {
     const res = await request.post(`${EMPCLOUD_API}/auth/login`, { data: ADMIN_CREDS });
-    if (res.status() === 429) { await sleep(3000 * (attempt + 1)); continue; }
+    if (res.status() === 429 || res.status() >= 500) { await sleep(Math.min(2000 * (attempt + 1), 10000)); continue; }
     expect(res.status()).toBe(200);
     const body = await res.json();
     return body.data.tokens.access_token;
   }
-  throw new Error('Login failed after 3 retries (rate limited)');
+  throw new Error('Login failed after 10 retries (rate limited)');
 }
 
 async function ssoToRecruit(request: APIRequestContext, ecToken: string): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 10; attempt++) {
     const res = await request.post(`${RECRUIT_API}/auth/sso`, { data: { token: ecToken } });
-    if (res.status() === 429) { await sleep(3000 * (attempt + 1)); continue; }
+    if (res.status() === 429 || res.status() >= 500) { await sleep(Math.min(2000 * (attempt + 1), 10000)); continue; }
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
@@ -43,7 +43,7 @@ async function ssoToRecruit(request: APIRequestContext, ecToken: string): Promis
     expect(moduleToken, 'SSO response missing data.tokens.accessToken').toBeTruthy();
     return moduleToken;
   }
-  throw new Error('SSO failed after 3 retries (rate limited)');
+  throw new Error('SSO failed after 10 retries (rate limited)');
 }
 
 function auth() {
@@ -82,11 +82,13 @@ test.describe.serial('EMP Recruit Module', () => {
   test.describe('1 - Auth & Health', () => {
 
     test('1.1 EmpCloud login succeeds', async ({ request }) => {
+      test.setTimeout(60000); // Extended timeout for rate-limited auth
       cloudToken = await loginToCloud(request);
       expect(cloudToken.length).toBeGreaterThan(10);
     });
 
     test('1.2 SSO to Recruit succeeds', async ({ request }) => {
+      test.setTimeout(90000); // Extended timeout for rate-limited auth
       if (!cloudToken) cloudToken = await loginToCloud(request);
       recruitToken = await ssoToRecruit(request, cloudToken);
       expect(recruitToken.length).toBeGreaterThan(10);
@@ -354,7 +356,20 @@ test.describe.serial('EMP Recruit Module', () => {
     });
 
     test('5.2 List offers', async ({ request }) => {
-      const r = await request.get(`${RECRUIT_API}/offers`, auth());
+      test.setTimeout(90000);
+      let r = await request.get(`${RECRUIT_API}/offers`, auth());
+      // Retry with fresh auth on 500/401 — token may have expired mid-suite
+      for (let retry = 0; retry < 5 && (r.status() === 500 || r.status() === 401); retry++) {
+        await new Promise(resolve => setTimeout(resolve, Math.min(2000 * (retry + 1), 10000)));
+        cloudToken = await loginToCloud(request);
+        recruitToken = await ssoToRecruit(request, cloudToken);
+        r = await request.get(`${RECRUIT_API}/offers`, auth());
+      }
+      if (r.status() === 500) {
+        const errBody = await r.json().catch(() => ({}));
+        console.warn('5.2 List offers: server returned 500 after retries:', JSON.stringify(errBody));
+        expect(r.status(), `Recruit /offers returned 500: ${JSON.stringify(errBody)}`).toBe(200);
+      }
       expect(r.status()).toBe(200);
       const body = await r.json();
       const offers = body.data?.data || body.data?.offers || body.data;

@@ -69,7 +69,7 @@ test("Super Admin screenshots", async ({ browser }) => {
   test.setTimeout(90000);
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  await login(page, "admin@empcloud.com", "SuperAdmin@2026");
+  await login(page, "admin@empcloud.com", "SuperAdmin@123");
 
   const pages = [
     ["/admin", "super_admin_dashboard"],

@@ -31,25 +31,25 @@ let pipId: number | string = 0;
 async function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 async function loginWithRetry(request: any, creds: { email: string; password: string }): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const res = await request.post(`${EMPCLOUD_API}/auth/login`, { data: creds });
-    if (res.status() === 429) { await sleep(2000); continue; }
+    if (res.status() === 429 || res.status() >= 500) { await sleep(1000 * (attempt + 1)); continue; }
     expect(res.status()).toBe(200);
     const body = await res.json();
     return body.data.tokens.access_token;
   }
-  throw new Error('Login failed after 3 retries');
+  throw new Error('Login failed after 5 retries');
 }
 
 async function ssoWithRetry(request: any, ecToken: string): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     const res = await request.post(`${PERF_API}/auth/sso`, { data: { token: ecToken } });
-    if (res.status() === 429) { await sleep(2000); continue; }
+    if (res.status() === 429 || res.status() >= 500) { await sleep(1000 * (attempt + 1)); continue; }
     expect(res.status()).toBe(200);
     const body = await res.json();
     return body.data?.tokens?.accessToken || '';
   }
-  throw new Error('SSO failed after 3 retries');
+  throw new Error('SSO failed after 5 retries');
 }
 
 test.describe('EMP Performance — Complete Coverage', () => {

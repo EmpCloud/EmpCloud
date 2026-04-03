@@ -7,7 +7,7 @@ import { test, expect, APIRequestContext } from "@playwright/test";
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
 const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const EMPLOYEE = { email: "priya@technova.in", password: "Welcome@123" };
 const SUPER_ADMIN = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
 
 // =============================================================================
@@ -19,12 +19,24 @@ async function loginAndGetToken(
   email: string,
   password: string,
 ): Promise<string> {
-  const res = await request.post(`${API}/auth/login`, {
-    data: { email, password },
-  });
-  expect(res.status()).toBe(200);
-  const body = await res.json();
-  return body.data.tokens.access_token;
+  // Retry with backoff to handle rate limiting when multiple spec files run in parallel
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const res = await request.post(`${API}/auth/login`, {
+      data: { email, password },
+    });
+    if (res.status() === 200) {
+      const body = await res.json();
+      return body.data.tokens.access_token;
+    }
+    if (attempt < 3) {
+      await new Promise((r) => setTimeout(r, attempt * 2000));
+      continue;
+    }
+    // Final attempt — fail with details including response body
+    const errorBody = await res.text().catch(() => "no body");
+    throw new Error(`Login failed for ${email} after ${attempt} attempts: status=${res.status()} body=${errorBody}`);
+  }
+  throw new Error("Login failed after retries");
 }
 
 function auth(token: string) {
@@ -32,18 +44,22 @@ function auth(token: string) {
 }
 
 // =============================================================================
+// Single login, all tests share tokens
+// =============================================================================
+
+let adminToken: string;
+let employeeToken: string;
+
+test.beforeAll(async ({ request }) => {
+  adminToken = await loginAndGetToken(request, ADMIN.email, ADMIN.password);
+  employeeToken = await loginAndGetToken(request, EMPLOYEE.email, EMPLOYEE.password);
+});
+
+// =============================================================================
 // 1. Modules List
 // =============================================================================
 
 test.describe("Modules", () => {
-  let adminToken: string;
-  let employeeToken: string;
-
-  test.beforeAll(async ({ request }) => {
-    adminToken = await loginAndGetToken(request, ADMIN.email, ADMIN.password);
-    employeeToken = await loginAndGetToken(request, EMPLOYEE.email, EMPLOYEE.password);
-  });
-
   test("Admin can list all modules", async ({ request }) => {
     const res = await request.get(`${API}/modules`, {
       headers: auth(adminToken),
@@ -121,14 +137,6 @@ test.describe("Modules", () => {
 // =============================================================================
 
 test.describe("Subscriptions", () => {
-  let adminToken: string;
-  let employeeToken: string;
-
-  test.beforeAll(async ({ request }) => {
-    adminToken = await loginAndGetToken(request, ADMIN.email, ADMIN.password);
-    employeeToken = await loginAndGetToken(request, EMPLOYEE.email, EMPLOYEE.password);
-  });
-
   test("Admin can list subscriptions", async ({ request }) => {
     const res = await request.get(`${API}/subscriptions`, {
       headers: auth(adminToken),
@@ -177,14 +185,6 @@ test.describe("Subscriptions", () => {
 // =============================================================================
 
 test.describe("Billing", () => {
-  let adminToken: string;
-  let employeeToken: string;
-
-  test.beforeAll(async ({ request }) => {
-    adminToken = await loginAndGetToken(request, ADMIN.email, ADMIN.password);
-    employeeToken = await loginAndGetToken(request, EMPLOYEE.email, EMPLOYEE.password);
-  });
-
   test("Admin can list invoices", async ({ request }) => {
     const res = await request.get(`${API}/billing/invoices`, {
       headers: auth(adminToken),
@@ -257,14 +257,6 @@ test.describe("Billing", () => {
 // =============================================================================
 
 test.describe("Notifications", () => {
-  let adminToken: string;
-  let employeeToken: string;
-
-  test.beforeAll(async ({ request }) => {
-    adminToken = await loginAndGetToken(request, ADMIN.email, ADMIN.password);
-    employeeToken = await loginAndGetToken(request, EMPLOYEE.email, EMPLOYEE.password);
-  });
-
   test("Admin can list notifications", async ({ request }) => {
     const res = await request.get(`${API}/notifications`, {
       headers: auth(adminToken),
@@ -366,14 +358,6 @@ test.describe("Notifications", () => {
 // =============================================================================
 
 test.describe("Manager Dashboard", () => {
-  let adminToken: string;
-  let employeeToken: string;
-
-  test.beforeAll(async ({ request }) => {
-    adminToken = await loginAndGetToken(request, ADMIN.email, ADMIN.password);
-    employeeToken = await loginAndGetToken(request, EMPLOYEE.email, EMPLOYEE.password);
-  });
-
   test("Admin can access manager dashboard", async ({ request }) => {
     const res = await request.get(`${API}/manager/dashboard`, {
       headers: auth(adminToken),

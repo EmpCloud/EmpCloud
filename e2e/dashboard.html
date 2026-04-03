@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMP Cloud - E2E Test Dashboard</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --bg-hover: #292e36;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #484f58;
+    --green: #3fb950;
+    --green-dim: #1a3a2a;
+    --red: #f85149;
+    --red-dim: #3d1a1a;
+    --yellow: #d29922;
+    --yellow-dim: #3d2e00;
+    --blue: #58a6ff;
+    --purple: #bc8cff;
+    --pending: #484f58;
+    --progress-bg: #21262d;
+    --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'SF Mono', Consolas, monospace;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* Header */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+  }
+
+  .logo-text {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 1px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-running {
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--blue);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+  }
+
+  .status-finished {
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--green);
+    border: 1px solid rgba(63, 185, 80, 0.3);
+  }
+
+  .status-finished.has-failures {
+    background: rgba(248, 81, 73, 0.15);
+    color: var(--red);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .no-pulse { animation: none; }
+
+  /* Stats */
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: -1px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-passed .stat-value { color: var(--green); }
+  .stat-failed .stat-value { color: var(--red); }
+  .stat-pending .stat-value { color: var(--text-muted); }
+  .stat-skipped .stat-value { color: var(--yellow); }
+  .stat-total .stat-value { color: var(--text-primary); }
+
+  .stat-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+  }
+
+  .elapsed {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-left: auto;
+  }
+
+  .last-updated {
+    font-size: 11px;
+    color: var(--text-muted);
+    animation: fadeUpdate 2s ease;
+  }
+
+  @keyframes fadeUpdate {
+    0% { color: var(--blue); }
+    100% { color: var(--text-muted); }
+  }
+
+  /* Progress bar */
+  .progress-container {
+    margin-top: 12px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--progress-bg);
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .progress-passed {
+    background: var(--green);
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+
+  .progress-failed {
+    background: var(--red);
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+
+  .progress-skipped {
+    background: var(--yellow);
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-sans);
+  }
+
+  .filter-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+  }
+
+  .filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .filter-btn.active-red {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    max-width: 400px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-family: var(--font-mono);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .search-input:focus {
+    border-color: var(--blue);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .controls-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toggle-all-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-sans);
+  }
+
+  .toggle-all-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+  }
+
+  /* Main content */
+  .main {
+    padding: 16px 24px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Module card */
+  .module-card {
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    transition: border-color 0.2s ease;
+  }
+
+  .module-card:hover {
+    border-color: var(--text-muted);
+  }
+
+  .module-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+    transition: background 0.15s ease;
+  }
+
+  .module-header:hover {
+    background: var(--bg-hover);
+  }
+
+  .module-chevron {
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    width: 16px;
+  }
+
+  .module-chevron.open {
+    transform: rotate(90deg);
+  }
+
+  .module-name {
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .module-stats {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    align-items: center;
+  }
+
+  .module-stat-passed { color: var(--green); }
+  .module-stat-failed { color: var(--red); }
+  .module-stat-pending { color: var(--text-muted); }
+  .module-stat-total { color: var(--text-secondary); }
+
+  .module-progress {
+    width: 120px;
+    height: 3px;
+    background: var(--progress-bg);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .module-progress .progress-passed,
+  .module-progress .progress-failed,
+  .module-progress .progress-skipped {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .module-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .module-body.open {
+    display: block;
+  }
+
+  /* Test row */
+  .test-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 16px 6px 44px;
+    gap: 10px;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+    transition: background 0.15s ease, opacity 0.3s ease;
+  }
+
+  .test-row:last-child {
+    border-bottom: none;
+  }
+
+  .test-row:hover {
+    background: var(--bg-hover);
+  }
+
+  .test-row.hidden {
+    display: none;
+  }
+
+  .test-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .test-dot.pending {
+    background: var(--pending);
+  }
+
+  .test-dot.passed {
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(63, 185, 80, 0.4);
+  }
+
+  .test-dot.failed {
+    background: var(--red);
+    box-shadow: 0 0 6px rgba(248, 81, 73, 0.4);
+  }
+
+  .test-dot.skipped {
+    background: var(--yellow);
+  }
+
+  .test-dot.timedOut {
+    background: var(--yellow);
+    box-shadow: 0 0 6px rgba(210, 153, 34, 0.4);
+  }
+
+  .test-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .test-name.pending { color: var(--text-muted); }
+  .test-name.passed { color: var(--text-primary); }
+  .test-name.failed { color: var(--red); }
+
+  .test-file {
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .test-duration {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    min-width: 55px;
+    text-align: right;
+  }
+
+  .test-duration.slow {
+    color: var(--yellow);
+  }
+
+  /* Error tooltip */
+  .test-row.has-error {
+    position: relative;
+  }
+
+  .test-error {
+    display: none;
+    position: absolute;
+    left: 44px;
+    top: 100%;
+    z-index: 50;
+    max-width: 600px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--red);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--red);
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .test-row.has-error:hover .test-error {
+    display: block;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-state-text {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .empty-state-sub {
+    font-size: 13px;
+  }
+
+  /* Waiting / connecting state */
+  .connecting {
+    text-align: center;
+    padding: 120px 24px;
+    color: var(--text-secondary);
+  }
+
+  .connecting-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top: 3px solid var(--blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Animations for status change */
+  @keyframes flashGreen {
+    0% { background: var(--green-dim); }
+    100% { background: transparent; }
+  }
+
+  @keyframes flashRed {
+    0% { background: var(--red-dim); }
+    100% { background: transparent; }
+  }
+
+  .flash-green {
+    animation: flashGreen 1s ease;
+  }
+
+  .flash-red {
+    animation: flashRed 1s ease;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header { padding: 12px 16px; }
+    .controls { padding: 8px 16px; }
+    .main { padding: 12px 16px; }
+    .test-row { padding-left: 32px; }
+    .test-file { display: none; }
+    .module-progress { display: none; }
+    .stats-row { gap: 10px; }
+    .stat-value { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">E2E</div>
+      <div>
+        <div class="logo-text">EMP Cloud Test Dashboard</div>
+        <div class="logo-sub">Real-time Playwright E2E Test Monitor</div>
+      </div>
+    </div>
+    <div id="statusBadge" class="status-badge status-running">
+      <div class="pulse-dot"></div>
+      <span>Waiting</span>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat stat-total">
+      <span class="stat-value" id="statTotal">-</span>
+      <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat stat-passed">
+      <span class="stat-value" id="statPassed">0</span>
+      <span class="stat-label">Passed</span>
+    </div>
+    <div class="stat stat-failed">
+      <span class="stat-value" id="statFailed">0</span>
+      <span class="stat-label">Failed</span>
+    </div>
+    <div class="stat stat-skipped">
+      <span class="stat-value" id="statSkipped">0</span>
+      <span class="stat-label">Skip</span>
+    </div>
+    <div class="stat stat-pending">
+      <span class="stat-value" id="statPending">0</span>
+      <span class="stat-label">Pending</span>
+    </div>
+    <div class="elapsed" id="elapsed"></div>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-passed" id="progressPassed" style="width:0"></div>
+      <div class="progress-failed" id="progressFailed" style="width:0"></div>
+      <div class="progress-skipped" id="progressSkipped" style="width:0"></div>
+    </div>
+    <div class="progress-text">
+      <span id="progressPercent">0% complete</span>
+      <span id="lastUpdated" class="last-updated"></span>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+  <button class="filter-btn" data-filter="passed" onclick="setFilter('passed')">Passed</button>
+  <button class="filter-btn" data-filter="failed" onclick="setFilter('failed')">Failed</button>
+  <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')">Pending</button>
+  <button class="filter-btn" data-filter="skipped" onclick="setFilter('skipped')">Skipped</button>
+  <input class="search-input" id="searchInput" type="text" placeholder="Search tests..." oninput="applyFilters()">
+  <div class="controls-right">
+    <button class="toggle-all-btn" id="toggleAllBtn" onclick="toggleAll()">Expand All</button>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <div class="connecting">
+    <div class="connecting-spinner"></div>
+    <div>Waiting for test data...</div>
+    <div style="font-size: 12px; margin-top: 8px; color: var(--text-muted);">
+      Run tests with: <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">npx playwright test --reporter=./e2e/dashboard-reporter.ts</code>
+    </div>
+  </div>
+</div>
+
+<!-- Optional: uncomment for sound on failure -->
+<!-- <audio id="failSound" preload="auto"><source src="data:audio/wav;base64,..." type="audio/wav"></audio> -->
+
+<script>
+const POLL_INTERVAL = 1500;
+let currentFilter = 'all';
+let currentSearch = '';
+let previousStatuses = {};
+let allExpanded = false;
+let openModules = new Set();
+let dataLoaded = false;
+
+function formatDuration(ms) {
+  if (ms === null || ms === undefined) return '';
+  if (ms < 1000) return ms + 'ms';
+  if (ms < 60000) return (ms / 1000).toFixed(1) + 's';
+  const mins = Math.floor(ms / 60000);
+  const secs = ((ms % 60000) / 1000).toFixed(0);
+  return mins + 'm ' + secs + 's';
+}
+
+function formatElapsed(ms) {
+  if (!ms) return '';
+  const secs = Math.floor(ms / 1000);
+  const mins = Math.floor(secs / 60);
+  const hrs = Math.floor(mins / 60);
+  if (hrs > 0) return hrs + 'h ' + (mins % 60) + 'm ' + (secs % 60) + 's';
+  if (mins > 0) return mins + 'm ' + (secs % 60) + 's';
+  return secs + 's';
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active', 'active-red');
+    if (btn.dataset.filter === filter) {
+      btn.classList.add(filter === 'failed' ? 'active-red' : 'active');
+    }
+  });
+  applyFilters();
+}
+
+function applyFilters() {
+  currentSearch = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.test-row').forEach(row => {
+    const status = row.dataset.status;
+    const name = row.dataset.name;
+    const matchesFilter = currentFilter === 'all' || status === currentFilter;
+    const matchesSearch = !currentSearch || name.includes(currentSearch);
+    row.classList.toggle('hidden', !(matchesFilter && matchesSearch));
+  });
+}
+
+function toggleModule(moduleName) {
+  if (openModules.has(moduleName)) {
+    openModules.delete(moduleName);
+  } else {
+    openModules.add(moduleName);
+  }
+  updateModuleVisibility(moduleName);
+}
+
+function updateModuleVisibility(moduleName) {
+  const card = document.querySelector(`[data-module="${CSS.escape(moduleName)}"]`);
+  if (!card) return;
+  const body = card.querySelector('.module-body');
+  const chevron = card.querySelector('.module-chevron');
+  const isOpen = openModules.has(moduleName);
+  body.classList.toggle('open', isOpen);
+  chevron.classList.toggle('open', isOpen);
+}
+
+function toggleAll() {
+  const modules = document.querySelectorAll('.module-card');
+  if (allExpanded) {
+    openModules.clear();
+    allExpanded = false;
+    document.getElementById('toggleAllBtn').textContent = 'Expand All';
+  } else {
+    modules.forEach(m => openModules.add(m.dataset.module));
+    allExpanded = true;
+    document.getElementById('toggleAllBtn').textContent = 'Collapse All';
+  }
+  modules.forEach(m => updateModuleVisibility(m.dataset.module));
+}
+
+function render(data) {
+  if (!data || !data.modules) return;
+
+  const { summary, modules, status, elapsed } = data;
+
+  // Update stats
+  document.getElementById('statTotal').textContent = summary.total;
+  document.getElementById('statPassed').textContent = summary.passed;
+  document.getElementById('statFailed').textContent = summary.failed;
+  document.getElementById('statSkipped').textContent = (summary.skipped || 0) + (summary.timedOut || 0);
+  document.getElementById('statPending').textContent = summary.pending;
+  document.getElementById('elapsed').textContent = formatElapsed(elapsed);
+
+  // Progress
+  const done = summary.total - summary.pending;
+  const pct = summary.total > 0 ? ((done / summary.total) * 100) : 0;
+  const passedPct = summary.total > 0 ? ((summary.passed / summary.total) * 100) : 0;
+  const failedPct = summary.total > 0 ? ((summary.failed / summary.total) * 100) : 0;
+  const skippedPct = summary.total > 0 ? (((summary.skipped || 0) / summary.total) * 100) : 0;
+
+  document.getElementById('progressPassed').style.width = passedPct + '%';
+  document.getElementById('progressFailed').style.width = failedPct + '%';
+  document.getElementById('progressSkipped').style.width = skippedPct + '%';
+  document.getElementById('progressPercent').textContent = pct.toFixed(1) + '% complete';
+
+  // Status badge
+  const badge = document.getElementById('statusBadge');
+  if (status === 'finished') {
+    badge.className = 'status-badge status-finished' + (summary.failed > 0 ? ' has-failures' : '');
+    badge.innerHTML = '<div class="pulse-dot no-pulse"></div><span>' +
+      (summary.failed > 0 ? 'Finished with failures' : 'All passed') + '</span>';
+  } else {
+    badge.className = 'status-badge status-running';
+    badge.innerHTML = '<div class="pulse-dot"></div><span>Running</span>';
+  }
+
+  // Last updated
+  const now = new Date();
+  document.getElementById('lastUpdated').textContent = 'Updated ' + now.toLocaleTimeString();
+  // Force re-trigger animation
+  const el = document.getElementById('lastUpdated');
+  el.style.animation = 'none';
+  void el.offsetHeight;
+  el.style.animation = '';
+
+  // Build or update modules
+  const main = document.getElementById('main');
+
+  // First render: build DOM
+  if (!dataLoaded) {
+    dataLoaded = true;
+    main.innerHTML = '';
+
+    for (const [modName, modData] of Object.entries(modules)) {
+      const card = document.createElement('div');
+      card.className = 'module-card';
+      card.dataset.module = modName;
+
+      const mTests = modData.tests;
+      const mPassed = mTests.filter(t => t.status === 'passed').length;
+      const mFailed = mTests.filter(t => t.status === 'failed').length;
+      const mPending = mTests.filter(t => t.status === 'pending').length;
+      const mTotal = mTests.length;
+      const mDone = mTotal - mPending;
+      const mPassPct = mTotal > 0 ? (mPassed / mTotal * 100) : 0;
+      const mFailPct = mTotal > 0 ? (mFailed / mTotal * 100) : 0;
+
+      card.innerHTML = `
+        <div class="module-header" onclick="toggleModule('${modName.replace(/'/g, "\\'")}')">
+          <span class="module-chevron">&#9654;</span>
+          <span class="module-name">${modName}</span>
+          <div class="module-stats">
+            <span class="module-stat-passed" data-stat="passed">${mPassed}</span>
+            <span class="module-stat-failed" data-stat="failed">${mFailed}</span>
+            <span class="module-stat-total" data-stat="total">${mTotal} tests</span>
+            <div class="module-progress">
+              <div class="progress-passed" style="width:${mPassPct}%"></div>
+              <div class="progress-failed" style="width:${mFailPct}%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="module-body">
+          ${mTests.map((t, i) => {
+            const key = modName + '::' + i;
+            previousStatuses[key] = t.status;
+            const isDurationSlow = t.duration && t.duration > 10000;
+            return `<div class="test-row ${t.error ? 'has-error' : ''}" data-key="${key}" data-status="${t.status}" data-name="${(t.path || t.name).toLowerCase()}">
+              <div class="test-dot ${t.status}"></div>
+              <span class="test-name ${t.status}" title="${escapeHtml(t.path || t.name)}">${escapeHtml(t.path || t.name)}</span>
+              <span class="test-file" title="${escapeHtml(t.file)}">${escapeHtml(t.file)}</span>
+              <span class="test-duration ${isDurationSlow ? 'slow' : ''}">${formatDuration(t.duration)}</span>
+              ${t.error ? '<div class="test-error">' + escapeHtml(t.error) + '</div>' : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+
+      main.appendChild(card);
+
+      // Auto-expand modules with failures
+      if (mFailed > 0) {
+        openModules.add(modName);
+      }
+    }
+
+    // Restore open states
+    openModules.forEach(m => updateModuleVisibility(m));
+    applyFilters();
+    return;
+  }
+
+  // Subsequent renders: update in place
+  for (const [modName, modData] of Object.entries(modules)) {
+    const card = document.querySelector(`[data-module="${CSS.escape(modName)}"]`);
+    if (!card) continue;
+
+    const mTests = modData.tests;
+    const mPassed = mTests.filter(t => t.status === 'passed').length;
+    const mFailed = mTests.filter(t => t.status === 'failed').length;
+    const mPending = mTests.filter(t => t.status === 'pending').length;
+    const mTotal = mTests.length;
+    const mPassPct = mTotal > 0 ? (mPassed / mTotal * 100) : 0;
+    const mFailPct = mTotal > 0 ? (mFailed / mTotal * 100) : 0;
+
+    // Update module stats
+    const statsEl = card.querySelector('.module-stats');
+    statsEl.querySelector('[data-stat="passed"]').textContent = mPassed;
+    statsEl.querySelector('[data-stat="failed"]').textContent = mFailed;
+
+    const modProgress = card.querySelector('.module-progress');
+    modProgress.querySelector('.progress-passed').style.width = mPassPct + '%';
+    modProgress.querySelector('.progress-failed').style.width = mFailPct + '%';
+
+    // Auto-expand if new failure
+    if (mFailed > 0 && !openModules.has(modName)) {
+      openModules.add(modName);
+      updateModuleVisibility(modName);
+    }
+
+    // Update individual tests
+    mTests.forEach((t, i) => {
+      const key = modName + '::' + i;
+      const row = card.querySelector(`[data-key="${CSS.escape(key)}"]`);
+      if (!row) return;
+
+      const prev = previousStatuses[key];
+      if (prev !== t.status) {
+        // Status changed
+        previousStatuses[key] = t.status;
+        row.dataset.status = t.status;
+
+        const dot = row.querySelector('.test-dot');
+        dot.className = 'test-dot ' + t.status;
+
+        const nameEl = row.querySelector('.test-name');
+        nameEl.className = 'test-name ' + t.status;
+
+        // Flash animation
+        row.classList.remove('flash-green', 'flash-red');
+        void row.offsetHeight;
+        if (t.status === 'passed') row.classList.add('flash-green');
+        else if (t.status === 'failed') row.classList.add('flash-red');
+
+        // Add error tooltip if failed
+        if (t.error) {
+          row.classList.add('has-error');
+          let errEl = row.querySelector('.test-error');
+          if (!errEl) {
+            errEl = document.createElement('div');
+            errEl.className = 'test-error';
+            row.appendChild(errEl);
+          }
+          errEl.textContent = t.error;
+        }
+
+        // Play fail sound (if enabled)
+        // if (t.status === 'failed') { document.getElementById('failSound')?.play(); }
+      }
+
+      // Update duration
+      const durEl = row.querySelector('.test-duration');
+      durEl.textContent = formatDuration(t.duration);
+      durEl.classList.toggle('slow', t.duration && t.duration > 10000);
+    });
+  }
+
+  applyFilters();
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Polling
+let fetchErrors = 0;
+
+async function poll() {
+  try {
+    const resp = await fetch('./test-results-live.json?t=' + Date.now());
+    if (!resp.ok) {
+      fetchErrors++;
+      if (fetchErrors > 3 && !dataLoaded) {
+        // Still waiting
+      }
+      return;
+    }
+    fetchErrors = 0;
+    const data = await resp.json();
+    render(data);
+  } catch (e) {
+    fetchErrors++;
+  }
+}
+
+setInterval(poll, POLL_INTERVAL);
+poll();
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === '/') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+  if (e.key === 'Escape') { document.getElementById('searchInput').blur(); document.getElementById('searchInput').value = ''; applyFilters(); }
+  if (e.key === 'e') toggleAll();
+  if (e.key === '1') setFilter('all');
+  if (e.key === '2') setFilter('passed');
+  if (e.key === '3') setFilter('failed');
+  if (e.key === '4') setFilter('pending');
+});
+</script>
+
+</body>
+</html>
