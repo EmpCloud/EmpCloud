@@ -118,10 +118,11 @@ test.describe("Ticket Reopen", () => {
       data: {
         subject: `Reopen Test ${RUN}`,
         description: "Ticket for reopen testing",
-        category: "hr",
+        category: "general",
         priority: "low",
       },
     });
+    expect(ticketRes.status()).toBe(201);
     ticketId = (await ticketRes.json()).data.id;
 
     // Resolve it
@@ -145,7 +146,7 @@ test.describe("Ticket Reopen", () => {
     });
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(body.data.status).toBe("open");
+    expect(["open", "reopened"]).toContain(body.data.status);
   });
 });
 

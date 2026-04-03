@@ -61,13 +61,16 @@ test.describe("Document Upload", () => {
   });
 
   test("Employee can upload a document via multipart form", async ({ request }) => {
+    // Use PDF mime type — server only allows PDF, JPEG, PNG, DOCX
+    // Create a minimal valid PDF buffer
+    const pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R>>endobj\nxref\n0 4\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n0\n%%EOF";
     const res = await request.post(`${API}/documents/upload`, {
       headers: authMultipart(employeeToken),
       multipart: {
         file: {
-          name: "test-doc.txt",
-          mimeType: "text/plain",
-          buffer: Buffer.from("E2E test document content"),
+          name: "test-doc.pdf",
+          mimeType: "application/pdf",
+          buffer: Buffer.from(pdfContent),
         },
         category_id: String(categoryId),
         name: `E2E Doc ${RUN}`,
@@ -182,13 +185,14 @@ test.describe("Document Verify / Reject / Delete", () => {
     });
     categoryId = (await catRes.json()).data.id;
 
+    const pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R>>endobj\nxref\n0 4\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n0\n%%EOF";
     const upRes = await request.post(`${API}/documents/upload`, {
       headers: authMultipart(employeeToken),
       multipart: {
         file: {
-          name: "verify-doc.txt",
-          mimeType: "text/plain",
-          buffer: Buffer.from("Document to verify"),
+          name: "verify-doc.pdf",
+          mimeType: "application/pdf",
+          buffer: Buffer.from(pdfContent),
         },
         category_id: String(categoryId),
         name: `Verify Doc ${RUN}`,
