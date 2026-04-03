@@ -213,6 +213,7 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
           leave_type_id: leaveTypeId,
           start_date: startDate.toISOString().split("T")[0],
           end_date: endDate.toISOString().split("T")[0],
+          days_count: 1,
           reason: `DB verify leave ${RUN}`,
         },
       });
@@ -233,9 +234,9 @@ test.describe("DB Verification: Leave Application Lifecycle", () => {
       expect(body.data.reason).toContain(`DB verify leave ${RUN}`);
     });
 
-    test("POST approve — status changes to approved in DB", async ({ request }) => {
+    test("PUT approve — status changes to approved in DB", async ({ request }) => {
       expect(applicationId, 'Leave application must exist from previous test').toBeTruthy();
-      const res = await request.post(`${API}/leave/applications/${applicationId}/approve`, {
+      const res = await request.put(`${API}/leave/applications/${applicationId}/approve`, {
         headers: auth(adminToken),
         data: { remarks: "Approved by E2E test" },
       });
