@@ -1185,7 +1185,7 @@ describe("HelpdeskService coverage", () => {
     await db("ticket_comments").where({ ticket_id: createdTicketId }).delete();
     await db("helpdesk_tickets").where({ id: createdTicketId }).delete();
     await db("kb_article_ratings").where({ article_id: createdArticleId }).delete();
-    await db("kb_articles").where({ id: createdArticleId }).delete();
+    await db("knowledge_base_articles").where({ id: createdArticleId }).delete();
   });
 });
 
