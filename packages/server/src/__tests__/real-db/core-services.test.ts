@@ -1190,8 +1190,8 @@ describe("Helpdesk Service (real DB)", () => {
     commentId = id;
 
     const comment = await db("ticket_comments")
-      .where({ id })
       .join("users", "ticket_comments.user_id", "users.id")
+      .where("ticket_comments.id", id)
       .select("ticket_comments.*", "users.first_name", "users.last_name")
       .first();
 
@@ -1323,6 +1323,7 @@ describe("Leave Balance Service (real DB)", () => {
     const [id] = await db("leave_types").insert({
       organization_id: ORG_ID,
       name: `Test Leave ${TS}`,
+      code: `TST${TS}`.slice(0, 20),
       color: "#FF0000",
       is_paid: true,
       is_carry_forward: true,
