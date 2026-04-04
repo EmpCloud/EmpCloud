@@ -1,6 +1,9 @@
 // =============================================================================
 // EMP CLOUD - Service-level tests that import actual service functions
-// to generate real V8 coverage for the service layer
+// to generate real V8 coverage for the service layer.
+//
+// REFACTORED: Every section now calls real service functions (not just imports)
+// so vitest coverage tracks actual code execution paths.
 // =============================================================================
 
 // Set env vars BEFORE importing anything
@@ -132,7 +135,6 @@ describe("AttendanceService coverage", () => {
   it("getMyToday", async () => {
     const { getMyToday } = await import("../../services/attendance/attendance.service.js");
     const r = await getMyToday(ORG, EMP);
-    // May or may not have a record
     expect(r === null || r === undefined || typeof r === "object").toBe(true);
   });
 
@@ -148,8 +150,6 @@ describe("AttendanceService coverage", () => {
     const r = await getMyHistory(ORG, EMP);
     expect(r).toHaveProperty("records");
   });
-
-  // NOTE: listRecords skipped - source has wrong table alias 'departments' vs 'organization_departments'
 
   it("getDashboard", async () => {
     const { getDashboard } = await import("../../services/attendance/attendance.service.js");
@@ -329,6 +329,39 @@ describe("LeaveApplicationService coverage", () => {
     const { getApplication } = await import("../../services/leave/leave-application.service.js");
     await expect(getApplication(ORG, 999999)).rejects.toThrow();
   });
+
+  it("applyLeave - invalid dates rejected", async () => {
+    const { applyLeave } = await import("../../services/leave/leave-application.service.js");
+    await expect(applyLeave(ORG, EMP, {
+      leave_type_id: 999999,
+      start_date: "invalid-date",
+      end_date: "2026-04-10",
+      days_count: 1,
+      reason: "test",
+    } as any)).rejects.toThrow(/Invalid start_date/);
+  });
+
+  it("applyLeave - end before start rejected", async () => {
+    const { applyLeave } = await import("../../services/leave/leave-application.service.js");
+    await expect(applyLeave(ORG, EMP, {
+      leave_type_id: 1,
+      start_date: "2026-04-15",
+      end_date: "2026-04-10",
+      days_count: 1,
+      reason: "test",
+    } as any)).rejects.toThrow(/before start/);
+  });
+
+  it("applyLeave - past date rejected", async () => {
+    const { applyLeave } = await import("../../services/leave/leave-application.service.js");
+    await expect(applyLeave(ORG, EMP, {
+      leave_type_id: 1,
+      start_date: "2020-01-01",
+      end_date: "2020-01-02",
+      days_count: 1,
+      reason: "test",
+    } as any)).rejects.toThrow(/past/);
+  });
 });
 
 // ============================================================================
@@ -351,6 +384,16 @@ describe("CompOffService coverage", () => {
   it("getCompOff - not found", async () => {
     const { getCompOff } = await import("../../services/leave/comp-off.service.js");
     await expect(getCompOff(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("approveCompOff - not found", async () => {
+    const { approveCompOff } = await import("../../services/leave/comp-off.service.js");
+    await expect(approveCompOff(ORG, 999999, HR)).rejects.toThrow();
+  });
+
+  it("rejectCompOff - not found", async () => {
+    const { rejectCompOff } = await import("../../services/leave/comp-off.service.js");
+    await expect(rejectCompOff(ORG, 999999, HR, "test")).rejects.toThrow();
   });
 });
 
@@ -418,16 +461,94 @@ describe("DocumentService coverage", () => {
     const { deleteCategory } = await import("../../services/document/document.service.js");
     await expect(deleteCategory(ORG, 999999)).rejects.toThrow();
   });
+
+  it("createCategory + updateCategory + deleteCategory lifecycle", async () => {
+    const { createCategory, updateCategory, deleteCategory } = await import("../../services/document/document.service.js");
+    const cat = await createCategory(ORG, { name: `TestCat-${U}`, description: "Temp test category" });
+    expect(cat.name).toContain("TestCat");
+
+    const updated = await updateCategory(ORG, cat.id, { name: `TestCat-${U}-upd` });
+    expect(updated.name).toContain("upd");
+
+    await deleteCategory(ORG, cat.id);
+  });
 });
 
 // ============================================================================
 // POLICY SERVICE
 // ============================================================================
 describe("PolicyService coverage", () => {
-  it("import and list policies", async () => {
-    const policy = await import("../../services/policy/policy.service.js");
-    // Just verifying the module loads - the actual functions use getDB()
-    expect(policy).toBeTruthy();
+  let createdPolicyId: number;
+
+  it("listPolicies", async () => {
+    const { listPolicies } = await import("../../services/policy/policy.service.js");
+    const r = await listPolicies(ORG);
+    expect(r).toHaveProperty("policies");
+    expect(r).toHaveProperty("total");
+    expect(r.total).toBeGreaterThan(0);
+  });
+
+  it("listPolicies with category filter", async () => {
+    const { listPolicies } = await import("../../services/policy/policy.service.js");
+    const r = await listPolicies(ORG, { category: "general" });
+    expect(r).toHaveProperty("policies");
+  });
+
+  it("createPolicy", async () => {
+    const { createPolicy } = await import("../../services/policy/policy.service.js");
+    const p = await createPolicy(ORG, ADMIN, {
+      title: `Test Policy ${U}`,
+      content: "<p>This is test policy content.</p>",
+      category: "general",
+    });
+    expect(p.title).toContain("Test Policy");
+    expect(p.is_active).toBe(1);
+    createdPolicyId = p.id;
+  });
+
+  it("getPolicy", async () => {
+    const { getPolicy } = await import("../../services/policy/policy.service.js");
+    const p = await getPolicy(ORG, createdPolicyId);
+    expect(p.title).toContain("Test Policy");
+  });
+
+  it("getPolicy - not found", async () => {
+    const { getPolicy } = await import("../../services/policy/policy.service.js");
+    await expect(getPolicy(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("updatePolicy", async () => {
+    const { updatePolicy } = await import("../../services/policy/policy.service.js");
+    const p = await updatePolicy(ORG, createdPolicyId, { title: `Updated Policy ${U}` });
+    expect(p.title).toContain("Updated Policy");
+  });
+
+  it("acknowledgePolicy + getAcknowledgments", async () => {
+    const { acknowledgePolicy, getAcknowledgments } = await import("../../services/policy/policy.service.js");
+    await acknowledgePolicy(createdPolicyId, EMP, ORG);
+    const acks = await getAcknowledgments(ORG, createdPolicyId);
+    expect(acks.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("getPendingAcknowledgments", async () => {
+    const { getPendingAcknowledgments } = await import("../../services/policy/policy.service.js");
+    const r = await getPendingAcknowledgments(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("deletePolicy (cleanup)", async () => {
+    const { deletePolicy } = await import("../../services/policy/policy.service.js");
+    if (createdPolicyId) {
+      // Clean up acknowledgments first
+      const db = getDB();
+      await db("policy_acknowledgments").where({ policy_id: createdPolicyId }).delete();
+      await deletePolicy(ORG, createdPolicyId);
+    }
+  });
+
+  it("deletePolicy - not found", async () => {
+    const { deletePolicy } = await import("../../services/policy/policy.service.js");
+    await expect(deletePolicy(ORG, 999999)).rejects.toThrow();
   });
 });
 
@@ -435,9 +556,76 @@ describe("PolicyService coverage", () => {
 // ORG SERVICE
 // ============================================================================
 describe("OrgService coverage", () => {
-  it("import org service", async () => {
-    const org = await import("../../services/org/org.service.js");
-    expect(org).toBeTruthy();
+  it("getOrg", async () => {
+    const { getOrg } = await import("../../services/org/org.service.js");
+    const org = await getOrg(ORG);
+    expect(org).toHaveProperty("name");
+    expect(org.id).toBe(ORG);
+  });
+
+  it("getOrg - not found", async () => {
+    const { getOrg } = await import("../../services/org/org.service.js");
+    await expect(getOrg(999999)).rejects.toThrow();
+  });
+
+  it("getOrgStats", async () => {
+    const { getOrgStats } = await import("../../services/org/org.service.js");
+    const stats = await getOrgStats(ORG);
+    expect(stats).toHaveProperty("total_users");
+    expect(stats).toHaveProperty("total_departments");
+    expect(stats).toHaveProperty("active_subscriptions");
+  });
+
+  it("listDepartments", async () => {
+    const { listDepartments } = await import("../../services/org/org.service.js");
+    const depts = await listDepartments(ORG);
+    expect(depts.length).toBeGreaterThan(0);
+  });
+
+  it("getDepartment - not found", async () => {
+    const { getDepartment } = await import("../../services/org/org.service.js");
+    await expect(getDepartment(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("listLocations", async () => {
+    const { listLocations } = await import("../../services/org/org.service.js");
+    const locs = await listLocations(ORG);
+    expect(Array.isArray(locs)).toBe(true);
+  });
+
+  it("getLocation - not found", async () => {
+    const { getLocation } = await import("../../services/org/org.service.js");
+    await expect(getLocation(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("getDepartmentsWithoutManager", async () => {
+    const { getDepartmentsWithoutManager } = await import("../../services/org/org.service.js");
+    const r = await getDepartmentsWithoutManager(ORG);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("createDepartment + deleteDepartment lifecycle", async () => {
+    const { createDepartment, deleteDepartment } = await import("../../services/org/org.service.js");
+    const dept = await createDepartment(ORG, `TestDept-${U}`);
+    expect(dept.name).toContain("TestDept");
+    await deleteDepartment(ORG, dept.id);
+  });
+
+  it("deleteDepartment - not found", async () => {
+    const { deleteDepartment } = await import("../../services/org/org.service.js");
+    await expect(deleteDepartment(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("createLocation + deleteLocation lifecycle", async () => {
+    const { createLocation, deleteLocation } = await import("../../services/org/org.service.js");
+    const loc = await createLocation(ORG, { name: `TestLoc-${U}`, address: "123 Test St" });
+    expect(loc.name).toContain("TestLoc");
+    await deleteLocation(ORG, loc.id);
+  });
+
+  it("deleteLocation - not found", async () => {
+    const { deleteLocation } = await import("../../services/org/org.service.js");
+    await expect(deleteLocation(ORG, 999999)).rejects.toThrow();
   });
 });
 
@@ -464,15 +652,123 @@ describe("SubscriptionService coverage", () => {
     const { getSubscription } = await import("../../services/subscription/subscription.service.js");
     await expect(getSubscription(ORG, 999999)).rejects.toThrow();
   });
+
+  it("listSeats for a module", async () => {
+    const { listSubscriptions, listSeats } = await import("../../services/subscription/subscription.service.js");
+    const subs = await listSubscriptions(ORG);
+    if (subs.length > 0) {
+      const seats = await listSeats(ORG, subs[0].module_id);
+      expect(Array.isArray(seats)).toBe(true);
+    }
+  });
+
+  it("getBillingStatus", async () => {
+    const { getBillingStatus } = await import("../../services/subscription/subscription.service.js");
+    const status = await getBillingStatus(ORG);
+    expect(status).toHaveProperty("subscriptions");
+  });
+
+  it("checkModuleAccess", async () => {
+    const { checkModuleAccess } = await import("../../services/subscription/subscription.service.js");
+    const access = await checkModuleAccess({ orgId: ORG, moduleId: 1, userId: EMP });
+    expect(access).toHaveProperty("hasAccess");
+  });
 });
 
 // ============================================================================
 // EVENT SERVICE
 // ============================================================================
 describe("EventService coverage", () => {
-  it("import event service", async () => {
-    const ev = await import("../../services/event/event.service.js");
-    expect(ev).toBeTruthy();
+  let createdEventId: number;
+
+  it("createEvent", async () => {
+    const { createEvent } = await import("../../services/event/event.service.js");
+    const ev = await createEvent(ORG, ADMIN, {
+      title: `Test Event ${U}`,
+      description: "Automated test event",
+      event_type: "team_building",
+      start_date: "2026-06-15T10:00:00",
+      end_date: "2026-06-15T17:00:00",
+    } as any);
+    expect(ev.title).toContain("Test Event");
+    createdEventId = ev.id;
+  });
+
+  it("listEvents", async () => {
+    const { listEvents } = await import("../../services/event/event.service.js");
+    const r = await listEvents(ORG);
+    expect(r).toHaveProperty("events");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listEvents with type filter", async () => {
+    const { listEvents } = await import("../../services/event/event.service.js");
+    const r = await listEvents(ORG, { event_type: "team_building" });
+    expect(r).toHaveProperty("events");
+  });
+
+  it("getEvent", async () => {
+    const { getEvent } = await import("../../services/event/event.service.js");
+    const ev = await getEvent(ORG, createdEventId);
+    expect(ev.title).toContain("Test Event");
+  });
+
+  it("getEvent - not found", async () => {
+    const { getEvent } = await import("../../services/event/event.service.js");
+    await expect(getEvent(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("rsvpEvent", async () => {
+    const { rsvpEvent } = await import("../../services/event/event.service.js");
+    const r = await rsvpEvent(ORG, createdEventId, EMP, "going");
+    expect(r).toHaveProperty("event_id");
+  });
+
+  it("getMyEvents", async () => {
+    const { getMyEvents } = await import("../../services/event/event.service.js");
+    const r = await getMyEvents(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getUpcomingEvents", async () => {
+    const { getUpcomingEvents } = await import("../../services/event/event.service.js");
+    const r = await getUpcomingEvents(ORG);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getEventDashboard", async () => {
+    const { getEventDashboard } = await import("../../services/event/event.service.js");
+    const d = await getEventDashboard(ORG);
+    expect(d).toHaveProperty("total_events");
+  });
+
+  it("updateEvent", async () => {
+    const { updateEvent } = await import("../../services/event/event.service.js");
+    const ev = await updateEvent(ORG, createdEventId, { title: `Updated Event ${U}` });
+    expect(ev.title).toContain("Updated");
+  });
+
+  it("cancelEvent", async () => {
+    const { cancelEvent } = await import("../../services/event/event.service.js");
+    const ev = await cancelEvent(ORG, createdEventId);
+    expect(ev.status).toBe("cancelled");
+  });
+
+  it("deleteEvent (cleanup)", async () => {
+    const { deleteEvent } = await import("../../services/event/event.service.js");
+    // Clean up RSVP first
+    const db = getDB();
+    await db("event_rsvps").where({ event_id: createdEventId }).delete();
+    await deleteEvent(ORG, createdEventId);
+  });
+
+  it("createEvent - end before start rejected", async () => {
+    const { createEvent } = await import("../../services/event/event.service.js");
+    await expect(createEvent(ORG, ADMIN, {
+      title: "Bad Event",
+      start_date: "2026-06-20T17:00:00",
+      end_date: "2026-06-20T10:00:00",
+    } as any)).rejects.toThrow(/before start/);
   });
 });
 
@@ -480,9 +776,152 @@ describe("EventService coverage", () => {
 // WELLNESS SERVICE
 // ============================================================================
 describe("WellnessService coverage", () => {
-  it("import wellness service", async () => {
-    const w = await import("../../services/wellness/wellness.service.js");
-    expect(w).toBeTruthy();
+  let createdProgramId: number;
+
+  it("createProgram", async () => {
+    const { createProgram } = await import("../../services/wellness/wellness.service.js");
+    const p = await createProgram(ORG, ADMIN, {
+      title: `Test Wellness ${U}`,
+      description: "Automated test program",
+      program_type: "fitness",
+      start_date: "2026-06-01",
+      end_date: "2026-06-30",
+      max_participants: 50,
+      points_reward: 100,
+    } as any);
+    expect(p.title).toContain("Test Wellness");
+    createdProgramId = p.id;
+  });
+
+  it("createProgram - end before start rejected", async () => {
+    const { createProgram } = await import("../../services/wellness/wellness.service.js");
+    await expect(createProgram(ORG, ADMIN, {
+      title: "Bad Program",
+      program_type: "fitness",
+      start_date: "2026-06-30",
+      end_date: "2026-06-01",
+    } as any)).rejects.toThrow(/before start/);
+  });
+
+  it("listPrograms", async () => {
+    const { listPrograms } = await import("../../services/wellness/wellness.service.js");
+    const r = await listPrograms(ORG);
+    expect(r).toHaveProperty("programs");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listPrograms with type filter", async () => {
+    const { listPrograms } = await import("../../services/wellness/wellness.service.js");
+    const r = await listPrograms(ORG, { program_type: "fitness" } as any);
+    expect(r).toHaveProperty("programs");
+  });
+
+  it("getProgram", async () => {
+    const { getProgram } = await import("../../services/wellness/wellness.service.js");
+    const p = await getProgram(ORG, createdProgramId);
+    expect(p.title).toContain("Test Wellness");
+  });
+
+  it("getProgram - not found", async () => {
+    const { getProgram } = await import("../../services/wellness/wellness.service.js");
+    await expect(getProgram(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("enrollInProgram", async () => {
+    const { enrollInProgram } = await import("../../services/wellness/wellness.service.js");
+    const r = await enrollInProgram(ORG, EMP, createdProgramId);
+    expect(r).toHaveProperty("id");
+  });
+
+  it("getMyPrograms", async () => {
+    const { getMyPrograms } = await import("../../services/wellness/wellness.service.js");
+    const r = await getMyPrograms(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("dailyCheckIn", async () => {
+    const { dailyCheckIn } = await import("../../services/wellness/wellness.service.js");
+    const r = await dailyCheckIn(ORG, EMP, {
+      mood: "good",
+      energy_level: 4,
+      sleep_hours: 7,
+      exercise_minutes: 30,
+      notes: "Feeling great",
+      check_in_date: "2018-06-15",
+    } as any);
+    expect(r).toHaveProperty("id");
+    expect(r).toHaveProperty("check_in_date");
+  });
+
+  it("dailyCheckIn - update existing", async () => {
+    const { dailyCheckIn } = await import("../../services/wellness/wellness.service.js");
+    const r = await dailyCheckIn(ORG, EMP, {
+      mood: "excellent",
+      energy_level: 5,
+      check_in_date: "2018-06-15",
+    } as any);
+    expect(r.message).toBe("Check-in updated");
+  });
+
+  it("dailyCheckIn - invalid energy_level", async () => {
+    const { dailyCheckIn } = await import("../../services/wellness/wellness.service.js");
+    await expect(dailyCheckIn(ORG, EMP, {
+      mood: "good",
+      energy_level: 10,
+    } as any)).rejects.toThrow(/between 1 and 5/);
+  });
+
+  it("getMyCheckIns", async () => {
+    const { getMyCheckIns } = await import("../../services/wellness/wellness.service.js");
+    const r = await getMyCheckIns(ORG, EMP);
+    expect(r).toHaveProperty("checkIns");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("getMyCheckIns with date range", async () => {
+    const { getMyCheckIns } = await import("../../services/wellness/wellness.service.js");
+    const r = await getMyCheckIns(ORG, EMP, { start_date: "2018-06-01", end_date: "2018-06-30" });
+    expect(r).toHaveProperty("checkIns");
+  });
+
+  it("createGoal", async () => {
+    const { createGoal } = await import("../../services/wellness/wellness.service.js");
+    const g = await createGoal(ORG, EMP, {
+      title: `Test Goal ${U}`,
+      description: "Walk 10k steps daily",
+      goal_type: "steps",
+      target_value: 10000,
+      target_date: "2026-06-30",
+    } as any);
+    expect(g.title).toContain("Test Goal");
+    // Clean up
+    const db = getDB();
+    await db("wellness_goals").where({ id: g.id }).delete();
+  });
+
+  it("getMyGoals", async () => {
+    const { getMyGoals } = await import("../../services/wellness/wellness.service.js");
+    const r = await getMyGoals(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getWellnessDashboard", async () => {
+    const { getWellnessDashboard } = await import("../../services/wellness/wellness.service.js");
+    const d = await getWellnessDashboard(ORG);
+    expect(d).toHaveProperty("total_programs");
+  });
+
+  it("getMyWellnessSummary", async () => {
+    const { getMyWellnessSummary } = await import("../../services/wellness/wellness.service.js");
+    const s = await getMyWellnessSummary(ORG, EMP);
+    expect(s).toBeTruthy();
+  });
+
+  it("cleanup: delete test program enrollment and program", async () => {
+    const db = getDB();
+    await db("wellness_enrollments").where({ program_id: createdProgramId }).delete();
+    await db("wellness_check_ins").where({ organization_id: ORG, user_id: EMP, check_in_date: "2018-06-15" }).delete();
+    await db("wellness_programs").where({ id: createdProgramId }).delete();
   });
 });
 
@@ -490,9 +929,99 @@ describe("WellnessService coverage", () => {
 // SURVEY SERVICE
 // ============================================================================
 describe("SurveyService coverage", () => {
-  it("import survey service", async () => {
-    const s = await import("../../services/survey/survey.service.js");
-    expect(s).toBeTruthy();
+  let createdSurveyId: number;
+
+  it("createSurvey", async () => {
+    const { createSurvey } = await import("../../services/survey/survey.service.js");
+    const s = await createSurvey(ORG, ADMIN, {
+      title: `Test Survey ${U}`,
+      description: "Automated test survey",
+      type: "pulse",
+      is_anonymous: true,
+      questions: [
+        { question_text: "How satisfied are you?", question_type: "rating_1_5", is_required: true },
+        { question_text: "Any comments?", question_type: "text", is_required: false },
+      ],
+    } as any);
+    expect(s.title).toContain("Test Survey");
+    expect(s.status).toBe("draft");
+    createdSurveyId = s.id;
+  });
+
+  it("createSurvey - end before start rejected", async () => {
+    const { createSurvey } = await import("../../services/survey/survey.service.js");
+    await expect(createSurvey(ORG, ADMIN, {
+      title: "Bad Survey",
+      start_date: "2026-06-30",
+      end_date: "2026-06-01",
+      questions: [{ question_text: "Q1", question_type: "rating_1_5" }],
+    } as any)).rejects.toThrow(/before/);
+  });
+
+  it("listSurveys", async () => {
+    const { listSurveys } = await import("../../services/survey/survey.service.js");
+    const r = await listSurveys(ORG);
+    expect(r).toHaveProperty("surveys");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listSurveys with type filter", async () => {
+    const { listSurveys } = await import("../../services/survey/survey.service.js");
+    const r = await listSurveys(ORG, { type: "pulse" } as any);
+    expect(r).toHaveProperty("surveys");
+  });
+
+  it("getSurvey", async () => {
+    const { getSurvey } = await import("../../services/survey/survey.service.js");
+    const s = await getSurvey(ORG, createdSurveyId);
+    expect(s.title).toContain("Test Survey");
+    expect(s).toHaveProperty("questions");
+  });
+
+  it("getSurvey - not found", async () => {
+    const { getSurvey } = await import("../../services/survey/survey.service.js");
+    await expect(getSurvey(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("updateSurvey", async () => {
+    const { updateSurvey } = await import("../../services/survey/survey.service.js");
+    const s = await updateSurvey(ORG, createdSurveyId, { title: `Updated Survey ${U}` } as any);
+    expect(s.title).toContain("Updated Survey");
+  });
+
+  it("publishSurvey", async () => {
+    const { publishSurvey } = await import("../../services/survey/survey.service.js");
+    const s = await publishSurvey(ORG, createdSurveyId);
+    expect(s.status).toBe("active");
+  });
+
+  it("getActiveSurveys", async () => {
+    const { getActiveSurveys } = await import("../../services/survey/survey.service.js");
+    const r = await getActiveSurveys(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getMyResponses", async () => {
+    const { getMyResponses } = await import("../../services/survey/survey.service.js");
+    const r = await getMyResponses(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getSurveyDashboard", async () => {
+    const { getSurveyDashboard } = await import("../../services/survey/survey.service.js");
+    const d = await getSurveyDashboard(ORG);
+    expect(d).toHaveProperty("total_surveys");
+  });
+
+  it("closeSurvey", async () => {
+    const { closeSurvey } = await import("../../services/survey/survey.service.js");
+    const s = await closeSurvey(ORG, createdSurveyId);
+    expect(s.status).toBe("closed");
+  });
+
+  it("deleteSurvey (cleanup)", async () => {
+    const { deleteSurvey } = await import("../../services/survey/survey.service.js");
+    await deleteSurvey(ORG, createdSurveyId, "hr_admin");
   });
 });
 
@@ -500,9 +1029,130 @@ describe("SurveyService coverage", () => {
 // HELPDESK SERVICE
 // ============================================================================
 describe("HelpdeskService coverage", () => {
-  it("import helpdesk service", async () => {
-    const h = await import("../../services/helpdesk/helpdesk.service.js");
-    expect(h).toBeTruthy();
+  let createdTicketId: number;
+  let createdArticleId: number;
+
+  it("createTicket", async () => {
+    const { createTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    const t = await createTicket(ORG, EMP, {
+      category: "it_support",
+      priority: "medium",
+      subject: `Test Ticket ${U}`,
+      description: "Automated test ticket for service coverage",
+    });
+    expect(t.subject).toContain("Test Ticket");
+    expect(t.status).toBe("open");
+    expect(t.sla_response_hours).toBe(24);
+    createdTicketId = t.id;
+  });
+
+  it("listTickets", async () => {
+    const { listTickets } = await import("../../services/helpdesk/helpdesk.service.js");
+    const r = await listTickets(ORG);
+    expect(r).toHaveProperty("tickets");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listTickets with filters", async () => {
+    const { listTickets } = await import("../../services/helpdesk/helpdesk.service.js");
+    const r = await listTickets(ORG, { status: "open", priority: "medium" });
+    expect(r).toHaveProperty("tickets");
+  });
+
+  it("getTicket", async () => {
+    const { getTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    const t = await getTicket(ORG, createdTicketId);
+    expect(t.subject).toContain("Test Ticket");
+  });
+
+  it("getTicket - not found", async () => {
+    const { getTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    await expect(getTicket(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("assignTicket", async () => {
+    const { assignTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    const t = await assignTicket(ORG, createdTicketId, HR);
+    expect(t.assigned_to).toBe(HR);
+  });
+
+  it("addComment", async () => {
+    const { addComment } = await import("../../services/helpdesk/helpdesk.service.js");
+    const c = await addComment(ORG, createdTicketId, HR, {
+      content: "Working on this ticket",
+      is_internal: false,
+    });
+    expect(c.content).toContain("Working on");
+  });
+
+  it("getMyTickets", async () => {
+    const { getMyTickets } = await import("../../services/helpdesk/helpdesk.service.js");
+    const r = await getMyTickets(ORG, EMP);
+    expect(r).toHaveProperty("tickets");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("resolveTicket", async () => {
+    const { resolveTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    const t = await resolveTicket(ORG, createdTicketId, HR);
+    expect(t.status).toBe("resolved");
+  });
+
+  it("reopenTicket", async () => {
+    const { reopenTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    const t = await reopenTicket(ORG, createdTicketId);
+    expect(t.status).toBe("open");
+  });
+
+  it("closeTicket", async () => {
+    const { closeTicket } = await import("../../services/helpdesk/helpdesk.service.js");
+    const t = await closeTicket(ORG, createdTicketId);
+    expect(t.status).toBe("closed");
+  });
+
+  it("getHelpdeskDashboard", async () => {
+    const { getHelpdeskDashboard } = await import("../../services/helpdesk/helpdesk.service.js");
+    const d = await getHelpdeskDashboard(ORG);
+    expect(d).toHaveProperty("total_tickets");
+  });
+
+  it("createArticle", async () => {
+    const { createArticle } = await import("../../services/helpdesk/helpdesk.service.js");
+    const a = await createArticle(ORG, HR, {
+      title: `Test KB Article ${U}`,
+      content: "This is a test knowledge base article.",
+      category: "general",
+      tags: ["test"],
+    });
+    expect(a.title).toContain("Test KB Article");
+    createdArticleId = a.id;
+  });
+
+  it("listArticles", async () => {
+    const { listArticles } = await import("../../services/helpdesk/helpdesk.service.js");
+    const r = await listArticles(ORG);
+    expect(r).toHaveProperty("articles");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("getArticle", async () => {
+    const { getArticle } = await import("../../services/helpdesk/helpdesk.service.js");
+    const a = await getArticle(ORG, String(createdArticleId));
+    expect(a.title).toContain("Test KB Article");
+  });
+
+  it("rateArticle", async () => {
+    const { rateArticle } = await import("../../services/helpdesk/helpdesk.service.js");
+    const r = await rateArticle(ORG, createdArticleId, true, EMP);
+    expect(r).toHaveProperty("helpful_count");
+  });
+
+  it("cleanup: delete helpdesk test data", async () => {
+    const db = getDB();
+    await db("helpdesk_comments").where({ ticket_id: createdTicketId }).delete();
+    await db("helpdesk_tickets").where({ id: createdTicketId }).delete();
+    await db("kb_article_ratings").where({ article_id: createdArticleId }).delete();
+    await db("kb_articles").where({ id: createdArticleId }).delete();
   });
 });
 
@@ -510,9 +1160,101 @@ describe("HelpdeskService coverage", () => {
 // FEEDBACK SERVICE
 // ============================================================================
 describe("FeedbackService coverage", () => {
-  it("import feedback service", async () => {
-    const f = await import("../../services/feedback/anonymous-feedback.service.js");
-    expect(f).toBeTruthy();
+  let createdFeedbackId: number;
+
+  it("submitFeedback", async () => {
+    const { submitFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const f = await submitFeedback(ORG, EMP, {
+      category: "suggestion",
+      subject: `Test Feedback ${U}`,
+      message: "This is automated test feedback for service coverage",
+    });
+    expect(f.subject).toContain("Test Feedback");
+    expect(f.status).toBe("new");
+    expect(f.sentiment).toBe("positive"); // suggestion -> positive
+    createdFeedbackId = f.id;
+  });
+
+  it("submitFeedback - negative sentiment inferred", async () => {
+    const { submitFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const f = await submitFeedback(ORG, EMP, {
+      category: "harassment",
+      subject: `Harassment Report ${U}`,
+      message: "Test harassment feedback",
+    });
+    expect(f.sentiment).toBe("negative");
+    // Clean up
+    const db = getDB();
+    await db("anonymous_feedback").where({ id: f.id }).delete();
+  });
+
+  it("submitFeedback - explicit sentiment overrides", async () => {
+    const { submitFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const f = await submitFeedback(ORG, EMP, {
+      category: "other",
+      subject: `Neutral Feedback ${U}`,
+      message: "Test explicit sentiment",
+      sentiment: "positive",
+    });
+    expect(f.sentiment).toBe("positive");
+    const db = getDB();
+    await db("anonymous_feedback").where({ id: f.id }).delete();
+  });
+
+  it("getMyFeedback", async () => {
+    const { getMyFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const r = await getMyFeedback(ORG, EMP);
+    expect(r).toHaveProperty("feedback");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listFeedback", async () => {
+    const { listFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const r = await listFeedback(ORG);
+    expect(r).toHaveProperty("feedback");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listFeedback with filters", async () => {
+    const { listFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const r = await listFeedback(ORG, { category: "suggestion", status: "new" });
+    expect(r).toHaveProperty("feedback");
+  });
+
+  it("getFeedbackById", async () => {
+    const { getFeedbackById } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const f = await getFeedbackById(ORG, createdFeedbackId);
+    expect(f.subject).toContain("Test Feedback");
+  });
+
+  it("getFeedbackById - not found", async () => {
+    const { getFeedbackById } = await import("../../services/feedback/anonymous-feedback.service.js");
+    await expect(getFeedbackById(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("respondToFeedback", async () => {
+    const { respondToFeedback } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const f = await respondToFeedback(ORG, createdFeedbackId, {
+      response: "Thank you for your feedback",
+    });
+    expect(f.admin_response).toContain("Thank you");
+  });
+
+  it("updateStatus", async () => {
+    const { updateStatus } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const f = await updateStatus(ORG, createdFeedbackId, "in_review");
+    expect(f.status).toBe("in_review");
+  });
+
+  it("getFeedbackDashboard", async () => {
+    const { getFeedbackDashboard } = await import("../../services/feedback/anonymous-feedback.service.js");
+    const d = await getFeedbackDashboard(ORG);
+    expect(d).toHaveProperty("total");
+  });
+
+  it("cleanup: delete test feedback", async () => {
+    const db = getDB();
+    await db("anonymous_feedback").where({ id: createdFeedbackId }).delete();
   });
 });
 
@@ -520,9 +1262,71 @@ describe("FeedbackService coverage", () => {
 // CUSTOM FIELD SERVICE
 // ============================================================================
 describe("CustomFieldService coverage", () => {
-  it("import custom field service", async () => {
-    const cf = await import("../../services/custom-field/custom-field.service.js");
-    expect(cf).toBeTruthy();
+  let createdFieldId: number;
+
+  it("createFieldDefinition", async () => {
+    const { createFieldDefinition } = await import("../../services/custom-field/custom-field.service.js");
+    const f = await createFieldDefinition(ORG, ADMIN, {
+      entity_type: "employee",
+      field_name: `Test Field ${U}`,
+      field_type: "text",
+      is_required: false,
+      section: "Custom Fields",
+    } as any);
+    expect(f.field_name).toContain("Test Field");
+    expect(f.field_type).toBe("text");
+    createdFieldId = f.id;
+  });
+
+  it("createFieldDefinition - duplicate rejected", async () => {
+    const { createFieldDefinition } = await import("../../services/custom-field/custom-field.service.js");
+    await expect(createFieldDefinition(ORG, ADMIN, {
+      entity_type: "employee",
+      field_name: `Test Field ${U}`,
+      field_type: "text",
+    } as any)).rejects.toThrow(/already exists/);
+  });
+
+  it("listFieldDefinitions", async () => {
+    const { listFieldDefinitions } = await import("../../services/custom-field/custom-field.service.js");
+    const r = await listFieldDefinitions(ORG);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("listFieldDefinitions with entity type", async () => {
+    const { listFieldDefinitions } = await import("../../services/custom-field/custom-field.service.js");
+    const r = await listFieldDefinitions(ORG, "employee");
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getFieldDefinition", async () => {
+    const { getFieldDefinition } = await import("../../services/custom-field/custom-field.service.js");
+    const f = await getFieldDefinition(ORG, createdFieldId);
+    expect(f.field_name).toContain("Test Field");
+  });
+
+  it("getFieldDefinition - not found", async () => {
+    const { getFieldDefinition } = await import("../../services/custom-field/custom-field.service.js");
+    await expect(getFieldDefinition(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("setFieldValues + getFieldValues", async () => {
+    const { setFieldValues, getFieldValues } = await import("../../services/custom-field/custom-field.service.js");
+    await setFieldValues(ORG, "employee", EMP, [
+      { field_id: createdFieldId, value: "custom-test-value" },
+    ], ADMIN);
+    const values = await getFieldValues(ORG, "employee", EMP);
+    const found = values.find((v: any) => v.field_id === createdFieldId);
+    expect(found).toBeTruthy();
+    expect(found.value).toBe("custom-test-value");
+  });
+
+  it("deleteFieldDefinition (cleanup)", async () => {
+    const { deleteFieldDefinition } = await import("../../services/custom-field/custom-field.service.js");
+    // Clean up field values first
+    const db = getDB();
+    await db("custom_field_values").where({ field_id: createdFieldId }).delete();
+    await deleteFieldDefinition(ORG, createdFieldId);
   });
 });
 
@@ -530,8 +1334,171 @@ describe("CustomFieldService coverage", () => {
 // WHISTLEBLOWING SERVICE
 // ============================================================================
 describe("WhistleblowingService coverage", () => {
-  it("import whistleblowing service", async () => {
-    const w = await import("../../services/whistleblowing/whistleblowing.service.js");
-    expect(w).toBeTruthy();
+  let createdReportId: number;
+  let createdCaseNumber: string;
+
+  it("submitReport", async () => {
+    const { submitReport } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await submitReport(ORG, EMP, {
+      category: "fraud",
+      severity: "high",
+      subject: `Test Whistleblower Report ${U}`,
+      description: "Automated test report for service coverage",
+      is_anonymous: true,
+    });
+    expect(r.subject).toContain("Test Whistleblower Report");
+    expect(r.status).toBe("submitted");
+    expect(r.case_number).toBeTruthy();
+    expect(r.reporter_user_id).toBeNull(); // anonymous
+    createdReportId = r.id;
+    createdCaseNumber = r.case_number;
+  });
+
+  it("submitReport - non-anonymous", async () => {
+    const { submitReport } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await submitReport(ORG, EMP, {
+      category: "misconduct",
+      subject: `Non-anon Report ${U}`,
+      description: "Non-anonymous test report",
+      is_anonymous: false,
+    });
+    expect(r.reporter_user_id).toBe(EMP);
+    // Clean up
+    const db = getDB();
+    await db("whistleblower_reports").where({ id: r.id }).delete();
+  });
+
+  it("getMyReports", async () => {
+    const { getMyReports } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await getMyReports(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+  });
+
+  it("getReportByCase", async () => {
+    const { getReportByCase } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await getReportByCase(ORG, createdCaseNumber);
+    expect(r.id).toBe(createdReportId);
+  });
+
+  it("getReportByCase - not found", async () => {
+    const { getReportByCase } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    await expect(getReportByCase(ORG, "WB-0000-9999")).rejects.toThrow();
+  });
+
+  it("listReports", async () => {
+    const { listReports } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await listReports(ORG);
+    expect(r).toHaveProperty("reports");
+    expect(r).toHaveProperty("total");
+  });
+
+  it("listReports with filters", async () => {
+    const { listReports } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await listReports(ORG, { status: "submitted", severity: "high" });
+    expect(r).toHaveProperty("reports");
+  });
+
+  it("getReport", async () => {
+    const { getReport } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await getReport(ORG, createdReportId);
+    expect(r.subject).toContain("Test Whistleblower Report");
+  });
+
+  it("getReport - not found", async () => {
+    const { getReport } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    await expect(getReport(ORG, 999999)).rejects.toThrow();
+  });
+
+  it("assignInvestigator", async () => {
+    const { assignInvestigator } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await assignInvestigator(ORG, createdReportId, HR);
+    expect(r.assigned_investigator_id).toBe(HR);
+  });
+
+  it("addUpdate", async () => {
+    const { addUpdate } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await addUpdate(ORG, createdReportId, HR, {
+      update_text: "Investigation in progress",
+      is_internal: true,
+    });
+    expect(r).toHaveProperty("id");
+  });
+
+  it("updateStatus", async () => {
+    const { updateStatus } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const r = await updateStatus(ORG, createdReportId, {
+      status: "under_investigation",
+      investigation_notes: "Investigating the matter",
+    });
+    expect(r.status).toBe("under_investigation");
+  });
+
+  it("getWhistleblowingDashboard", async () => {
+    const { getWhistleblowingDashboard } = await import("../../services/whistleblowing/whistleblowing.service.js");
+    const d = await getWhistleblowingDashboard(ORG);
+    expect(d).toHaveProperty("total_reports");
+  });
+
+  it("cleanup: delete whistleblower test data", async () => {
+    const db = getDB();
+    await db("whistleblower_updates").where({ report_id: createdReportId }).delete();
+    await db("whistleblower_reports").where({ id: createdReportId }).delete();
+  });
+});
+
+// ============================================================================
+// CHATBOT SERVICE
+// ============================================================================
+describe("ChatbotService coverage", () => {
+  let conversationId: number;
+
+  it("createConversation", async () => {
+    const { createConversation } = await import("../../services/chatbot/chatbot.service.js");
+    const c = await createConversation(ORG, EMP);
+    expect(c).toHaveProperty("id");
+    expect(c.status).toBe("active");
+    conversationId = c.id;
+  });
+
+  it("getConversations", async () => {
+    const { getConversations } = await import("../../services/chatbot/chatbot.service.js");
+    const r = await getConversations(ORG, EMP);
+    expect(Array.isArray(r)).toBe(true);
+    expect(r.length).toBeGreaterThan(0);
+  });
+
+  it("getMessages - empty conversation", async () => {
+    const { getMessages } = await import("../../services/chatbot/chatbot.service.js");
+    const msgs = await getMessages(ORG, conversationId, EMP);
+    expect(Array.isArray(msgs)).toBe(true);
+  });
+
+  it("getMessages - not found", async () => {
+    const { getMessages } = await import("../../services/chatbot/chatbot.service.js");
+    await expect(getMessages(ORG, 999999, EMP)).rejects.toThrow();
+  });
+
+  it("getSuggestions", async () => {
+    const { getSuggestions } = await import("../../services/chatbot/chatbot.service.js");
+    const suggestions = getSuggestions();
+    expect(Array.isArray(suggestions)).toBe(true);
+    expect(suggestions.length).toBeGreaterThan(0);
+  });
+
+  it("deleteConversation", async () => {
+    const { deleteConversation } = await import("../../services/chatbot/chatbot.service.js");
+    const r = await deleteConversation(ORG, conversationId, EMP);
+    expect(r.success).toBe(true);
+  });
+
+  it("deleteConversation - not found", async () => {
+    const { deleteConversation } = await import("../../services/chatbot/chatbot.service.js");
+    await expect(deleteConversation(ORG, 999999, EMP)).rejects.toThrow();
+  });
+
+  it("cleanup: delete test conversation", async () => {
+    const db = getDB();
+    await db("chatbot_messages").where({ conversation_id: conversationId }).delete();
+    await db("chatbot_conversations").where({ id: conversationId }).delete();
   });
 });
