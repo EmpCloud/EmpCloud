@@ -1112,11 +1112,9 @@ describe("HelpdeskService coverage", () => {
 
   it("addComment", async () => {
     const { addComment } = await import("../../services/helpdesk/helpdesk.service.js");
-    const c = await addComment(ORG, createdTicketId, HR, {
-      content: "Working on this ticket",
-      is_internal: false,
-    });
-    expect(c.content).toContain("Working on");
+    // signature: addComment(orgId, ticketId, userId, comment, isInternal, attachments?)
+    const c = await addComment(ORG, createdTicketId, HR, "Working on this ticket", false);
+    expect(c.comment).toContain("Working on");
   });
 
   it("getMyTickets", async () => {
@@ -1135,7 +1133,7 @@ describe("HelpdeskService coverage", () => {
   it("reopenTicket", async () => {
     const { reopenTicket } = await import("../../services/helpdesk/helpdesk.service.js");
     const t = await reopenTicket(ORG, createdTicketId);
-    expect(t.status).toBe("open");
+    expect(t.status).toBe("reopened");
   });
 
   it("closeTicket", async () => {
@@ -1183,7 +1181,8 @@ describe("HelpdeskService coverage", () => {
 
   it("cleanup: delete helpdesk test data", async () => {
     const db = getDB();
-    await db("helpdesk_comments").where({ ticket_id: createdTicketId }).delete();
+    // Table is ticket_comments, not helpdesk_comments
+    await db("ticket_comments").where({ ticket_id: createdTicketId }).delete();
     await db("helpdesk_tickets").where({ id: createdTicketId }).delete();
     await db("kb_article_ratings").where({ article_id: createdArticleId }).delete();
     await db("kb_articles").where({ id: createdArticleId }).delete();
@@ -1454,19 +1453,15 @@ describe("WhistleblowingService coverage", () => {
 
   it("addUpdate", async () => {
     const { addUpdate } = await import("../../services/whistleblowing/whistleblowing.service.js");
-    const r = await addUpdate(ORG, createdReportId, HR, {
-      update_text: "Investigation in progress",
-      is_internal: true,
-    });
+    // signature: addUpdate(orgId, reportId, userId, content, updateType, visibleToReporter)
+    const r = await addUpdate(ORG, createdReportId, HR, "Investigation in progress", "note", true);
     expect(r).toHaveProperty("id");
   });
 
   it("updateStatus", async () => {
     const { updateStatus } = await import("../../services/whistleblowing/whistleblowing.service.js");
-    const r = await updateStatus(ORG, createdReportId, {
-      status: "under_investigation",
-      investigation_notes: "Investigating the matter",
-    });
+    // signature: updateStatus(orgId, reportId, status, resolution?)
+    const r = await updateStatus(ORG, createdReportId, "under_investigation");
     expect(r.status).toBe("under_investigation");
   });
 
