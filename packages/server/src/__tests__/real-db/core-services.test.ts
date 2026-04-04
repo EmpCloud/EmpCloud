@@ -61,10 +61,9 @@ describe("Whistleblowing Service (real DB)", () => {
   });
 
   it("should submit an anonymous report and get a case number", async () => {
-    const year = new Date().getFullYear();
     const [id] = await db("whistleblower_reports").insert({
       organization_id: ORG_ID,
-      case_number: `WB-${year}-T${TS}`,
+      case_number: `WB-${TS}`,
       category: "fraud",
       severity: "high",
       subject: `Test Report ${TS}`,
@@ -79,17 +78,16 @@ describe("Whistleblowing Service (real DB)", () => {
 
     const report = await db("whistleblower_reports").where({ id }).first();
     expect(report).toBeTruthy();
-    expect(report.case_number).toContain(`WB-${year}`);
+    expect(report.case_number).toContain("WB-");
     expect(report.status).toBe("submitted");
     expect(report.is_anonymous).toBeTruthy();
     expect(report.reporter_user_id).toBeNull();
   });
 
   it("should submit a non-anonymous report with reporter_user_id", async () => {
-    const year = new Date().getFullYear();
     const [id] = await db("whistleblower_reports").insert({
       organization_id: ORG_ID,
-      case_number: `WB-${year}-T${TS + 1}`,
+      case_number: `WB-${TS + 1}`,
       category: "safety",
       severity: "medium",
       subject: `Non-Anon Report ${TS}`,
@@ -1124,7 +1122,7 @@ describe("Helpdesk Service (real DB)", () => {
     const [id] = await db("helpdesk_tickets").insert({
       organization_id: ORG_ID,
       raised_by: EMPLOYEE_USER_ID,
-      category: "it_support",
+      category: "it",
       priority: "medium",
       subject: `Test Ticket ${TS}`,
       description: "Automated test helpdesk ticket.",
