@@ -239,15 +239,20 @@ test.describe("2. Headcount Planning", () => {
 // 3. Leave Calendar & Comp-Off Rejection
 // =============================================================================
 
+const MANAGER_CRED = { email: "karthik@technova.in", password: "Welcome@123" };
+
 test.describe("3. Leave Calendar & Comp-Off", () => {
   let adminToken: string;
   let empToken: string;
+  let mgrToken: string;
 
   test.beforeAll(async ({ request }) => {
     const a = await login(request, ADMIN.email, ADMIN.password);
     adminToken = a.token;
     const e = await login(request, EMPLOYEE.email, EMPLOYEE.password);
     empToken = e.token;
+    const m = await login(request, MANAGER_CRED.email, MANAGER_CRED.password);
+    mgrToken = m.token;
   });
 
   test("3.1 Get leave calendar", async ({ request }) => {
@@ -268,10 +273,10 @@ test.describe("3. Leave Calendar & Comp-Off", () => {
     expect(body.success).toBe(true);
   });
 
-  test("3.3 Reject a comp-off request", async ({ request }) => {
+  test("3.3 Reject a comp-off request (Manager)", async ({ request }) => {
     // List comp-off requests
     const listRes = await request.get(`${API}/leave/comp-off/pending`, {
-      headers: auth(adminToken),
+      headers: auth(mgrToken),
     });
     expect(listRes.status()).toBe(200);
     const listBody = await listRes.json();
@@ -292,8 +297,8 @@ test.describe("3. Leave Calendar & Comp-Off", () => {
         const compOffId = createBody.data?.id;
         if (compOffId) {
           const res = await request.put(`${API}/leave/comp-off/${compOffId}/reject`, {
-            headers: auth(adminToken),
-            data: { reason: "E2E test rejection" },
+            headers: auth(mgrToken),
+            data: { reason: "E2E test rejection by manager" },
           });
           expect([200, 400, 404]).toContain(res.status());
           return;
@@ -304,15 +309,15 @@ test.describe("3. Leave Calendar & Comp-Off", () => {
     // Try rejecting first pending one
     if (pending.length > 0) {
       const res = await request.put(`${API}/leave/comp-off/${pending[0].id}/reject`, {
-        headers: auth(adminToken),
-        data: { reason: "E2E test rejection" },
+        headers: auth(mgrToken),
+        data: { reason: "E2E test rejection by manager" },
       });
       expect([200, 400, 409]).toContain(res.status());
     } else {
       // Endpoint test with invalid ID
       const res = await request.put(`${API}/leave/comp-off/999999/reject`, {
-        headers: auth(adminToken),
-        data: { reason: "E2E test rejection" },
+        headers: auth(mgrToken),
+        data: { reason: "E2E test rejection by manager" },
       });
       expect([200, 400, 404]).toContain(res.status());
     }

@@ -7,20 +7,22 @@ import { test, expect } from '@playwright/test';
 //         Cross-Org User Management, Document Download, Manager Dashboard,
 //         Dashboard Widgets, Probation, Leave Calendar, and more.
 //
-// TechNova Solutions — Meera Krishnan (Finance Manager)
+// TechNova Solutions — Karthik Iyer (Manager), Priya Patel (Employee), Meera Krishnan (HR Admin)
 // API: https://test-empcloud-api.empcloud.com/api/v1
 // =============================================================================
 
 const API = 'https://test-empcloud-api.empcloud.com/api/v1';
 
 const ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'arjun@technova.in', password: 'Welcome@123' };
+const MANAGER_USER = { email: 'karthik@technova.in', password: 'Welcome@123' };
+const EMPLOYEE = { email: 'priya@technova.in', password: 'Welcome@123' };
 const MEERA = { email: 'meera@technova.in', password: 'Welcome@123' };
 
 const RUN = Date.now().toString().slice(-6);
 
 test.describe('EMP Cloud — Complete Coverage', () => {
   let adminToken: string;
+  let managerToken: string;
   let employeeToken: string;
   let meeraToken: string;
   let adminUserId: number;
@@ -40,27 +42,23 @@ test.describe('EMP Cloud — Complete Coverage', () => {
     const adminMeData = await adminMe.json();
     adminUserId = adminMeData.data?.user?.id || adminMeData.data?.employee_id || adminMeData.data?.id;
 
-    // Login as employee (Arjun) — may be deactivated, fall back to admin token
-    try {
-      const empResp = await request.post(`${API}/auth/login`, { data: EMPLOYEE });
-      if (empResp.status() === 200) {
-        const empData = await empResp.json();
-        employeeToken = empData.data.tokens.access_token;
+    // Login as manager (Karthik — reporting manager for Priya)
+    const mgrResp = await request.post(`${API}/auth/login`, { data: MANAGER_USER });
+    expect(mgrResp.status()).toBe(200);
+    const mgrData = await mgrResp.json();
+    managerToken = mgrData.data.tokens.access_token;
 
-        const empMe = await request.get(`${API}/auth/me`, {
-          headers: { Authorization: `Bearer ${employeeToken}` },
-        });
-        const empMeData = await empMe.json();
-        employeeUserId = empMeData.data?.user?.id || empMeData.data?.employee_id || empMeData.data?.id;
-      } else {
-        // Arjun deactivated — fall back to admin
-        employeeToken = adminToken;
-        employeeUserId = adminUserId;
-      }
-    } catch {
-      employeeToken = adminToken;
-      employeeUserId = adminUserId;
-    }
+    // Login as employee (Priya — reports to Karthik)
+    const empResp = await request.post(`${API}/auth/login`, { data: EMPLOYEE });
+    expect(empResp.status()).toBe(200);
+    const empData = await empResp.json();
+    employeeToken = empData.data.tokens.access_token;
+
+    const empMe = await request.get(`${API}/auth/me`, {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    const empMeData = await empMe.json();
+    employeeUserId = empMeData.data?.user?.id || empMeData.data?.employee_id || empMeData.data?.id;
 
     // Try login as Meera Krishnan
     try {
@@ -295,14 +293,14 @@ test.describe('EMP Cloud — Complete Coverage', () => {
       if (body.data.length > 0) shiftId = body.data[0].id;
     });
 
-    test('6.2 Create shift swap request for Arjun', async ({ request }) => {
+    test('6.2 Create shift swap request for Priya', async ({ request }) => {
       if (!shiftId) { expect(true).toBe(true); return; }
-      // First ensure Arjun has a shift assignment
+      // Employee requests shift swap
       const r = await request.post(`${API}/attendance/shifts/swap-request`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
         data: {
           target_shift_id: shiftId,
-          reason: `Arjun needs to swap to accommodate client meeting ${RUN}`,
+          reason: `Priya needs to swap to accommodate client meeting ${RUN}`,
           swap_date: '2026-04-15',
         },
       });
@@ -354,7 +352,7 @@ test.describe('EMP Cloud — Complete Coverage', () => {
     });
 
     test('7.2 List pending comp-off approvals', async ({ request }) => {
-      const r = await request.get(`${API}/leave/comp-off/pending`, auth());
+      const r = await request.get(`${API}/leave/comp-off/pending`, { headers: { Authorization: `Bearer ${managerToken}` } });
       expect([200]).toContain(r.status());
       const body = await r.json();
       if (!compOffId && body.data?.length > 0) {
@@ -362,9 +360,9 @@ test.describe('EMP Cloud — Complete Coverage', () => {
       }
     });
 
-    test('7.3 Approve comp-off for weekend work', async ({ request }) => {
+    test('7.3 Approve comp-off for weekend work (Manager)', async ({ request }) => {
       if (!compOffId) { expect(true).toBe(true); return; }
-      const r = await request.put(`${API}/leave/comp-off/${compOffId}/approve`, auth());
+      const r = await request.put(`${API}/leave/comp-off/${compOffId}/approve`, { headers: { Authorization: `Bearer ${managerToken}` } });
       expect([200, 400, 404, 409]).toContain(r.status());
     });
 
@@ -469,18 +467,18 @@ test.describe('EMP Cloud — Complete Coverage', () => {
   test.describe('11 - Manager Dashboard', () => {
 
     test('11.1 Get manager dashboard stats', async ({ request }) => {
-      const r = await request.get(`${API}/manager/dashboard`, auth());
-      expect([200, 403]).toContain(r.status());
+      const r = await request.get(`${API}/manager/dashboard`, { headers: { Authorization: `Bearer ${managerToken}` } });
+      expect([200]).toContain(r.status());
     });
 
     test('11.2 Get manager team members', async ({ request }) => {
-      const r = await request.get(`${API}/manager/team`, auth());
-      expect([200, 403]).toContain(r.status());
+      const r = await request.get(`${API}/manager/team`, { headers: { Authorization: `Bearer ${managerToken}` } });
+      expect([200]).toContain(r.status());
     });
 
     test('11.3 Get team attendance today', async ({ request }) => {
-      const r = await request.get(`${API}/manager/attendance`, auth());
-      expect([200, 403]).toContain(r.status());
+      const r = await request.get(`${API}/manager/attendance`, { headers: { Authorization: `Bearer ${managerToken}` } });
+      expect([200]).toContain(r.status());
     });
   });
 
@@ -529,13 +527,13 @@ test.describe('EMP Cloud — Complete Coverage', () => {
   test.describe('14 - Leave Calendar', () => {
 
     test('14.1 Get manager team leave calendar', async ({ request }) => {
-      const r = await request.get(`${API}/manager/leaves/calendar?start_date=2026-04-01&end_date=2026-04-30`, auth());
-      expect([200, 403]).toContain(r.status());
+      const r = await request.get(`${API}/manager/leaves/calendar?start_date=2026-04-01&end_date=2026-04-30`, { headers: { Authorization: `Bearer ${managerToken}` } });
+      expect([200]).toContain(r.status());
     });
 
     test('14.2 Get manager pending leave approvals', async ({ request }) => {
-      const r = await request.get(`${API}/manager/leaves/pending`, auth());
-      expect([200, 403]).toContain(r.status());
+      const r = await request.get(`${API}/manager/leaves/pending`, { headers: { Authorization: `Bearer ${managerToken}` } });
+      expect([200]).toContain(r.status());
     });
   });
 

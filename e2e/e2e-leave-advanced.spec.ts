@@ -9,12 +9,47 @@ import { test, expect } from '@playwright/test';
 const API_BASE = 'https://test-empcloud-api.empcloud.com/api/v1';
 
 const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'arjun@technova.in', password: 'Welcome@123' };
+const MANAGER = { email: 'karthik@technova.in', password: 'Welcome@123' };
+const EMPLOYEE = { email: 'priya@technova.in', password: 'Welcome@123' };
+
+/** Find or create an active leave type; returns the leave type id */
+async function ensureActiveLeaveType(
+  request: import('@playwright/test').APIRequestContext,
+  token: string,
+): Promise<number> {
+  const resp = await request.get(`${API_BASE}/leave/types`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const body = await resp.json();
+  const active = body.data?.find((t: any) => t.is_active);
+  if (active) return active.id;
+
+  // No active leave type — create one as admin
+  const code = `E2E_WF_${Date.now().toString(36).toUpperCase()}`;
+  const createResp = await request.post(`${API_BASE}/leave/types`, {
+    headers: { Authorization: `Bearer ${token}` },
+    data: {
+      name: 'E2E Workflow Leave',
+      code,
+      description: 'Auto-created for workflow tests',
+      is_paid: true,
+      is_carry_forward: false,
+      max_carry_forward_days: 0,
+      is_encashable: false,
+      requires_approval: true,
+      color: '#4CAF50',
+    },
+  });
+  const createBody = await createResp.json();
+  return createBody.data.id;
+}
 
 test.describe('Leave Advanced', () => {
   let adminToken: string;
+  let managerToken: string;
   let employeeToken: string;
   let employeeUserId: number;
+  let activeLeaveTypeId: number;
 
   test.beforeAll(async ({ request }) => {
     const adminResp = await request.post(`${API_BASE}/auth/login`, {
@@ -23,6 +58,13 @@ test.describe('Leave Advanced', () => {
     expect(adminResp.status()).toBe(200);
     const adminData = await adminResp.json();
     adminToken = adminData.data.tokens.access_token;
+
+    const mgrResp = await request.post(`${API_BASE}/auth/login`, {
+      data: { email: MANAGER.email, password: MANAGER.password },
+    });
+    expect(mgrResp.status()).toBe(200);
+    const mgrData = await mgrResp.json();
+    managerToken = mgrData.data.tokens.access_token;
 
     const empResp = await request.post(`${API_BASE}/auth/login`, {
       data: { email: EMPLOYEE.email, password: EMPLOYEE.password },
@@ -36,6 +78,15 @@ test.describe('Leave Advanced', () => {
     });
     const empMeData = await empMe.json();
     employeeUserId = empMeData.data.employee_id || empMeData.data.id;
+
+    // Ensure an active leave type exists for application tests
+    activeLeaveTypeId = await ensureActiveLeaveType(request, adminToken);
+
+    // Initialize balances for the current year so leave applications work
+    await request.post(`${API_BASE}/leave/balances/initialize`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+      data: { year: new Date().getFullYear() },
+    });
   });
 
   // ─── Leave Types CRUD ─────────────────────────────────────────────────────
@@ -275,20 +326,9 @@ test.describe('Leave Advanced', () => {
   // ─── Leave Applications Lifecycle ─────────────────────────────────────────
 
   test.describe.serial('Leave Application Lifecycle', () => {
-    let leaveTypeId: number;
     let appliedLeaveId: number;
 
-    test.beforeAll(async ({ request }) => {
-      const resp = await request.get(`${API_BASE}/leave/types`, {
-        headers: { Authorization: `Bearer ${employeeToken}` },
-      });
-      const body = await resp.json();
-      leaveTypeId = body.data[0]?.id;
-    });
-
     test('POST apply leave — future date returns 201', async ({ request }) => {
-      if (!leaveTypeId) return;
-
       const future = new Date();
       future.setDate(future.getDate() + 45);
       const dateStr = future.toISOString().split('T')[0];
@@ -296,7 +336,7 @@ test.describe('Leave Advanced', () => {
       const resp = await request.post(`${API_BASE}/leave/applications`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
         data: {
-          leave_type_id: leaveTypeId,
+          leave_type_id: activeLeaveTypeId,
           start_date: dateStr,
           end_date: dateStr,
           days_count: 1,
@@ -353,14 +393,14 @@ test.describe('Leave Advanced', () => {
       expect(body.success).toBe(true);
     });
 
-    test('PUT approve — HR approves leave', async ({ request }) => {
+    test('PUT approve — Manager approves leave', async ({ request }) => {
       if (!appliedLeaveId) return;
 
       const resp = await request.put(
         `${API_BASE}/leave/applications/${appliedLeaveId}/approve`,
         {
-          headers: { Authorization: `Bearer ${adminToken}` },
-          data: { remarks: 'Approved via E2E test' },
+          headers: { Authorization: `Bearer ${managerToken}` },
+          data: { remarks: 'Approved via E2E test by manager' },
         },
       );
       // 200 if approved, 400 if already processed
@@ -392,19 +432,8 @@ test.describe('Leave Advanced', () => {
 
   test.describe.serial('Leave Reject Flow', () => {
     let rejectLeaveId: number;
-    let leaveTypeId: number;
-
-    test.beforeAll(async ({ request }) => {
-      const resp = await request.get(`${API_BASE}/leave/types`, {
-        headers: { Authorization: `Bearer ${employeeToken}` },
-      });
-      const body = await resp.json();
-      leaveTypeId = body.data[0]?.id;
-    });
 
     test('POST apply leave — to be rejected', async ({ request }) => {
-      if (!leaveTypeId) return;
-
       const future = new Date();
       future.setDate(future.getDate() + 60);
       const dateStr = future.toISOString().split('T')[0];
@@ -412,7 +441,7 @@ test.describe('Leave Advanced', () => {
       const resp = await request.post(`${API_BASE}/leave/applications`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
         data: {
-          leave_type_id: leaveTypeId,
+          leave_type_id: activeLeaveTypeId,
           start_date: dateStr,
           end_date: dateStr,
           days_count: 1,
@@ -429,14 +458,14 @@ test.describe('Leave Advanced', () => {
       }
     });
 
-    test('PUT reject — HR rejects leave', async ({ request }) => {
+    test('PUT reject — Manager rejects leave', async ({ request }) => {
       if (!rejectLeaveId) return;
 
       const resp = await request.put(
         `${API_BASE}/leave/applications/${rejectLeaveId}/reject`,
         {
-          headers: { Authorization: `Bearer ${adminToken}` },
-          data: { remarks: 'Rejected via E2E test' },
+          headers: { Authorization: `Bearer ${managerToken}` },
+          data: { remarks: 'Rejected via E2E test by manager' },
         },
       );
       expect([200, 400]).toContain(resp.status());
@@ -447,19 +476,8 @@ test.describe('Leave Advanced', () => {
 
   test.describe.serial('Leave Cancel Flow', () => {
     let cancelLeaveId: number;
-    let leaveTypeId: number;
-
-    test.beforeAll(async ({ request }) => {
-      const resp = await request.get(`${API_BASE}/leave/types`, {
-        headers: { Authorization: `Bearer ${employeeToken}` },
-      });
-      const body = await resp.json();
-      leaveTypeId = body.data[0]?.id;
-    });
 
     test('POST apply leave — to be cancelled', async ({ request }) => {
-      if (!leaveTypeId) return;
-
       const future = new Date();
       future.setDate(future.getDate() + 75);
       const dateStr = future.toISOString().split('T')[0];
@@ -467,7 +485,7 @@ test.describe('Leave Advanced', () => {
       const resp = await request.post(`${API_BASE}/leave/applications`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
         data: {
-          leave_type_id: leaveTypeId,
+          leave_type_id: activeLeaveTypeId,
           start_date: dateStr,
           end_date: dateStr,
           days_count: 1,
@@ -496,8 +514,6 @@ test.describe('Leave Advanced', () => {
 
     test('PUT cancel via status update — alternative cancel endpoint', async ({ request }) => {
       // Apply another one to test the PUT /:id with status=cancelled
-      if (!leaveTypeId) return;
-
       const future = new Date();
       future.setDate(future.getDate() + 90);
       const dateStr = future.toISOString().split('T')[0];
@@ -505,7 +521,7 @@ test.describe('Leave Advanced', () => {
       const applyResp = await request.post(`${API_BASE}/leave/applications`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
         data: {
-          leave_type_id: leaveTypeId,
+          leave_type_id: activeLeaveTypeId,
           start_date: dateStr,
           end_date: dateStr,
           days_count: 1,
@@ -572,18 +588,18 @@ test.describe('Leave Advanced', () => {
       expect(body.success).toBe(true);
     });
 
-    test('GET comp-off — HR sees all requests', async ({ request }) => {
+    test('GET comp-off — Manager sees all requests', async ({ request }) => {
       const resp = await request.get(`${API_BASE}/leave/comp-off`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
+        headers: { Authorization: `Bearer ${managerToken}` },
       });
       expect(resp.status()).toBe(200);
       const body = await resp.json();
       expect(body.success).toBe(true);
     });
 
-    test('GET comp-off/pending — list pending comp-offs', async ({ request }) => {
+    test('GET comp-off/pending — Manager lists pending comp-offs', async ({ request }) => {
       const resp = await request.get(`${API_BASE}/leave/comp-off/pending`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
+        headers: { Authorization: `Bearer ${managerToken}` },
       });
       expect(resp.status()).toBe(200);
       const body = await resp.json();
@@ -599,10 +615,10 @@ test.describe('Leave Advanced', () => {
       expect(body.success).toBe(true);
     });
 
-    test('PUT comp-off approve — HR approves', async ({ request }) => {
+    test('PUT comp-off approve — Manager approves', async ({ request }) => {
       // Find a pending comp-off
       const listResp = await request.get(`${API_BASE}/leave/comp-off/pending`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
+        headers: { Authorization: `Bearer ${managerToken}` },
       });
       const listData = await listResp.json();
       const pending = listData.data?.[0] || (compOffId ? { id: compOffId } : null);
@@ -610,14 +626,14 @@ test.describe('Leave Advanced', () => {
       if (pending) {
         const resp = await request.put(
           `${API_BASE}/leave/comp-off/${pending.id}/approve`,
-          { headers: { Authorization: `Bearer ${adminToken}` } },
+          { headers: { Authorization: `Bearer ${managerToken}` } },
         );
         // 200 if approved, 400 if already processed
         expect([200, 400]).toContain(resp.status());
       }
     });
 
-    test('PUT comp-off reject — HR rejects', async ({ request }) => {
+    test('PUT comp-off reject — Manager rejects', async ({ request }) => {
       // Submit a new comp-off to reject
       const twoDaysAgo = new Date();
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 8);
@@ -642,8 +658,8 @@ test.describe('Leave Advanced', () => {
         const resp = await request.put(
           `${API_BASE}/leave/comp-off/${submitData.data.id}/reject`,
           {
-            headers: { Authorization: `Bearer ${adminToken}` },
-            data: { reason: 'E2E test rejection' },
+            headers: { Authorization: `Bearer ${managerToken}` },
+            data: { reason: 'E2E test rejection by manager' },
           },
         );
         expect([200, 400]).toContain(resp.status());
@@ -652,7 +668,7 @@ test.describe('Leave Advanced', () => {
 
     test('employee cannot approve comp-off (403)', async ({ request }) => {
       const listResp = await request.get(`${API_BASE}/leave/comp-off/pending`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
+        headers: { Authorization: `Bearer ${managerToken}` },
       });
       const listData = await listResp.json();
       const pending = listData.data?.[0];
@@ -710,40 +726,32 @@ test.describe('Leave Advanced', () => {
 
   test.describe('Half-Day Leave', () => {
     test('POST apply half-day leave', async ({ request }) => {
-      const typesResp = await request.get(`${API_BASE}/leave/types`, {
+      const future = new Date();
+      future.setDate(future.getDate() + 100);
+      const dateStr = future.toISOString().split('T')[0];
+
+      const resp = await request.post(`${API_BASE}/leave/applications`, {
         headers: { Authorization: `Bearer ${employeeToken}` },
+        data: {
+          leave_type_id: activeLeaveTypeId,
+          start_date: dateStr,
+          end_date: dateStr,
+          days_count: 0.5,
+          is_half_day: true,
+          half_day_type: 'first_half',
+          reason: 'E2E test — half day leave',
+        },
       });
-      const typesData = await typesResp.json();
-      const leaveTypeId = typesData.data[0]?.id;
+      // 201 or 400 (no balance)
+      expect([200, 201, 400]).toContain(resp.status());
 
-      if (leaveTypeId) {
-        const future = new Date();
-        future.setDate(future.getDate() + 100);
-        const dateStr = future.toISOString().split('T')[0];
-
-        const resp = await request.post(`${API_BASE}/leave/applications`, {
-          headers: { Authorization: `Bearer ${employeeToken}` },
-          data: {
-            leave_type_id: leaveTypeId,
-            start_date: dateStr,
-            end_date: dateStr,
-            days_count: 0.5,
-            is_half_day: true,
-            half_day_type: 'first_half',
-            reason: 'E2E test — half day leave',
-          },
-        });
-        // 201 or 400 (no balance)
-        expect([200, 201, 400]).toContain(resp.status());
-
-        // Clean up if created
-        if (resp.status() === 201 || resp.status() === 200) {
-          const body = await resp.json();
-          if (body.data?.id) {
-            await request.put(`${API_BASE}/leave/applications/${body.data.id}/cancel`, {
-              headers: { Authorization: `Bearer ${employeeToken}` },
-            });
-          }
+      // Clean up if created
+      if (resp.status() === 201 || resp.status() === 200) {
+        const body = await resp.json();
+        if (body.data?.id) {
+          await request.put(`${API_BASE}/leave/applications/${body.data.id}/cancel`, {
+            headers: { Authorization: `Bearer ${employeeToken}` },
+          });
         }
       }
     });

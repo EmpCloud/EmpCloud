@@ -8,10 +8,12 @@ import { test, expect } from '@playwright/test';
 const API_BASE = 'https://test-empcloud-api.empcloud.com/api/v1';
 
 const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'arjun@technova.in', password: 'Welcome@123' };
+const MANAGER = { email: 'karthik@technova.in', password: 'Welcome@123' };
+const EMPLOYEE = { email: 'priya@technova.in', password: 'Welcome@123' };
 
 test.describe('Attendance & Leave Module', () => {
   let adminToken: string;
+  let managerToken: string;
   let employeeToken: string;
 
   test.beforeAll(async ({ request }) => {
@@ -23,7 +25,15 @@ test.describe('Attendance & Leave Module', () => {
     const adminData = await adminResp.json();
     adminToken = adminData.data.tokens.access_token;
 
-    // Login as employee
+    // Login as manager (Karthik — reporting manager for Priya)
+    const mgrResp = await request.post(`${API_BASE}/auth/login`, {
+      data: { email: MANAGER.email, password: MANAGER.password },
+    });
+    expect(mgrResp.status()).toBe(200);
+    const mgrData = await mgrResp.json();
+    managerToken = mgrData.data.tokens.access_token;
+
+    // Login as employee (Priya — reports to Karthik)
     const empResp = await request.post(`${API_BASE}/auth/login`, {
       data: { email: EMPLOYEE.email, password: EMPLOYEE.password },
     });
@@ -329,11 +339,11 @@ test.describe('Attendance & Leave Module', () => {
       expect(body.success).toBe(true);
     });
 
-    test('approve leave as HR returns 200', async ({ request }) => {
+    test('approve leave as Manager returns 200', async ({ request }) => {
       // Find a pending leave application to approve
       const listResp = await request.get(
         `${API_BASE}/leave/applications?status=pending`,
-        { headers: { Authorization: `Bearer ${adminToken}` } }
+        { headers: { Authorization: `Bearer ${managerToken}` } }
       );
       const listData = await listResp.json();
       const pendingLeave = listData.data?.[0] || (createdLeaveId ? { id: createdLeaveId } : null);
@@ -342,8 +352,8 @@ test.describe('Attendance & Leave Module', () => {
         const resp = await request.put(
           `${API_BASE}/leave/applications/${pendingLeave.id}/approve`,
           {
-            headers: { Authorization: `Bearer ${adminToken}` },
-            data: { comments: 'Approved via E2E test' },
+            headers: { Authorization: `Bearer ${managerToken}` },
+            data: { comments: 'Approved via E2E test by manager' },
           }
         );
         // 200 if approved, 400 if already processed
