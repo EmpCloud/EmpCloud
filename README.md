@@ -28,11 +28,12 @@ Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Pr
 | Frontend pages | 94 |
 | Service modules | 34 |
 | **Playwright E2E tests** | **3,656 passing (111 spec files)** |
-| **Unit tests (mocked DB)** | **451 passing across 4 modules** |
+| **Unit tests (vitest)** | **~4,400 passing across 9 modules** |
 | **Real-DB integration tests** | **549 passing across 9 modules** |
-| **Total tests** | **~5,700+** |
+| **Total tests** | **~8,000+** |
 | **API route coverage** | **97% (1,881/1,937 routes)** |
-| **Line coverage (avg)** | **70%+ across 9 TypeScript modules** |
+| **Line coverage (best)** | **97.4% (EMP LMS)** |
+| **Line coverage (avg)** | **60-75% across 9 TypeScript modules (pushing to 90%)** |
 | AI agent tools | 41 |
 | Languages supported | 9 |
 | GitHub repositories | 12 |
@@ -968,15 +969,15 @@ SMTP_PASS=
 
 | Module | Routes (E2E) | Line Coverage | Unit Tests | Real-DB Tests |
 |--------|-------------|---------------|------------|---------------|
-| EmpCloud Core | 97% (362/398) | 70.4% | 193 | 73 |
-| EMP Payroll | ~100% (215/270) | 73.9% | 180 | 38 |
-| EMP Billing | 93% (216/232) | 63.1% | 21 | 87 |
-| EMP Performance | 94% (100/124) | 80.6% | — | 74 |
-| EMP Exit | 93% (91/109) | 67.2% | — | 53 |
-| EMP Recruit | 96% (100/134) | 66.5% | — | 46 |
-| EMP Rewards | 97% (63/105) | 70.3% | — | 67 |
-| EMP LMS | 97% (128/169) | 51.6% | 57 | 246 |
-| EMP Field | 94% (58/67) | 74.3% | — | 44 |
+| EmpCloud Core | 97% (362/398) | 43-75% | 786+ | 73 |
+| EMP Payroll | ~100% (215/270) | 62-74% | 603+ | 38 |
+| EMP Billing | 93% (216/232) | 72.9% | 1,518+ | 87 |
+| EMP Performance | 94% (100/124) | 47-80% | 501+ | 74 |
+| EMP Exit | 93% (91/109) | 59-67% | 371+ | 53 |
+| EMP Recruit | 96% (100/134) | 48-70% | 350+ | 46 |
+| EMP Rewards | 97% (63/105) | 51-71% | 429+ | 67 |
+| EMP LMS | 97% (128/169) | **97.4%** | 1,332+ | 246 |
+| EMP Field | 94% (58/67) | 70-78% | 333+ | 44 |
 | EMP Project | ~95% (237/239) | N/A (JS) | — | — |
 
 ### Manager Approval Workflow Testing
