@@ -1,22 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../db/connection", () => {
-  const chain: any = {};
-  chain.select = vi.fn(() => chain);
-  chain.where = vi.fn(() => chain);
-  chain.whereIn = vi.fn(() => chain);
-  chain.whereNull = vi.fn(() => chain);
-  chain.whereNot = vi.fn(() => chain);
+  const chain: any = new Proxy({} as any, {
+    get(_target: any, prop: string) {
+      if (prop === "then" || prop === "catch") return undefined;
+      if (!_target[prop]) {
+        _target[prop] = vi.fn(function() { return chain; });
+      }
+      return _target[prop];
+    }
+  });
   chain.first = vi.fn(() => Promise.resolve(null));
   chain.insert = vi.fn(() => Promise.resolve([1]));
   chain.update = vi.fn(() => Promise.resolve(1));
   chain.delete = vi.fn(() => Promise.resolve(1));
-  chain.orderBy = vi.fn(() => chain);
-  chain.limit = vi.fn(() => chain);
-  chain.offset = vi.fn(() => chain);
-  chain.join = vi.fn(() => chain);
-  chain.leftJoin = vi.fn(() => chain);
-  chain.count = vi.fn(() => Promise.resolve([{ "count(*)": 5 }]));
+  chain.count = vi.fn(() => chain);
   const db: any = vi.fn(() => chain);
   db.raw = vi.fn(() => Promise.resolve([[], []]));
   db.transaction = vi.fn((cb: any) => cb(db));
