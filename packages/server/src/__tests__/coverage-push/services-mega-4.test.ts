@@ -311,91 +311,131 @@ describe("OnboardingService — deep coverage", () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
     const status = await mod.getOnboardingStatus(ORG);
     expect(status).toBeTruthy();
-    expect(typeof status).toBe("object");
+    expect(status).toHaveProperty("steps");
+    expect(Array.isArray(status.steps)).toBe(true);
   });
 
-  it("completeStep with company_info", async () => {
+  it("getOnboardingStatus — not found org", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.completeStep(ORG, "company_info", {
-        legal_name: "TechNova Solutions",
-        country: "India",
-      });
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    await expect(mod.getOnboardingStatus(999999)).rejects.toThrow();
   });
 
-  it("completeStep with departments", async () => {
+  it("completeStep 1 — company_info", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.completeStep(ORG, "departments", {
-        departments: ["Engineering", "Sales"],
-      });
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    const result = await mod.completeStep(ORG, ADMIN, 1, {
+      timezone: "Asia/Kolkata",
+      country: "India",
+      state: "Maharashtra",
+      city: "Mumbai",
+      language: "en",
+      name: "TechNova Solutions",
+      contact_number: "+911234567890",
+      website: "https://technova.in",
+      address: "Mumbai, India",
+    });
+    expect(result).toBeTruthy();
+    expect(result).toHaveProperty("steps");
   });
 
-  it("completeStep with choose_modules", async () => {
+  it("completeStep 2 — departments", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.completeStep(ORG, "choose_modules", {
-        modules: ["payroll", "performance"],
-      });
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    const result = await mod.completeStep(ORG, ADMIN, 2, {
+      departments: ["Engineering", "Sales", "Marketing"],
+    });
+    expect(result).toBeTruthy();
   });
 
-  it("completeStep with invite_team", async () => {
+  it("completeStep 2 — empty departments error", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.completeStep(ORG, "invite_team", {
-        emails: [`onboard-${TS}@example.com`],
-      });
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    await expect(mod.completeStep(ORG, ADMIN, 2, { departments: [] })).rejects.toThrow();
   });
 
-  it("completeStep with quick_setup", async () => {
+  it("completeStep 3 — invite_team with invitations", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.completeStep(ORG, "quick_setup", {});
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    const result = await mod.completeStep(ORG, ADMIN, 3, {
+      invitations: [
+        { email: `onboard-${TS}@example.com`, role: "employee" },
+        { email: `onboard2-${TS}@example.com` },
+      ],
+    });
+    expect(result).toBeTruthy();
+    // Cleanup
+    const db = getDB();
+    await db("invitations").where("email", "like", `%${TS}@example.com`).delete().catch(() => {});
   });
 
-  it("completeStep with invalid step", async () => {
+  it("completeStep 3 — invite_team with empty invitations", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    await expect(mod.completeStep(ORG, "invalid_step", {})).rejects.toThrow();
+    const result = await mod.completeStep(ORG, ADMIN, 3, {
+      invitations: [],
+    });
+    expect(result).toBeTruthy();
+  });
+
+  it("completeStep 4 — choose_modules", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    const result = await mod.completeStep(ORG, ADMIN, 4, {
+      module_ids: [1, 2],
+    });
+    expect(result).toBeTruthy();
+  });
+
+  it("completeStep 4 — empty module_ids", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    const result = await mod.completeStep(ORG, ADMIN, 4, {
+      module_ids: [],
+    });
+    expect(result).toBeTruthy();
+  });
+
+  it("completeStep 5 — quick_setup with leave types", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    const result = await mod.completeStep(ORG, ADMIN, 5, {
+      leave_types: [
+        { name: `TestOnboard-${TS}`, code: `TOB${TS}`, annual_quota: 12, is_paid: true },
+      ],
+      shift: {
+        name: "General Shift",
+        start_time: "09:00:00",
+        end_time: "18:00:00",
+        break_minutes: 60,
+      },
+    });
+    expect(result).toBeTruthy();
+    // Cleanup
+    const db = getDB();
+    await db("leave_policies").where("name", "like", `%TestOnboard-${TS}%`).delete().catch(() => {});
+    await db("leave_types").where("code", `TOB${TS}`).delete().catch(() => {});
+  });
+
+  it("completeStep 5 — quick_setup empty", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    const result = await mod.completeStep(ORG, ADMIN, 5, {});
+    expect(result).toBeTruthy();
+  });
+
+  it("completeStep — invalid step 0", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    await expect(mod.completeStep(ORG, ADMIN, 0, {})).rejects.toThrow();
+  });
+
+  it("completeStep — invalid step 6", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    await expect(mod.completeStep(ORG, ADMIN, 6, {})).rejects.toThrow();
   });
 
   it("completeOnboarding marks done", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.completeOnboarding(ORG);
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    const result = await mod.completeOnboarding(ORG);
+    expect(result).toHaveProperty("completed");
+    expect(result.completed).toBe(true);
   });
 
   it("skipOnboarding skips", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.skipOnboarding(ORG);
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e.message).toBeTruthy();
-    }
+    const result = await mod.skipOnboarding(ORG);
+    expect(result).toHaveProperty("completed");
+    expect(result).toHaveProperty("skipped");
   });
 });
 

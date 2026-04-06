@@ -348,32 +348,34 @@ describe("LeaveApplicationService — extra branches", () => {
 // =============================================================================
 
 describe("OnboardingService — extra branches", () => {
-  it("getOnboardingStatus for non-existent org", async () => {
+  it("getOnboardingStatus for non-existent org throws", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      const result = await mod.getOnboardingStatus(999999);
-      expect(result).toBeTruthy();
-    } catch (e: any) {
-      expect(e).toBeTruthy();
-    }
+    await expect(mod.getOnboardingStatus(999999)).rejects.toThrow();
   });
 
-  it("completeStep with empty data", async () => {
+  it("completeStep 1 with minimal data", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      await mod.completeStep(ORG, "company_info", {});
-    } catch (e: any) {
-      expect(e).toBeTruthy();
-    }
+    const result = await mod.completeStep(ORG, ADMIN, 1, { country: "India" });
+    expect(result).toBeTruthy();
   });
 
-  it("completeStep invite_team with no emails", async () => {
+  it("completeStep 3 with existing email user", async () => {
     const mod = await import("../../services/onboarding/onboarding.service.js");
-    try {
-      await mod.completeStep(ORG, "invite_team", { emails: [] });
-    } catch (e: any) {
-      expect(e).toBeTruthy();
-    }
+    const result = await mod.completeStep(ORG, ADMIN, 3, {
+      invitations: [{ email: "ananya@technova.in" }], // existing user
+    });
+    expect(result).toBeTruthy();
+  });
+
+  it("completeStep 4 with non-existent module", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    const result = await mod.completeStep(ORG, ADMIN, 4, { module_ids: [999999] });
+    expect(result).toBeTruthy();
+  });
+
+  it("completeStep — not found org", async () => {
+    const mod = await import("../../services/onboarding/onboarding.service.js");
+    await expect(mod.completeStep(999999, ADMIN, 1, {})).rejects.toThrow();
   });
 });
 
