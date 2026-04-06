@@ -38,7 +38,7 @@ vi.mock("@empcloud/shared", () => ({
   AuditAction: { USER_CREATED: "USER_CREATED", EXIT_COMPLETED: "EXIT_COMPLETED" },
   ROLE_HIERARCHY: { employee: 0, manager: 20, hr_admin: 60, org_admin: 80, super_admin: 100 },
 }));
-vi.mock("../audit/audit.service", () => ({ logAudit: vi.fn(() => Promise.resolve()) }));
+vi.mock("../../services/audit/audit.service", () => ({ logAudit: vi.fn(() => Promise.resolve()) }));
 
 function reset() {
   vi.clearAllMocks();

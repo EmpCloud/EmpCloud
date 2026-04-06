@@ -38,13 +38,13 @@ vi.mock("../../utils/crypto", () => ({
   hashToken: vi.fn((t: string) => `hashed_${t}`),
 }));
 
-vi.mock("../oauth/oauth.service", () => ({
+vi.mock("../../services/oauth/oauth.service", () => ({
   issueTokens: vi.fn(() => Promise.resolve({
     access_token: "at", refresh_token: "rt", expires_in: 3600, token_type: "Bearer", scope: "openid",
   })),
 }));
 
-vi.mock("../audit/audit.service", () => ({
+vi.mock("../../services/audit/audit.service", () => ({
   logAudit: vi.fn(() => Promise.resolve()),
 }));
 
@@ -54,7 +54,7 @@ vi.mock("@empcloud/shared", () => ({
   ROLE_HIERARCHY: { employee: 0, manager: 20, hr_admin: 60, org_admin: 80, super_admin: 100 },
 }));
 
-vi.mock("../subscription/subscription.service", () => ({
+vi.mock("../../services/subscription/subscription.service", () => ({
   checkFreeTierUserLimit: vi.fn(() => Promise.resolve()),
 }));
 
