@@ -11,9 +11,10 @@ function buildMockDB() {
   chain.count = vi.fn(() => Promise.resolve([{ count: 0 }]));
   chain.increment = vi.fn(() => Promise.resolve(1));
   chain.decrement = vi.fn(() => Promise.resolve(1));
-  // Note: NOT making chain thenable, since some services check first() results
-  // For functions that return chain directly (list queries), tests should use
-  // mockResolvedValueOnce on the terminal chain method
+  // Make chain thenable - resolves to [] when awaited directly
+  // first() still returns its own Promise (not affected by chain.then)
+  chain.then = vi.fn((resolve: any) => Promise.resolve([]).then(resolve));
+  chain.catch = vi.fn(() => chain);
   const db: any = vi.fn(() => chain);
   db.raw = vi.fn(() => Promise.resolve([[]]));
   db.transaction = vi.fn(async (cb: any) => cb(db));
