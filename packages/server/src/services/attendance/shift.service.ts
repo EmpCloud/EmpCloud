@@ -4,7 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
-import type { CreateShiftInput, BulkAssignShiftInput, ShiftSwapRequestInput } from "@empcloud/shared";
+import type { CreateShiftInput, BulkAssignShiftInput, ShiftSwapRequestInput, UpdateShiftAssignmentInput } from "@empcloud/shared";
 
 export async function createShift(orgId: number, data: CreateShiftInput) {
   const db = getDB();
@@ -26,6 +26,8 @@ export async function createShift(orgId: number, data: CreateShiftInput) {
     grace_minutes_early: data.grace_minutes_early ?? 0,
     is_night_shift: data.is_night_shift ?? false,
     is_default: data.is_default ?? false,
+    working_days: data.working_days ?? "1,2,3,4,5",
+    half_days: data.half_days ?? "",
     is_active: true,
     created_at: new Date(),
     updated_at: new Date(),
@@ -89,25 +91,19 @@ export async function assignShift(
   const user = await db("users").where({ id: data.user_id, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
 
-  // Rule: Prevent overlapping shift assignments for the same employee
-  const overlapQuery = db("shift_assignments")
+  // Auto-end any overlapping open-ended assignments for this employee
+  const newFrom = data.effective_from;
+  const endDate = new Date(newFrom);
+  endDate.setDate(endDate.getDate() - 1);
+  const endStr = endDate.toISOString().split("T")[0];
+
+  await db("shift_assignments")
     .where({ organization_id: orgId, user_id: data.user_id })
-    .where("effective_from", "<=", data.effective_to || "9999-12-31");
-  if (data.effective_to) {
-    overlapQuery.where(function () {
-      this.whereNull("effective_to").orWhere("effective_to", ">=", data.effective_from);
-    });
-  } else {
-    overlapQuery.where(function () {
-      this.whereNull("effective_to").orWhere("effective_to", ">=", data.effective_from);
-    });
-  }
-  const overlapping = await overlapQuery.first();
-  if (overlapping) {
-    throw new ValidationError(
-      "Employee already has an overlapping shift assignment for this date range",
-    );
-  }
+    .whereRaw("DATE(effective_from) <= ?", [newFrom])
+    .where(function () {
+      this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [newFrom]);
+    })
+    .update({ effective_to: endStr, updated_at: new Date() });
 
   const [id] = await db("shift_assignments").insert({
     organization_id: orgId,
@@ -148,6 +144,58 @@ export async function listShiftAssignments(orgId: number, params?: { user_id?: n
 }
 
 // ---------------------------------------------------------------------------
+// Update Shift Assignment
+// ---------------------------------------------------------------------------
+
+export async function updateShiftAssignment(
+  orgId: number,
+  assignmentId: number,
+  data: UpdateShiftAssignmentInput,
+) {
+  const db = getDB();
+
+  const assignment = await db("shift_assignments")
+    .where({ id: assignmentId, organization_id: orgId })
+    .first();
+  if (!assignment) throw new NotFoundError("Shift assignment");
+
+  // If changing shift, verify new shift belongs to org
+  if (data.shift_id && data.shift_id !== assignment.shift_id) {
+    const shift = await db("shifts").where({ id: data.shift_id, organization_id: orgId, is_active: true }).first();
+    if (!shift) throw new NotFoundError("Shift");
+  }
+
+  const updates: Record<string, any> = { updated_at: new Date() };
+  if (data.shift_id !== undefined) updates.shift_id = data.shift_id;
+  if (data.effective_from !== undefined) updates.effective_from = data.effective_from;
+  if (data.effective_to !== undefined) updates.effective_to = data.effective_to;
+
+  await db("shift_assignments").where({ id: assignmentId }).update(updates);
+
+  return db("shift_assignments as sa")
+    .join("shifts as s", "sa.shift_id", "s.id")
+    .join("users as u", "sa.user_id", "u.id")
+    .where("sa.id", assignmentId)
+    .select("sa.*", "s.name as shift_name", "u.first_name", "u.last_name", "u.email")
+    .first();
+}
+
+// ---------------------------------------------------------------------------
+// Delete Shift Assignment
+// ---------------------------------------------------------------------------
+
+export async function deleteShiftAssignment(orgId: number, assignmentId: number) {
+  const db = getDB();
+
+  const assignment = await db("shift_assignments")
+    .where({ id: assignmentId, organization_id: orgId })
+    .first();
+  if (!assignment) throw new NotFoundError("Shift assignment");
+
+  await db("shift_assignments").where({ id: assignmentId }).delete();
+}
+
+// ---------------------------------------------------------------------------
 // Bulk Assign Shifts
 // ---------------------------------------------------------------------------
 
@@ -173,6 +221,21 @@ export async function bulkAssignShifts(
   if (missingIds.length > 0) {
     throw new ValidationError(`Users not found in organization: ${missingIds.join(", ")}`);
   }
+
+  // Auto-end any overlapping open-ended assignments for these employees
+  const newFrom = data.effective_from;
+  const endDate = new Date(newFrom);
+  endDate.setDate(endDate.getDate() - 1);
+  const endStr = endDate.toISOString().split("T")[0];
+
+  await db("shift_assignments")
+    .where({ organization_id: orgId })
+    .whereIn("user_id", data.user_ids)
+    .whereRaw("DATE(effective_from) <= ?", [newFrom])
+    .where(function () {
+      this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [newFrom]);
+    })
+    .update({ effective_to: endStr, updated_at: new Date() });
 
   const rows = data.user_ids.map((userId) => ({
     organization_id: orgId,
@@ -213,9 +276,9 @@ export async function getSchedule(
   const assignments = await db("shift_assignments as sa")
     .join("shifts as s", "sa.shift_id", "s.id")
     .where("sa.organization_id", orgId)
-    .where("sa.effective_from", "<=", params.end_date)
+    .whereRaw("DATE(sa.effective_from) <= ?", [params.end_date])
     .where(function () {
-      this.whereNull("sa.effective_to").orWhere("sa.effective_to", ">=", params.start_date);
+      this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [params.start_date]);
     })
     .select(
       "sa.id as assignment_id",
@@ -227,6 +290,7 @@ export async function getSchedule(
       "s.start_time",
       "s.end_time",
       "s.is_night_shift",
+      "s.working_days",
     );
 
   // Build a map of user_id -> assignments
@@ -267,9 +331,9 @@ export async function getMySchedule(orgId: number, userId: number) {
     .join("shifts as s", "sa.shift_id", "s.id")
     .where("sa.organization_id", orgId)
     .where("sa.user_id", userId)
-    .where("sa.effective_from", "<=", endStr)
+    .whereRaw("DATE(sa.effective_from) <= ?", [endStr])
     .where(function () {
-      this.whereNull("sa.effective_to").orWhere("sa.effective_to", ">=", startStr);
+      this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [startStr]);
     })
     .select(
       "sa.id as assignment_id",
@@ -281,6 +345,7 @@ export async function getMySchedule(orgId: number, userId: number) {
       "s.end_time",
       "s.is_night_shift",
       "s.break_minutes",
+      "s.working_days",
     )
     .orderBy("sa.effective_from", "asc");
 

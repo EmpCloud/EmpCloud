@@ -16,6 +16,7 @@ import {
   updateShiftSchema,
   assignShiftSchema,
   bulkAssignShiftSchema,
+  updateShiftAssignmentSchema,
   shiftSwapRequestSchema,
   shiftScheduleQuerySchema,
   createGeoFenceSchema,
@@ -86,6 +87,45 @@ router.get("/shifts/assignments", authenticate, requireHR, async (req: Request, 
     const shiftId = req.query.shift_id ? Number(req.query.shift_id) : undefined;
     const assignments = await shiftService.listShiftAssignments(req.user!.org_id, { user_id: userId, shift_id: shiftId });
     sendSuccess(res, assignments);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/attendance/shifts/assignments/:id
+router.put("/shifts/assignments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateShiftAssignmentSchema.parse(req.body);
+    const assignment = await shiftService.updateShiftAssignment(req.user!.org_id, paramInt(req.params.id), data);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SHIFT_ASSIGNMENT_UPDATED,
+      resourceType: "shift_assignment",
+      resourceId: String(req.params.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, assignment);
+  } catch (err) { next(err); }
+});
+
+// DELETE /api/v1/attendance/shifts/assignments/:id
+router.delete("/shifts/assignments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await shiftService.deleteShiftAssignment(req.user!.org_id, paramInt(req.params.id));
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SHIFT_ASSIGNMENT_DELETED,
+      resourceType: "shift_assignment",
+      resourceId: String(req.params.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, { message: "Shift assignment removed" });
   } catch (err) { next(err); }
 });
 
@@ -346,6 +386,113 @@ router.get("/monthly-report", authenticate, requireHR, async (req: Request, res:
     const userId = req.query.user_id ? Number(req.query.user_id) : undefined;
     const report = await attendanceService.getMonthlyReport(req.user!.org_id, { month, year, user_id: userId });
     sendSuccess(res, report);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX
+router.get("/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = (await import("../../db/connection.js")).getDB();
+    const orgId = req.user!.org_id;
+    const month = req.query.month ? Number(req.query.month) : undefined;
+    const year = req.query.year ? Number(req.query.year) : undefined;
+    const dateFrom = req.query.date_from as string | undefined;
+    const dateTo = req.query.date_to as string | undefined;
+    const departmentId = req.query.department_id ? Number(req.query.department_id) : undefined;
+    const employeeId = req.query.employee_id ? Number(req.query.employee_id) : undefined;
+    const status = req.query.status as string | undefined;
+
+    let query = db("attendance_records as ar")
+      .join("users as u", function () { this.on("ar.user_id", "u.id").andOn("ar.organization_id", "u.organization_id"); })
+      .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
+      .leftJoin("shifts as s", "ar.shift_id", "s.id")
+      .where("ar.organization_id", orgId)
+      .where("u.status", 1)
+      .whereNot("u.role", "super_admin");
+
+    if (dateFrom) {
+      query = query.where("ar.date", ">=", dateFrom);
+      if (dateTo) query = query.where("ar.date", "<=", dateTo);
+    } else if (month && year) {
+      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
+      query = query.whereBetween("ar.date", [startDate, endDate]);
+    }
+    if (departmentId) query = query.where("u.department_id", departmentId);
+    if (employeeId) query = query.where("ar.user_id", employeeId);
+    if (status) query = query.where("ar.status", status);
+
+    const records = await query.select(
+      "ar.id",
+      "ar.user_id",
+      "u.first_name",
+      "u.last_name",
+      "u.email",
+      "u.emp_code",
+      "dept.name as department_name",
+      "u.designation",
+      "ar.date",
+      "ar.check_in",
+      "ar.check_out",
+      "ar.worked_minutes",
+      "ar.overtime_minutes",
+      "ar.late_minutes",
+      "ar.early_departure_minutes",
+      "ar.status",
+      "s.name as shift_name",
+      "s.start_time as shift_start",
+      "s.end_time as shift_end",
+    ).orderBy([{ column: "u.first_name", order: "asc" }, { column: "ar.date", order: "asc" }]);
+
+    sendSuccess(res, records);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/export/consolidated — Consolidated employee-wise summary
+router.get("/export/consolidated", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = (await import("../../db/connection.js")).getDB();
+    const orgId = req.user!.org_id;
+    const month = req.query.month ? Number(req.query.month) : new Date().getMonth() + 1;
+    const year = req.query.year ? Number(req.query.year) : new Date().getFullYear();
+    const departmentId = req.query.department_id ? Number(req.query.department_id) : undefined;
+
+    const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+    const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
+    const totalWorkingDays = new Date(year, month, 0).getDate();
+
+    let query = db("attendance_records as ar")
+      .join("users as u", "ar.user_id", "u.id")
+      .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
+      .where("ar.organization_id", orgId)
+      .where("u.status", 1)
+      .whereNot("u.role", "super_admin")
+      .whereBetween("ar.date", [startDate, endDate]);
+
+    if (departmentId) query = query.where("u.department_id", departmentId);
+
+    const records = await query.select(
+      "ar.user_id",
+      "u.first_name",
+      "u.last_name",
+      "u.email",
+      "u.emp_code",
+      "u.designation",
+      "dept.name as department_name",
+      db.raw("COUNT(*) as total_records"),
+      db.raw("SUM(CASE WHEN ar.status IN ('present','checked_in') THEN 1 ELSE 0 END) as present_days"),
+      db.raw("SUM(CASE WHEN ar.status = 'half_day' THEN 1 ELSE 0 END) as half_days"),
+      db.raw("SUM(CASE WHEN ar.status = 'absent' THEN 1 ELSE 0 END) as absent_days"),
+      db.raw("SUM(CASE WHEN ar.status = 'on_leave' THEN 1 ELSE 0 END) as leave_days"),
+      db.raw("SUM(COALESCE(ar.worked_minutes, 0)) as total_worked_minutes"),
+      db.raw("SUM(COALESCE(ar.overtime_minutes, 0)) as total_overtime_minutes"),
+      db.raw("SUM(COALESCE(ar.late_minutes, 0)) as total_late_minutes"),
+      db.raw("SUM(COALESCE(ar.early_departure_minutes, 0)) as total_early_departure_minutes"),
+      db.raw("COUNT(CASE WHEN ar.late_minutes > 0 THEN 1 END) as late_count"),
+      db.raw("AVG(CASE WHEN ar.worked_minutes > 0 THEN ar.worked_minutes END) as avg_worked_minutes"),
+    ).groupBy("ar.user_id", "u.first_name", "u.last_name", "u.email", "u.emp_code", "u.designation", "dept.name");
+
+    sendSuccess(res, { month, year, total_working_days: totalWorkingDays, report: records });
   } catch (err) { next(err); }
 });
 

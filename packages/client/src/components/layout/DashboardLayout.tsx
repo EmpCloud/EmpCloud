@@ -107,14 +107,6 @@ export default function DashboardLayout() {
           {isHR && (
             <NavSection label={t('nav.positions')} items={positionNavItems} location={location} t={t} />
           )}
-          <NavSection label={t('nav.forum')} items={isHR ? forumHRNavItems : forumNavItems} location={location} t={t} />
-          <NavSection label={t('nav.events')} items={isHR ? eventHRNavItems : eventNavItems} location={location} t={t} />
-          <NavSection label={t('nav.whistleblowing')} items={isHR ? whistleblowingHRNavItems : whistleblowingNavItems} location={location} t={t} />
-          <NavSection label={t('nav.helpdesk')} items={isHR ? helpdeskHRNavItems : helpdeskNavItems} location={location} t={t} />
-          <NavSection label={t('nav.surveys')} items={isHR ? surveyHRNavItems : surveyNavItems} location={location} t={t} />
-          <NavSection label={t('nav.wellness')} items={isHR ? wellnessHRNavItems : wellnessNavItems} location={location} t={t} />
-          <NavSection label={t('nav.assets')} items={isHR ? assetHRNavItems : assetNavItems} location={location} t={t} />
-          <NavSection label={t('nav.feedback')} items={isHR ? feedbackHRNavItems : feedbackNavItems} location={location} t={t} />
           {hasBiometrics && (
             <NavSection label={t('nav.biometrics')} items={biometricsNavItems} location={location} t={t} />
           )}

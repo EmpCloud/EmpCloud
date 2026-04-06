@@ -128,10 +128,11 @@ export default function AttendancePage() {
               {todayRecord?.status && (
                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                   todayRecord.status === "present" ? "bg-green-50 text-green-700"
+                    : todayRecord.status === "checked_in" ? "bg-brand-50 text-brand-700"
                     : todayRecord.status === "half_day" ? "bg-yellow-50 text-yellow-700"
                     : "bg-gray-100 text-gray-700"
                 }`}>
-                  {todayRecord.status.replace(/_/g, " ")}
+                  {todayRecord.status === "checked_in" ? "checked in" : todayRecord.status.replace(/_/g, " ")}
                 </span>
               )}
             </>
@@ -305,14 +306,15 @@ export default function AttendancePage() {
                   <td className="px-6 py-4">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                       r.status === "present" ? "bg-green-50 text-green-700"
+                        : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
                         : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
                         : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
                         : "bg-red-50 text-red-700"
                     }`}>
-                      {r.status.replace(/_/g, " ")}
+                      {r.status === "checked_in" ? "checked in" : r.status.replace(/_/g, " ")}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${r.late_minutes}m` : "-"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
                 </tr>
               ))
             )}

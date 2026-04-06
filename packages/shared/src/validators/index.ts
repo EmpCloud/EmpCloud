@@ -402,6 +402,8 @@ const shiftBaseSchema = z.object({
   grace_minutes_early: z.number().int().min(0).default(0),
   is_night_shift: z.boolean().default(false),
   is_default: z.boolean().default(false),
+  working_days: z.string().default("1,2,3,4,5"), // comma-separated: 0=Sun,1=Mon,...6=Sat
+  half_days: z.string().default(""), // comma-separated day numbers for half-day
 });
 
 export const createShiftSchema = shiftBaseSchema.refine(
@@ -430,6 +432,12 @@ export const bulkAssignShiftSchema = z.object({
   user_ids: z.array(z.number().int().positive()).min(1),
   shift_id: z.number().int().positive(),
   effective_from: z.string(),
+  effective_to: z.string().optional().nullable(),
+});
+
+export const updateShiftAssignmentSchema = z.object({
+  shift_id: z.number().int().positive().optional(),
+  effective_from: z.string().optional(),
   effective_to: z.string().optional().nullable(),
 });
 
@@ -632,6 +640,7 @@ export type CreateLeaveTypeInput = z.infer<typeof createLeaveTypeSchema>;
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;
 export type CreatePolicyInput = z.infer<typeof createPolicySchema>;
 export type BulkAssignShiftInput = z.infer<typeof bulkAssignShiftSchema>;
+export type UpdateShiftAssignmentInput = z.infer<typeof updateShiftAssignmentSchema>;
 export type ShiftSwapRequestInput = z.infer<typeof shiftSwapRequestSchema>;
 export type RejectDocumentInput = z.infer<typeof rejectDocumentSchema>;
 
