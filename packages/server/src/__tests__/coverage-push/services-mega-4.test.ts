@@ -327,7 +327,6 @@ describe("OnboardingService — deep coverage", () => {
       country: "India",
       state: "Maharashtra",
       city: "Mumbai",
-      language: "en",
       name: "TechNova Solutions",
       contact_number: "+911234567890",
       website: "https://technova.in",
