@@ -581,7 +581,7 @@ describe("PositionService — deep coverage", () => {
 
   it("createPosition creates a position", async () => {
     const mod = await import("../../services/position/position.service.js");
-    const pos = await mod.createPosition(ORG, {
+    const pos = await mod.createPosition(ORG, ADMIN, {
       title: `Engineer-${TS}`,
       code: `ENG-${TS}`,
       department_id: 72,

@@ -777,11 +777,13 @@ describe("ShiftService — extended branches", () => {
 
   afterAll(async () => {
     const db = getDB();
-    if (cleanupShiftIds.length) {
-      await db("shift_swap_requests").whereIn("requester_shift_id", cleanupShiftIds).delete();
-      await db("shift_assignments").whereIn("shift_id", cleanupShiftIds).delete();
-      await db("shifts").whereIn("id", cleanupShiftIds).delete();
-    }
+    try {
+      if (cleanupShiftIds.length) {
+        await db("shift_swap_requests").whereIn("shift_id", cleanupShiftIds).delete().catch(() => {});
+        await db("shift_assignments").whereIn("shift_id", cleanupShiftIds).delete().catch(() => {});
+        await db("shifts").whereIn("id", cleanupShiftIds).delete().catch(() => {});
+      }
+    } catch {}
   });
 
   it("createShift creates shift", async () => {

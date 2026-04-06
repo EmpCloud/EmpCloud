@@ -104,25 +104,25 @@ describe("SuperAdminService — deep coverage", () => {
 
   it("getOrgList returns paginated list", async () => {
     const mod = await import("../../services/admin/super-admin.service.js");
-    const result = await mod.getOrgList({ page: 1, perPage: 10 });
+    const result = await mod.getOrgList({ page: 1, per_page: 10 });
     expect(result).toBeTruthy();
     expect(typeof result).toBe("object");
-    // Uses "orgs" not "organizations"
-    expect(result).toHaveProperty("orgs");
+    expect(result).toHaveProperty("data");
     expect(result).toHaveProperty("total");
+    expect(Array.isArray(result.data)).toBe(true);
   });
 
   it("getOrgList with search filter", async () => {
     const mod = await import("../../services/admin/super-admin.service.js");
-    const result = await mod.getOrgList({ page: 1, perPage: 10, search: "TechNova" });
-    expect(result).toHaveProperty("orgs");
+    const result = await mod.getOrgList({ page: 1, per_page: 10, search: "TechNova" });
+    expect(result).toHaveProperty("data");
     expect(result).toHaveProperty("total");
   });
 
   it("getOrgList with status filter", async () => {
     const mod = await import("../../services/admin/super-admin.service.js");
-    const result = await mod.getOrgList({ page: 1, perPage: 10, status: "active" });
-    expect(result).toHaveProperty("orgs");
+    const result = await mod.getOrgList({ page: 1, per_page: 10 });
+    expect(result).toHaveProperty("data");
   });
 
   it("getOrgDetail returns org details", async () => {
