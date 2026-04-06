@@ -120,10 +120,12 @@ describe("Subscription Service Coverage", () => {
 
     it("creates fresh subscription", async () => {
       const mc = getChain();
+      // Override first to return controlled results then a fallback
+      mc.first.mockImplementation(() => Promise.resolve({ id: 1, status: "active", name: "Payroll" }));
       mc.first
-        .mockResolvedValueOnce(null) // existing sub
-        .mockResolvedValueOnce({ id: 1, name: "Payroll" }) // module
-        .mockResolvedValueOnce({ id: 1, status: "active" }); // getSubscription
+        .mockResolvedValueOnce(null) // existing sub check
+        .mockResolvedValueOnce({ id: 1, name: "Payroll" }); // module lookup
+      // All subsequent first() calls return the subscription
       mc.insert.mockResolvedValueOnce([1]);
       const r = await createSubscription(1, { module_id: 1, plan_tier: "starter", total_seats: 10, billing_cycle: "monthly" } as any);
       expect(r).toBeTruthy();
@@ -131,10 +133,10 @@ describe("Subscription Service Coverage", () => {
 
     it("reactivates cancelled sub", async () => {
       const mc = getChain();
+      mc.first.mockImplementation(() => Promise.resolve({ id: 5, status: "active", name: "Payroll" }));
       mc.first
-        .mockResolvedValueOnce({ id: 5, status: "cancelled" })
-        .mockResolvedValueOnce({ id: 1, name: "Payroll" })
-        .mockResolvedValueOnce({ id: 5, status: "active" });
+        .mockResolvedValueOnce({ id: 5, status: "cancelled" }) // existing cancelled
+        .mockResolvedValueOnce({ id: 1, name: "Payroll" }); // module
       mc.update.mockResolvedValue(1);
       const r = await createSubscription(1, { module_id: 1, plan_tier: "starter", total_seats: 5, billing_cycle: "quarterly" } as any);
       expect(r).toBeTruthy();
@@ -142,10 +144,10 @@ describe("Subscription Service Coverage", () => {
 
     it("creates trial sub", async () => {
       const mc = getChain();
+      mc.first.mockImplementation(() => Promise.resolve({ id: 1, status: "trial", name: "LMS" }));
       mc.first
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({ id: 1, name: "LMS" })
-        .mockResolvedValueOnce({ id: 1, status: "trial" });
+        .mockResolvedValueOnce(null) // existing
+        .mockResolvedValueOnce({ id: 1, name: "LMS" }); // module
       mc.insert.mockResolvedValueOnce([1]);
       const r = await createSubscription(1, { module_id: 1, plan_tier: "starter", total_seats: 5, trial_days: 14, billing_cycle: "annual" } as any);
       expect(r).toBeTruthy();
@@ -167,9 +169,7 @@ describe("Subscription Service Coverage", () => {
 
     it("updates with plan_tier", async () => {
       const mc = getChain();
-      mc.first
-        .mockResolvedValueOnce({ id: 1, used_seats: 2, status: "active" })
-        .mockResolvedValueOnce({ id: 1, status: "active" });
+      mc.first.mockImplementation(() => Promise.resolve({ id: 1, used_seats: 2, status: "active" }));
       mc.update.mockResolvedValue(1);
       const r = await updateSubscription(1, 1, { plan_tier: "pro", total_seats: 20 } as any);
       expect(r).toBeTruthy();
@@ -179,9 +179,8 @@ describe("Subscription Service Coverage", () => {
   describe("cancelSubscription", () => {
     it("cancels", async () => {
       const mc = getChain();
-      mc.first
-        .mockResolvedValueOnce({ id: 1, status: "active" })
-        .mockResolvedValueOnce({ id: 1, status: "cancelled" });
+      mc.first.mockImplementation(() => Promise.resolve({ id: 1, status: "cancelled" }));
+      mc.first.mockResolvedValueOnce({ id: 1, status: "active" }); // getSubscription check
       mc.update.mockResolvedValue(1);
       const r = await cancelSubscription(1, 1);
       expect(r).toBeTruthy();
