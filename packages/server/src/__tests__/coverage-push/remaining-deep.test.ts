@@ -1,20 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 function buildMockDB() {
-  const chain: any = new Proxy({} as any, {
-    get(_target: any, prop: string) {
-      if (prop === "then" || prop === "catch") return undefined;
-      if (!_target[prop]) {
-        _target[prop] = vi.fn(function() { return chain; });
-      }
-      return _target[prop];
-    }
-  });
+  const chain: any = {};
+  const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn","orWhere","orWhereRaw","groupBy","having","as","whereNotNull","whereBetween","sum","max","min","avg"];
+  chainMethods.forEach(m => { chain[m] = vi.fn(() => chain); });
   chain.first = vi.fn(() => Promise.resolve(null));
   chain.insert = vi.fn(() => Promise.resolve([1]));
   chain.update = vi.fn(() => Promise.resolve(1));
   chain.delete = vi.fn(() => Promise.resolve(1));
-  chain.count = vi.fn(() => chain);
+  chain.count = vi.fn(() => Promise.resolve([{ count: 0 }]));
   chain.increment = vi.fn(() => Promise.resolve(1));
   chain.decrement = vi.fn(() => Promise.resolve(1));
   const db: any = vi.fn(() => chain);
@@ -45,11 +39,13 @@ vi.mock("../audit/audit.service", () => ({ logAudit: vi.fn(() => Promise.resolve
 
 function reset() {
   vi.clearAllMocks();
+  const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn","orWhere","orWhereRaw","groupBy","having","as","whereNotNull","whereBetween","sum","max","min","avg"];
+  chainMethods.forEach(m => { c[m].mockReset().mockReturnValue(c); });
   c.first.mockReset().mockResolvedValue(null);
   c.insert.mockReset().mockResolvedValue([1]);
   c.update.mockReset().mockResolvedValue(1);
   c.delete.mockReset().mockResolvedValue(1);
-  c.count.mockReset().mockReturnValue(c);
+  c.count.mockReset().mockResolvedValue([{ count: 0 }]);
   c.increment.mockReset().mockResolvedValue(1);
   c.decrement.mockReset().mockResolvedValue(1);
 }
@@ -683,12 +679,11 @@ describe("Attendance Service Coverage", () => {
 
   describe("getDashboard", () => {
     it("returns dashboard", async () => {
-      // getDashboard uses count("* as count") which chains into first()
-      c.first
-        .mockResolvedValueOnce({ count: 100 })
-        .mockResolvedValueOnce({ count: 80 })
-        .mockResolvedValueOnce({ count: 5 })
-        .mockResolvedValueOnce({ count: 15 });
+      c.count
+        .mockResolvedValueOnce([{ count: 100 }])
+        .mockResolvedValueOnce([{ count: 80 }])
+        .mockResolvedValueOnce([{ count: 5 }])
+        .mockResolvedValueOnce([{ count: 15 }]);
       const r = await getDashboard(1);
       expect(r).toBeTruthy();
     });

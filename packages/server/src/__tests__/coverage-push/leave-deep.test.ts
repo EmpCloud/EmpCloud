@@ -1,21 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Proxy-based mock: all methods return chain, terminal methods return Promises
 function buildMockDB() {
-  const chain: any = new Proxy({} as any, {
-    get(_target: any, prop: string) {
-      if (prop === "then" || prop === "catch") return undefined;
-      if (!_target[prop]) {
-        _target[prop] = vi.fn(function() { return chain; });
-      }
-      return _target[prop];
-    }
-  });
+  const chain: any = {};
+  const chainMethods = ["select","where","whereIn","whereNotIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone"];
+  chainMethods.forEach(m => { chain[m] = vi.fn(() => chain); });
   chain.first = vi.fn(() => Promise.resolve(null));
   chain.insert = vi.fn(() => Promise.resolve([1]));
   chain.update = vi.fn(() => Promise.resolve(1));
   chain.delete = vi.fn(() => Promise.resolve(1));
-  chain.count = vi.fn(() => chain);
+  chain.count = vi.fn(() => Promise.resolve([{ count: 0 }]));
   chain.increment = vi.fn(() => Promise.resolve(1));
   chain.decrement = vi.fn(() => Promise.resolve(1));
   const db: any = vi.fn(() => chain);
@@ -57,11 +50,13 @@ import * as balanceService from "../../services/leave/leave-balance.service.js";
 describe("Leave Application Service Coverage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    const chainMethods = ["select","where","whereIn","whereNotIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone"];
+    chainMethods.forEach(m => { mockChain[m].mockReset().mockReturnValue(mockChain); });
     mockChain.first.mockReset().mockResolvedValue(null);
     mockChain.insert.mockReset().mockResolvedValue([1]);
     mockChain.update.mockReset().mockResolvedValue(1);
     mockChain.delete.mockReset().mockResolvedValue(1);
-    mockChain.count.mockReset().mockReturnValue(mockChain);
+    mockChain.count.mockReset().mockResolvedValue([{ count: 0 }]);
     mockChain.increment.mockReset().mockResolvedValue(1);
     mockChain.decrement.mockReset().mockResolvedValue(1);
   });
@@ -301,14 +296,13 @@ describe("Leave Application Service Coverage", () => {
   // ---- listApplications ----
   describe("listApplications", () => {
     it("lists with default params", async () => {
-      // count() -> clone() -> count() resolves via first chain
-      mockChain.first.mockResolvedValueOnce({ count: 0 });
+      mockChain.count.mockResolvedValueOnce([{ count: 0 }]);
       const r = await listApplications(1, {});
       expect(r).toBeTruthy();
     });
 
     it("lists with all filters", async () => {
-      mockChain.first.mockResolvedValueOnce({ count: 2 });
+      mockChain.count.mockResolvedValueOnce([{ count: 2 }]);
       const r = await listApplications(1, { page: 1, perPage: 10, status: "pending", leaveTypeId: 1, userId: 1 });
       expect(r).toBeTruthy();
     });
@@ -352,11 +346,13 @@ import {
 describe("Comp-Off Service Coverage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    const chainMethods = ["select","where","whereIn","whereNotIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone"];
+    chainMethods.forEach(m => { mockChain[m].mockReset().mockReturnValue(mockChain); });
     mockChain.first.mockReset().mockResolvedValue(null);
     mockChain.insert.mockReset().mockResolvedValue([1]);
     mockChain.update.mockReset().mockResolvedValue(1);
     mockChain.delete.mockReset().mockResolvedValue(1);
-    mockChain.count.mockReset().mockReturnValue(mockChain);
+    mockChain.count.mockReset().mockResolvedValue([{ count: 0 }]);
     mockChain.increment.mockReset().mockResolvedValue(1);
     mockChain.decrement.mockReset().mockResolvedValue(1);
   });
@@ -382,14 +378,13 @@ describe("Comp-Off Service Coverage", () => {
 
   describe("listCompOffs", () => {
     it("lists with defaults", async () => {
-      // count chains to first which returns count result
-      mockChain.first.mockResolvedValueOnce({ count: 0 });
+      mockChain.count.mockResolvedValueOnce([{ count: 0 }]);
       const r = await listCompOffs(1, {});
       expect(r.total).toBe(0);
     });
 
     it("lists with all filters", async () => {
-      mockChain.first.mockResolvedValueOnce({ count: 1 });
+      mockChain.count.mockResolvedValueOnce([{ count: 1 }]);
       const r = await listCompOffs(1, { page: 2, perPage: 5, userId: 1, status: "pending" });
       expect(r.total).toBe(1);
     });

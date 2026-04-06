@@ -1,20 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../db/connection", () => {
-  const chain: any = new Proxy({} as any, {
-    get(_target: any, prop: string) {
-      if (prop === "then" || prop === "catch") return undefined;
-      if (!_target[prop]) {
-        _target[prop] = vi.fn(function() { return chain; });
-      }
-      return _target[prop];
-    }
-  });
+  const chain: any = {};
+  const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn"];
+  chainMethods.forEach(m => { chain[m] = vi.fn(() => chain); });
   chain.first = vi.fn(() => Promise.resolve(null));
   chain.insert = vi.fn(() => Promise.resolve([1]));
   chain.update = vi.fn(() => Promise.resolve(1));
   chain.delete = vi.fn(() => Promise.resolve(1));
-  chain.count = vi.fn(() => chain);
+  chain.count = vi.fn(() => Promise.resolve([{ count: 0 }]));
   const db: any = vi.fn(() => chain);
   db.raw = vi.fn(() => Promise.resolve([[], []]));
   db.transaction = vi.fn((cb: any) => cb(db));
@@ -78,6 +72,13 @@ describe("OAuth Service Coverage", () => {
     vi.clearAllMocks();
     const db: any = getDB();
     chain = db._chain;
+    const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn"];
+    chainMethods.forEach(m => { chain[m].mockReset().mockReturnValue(chain); });
+    chain.first.mockReset().mockResolvedValue(null);
+    chain.insert.mockReset().mockResolvedValue([1]);
+    chain.update.mockReset().mockResolvedValue(1);
+    chain.delete.mockReset().mockResolvedValue(1);
+    chain.count.mockReset().mockResolvedValue([{ count: 0 }]);
   });
 
   describe("findClientById", () => {

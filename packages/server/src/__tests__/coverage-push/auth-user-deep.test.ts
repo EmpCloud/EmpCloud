@@ -1,20 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 function buildMockDB() {
-  const chain: any = new Proxy({} as any, {
-    get(_target: any, prop: string) {
-      if (prop === "then" || prop === "catch") return undefined;
-      if (!_target[prop]) {
-        _target[prop] = vi.fn(function() { return chain; });
-      }
-      return _target[prop];
-    }
-  });
+  const chain: any = {};
+  const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn","orWhere","orWhereRaw"];
+  chainMethods.forEach(m => { chain[m] = vi.fn(() => chain); });
   chain.first = vi.fn(() => Promise.resolve(null));
   chain.insert = vi.fn(() => Promise.resolve([1]));
   chain.update = vi.fn(() => Promise.resolve(1));
   chain.delete = vi.fn(() => Promise.resolve(1));
-  chain.count = vi.fn(() => chain);
+  chain.count = vi.fn(() => Promise.resolve([{ count: 0 }]));
   chain.increment = vi.fn(() => Promise.resolve(1));
   chain.decrement = vi.fn(() => Promise.resolve(1));
   const db: any = vi.fn(() => chain);
@@ -63,11 +57,13 @@ vi.mock("../subscription/subscription.service", () => ({
 }));
 
 function resetChain() {
+  const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn","orWhere","orWhereRaw"];
+  chainMethods.forEach(m => { mockChain[m].mockReset().mockReturnValue(mockChain); });
   mockChain.first.mockReset().mockResolvedValue(null);
   mockChain.insert.mockReset().mockResolvedValue([1]);
   mockChain.update.mockReset().mockResolvedValue(1);
   mockChain.delete.mockReset().mockResolvedValue(1);
-  mockChain.count.mockReset().mockReturnValue(mockChain);
+  mockChain.count.mockReset().mockResolvedValue([{ count: 0 }]);
   mockChain.increment.mockReset().mockResolvedValue(1);
   mockChain.decrement.mockReset().mockResolvedValue(1);
 }
@@ -232,13 +228,13 @@ describe("User Service Coverage", () => {
 
   describe("listUsers", () => {
     it("lists with default params", async () => {
-      mockChain.first.mockResolvedValueOnce({ count: 0 });
+      mockChain.count.mockResolvedValueOnce([{ count: 0 }]);
       const r = await listUsers(1);
       expect(r.total).toBe(0);
     });
 
     it("lists with search and include_inactive", async () => {
-      mockChain.first.mockResolvedValueOnce({ count: 1 });
+      mockChain.count.mockResolvedValueOnce([{ count: 1 }]);
       // We need to handle the where callback for search
       mockChain.where.mockImplementation(function(this: any, arg: any) {
         if (typeof arg === "function") arg.call(mockChain);
@@ -351,20 +347,20 @@ describe("User Service Coverage", () => {
     });
 
     it("throws with pending items", async () => {
-      mockChain.first
-        .mockResolvedValueOnce({ id: 1 }) // user
-        .mockResolvedValueOnce({ count: 2 }) // pending leaves count
-        .mockResolvedValueOnce({ count: 0 }) // assets count
-        .mockResolvedValueOnce({ count: 0 }); // tickets count
+      mockChain.first.mockResolvedValueOnce({ id: 1 }); // user
+      mockChain.count
+        .mockResolvedValueOnce([{ count: 2 }]) // pending leaves
+        .mockResolvedValueOnce([{ count: 0 }]) // assets
+        .mockResolvedValueOnce([{ count: 0 }]); // tickets
       await expect(deactivateUser(1, 1)).rejects.toThrow("pending items");
     });
 
     it("deactivates successfully", async () => {
-      mockChain.first
-        .mockResolvedValueOnce({ id: 1 })
-        .mockResolvedValueOnce({ count: 0 })
-        .mockResolvedValueOnce({ count: 0 })
-        .mockResolvedValueOnce({ count: 0 });
+      mockChain.first.mockResolvedValueOnce({ id: 1 });
+      mockChain.count
+        .mockResolvedValueOnce([{ count: 0 }])
+        .mockResolvedValueOnce([{ count: 0 }])
+        .mockResolvedValueOnce([{ count: 0 }]);
       mockChain.update.mockResolvedValue(1);
       mockChain.decrement.mockResolvedValue(1);
       await deactivateUser(1, 1);
@@ -375,34 +371,33 @@ describe("User Service Coverage", () => {
     it("throws on existing user", async () => {
       mockChain.first
         .mockResolvedValueOnce({ id: 1, total_allowed_user_count: 100, current_user_count: 1 })
-        .mockResolvedValueOnce({ count: 0 }) // pending invitations count
         .mockResolvedValueOnce({ id: 1 }); // existing user
+      mockChain.count.mockResolvedValueOnce([{ count: 0 }]);
       await expect(inviteUser(1, 1, { email: "dup@a.com", role: "employee" } as any)).rejects.toThrow("already exists");
     });
 
     it("throws on existing pending invite", async () => {
       mockChain.first
         .mockResolvedValueOnce({ id: 1, total_allowed_user_count: 100, current_user_count: 1 })
-        .mockResolvedValueOnce({ count: 0 }) // count
         .mockResolvedValueOnce(null) // no existing user
         .mockResolvedValueOnce({ id: 1 }); // pending invite
+      mockChain.count.mockResolvedValueOnce([{ count: 0 }]);
       await expect(inviteUser(1, 1, { email: "a@a.com", role: "employee" } as any)).rejects.toThrow("already been sent");
     });
 
     it("throws on seat limit", async () => {
-      mockChain.first
-        .mockResolvedValueOnce({ id: 1, total_allowed_user_count: 5, current_user_count: 4 })
-        .mockResolvedValueOnce({ count: 1 }); // 4+1 = 5 = limit
+      mockChain.first.mockResolvedValueOnce({ id: 1, total_allowed_user_count: 5, current_user_count: 4 });
+      mockChain.count.mockResolvedValueOnce([{ count: 1 }]); // 4+1 = 5 = limit
       await expect(inviteUser(1, 1, { email: "a@a.com", role: "employee" } as any)).rejects.toThrow("user limit");
     });
 
     it("creates invitation", async () => {
       mockChain.first
         .mockResolvedValueOnce({ id: 1, total_allowed_user_count: 100, current_user_count: 1 })
-        .mockResolvedValueOnce({ count: 0 }) // count
         .mockResolvedValueOnce(null) // no existing user
         .mockResolvedValueOnce(null) // no pending invite
         .mockResolvedValueOnce({ id: 1, email: "a@a.com" }); // invitation
+      mockChain.count.mockResolvedValueOnce([{ count: 0 }]);
       mockChain.insert.mockResolvedValue([1]);
       const r = await inviteUser(1, 1, { email: "a@a.com", role: "employee" } as any);
       expect(r.token).toBe("mock-hex-token");
