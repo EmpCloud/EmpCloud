@@ -38,7 +38,7 @@ vi.mock("../../config/index", () => ({
   },
 }));
 
-vi.mock("./jwt.service", () => ({
+vi.mock("../../services/oauth/jwt.service", () => ({
   signAccessToken: vi.fn(() => "mock-access-token"),
   signIDToken: vi.fn(() => "mock-id-token"),
   parseExpiry: vi.fn((s: string) => {
@@ -74,11 +74,11 @@ describe("OAuth Service Coverage", () => {
     chain = db._chain;
     const chainMethods = ["select","where","whereIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone","whereNotIn"];
     chainMethods.forEach(m => { chain[m].mockReset().mockReturnValue(chain); });
-    chain.first.mockReset().mockResolvedValue(null);
-    chain.insert.mockReset().mockResolvedValue([1]);
-    chain.update.mockReset().mockResolvedValue(1);
-    chain.delete.mockReset().mockResolvedValue(1);
-    chain.count.mockReset().mockResolvedValue([{ count: 0 }]);
+    chain.first.mockReset().mockImplementation(() => Promise.resolve(null));
+    chain.insert.mockReset().mockImplementation(() => Promise.resolve([1]));
+    chain.update.mockReset().mockImplementation(() => Promise.resolve(1));
+    chain.delete.mockReset().mockImplementation(() => Promise.resolve(1));
+    chain.count.mockReset().mockImplementation(() => Promise.resolve([{ count: 0 }]));
   });
 
   describe("findClientById", () => {
