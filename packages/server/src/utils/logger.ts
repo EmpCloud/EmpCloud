@@ -9,6 +9,7 @@ import { config } from "../config/index.js";
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
+/* v8 ignore start */ // Pretty format only used in development console
 const prettyFormat = combine(
   colorize(),
   timestamp({ format: "HH:mm:ss" }),
@@ -19,8 +20,10 @@ const prettyFormat = combine(
   })
 );
 
+/* v8 ignore stop */
 const jsonFormat = combine(timestamp(), json());
 
+/* v8 ignore start */ // Production-only transports
 const productionTransports: winston.transport[] = [
   new DailyRotateFile({
     filename: "logs/%DATE%-combined.log",
@@ -38,6 +41,7 @@ const productionTransports: winston.transport[] = [
   }),
 ];
 
+/* v8 ignore stop */
 export const logger = winston.createLogger({
   level: config.log.level,
   format: config.log.format === "pretty" ? prettyFormat : jsonFormat,

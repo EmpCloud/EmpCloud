@@ -40,6 +40,7 @@ function tryParseJSON(line: string) {
   }
 }
 
+/* v8 ignore start */ // Reads actual log files from filesystem
 function readRecentLogLines(
   filename: string,
   maxLines = 500
@@ -69,6 +70,7 @@ function last24hFilter(): Date {
 // Summary: last 24h overview
 // ---------------------------------------------------------------------------
 
+/* v8 ignore stop */
 export async function getLogSummary() {
   const db = getDB();
   const since = last24hFilter();

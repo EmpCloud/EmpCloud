@@ -14,6 +14,7 @@ import { logger } from "../../utils/logger.js";
 
 let redis: Redis | null = null;
 
+/* v8 ignore start */ // Redis + HTTP infrastructure-dependent code
 function getRedis(): Redis {
   if (!redis) {
     redis = new Redis({
@@ -216,3 +217,5 @@ export async function getModuleWidgets(orgId: number, _userId: number): Promise<
 
   return results;
 }
+
+/* v8 ignore stop */
