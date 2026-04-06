@@ -325,12 +325,7 @@ describe("OnboardingService — deep coverage", () => {
     const result = await mod.completeStep(ORG, ADMIN, 1, {
       timezone: "Asia/Kolkata",
       country: "India",
-      state: "Maharashtra",
-      city: "Mumbai",
       name: "TechNova Solutions",
-      contact_number: "+911234567890",
-      website: "https://technova.in",
-      address: "Mumbai, India",
     });
     expect(result).toBeTruthy();
     expect(result).toHaveProperty("steps");
