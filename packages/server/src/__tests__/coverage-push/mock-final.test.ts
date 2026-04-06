@@ -21,6 +21,10 @@ process.env.OAUTH_ACCESS_TOKEN_EXPIRY = "1h";
 process.env.OAUTH_REFRESH_TOKEN_EXPIRY = "7d";
 process.env.OAUTH_AUTH_CODE_EXPIRY = "10m";
 process.env.BILLING_GRACE_PERIOD_DAYS = "5";
+// Disable AI providers to prevent chatbot from calling real APIs
+process.env.ANTHROPIC_API_KEY = "";
+process.env.OPENAI_API_KEY = "";
+process.env.GEMINI_API_KEY = "";
 
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { initDB, closeDB, getDB } from "../../db/connection.js";
