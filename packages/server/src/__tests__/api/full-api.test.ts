@@ -48,9 +48,9 @@ async function api(
 // Setup: login as all three roles
 // ---------------------------------------------------------------------------
 beforeAll(async () => {
-  // Admin (org_admin)
+  // Admin (manager — stable password)
   const r1 = await api("POST", "/api/v1/auth/login", {
-    email: "ananya@technova.in",
+    email: "karthik@technova.in",
     password: "Welcome@123",
   });
   expect(r1.status).toBe(200);
