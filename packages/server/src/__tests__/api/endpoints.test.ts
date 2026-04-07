@@ -64,7 +64,7 @@ describe("API Endpoints - Live Server", () => {
     it("POST /auth/login returns user info with tokens", async () => {
       const { data } = await login("priya@technova.in", "Welcome@123");
       expect(data.data.user).toBeDefined();
-      expect(data.data.user.email).toBe("ananya@technova.in");
+      expect(data.data.user.email).toBe("priya@technova.in");
       expect(data.data.user.password).toBeUndefined(); // password should not be returned
     });
   });

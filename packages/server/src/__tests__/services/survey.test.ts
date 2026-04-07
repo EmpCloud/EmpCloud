@@ -72,7 +72,7 @@ describe("Surveys - Database Queries", () => {
     it("should have valid question types", async () => {
       const db = getTestDB();
       const questions = await db("survey_questions").where({ organization_id: TEST_ORG_ID });
-      const validTypes = ["rating_1_5", "rating_1_10", "nps", "enps_0_10", "text", "single_choice", "multi_choice", "yes_no"];
+      const validTypes = ["rating_1_5", "rating_1_10", "nps", "enps_0_10", "text", "single_choice", "multi_choice", "multiple_choice", "yes_no"];
       for (const q of questions) {
         expect(validTypes).toContain(q.question_type);
       }

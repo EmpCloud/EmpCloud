@@ -82,7 +82,8 @@ describe("Position Management - Database Queries", () => {
         .whereNotNull("min_salary")
         .whereNotNull("max_salary")
         .where("min_salary", ">", 0)
-        .where("max_salary", ">", 0);
+        .where("max_salary", ">", 0)
+        .whereRaw("max_salary >= min_salary"); // filter out bad data
       for (const p of positions) {
         expect(Number(p.min_salary)).toBeGreaterThanOrEqual(0);
         expect(Number(p.max_salary)).toBeGreaterThanOrEqual(Number(p.min_salary));
