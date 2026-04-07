@@ -168,10 +168,10 @@ describe("Wellness Service — Programs", () => {
 
   it("updateProgram — update program_type and points_reward", async () => {
     const result = await wellness.updateProgram(ORG, programId, {
-      program_type: "social",
+      program_type: "team_activity",
       points_reward: 100,
     } as any);
-    expect(result.program_type).toBe("social");
+    expect(result.program_type).toBe("team_activity");
     expect(result.points_reward).toBe(100);
   });
 
@@ -355,7 +355,7 @@ describe("Wellness Service — Daily Check-Ins", () => {
 
   it("dailyCheckIn — rejects energy_level out of range (0)", async () => {
     await expect(wellness.dailyCheckIn(ORG, EMP, {
-      mood: "bad",
+      mood: "low",
       energy_level: 0,
       check_in_date: "2099-12-01",
     } as any)).rejects.toThrow("Energy level must be between 1 and 5");
@@ -363,7 +363,7 @@ describe("Wellness Service — Daily Check-Ins", () => {
 
   it("dailyCheckIn — rejects energy_level out of range (6)", async () => {
     await expect(wellness.dailyCheckIn(ORG, EMP, {
-      mood: "terrible",
+      mood: "stressed",
       energy_level: 6,
       check_in_date: "2099-12-02",
     } as any)).rejects.toThrow("Energy level must be between 1 and 5");
@@ -597,9 +597,9 @@ describe("Wellness Service — Goals", () => {
   it("updateGoalProgress — set status explicitly", async () => {
     // Use goalId2 which is still active
     const result = await wellness.updateGoalProgress(ORG, EMP, goalId2, {
-      status: "paused",
+      status: "abandoned",
     } as any);
-    expect(result.status).toBe("paused");
+    expect(result.status).toBe("abandoned");
   });
 
   it("updateGoalProgress — not found", async () => {
@@ -1399,7 +1399,7 @@ describe("Helpdesk KB — Articles", () => {
     const result = await helpdesk.createArticle(ORG, ADMIN, {
       title: `How to Use Leave ${U}`,
       content: "Step 1: Go to leave page. Step 2: Apply for leave.",
-      category: "hr-guides",
+      category: "leave",
       slug: `leave-guide-${U}`,
       is_published: true,
       is_featured: true,
@@ -1409,7 +1409,7 @@ describe("Helpdesk KB — Articles", () => {
     expect(result.id).toBeGreaterThan(0);
     expect(result.title).toContain(`How to Use Leave ${U}`);
     expect(result.slug).toBe(`leave-guide-${U}`);
-    expect(result.category).toBe("hr-guides");
+    expect(result.category).toBe("leave");
     expect(result.is_published).toBeTruthy();
     expect(result.is_featured).toBeTruthy();
     expect(result.author_id).toBe(ADMIN);
@@ -1421,7 +1421,7 @@ describe("Helpdesk KB — Articles", () => {
     const result = await helpdesk.createArticle(ORG, EMP, {
       title: `Attendance Policy ${U}`,
       content: "The attendance policy states...",
-      category: "policies",
+      category: "policy",
       is_published: false,
     });
 
@@ -1435,7 +1435,7 @@ describe("Helpdesk KB — Articles", () => {
     const result = await helpdesk.createArticle(ORG, ADMIN, {
       title: `How to Use Leave ${U}`,
       content: "Duplicate slug test",
-      category: "hr-guides",
+      category: "leave",
       slug: `leave-guide-${U}`,
       is_published: true,
     });
@@ -1452,7 +1452,7 @@ describe("Helpdesk KB — Articles", () => {
     const result = await helpdesk.createArticle(ORG, ADMIN, {
       title: `Default Draft ${U}`,
       content: "Should be unpublished by default",
-      category: "misc",
+      category: "general",
     });
     expect(result.is_published).toBeFalsy();
     const db = getDB();
@@ -1476,11 +1476,11 @@ describe("Helpdesk KB — Articles", () => {
 
   it("listArticles — filter by category", async () => {
     const result = await helpdesk.listArticles(ORG, {
-      category: "hr-guides",
+      category: "leave",
       published_only: false,
     });
     for (const a of result.articles) {
-      expect(a.category).toBe("hr-guides");
+      expect(a.category).toBe("leave");
     }
   });
 
@@ -1546,9 +1546,9 @@ describe("Helpdesk KB — Articles", () => {
 
   it("updateArticle — update category", async () => {
     const result = await helpdesk.updateArticle(ORG, articleId, {
-      category: "updated-category",
+      category: "payroll",
     });
-    expect(result.category).toBe("updated-category");
+    expect(result.category).toBe("payroll");
   });
 
   it("updateArticle — update slug", async () => {
@@ -1604,7 +1604,7 @@ describe("Helpdesk KB — Article Ratings", () => {
     const article = await helpdesk.createArticle(ORG, ADMIN, {
       title: `Rating Test ${U}`,
       content: "Article for rating tests",
-      category: "test",
+      category: "general",
       is_published: true,
     });
     articleId = article.id;

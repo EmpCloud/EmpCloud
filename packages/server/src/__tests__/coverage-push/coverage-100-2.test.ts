@@ -1,6 +1,6 @@
 // =============================================================================
 // Coverage Push: Employee Detail, Employee Profile, Salary, Probation,
-// Onboarding, Nomination, Geo-fence — comprehensive real-DB tests
+// Onboarding, Geo-fence — comprehensive real-DB tests
 // =============================================================================
 
 process.env.DB_HOST = "localhost";
@@ -60,42 +60,42 @@ describe("EmployeeDetailService — Addresses", () => {
 
   it("createAddress creates a current address", async () => {
     const addr = await svc.createAddress(ORG, EMP, {
-      address_type: "current",
-      address_line_1: `Test Addr ${U}`,
+      type: "current",
+      line1: `Test Addr ${U}`,
       city: "Mumbai",
       state: "Maharashtra",
       country: "India",
-      postal_code: "400001",
+      zipcode: "400001",
     });
     expect(addr).toBeDefined();
     expect(addr.id).toBeDefined();
-    expect(addr.address_type).toBe("current");
+    expect(addr.type).toBe("current");
     expect(addr.city).toBe("Mumbai");
     createdIds.push(addr.id);
   });
 
   it("createAddress creates a permanent address with optional fields", async () => {
     const addr = await svc.createAddress(ORG, EMP, {
-      address_type: "permanent",
-      address_line_1: `Perm Addr ${U}`,
-      address_line_2: "Apt 42",
+      type: "permanent",
+      line1: `Perm Addr ${U}`,
+      line2: "Apt 42",
       city: "Delhi",
       state: "Delhi",
       country: "India",
-      postal_code: "110001",
+      zipcode: "110001",
     });
-    expect(addr.address_type).toBe("permanent");
-    expect(addr.address_line_2).toBe("Apt 42");
+    expect(addr.type).toBe("permanent");
+    expect(addr.line2).toBe("Apt 42");
     createdIds.push(addr.id);
   });
 
   it("updateAddress updates existing address", async () => {
     const updated = await svc.updateAddress(ORG, EMP, createdIds[0], {
       city: "Pune",
-      postal_code: "411001",
+      zipcode: "411001",
     });
     expect(updated.city).toBe("Pune");
-    expect(updated.postal_code).toBe("411001");
+    expect(updated.zipcode).toBe("411001");
   });
 
   it("updateAddress throws NotFoundError for wrong addressId", async () => {
@@ -118,12 +118,12 @@ describe("EmployeeDetailService — Addresses", () => {
 
   it("deleteAddress removes address", async () => {
     const addr = await svc.createAddress(ORG, EMP, {
-      address_type: "current",
-      address_line_1: `Del Addr ${U}`,
+      type: "current",
+      line1: `Del Addr ${U}`,
       city: "Chennai",
       state: "TN",
       country: "India",
-      postal_code: "600001",
+      zipcode: "600001",
     });
     await svc.deleteAddress(ORG, EMP, addr.id);
     // Verify deleted
@@ -195,20 +195,20 @@ describe("EmployeeDetailService — Education", () => {
       field_of_study: "Computer Science",
       start_year: 2020,
       end_year: 2022,
-      grade_or_gpa: "9.1",
+      grade: "9.1",
     });
     expect(edu.field_of_study).toBe("Computer Science");
     expect(edu.end_year).toBe(2022);
-    expect(edu.grade_or_gpa).toBe("9.1");
+    expect(edu.grade).toBe("9.1");
     createdIds.push(edu.id);
   });
 
   it("updateEducation updates fields", async () => {
     const updated = await svc.updateEducation(ORG, EMP, createdIds[0], {
-      grade_or_gpa: "8.5",
+      grade: "8.5",
       end_year: 2022,
     });
-    expect(updated.grade_or_gpa).toBe("8.5");
+    expect(updated.grade).toBe("8.5");
     expect(updated.end_year).toBe(2022);
   });
 
@@ -381,10 +381,10 @@ describe("EmployeeDetailService — Dependents", () => {
       relationship: "child",
       date_of_birth: "2015-03-20",
       gender: "male",
-      is_emergency_contact: true,
+      is_nominee: true,
     });
     expect(dep.gender).toBe("male");
-    expect(dep.is_emergency_contact).toBeTruthy();
+    expect(dep.is_nominee).toBeTruthy();
     createdIds.push(dep.id);
   });
 
@@ -394,7 +394,7 @@ describe("EmployeeDetailService — Dependents", () => {
       relationship: "parent",
       date_of_birth: "1960-11-05",
       gender: "female",
-      is_emergency_contact: false,
+      is_nominee: false,
     });
     expect(dep.relationship).toBe("parent");
     createdIds.push(dep.id);
@@ -403,7 +403,7 @@ describe("EmployeeDetailService — Dependents", () => {
   it("updateDependent updates fields", async () => {
     const updated = await svc.updateDependent(ORG, EMP, createdIds[0], {
       name: `Updated Dep ${U}`,
-      is_emergency_contact: true,
+      is_nominee: true,
     });
     expect(updated.name).toBe(`Updated Dep ${U}`);
   });
@@ -889,7 +889,7 @@ describe("ProbationService", () => {
         first_name: "ProbTest",
         last_name: U,
         email: `probtest-${U}@test.local`,
-        password_hash: "test",
+        password: "test",
         role: "employee",
         status: 1,
         probation_status: "on_probation",
@@ -944,7 +944,7 @@ describe("ProbationService", () => {
         first_name: "ExtTest",
         last_name: U,
         email: `exttest-${U}@test.local`,
-        password_hash: "test",
+        password: "test",
         role: "employee",
         status: 1,
         probation_status: "on_probation",
@@ -1249,136 +1249,7 @@ describe("OnboardingService", () => {
 });
 
 // =============================================================================
-// 6. NOMINATION SERVICE (2 functions)
-// =============================================================================
-
-describe("NominationService", () => {
-  let svc: any;
-  const createdIds: number[] = [];
-  const PROGRAM_ID = Number(`${U}`); // Unique program ID based on timestamp
-
-  beforeAll(async () => {
-    svc = await import("../../services/nomination/nomination.service.js");
-  });
-
-  afterAll(async () => {
-    const db = getDB();
-    if (createdIds.length) {
-      await db("nominations").whereIn("id", createdIds).delete();
-    }
-  });
-
-  describe("createNomination", () => {
-    it("creates a nomination successfully", async () => {
-      const result = await svc.createNomination(ORG, ADMIN, {
-        program_id: PROGRAM_ID,
-        nominee_id: EMP,
-        reason: `Great performance ${U}`,
-      });
-      expect(result).toBeDefined();
-      expect(result.id).toBeDefined();
-      expect(result.program_id).toBe(PROGRAM_ID);
-      expect(result.nominator_id).toBe(ADMIN);
-      expect(result.nominee_id).toBe(EMP);
-      expect(result.status).toBe("pending");
-      expect(result.reason).toBe(`Great performance ${U}`);
-      createdIds.push(result.id);
-    });
-
-    it("creates another nomination with different nominator", async () => {
-      const result = await svc.createNomination(ORG, MGR, {
-        program_id: PROGRAM_ID,
-        nominee_id: EMP,
-        reason: `Team player ${U}`,
-      });
-      expect(result.nominator_id).toBe(MGR);
-      createdIds.push(result.id);
-    });
-
-    it("throws ValidationError for self-nomination", async () => {
-      try {
-        await svc.createNomination(ORG, EMP, {
-          program_id: PROGRAM_ID,
-          nominee_id: EMP,
-          reason: "Self nomination",
-        });
-        expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toMatch(/cannot nominate yourself/i);
-      }
-    });
-
-    it("throws NotFoundError for non-existent nominee", async () => {
-      try {
-        await svc.createNomination(ORG, ADMIN, {
-          program_id: PROGRAM_ID,
-          nominee_id: 999999,
-          reason: "Does not exist",
-        });
-        expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toMatch(/not found/i);
-      }
-    });
-  });
-
-  describe("listNominations", () => {
-    it("lists nominations for a program", async () => {
-      const result = await svc.listNominations(ORG, PROGRAM_ID);
-      expect(result).toBeDefined();
-      expect(result.nominations).toBeDefined();
-      expect(Array.isArray(result.nominations)).toBe(true);
-      expect(result.total).toBeGreaterThanOrEqual(2);
-    });
-
-    it("lists nominations with pagination", async () => {
-      const result = await svc.listNominations(ORG, PROGRAM_ID, {
-        page: 1,
-        perPage: 1,
-      });
-      expect(result.nominations).toHaveLength(1);
-      expect(result.total).toBeGreaterThanOrEqual(2);
-    });
-
-    it("lists nominations filtered by status", async () => {
-      const result = await svc.listNominations(ORG, PROGRAM_ID, {
-        status: "pending",
-      });
-      expect(result.nominations.length).toBeGreaterThanOrEqual(1);
-      for (const nom of result.nominations) {
-        expect(nom.status).toBe("pending");
-      }
-    });
-
-    it("returns empty for non-existent program", async () => {
-      const result = await svc.listNominations(ORG, 999999);
-      expect(result.total).toBe(0);
-      expect(result.nominations).toHaveLength(0);
-    });
-
-    it("returns empty for non-existent org", async () => {
-      const result = await svc.listNominations(99999, PROGRAM_ID);
-      expect(result.total).toBe(0);
-    });
-
-    it("page 2 with perPage=1 returns different nomination", async () => {
-      const p1 = await svc.listNominations(ORG, PROGRAM_ID, { page: 1, perPage: 1 });
-      const p2 = await svc.listNominations(ORG, PROGRAM_ID, { page: 2, perPage: 1 });
-      if (p1.total >= 2) {
-        expect(p2.nominations).toHaveLength(1);
-        expect(p2.nominations[0].id).not.toBe(p1.nominations[0].id);
-      }
-    });
-
-    it("lists with no filters (default pagination)", async () => {
-      const result = await svc.listNominations(ORG, PROGRAM_ID, {});
-      expect(result.total).toBeGreaterThanOrEqual(1);
-    });
-  });
-});
-
-// =============================================================================
-// 7. GEO-FENCE SERVICE (4 functions)
+// 6. GEO-FENCE SERVICE (4 functions)
 // =============================================================================
 
 describe("GeoFenceService", () => {

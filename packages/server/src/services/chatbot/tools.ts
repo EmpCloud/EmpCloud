@@ -779,7 +779,7 @@ export const tools: ToolDefinition[] = [
         .where({ organization_id: orgId })
         .count("id as count");
 
-      const [locs] = await db("locations")
+      const [locs] = await db("organization_locations")
         .where({ organization_id: orgId })
         .count("id as count");
 

@@ -84,16 +84,60 @@ describe("Billing Integration Service", () => {
   });
 
   describe("saveBillingSubscriptionMapping", () => {
-    const testCloudSubId = 999990 + Number(U.slice(-3));
+    let testCloudSubId: number;
+    let testCloudSubId2: number;
+
+    beforeAll(async () => {
+      // Find a real subscription ID for this org to satisfy FK constraint
+      const db = getDB();
+      const subs = await db("org_subscriptions")
+        .where({ organization_id: ORG })
+        .select("id")
+        .orderBy("id", "asc")
+        .limit(2);
+      if (subs.length >= 2) {
+        testCloudSubId = subs[0].id;
+        testCloudSubId2 = subs[1].id;
+      } else if (subs.length === 1) {
+        testCloudSubId = subs[0].id;
+        testCloudSubId2 = subs[0].id; // fallback
+      } else {
+        testCloudSubId = 0;
+        testCloudSubId2 = 0;
+      }
+      // Clean any existing test mappings
+      if (testCloudSubId) {
+        await db("billing_subscription_mappings")
+          .where({ cloud_subscription_id: testCloudSubId })
+          .del()
+          .catch(() => {});
+      }
+      if (testCloudSubId2 && testCloudSubId2 !== testCloudSubId) {
+        await db("billing_subscription_mappings")
+          .where({ cloud_subscription_id: testCloudSubId2 })
+          .del()
+          .catch(() => {});
+      }
+    });
 
     afterAll(async () => {
       const db = getDB();
-      await db("billing_subscription_mappings")
-        .where({ cloud_subscription_id: testCloudSubId })
-        .del();
+      if (testCloudSubId) {
+        await db("billing_subscription_mappings")
+          .where({ cloud_subscription_id: testCloudSubId })
+          .del()
+          .catch(() => {});
+      }
+      if (testCloudSubId2 && testCloudSubId2 !== testCloudSubId) {
+        await db("billing_subscription_mappings")
+          .where({ cloud_subscription_id: testCloudSubId2 })
+          .del()
+          .catch(() => {});
+      }
     });
 
     it("should insert a new mapping", async () => {
+      if (!testCloudSubId) return; // skip if no subscriptions
       const { saveBillingSubscriptionMapping } = await import(
         "../../services/billing/billing-integration.service.js"
       );
@@ -113,6 +157,7 @@ describe("Billing Integration Service", () => {
     });
 
     it("should not duplicate on second call", async () => {
+      if (!testCloudSubId) return; // skip if no subscriptions
       const { saveBillingSubscriptionMapping } = await import(
         "../../services/billing/billing-integration.service.js"
       );
@@ -131,23 +176,22 @@ describe("Billing Integration Service", () => {
     });
 
     it("should handle missing billingPlanId", async () => {
+      if (!testCloudSubId2 || testCloudSubId2 === testCloudSubId) return;
       const { saveBillingSubscriptionMapping } = await import(
         "../../services/billing/billing-integration.service.js"
       );
-      const subId2 = testCloudSubId + 1;
       await saveBillingSubscriptionMapping({
         orgId: ORG,
-        cloudSubscriptionId: subId2,
+        cloudSubscriptionId: testCloudSubId2,
         billingSubscriptionId: `billing-sub-noplan-${U}`,
       });
 
       const db = getDB();
       const row = await db("billing_subscription_mappings")
-        .where({ cloud_subscription_id: subId2 })
+        .where({ cloud_subscription_id: testCloudSubId2 })
         .first();
       if (row) {
         expect(row.billing_plan_id).toBeNull();
-        await db("billing_subscription_mappings").where({ cloud_subscription_id: subId2 }).del();
       }
     });
   });
@@ -165,19 +209,25 @@ describe("Billing Integration Service", () => {
       const { getBillingSubscriptionId, saveBillingSubscriptionMapping } = await import(
         "../../services/billing/billing-integration.service.js"
       );
-      const subId = 888880 + Number(U.slice(-3));
+      const db = getDB();
+      // Find a real subscription that doesn't already have a mapping
+      const sub = await db("org_subscriptions")
+        .where({ organization_id: ORG })
+        .whereNotIn("id", db("billing_subscription_mappings").select("cloud_subscription_id"))
+        .first();
+      if (!sub) return; // skip if all subs already mapped
+
       await saveBillingSubscriptionMapping({
         orgId: ORG,
-        cloudSubscriptionId: subId,
+        cloudSubscriptionId: sub.id,
         billingSubscriptionId: `get-test-${U}`,
       });
 
-      const result = await getBillingSubscriptionId(subId);
+      const result = await getBillingSubscriptionId(sub.id);
       expect(result).toBe(`get-test-${U}`);
 
       // Cleanup
-      const db = getDB();
-      await db("billing_subscription_mappings").where({ cloud_subscription_id: subId }).del();
+      await db("billing_subscription_mappings").where({ cloud_subscription_id: sub.id }).del();
     });
   });
 

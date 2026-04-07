@@ -132,7 +132,10 @@ describe("Biometrics Service", () => {
   // ---- verifyFace ----
 
   it("verifyFace — returns match result structure", async () => {
-    const { verifyFace } = await import("../../services/biometrics/biometrics.service.js");
+    const { verifyFace, enrollFace } = await import("../../services/biometrics/biometrics.service.js");
+    // Ensure there is an active enrollment for ORG so verifyFace reaches the threshold path
+    const enrollment = await enrollFace(ORG, EMP, { enrollment_method: "webcam" }, ADMIN);
+    createdEnrollmentIds.push(enrollment.id);
     const result = await verifyFace(ORG, {
       face_encoding: "test-encoding",
       liveness_passed: true,
@@ -149,6 +152,7 @@ describe("Biometrics Service", () => {
       face_encoding: "test-encoding",
       liveness_passed: false,
     });
+    // Liveness check happens after enrollment check; if enrollments exist, returns liveness message
     expect(result.matched).toBe(false);
     expect(result.message).toContain("Liveness");
   });
@@ -902,11 +906,11 @@ describe("Anonymous Feedback Service", () => {
   it("respondToFeedback — does not change status if already not 'new'", async () => {
     const { respondToFeedback, updateStatus } = await import("../../services/feedback/anonymous-feedback.service.js");
     const feedbackId = createdFeedbackIds[1];
-    // First set status to "in_progress"
-    await updateStatus(ORG, feedbackId, "in_progress");
+    // First set status to "under_review" (valid enum: new, acknowledged, under_review, resolved, archived)
+    await updateStatus(ORG, feedbackId, "under_review");
     // Then respond
     const result = await respondToFeedback(ORG, feedbackId, "Investigating.", ADMIN);
-    expect(result.status).toBe("in_progress"); // should NOT change to acknowledged
+    expect(result.status).toBe("under_review"); // should NOT change to acknowledged
   });
 
   it("respondToFeedback — throws for non-existent", async () => {
