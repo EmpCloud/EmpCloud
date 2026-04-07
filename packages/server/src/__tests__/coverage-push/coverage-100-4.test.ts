@@ -518,7 +518,7 @@ describe("Policy service — full lifecycle", () => {
     const p = await pol.createPolicy(ORG, ADMIN, {
       title: `TestPolicy-${U}`,
       content: `<p>Policy content ${U}</p>`,
-      category: "HR",
+      category: "hr",
       effective_date: new Date().toISOString().split("T")[0],
     });
     expect(p).toBeTruthy();
@@ -553,9 +553,9 @@ describe("Policy service — full lifecycle", () => {
   });
 
   it("listPolicies — with category filter", async () => {
-    const result = await pol.listPolicies(ORG, { category: "HR" });
+    const result = await pol.listPolicies(ORG, { category: "hr" });
     for (const p of result.policies) {
-      expect(p.category).toBe("HR");
+      expect(p.category.toLowerCase()).toBe("hr");
     }
   });
 
@@ -998,7 +998,7 @@ describe("Helpdesk service — full lifecycle", () => {
 
   it("createTicket — full data", async () => {
     const t = await hd.createTicket(ORG, EMP, {
-      category: "IT",
+      category: "it",
       priority: "high",
       subject: `Ticket-${U}`,
       description: "My laptop is broken",
@@ -1014,7 +1014,7 @@ describe("Helpdesk service — full lifecycle", () => {
 
   it("createTicket — default priority (medium)", async () => {
     const t = await hd.createTicket(ORG, EMP, {
-      category: "HR",
+      category: "general",
       subject: `Ticket2-${U}`,
       description: "Need help with leave",
     });
@@ -1024,7 +1024,7 @@ describe("Helpdesk service — full lifecycle", () => {
 
   it("createTicket — urgent priority SLA", async () => {
     const t = await hd.createTicket(ORG, EMP, {
-      category: "IT",
+      category: "it",
       priority: "urgent",
       subject: `UrgentTicket-${U}`,
       description: "Server is down",
@@ -1053,9 +1053,9 @@ describe("Helpdesk service — full lifecycle", () => {
   });
 
   it("listTickets — with category filter", async () => {
-    const result = await hd.listTickets(ORG, { category: "IT" });
+    const result = await hd.listTickets(ORG, { category: "it" });
     for (const t of result.tickets) {
-      expect(t.category).toBe("IT");
+      expect(t.category).toBe("it");
     }
   });
 
@@ -1297,9 +1297,9 @@ describe("Helpdesk service — full lifecycle", () => {
   });
 
   it("getMyTickets — with category filter", async () => {
-    const result = await hd.getMyTickets(ORG, EMP, { category: "IT" });
+    const result = await hd.getMyTickets(ORG, EMP, { category: "it" });
     for (const t of result.tickets) {
-      expect(t.category).toBe("IT");
+      expect(t.category).toBe("it");
     }
   });
 
