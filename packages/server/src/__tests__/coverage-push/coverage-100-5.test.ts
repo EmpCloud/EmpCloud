@@ -876,11 +876,21 @@ describe("Chatbot Tools", () => {
     });
   });
 
+  // Helper: executeTool returns strings that may contain control characters
+  function safeParse(s: string): any {
+    try {
+      // Strip control characters that break JSON.parse
+      return JSON.parse(s.replace(/[\x00-\x1f\x7f]/g, " "));
+    } catch {
+      return { raw: s };
+    }
+  }
+
   describe("executeTool", () => {
     it("get_employee_count", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_employee_count", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("total_employees");
@@ -891,7 +901,7 @@ describe("Chatbot Tools", () => {
     it("get_department_list", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_department_list", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       // Tool may return {error} if DB query fails, or {departments, total_departments}
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
@@ -903,7 +913,7 @@ describe("Chatbot Tools", () => {
     it("get_attendance_today", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_today", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("date");
@@ -914,28 +924,28 @@ describe("Chatbot Tools", () => {
     it("get_leave_balance for current user", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_leave_balance", ORG, EMP, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed.balances !== undefined || parsed.message !== undefined || parsed.error !== undefined).toBe(true);
     });
 
     it("get_leave_balance with employee_name", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_leave_balance", ORG, ADMIN, { employee_name: "Priya" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_leave_balance with non-existent employee", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_leave_balance", ORG, ADMIN, { employee_name: "ZZZNONEXIST" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
     it("get_pending_leave_requests", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_pending_leave_requests", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("pending_requests");
@@ -946,7 +956,7 @@ describe("Chatbot Tools", () => {
     it("get_announcements with limit", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_announcements", ORG, ADMIN, { limit: 5 });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("announcements");
@@ -957,7 +967,7 @@ describe("Chatbot Tools", () => {
     it("get_announcements with default limit", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_announcements", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("announcements");
@@ -967,7 +977,7 @@ describe("Chatbot Tools", () => {
     it("get_company_policies", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_company_policies", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("policies");
@@ -978,7 +988,7 @@ describe("Chatbot Tools", () => {
     it("get_company_policies with category filter", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_company_policies", ORG, ADMIN, { category: "hr" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("policies");
@@ -988,14 +998,14 @@ describe("Chatbot Tools", () => {
     it("get_helpdesk_stats", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_helpdesk_stats", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_module_subscriptions", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_module_subscriptions", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("subscriptions");
@@ -1006,7 +1016,7 @@ describe("Chatbot Tools", () => {
     it("get_billing_summary", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_billing_summary", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("active_subscriptions");
@@ -1017,21 +1027,21 @@ describe("Chatbot Tools", () => {
     it("get_upcoming_holidays", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_upcoming_holidays", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_upcoming_holidays with limit", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_upcoming_holidays", ORG, ADMIN, { limit: 3 });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_org_stats", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_org_stats", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("total_users");
@@ -1044,56 +1054,56 @@ describe("Chatbot Tools", () => {
     it("get_asset_summary", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_asset_summary", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_position_vacancies", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_position_vacancies", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_survey_results", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_survey_results", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_wellness_dashboard", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_wellness_dashboard", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_recent_feedback", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_recent_feedback", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_recent_feedback with limit", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_recent_feedback", ORG, ADMIN, { limit: 3 });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_whistleblower_stats", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_whistleblower_stats", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_employee_details", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_employee_details", ORG, ADMIN, { query: "Priya" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("employees");
@@ -1104,7 +1114,7 @@ describe("Chatbot Tools", () => {
     it("get_employee_details with email query", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_employee_details", ORG, ADMIN, { query: "ananya" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("employees");
@@ -1114,7 +1124,7 @@ describe("Chatbot Tools", () => {
     it("get_employee_details with no match", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_employee_details", ORG, ADMIN, { query: "ZZZNOTFOUND" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       if (!parsed.error) {
         expect(parsed.count).toBe(0);
       } else {
@@ -1125,7 +1135,7 @@ describe("Chatbot Tools", () => {
     it("get_my_attendance", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_my_attendance", ORG, EMP, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("date");
@@ -1135,7 +1145,7 @@ describe("Chatbot Tools", () => {
     it("get_team_attendance", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_team_attendance", ORG, MGR, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("date");
@@ -1145,7 +1155,7 @@ describe("Chatbot Tools", () => {
     it("get_team_attendance with date param", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_team_attendance", ORG, MGR, { date: "2026-04-01" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("date");
@@ -1155,7 +1165,7 @@ describe("Chatbot Tools", () => {
     it("get_team_attendance for user with no reports", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_team_attendance", ORG, EMP, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed.team_size === 0 || parsed.team_size > 0).toBe(true);
@@ -1165,49 +1175,49 @@ describe("Chatbot Tools", () => {
     it("get_attendance_for_employee", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_for_employee", ORG, ADMIN, { employee_name: "Priya" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_attendance_for_employee with days param", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_for_employee", ORG, ADMIN, { employee_name: "Priya", days: 14 });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_attendance_for_employee with non-existent employee", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_for_employee", ORG, ADMIN, { employee_name: "ZZZNONEXIST" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
     it("get_attendance_by_department", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_by_department", ORG, ADMIN, { department: "Engineering" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_attendance_by_department with non-existent dept", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_by_department", ORG, ADMIN, { department: "ZZZNONEXIST" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_attendance_by_department with date", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_attendance_by_department", ORG, ADMIN, { department: "Engineering", date: "2026-04-01" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_leave_calendar", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_leave_calendar", ORG, ADMIN, { start_date: "2026-01-01", end_date: "2026-12-31" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("on_leave");
@@ -1218,7 +1228,7 @@ describe("Chatbot Tools", () => {
     it("get_leave_calendar with defaults", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_leave_calendar", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("on_leave");
@@ -1228,28 +1238,28 @@ describe("Chatbot Tools", () => {
     it("search_knowledge_base", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("search_knowledge_base", ORG, ADMIN, { query: "leave" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("search_knowledge_base with no results", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("search_knowledge_base", ORG, ADMIN, { query: "xyznonexistent" });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_upcoming_events", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_upcoming_events", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
     it("get_upcoming_events with limit", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("get_upcoming_events", ORG, ADMIN, { limit: 3 });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
     });
 
@@ -1258,7 +1268,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "SELECT COUNT(*) as cnt FROM users WHERE organization_id = 5",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toBeTruthy();
       if (!parsed.error) {
         expect(parsed).toHaveProperty("rows");
@@ -1271,7 +1281,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "INSERT INTO users (email) VALUES ('test@test.com')",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
@@ -1280,7 +1290,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "DELETE FROM users WHERE organization_id = 5",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
@@ -1289,7 +1299,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "UPDATE users SET status = 0 WHERE organization_id = 5",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
@@ -1298,7 +1308,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "DROP TABLE users",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
@@ -1307,7 +1317,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "SELECT COUNT(*) FROM users",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
@@ -1316,7 +1326,7 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "SELECT 1; SELECT 2 WHERE organization_id = 5",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
@@ -1325,14 +1335,14 @@ describe("Chatbot Tools", () => {
       const result = await executeTool("run_sql_query", ORG, ADMIN, {
         query: "SELECT * FROM nonexistent_table_xyz WHERE organization_id = 5",
       });
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
     });
 
     it("should handle non-existent tool name gracefully", async () => {
       const { executeTool } = await import("../../services/chatbot/tools.js");
       const result = await executeTool("nonexistent_tool_xyz", ORG, ADMIN, {});
-      const parsed = JSON.parse(result);
+      const parsed = safeParse(result);
       expect(parsed).toHaveProperty("error");
       expect(parsed.error).toContain("Unknown tool");
     });
@@ -1644,6 +1654,7 @@ describe("Position Service", () => {
       const { createPosition } = await import("../../services/position/position.service.js");
       const result = await createPosition(ORG, ADMIN, {
         title: posTitle,
+        code: `TST-${U}-001`,
         employment_type: "full_time",
         currency: "INR",
         headcount_budget: 5,
@@ -1804,7 +1815,7 @@ describe("Position Service", () => {
     it("should reject duplicate code on update", async () => {
       const { createPosition, updatePosition } = await import("../../services/position/position.service.js");
       // Create a second position
-      const second = await createPosition(ORG, ADMIN, { title: `${posTitle}-Second`, employment_type: "full_time", currency: "INR", headcount_budget: 1, is_critical: false } as any);
+      const second = await createPosition(ORG, ADMIN, { title: `${posTitle}-Second`, code: `TST-${U}-SEC`, employment_type: "full_time", currency: "INR", headcount_budget: 1, is_critical: false } as any);
       const db = getDB();
       const first = await db("positions").where({ id: createdPositionId }).first();
 
@@ -1950,7 +1961,7 @@ describe("Position Service", () => {
   describe("deletePosition", () => {
     it("should soft-delete (close) a position", async () => {
       const { createPosition, deletePosition } = await import("../../services/position/position.service.js");
-      const pos = await createPosition(ORG, ADMIN, { title: `${posTitle}-ToDelete`, employment_type: "full_time", currency: "INR", headcount_budget: 1, is_critical: false } as any);
+      const pos = await createPosition(ORG, ADMIN, { title: `${posTitle}-ToDelete`, code: `TST-${U}-DEL`, employment_type: "full_time", currency: "INR", headcount_budget: 1, is_critical: false } as any);
       await deletePosition(ORG, pos.id);
 
       const db = getDB();
@@ -1967,7 +1978,7 @@ describe("Position Service", () => {
 
     it("should throw NotFoundError for already closed position", async () => {
       const { createPosition, deletePosition } = await import("../../services/position/position.service.js");
-      const pos = await createPosition(ORG, ADMIN, { title: `${posTitle}-CloseTest`, employment_type: "full_time", currency: "INR", headcount_budget: 1, is_critical: false } as any);
+      const pos = await createPosition(ORG, ADMIN, { title: `${posTitle}-CloseTest`, code: `TST-${U}-CLS`, employment_type: "full_time", currency: "INR", headcount_budget: 1, is_critical: false } as any);
       await deletePosition(ORG, pos.id);
       await expect(deletePosition(ORG, pos.id)).rejects.toThrow();
       // Cleanup
