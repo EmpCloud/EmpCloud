@@ -16,10 +16,10 @@ describe("Employee Management - Database Queries", () => {
       const db = getTestDB();
       const results = await db("users")
         .where({ organization_id: TEST_ORG_ID })
-        .whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%Ananya%"]);
+        .whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%Priya%"]);
       expect(results.length).toBeGreaterThan(0);
-      const hasAnanya = results.some((r: any) => r.first_name.toLowerCase().includes("ananya"));
-      expect(hasAnanya).toBe(true);
+      const hasPriya = results.some((r: any) => r.first_name.toLowerCase().includes("priya"));
+      expect(hasPriya).toBe(true);
     });
 
     it("should support department filter", async () => {

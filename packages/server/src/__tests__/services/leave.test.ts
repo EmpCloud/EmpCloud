@@ -98,12 +98,12 @@ describe("Leave Management - Database Queries", () => {
         if (b.year !== undefined) {
           expect(b.year).toBeGreaterThanOrEqual(2024);
         }
-        // Check numeric fields if they exist in schema
-        if (b.total_allocated !== undefined) {
-          expect(Number(b.total_allocated)).toBeGreaterThanOrEqual(0);
+        // Check numeric fields — actual columns are allocated/used
+        if (b.allocated !== undefined) {
+          expect(Number(b.allocated)).toBeGreaterThanOrEqual(0);
         }
-        if (b.total_used !== undefined) {
-          expect(Number(b.total_used)).toBeGreaterThanOrEqual(0);
+        if (b.used !== undefined) {
+          expect(Number(b.used)).toBeGreaterThanOrEqual(0);
         }
       }
     });
@@ -115,8 +115,8 @@ describe("Leave Management - Database Queries", () => {
       for (const b of balances) {
         // Balance is independently tracked (decremented by approvals), not a computed formula
         expect(Number(b.balance)).toBeGreaterThanOrEqual(0);
-        expect(Number(b.total_allocated)).toBeGreaterThanOrEqual(0);
-        expect(Number(b.total_used)).toBeGreaterThanOrEqual(0);
+        expect(Number(b.allocated)).toBeGreaterThanOrEqual(0);
+        expect(Number(b.used)).toBeGreaterThanOrEqual(0);
       }
     });
 

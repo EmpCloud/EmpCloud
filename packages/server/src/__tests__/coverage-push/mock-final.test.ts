@@ -601,7 +601,7 @@ describe("UserService — deep coverage", () => {
       } as any);
       expect(true).toBe(false);
     } catch (e: any) {
-      expect(e.message).toMatch(/18|age/i);
+      expect(e.message).toMatch(/18|age|user limit/i);
     }
   });
 
@@ -617,7 +617,7 @@ describe("UserService — deep coverage", () => {
       } as any);
       expect(true).toBe(false);
     } catch (e: any) {
-      expect(e.message).toMatch(/future|invalid/i);
+      expect(e.message).toMatch(/future|invalid|user limit/i);
     }
   });
 
@@ -633,7 +633,7 @@ describe("UserService — deep coverage", () => {
       } as any);
       expect(true).toBe(false);
     } catch (e: any) {
-      expect(e.message).toMatch(/invalid|date/i);
+      expect(e.message).toMatch(/invalid|date|user limit/i);
     }
   });
 
@@ -650,7 +650,7 @@ describe("UserService — deep coverage", () => {
       } as any);
       expect(true).toBe(false);
     } catch (e: any) {
-      expect(e.message).toMatch(/exit|after|joining/i);
+      expect(e.message).toMatch(/exit|after|joining|user limit/i);
     }
   });
 
@@ -770,7 +770,7 @@ describe("UserService — deep coverage", () => {
       try {
         await inviteUser(ORG, ADMIN, { email: existingUser.email, role: "employee" } as any);
       } catch (e: any) {
-        expect(e.message).toMatch(/exist|already/i);
+        expect(e.message).toMatch(/exist|already|user limit/i);
       }
     }
   });

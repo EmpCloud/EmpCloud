@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 
 function buildMockDB() {
   const chain: any = {};
@@ -426,6 +426,7 @@ describe("Comp-Off Service Coverage", () => {
       mockChain.first
         .mockResolvedValueOnce({ id: 1, status: "pending", user_id: 3, worked_date: "2026-06-01", days: 1 })
         .mockResolvedValueOnce({ id: 2, role: "hr_admin" }) // HR authorized
+        .mockResolvedValueOnce({ id: 3, reporting_manager_id: 99 }) // isManager check (always evaluated, not manager)
         .mockResolvedValueOnce({ id: 5, code: "COMP_OFF" }) // comp off type
         .mockResolvedValueOnce({ id: 10, total_allocated: 2, balance: 2 }) // existing balance
         .mockResolvedValueOnce({ id: 1, status: "approved" }); // getCompOff
@@ -452,6 +453,7 @@ describe("Comp-Off Service Coverage", () => {
       mockChain.first
         .mockResolvedValueOnce({ id: 1, status: "pending", user_id: 3, worked_date: "2026-06-01", days: 1 })
         .mockResolvedValueOnce({ id: 2, role: "org_admin" })
+        .mockResolvedValueOnce(null) // isManager check (always evaluated)
         .mockResolvedValueOnce(null) // no comp off type
         .mockResolvedValueOnce({ id: 1, status: "approved" }); // getCompOff
       mockChain.update.mockResolvedValue(1);
@@ -491,13 +493,27 @@ describe("Comp-Off Service Coverage", () => {
 });
 
 // ===================== Leave Balance Service =====================
-import {
-  getBalances, initializeBalances, deductBalance as realDeductBalance, creditBalance as realCreditBalance,
-} from "../../services/leave/leave-balance.service.js";
+// The leave-balance module is mocked at the top of this file for leave-application tests.
+// We must use vi.importActual to get the REAL implementations for these tests.
 
 describe("Leave Balance Service Coverage", () => {
+  let realGetBalances: any;
+  let realDeductBalance: any;
+  let realCreditBalance: any;
+  let realInitializeBalances: any;
+
+  beforeAll(async () => {
+    const actual = await vi.importActual("../../services/leave/leave-balance.service.js") as any;
+    realGetBalances = actual.getBalances;
+    realDeductBalance = actual.deductBalance;
+    realCreditBalance = actual.creditBalance;
+    realInitializeBalances = actual.initializeBalances;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+    const chainMethods = ["select","where","whereIn","whereNotIn","whereNull","whereNot","whereRaw","andWhere","orderBy","limit","offset","join","leftJoin","clone"];
+    chainMethods.forEach(m => { mockChain[m].mockReset().mockReturnValue(mockChain); });
     mockChain.first.mockReset().mockResolvedValue(null);
     mockChain.insert.mockReset().mockResolvedValue([1]);
     mockChain.update.mockReset().mockResolvedValue(1);
@@ -506,13 +522,13 @@ describe("Leave Balance Service Coverage", () => {
   describe("getBalances", () => {
     it("returns balances for user and year", async () => {
       mockChain.orderBy.mockResolvedValueOnce([{ id: 1, balance: 10 }]);
-      const r = await getBalances(1, 1, 2026);
+      const r = await realGetBalances(1, 1, 2026);
       expect(r).toBeTruthy();
     });
 
     it("defaults to current year when not specified", async () => {
       mockChain.orderBy.mockResolvedValueOnce([]);
-      const r = await getBalances(1, 1);
+      const r = await realGetBalances(1, 1);
       expect(r).toBeTruthy();
     });
   });

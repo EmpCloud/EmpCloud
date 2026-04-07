@@ -80,12 +80,12 @@ describe("Position Management - Database Queries", () => {
       const positions = await db("positions")
         .where({ organization_id: TEST_ORG_ID })
         .whereNotNull("min_salary")
-        .whereNotNull("max_salary");
+        .whereNotNull("max_salary")
+        .where("min_salary", ">", 0)
+        .where("max_salary", ">", 0);
       for (const p of positions) {
-        // Some positions may have inverted salary ranges due to data entry
-        // Just verify both are non-negative numbers
         expect(Number(p.min_salary)).toBeGreaterThanOrEqual(0);
-        expect(Number(p.max_salary)).toBeGreaterThanOrEqual(0);
+        expect(Number(p.max_salary)).toBeGreaterThanOrEqual(Number(p.min_salary));
       }
     });
 
