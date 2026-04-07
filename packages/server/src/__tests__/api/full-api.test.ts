@@ -5,10 +5,7 @@
 
 import { describe, it, expect, beforeAll } from "vitest";
 
-const API =
-  process.env.TEST_DB_HOST === "localhost"
-    ? "http://localhost:3000"
-    : (process.env.TEST_API_URL ?? "https://test-empcloud-api.empcloud.com");
+const API = process.env.TEST_API_URL ?? "https://test-empcloud-api.empcloud.com";
 
 // ---------------------------------------------------------------------------
 // Tokens populated in beforeAll

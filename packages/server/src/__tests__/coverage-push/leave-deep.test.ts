@@ -37,7 +37,7 @@ vi.mock("../../utils/errors", async () => {
 });
 
 // Mock leave-balance service
-vi.mock("./leave-balance.service", () => ({
+vi.mock("../../services/leave/leave-balance.service", () => ({
   getBalances: vi.fn(() => Promise.resolve([])),
   deductBalance: vi.fn(() => Promise.resolve({})),
   creditBalance: vi.fn(() => Promise.resolve({})),

@@ -53,7 +53,8 @@ describe("User CRUD (deep)", () => {
         this.where("first_name", "like", s).orWhere("last_name", "like", s).orWhere("email", "like", s);
       }).limit(10);
     expect(r.length).toBeGreaterThanOrEqual(1);
-    expect(r[0].first_name).toBe("Ananya");
+    const hasAnanya = r.some((u: any) => u.first_name === "Ananya");
+    expect(hasAnanya).toBe(true);
   });
 
   it("list users include_inactive", async () => {

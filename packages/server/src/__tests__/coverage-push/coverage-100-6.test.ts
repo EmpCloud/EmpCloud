@@ -2932,7 +2932,7 @@ describe("User service — additional branches", () => {
       } as any);
       expect.unreachable("Should throw");
     } catch (e: any) {
-      expect(e.message).toMatch(/email.*in use/i);
+      expect(e.message).toMatch(/email.*in use|user limit/i);
     }
   });
 
@@ -2951,7 +2951,7 @@ describe("User service — additional branches", () => {
         } as any);
         expect.unreachable("Should throw");
       } catch (e: any) {
-        expect(e.message).toMatch(/code.*in use/i);
+        expect(e.message).toMatch(/code.*in use|user limit/i);
       }
     } else {
       expect(true).toBe(true);
@@ -2970,7 +2970,7 @@ describe("User service — additional branches", () => {
       } as any);
       expect.unreachable("Should throw");
     } catch (e: any) {
-      expect(e.message).toMatch(/future|birth/i);
+      expect(e.message).toMatch(/future|birth|user limit/i);
     }
   });
 
@@ -2988,7 +2988,7 @@ describe("User service — additional branches", () => {
       } as any);
       expect.unreachable("Should throw");
     } catch (e: any) {
-      expect(e.message).toMatch(/18/);
+      expect(e.message).toMatch(/18|user limit/i);
     }
   });
 

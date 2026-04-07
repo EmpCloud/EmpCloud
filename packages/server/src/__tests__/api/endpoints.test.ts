@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-const API =
-  process.env.TEST_DB_HOST === "localhost"
-    ? "http://localhost:3000"
-    : (process.env.TEST_API_URL ?? "https://test-empcloud-api.empcloud.com");
+const API = process.env.TEST_API_URL ?? "https://test-empcloud-api.empcloud.com";
 
 async function login(email: string, password: string) {
   const res = await fetch(`${API}/api/v1/auth/login`, {

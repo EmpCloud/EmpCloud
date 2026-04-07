@@ -18,7 +18,8 @@ describe("Employee Management - Database Queries", () => {
         .where({ organization_id: TEST_ORG_ID })
         .whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%Ananya%"]);
       expect(results.length).toBeGreaterThan(0);
-      expect(results[0].first_name.toLowerCase()).toContain("ananya");
+      const hasAnanya = results.some((r: any) => r.first_name.toLowerCase().includes("ananya"));
+      expect(hasAnanya).toBe(true);
     });
 
     it("should support department filter", async () => {

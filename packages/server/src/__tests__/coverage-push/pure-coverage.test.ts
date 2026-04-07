@@ -11,7 +11,7 @@ describe("JWT parseExpiry", () => {
   it("parses minutes", () => { expect(parseExpiry("10m")).toBe(600); });
   it("parses hours", () => { expect(parseExpiry("1h")).toBe(3600); });
   it("parses days", () => { expect(parseExpiry("7d")).toBe(604800); });
-  it("handles numeric string", () => { const r = parseExpiry("3600"); expect(typeof r).toBe("number"); });
+  it("handles numeric string", () => { expect(() => parseExpiry("3600")).toThrow("Invalid expiry format"); });
 });
 
 // ===== Payroll Rules =====

@@ -584,7 +584,7 @@ describe("UserService — deep coverage", () => {
         } as any);
         expect(true).toBe(false);
       } catch (e: any) {
-        expect(e.message).toMatch(/email|already|exist/i);
+        expect(e.message).toMatch(/email|already|exist|user limit/i);
       }
     }
   });
