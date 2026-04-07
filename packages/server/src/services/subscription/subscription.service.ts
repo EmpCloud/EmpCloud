@@ -322,11 +322,23 @@ export async function syncUsedSeats(orgId: number, moduleId: number): Promise<vo
 
   if (!sub) return;
 
-  const [{ count }] = await db("org_module_seats")
+  // Check if this module has explicit seat assignments
+  const [{ seatCount }] = await db("org_module_seats")
     .where({ subscription_id: sub.id })
-    .count("* as count");
+    .count("* as seatCount");
 
-  const actualCount = Number(count);
+  let actualCount = Number(seatCount);
+
+  // If no explicit seat assignments exist, count active org users instead
+  // This handles modules like Monitor where users log in via SSO without
+  // explicit seat assignment in EmpCloud
+  if (actualCount === 0) {
+    const [{ userCount }] = await db("users")
+      .where({ organization_id: orgId, status: 1 })
+      .whereNot("role", "super_admin")
+      .count("* as userCount");
+    actualCount = Number(userCount);
+  }
 
   if (sub.used_seats !== actualCount) {
     logger.info(

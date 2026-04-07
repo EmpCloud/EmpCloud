@@ -4,6 +4,7 @@ import { useAuthStore } from "@/lib/auth-store";
 
 const BillingPage = lazy(() => import("@/pages/billing/BillingPage"));
 const ModulesPage = lazy(() => import("@/pages/modules/ModulesPage"));
+const ModuleAccessPage = lazy(() => import("@/pages/modules/ModuleAccessPage"));
 
 const HR_ROLES = ["org_admin", "hr_admin", "super_admin"];
 
@@ -16,6 +17,7 @@ function RequireHR({ children }: { children: React.ReactNode }) {
 export const billingRoutes = (
   <>
     <Route path="/modules" element={<ModulesPage />} />
+    <Route path="/modules/access" element={<RequireHR><ModuleAccessPage /></RequireHR>} />
     <Route path="/subscriptions" element={<Navigate to="/billing" replace />} />
     <Route path="/billing" element={<RequireHR><BillingPage /></RequireHR>} />
   </>

@@ -107,7 +107,10 @@ export const employeeNavItems: NavItem[] = [
 export const adminNavItems: NavItem[] = [
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
   { path: "/self-service", label: "Self Service", i18nKey: "nav.selfService", icon: UserCircle },
-  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package },
+  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package, children: [
+    { path: "/modules", label: "Marketplace", i18nKey: "nav.modules", icon: Package },
+    { path: "/modules/access", label: "Module Access", i18nKey: "nav.moduleAccess", icon: Shield },
+  ]},
   { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
   { path: "/users", label: "People", i18nKey: "nav.people", icon: Users, children: [
     { path: "/users", label: "Users", i18nKey: "nav.users", icon: Users },
