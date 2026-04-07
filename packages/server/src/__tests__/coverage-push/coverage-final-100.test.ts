@@ -97,74 +97,37 @@ describe("AgentService", () => {
     delete process.env.OPENAI_BASE_URL;
   });
 
-  it("runAgent with anthropic provider and simple question", async () => {
+  it("runAgent with anthropic provider — real API call with tool use", async () => {
     const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      const response = await mod.runAgent(ORG, USER, "How many employees are there?", [], "en");
-      expect(typeof response).toBe("string");
-      expect(response.length).toBeGreaterThan(0);
-    } catch (err: any) {
-      // AI call may fail due to timeout or rate limit - that's OK for coverage
-      expect(err).toBeDefined();
-    }
-  }, 60_000);
+    const provider = await mod.detectProviderAsync();
+    if (provider === "none") return; // skip if no AI configured
+    // Make a REAL Anthropic call — no try/catch so we cover the full execution path
+    const response = await mod.runAgent(ORG, USER, "How many employees are in the company? Just give me the number.", [], "en");
+    expect(typeof response).toBe("string");
+    expect(response.length).toBeGreaterThan(0);
+  }, 120_000);
 
-  it("runAgent with conversation history", async () => {
+  it("runAgent with conversation history — exercises message building", async () => {
     const mod = await import("../../services/chatbot/agent.service.js");
+    const provider = await mod.detectProviderAsync();
+    if (provider === "none") return;
     const history = [
       { role: "user" as const, content: "Hello" },
       { role: "assistant" as const, content: "Hi! How can I help?" },
     ];
-    try {
-      const response = await mod.runAgent(ORG, USER, "What is my leave balance?", history, "en");
-      expect(typeof response).toBe("string");
-    } catch {
-      // Coverage achieved even on error
-    }
-  }, 60_000);
+    const response = await mod.runAgent(ORG, USER, "What departments exist?", history, "en");
+    expect(typeof response).toBe("string");
+    expect(response.length).toBeGreaterThan(0);
+  }, 120_000);
 
-  it("runAgent with Hindi language", async () => {
+  it("runAgent with Hindi language — exercises buildSystemPrompt with language", async () => {
     const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      const response = await mod.runAgent(ORG, USER, "Hello", [], "hi");
-      expect(typeof response).toBe("string");
-    } catch {
-      // Coverage achieved
-    }
-  }, 60_000);
-
-  it("runAgent with Spanish language", async () => {
-    const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      const response = await mod.runAgent(ORG, USER, "Hola", [], "es");
-      expect(typeof response).toBe("string");
-    } catch { /* coverage */ }
-  }, 60_000);
-
-  it("runAgent with French language", async () => {
-    const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      const response = await mod.runAgent(ORG, USER, "Bonjour", [], "fr");
-      expect(typeof response).toBe("string");
-    } catch { /* coverage */ }
-  }, 60_000);
-
-  it("runAgent with unknown language code", async () => {
-    const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      const response = await mod.runAgent(ORG, USER, "Test", [], "zz");
-      expect(typeof response).toBe("string");
-    } catch { /* coverage */ }
-  }, 60_000);
-
-  it("runAgent rate limits after many calls", async () => {
-    const mod = await import("../../services/chatbot/agent.service.js");
-    // The rate limiter resets per minute; just calling once more exercises the path
-    try {
-      const result = await mod.runAgent(ORG, USER, "test rate", [], "en");
-      expect(typeof result).toBe("string");
-    } catch { /* coverage */ }
-  }, 60_000);
+    const provider = await mod.detectProviderAsync();
+    if (provider === "none") return;
+    const response = await mod.runAgent(ORG, USER, "Tell me about leave policies", [], "hi");
+    expect(typeof response).toBe("string");
+    expect(response.length).toBeGreaterThan(0);
+  }, 120_000);
 
   it("runAgent with no provider throws", async () => {
     // Save and clear all keys
@@ -1874,22 +1837,31 @@ describe("Additional edge cases", () => {
     expect(result.per_page).toBe(5);
   }, 15_000);
 
-  it("agent service toAnthropicTools and toOpenAITools are exercised via runAgent", async () => {
-    // The tool format conversion functions are private but exercised by runAgent
+  it("agent service runAgent executes Anthropic agent loop with tool calls", async () => {
+    // This test makes a REAL Anthropic API call — do NOT wrap in try/catch
     const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      await mod.runAgent(ORG, USER, "List all departments", [], "en");
-    } catch { /* coverage */ }
-    expect(true).toBe(true);
+    const provider = await mod.detectProviderAsync();
+    if (provider === "none") {
+      // No provider configured — skip
+      return;
+    }
+    const result = await mod.runAgent(ORG, USER, "How many employees are in the company?", [], "en");
+    expect(typeof result).toBe("string");
+    expect(result.length).toBeGreaterThan(0);
   }, 60_000);
 
-  it("agent service buildSystemPrompt is exercised via runAgent", async () => {
+  it("agent service runAgent with conversation history and non-English", async () => {
     const mod = await import("../../services/chatbot/agent.service.js");
-    try {
-      await mod.runAgent(ORG, USER, "What time is it?", [], "de");
-    } catch { /* coverage */ }
-    expect(true).toBe(true);
-  }, 60_000);
+    const provider = await mod.detectProviderAsync();
+    if (provider === "none") return;
+    const history = [
+      { role: "user" as const, content: "Hello" },
+      { role: "assistant" as const, content: "Hi! How can I help?" },
+    ];
+    const result = await mod.runAgent(ORG, USER, "What leave types are available?", history, "hi");
+    expect(typeof result).toBe("string");
+    expect(result.length).toBeGreaterThan(0);
+  }, 120_000);
 
   it("agent service with Arabic language", async () => {
     const mod = await import("../../services/chatbot/agent.service.js");
