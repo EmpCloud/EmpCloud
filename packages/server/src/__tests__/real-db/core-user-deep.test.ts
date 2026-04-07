@@ -44,7 +44,7 @@ describe("User CRUD (deep)", () => {
   });
 
   it("list users with search filter", async () => {
-    const s = "%Ananya%";
+    const s = "%Priya%";
     const r = await db("users")
       .where({ organization_id: ORG })
       .where("role", "!=", "super_admin")
@@ -53,7 +53,8 @@ describe("User CRUD (deep)", () => {
         this.where("first_name", "like", s).orWhere("last_name", "like", s).orWhere("email", "like", s);
       }).limit(10);
     expect(r.length).toBeGreaterThanOrEqual(1);
-    expect(r[0].first_name).toBe("Ananya");
+    const hasPriya = r.some((u: any) => u.first_name === "Priya");
+    expect(hasPriya).toBe(true);
   });
 
   it("list users include_inactive", async () => {

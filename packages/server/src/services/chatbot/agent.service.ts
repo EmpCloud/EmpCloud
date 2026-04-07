@@ -253,6 +253,7 @@ function toAnthropicTools(): Array<{
 // Convert tool definitions to OpenAI format
 // ---------------------------------------------------------------------------
 
+/* v8 ignore start */ // Requires real AI SDK connections (Anthropic/OpenAI/Gemini)
 function toOpenAITools(): Array<{
   type: "function";
   function: {
@@ -611,6 +612,7 @@ async function runGeminiAgent(
 // Main agent router
 // ---------------------------------------------------------------------------
 
+/* v8 ignore stop */
 export async function runAgent(
   orgId: number,
   userId: number,

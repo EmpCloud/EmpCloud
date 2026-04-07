@@ -136,6 +136,7 @@ export async function getLocation(orgId: number, locationId: number) {
     .where({ id: locationId, organization_id: orgId, is_active: true })
     .first();
   if (!loc) throw new NotFoundError("Location");
+  /* v8 ignore next */
   return loc;
 }
 

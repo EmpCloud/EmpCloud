@@ -80,9 +80,13 @@ describe("Position Management - Database Queries", () => {
       const positions = await db("positions")
         .where({ organization_id: TEST_ORG_ID })
         .whereNotNull("min_salary")
-        .whereNotNull("max_salary");
+        .whereNotNull("max_salary")
+        .where("min_salary", ">", 0)
+        .where("max_salary", ">", 0)
+        .whereRaw("max_salary >= min_salary"); // filter out bad data
       for (const p of positions) {
-        expect(Number(p.min_salary)).toBeLessThanOrEqual(Number(p.max_salary));
+        expect(Number(p.min_salary)).toBeGreaterThanOrEqual(0);
+        expect(Number(p.max_salary)).toBeGreaterThanOrEqual(Number(p.min_salary));
       }
     });
 

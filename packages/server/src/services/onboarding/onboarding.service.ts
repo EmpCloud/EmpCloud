@@ -106,12 +106,12 @@ async function handleCompanyInfo(orgId: number, data: Record<string, any>) {
   if (data.country) updatePayload.country = data.country;
   if (data.state) updatePayload.state = data.state;
   if (data.city) updatePayload.city = data.city;
-  if (data.language) updatePayload.language = data.language;
   if (data.logo) updatePayload.logo = data.logo;
   if (data.name) updatePayload.name = data.name;
   if (data.contact_number) updatePayload.contact_number = data.contact_number;
   if (data.website) updatePayload.website = data.website;
-  if (data.address) updatePayload.address = data.address;
+  if (data.address) updatePayload.address_line1 = data.address;
+  if (data.address_line1) updatePayload.address_line1 = data.address_line1;
 
   await db("organizations").where({ id: orgId }).update(updatePayload);
 }

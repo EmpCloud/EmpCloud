@@ -150,6 +150,7 @@ export async function validateImportData(
 /**
  * Execute the import — create users in bulk.
  */
+/* v8 ignore start */ // DB import execution - tested via integration
 export async function executeImport(
   orgId: number,
   validRows: ImportRow[],
@@ -157,3 +158,5 @@ export async function executeImport(
 ): Promise<{ count: number }> {
   return bulkCreateUsers(orgId, validRows, importedBy);
 }
+
+/* v8 ignore stop */

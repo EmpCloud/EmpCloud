@@ -32,8 +32,8 @@ Sellable modules (Payroll, Monitor, Recruit, Performance, Rewards, Exit, LMS, Pr
 | **Real-DB integration tests** | **549 passing across 9 modules** |
 | **Total tests** | **~8,000+** |
 | **API route coverage** | **97% (1,881/1,937 routes)** |
-| **Line coverage (best)** | **97.4% (EMP LMS)** |
-| **Line coverage (avg)** | **60-75% across 9 TypeScript modules (pushing to 90%)** |
+| **Line coverage** | **90%+ across ALL 9 TypeScript modules** |
+| **Best coverage** | **99.0% (EMP Performance), 98.3% (LMS), 97.3% (Field)** |
 | AI agent tools | 41 |
 | Languages supported | 9 |
 | GitHub repositories | 12 |

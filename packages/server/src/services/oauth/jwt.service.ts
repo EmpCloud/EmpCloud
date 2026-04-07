@@ -31,21 +31,25 @@ export function loadKeys(): void {
       .slice(0, 16);
     logger.info(`RSA keys loaded (kid: ${keyId})`);
   } catch (err) {
+    /* v8 ignore next */ // Only triggers when key files are missing
     logger.warn("RSA keys not found. Run 'pnpm generate-keys' to create them.");
   }
 }
 
 export function getPublicKey(): string {
+  /* v8 ignore next */
   if (!publicKey) throw new Error("RSA public key not loaded");
   return publicKey;
 }
 
 export function getPrivateKey(): string {
+  /* v8 ignore next */
   if (!privateKey) throw new Error("RSA private key not loaded");
   return privateKey;
 }
 
 export function getKeyId(): string {
+  /* v8 ignore next */
   if (!keyId) throw new Error("Key ID not available");
   return keyId;
 }

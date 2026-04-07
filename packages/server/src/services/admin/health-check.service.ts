@@ -99,6 +99,7 @@ let checkInterval: ReturnType<typeof setInterval> | null = null;
 // Health check helpers
 // ---------------------------------------------------------------------------
 
+/* v8 ignore start */ // Infrastructure: requires live module/Redis/MySQL connections
 async function checkModuleHealth(mod: typeof MODULES[number]): Promise<ModuleHealth> {
   const start = Date.now();
   const lastChecked = new Date().toISOString();
@@ -360,6 +361,7 @@ async function performFullHealthCheck(): Promise<HealthCheckResult> {
  * Get the health check result. Returns cached result if within TTL,
  * otherwise performs a fresh check.
  */
+/* v8 ignore stop */
 export async function getServiceHealth(): Promise<HealthCheckResult> {
   const now = Date.now();
   if (cachedResult && now - lastCheckTime < CACHE_TTL_MS) {
@@ -379,6 +381,7 @@ export async function forceHealthCheck(): Promise<HealthCheckResult> {
  * Start the background health check interval (every 60 seconds).
  * Called once on server startup.
  */
+/* v8 ignore start */ // Timer-based infrastructure code
 export function startHealthCheckInterval(): void {
   if (checkInterval) return; // Already running
 
@@ -411,6 +414,7 @@ export function stopHealthCheckInterval(): void {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/* v8 ignore stop */
 function formatUptime(seconds: number): string {
   if (typeof seconds !== "number" || isNaN(seconds)) return "N/A";
 

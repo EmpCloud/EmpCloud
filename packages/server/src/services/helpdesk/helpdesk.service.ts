@@ -877,16 +877,17 @@ export async function rateArticle(orgId: number, articleId: number, helpful: boo
 
       if (existingRating) {
         // User already voted — if same vote, do nothing; if different, swap
-        if (existingRating.helpful === helpful) {
+        // Use !! to coerce MySQL TINYINT(1) to boolean for correct comparison
+        if (!!existingRating.helpful === helpful) {
           return db("knowledge_base_articles").where({ id: articleId }).first();
         }
-        // Swap vote: decrement old, increment new
+        // Swap vote: decrement old (using GREATEST to prevent BIGINT UNSIGNED underflow), increment new
         if (helpful) {
           await db("knowledge_base_articles").where({ id: articleId }).increment("helpful_count", 1);
-          await db("knowledge_base_articles").where({ id: articleId }).decrement("not_helpful_count", 1);
+          await db("knowledge_base_articles").where({ id: articleId }).update({ not_helpful_count: db.raw("GREATEST(not_helpful_count - 1, 0)") });
         } else {
           await db("knowledge_base_articles").where({ id: articleId }).increment("not_helpful_count", 1);
-          await db("knowledge_base_articles").where({ id: articleId }).decrement("helpful_count", 1);
+          await db("knowledge_base_articles").where({ id: articleId }).update({ helpful_count: db.raw("GREATEST(helpful_count - 1, 0)") });
         }
         await db("kb_article_ratings")
           .where({ article_id: articleId, user_id: userId })
