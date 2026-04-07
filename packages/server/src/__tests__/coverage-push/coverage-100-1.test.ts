@@ -159,16 +159,33 @@ describe("Biometrics Service", () => {
 
   it("verifyFace — no enrollments for different org", async () => {
     const { verifyFace } = await import("../../services/biometrics/biometrics.service.js");
-    // Use org 9999 which shouldn't have enrollments
-    const result = await verifyFace(9999, {
-      face_encoding: "test",
-      liveness_passed: true,
-    });
-    expect(result.matched).toBe(false);
-    expect(result.message).toContain("No face enrollments");
-    // Clean up settings created for org 9999
     const db = getDB();
-    await db("biometric_settings").where("organization_id", 9999).del();
+    // Use a real org that has no face enrollments instead of a non-existent org
+    // (biometric_settings has FK to organizations, so org 9999 would fail)
+    // First ensure no enrollments exist for ORG by deactivating them temporarily
+    const activeEnrollments = await db("face_enrollments")
+      .where({ organization_id: ORG, is_active: true })
+      .select("id");
+    if (activeEnrollments.length > 0) {
+      await db("face_enrollments")
+        .where({ organization_id: ORG, is_active: true })
+        .update({ is_active: false });
+    }
+    try {
+      const result = await verifyFace(ORG, {
+        face_encoding: "test",
+        liveness_passed: true,
+      });
+      expect(result.matched).toBe(false);
+      expect(result.message).toContain("No face enrollments");
+    } finally {
+      // Re-activate enrollments
+      if (activeEnrollments.length > 0) {
+        await db("face_enrollments")
+          .whereIn("id", activeEnrollments.map((e: any) => e.id))
+          .update({ is_active: true });
+      }
+    }
   });
 
   // ---- QR Codes ----

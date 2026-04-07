@@ -96,7 +96,7 @@ describe("Document service — full lifecycle", () => {
       file_path: `/tmp/test-doc-${U}.pdf`,
       file_size: 1024,
       mime_type: "application/pdf",
-      expires_at: new Date(Date.now() + 5 * 86400000).toISOString(),
+      expires_at: new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 19).replace("T", " "),
     });
     expect(d).toBeTruthy();
     expect(d.download_url).toBeTruthy();
@@ -356,8 +356,8 @@ describe("Announcement service — full lifecycle", () => {
       title: `Expiring-${U}`,
       content: "<p>Expires soon</p>",
       priority: "normal",
-      expires_at: new Date(Date.now() + 7 * 86400000).toISOString(),
-      published_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 19).replace("T", " "),
+      published_at: new Date().toISOString().slice(0, 19).replace("T", " "),
       target_type: "department",
       target_ids: JSON.stringify(["1"]),
     });
@@ -411,8 +411,8 @@ describe("Announcement service — full lifecycle", () => {
 
   it("updateAnnouncement — with expires_at and published_at", async () => {
     const a = await ann.updateAnnouncement(ORG, announcementId, {
-      expires_at: new Date(Date.now() + 14 * 86400000).toISOString(),
-      published_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 19).replace("T", " "),
+      published_at: new Date().toISOString().slice(0, 19).replace("T", " "),
     });
     expect(a).toBeTruthy();
   });
@@ -1925,8 +1925,8 @@ describe("Survey service — deep coverage", () => {
 
   it("updateSurvey — update dates and targeting", async () => {
     const s = await srv.updateSurvey(ORG, draftSurveyId, {
-      start_date: new Date().toISOString(),
-      end_date: new Date(Date.now() + 30 * 86400000).toISOString(),
+      start_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+      end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 19).replace("T", " "),
       target_type: "department",
       target_ids: [1, 2],
       recurrence: "weekly",

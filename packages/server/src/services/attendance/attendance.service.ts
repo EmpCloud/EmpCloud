@@ -204,7 +204,7 @@ export async function listRecords(
     .join("users as u", function () {
       this.on("ar.user_id", "u.id").andOn("ar.organization_id", "u.organization_id");
     })
-    .leftJoin("departments as dept", "u.department_id", "dept.id")
+    .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
     .where("ar.organization_id", orgId)
     .where("u.status", 1); // Only active employees — matches getDashboard filter
 
