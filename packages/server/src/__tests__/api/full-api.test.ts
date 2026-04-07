@@ -48,16 +48,12 @@ async function api(
 // Setup: login as all three roles
 // ---------------------------------------------------------------------------
 beforeAll(async () => {
-  // Admin (using manager with org access — Ananya's password was changed)
+  // Admin (org_admin)
   const r1 = await api("POST", "/api/v1/auth/login", {
-    email: "karthik@technova.in",
+    email: "ananya@technova.in",
     password: "Welcome@123",
   });
-  if (r1.status !== 200) {
-    // Fallback: skip test suite if login fails
-    console.warn("Admin login failed, some tests may be skipped");
-    return;
-  }
+  expect(r1.status).toBe(200);
   adminToken = r1.data.data.tokens.access_token;
   adminUserId = r1.data.data.user.id;
 

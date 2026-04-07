@@ -33,7 +33,7 @@ describe("API Endpoints - Live Server", () => {
 
   describe("Authentication", () => {
     it("POST /auth/login with valid credentials returns tokens", async () => {
-      const { status, data } = await login("priya@technova.in", "Welcome@123");
+      const { status, data } = await login("ananya@technova.in", "Welcome@123");
       expect(status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.tokens.access_token).toBeTruthy();
@@ -62,9 +62,9 @@ describe("API Endpoints - Live Server", () => {
     });
 
     it("POST /auth/login returns user info with tokens", async () => {
-      const { data } = await login("priya@technova.in", "Welcome@123");
+      const { data } = await login("ananya@technova.in", "Welcome@123");
       expect(data.data.user).toBeDefined();
-      expect(data.data.user.email).toBe("priya@technova.in");
+      expect(data.data.user.email).toBe("ananya@technova.in");
       expect(data.data.user.password).toBeUndefined(); // password should not be returned
     });
   });
@@ -109,7 +109,7 @@ describe("API Endpoints - Live Server", () => {
     let token: string;
 
     it("GET /employees/directory with auth returns employee data", async () => {
-      const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+      const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
       token = loginData.data.tokens.access_token;
 
       const { status, data } = await getWithAuth("/api/v1/employees/directory", token);
@@ -120,7 +120,7 @@ describe("API Endpoints - Live Server", () => {
 
     it("GET /employees/directory returns org-scoped data only", async () => {
       if (!token) {
-        const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+        const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
         token = loginData.data.tokens.access_token;
       }
       const { data } = await getWithAuth("/api/v1/employees/directory", token);
@@ -131,7 +131,7 @@ describe("API Endpoints - Live Server", () => {
 
     it("GET /employees/directory supports pagination", async () => {
       if (!token) {
-        const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+        const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
         token = loginData.data.tokens.access_token;
       }
       const { status, data } = await getWithAuth("/api/v1/employees/directory?page=1&per_page=2", token);
@@ -167,7 +167,7 @@ describe("API Endpoints - Live Server", () => {
     });
 
     it("Org 5 user cannot see Org 9 data", async () => {
-      const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+      const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
       const token = loginData.data.tokens.access_token;
 
       const { data } = await getWithAuth("/api/v1/employees/directory", token);
@@ -179,7 +179,7 @@ describe("API Endpoints - Live Server", () => {
 
   describe("Leave Endpoints", () => {
     it("GET /leave/types returns leave types for the org", async () => {
-      const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+      const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
       const token = loginData.data.tokens.access_token;
 
       const { status, data } = await getWithAuth("/api/v1/leave/types", token);
@@ -188,7 +188,7 @@ describe("API Endpoints - Live Server", () => {
     });
 
     it("GET /leave/balances returns balance data", async () => {
-      const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+      const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
       const token = loginData.data.tokens.access_token;
 
       const { status, data } = await getWithAuth("/api/v1/leave/balances", token);
@@ -199,7 +199,7 @@ describe("API Endpoints - Live Server", () => {
 
   describe("Attendance Endpoints", () => {
     it("GET /attendance/shifts returns shifts", async () => {
-      const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+      const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
       const token = loginData.data.tokens.access_token;
 
       const { status, data } = await getWithAuth("/api/v1/attendance/shifts", token);
@@ -210,7 +210,7 @@ describe("API Endpoints - Live Server", () => {
 
   describe("Announcement Endpoints", () => {
     it("GET /announcements returns announcements for the org", async () => {
-      const { data: loginData } = await login("priya@technova.in", "Welcome@123");
+      const { data: loginData } = await login("ananya@technova.in", "Welcome@123");
       const token = loginData.data.tokens.access_token;
 
       const { status, data } = await getWithAuth("/api/v1/announcements", token);
