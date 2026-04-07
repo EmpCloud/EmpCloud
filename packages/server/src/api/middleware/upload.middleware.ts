@@ -17,7 +17,6 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
-/* v8 ignore start */ // Multer storage callbacks - tested via integration/E2E
 const storage = multer.diskStorage({
   destination: (req: Request, _file, cb) => {
     const orgId = req.user?.org_id ?? "unknown";
@@ -60,5 +59,3 @@ export const upload = multer({
   limits: { fileSize: MAX_FILE_SIZE },
   fileFilter,
 });
-
-/* v8 ignore stop */

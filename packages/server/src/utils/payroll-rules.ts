@@ -222,13 +222,11 @@ export function validateSalaryStructure(
   const employerPF = calculateEmployerPF(structure.basic);
 
   if (Math.abs(structure.employer_pf - employerPF) > tolerance) {
-    /* v8 ignore start */ // Rare validation edge case
     errors.push(
       `Employer PF (${structure.employer_pf}) does not match calculated value (${employerPF}). ` +
       `PF is 12% of basic capped at Rs ${PF_BASIC_CAP}.`,
     );
   }
-    /* v8 ignore stop */
 
   // --- Rule 4: ESI threshold validation ---
   const employeeESI = calculateEmployeeESI(structure.gross);
@@ -251,13 +249,11 @@ export function validateSalaryStructure(
   const gratuity = calculateGratuity(structure.basic);
 
   if (Math.abs(structure.gratuity - gratuity) > tolerance) {
-    /* v8 ignore start */ // Rare validation edge case
     errors.push(
       `Gratuity (${structure.gratuity}) does not match calculated value (${gratuity}). ` +
       `Expected ${GRATUITY_RATE * 100}% of basic.`,
     );
   }
-    /* v8 ignore stop */
 
   // --- Rule 1: CTC formula validation ---
   const expectedCTC = structure.gross + employerPF + employerESI + gratuity;
