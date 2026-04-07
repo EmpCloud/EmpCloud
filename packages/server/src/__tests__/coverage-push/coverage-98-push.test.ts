@@ -1215,8 +1215,8 @@ describe("Chatbot Tools — executeTool coverage", () => {
       expect(parsed.error).toMatch(/multiple/i);
     });
 
-    it("executes get_subscriptions tool", async () => {
-      const result = await toolsModule.executeTool("get_subscriptions", ORG, ADMIN, {});
+    it("executes get_module_subscriptions tool", async () => {
+      const result = await toolsModule.executeTool("get_module_subscriptions", ORG, ADMIN, {});
       const parsed = JSON.parse(result);
       expect(parsed.subscriptions).toBeDefined();
     });
