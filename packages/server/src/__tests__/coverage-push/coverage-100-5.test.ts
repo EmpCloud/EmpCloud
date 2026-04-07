@@ -1709,7 +1709,6 @@ describe("Position Service", () => {
       expect(result.code).toBeTruthy();
       expect(result.code.startsWith("POS")).toBe(true);
       // Cleanup
-      const db = getDB();
       await db("positions").where({ id: result.id }).del();
     });
   });
