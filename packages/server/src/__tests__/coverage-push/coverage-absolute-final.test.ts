@@ -1067,34 +1067,62 @@ describe("edge cases & extra coverage", () => {
     // Create a past_due subscription with period end 20 days ago
     const pastDate = new Date();
     pastDate.setDate(pastDate.getDate() - 20);
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
 
     const mod = await db("modules").where({ is_active: true }).first();
     if (!mod) return;
 
-    const [subId] = await db("org_subscriptions").insert({
-      organization_id: ORG,
-      module_id: mod.id,
-      plan_tier: "basic",
-      status: "past_due",
-      total_seats: 5,
-      used_seats: 0,
-      billing_cycle: "monthly",
-      price_per_seat: 100,
-      currency: "INR",
-      current_period_start: new Date(pastDate.getTime() - 30 * 86400000),
-      current_period_end: pastDate,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
-    cleanupSubscriptionIds.push(subId);
+    // Find a module that doesn't already have a subscription for this org,
+    // or update an existing one to past_due. Unique constraint: (org_id, module_id).
+    const existingSub = await db("org_subscriptions")
+      .where({ organization_id: ORG, module_id: mod.id })
+      .first();
 
-    const status = await getBillingStatus(ORG);
-    expect(status.has_overdue).toBe(true);
-    expect(status.days_overdue).toBeGreaterThanOrEqual(1);
-    expect(["info", "warning", "critical"]).toContain(status.warning_level);
-    expect(status.message).toBeTruthy();
-    expect(status.overdue_subscriptions.length).toBeGreaterThanOrEqual(1);
+    let subId: number;
+    let originalStatus: string | null = null;
+
+    if (existingSub) {
+      // Temporarily set existing subscription to past_due
+      subId = existingSub.id;
+      originalStatus = existingSub.status;
+      await db("org_subscriptions").where({ id: subId }).update({
+        status: "past_due",
+        current_period_end: pastDate,
+      });
+    } else {
+      // No existing subscription — safe to insert
+      [subId] = await db("org_subscriptions").insert({
+        organization_id: ORG,
+        module_id: mod.id,
+        plan_tier: "basic",
+        status: "past_due",
+        total_seats: 5,
+        used_seats: 0,
+        billing_cycle: "monthly",
+        price_per_seat: 100,
+        currency: "INR",
+        current_period_start: new Date(pastDate.getTime() - 30 * 86400000),
+        current_period_end: pastDate,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+      cleanupSubscriptionIds.push(subId);
+    }
+
+    try {
+      const status = await getBillingStatus(ORG);
+      expect(status.has_overdue).toBe(true);
+      expect(status.days_overdue).toBeGreaterThanOrEqual(1);
+      expect(["info", "warning", "critical"]).toContain(status.warning_level);
+      expect(status.message).toBeTruthy();
+      expect(status.overdue_subscriptions.length).toBeGreaterThanOrEqual(1);
+    } finally {
+      // Restore original status if we modified an existing subscription
+      if (originalStatus !== null) {
+        await db("org_subscriptions").where({ id: subId }).update({
+          status: originalStatus,
+          current_period_end: existingSub!.current_period_end,
+        });
+      }
+    }
   }, 15000);
 });
