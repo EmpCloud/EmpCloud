@@ -820,7 +820,7 @@ describe("Agent Tools — additional tool executions", () => {
   it("tools list includes at least these tools", () => {
     const names = toolsMod.tools.map((t: any) => t.name);
     expect(names).toContain("get_employee_count");
-    expect(names).toContain("get_departments");
+    expect(names).toContain("get_department_list");
   });
 
   it("each tool can be called with empty params without crashing", async () => {
