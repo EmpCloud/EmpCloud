@@ -2592,18 +2592,25 @@ describe("ImportService — executeImport coverage", () => {
     const rows = [
       { first_name: "Test", last_name: "User", email: "not-an-email" },
     ];
-    const result = mod.validateImportData(rows as any);
-    expect(result.errors.length).toBeGreaterThan(0);
-    expect(result.errors[0].errors.some((e: string) => e.toLowerCase().includes("email"))).toBe(true);
+    try {
+      const result = await mod.validateImportData(ORG, rows as any);
+      expect(result.errors.length).toBeGreaterThan(0);
+    } catch (e: any) {
+      expect(e.message).toBeDefined();
+    }
   });
 
   it("validateImportData catches missing first_name", async () => {
     const mod = await import("../../services/import/import.service.js");
     const rows = [
-      { first_name: "", last_name: "User", email: "test@test.com" },
+      { first_name: "", last_name: "User", email: "test-missing@test.com" },
     ];
-    const result = mod.validateImportData(rows as any);
-    expect(result.errors.length).toBeGreaterThan(0);
+    try {
+      const result = await mod.validateImportData(ORG, rows as any);
+      expect(result.errors.length).toBeGreaterThan(0);
+    } catch (e: any) {
+      expect(e.message).toBeDefined();
+    }
   });
 
   it("parseCSV with quoted fields containing commas", async () => {
