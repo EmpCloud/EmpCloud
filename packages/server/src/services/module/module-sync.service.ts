@@ -262,8 +262,9 @@ export async function getAllUsersModuleMap(orgId: number) {
 
 export async function handleModuleSeatWebhook(data: {
   module_slug: string;
-  empcloud_user_id: number;
-  organization_id: number;
+  empcloud_user_id?: number;
+  email?: string;
+  organization_id?: number;
   action: "added" | "removed";
 }): Promise<void> {
   const db = getDB();
@@ -271,41 +272,49 @@ export async function handleModuleSeatWebhook(data: {
   const mod = await db("modules").where({ slug: data.module_slug }).first();
   if (!mod) throw new NotFoundError(`Module '${data.module_slug}'`);
 
-  const user = await db("users").where({ id: data.empcloud_user_id, organization_id: data.organization_id }).first();
+  // Look up user by empcloud_user_id or email
+  let user;
+  if (data.empcloud_user_id && data.organization_id) {
+    user = await db("users").where({ id: data.empcloud_user_id, organization_id: data.organization_id }).first();
+  }
+  if (!user && data.email) {
+    user = await db("users").where({ email: data.email }).first();
+  }
   if (!user) throw new NotFoundError("User");
 
+  const orgId = user.organization_id;
+
   const sub = await db("org_subscriptions")
-    .where({ organization_id: data.organization_id, module_id: mod.id })
+    .where({ organization_id: orgId, module_id: mod.id })
     .whereIn("status", ["active", "trial"])
     .first();
   if (!sub) throw new NotFoundError("Active subscription");
 
   if (data.action === "added") {
-    // Check if seat already exists
     const existing = await db("org_module_seats")
-      .where({ organization_id: data.organization_id, module_id: mod.id, user_id: data.empcloud_user_id })
+      .where({ organization_id: orgId, module_id: mod.id, user_id: user.id })
       .first();
-    if (existing) return; // Already tracked
+    if (existing) return;
 
     await db("org_module_seats").insert({
       subscription_id: sub.id,
-      organization_id: data.organization_id,
+      organization_id: orgId,
       module_id: mod.id,
-      user_id: data.empcloud_user_id,
-      assigned_by: data.empcloud_user_id, // self-assigned via module
+      user_id: user.id,
+      assigned_by: user.id,
       assigned_at: new Date(),
     });
     await db("org_subscriptions").where({ id: sub.id }).increment("used_seats", 1);
-    logger.info(`Seat registered via webhook: module ${data.module_slug}, user ${data.empcloud_user_id}`);
+    logger.info(`Seat registered via webhook: module ${data.module_slug}, user ${user.id} (${user.email})`);
 
   } else if (data.action === "removed") {
     const seat = await db("org_module_seats")
-      .where({ organization_id: data.organization_id, module_id: mod.id, user_id: data.empcloud_user_id })
+      .where({ organization_id: orgId, module_id: mod.id, user_id: user.id })
       .first();
     if (!seat) return;
 
     await db("org_module_seats").where({ id: seat.id }).delete();
     await db("org_subscriptions").where({ id: seat.subscription_id }).decrement("used_seats", 1);
-    logger.info(`Seat removed via webhook: module ${data.module_slug}, user ${data.empcloud_user_id}`);
+    logger.info(`Seat removed via webhook: module ${data.module_slug}, user ${user.id} (${user.email})`);
   }
 }
