@@ -10,7 +10,7 @@ import { test, expect } from '@playwright/test';
 
 const BILLING_API = 'https://test-billing-api.empcloud.com/api/v1';
 const BILLING_BASE = 'https://test-billing-api.empcloud.com';
-const API_KEY = 'emp-billing-api-key-2026-secure-integration';
+const API_KEY = process.env.BILLING_API_KEY || "";
 
 // Helper: API key auth headers (Bearer token, matching billing API middleware)
 const auth = () => ({

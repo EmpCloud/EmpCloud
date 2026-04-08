@@ -18,7 +18,7 @@ export function getTestDB(): Knex {
         host: process.env.TEST_DB_HOST || "localhost",
         port: Number(process.env.TEST_DB_PORT || 3306),
         user: process.env.TEST_DB_USER || "empcloud",
-        password: process.env.TEST_DB_PASSWORD || "EmpCloud2026",
+        password: process.env.TEST_DB_PASSWORD || "",
         database: process.env.TEST_DB_NAME || "empcloud",
         connectTimeout: 30000,
       },

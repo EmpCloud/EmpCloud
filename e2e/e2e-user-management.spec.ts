@@ -7,8 +7,8 @@ import { test, expect, APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "arjun@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 const RUN = Date.now().toString().slice(-6);
 
@@ -120,7 +120,7 @@ test.describe("User CRUD (org_admin)", () => {
         email: `e2e-user-${RUN}@technova.in`,
         first_name: "E2E",
         last_name: `User ${RUN}`,
-        password: "Welcome@123",
+        password: process.env.TEST_USER_PASSWORD || "Welcome@123",
         role: "employee",
       },
     });
@@ -148,7 +148,7 @@ test.describe("User CRUD (org_admin)", () => {
         email: `blocked-${RUN}@technova.in`,
         first_name: "Blocked",
         last_name: "User",
-        password: "Welcome@123",
+        password: process.env.TEST_USER_PASSWORD || "Welcome@123",
         role: "employee",
       },
     });

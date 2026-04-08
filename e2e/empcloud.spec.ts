@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://test-empcloud.empcloud.com";
 const DEMO_EMAIL = "ananya@technova.in";
-const DEMO_PASSWORD = "Welcome@123";
+const DEMO_PASSWORD = process.env.TEST_USER_PASSWORD || "Welcome@123";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. REGISTER FLOW

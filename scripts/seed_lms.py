@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Generate and execute LMS seed SQL on the test server."""
-import paramiko, sys, uuid
+import paramiko, sys, uuid, os
 
 def uid(): return str(uuid.uuid4())
 
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect('163.227.174.141', username='empcloud-development', password='Epm^%$#Dv98g89')
+ssh.connect('163.227.174.141', username='empcloud-development', password=os.environ.get('SSH_PASSWORD', ''))
 
 cat_tech = 'eae171b4-a435-4eba-b0c6-3c15c270686f'
 cat_soft = 'ebd29783-3361-4e1f-a86e-c0b3ab75da17'
@@ -97,14 +97,15 @@ sftp.close()
 print("SQL uploaded")
 
 # Execute
-stdin, stdout, stderr = ssh.exec_command("mysql -u empcloud -pEmpCloud2026 emp_lms < /tmp/lms_seed.sql 2>&1 | grep -v Warning", timeout=30)
+db_pass = os.environ.get('DB_PASSWORD', '')
+stdin, stdout, stderr = ssh.exec_command(f"mysql -u empcloud -p{db_pass} emp_lms < /tmp/lms_seed.sql 2>&1 | grep -v Warning", timeout=30)
 out = stdout.read().decode('utf-8', errors='replace')
 err = stderr.read().decode('utf-8', errors='replace')
 print(f"Result: {out}{err}")
 
 # Verify
 for t in ['courses','enrollments','learning_paths','learning_path_courses','certificates','ilt_sessions','compliance_assignments','discussions','course_ratings']:
-    stdin, stdout, stderr = ssh.exec_command(f"mysql -u empcloud -pEmpCloud2026 emp_lms -e 'SELECT COUNT(*) as c FROM {t}' 2>&1 | grep -v Warning | tail -1")
+    stdin, stdout, stderr = ssh.exec_command(f"mysql -u empcloud -p{os.environ.get('DB_PASSWORD', '')} emp_lms -e 'SELECT COUNT(*) as c FROM {t}' 2>&1 | grep -v Warning | tail -1")
     print(f"{t}: {stdout.read().decode().strip()}")
 
 ssh.close()

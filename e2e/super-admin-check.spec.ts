@@ -17,7 +17,7 @@ test("Super Admin Overview Dashboard loading check", async ({ page }) => {
   // Login as super admin
   await page.goto("https://test-empcloud.empcloud.com/login");
   await page.fill('input[name="email"]', "admin@empcloud.com");
-  await page.fill('input[name="password"]', "SuperAdmin@123");
+  await page.fill('input[name="password"]', process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123");
   await page.click('button[type="submit"]');
   await page.waitForURL("**/", { timeout: 15000 });
   await page.waitForTimeout(2000);

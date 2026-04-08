@@ -8,9 +8,9 @@ import { test, expect, type Page } from "@playwright/test";
 const FRONTEND = "https://test-empcloud.empcloud.com";
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 const BILLING_API = "https://test-billing-api.empcloud.com/api/v1";
-const BILLING_KEY = "emp-billing-api-key-2026-secure-integration";
+const BILLING_KEY = process.env.BILLING_API_KEY || "";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 async function login(page: Page): Promise<void> {
   await page.goto(`${FRONTEND}/login`);

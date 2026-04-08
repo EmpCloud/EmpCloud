@@ -4,7 +4,7 @@ const CLOUD_URL = "https://test-empcloud.empcloud.com";
 const LMS_URL = "https://testlms.empcloud.com";
 const LMS_API = "https://testlms-api.empcloud.com";
 const EMAIL = "ananya@technova.in";
-const PASSWORD = "Welcome@123";
+const PASSWORD = process.env.TEST_USER_PASSWORD || "Welcome@123";
 
 test("SSO: Cloud -> LMS end-to-end", async ({ page }) => {
   test.setTimeout(60000);

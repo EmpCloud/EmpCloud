@@ -6,9 +6,9 @@ import { test, expect, APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
-const ADMIN_CREDS = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE_CREDS = { email: "priya@technova.in", password: "Welcome@123" };
-const SUPER_ADMIN_CREDS = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
+const ADMIN_CREDS = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE_CREDS = { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const SUPER_ADMIN_CREDS = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" };
 
 // =============================================================================
 // Helpers
@@ -378,7 +378,7 @@ test.describe("11. Login with Deactivated Account", () => {
     // If no deactivated user exists, verify the login endpoint handles status checks.
     // Attempt login with a non-existent email (simulates deactivated/missing)
     const res = await request.post(`${API}/auth/login`, {
-      data: { email: "deactivated-user-test@technova.in", password: "Welcome@123" },
+      data: { email: "deactivated-user-test@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
     });
     expect(res.status()).toBe(401);
     const body = await res.json();

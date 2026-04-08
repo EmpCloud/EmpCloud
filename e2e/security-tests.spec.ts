@@ -8,10 +8,10 @@ const API = "https://test-empcloud-api.empcloud.com";
 const APP = "https://test-empcloud.empcloud.com";
 const LMS_API = "https://testlms-api.empcloud.com";
 
-const ADMIN_CREDS = { email: "ananya@technova.in", password: "Welcome@123" }; // Org 5
-const EMPLOYEE_CREDS = { email: "priya@technova.in", password: "Welcome@123" }; // Org 5
-const SUPER_ADMIN_CREDS = { email: "admin@empcloud.com", password: "SuperAdmin@123" }; // Org 7
-const OTHER_ORG_CREDS = { email: "john@globaltech.com", password: "Welcome@123" }; // Org 9
+const ADMIN_CREDS = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" }; // Org 5
+const EMPLOYEE_CREDS = { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" }; // Org 5
+const SUPER_ADMIN_CREDS = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" }; // Org 7
+const OTHER_ORG_CREDS = { email: "john@globaltech.com", password: process.env.TEST_USER_PASSWORD || "Welcome@123" }; // Org 9
 
 // =============================================================================
 // Helpers

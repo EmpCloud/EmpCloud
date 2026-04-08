@@ -7,8 +7,8 @@ import { test, expect, type Page } from "@playwright/test";
 
 const FRONTEND = "https://test-empcloud.empcloud.com";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "arjun@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 async function login(page: Page, email: string, password: string): Promise<void> {
   await page.goto(`${FRONTEND}/login`, { timeout: 30000 });

@@ -13,7 +13,7 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const PAYROLL_API = 'https://testpayroll-api.empcloud.com/api/v1';
 const PAYROLL_BASE = 'https://testpayroll-api.empcloud.com';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 let token = '';
 let refreshToken = '';
@@ -174,7 +174,7 @@ test.describe('1. Auth Gap Routes', () => {
     await ensureIds(request);
     const r = await request.post(`${PAYROLL_API}/auth/reset-employee-password`, {
       ...authJson(),
-      data: { empcloudUserId: Number(employeeId), newPassword: 'Welcome@123' },
+      data: { empcloudUserId: Number(employeeId), newPassword: process.env.TEST_USER_PASSWORD || 'Welcome@123' },
     });
     expect([200, 400, 403, 404, 500]).toContain(r.status());
   });
@@ -183,7 +183,7 @@ test.describe('1. Auth Gap Routes', () => {
     await ensureAuth(request);
     const r = await request.post(`${PAYROLL_API}/auth/change-password`, {
       ...authJson(),
-      data: { currentPassword: 'Welcome@123', newPassword: 'Welcome@123' },
+      data: { currentPassword: process.env.TEST_USER_PASSWORD || 'Welcome@123', newPassword: process.env.TEST_USER_PASSWORD || 'Welcome@123' },
     });
     expect([200, 400, 404, 500]).toContain(r.status());
   });

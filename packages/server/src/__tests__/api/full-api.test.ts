@@ -51,15 +51,15 @@ beforeAll(async () => {
   // Super Admin (most stable — login first)
   const r3 = await api("POST", "/api/v1/auth/login", {
     email: "admin@empcloud.com",
-    password: "SuperAdmin@123",
+    password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123",
   });
   expect(r3.status).toBe(200);
   superAdminToken = r3.data.data.tokens.access_token;
 
   // Admin — try candidates in order (passwords may be changed by other tests)
   const adminCandidates = [
-    { email: "ananya@technova.in", password: "Welcome@123" },
-    { email: "karthik@technova.in", password: "Welcome@123" },
+    { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
+    { email: "karthik@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
   ];
   for (const cred of adminCandidates) {
     const r = await api("POST", "/api/v1/auth/login", cred);
@@ -78,8 +78,8 @@ beforeAll(async () => {
 
   // Employee — try candidates in order
   const employeeCandidates = [
-    { email: "priya@technova.in", password: "Welcome@123" },
-    { email: "karthik@technova.in", password: "Welcome@123" },
+    { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
+    { email: "karthik@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
   ];
   for (const cred of employeeCandidates) {
     const r = await api("POST", "/api/v1/auth/login", cred);
@@ -103,10 +103,10 @@ describe("Auth Endpoints", () => {
   it("POST /auth/login — success returns tokens + user", async () => {
     // Try multiple candidates — passwords may be changed by other tests
     const candidates = [
-      { email: "ananya@technova.in", password: "Welcome@123" },
-      { email: "karthik@technova.in", password: "Welcome@123" },
-      { email: "priya@technova.in", password: "Welcome@123" },
-      { email: "admin@empcloud.com", password: "SuperAdmin@123" },
+      { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
+      { email: "karthik@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
+      { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" },
+      { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" },
     ];
     let r: { status: number; data: any } | undefined;
     for (const cred of candidates) {

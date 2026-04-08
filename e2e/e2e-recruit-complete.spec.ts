@@ -14,7 +14,7 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const RECRUIT_API = 'https://test-recruit-api.empcloud.com/api/v1';
 const RECRUIT_BASE = 'https://test-recruit-api.empcloud.com';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 const RUN = Date.now().toString().slice(-6);
 
 // ---------------------------------------------------------------------------

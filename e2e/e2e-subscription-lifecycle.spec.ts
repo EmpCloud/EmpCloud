@@ -8,10 +8,10 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 const BILLING_API = "https://test-billing-api.empcloud.com/api/v1";
-const BILLING_KEY = "emp-billing-api-key-2026-secure-integration";
+const BILLING_KEY = process.env.BILLING_API_KEY || "";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "arjun@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -582,7 +582,7 @@ test.describe("Phase 9: Cross-System Integrity", () => {
 
   test("9.3 Revenue analytics reflect subscriptions", async ({ request }) => {
     // Login as super admin for revenue
-    const superToken = await getToken(request, "admin@empcloud.com", "SuperAdmin@123");
+    const superToken = await getToken(request, "admin@empcloud.com", process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123");
     const res = await request.get(`${API}/admin/revenue`, { headers: auth(superToken) });
     expect(res.status()).toBe(200);
     const data = (await res.json()).data;

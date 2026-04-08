@@ -39,7 +39,7 @@ let assessmentToken = '';
 test.describe.serial('0 — Auth Setup', () => {
   test('0.1 Login to EmpCloud', async ({ request }) => {
     const res = await request.post(`${EC_API}/auth/login`, {
-      data: { email: 'ananya@technova.in', password: 'Welcome@123' },
+      data: { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || process.env.TEST_USER_PASSWORD || 'Welcome@123' },
     });
     expect([200, 201, 400, 401, 409, 500]).toContain(res.status());
     const body = await res.json();
@@ -488,7 +488,7 @@ test.describe.serial('8 — Payroll: auth.service.ts (48%)', () => {
     const res = await request.post(`${PAY_API}/auth/change-password`, {
       headers: { Authorization: `Bearer ${payToken}` },
       data: {
-        currentPassword: 'Welcome@123',
+        currentPassword: process.env.TEST_USER_PASSWORD || 'Welcome@123',
         newPassword: 'abc',
       },
     });

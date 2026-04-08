@@ -25,10 +25,10 @@ const DEFAULT_PASSWORD = "NexGen@2026";
 const SSH_HOST = "163.227.174.141";
 const SSH_PORT = 22;
 const SSH_USER = "empcloud-development";
-const SSH_PASS = "rSPa3izkYPtAjCFLa5cqPDpsFvV071KN9u";
+const SSH_PASS = process.env.SSH_PASSWORD || "";
 
 const MYSQL_USER = "empcloud";
-const MYSQL_PASS = "EmpCloud2026";
+const MYSQL_PASS = process.env.DB_PASSWORD || "";
 const MYSQL_DB = "empcloud";
 
 // ---------------------------------------------------------------------------

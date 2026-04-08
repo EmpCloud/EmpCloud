@@ -56,7 +56,7 @@ describe("Security - Database Verification", () => {
         // Must NOT be any common plaintext password
         expect(u.password).not.toBe("password");
         expect(u.password).not.toBe("123456");
-        expect(u.password).not.toBe("Welcome@123");
+        expect(u.password).not.toBe(process.env.TEST_USER_PASSWORD || "Welcome@123");
         expect(u.password).not.toBe("admin");
       }
     });

@@ -13,10 +13,10 @@ import { test, expect } from '@playwright/test';
 
 const API = 'https://test-empcloud-api.empcloud.com/api/v1';
 
-const ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const MANAGER_USER = { email: 'karthik@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'priya@technova.in', password: 'Welcome@123' };
-const MEERA = { email: 'meera@technova.in', password: 'Welcome@123' };
+const ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const MANAGER_USER = { email: 'karthik@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE = { email: 'priya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const MEERA = { email: 'meera@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 const RUN = Date.now().toString().slice(-6);
 

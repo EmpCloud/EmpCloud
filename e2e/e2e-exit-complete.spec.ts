@@ -15,8 +15,8 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const EXIT_API = 'https://test-exit-api.empcloud.com/api/v1';
 const EXIT_BASE = 'https://test-exit-api.empcloud.com';
 
-const ADMIN_CREDS = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE_CREDS = { email: 'priya@technova.in', password: 'Welcome@123' };
+const ADMIN_CREDS = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE_CREDS = { email: 'priya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 const RUN = Date.now().toString().slice(-6);
 

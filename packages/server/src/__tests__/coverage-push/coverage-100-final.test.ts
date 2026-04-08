@@ -7,7 +7,7 @@
 process.env.DB_HOST = "localhost";
 process.env.DB_PORT = "3306";
 process.env.DB_USER = "empcloud";
-process.env.DB_PASSWORD = "EmpCloud2026";
+// DB_PASSWORD must be set via environment variable
 process.env.DB_NAME = "empcloud";
 process.env.NODE_ENV = "test";
 process.env.REDIS_HOST = "localhost";
@@ -30,7 +30,7 @@ import knex from "knex";
 // Probe DB connectivity at module level
 let dbAvailable = false;
 try {
-  const probe = knex({ client: "mysql2", connection: { host: "localhost", port: 3306, user: "empcloud", password: "EmpCloud2026", database: "empcloud" }, pool: { min: 0, max: 1 } });
+  const probe = knex({ client: "mysql2", connection: { host: "localhost", port: 3306, user: "empcloud", password: process.env.DB_PASSWORD || "", database: "empcloud" }, pool: { min: 0, max: 1 } });
   await probe.raw("SELECT 1");
   await probe.destroy();
   dbAvailable = true;
@@ -435,7 +435,7 @@ describe.skipIf(!dbAvailable)("user.service — validation & edge cases", () => 
       first_name: "TestFinal",
       last_name: "User",
       email: `testfinal_${U}@test.com`,
-      password: "Welcome@123",
+      password: process.env.TEST_USER_PASSWORD || "Welcome@123",
       role: "employee",
     } as any);
     expect(result.id).toBeDefined();
@@ -448,7 +448,7 @@ describe.skipIf(!dbAvailable)("user.service — validation & edge cases", () => 
       first_name: "BadMgr",
       last_name: "User",
       email: `badmgr_${U}@test.com`,
-      password: "Welcome@123",
+      password: process.env.TEST_USER_PASSWORD || "Welcome@123",
       reporting_manager_id: 999999,
     } as any);
     expect(result.id).toBeDefined();
@@ -678,7 +678,7 @@ describe.skipIf(!dbAvailable)("user.service — validation & edge cases", () => 
         token: "nonexistent_token_12345",
         firstName: "Test",
         lastName: "User",
-        password: "Welcome@123",
+        password: process.env.TEST_USER_PASSWORD || "Welcome@123",
       })
     ).rejects.toThrow(/Invitation/);
   });
@@ -705,7 +705,7 @@ describe.skipIf(!dbAvailable)("user.service — validation & edge cases", () => 
         token,
         firstName: "Exp",
         lastName: "User",
-        password: "Welcome@123",
+        password: process.env.TEST_USER_PASSWORD || "Welcome@123",
       })
     ).rejects.toThrow(/expired/);
   });
@@ -1509,10 +1509,10 @@ describe.skipIf(!dbAvailable)("API Endpoints - Live Server (coverage)", () => {
 
   async function getToken(): Promise<string | null> {
     // Try Ananya first, then Karthik as fallback
-    const { status: s1, data: d1 } = await login("ananya@technova.in", "Welcome@123");
+    const { status: s1, data: d1 } = await login("ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
     if (s1 === 200 && d1?.data?.tokens?.access_token) return d1.data.tokens.access_token;
 
-    const { status: s2, data: d2 } = await login("karthik@technova.in", "Welcome@123");
+    const { status: s2, data: d2 } = await login("karthik@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
     if (s2 === 200 && d2?.data?.tokens?.access_token) return d2.data.tokens.access_token;
 
     return null;
@@ -1645,7 +1645,7 @@ describe.skipIf(!dbAvailable)("additional coverage — misc service branches", (
       first_name: "Deactivate",
       last_name: "Me",
       email: `deactivate_${U}@test.com`,
-      password: "Welcome@123",
+      password: process.env.TEST_USER_PASSWORD || "Welcome@123",
     } as any);
     cleanupUserIds.push(user.id);
 
@@ -1673,7 +1673,7 @@ describe.skipIf(!dbAvailable)("additional coverage — misc service branches", (
       first_name: "DeptLoc",
       last_name: "User",
       email: `deptloc_${U}@test.com`,
-      password: "Welcome@123",
+      password: process.env.TEST_USER_PASSWORD || "Welcome@123",
       department_id: dept?.id || undefined,
       location_id: loc?.id || undefined,
       designation: "Engineer",

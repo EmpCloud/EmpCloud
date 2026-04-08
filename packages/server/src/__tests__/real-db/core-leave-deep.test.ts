@@ -8,7 +8,7 @@ let db: Knex;
 beforeAll(async () => {
   db = knex({
     client: "mysql2",
-    connection: { host: "localhost", port: 3306, user: "empcloud", password: "EmpCloud2026", database: "empcloud" },
+    connection: { host: "localhost", port: 3306, user: "empcloud", password: process.env.DB_PASSWORD || "", database: "empcloud" },
     pool: { min: 1, max: 5 },
   });
   await db.raw("SELECT 1");

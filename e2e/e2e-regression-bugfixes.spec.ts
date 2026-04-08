@@ -9,9 +9,9 @@ import { test, expect, APIRequestContext, Page } from "@playwright/test";
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 const FRONTEND = "https://test-empcloud.empcloud.com";
 
-const ADMIN_CREDS = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE_CREDS = { email: "priya@technova.in", password: "Welcome@123" };
-const SUPER_ADMIN_CREDS = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
+const ADMIN_CREDS = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE_CREDS = { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const SUPER_ADMIN_CREDS = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" };
 
 // =============================================================================
 // Helpers

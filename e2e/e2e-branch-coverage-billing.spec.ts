@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 // =============================================================================
 
 const API = 'https://test-billing-api.empcloud.com/api/v1';
-const API_KEY = 'emp-billing-api-key-2026-secure-integration';
+const API_KEY = process.env.BILLING_API_KEY || "";
 
 const auth = () => ({
   headers: {

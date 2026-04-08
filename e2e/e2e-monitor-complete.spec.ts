@@ -15,8 +15,8 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const MONITOR_API = 'https://test-empmonitor-api.empcloud.com/api/v3';
 const MONITOR_BASE = 'https://test-empmonitor-api.empcloud.com';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'arjun@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE = { email: 'arjun@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 let adminToken = '';
 let employeeToken = '';

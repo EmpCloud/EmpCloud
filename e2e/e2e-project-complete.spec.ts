@@ -13,7 +13,7 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const PROJECT_API = 'https://test-project-api.empcloud.com/v1';
 const TASK_API = 'https://test-project-task-api.empcloud.com/v1';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 const RUN = Date.now().toString().slice(-6);
 
 // ---------------------------------------------------------------------------

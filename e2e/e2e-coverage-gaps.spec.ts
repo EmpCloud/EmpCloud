@@ -6,9 +6,9 @@ import { test, expect, APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "priya@technova.in", password: "Welcome@123" };
-const SUPER_ADMIN = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const SUPER_ADMIN = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" };
 
 const RUN = Date.now().toString().slice(-6);
 
@@ -239,7 +239,7 @@ test.describe("2. Headcount Planning", () => {
 // 3. Leave Calendar & Comp-Off Rejection
 // =============================================================================
 
-const MANAGER_CRED = { email: "karthik@technova.in", password: "Welcome@123" };
+const MANAGER_CRED = { email: "karthik@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 test.describe("3. Leave Calendar & Comp-Off", () => {
   let adminToken: string;

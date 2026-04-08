@@ -5,12 +5,13 @@ import paramiko
 import json
 import time
 import sys
+import os
 
 HOST = "163.227.174.141"
 USER = "empcloud-development"
-PASS = "rSPa3izkYPtAjCFLa5cqPDpsFvV071KN9u"
+PASS = os.environ.get("SSH_PASSWORD", "")
 DB_USER = "empcloud"
-DB_PASS = "EmpCloud2026"
+DB_PASS = os.environ.get("DB_PASSWORD", "")
 DB_NAME = "empcloud"
 ORG_ID = 5  # TechNova
 

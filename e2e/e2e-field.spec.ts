@@ -11,7 +11,7 @@ test.describe('EMP Field Module', () => {
   test.beforeAll(async ({ request }) => {
     // Login to EmpCloud
     const login = await request.post(`${EMPCLOUD_API}/auth/login`, {
-      data: { email: 'ananya@technova.in', password: 'Welcome@123' },
+      data: { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' },
     });
     const ecToken = (await login.json()).data.tokens.access_token;
 

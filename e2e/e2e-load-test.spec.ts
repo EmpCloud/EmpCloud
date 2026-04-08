@@ -7,7 +7,7 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
 // =============================================================================
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 async function getToken(request: APIRequestContext): Promise<string> {
   const res = await request.post(`${API}/auth/login`, { data: ADMIN });

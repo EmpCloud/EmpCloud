@@ -17,7 +17,7 @@ import { test, expect } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
-const VALID_CREDS = { email: "ananya@technova.in", password: "Welcome@123" };
+const VALID_CREDS = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 const WRONG_CREDS = { email: "ananya@technova.in", password: "WrongPassword@999" };
 
 // =============================================================================

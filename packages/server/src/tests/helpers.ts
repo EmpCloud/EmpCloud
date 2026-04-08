@@ -39,7 +39,7 @@ export const api = {
 
 export async function loginAs(
   email = "ananya@technova.in",
-  password = "Welcome@123"
+  password = process.env.TEST_USER_PASSWORD || "Welcome@123"
 ): Promise<{ token: string; refreshToken: string; user: any; org: any }> {
   const { body } = await api.post("/api/v1/auth/login", { email, password });
   if (!body.success) throw new Error(`Login failed: ${body.error?.message}`);

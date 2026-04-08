@@ -10,7 +10,7 @@ const API = "https://test-empcloud-api.empcloud.com/api/v1";
 // We use the org admin account for password reset tests.
 // After the test, we reset the password back to the original.
 const TEST_EMAIL = "ananya@technova.in";
-const ORIGINAL_PASSWORD = "Welcome@123";
+const ORIGINAL_PASSWORD = process.env.TEST_USER_PASSWORD || "Welcome@123";
 const NEW_PASSWORD = "ResetTest@2026";
 
 async function loginAndGetToken(

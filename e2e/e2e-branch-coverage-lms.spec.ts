@@ -20,7 +20,7 @@ import { test, expect, APIRequestContext } from '@playwright/test';
 const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const LMS_API = 'https://testlms-api.empcloud.com/api/v1';
 
-const ADMIN_CREDS = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ADMIN_CREDS = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 const FAKE_UUID = '00000000-0000-0000-0000-000000000099';
 
 const RUN = Date.now().toString().slice(-6);

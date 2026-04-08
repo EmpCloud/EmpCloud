@@ -9,10 +9,10 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 const BILLING_API = "https://test-billing-api.empcloud.com/api/v1";
-const BILLING_KEY = "emp-billing-api-key-2026-secure-integration";
+const BILLING_KEY = process.env.BILLING_API_KEY || "";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "arjun@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 async function getToken(request: APIRequestContext, email: string, password: string): Promise<string> {
   const res = await request.post(`${API}/auth/login`, { data: { email, password } });
@@ -137,7 +137,7 @@ test.describe("System Notifications", () => {
   let superToken: string;
 
   test.beforeAll(async ({ request }) => {
-    superToken = await getToken(request, "admin@empcloud.com", "SuperAdmin@123");
+    superToken = await getToken(request, "admin@empcloud.com", process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123");
   });
 
   test("Super admin can list system notifications", async ({ request }) => {

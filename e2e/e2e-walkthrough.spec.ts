@@ -10,9 +10,9 @@ import * as fs from 'fs';
 const BASE = 'https://test-empcloud.empcloud.com';
 const SCREENSHOT_DIR = path.join(__dirname, 'screenshots');
 
-const ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'arjun@technova.in', password: 'Welcome@123' };
-const SUPER_ADMIN = { email: 'admin@empcloud.com', password: 'SuperAdmin@123' };
+const ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE = { email: 'arjun@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const SUPER_ADMIN = { email: 'admin@empcloud.com', password: process.env.TEST_SUPER_ADMIN_PASSWORD || 'SuperAdmin@123' };
 
 // Ensure screenshot dir exists
 fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });

@@ -6,7 +6,7 @@ test("SSO: EMP Cloud → EMP Monitor end-to-end", async ({ page }) => {
   // 1. Login to EMP Cloud
   await page.goto("https://test-empcloud.empcloud.com/login");
   await page.fill('input[type="email"]', "ananya@technova.in");
-  await page.fill('input[type="password"]', "Welcome@123");
+  await page.fill('input[type="password"]', process.env.TEST_USER_PASSWORD || "Welcome@123");
   await page.click('button[type="submit"]');
   await page.waitForURL("**/", { timeout: 15000 });
   await page.waitForLoadState("networkidle");

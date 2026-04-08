@@ -9,7 +9,7 @@ import crypto from "crypto";
 const BASE_URL = "https://test-empcloud-api.empcloud.com";
 const API = `${BASE_URL}/api/v1`;
 
-const ADMIN_CREDS = { email: "ananya@technova.in", password: "Welcome@123" };
+const ADMIN_CREDS = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 // The empcloud-dashboard client is a public (non-confidential) OAuth client
 const PUBLIC_CLIENT_ID = "empcloud-dashboard";
