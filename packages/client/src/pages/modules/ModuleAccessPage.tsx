@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Package, Loader2, Shield, AlertTriangle } from "lucide-react";
+import { Search, Package, Loader2, AlertTriangle } from "lucide-react";
 import api from "@/api/client";
 
 export default function ModuleAccessPage() {
