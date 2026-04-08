@@ -92,7 +92,7 @@ export default function AttendanceDashboardPage() {
   const [exportMonth, setExportMonth] = useState(month);
   const [exportYear, setExportYear] = useState(year);
   const [exportDept, setExportDept] = useState<string>("");
-  const [exportEmployee, setExportEmployee] = useState<string>("");
+  const [exportEmployee] = useState<string>("");
   const [exportStatus, setExportStatus] = useState<string>("");
   const [exportDateFrom, setExportDateFrom] = useState("");
   const [exportDateTo, setExportDateTo] = useState("");

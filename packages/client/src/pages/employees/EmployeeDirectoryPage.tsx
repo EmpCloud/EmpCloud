@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, Users, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 import * as XLSX from "xlsx";
@@ -86,22 +86,6 @@ function parseUploadedFile(file: File): Promise<any[]> {
   });
 }
 
-// Keep CSV parser as fallback
-function parseCsvUpload(text: string): any[] {
-  const lines = text.split("\n").filter((l) => l.trim());
-  if (lines.length < 2) return [];
-  const headers = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
-  return lines.slice(1).map((line) => {
-    const values = line.match(/("([^"]|"")*"|[^,]*)/g) || [];
-    const row: any = {};
-    headers.forEach((h, i) => {
-      let v = (values[i] || "").trim().replace(/^"|"$/g, "").replace(/""/g, '"');
-      row[h] = v;
-    });
-    if (row.id) row.id = Number(row.id);
-    return row;
-  });
-}
 
 // ---------------------------------------------------------------------------
 // Component

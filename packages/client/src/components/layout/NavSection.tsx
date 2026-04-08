@@ -37,7 +37,7 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
             location={location}
             t={t}
             activeClass={activeClass}
-            allItems={items}
+
           />
         ) : (
           <NavLink
@@ -46,7 +46,7 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
             location={location}
             t={t}
             activeClass={activeClass}
-            allItems={items}
+
           />
         )
       )}
@@ -59,14 +59,13 @@ function NavLink({
   location,
   t,
   activeClass,
-  allItems,
+
   indent = false,
 }: {
   item: NavItem;
   location: { pathname: string };
   t: (key: string) => string;
   activeClass: string;
-  allItems: NavItem[];
   indent?: boolean;
 }) {
   const Icon = item.icon;
@@ -93,13 +92,12 @@ function NestedNavItem({
   location,
   t,
   activeClass,
-  allItems,
+
 }: {
   item: NavItem;
   location: { pathname: string };
   t: (key: string) => string;
   activeClass: string;
-  allItems: NavItem[];
 }) {
   const Icon = item.icon;
   const childActive = item.children?.some((child) =>
