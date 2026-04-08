@@ -59,13 +59,14 @@ function NavLink({
   location,
   t,
   activeClass,
-
+  allItems = [],
   indent = false,
 }: {
   item: NavItem;
   location: { pathname: string };
   t: (key: string) => string;
   activeClass: string;
+  allItems?: NavItem[];
   indent?: boolean;
 }) {
   const Icon = item.icon;
