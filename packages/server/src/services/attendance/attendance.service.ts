@@ -20,12 +20,12 @@ export async function checkIn(orgId: number, userId: number, data: CheckInInput)
     throw new ConflictError("Already checked in today");
   }
 
-  // Get current shift assignment
+  // Get current shift assignment (use DATE() to avoid timezone mismatch)
   const assignment = await db("shift_assignments")
     .where({ organization_id: orgId, user_id: userId })
-    .where("effective_from", "<=", today)
+    .whereRaw("DATE(effective_from) <= ?", [today])
     .where(function () {
-      this.whereNull("effective_to").orWhere("effective_to", ">=", today);
+      this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [today]);
     })
     .orderBy("effective_from", "desc")
     .first();
@@ -48,14 +48,14 @@ export async function checkIn(orgId: number, userId: number, data: CheckInInput)
   }
 
   if (existing) {
-    // Update existing record
+    // Update existing record — status stays "checked_in" until check-out
     await db("attendance_records").where({ id: existing.id }).update({
       check_in: now,
       check_in_source: data.source || "manual",
       check_in_lat: data.latitude || null,
       check_in_lng: data.longitude || null,
       late_minutes: lateMinutes,
-      status: "present",
+      status: "checked_in",
       updated_at: now,
     });
     return db("attendance_records").where({ id: existing.id }).first();
@@ -70,7 +70,7 @@ export async function checkIn(orgId: number, userId: number, data: CheckInInput)
     check_in_source: data.source || "manual",
     check_in_lat: data.latitude || null,
     check_in_lng: data.longitude || null,
-    status: "present",
+    status: "checked_in",
     late_minutes: lateMinutes,
     remarks: data.remarks || null,
     created_at: now,
@@ -131,12 +131,25 @@ export async function checkOut(orgId: number, userId: number, data: CheckOutInpu
     }
   }
 
-  // Determine status based on worked hours
-  // Minimum 5 minutes required to count as any attendance; below that treat as absent
+  // Determine status based on worked hours vs shift duration
+  // Calculate expected shift minutes (default 480 = 8h if no shift)
+  let shiftDurationMinutes = 480;
+  if (record.shift_id) {
+    const shiftForStatus = await db("shifts").where({ id: record.shift_id }).first();
+    if (shiftForStatus) {
+      const [sh, sm] = shiftForStatus.start_time.split(":").map(Number);
+      const [eeh, eem] = shiftForStatus.end_time.split(":").map(Number);
+      let diff = (eeh * 60 + eem) - (sh * 60 + sm);
+      if (diff <= 0) diff += 1440; // night shift crosses midnight
+      shiftDurationMinutes = diff - (shiftForStatus.break_minutes || 0);
+    }
+  }
+  const halfShift = Math.floor(shiftDurationMinutes / 2);
+
   let status = "present";
   if (workedMinutes < 5) {
     status = "absent";
-  } else if (workedMinutes < 240) {
+  } else if (workedMinutes < halfShift) {
     status = "half_day";
   }
 
@@ -262,7 +275,7 @@ export async function getDashboard(orgId: number) {
 
   const [presentCount] = await db("attendance_records")
     .where({ organization_id: orgId, date: today })
-    .whereIn("status", ["present", "half_day"])
+    .whereIn("status", ["present", "half_day", "checked_in"])
     .count("* as count");
 
   const [lateCount] = await db("attendance_records")

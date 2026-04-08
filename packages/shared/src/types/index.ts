@@ -164,6 +164,8 @@ export enum AuditAction {
   WELLNESS_CHECK_IN = "wellness_check_in",
   // Shift Scheduling
   SHIFT_BULK_ASSIGNED = "shift_bulk_assigned",
+  SHIFT_ASSIGNMENT_UPDATED = "shift_assignment_updated",
+  SHIFT_ASSIGNMENT_DELETED = "shift_assignment_deleted",
   SHIFT_SWAP_REQUESTED = "shift_swap_requested",
   SHIFT_SWAP_APPROVED = "shift_swap_approved",
   SHIFT_SWAP_REJECTED = "shift_swap_rejected",
@@ -663,6 +665,8 @@ export interface Shift {
   is_night_shift: boolean;
   is_default: boolean;
   is_active: boolean;
+  working_days: string; // comma-separated day numbers: 0=Sun,1=Mon,...6=Sat
+  half_days: string; // comma-separated day numbers for half-day work
   created_at: string;
   updated_at: string;
 }

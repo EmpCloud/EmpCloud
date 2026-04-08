@@ -10,6 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 
 // --- Helpers ---
@@ -106,6 +108,14 @@ export default function ShiftSchedulePage() {
   // Quick assign form state
   const [assignShiftId, setAssignShiftId] = useState("");
 
+  // Edit assignment state
+  const [editAssignment, setEditAssignment] = useState<{
+    id: number;
+    shift_id: number;
+    effective_from: string;
+    effective_to: string | null;
+  } | null>(null);
+
   const week = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
   const { data: shifts = [] } = useShifts();
@@ -132,6 +142,22 @@ export default function ShiftSchedulePage() {
       qc.invalidateQueries({ queryKey: ["shift-schedule"] });
       setShowAssign(null);
       setAssignShiftId("");
+    },
+  });
+
+  const updateAssignment = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
+      api.put(`/attendance/shifts/assignments/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["shift-schedule"] });
+      setEditAssignment(null);
+    },
+  });
+
+  const deleteAssignment = useMutation({
+    mutationFn: (id: number) => api.delete(`/attendance/shifts/assignments/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["shift-schedule"] });
     },
   });
 
@@ -166,6 +192,19 @@ export default function ShiftSchedulePage() {
       user_id: showAssign.userId,
       shift_id: Number(assignShiftId),
       effective_from: showAssign.date,
+    });
+  };
+
+  const handleEditAssignment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editAssignment) return;
+    updateAssignment.mutate({
+      id: editAssignment.id,
+      data: {
+        shift_id: editAssignment.shift_id,
+        effective_from: editAssignment.effective_from,
+        effective_to: editAssignment.effective_to || null,
+      },
     });
   };
 
@@ -357,6 +396,68 @@ export default function ShiftSchedulePage() {
         </div>
       )}
 
+      {/* Edit Assignment Modal */}
+      {editAssignment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <form onSubmit={handleEditAssignment} className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-gray-900">Edit Assignment</h3>
+              <button type="button" onClick={() => setEditAssignment(null)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Shift</label>
+                <select
+                  value={editAssignment.shift_id}
+                  onChange={(e) => setEditAssignment({ ...editAssignment, shift_id: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  required
+                >
+                  {shifts.map((s: any) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.start_time} - {s.end_time})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+                <input
+                  type="date"
+                  value={editAssignment.effective_from}
+                  onChange={(e) => setEditAssignment({ ...editAssignment, effective_from: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">To (optional)</label>
+                <input
+                  type="date"
+                  value={editAssignment.effective_to || ""}
+                  onChange={(e) => setEditAssignment({ ...editAssignment, effective_to: e.target.value || null })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <button type="button" onClick={() => setEditAssignment(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={updateAssignment.isPending}
+                className="bg-brand-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              >
+                {updateAssignment.isPending ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Tab Content: Team Schedule */}
       {tab === "schedule" && (
         <div>
@@ -436,11 +537,46 @@ export default function ShiftSchedulePage() {
                         return (
                           <td key={date} className="px-2 py-3 text-center">
                             {assignment ? (
-                              <span
-                                className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
-                              >
-                                {assignment.shift_name}
-                              </span>
+                              <div className="group relative inline-flex items-center gap-1">
+                                <span
+                                  className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
+                                >
+                                  {assignment.shift_name}
+                                </span>
+                                <span className="hidden group-hover:inline-flex items-center gap-0.5">
+                                  <button
+                                    onClick={() =>
+                                      setEditAssignment({
+                                        id: assignment.assignment_id,
+                                        shift_id: assignment.shift_id,
+                                        effective_from: typeof assignment.effective_from === "string"
+                                          ? assignment.effective_from.split("T")[0]
+                                          : new Date(assignment.effective_from).toISOString().split("T")[0],
+                                        effective_to: assignment.effective_to
+                                          ? typeof assignment.effective_to === "string"
+                                            ? assignment.effective_to.split("T")[0]
+                                            : new Date(assignment.effective_to).toISOString().split("T")[0]
+                                          : null,
+                                      })
+                                    }
+                                    className="text-gray-400 hover:text-brand-600 p-0.5"
+                                    title="Edit assignment"
+                                  >
+                                    <Pencil className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      if (confirm("Remove this shift assignment?")) {
+                                        deleteAssignment.mutate(assignment.assignment_id);
+                                      }
+                                    }}
+                                    className="text-gray-400 hover:text-red-600 p-0.5"
+                                    title="Remove assignment"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </span>
+                              </div>
                             ) : (
                               <button
                                 onClick={() =>

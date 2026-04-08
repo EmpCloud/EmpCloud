@@ -9,6 +9,7 @@ import { sendSuccess } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as subService from "../../services/subscription/subscription.service.js";
 import * as billingIntegration from "../../services/billing/billing-integration.service.js";
+import * as moduleSyncService from "../../services/module/module-sync.service.js";
 import {
   createSubscriptionSchema,
   updateSubscriptionSchema,
@@ -41,6 +42,22 @@ router.get("/billing-status", authenticate, requireHR, async (req: Request, res:
   try {
     const status = await subService.getBillingStatus(req.user!.org_id);
     sendSuccess(res, status);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/subscriptions/users-module-map — All users with their module access
+router.get("/users-module-map", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await moduleSyncService.getAllUsersModuleMap(req.user!.org_id);
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/subscriptions/user-modules/:userId — Get which modules a user has access to
+router.get("/user-modules/:userId", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const modules = await moduleSyncService.getUserModuleMap(req.user!.org_id, paramInt(req.params.userId));
+    sendSuccess(res, modules);
   } catch (err) { next(err); }
 });
 
@@ -185,6 +202,92 @@ router.post("/check-access", async (req: Request, res: Response, next: NextFunct
       moduleSlug: data.module_slug,
     });
     sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
+// =============================================================================
+// MODULE USER SYNC — Enable/Disable users across modules
+// =============================================================================
+
+// POST /api/v1/subscriptions/enable-module — Enable a user for a module
+router.post("/enable-module", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { module_id, user_id } = req.body;
+    if (!module_id || !user_id) throw new Error("module_id and user_id required");
+
+    const result = await moduleSyncService.enableUserForModule(
+      req.user!.org_id, Number(module_id), Number(user_id), req.user!.sub,
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SEAT_ASSIGNED,
+      details: { module_id, user_id, sync_status: result.sync_status },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result, 201);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/subscriptions/disable-module — Disable a user for a module
+router.post("/disable-module", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { module_id, user_id } = req.body;
+    if (!module_id || !user_id) throw new Error("module_id and user_id required");
+
+    const result = await moduleSyncService.disableUserForModule(
+      req.user!.org_id, Number(module_id), Number(user_id),
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.SEAT_REVOKED,
+      details: { module_id, user_id, sync_status: result.sync_status },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/subscriptions/bulk-enable-module — Enable multiple users for a module
+router.post("/bulk-enable-module", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { module_id, user_ids } = req.body;
+    if (!module_id || !Array.isArray(user_ids)) throw new Error("module_id and user_ids[] required");
+
+    const result = await moduleSyncService.bulkEnableUsersForModule(
+      req.user!.org_id, Number(module_id), user_ids.map(Number), req.user!.sub,
+    );
+
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/subscriptions/seat-webhook — Module reports a seat change (module → EmpCloud)
+router.post("/seat-webhook", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Authenticate via API key (skip if no key configured — dev mode)
+    const expectedKey = process.env.MODULE_SYNC_API_KEY || process.env.BILLING_API_KEY || "";
+    if (expectedKey) {
+      const apiKey = req.headers["x-api-key"] as string;
+      if (!apiKey || apiKey !== expectedKey) {
+        return res.status(401).json({ success: false, message: "Invalid API key" });
+      }
+    }
+
+    const { module_slug, empcloud_user_id, organization_id, action } = req.body;
+    if (!module_slug || !empcloud_user_id || !organization_id || !action) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    await moduleSyncService.handleModuleSeatWebhook({ module_slug, empcloud_user_id, organization_id, action });
+    sendSuccess(res, { message: "Seat sync processed" });
   } catch (err) { next(err); }
 });
 

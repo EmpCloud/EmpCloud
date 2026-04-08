@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2 } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import { useAuthStore } from "@/lib/auth-store";
+import * as XLSX from "xlsx";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -85,33 +86,107 @@ export default function AttendanceDashboardPage() {
   const records = recordsData?.data || [];
   const meta = recordsData?.meta;
 
-  const handleExportCSV = () => {
-    if (!records || records.length === 0) {
-      alert("No data to export. Please adjust your filters and try again.");
-      return;
+  // Export modal state
+  const [showExport, setShowExport] = useState(false);
+  const [exportType, setExportType] = useState<"detailed" | "consolidated">("detailed");
+  const [exportMonth, setExportMonth] = useState(month);
+  const [exportYear, setExportYear] = useState(year);
+  const [exportDept, setExportDept] = useState<string>("");
+  const [exportEmployee, setExportEmployee] = useState<string>("");
+  const [exportStatus, setExportStatus] = useState<string>("");
+  const [exportDateFrom, setExportDateFrom] = useState("");
+  const [exportDateTo, setExportDateTo] = useState("");
+  const [exportUseRange, setExportUseRange] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const fmtMin = (m: number) => `${Math.floor(m / 60)}h ${m % 60}m`;
+  const fmtDate = (v: any) => v ? new Date(v).toLocaleDateString() : "";
+  const fmtTime = (v: any) => v ? new Date(v).toLocaleTimeString() : "";
+
+  const downloadExcel = (headers: string[], rows: any[][], filename: string, sheetName = "Report") => {
+    const data = rows.map((row) => {
+      const obj: Record<string, any> = {};
+      headers.forEach((h, i) => { obj[h] = row[i]; });
+      return obj;
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws["!cols"] = headers.map((h) => {
+      const maxLen = Math.max(h.length, ...rows.map((r) => String(r[headers.indexOf(h)] ?? "").length));
+      return { wch: Math.min(maxLen + 2, 40) };
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, filename.replace(/\.csv$/, ".xlsx"));
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const params: Record<string, any> = {};
+      if (exportUseRange && exportDateFrom) {
+        params.date_from = exportDateFrom;
+        if (exportDateTo) params.date_to = exportDateTo;
+      } else {
+        params.month = exportMonth;
+        params.year = exportYear;
+      }
+      if (exportDept) params.department_id = exportDept;
+      if (exportEmployee) params.employee_id = exportEmployee;
+      if (exportStatus && exportType === "detailed") params.status = exportStatus;
+
+      if (exportType === "detailed") {
+        const res = await api.get("/attendance/export", { params });
+        const data = res.data.data || [];
+        const headers = [
+          "Employee", "Emp Code", "Email", "Department", "Designation", "Date",
+          "Shift", "Shift Start", "Shift End", "Check In", "Check Out",
+          "Worked", "Overtime", "Late", "Early Departure", "Status",
+        ];
+        const rows = data.map((r: any) => [
+          `${r.first_name || ""} ${r.last_name || ""}`.trim(),
+          r.emp_code || "", r.email || "", r.department_name || "", r.designation || "",
+          fmtDate(r.date), r.shift_name || "-", r.shift_start || "", r.shift_end || "",
+          fmtTime(r.check_in), fmtTime(r.check_out),
+          r.worked_minutes != null ? fmtMin(r.worked_minutes) : "",
+          r.overtime_minutes ? fmtMin(r.overtime_minutes) : "0",
+          r.late_minutes ? fmtMin(r.late_minutes) : "0",
+          r.early_departure_minutes ? fmtMin(r.early_departure_minutes) : "0",
+          r.status?.replace(/_/g, " ") || "",
+        ]);
+        const label = exportUseRange ? `${exportDateFrom}_to_${exportDateTo}` : `${months.find((m) => m.value === exportMonth)?.label}_${exportYear}`;
+        downloadExcel(headers, rows, `attendance_detailed_${label}.xlsx`, "Detailed Report");
+      } else {
+        const res = await api.get("/attendance/export/consolidated", { params });
+        const { report = [], total_working_days } = res.data.data || {};
+        const headers = [
+          "Employee", "Emp Code", "Email", "Department", "Designation",
+          "Present Days", "Half Days", "Absent Days", "Leave Days", "Late Count",
+          "Total Worked", "Avg Daily Worked", "Total Overtime", "Total Late", "Total Early Departure",
+          `Attendance % (of ${total_working_days} days)`,
+        ];
+        const rows = report.map((r: any) => {
+          const present = Number(r.present_days) + Number(r.half_days) * 0.5;
+          const pct = total_working_days > 0 ? ((present / total_working_days) * 100).toFixed(1) + "%" : "-";
+          return [
+            `${r.first_name || ""} ${r.last_name || ""}`.trim(),
+            r.emp_code || "", r.email || "", r.department_name || "", r.designation || "",
+            r.present_days, r.half_days, r.absent_days, r.leave_days, r.late_count,
+            fmtMin(Number(r.total_worked_minutes)),
+            r.avg_worked_minutes ? fmtMin(Math.round(Number(r.avg_worked_minutes))) : "-",
+            fmtMin(Number(r.total_overtime_minutes)),
+            fmtMin(Number(r.total_late_minutes)),
+            fmtMin(Number(r.total_early_departure_minutes)),
+            pct,
+          ];
+        });
+        downloadExcel(headers, rows, `attendance_consolidated_${months.find((m) => m.value === exportMonth)?.label}_${exportYear}.xlsx`, "Consolidated Report");
+      }
+      setShowExport(false);
+    } catch (err) {
+      alert("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
     }
-    const headers = ["Employee", "Emp Code", "Department", "Date", "Check In", "Check Out", "Worked", "Status", "Late (min)"];
-    const rows = records.map((r: any) => [
-      `${r.first_name || ""} ${r.last_name || ""}`.trim(),
-      r.emp_code || r.email || "",
-      r.department_name || "",
-      r.date ? new Date(r.date).toLocaleDateString() : "",
-      r.check_in ? new Date(r.check_in).toLocaleTimeString() : "",
-      r.check_out ? new Date(r.check_out).toLocaleTimeString() : "",
-      r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "",
-      r.status?.replace(/_/g, " ") || "",
-      r.late_minutes || "0",
-    ]);
-    const csvContent = [headers, ...rows].map((row) => row.map((cell: string) => `"${cell}"`).join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `attendance_${months.find((m) => m.value === month)?.label}_${year}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   const stats = [
@@ -242,14 +317,144 @@ export default function AttendanceDashboardPage() {
             Clear Filters
           </button>
           <button
-            onClick={handleExportCSV}
-            disabled={!records || records.length === 0}
-            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
+            onClick={() => { setExportMonth(month); setExportYear(year); setShowExport(true); }}
+            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
           >
-            <Download className="h-4 w-4" /> Export CSV
+            <Download className="h-4 w-4" /> Export Report
           </button>
         </div>
       </div>
+
+      {/* Export Modal */}
+      {showExport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                  <Download className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Export Attendance Report</h3>
+                  <p className="text-xs text-gray-400">Choose report type and filters</p>
+                </div>
+              </div>
+              <button onClick={() => setShowExport(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+            </div>
+
+            <div className="px-6 py-5 space-y-5">
+              {/* Report Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setExportType("detailed")}
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "detailed" ? "border-brand-600 bg-brand-50" : "border-gray-200 hover:border-gray-300"}`}
+                  >
+                    <FileSpreadsheet className={`h-5 w-5 ${exportType === "detailed" ? "text-brand-600" : "text-gray-400"}`} />
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-gray-900">Detailed Report</p>
+                      <p className="text-xs text-gray-400">Every check-in/out record</p>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExportType("consolidated")}
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "consolidated" ? "border-brand-600 bg-brand-50" : "border-gray-200 hover:border-gray-300"}`}
+                  >
+                    <BarChart3 className={`h-5 w-5 ${exportType === "consolidated" ? "text-brand-600" : "text-gray-400"}`} />
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-gray-900">Consolidated</p>
+                      <p className="text-xs text-gray-400">Employee-wise monthly summary</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Date Range Toggle */}
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="radio" checked={!exportUseRange} onChange={() => setExportUseRange(false)} className="text-brand-600" />
+                    Month/Year
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="radio" checked={exportUseRange} onChange={() => setExportUseRange(true)} className="text-brand-600" />
+                    Custom Date Range
+                  </label>
+                </div>
+                {!exportUseRange ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <select value={exportMonth} onChange={(e) => setExportMonth(Number(e.target.value))} className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                      {months.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                    </select>
+                    <select value={exportYear} onChange={(e) => setExportYear(Number(e.target.value))} className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                      {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">From</label>
+                      <input type="date" value={exportDateFrom} onChange={(e) => setExportDateFrom(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">To</label>
+                      <input type="date" value={exportDateTo} onChange={(e) => setExportDateTo(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Filters */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
+                  <select value={exportDept} onChange={(e) => setExportDept(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="">All Departments</option>
+                    {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                  </select>
+                </div>
+                {exportType === "detailed" && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                    <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                      <option value="">All Statuses</option>
+                      <option value="present">Present</option>
+                      <option value="checked_in">Checked In</option>
+                      <option value="half_day">Half Day</option>
+                      <option value="absent">Absent</option>
+                      <option value="on_leave">On Leave</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* What's included */}
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs font-medium text-gray-500 mb-1">This report includes:</p>
+                {exportType === "detailed" ? (
+                  <p className="text-xs text-gray-400">Employee name, emp code, email, department, designation, date, shift info, check-in/out times, worked hours, overtime, late minutes, early departure, status</p>
+                ) : (
+                  <p className="text-xs text-gray-400">Employee name, emp code, email, department, designation, present/half/absent/leave days, late count, total worked, avg daily worked, overtime, late, early departure, attendance %</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</button>
+              <button
+                onClick={handleExport}
+                disabled={exporting || (exportUseRange && !exportDateFrom)}
+                className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                {exporting ? <><Loader2 className="h-4 w-4 animate-spin" /> Exporting...</> : <><Download className="h-4 w-4" /> Download Excel</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Attendance Records Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
@@ -322,15 +527,16 @@ export default function AttendanceDashboardPage() {
                   <td className="px-6 py-4">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                       r.status === "present" ? "bg-green-50 text-green-700"
+                        : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
                         : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
                         : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
                         : "bg-red-50 text-red-700"
                     }`}>
-                      {r.status.replace(/_/g, " ")}
+                      {r.status === "checked_in" ? "checked in" : r.status.replace(/_/g, " ")}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.late_minutes ? `${r.late_minutes}m` : "-"}
+                    {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
                   </td>
                 </tr>
               ))

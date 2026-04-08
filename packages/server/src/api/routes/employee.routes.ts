@@ -62,6 +62,119 @@ const router = Router();
 // Directory & Insights (HR or any authenticated user for directory)
 // =========================================================================
 
+// GET /api/v1/employees/export — Export all employee data for bulk update
+router.get("/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getDB();
+    const employees = await db("users")
+      .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
+      .leftJoin("organization_locations", "users.location_id", "organization_locations.id")
+      .leftJoin("users as mgr", "users.reporting_manager_id", "mgr.id")
+      .where({ "users.organization_id": req.user!.org_id, "users.status": 1 })
+      .whereNot("users.role", "super_admin")
+      .select(
+        "users.id",
+        "users.emp_code",
+        "users.first_name",
+        "users.last_name",
+        "users.email",
+        "users.contact_number",
+        "users.designation",
+        "organization_departments.name as department_name",
+        "organization_locations.name as location_name",
+        "users.employment_type",
+        "users.gender",
+        "users.date_of_birth",
+        "users.date_of_joining",
+        "users.role",
+        "users.address",
+        db.raw("CONCAT(mgr.first_name, ' ', mgr.last_name) as reporting_manager"),
+      )
+      .orderBy("users.first_name", "asc");
+    sendSuccess(res, employees);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/employees/bulk-update — Bulk update employees from uploaded data
+router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { rows } = req.body;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      throw new ValidationError("rows array is required");
+    }
+
+    const db = getDB();
+    const orgId = req.user!.org_id;
+    const results: { id: number; status: string; error?: string }[] = [];
+
+    // Cache departments and locations for name→id lookup
+    const departments = await db("organization_departments").where({ organization_id: orgId }).select("id", "name");
+    const locations = await db("organization_locations").where({ organization_id: orgId }).select("id", "name");
+    const deptMap = new Map(departments.map((d: any) => [d.name?.toLowerCase(), d.id]));
+    const locMap = new Map(locations.map((l: any) => [l.name?.toLowerCase(), l.id]));
+
+    for (const row of rows) {
+      try {
+        if (!row.id) { results.push({ id: 0, status: "skipped", error: "Missing ID" }); continue; }
+
+        const user = await db("users").where({ id: row.id, organization_id: orgId }).first();
+        if (!user) { results.push({ id: row.id, status: "skipped", error: "Not found" }); continue; }
+
+        const updates: Record<string, any> = {};
+        if (row.first_name !== undefined && row.first_name !== user.first_name) updates.first_name = row.first_name;
+        if (row.last_name !== undefined && row.last_name !== user.last_name) updates.last_name = row.last_name;
+        if (row.emp_code !== undefined && row.emp_code !== user.emp_code) updates.emp_code = row.emp_code;
+        if (row.contact_number !== undefined && row.contact_number !== user.contact_number) updates.contact_number = row.contact_number;
+        if (row.designation !== undefined && row.designation !== user.designation) updates.designation = row.designation;
+        if (row.employment_type !== undefined && row.employment_type !== user.employment_type) updates.employment_type = row.employment_type;
+        if (row.gender !== undefined && row.gender !== user.gender) updates.gender = row.gender;
+        if (row.address !== undefined && row.address !== user.address) updates.address = row.address;
+        if (row.date_of_birth !== undefined) updates.date_of_birth = row.date_of_birth || null;
+        if (row.date_of_joining !== undefined) updates.date_of_joining = row.date_of_joining || null;
+        if (row.role && row.role !== user.role && ["employee", "manager", "hr_admin", "org_admin"].includes(row.role)) {
+          updates.role = row.role;
+        }
+        // Department name → id
+        if (row.department_name !== undefined) {
+          const deptId = deptMap.get(row.department_name?.toLowerCase());
+          if (deptId && deptId !== user.department_id) updates.department_id = deptId;
+        }
+        // Location name → id
+        if (row.location_name !== undefined) {
+          const locId = locMap.get(row.location_name?.toLowerCase());
+          if (locId && locId !== user.location_id) updates.location_id = locId;
+        }
+
+        if (Object.keys(updates).length === 0) {
+          results.push({ id: row.id, status: "unchanged" });
+          continue;
+        }
+
+        updates.updated_at = new Date();
+        await db("users").where({ id: row.id }).update(updates);
+        results.push({ id: row.id, status: "updated" });
+      } catch (err: any) {
+        results.push({ id: row.id, status: "error", error: err.message });
+      }
+    }
+
+    const updated = results.filter((r) => r.status === "updated").length;
+    const errors = results.filter((r) => r.status === "error").length;
+
+    await logAudit({
+      organizationId: orgId,
+      userId: req.user!.sub,
+      action: AuditAction.PROFILE_UPDATED,
+      resourceType: "employee_bulk_update",
+      resourceId: `${updated} updated, ${errors} errors`,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, { total: rows.length, updated, unchanged: results.filter((r) => r.status === "unchanged").length, errors, details: results });
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/employees — alias for /directory (#751)
 router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {

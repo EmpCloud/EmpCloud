@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Clock, Moon, Sun } from "lucide-react";
 
 interface ShiftForm {
   name: string;
@@ -12,7 +12,11 @@ interface ShiftForm {
   grace_minutes_early: number;
   is_night_shift: boolean;
   is_default: boolean;
+  working_days: string;
+  half_days: string;
 }
+
+const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const emptyForm: ShiftForm = {
   name: "",
@@ -23,6 +27,8 @@ const emptyForm: ShiftForm = {
   grace_minutes_early: 15,
   is_night_shift: false,
   is_default: false,
+  working_days: "1,2,3,4,5",
+  half_days: "",
 };
 
 export default function ShiftsPage() {
@@ -67,10 +73,36 @@ export default function ShiftsPage() {
       break_minutes: shift.break_minutes,
       grace_minutes_late: shift.grace_minutes_late,
       grace_minutes_early: shift.grace_minutes_early,
-      is_night_shift: shift.is_night_shift,
-      is_default: shift.is_default,
+      is_night_shift: !!shift.is_night_shift,
+      is_default: !!shift.is_default,
+      working_days: shift.working_days || "1,2,3,4,5",
+      half_days: shift.half_days || "",
     });
     setShowForm(true);
+  };
+
+  const cycleDayState = (day: number) => {
+    const workDays = form.working_days.split(",").filter(Boolean).map(Number);
+    const halfDays = form.half_days.split(",").filter(Boolean).map(Number);
+    const isWorking = workDays.includes(day);
+    const isHalf = halfDays.includes(day);
+
+    if (!isWorking && !isHalf) {
+      set("working_days", [...workDays, day].sort((a, b) => a - b).join(","));
+    } else if (isWorking && !isHalf) {
+      set("half_days", [...halfDays, day].sort((a, b) => a - b).join(","));
+    } else {
+      set("working_days", workDays.filter((d) => d !== day).join(","));
+      set("half_days", halfDays.filter((d) => d !== day).join(","));
+    }
+  };
+
+  const getDayState = (day: number): "off" | "full" | "half" => {
+    const workDays = form.working_days.split(",").filter(Boolean).map(Number);
+    const halfDays = form.half_days.split(",").filter(Boolean).map(Number);
+    if (!workDays.includes(day)) return "off";
+    if (halfDays.includes(day)) return "half";
+    return "full";
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -83,6 +115,8 @@ export default function ShiftsPage() {
   };
 
   const set = (key: keyof ShiftForm, value: any) => setForm((f) => ({ ...f, [key]: value }));
+
+  const isPending = createShift.isPending || updateShift.isPending;
 
   return (
     <div>
@@ -99,56 +133,176 @@ export default function ShiftsPage() {
         </button>
       </div>
 
-      {/* Form */}
+      {/* Modal */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">{editId ? "Edit Shift" : "Create Shift"}</h3>
-            <button type="button" onClick={resetForm} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input type="text" value={form.name} onChange={(e) => set("name", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-brand-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{editId ? "Edit Shift" : "Create Shift"}</h3>
+                  <p className="text-xs text-gray-400">Configure shift timing & working days</p>
+                </div>
+              </div>
+              <button type="button" onClick={resetForm} className="text-gray-400 hover:text-gray-600 p-1">
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-              <input type="time" value={form.start_time} onChange={(e) => set("start_time", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required />
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-5">
+              {/* Shift Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Shift Name</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  placeholder="e.g., General Shift, Night Shift, Weekend Shift"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  required
+                />
+              </div>
+
+              {/* Timing Row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                  <input
+                    type="time"
+                    value={form.start_time}
+                    onChange={(e) => set("start_time", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                  <input
+                    type="time"
+                    value={form.end_time}
+                    onChange={(e) => set("end_time", e.target.value)}
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Break & Grace */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Break (min)</label>
+                  <input
+                    type="number"
+                    value={form.break_minutes}
+                    onChange={(e) => set("break_minutes", Number(e.target.value))}
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    min={0}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Grace Late (min)</label>
+                  <input
+                    type="number"
+                    value={form.grace_minutes_late}
+                    onChange={(e) => set("grace_minutes_late", Number(e.target.value))}
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    min={0}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Grace Early (min)</label>
+                  <input
+                    type="number"
+                    value={form.grace_minutes_early}
+                    onChange={(e) => set("grace_minutes_early", Number(e.target.value))}
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    min={0}
+                  />
+                </div>
+              </div>
+
+              {/* Shift Options */}
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2.5 px-4 py-2.5 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                  <input
+                    type="checkbox"
+                    checked={form.is_night_shift}
+                    onChange={(e) => set("is_night_shift", e.target.checked)}
+                    className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                  />
+                  <Moon className="h-4 w-4 text-indigo-500" />
+                  <span className="text-sm text-gray-700">Night Shift</span>
+                </label>
+                <label className="flex items-center gap-2.5 px-4 py-2.5 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                  <input
+                    type="checkbox"
+                    checked={form.is_default}
+                    onChange={(e) => set("is_default", e.target.checked)}
+                    className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                  />
+                  <Sun className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm text-gray-700">Default Shift</span>
+                </label>
+              </div>
+
+              {/* Working Days */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Working Days</label>
+                <div className="flex gap-2 justify-between">
+                  {DAY_LABELS.map((label, idx) => {
+                    const state = getDayState(idx);
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => cycleDayState(idx)}
+                        className={`flex-1 py-3 rounded-xl text-xs font-medium border-2 transition flex flex-col items-center gap-1 ${
+                          state === "full"
+                            ? "bg-brand-600 text-white border-brand-600 shadow-sm"
+                            : state === "half"
+                            ? "bg-amber-50 text-amber-700 border-amber-300"
+                            : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <span className="font-semibold text-sm">{label}</span>
+                        <span className="text-[10px] opacity-80">
+                          {state === "full" ? "Full" : state === "half" ? "Half" : "Off"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-400 mt-2 text-center">Click to cycle: Off → Full Day → Half Day → Off</p>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-              <input type="time" value={form.end_time} onChange={(e) => set("end_time", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required />
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+              <button
+                type="button"
+                onClick={resetForm}
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="px-5 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 transition"
+              >
+                {isPending ? "Saving..." : editId ? "Update Shift" : "Create Shift"}
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Break (min)</label>
-              <input type="number" value={form.break_minutes} onChange={(e) => set("break_minutes", Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" min={0} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Grace Late (min)</label>
-              <input type="number" value={form.grace_minutes_late} onChange={(e) => set("grace_minutes_late", Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" min={0} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Grace Early (min)</label>
-              <input type="number" value={form.grace_minutes_early} onChange={(e) => set("grace_minutes_early", Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" min={0} />
-            </div>
-          </div>
-          <div className="flex items-center gap-6 mt-4">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.is_night_shift} onChange={(e) => set("is_night_shift", e.target.checked)} className="rounded" />
-              Night Shift
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.is_default} onChange={(e) => set("is_default", e.target.checked)} className="rounded" />
-              Default Shift
-            </label>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <button type="submit" disabled={createShift.isPending || updateShift.isPending} className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50">
-              {editId ? "Update" : "Create"}
-            </button>
-            <button type="button" onClick={resetForm} className="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>
-          </div>
-        </form>
+          </form>
+        </div>
       )}
 
       {/* Shifts Table */}
@@ -157,30 +311,52 @@ export default function ShiftsPage() {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Name</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Start</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">End</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Timing</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Break</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Grace Late</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Working Days</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
             ) : shifts.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">No shifts configured</td></tr>
+              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No shifts configured</td></tr>
             ) : (
               shifts.map((s: any) => (
                 <tr key={s.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <span className="text-sm font-medium text-gray-900">{s.name}</span>
-                    {s.is_default && <span className="ml-2 text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">Default</span>}
+                    {s.is_default ? <span className="ml-2 text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">Default</span> : null}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{s.start_time}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{s.end_time}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{s.start_time} - {s.end_time}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{s.break_minutes}m</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{s.grace_minutes_late}m</td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-1">
+                      {DAY_LABELS.map((label, idx) => {
+                        const workDays = (s.working_days || "1,2,3,4,5").split(",").filter(Boolean).map(Number);
+                        const halfDays = (s.half_days || "").split(",").filter(Boolean).map(Number);
+                        const isWorking = workDays.includes(idx);
+                        const isHalf = halfDays.includes(idx);
+                        return (
+                          <span
+                            key={idx}
+                            title={isHalf ? "Half Day" : isWorking ? "Full Day" : "Day Off"}
+                            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium ${
+                              isHalf
+                                ? "bg-amber-100 text-amber-700"
+                                : isWorking
+                                ? "bg-brand-100 text-brand-700"
+                                : "bg-gray-100 text-gray-300"
+                            }`}
+                          >
+                            {label[0]}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${s.is_night_shift ? "bg-indigo-50 text-indigo-700" : "bg-yellow-50 text-yellow-700"}`}>
                       {s.is_night_shift ? "Night" : "Day"}
