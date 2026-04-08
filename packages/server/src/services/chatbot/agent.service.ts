@@ -89,6 +89,12 @@ let _dbConfigCache: Record<string, string | null> | null = null;
 let _dbConfigCacheTime = 0;
 const DB_CONFIG_TTL = 60_000; // 60 seconds
 
+/** Reset the config cache — used by tests to force provider switch */
+export function resetConfigCache(): void {
+  _dbConfigCache = null;
+  _dbConfigCacheTime = 0;
+}
+
 async function loadDBConfig(): Promise<Record<string, string | null>> {
   const now = Date.now();
   if (_dbConfigCache && now - _dbConfigCacheTime < DB_CONFIG_TTL) {

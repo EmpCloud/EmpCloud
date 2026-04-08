@@ -82,12 +82,9 @@ describe("AgentService — toOpenAITools and provider routing", () => {
       await db("ai_config").where("config_key", "active_provider").update({ config_value: "openai" });
       await db("ai_config").where("config_key", "openai_api_key").update({ config_value: "sk-fake-openai-for-coverage" });
 
-      // Invalidate the agent cache by importing fresh and calling detectProviderAsync
-      // The cache TTL is 60s, but we can force by reimporting
       const agentMod = await import("../../services/chatbot/agent.service.js");
-      // Force cache invalidation — the module caches for 60s but we need to bypass
-      // Call detectProviderAsync which calls loadDBConfig — since cache was set within TTL,
-      // it returns cached anthropic. We need to wait or directly change env vars too.
+      // Invalidate the config cache so detectProviderAsync reads fresh DB values
+      agentMod.resetConfigCache();
       process.env.OPENAI_API_KEY = "sk-fake-openai-for-coverage";
 
       try {
@@ -97,10 +94,12 @@ describe("AgentService — toOpenAITools and provider routing", () => {
         expect(err).toBeDefined();
       }
     } finally {
-      // Restore DB
+      // Restore DB and reset cache
       if (origProvider) await db("ai_config").where("config_key", "active_provider").update({ config_value: origProvider.config_value });
       if (origOpenaiKey) await db("ai_config").where("config_key", "openai_api_key").update({ config_value: origOpenaiKey.config_value });
       delete process.env.OPENAI_API_KEY;
+      const agentMod2 = await import("../../services/chatbot/agent.service.js");
+      agentMod2.resetConfigCache();
     }
   }, 30_000);
 
@@ -115,16 +114,19 @@ describe("AgentService — toOpenAITools and provider routing", () => {
       process.env.GEMINI_API_KEY = "fake-gemini-for-coverage";
 
       const agentMod = await import("../../services/chatbot/agent.service.js");
+      agentMod.resetConfigCache();
       try {
         await agentMod.runAgent(ORG, USER, "hello", [], "en");
       } catch (err: any) {
         expect(err).toBeDefined();
       }
     } finally {
-      // Restore DB
+      // Restore DB and reset cache
       if (origProvider) await db("ai_config").where("config_key", "active_provider").update({ config_value: origProvider.config_value });
       if (origGeminiKey) await db("ai_config").where("config_key", "gemini_api_key").update({ config_value: origGeminiKey.config_value });
       delete process.env.GEMINI_API_KEY;
+      const agentMod2 = await import("../../services/chatbot/agent.service.js");
+      agentMod2.resetConfigCache();
     }
   }, 30_000);
 
