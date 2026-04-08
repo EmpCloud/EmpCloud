@@ -12,7 +12,7 @@ async function run() {
   const adminPage = await adminCtx.newPage();
   await adminPage.goto(BASE + "/login");
   await adminPage.fill('input[type="email"]', "ananya@technova.in");
-  await adminPage.fill('input[type="password"]', "Welcome@123");
+  await adminPage.fill('input[type="password"]', process.env.TEST_USER_PASSWORD || "Welcome@123");
   await adminPage.click('button[type="submit"]');
   await adminPage.waitForTimeout(4000);
 
@@ -44,7 +44,7 @@ async function run() {
   const empPage = await empCtx.newPage();
   await empPage.goto(BASE + "/login");
   await empPage.fill('input[type="email"]', "priya@technova.in");
-  await empPage.fill('input[type="password"]', "Welcome@123");
+  await empPage.fill('input[type="password"]', process.env.TEST_USER_PASSWORD || "Welcome@123");
   await empPage.click('button[type="submit"]');
   await empPage.waitForTimeout(4000);
 
