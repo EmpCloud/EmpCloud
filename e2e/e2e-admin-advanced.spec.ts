@@ -8,9 +8,9 @@ import { test, expect, APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
-const SUPER_ADMIN = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const SUPER_ADMIN = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "arjun@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 const RUN = Date.now().toString().slice(-6);
 
@@ -234,7 +234,7 @@ test.describe("Cross-Org User Management", () => {
         email: `crossorg-${RUN}@technova.in`,
         first_name: "CrossOrg",
         last_name: `Test ${RUN}`,
-        password: "Welcome@123",
+        password: process.env.TEST_USER_PASSWORD || "Welcome@123",
         role: "employee",
       },
     });

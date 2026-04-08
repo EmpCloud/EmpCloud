@@ -11,8 +11,8 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const PERF_API = 'https://test-performance-api.empcloud.com/api/v1';
 const PERF_BASE = 'https://test-performance-api.empcloud.com';
 
-const ADMIN_CREDS = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE_CREDS = { email: 'arjun@technova.in', password: 'Welcome@123' };
+const ADMIN_CREDS = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE_CREDS = { email: 'arjun@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 let token = '';
 let employeeToken = '';

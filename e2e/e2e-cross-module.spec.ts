@@ -16,10 +16,10 @@ const LMS_BASE = "https://testlms-api.empcloud.com";
 const MONITOR_API = "https://test-empmonitor-api.empcloud.com/api/v3";
 const MONITOR_BASE = "https://test-empmonitor-api.empcloud.com";
 
-const BILLING_KEY = "emp-billing-api-key-2026-secure-integration";
+const BILLING_KEY = process.env.BILLING_API_KEY || "";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const SUPER_ADMIN = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const SUPER_ADMIN = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" };
 
 // ---------------------------------------------------------------------------
 // Helpers

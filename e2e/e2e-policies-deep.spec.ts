@@ -18,8 +18,8 @@ test.describe('Policies Module — Deep E2E Tests', () => {
   let testPolicyId2: number;
 
   test.beforeAll(async ({ request }) => {
-    adminToken = await login(request, 'ananya@technova.in', 'Welcome@123');
-    employeeToken = await login(request, 'arjun@technova.in', 'Welcome@123');
+    adminToken = await login(request, 'ananya@technova.in', process.env.TEST_USER_PASSWORD || 'Welcome@123');
+    employeeToken = await login(request, 'arjun@technova.in', process.env.TEST_USER_PASSWORD || 'Welcome@123');
   });
 
   // ========== CRUD ==========

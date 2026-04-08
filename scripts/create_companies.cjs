@@ -1,11 +1,11 @@
 const bcrypt = require("bcryptjs");
 const knex = require("knex")({
   client: "mysql2",
-  connection: { host: "localhost", port: 3306, user: "empcloud", password: "EmpCloud2026", database: "empcloud" }
+  connection: { host: "localhost", port: 3306, user: "empcloud", password: process.env.DB_PASSWORD || "", database: "empcloud" }
 });
 
 async function main() {
-  const hash = bcrypt.hashSync("Welcome@123", 12);
+  const hash = bcrypt.hashSync(process.env.TEST_USER_PASSWORD || "Welcome@123", 12);
 
   const companies = [
     { name: "GlobalTech Inc.", legal_name: "GlobalTech Inc.", email: "admin@globaltech.com", country: "US", timezone: "America/New_York", admin_first: "John", admin_last: "Smith", admin_email: "john@globaltech.com", depts: ["Engineering", "Marketing", "Sales", "Finance"] },

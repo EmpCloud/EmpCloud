@@ -11,7 +11,7 @@ async function loginAndGoToPolicies(page: any) {
     return;
   }
   await page.fill('input[type="email"], input[name="email"]', 'ananya@technova.in');
-  await page.fill('input[type="password"], input[name="password"]', 'Welcome@123');
+  await page.fill('input[type="password"], input[name="password"]', process.env.TEST_USER_PASSWORD || 'Welcome@123');
   await page.click('button[type="submit"]');
   await page.waitForSelector('text=Welcome back', { timeout: 15000 }).catch(() => {});
   await page.waitForLoadState('networkidle');

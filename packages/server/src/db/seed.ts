@@ -65,7 +65,7 @@ async function seed() {
   }
 
   // --- Create Users ---
-  const adminPassword = await hashPassword("Welcome@123");
+  const adminPassword = await hashPassword(process.env.TEST_USER_PASSWORD || "Welcome@123");
   const users = [
     { first_name: "Ananya", last_name: "Gupta", email: "ananya@technova.in", role: "org_admin", dept: 4, designation: "HR Director" },
     { first_name: "Rahul", last_name: "Sharma", email: "rahul@technova.in", role: "hr_admin", dept: 0, designation: "Engineering Lead" },

@@ -10,7 +10,7 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const PAYROLL_API = 'https://testpayroll-api.empcloud.com/api/v1';
 const PAYROLL_BASE = 'https://testpayroll-api.empcloud.com';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 let token = '';
 let refreshToken = '';

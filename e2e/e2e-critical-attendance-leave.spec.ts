@@ -15,9 +15,9 @@ import { test, expect } from '@playwright/test';
 
 const API = 'https://test-empcloud-api.empcloud.com/api/v1';
 
-const ADMIN_CREDS = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const MANAGER_CREDS = { email: 'karthik@technova.in', password: 'Welcome@123' };
-const EMPLOYEE_CREDS = { email: 'priya@technova.in', password: 'Welcome@123' };
+const ADMIN_CREDS = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const MANAGER_CREDS = { email: 'karthik@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE_CREDS = { email: 'priya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 async function login(request: any, creds: { email: string; password: string }) {
   const resp = await request.post(`${API}/auth/login`, { data: creds });

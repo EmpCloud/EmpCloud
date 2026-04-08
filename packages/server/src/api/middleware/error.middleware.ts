@@ -18,7 +18,6 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
   }
 
   // Multer file-upload errors — return 400 with a helpful message
-/* v8 ignore start */ // Multer error codes - tested via integration/E2E
   if (err instanceof multer.MulterError) {
     const messages: Record<string, string> = {
       LIMIT_FILE_SIZE: "File too large. Maximum allowed size is 10 MB.",
@@ -35,7 +34,6 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
   }
 
   // Zod validation errors — extract first human-readable message for the client
-/* v8 ignore stop */
   if (err instanceof ZodError) {
     const firstIssue = err.errors[0];
     const message = firstIssue?.message && firstIssue.message !== "Required"

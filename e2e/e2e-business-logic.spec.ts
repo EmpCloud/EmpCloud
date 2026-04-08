@@ -11,8 +11,8 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const PAYROLL_API = 'https://testpayroll-api.empcloud.com/api/v1';
 const EXIT_API = 'https://test-exit-api.empcloud.com/api/v1';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const SUPER_ADMIN = { email: 'admin@empcloud.com', password: 'SuperAdmin@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const SUPER_ADMIN = { email: 'admin@empcloud.com', password: process.env.TEST_SUPER_ADMIN_PASSWORD || 'SuperAdmin@123' };
 
 // ---------------------------------------------------------------------------
 // Helpers

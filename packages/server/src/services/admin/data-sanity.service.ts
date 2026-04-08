@@ -89,7 +89,6 @@ function getModuleDB(dbName: string): Knex {
   return conn;
 }
 
-/* v8 ignore start */ // Infrastructure: requires module DB connections
 async function isDBAccessible(dbName: string): Promise<boolean> {
   try {
     const conn = getModuleDB(dbName);
@@ -808,7 +807,6 @@ async function checkDuplicates(): Promise<SanityCheck> {
 /**
  * Run all sanity checks and produce a report.
  */
-/* v8 ignore stop */
 export async function runSanityCheck(): Promise<SanityReport> {
   logger.info("Starting cross-module data sanity check...");
 
@@ -862,7 +860,6 @@ export async function runSanityCheck(): Promise<SanityReport> {
  * - Remove orphaned records
  * - Fix negative leave balances by clamping to 0
  */
-/* v8 ignore start */ // Infrastructure: modifies live DB data
 export async function runAutoFix(): Promise<FixReport> {
   logger.info("Starting data sanity auto-fix...");
   const db = getDB();
@@ -1029,5 +1026,3 @@ export async function runAutoFix(): Promise<FixReport> {
   logger.info("Data sanity auto-fix complete", { total_fixes: report.total_fixes, fix_count: fixes.length });
   return report;
 }
-
-/* v8 ignore stop */

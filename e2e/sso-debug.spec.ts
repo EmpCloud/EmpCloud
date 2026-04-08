@@ -12,7 +12,7 @@ test("Debug SSO request to Recruit", async ({ page }) => {
   // 1. Login to Cloud
   await page.goto("https://test-empcloud.empcloud.com/login");
   await page.fill('input[name="email"]', "ananya@technova.in");
-  await page.fill('input[name="password"]', "Welcome@123");
+  await page.fill('input[name="password"]', process.env.TEST_USER_PASSWORD || "Welcome@123");
   await page.click('button[type="submit"]');
   await page.waitForURL("**/", { timeout: 15000 });
   await page.waitForTimeout(2000);

@@ -7,7 +7,7 @@
 process.env.DB_HOST = "localhost";
 process.env.DB_PORT = "3306";
 process.env.DB_USER = "empcloud";
-process.env.DB_PASSWORD = "EmpCloud2026";
+// DB_PASSWORD must be set via environment variable
 process.env.DB_NAME = "empcloud";
 process.env.NODE_ENV = "test";
 process.env.JWT_SECRET = "test-jwt-secret-cov-final";

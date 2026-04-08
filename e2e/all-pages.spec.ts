@@ -8,7 +8,7 @@ import * as path from "path";
 
 const CREDS = {
   email: "ananya@technova.in",
-  password: "Welcome@123",
+  password: process.env.TEST_USER_PASSWORD || "Welcome@123",
 };
 
 const SCREENSHOT_DIR = path.resolve(__dirname, "screenshots", "all-pages");

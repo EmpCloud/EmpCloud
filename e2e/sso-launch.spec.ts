@@ -15,7 +15,7 @@ const MODULES = [
 test("Login to Cloud dashboard", async ({ page }) => {
   await page.goto(CLOUD + "/login");
   await page.fill('input[name="email"]', "ananya@technova.in");
-  await page.fill('input[name="password"]', "Welcome@123");
+  await page.fill('input[name="password"]', process.env.TEST_USER_PASSWORD || "Welcome@123");
   await page.click('button[type="submit"]');
   await page.waitForURL("**/", { timeout: 15000 });
 
@@ -35,7 +35,7 @@ for (const mod of MODULES) {
     // Login to Cloud first
     await page.goto(CLOUD + "/login");
     await page.fill('input[name="email"]', "ananya@technova.in");
-    await page.fill('input[name="password"]', "Welcome@123");
+    await page.fill('input[name="password"]', process.env.TEST_USER_PASSWORD || "Welcome@123");
     await page.click('button[type="submit"]');
     await page.waitForURL("**/", { timeout: 15000 });
     await page.waitForTimeout(2000);

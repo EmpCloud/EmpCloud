@@ -15,7 +15,7 @@ const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const FIELD_API = 'https://test-field-api.empcloud.com/api/v1';
 const FIELD_BASE = 'https://test-field-api.empcloud.com';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 let token = '';
 

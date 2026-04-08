@@ -9,10 +9,10 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
 
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 
-const ADMIN_CREDS = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMP_CREDS = { email: "priya@technova.in", password: "Welcome@123" };
-const MGR_CREDS = { email: "karthik@technova.in", password: "Welcome@123" };
-const SUPER_CREDS = { email: "admin@empcloud.com", password: "SuperAdmin@123" };
+const ADMIN_CREDS = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMP_CREDS = { email: "priya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const MGR_CREDS = { email: "karthik@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const SUPER_CREDS = { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123" };
 
 const RUN = Date.now().toString().slice(-6);
 

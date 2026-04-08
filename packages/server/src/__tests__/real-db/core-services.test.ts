@@ -19,7 +19,7 @@ beforeAll(async () => {
       host: process.env.DB_HOST || "localhost",
       port: Number(process.env.DB_PORT) || 3306,
       user: process.env.DB_USER || "empcloud",
-      password: process.env.DB_PASSWORD || "EmpCloud2026",
+      password: process.env.DB_PASSWORD || "",
       database: process.env.DB_NAME || "empcloud",
     },
     pool: { min: 1, max: 5 },

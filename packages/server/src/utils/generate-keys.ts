@@ -10,11 +10,9 @@ import path from "node:path";
 
 const keysDir = path.resolve(process.cwd(), "keys");
 
-/* v8 ignore start */
 if (!fs.existsSync(keysDir)) {
   fs.mkdirSync(keysDir, { recursive: true });
 }
-/* v8 ignore stop */
 
 const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,

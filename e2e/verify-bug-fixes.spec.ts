@@ -38,8 +38,8 @@ test("Fix 1: Employee cannot reject another users leave application", async ({
   test.setTimeout(30000);
 
   // Login as HR to find a pending leave
-  const hr = await login(request, "ananya@technova.in", "Welcome@123");
-  const emp = await login(request, "priya@technova.in", "Welcome@123");
+  const hr = await login(request, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
+  const emp = await login(request, "priya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   // First try to create a leave application so we have a pending one
   const typesRes = await request.get(`${API}/leave/types`, { headers: authHeader(hr.token) });
@@ -118,7 +118,7 @@ test("Fix 2: XSS payloads are sanitized in announcements", async ({
 }) => {
   test.setTimeout(30000);
 
-  const hr = await login(request, "ananya@technova.in", "Welcome@123");
+  const hr = await login(request, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   // Create announcement with XSS in title and content
   const createRes = await request.post(`${API}/announcements`, {
@@ -162,7 +162,7 @@ test("Fix 2: XSS payloads are sanitized in announcements", async ({
 test("Fix 3: Event creation returns 201", async ({ request }) => {
   test.setTimeout(30000);
 
-  const hr = await login(request, "ananya@technova.in", "Welcome@123");
+  const hr = await login(request, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   const createRes = await request.post(`${API}/events`, {
     headers: authHeader(hr.token),
@@ -198,7 +198,7 @@ test("Fix 3: Event creation returns 201", async ({ request }) => {
 test("Fix 4: Survey results have aggregated data", async ({ request }) => {
   test.setTimeout(30000);
 
-  const hr = await login(request, "ananya@technova.in", "Welcome@123");
+  const hr = await login(request, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   // Find a survey with responses
   const surveysRes = await request.get(`${API}/surveys`, {
@@ -254,7 +254,7 @@ test("Fix 5: Chatbot answers leave balance and manager queries", async ({
 }) => {
   test.setTimeout(60000);
 
-  const emp = await login(request, "priya@technova.in", "Welcome@123");
+  const emp = await login(request, "priya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   // Create conversation
   const convRes = await request.post(`${API}/chatbot/conversations`, {
@@ -302,7 +302,7 @@ test("Fix 6: Position hierarchy returns 200 with tree data", async ({
 }) => {
   test.setTimeout(30000);
 
-  const hr = await login(request, "ananya@technova.in", "Welcome@123");
+  const hr = await login(request, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   const res = await request.get(`${API}/positions/hierarchy`, {
     headers: authHeader(hr.token),
@@ -323,7 +323,7 @@ test("Fix 7: Position creation and user assignment works", async ({
 }) => {
   test.setTimeout(30000);
 
-  const hr = await login(request, "ananya@technova.in", "Welcome@123");
+  const hr = await login(request, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   // Create position
   const createRes = await request.post(`${API}/positions`, {

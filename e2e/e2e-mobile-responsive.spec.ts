@@ -6,8 +6,8 @@ import { test, expect, type Page } from "@playwright/test";
 // =============================================================================
 
 const FRONTEND = "https://test-empcloud.empcloud.com";
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
-const EMPLOYEE = { email: "arjun@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
+const EMPLOYEE = { email: "arjun@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 async function login(page: Page, email: string, password: string): Promise<void> {
   await page.goto(`${FRONTEND}/login`, { timeout: 30000 });
@@ -131,7 +131,7 @@ test.describe("Tablet (768px)", () => {
 
   test("Super admin revenue on tablet", async ({ page }) => {
     test.setTimeout(30000);
-    await login(page, "admin@empcloud.com", "SuperAdmin@123");
+    await login(page, "admin@empcloud.com", process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123");
     await page.goto(`${FRONTEND}/admin/revenue`);
     await page.waitForLoadState("networkidle").catch(() => {});
     await page.waitForTimeout(3000);

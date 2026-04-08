@@ -9,9 +9,9 @@ import { test, expect, type Page, type APIRequestContext } from "@playwright/tes
 const FRONTEND = "https://test-empcloud.empcloud.com";
 const API = "https://test-empcloud-api.empcloud.com/api/v1";
 const BILLING_API = "https://test-billing-api.empcloud.com/api/v1";
-const BILLING_API_KEY = "emp-billing-api-key-2026-secure-integration";
+const BILLING_API_KEY = process.env.BILLING_API_KEY || "";
 
-const ADMIN = { email: "ananya@technova.in", password: "Welcome@123" };
+const ADMIN = { email: "ananya@technova.in", password: process.env.TEST_USER_PASSWORD || "Welcome@123" };
 
 // Stripe test card
 const STRIPE_TEST_CARD = "4242424242424242";

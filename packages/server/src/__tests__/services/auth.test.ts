@@ -23,7 +23,7 @@ describe("Auth - Database Queries", () => {
     const db = getTestDB();
     const user = await db("users").where({ email: "ananya@technova.in" }).first();
     expect(user.password).toMatch(/^\$2[aby]\$/); // bcrypt hash
-    expect(user.password).not.toBe("Welcome@123");
+    expect(user.password).not.toBe(process.env.TEST_USER_PASSWORD || "Welcome@123");
   });
 
   it("should enforce org_id tenant isolation", async () => {

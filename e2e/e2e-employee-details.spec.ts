@@ -8,8 +8,8 @@ import { test, expect } from '@playwright/test';
 
 const API_BASE = 'https://test-empcloud-api.empcloud.com/api/v1';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
-const EMPLOYEE = { email: 'arjun@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
+const EMPLOYEE = { email: 'arjun@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 test.describe('Employee Details — Profile CRUD', () => {
   let adminToken: string;

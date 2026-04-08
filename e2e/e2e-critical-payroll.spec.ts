@@ -10,7 +10,7 @@ import { test, expect, APIRequestContext } from '@playwright/test';
 const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const PAYROLL_API = 'https://testpayroll-api.empcloud.com/api/v1';
 
-const ORG_ADMIN = { email: 'ananya@technova.in', password: 'Welcome@123' };
+const ORG_ADMIN = { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || process.env.TEST_USER_PASSWORD || 'Welcome@123' };
 
 let token = '';
 let refreshToken = '';
@@ -956,7 +956,7 @@ test.describe('7. Auth Service — Password, 2FA, API Key Management', () => {
       ...auth(),
       data: {
         empcloudUserId,
-        newPassword: 'Welcome@123',
+        newPassword: process.env.TEST_USER_PASSWORD || 'Welcome@123',
       },
     });
     expect(r.status()).toBeLessThan(600);

@@ -15,7 +15,7 @@ test("Admin screenshots", async ({ browser }) => {
   test.setTimeout(90000);
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  await login(page, "ananya@technova.in", "Welcome@123");
+  await login(page, "ananya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   const pages = [
     ["/employees", "admin_employee_directory"],
@@ -44,7 +44,7 @@ test("Employee screenshots", async ({ browser }) => {
   test.setTimeout(90000);
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  await login(page, "priya@technova.in", "Welcome@123");
+  await login(page, "priya@technova.in", process.env.TEST_USER_PASSWORD || "Welcome@123");
 
   const pages = [
     ["/", "employee_dashboard"],
@@ -69,7 +69,7 @@ test("Super Admin screenshots", async ({ browser }) => {
   test.setTimeout(90000);
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  await login(page, "admin@empcloud.com", "SuperAdmin@123");
+  await login(page, "admin@empcloud.com", process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123");
 
   const pages = [
     ["/admin", "super_admin_dashboard"],

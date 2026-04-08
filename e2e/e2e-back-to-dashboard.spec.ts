@@ -13,7 +13,7 @@ const MODULE_APIS: Record<string, string> = {
 
 async function getEmpCloudToken(request: any): Promise<string> {
   const resp = await request.post(`${EMPCLOUD_API}/auth/login`, {
-    data: { email: 'ananya@technova.in', password: 'Welcome@123' },
+    data: { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' },
   });
   expect(resp.status()).toBe(200);
   const body = await resp.json();

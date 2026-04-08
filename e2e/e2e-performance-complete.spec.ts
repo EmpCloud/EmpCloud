@@ -62,12 +62,12 @@ test.describe('EMP Performance — Complete Coverage', () => {
   // =========================================================================
 
   test.beforeAll(async ({ request }) => {
-    const ecToken = await loginWithRetry(request, { email: 'ananya@technova.in', password: 'Welcome@123' });
+    const ecToken = await loginWithRetry(request, { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' });
     token = await ssoWithRetry(request, ecToken);
     expect(token.length).toBeGreaterThan(10);
 
     try {
-      const empEcToken = await loginWithRetry(request, { email: 'arjun@technova.in', password: 'Welcome@123' });
+      const empEcToken = await loginWithRetry(request, { email: 'arjun@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' });
       employeeToken = await ssoWithRetry(request, empEcToken);
     } catch {
       employeeToken = '';

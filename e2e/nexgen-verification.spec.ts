@@ -13,7 +13,7 @@ const CREDS = {
   VP_ENG: { email: "arjun@nexgen.tech", password: "NexGen@2026", name: "Arjun" },
   DEV: { email: "kavya@nexgen.tech", password: "NexGen@2026", name: "Kavya" },
   EMP: { email: "rohit@nexgen.tech", password: "NexGen@2026", name: "Rohit" },
-  SUPER_ADMIN: { email: "admin@empcloud.com", password: "SuperAdmin@123", name: "Admin" },
+  SUPER_ADMIN: { email: "admin@empcloud.com", password: process.env.TEST_SUPER_ADMIN_PASSWORD || "SuperAdmin@123", name: "Admin" },
 };
 
 // =============================================================================

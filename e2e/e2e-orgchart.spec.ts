@@ -15,8 +15,8 @@ test.describe('Org Chart — Deep E2E Tests', () => {
   let employeeToken: string;
 
   test.beforeAll(async ({ request }) => {
-    adminToken = await login(request, 'ananya@technova.in', 'Welcome@123');
-    employeeToken = await login(request, 'arjun@technova.in', 'Welcome@123');
+    adminToken = await login(request, 'ananya@technova.in', process.env.TEST_USER_PASSWORD || 'Welcome@123');
+    employeeToken = await login(request, 'arjun@technova.in', process.env.TEST_USER_PASSWORD || 'Welcome@123');
   });
 
   // ========== API Tests ==========
@@ -91,7 +91,7 @@ test.describe('Org Chart — Deep E2E Tests', () => {
       await page.waitForLoadState('networkidle');
       if (page.url().includes('/login')) {
         await page.fill('input[type="email"]', 'ananya@technova.in');
-        await page.fill('input[type="password"]', 'Welcome@123');
+        await page.fill('input[type="password"]', process.env.TEST_USER_PASSWORD || 'Welcome@123');
         await page.click('button[type="submit"]');
         await page.waitForSelector('text=Welcome back', { timeout: 15000 }).catch(() => {});
         await page.waitForLoadState('networkidle');
