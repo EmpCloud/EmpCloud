@@ -13,9 +13,9 @@ process.env.DB_NAME = "empcloud";
 process.env.NODE_ENV = "test";
 process.env.REDIS_HOST = "localhost";
 process.env.REDIS_PORT = "6379";
-process.env.REDIS_PASSWORD = "fhclG7Q4p1yMnBdxvgX2bRoY0";
-process.env.ANTHROPIC_API_KEY =
-  "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";
+process.env.REDIS_PASSWORD = process.env.REDIS_PASSWORD || "";
+// NEVER hardcode API keys — read from .env only
+// process.env.ANTHROPIC_API_KEY is loaded from .env by dotenv
 process.env.BILLING_API_KEY = "test";
 process.env.BILLING_API_URL = "http://localhost:4001";
 process.env.LOG_LEVEL = "error";
