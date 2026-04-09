@@ -93,9 +93,8 @@ async function seed() {
   logger.info("Users created (password: Welcome@123)");
 
   // --- Create Modules ---
-  const moduleIds: Record<string, number> = {};
   for (const mod of DEFAULT_MODULES) {
-    const [id] = await db("modules").insert({
+    await db("modules").insert({
       name: mod.name,
       slug: mod.slug,
       description: mod.description,
@@ -105,8 +104,11 @@ async function seed() {
       created_at: new Date(),
       updated_at: new Date(),
     });
-    moduleIds[mod.slug] = id;
   }
+  // Query modules back to get their real IDs (more reliable than insertId)
+  const moduleRows = await db("modules").select("id", "slug");
+  const moduleIds: Record<string, number> = {};
+  for (const row of moduleRows) moduleIds[row.slug] = row.id;
   logger.info(`${DEFAULT_MODULES.length} modules registered`);
 
   // --- Add Module Features ---
@@ -151,9 +153,15 @@ async function seed() {
   oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
 
   for (const slug of ["emp-payroll", "emp-billing"]) {
-    const [subId] = await db("org_subscriptions").insert({
+    const moduleId = moduleIds[slug];
+    if (!moduleId) {
+      logger.warn(`Module ${slug} not found, skipping subscription`);
+      continue;
+    }
+
+    await db("org_subscriptions").insert({
       organization_id: orgId,
-      module_id: moduleIds[slug],
+      module_id: moduleId,
       plan_tier: "professional",
       status: "active",
       total_seats: 100,
@@ -167,13 +175,20 @@ async function seed() {
       updated_at: now,
     });
 
+    // Query back the subscription ID (insertId is unreliable across MySQL drivers)
+    const sub = await db("org_subscriptions")
+      .where({ organization_id: orgId, module_id: moduleId })
+      .orderBy("id", "desc")
+      .first();
+    const subId = sub.id;
+
     // Assign seats to all users
     const orgUsers = await db("users").where({ organization_id: orgId, status: 1 });
     for (const u of orgUsers) {
       await db("org_module_seats").insert({
         subscription_id: subId,
         organization_id: orgId,
-        module_id: moduleIds[slug],
+        module_id: moduleId,
         user_id: u.id,
         assigned_by: orgUsers[0].id,
         assigned_at: now,
