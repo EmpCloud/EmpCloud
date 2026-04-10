@@ -93,12 +93,20 @@ async function seed() {
   logger.info("Users created (password: Welcome@123)");
 
   // --- Create Modules ---
+  // api_url is used by module-sync to call each module's /users/sync endpoint
+  const moduleApiUrls: Record<string, string> = {
+    "emp-billing": `${process.env.BILLING_MODULE_URL || "http://localhost:6002"}/api/v1`,
+    "emp-payroll": `${process.env.PAYROLL_MODULE_URL || "http://localhost:6003"}/api/v1`,
+    "emp-monitor": `${process.env.MONITOR_MODULE_URL || "http://localhost:6004"}/api/v3`,
+  };
+
   for (const mod of DEFAULT_MODULES) {
     await db("modules").insert({
       name: mod.name,
       slug: mod.slug,
       description: mod.description,
       base_url: `https://${mod.slug.replace("emp-", "")}.empcloud.com`,
+      api_url: moduleApiUrls[mod.slug] || null,
       is_active: true,
       has_free_tier: ["emp-exit"].includes(mod.slug),
       created_at: new Date(),

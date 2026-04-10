@@ -68,6 +68,22 @@ async function main() {
     await runAllMigrations(db);
   }
 
+  // Sync module api_url from env vars (so DB stays in sync without manual SQL)
+  {
+    const { getDB } = await import("./db/connection.js");
+    const db = getDB();
+    const moduleUrls: Record<string, string | undefined> = {
+      "emp-billing": process.env.BILLING_MODULE_URL ? `${process.env.BILLING_MODULE_URL}/api/v1` : undefined,
+      "emp-payroll": process.env.PAYROLL_MODULE_URL ? `${process.env.PAYROLL_MODULE_URL}/api/v1` : undefined,
+      "emp-monitor": process.env.MONITOR_MODULE_URL ? `${process.env.MONITOR_MODULE_URL}/api/v3` : undefined,
+    };
+    for (const [slug, apiUrl] of Object.entries(moduleUrls)) {
+      if (apiUrl) {
+        await db("modules").where({ slug }).update({ api_url: apiUrl }).catch(() => {});
+      }
+    }
+  }
+
   // Load RSA keys
   loadKeys();
 
