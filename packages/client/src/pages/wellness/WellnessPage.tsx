@@ -31,6 +31,8 @@ const PROGRAM_TYPE_CONFIG: Record<string, { label: string; color: string; icon: 
 export default function WellnessPage() {
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState("");
+  // #1375 — Surface enroll errors and confirmations inline
+  const [enrollMessage, setEnrollMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const queryClient = useQueryClient();
 
   // Programs list
@@ -61,6 +63,16 @@ export default function WellnessPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wellness-programs"] });
       queryClient.invalidateQueries({ queryKey: ["wellness-summary"] });
+      setEnrollMessage({ type: "success", text: "Successfully enrolled in program" });
+      setTimeout(() => setEnrollMessage(null), 4000);
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to enroll in program";
+      setEnrollMessage({ type: "error", text: msg });
+      setTimeout(() => setEnrollMessage(null), 5000);
     },
   });
 
@@ -70,6 +82,17 @@ export default function WellnessPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
+      {enrollMessage && (
+        <div
+          className={`p-3 rounded-lg border text-sm ${
+            enrollMessage.type === "success"
+              ? "bg-green-50 border-green-200 text-green-700"
+              : "bg-red-50 border-red-200 text-red-700"
+          }`}
+        >
+          {enrollMessage.text}
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

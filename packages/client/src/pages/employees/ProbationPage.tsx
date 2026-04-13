@@ -50,6 +50,10 @@ export default function ProbationPage() {
   const [extendModal, setExtendModal] = useState<any>(null);
   const [extendDate, setExtendDate] = useState("");
   const [extendReason, setExtendReason] = useState("");
+  // #1394 — Dashboard card filter for the employee list
+  const [cardFilter, setCardFilter] = useState<
+    "all" | "on_probation" | "upcoming_30" | "confirmed_this_month" | "overdue"
+  >("all");
 
   // Dashboard stats
   const { data: dashboard } = useQuery({
@@ -94,32 +98,60 @@ export default function ProbationPage() {
     },
   });
 
-  const dashboardCards = [
+  const dashboardCards: Array<{
+    label: string;
+    value: number;
+    icon: any;
+    color: string;
+    filter: typeof cardFilter;
+  }> = [
     {
       label: "On Probation",
       value: dashboard?.on_probation ?? 0,
       icon: Clock,
       color: "bg-blue-50 text-blue-600",
+      filter: "on_probation",
     },
     {
       label: "Upcoming (30 days)",
       value: dashboard?.upcoming_30_days ?? 0,
       icon: CalendarClock,
       color: "bg-amber-50 text-amber-600",
+      filter: "upcoming_30",
     },
     {
       label: "Confirmed This Month",
       value: dashboard?.confirmed_this_month ?? 0,
       icon: CheckCircle2,
       color: "bg-green-50 text-green-600",
+      filter: "confirmed_this_month",
     },
     {
       label: "Overdue",
       value: dashboard?.overdue ?? 0,
       icon: AlertTriangle,
       color: "bg-red-50 text-red-600",
+      filter: "overdue",
     },
   ];
+
+  // #1394 — Filter the employee list based on the active card
+  const filteredEmployees = (employees || []).filter((emp: any) => {
+    if (cardFilter === "all") return true;
+    const daysRemaining = Number(emp.days_remaining ?? 0);
+    if (cardFilter === "on_probation") return emp.probation_status === "on_probation";
+    if (cardFilter === "overdue") return daysRemaining < 0;
+    if (cardFilter === "upcoming_30") return daysRemaining >= 0 && daysRemaining <= 30;
+    if (cardFilter === "confirmed_this_month") {
+      if (emp.probation_status !== "confirmed") return false;
+      const actualConfirmationDate = emp.actual_confirmation_date || emp.probation_end_date;
+      if (!actualConfirmationDate) return false;
+      const d = new Date(actualConfirmationDate);
+      const now = new Date();
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }
+    return true;
+  });
 
   return (
     <div>
@@ -140,20 +172,42 @@ export default function ProbationPage() {
 
       {/* Dashboard Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {dashboardCards.map((card) => (
-          <div key={card.label} className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${card.color}`}>
-                <card.icon className="h-5 w-5" />
+        {dashboardCards.map((card) => {
+          const isActive = cardFilter === card.filter;
+          return (
+            <button
+              key={card.label}
+              type="button"
+              onClick={() => setCardFilter(isActive ? "all" : card.filter)}
+              className={`text-left bg-white rounded-xl border p-5 transition-all hover:shadow-md ${
+                isActive ? "border-brand-500 ring-2 ring-brand-100" : "border-gray-200"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${card.color}`}>
+                  <card.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">{card.label}</p>
+                  <p className="text-xl font-bold text-gray-900">{card.value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">{card.label}</p>
-                <p className="text-xl font-bold text-gray-900">{card.value}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+            </button>
+          );
+        })}
       </div>
+      {cardFilter !== "all" && (
+        <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
+          <span>Filtered by card.</span>
+          <button
+            type="button"
+            onClick={() => setCardFilter("all")}
+            className="text-brand-600 hover:underline"
+          >
+            Clear filter
+          </button>
+        </div>
+      )}
 
       {/* Upcoming Confirmations */}
       {upcoming && upcoming.length > 0 && (
@@ -215,7 +269,7 @@ export default function ProbationPage() {
                 </tr>
               </thead>
               <tbody>
-                {(employees || []).map((emp: any) => {
+                {filteredEmployees.map((emp: any) => {
                   const status = getStatusBadge(emp.probation_status);
                   const daysColor = getDaysColor(Number(emp.days_remaining));
                   return (

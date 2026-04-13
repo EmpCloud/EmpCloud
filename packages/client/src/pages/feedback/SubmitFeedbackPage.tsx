@@ -81,7 +81,7 @@ export default function SubmitFeedbackPage() {
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 max-w-2xl space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Category <span className="text-red-500">*</span></label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -96,7 +96,7 @@ export default function SubmitFeedbackPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Subject <span className="text-red-500">*</span></label>
           <input
             type="text"
             value={subject}
@@ -108,7 +108,7 @@ export default function SubmitFeedbackPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Message <span className="text-red-500">*</span></label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}

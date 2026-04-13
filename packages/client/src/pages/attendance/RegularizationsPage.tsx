@@ -93,11 +93,11 @@ export default function RegularizationsPage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Submit Regularization Request</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date <span className="text-red-500">*</span></label>
               <input type="date" value={form.date} onChange={(e) => setField("date", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reason <span className="text-red-500">*</span></label>
               <input type="text" value={form.reason} onChange={(e) => setField("reason", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Reason for regularization" required />
             </div>
             <div>

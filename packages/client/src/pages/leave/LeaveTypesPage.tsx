@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { Plus, Pencil, Power, PowerOff, Settings2 } from "lucide-react";
+import { Plus, Pencil, Power, PowerOff, Trash2, Settings2 } from "lucide-react";
 
 interface LeaveType {
   id: number;
@@ -447,7 +447,7 @@ export default function LeaveTypesPage() {
           <form onSubmit={handlePolicySubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type <span className="text-red-500">*</span></label>
                 <select
                   value={policyForm.leave_type_id}
                   onChange={(e) => setPolicyForm({ ...policyForm, leave_type_id: Number(e.target.value) })}
