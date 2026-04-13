@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Building2,
@@ -117,6 +117,9 @@ export default function OnboardingWizard() {
   const [city, setCity] = useState("");
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [language, setLanguage] = useState("en");
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState<string | null>(null);
 
   // Step 2 state
   const [departments, setDepartments] = useState<string[]>([...DEFAULT_DEPARTMENTS]);
@@ -223,6 +226,26 @@ export default function OnboardingWizard() {
 
       switch (activeStep) {
         case 1:
+          // Upload the logo first if the user picked one, so we can include
+          // the resulting server path in the step 1 payload. Upload failure
+          // is non-blocking — we surface it as an error message but still
+          // advance the step so the rest of the onboarding isn't held up.
+          if (logoFile) {
+            try {
+              const form = new FormData();
+              form.append("logo", logoFile);
+              await api.post("/organizations/me/logo", form, {
+                headers: { "Content-Type": "multipart/form-data" },
+              });
+              setLogoError(null);
+            } catch (err: any) {
+              const msg =
+                err?.response?.data?.error?.message ||
+                err?.message ||
+                "Logo upload failed";
+              setLogoError(msg);
+            }
+          }
           stepData = { name: companyName, country, state, city, timezone, language };
           break;
         case 2:
@@ -489,6 +512,19 @@ export default function OnboardingWizard() {
                   setTimezone={setTimezone}
                   language={language}
                   setLanguage={setLanguage}
+                  logoFile={logoFile}
+                  logoPreview={logoPreview}
+                  logoError={logoError}
+                  onLogoSelected={(file, preview) => {
+                    setLogoFile(file);
+                    setLogoPreview(preview);
+                    setLogoError(null);
+                  }}
+                  onLogoCleared={() => {
+                    setLogoFile(null);
+                    setLogoPreview(null);
+                    setLogoError(null);
+                  }}
                 />
               )}
 
@@ -604,6 +640,11 @@ function Step1CompanyInfo({
   setTimezone,
   language,
   setLanguage,
+  logoFile,
+  logoPreview,
+  logoError,
+  onLogoSelected,
+  onLogoCleared,
 }: {
   companyName: string;
   setCompanyName: (v: string) => void;
@@ -617,7 +658,31 @@ function Step1CompanyInfo({
   setTimezone: (v: string) => void;
   language: string;
   setLanguage: (v: string) => void;
+  logoFile: File | null;
+  logoPreview: string | null;
+  logoError: string | null;
+  onLogoSelected: (file: File, preview: string) => void;
+  onLogoCleared: () => void;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  const acceptFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file (PNG, JPG, WebP, or SVG).");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Logo must be 2MB or smaller.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      onLogoSelected(file, e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="space-y-5 pt-2">
       <div>
@@ -699,13 +764,72 @@ function Step1CompanyInfo({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Company Logo <span className="text-gray-400 font-normal">(optional)</span>
         </label>
-        <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-gray-300 transition-colors cursor-pointer">
-          <Building2 className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">
-            Drag &amp; drop your logo here, or click to browse
-          </p>
-          <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 2MB</p>
+        <div
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
+            dragOver
+              ? "border-brand-500 bg-brand-50"
+              : logoPreview
+                ? "border-gray-200 bg-gray-50"
+                : "border-gray-200 hover:border-gray-300"
+          }`}
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            const file = e.dataTransfer.files?.[0];
+            if (file) acceptFile(file);
+          }}
+        >
+          {logoPreview ? (
+            <div className="flex flex-col items-center gap-2">
+              <img
+                src={logoPreview}
+                alt="Company logo preview"
+                className="h-20 w-20 object-contain rounded"
+              />
+              <p className="text-xs text-gray-500">
+                {logoFile?.name}{" "}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLogoCleared();
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                  className="text-red-500 hover:text-red-600 ml-2"
+                >
+                  remove
+                </button>
+              </p>
+            </div>
+          ) : (
+            <>
+              <Building2 className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">
+                Drag &amp; drop your logo here, or click to browse
+              </p>
+              <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP, SVG up to 2MB</p>
+            </>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) acceptFile(file);
+            }}
+          />
         </div>
+        {logoError && (
+          <p className="mt-2 text-xs text-red-600">{logoError}</p>
+        )}
       </div>
     </div>
   );

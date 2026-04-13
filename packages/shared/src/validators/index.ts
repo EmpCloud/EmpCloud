@@ -208,6 +208,34 @@ export const createUserSchema = z.object({
 
 export const updateUserSchema = createUserSchema.partial().omit({ password: true }).strict();
 
+/**
+ * Bulk import — one row as seen in a CSV. All fields are strings because CSV
+ * is untyped; the import service coerces and validates them against the
+ * full user schema before inserting. Department / location / reporting
+ * manager are resolved by human-readable name or email, not numeric ID.
+ */
+export const bulkImportUserRowSchema = z.object({
+  first_name: z.string().min(1).max(64),
+  last_name: z.string().min(1).max(64),
+  email: z.string().email().max(128),
+  // Password is optional — if blank, user must use forgot-password flow.
+  password: z.string().min(8).max(128).optional().or(z.literal("")),
+  role: z.nativeEnum(UserRole).optional(),
+  emp_code: z.string().max(50).optional(),
+  designation: z.string().max(100).optional(),
+  department_name: z.string().max(100).optional(),
+  location_name: z.string().max(100).optional(),
+  reporting_manager_email: z.string().email().max(128).optional().or(z.literal("")),
+  employment_type: z.nativeEnum(EmploymentType).optional(),
+  date_of_joining: z.string().optional(),
+  date_of_birth: z.string().optional(),
+  date_of_exit: z.string().optional(),
+  gender: z.string().max(10).optional(),
+  contact_number: z.string().max(20).optional(),
+  address: z.string().max(500).optional(),
+});
+export type BulkImportUserRow = z.infer<typeof bulkImportUserRowSchema>;
+
 export const inviteUserSchema = z.object({
   email: z.string().email().max(128),
   role: z.nativeEnum(UserRole).default(UserRole.EMPLOYEE),
