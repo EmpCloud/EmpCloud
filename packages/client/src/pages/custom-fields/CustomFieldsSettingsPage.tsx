@@ -160,6 +160,11 @@ export default function CustomFieldsSettingsPage() {
     });
     setEditingId(field.id);
     setShowForm(true);
+    // #1389 — Scroll to top so the edit form is visible. Without this, the form
+    // renders above the list but stays out of view, making the page look blank.
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -538,13 +543,34 @@ export default function CustomFieldsSettingsPage() {
             )}
 
             {/* Error Display */}
-            {(createMutation.isError || updateMutation.isError) && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
-                {(createMutation.error as any)?.response?.data?.error?.message
-                  || (updateMutation.error as any)?.response?.data?.error?.message
-                  || "Failed to save field. Please try again."}
-              </div>
-            )}
+            {(createMutation.isError || updateMutation.isError) && (() => {
+              // #1372 — Surface backend validation errors clearly. Some Zod errors
+              // arrive as { error: { message, details: [...] } }; render details too
+              // so users can tell *why* a Required + Searchable combo was rejected.
+              const err: any = createMutation.error || updateMutation.error;
+              const resp = err?.response?.data?.error;
+              const details: any[] = Array.isArray(resp?.details) ? resp.details : [];
+              const message =
+                resp?.message
+                || err?.response?.data?.message
+                || err?.message
+                || "Failed to save field. Please try again.";
+              return (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+                  <div className="font-medium">{message}</div>
+                  {details.length > 0 && (
+                    <ul className="list-disc list-inside mt-1 text-xs">
+                      {details.map((d, i) => (
+                        <li key={i}>
+                          {(d?.path && d.path.length > 0 ? `${d.path.join(".")}: ` : "") +
+                            (d?.message || JSON.stringify(d))}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Actions */}
             <div className="flex items-center gap-3 pt-2">

@@ -13,6 +13,8 @@ import {
   Check,
   X,
   Camera,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -274,10 +276,10 @@ export default function EmployeeProfilePage() {
             selfService={isOwnProfile && !isHR}
           />
         )}
-        {activeTab === "education" && <EducationTab data={education} />}
-        {activeTab === "experience" && <ExperienceTab data={experience} />}
-        {activeTab === "dependents" && <DependentsTab data={dependents} />}
-        {activeTab === "addresses" && <AddressesTab data={addresses} />}
+        {activeTab === "education" && <EducationTab data={education} userId={userId} canEdit={canEdit} />}
+        {activeTab === "experience" && <ExperienceTab data={experience} userId={userId} canEdit={canEdit} />}
+        {activeTab === "dependents" && <DependentsTab data={dependents} userId={userId} canEdit={canEdit} />}
+        {activeTab === "addresses" && <AddressesTab data={addresses} userId={userId} canEdit={canEdit} />}
         {activeTab === "custom" && <CustomFieldsTab entityId={userId} />}
       </div>
     </div>
@@ -499,128 +501,1009 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
   );
 }
 
-function EducationTab({ data }: { data?: any[] }) {
-  if (!data || data.length === 0) {
-    return <p className="text-sm text-gray-400">No education records added yet.</p>;
-  }
+// ---------------------------------------------------------------------------
+// Shared form helpers for sub-resource tabs (#1390)
+// ---------------------------------------------------------------------------
+
+const subInputClass =
+  "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+
+function SubResourceError({ error }: { error?: string | null }) {
+  if (!error) return null;
   return (
-    <div className="space-y-4">
-      {data.map((edu: any) => (
-        <div key={edu.id} className="border border-gray-100 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-900">{edu.degree}</h3>
-          <p className="text-sm text-gray-600">{edu.institution}</p>
-          {edu.field_of_study && (
-            <p className="text-sm text-gray-500">{edu.field_of_study}</p>
-          )}
-          <p className="text-xs text-gray-400 mt-1">
-            {edu.start_year && edu.end_year
-              ? `${edu.start_year} - ${edu.end_year}`
-              : edu.start_year
-              ? `From ${edu.start_year}`
-              : ""}
-            {edu.grade ? ` | Grade: ${edu.grade}` : ""}
-          </p>
-        </div>
-      ))}
+    <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-3 py-2 mb-3">
+      {error}
     </div>
   );
 }
 
-function ExperienceTab({ data }: { data?: any[] }) {
-  if (!data || data.length === 0) {
-    return <p className="text-sm text-gray-400">No work experience records added yet.</p>;
+function extractApiError(err: any): string {
+  const resp = err?.response?.data?.error;
+  const details: any[] = Array.isArray(resp?.details) ? resp.details : [];
+  if (details.length > 0) {
+    return details
+      .map((d) => (d?.path?.length ? `${d.path.join(".")}: ${d?.message || ""}` : d?.message || ""))
+      .filter(Boolean)
+      .join("; ");
   }
+  return resp?.message || err?.message || "Request failed";
+}
+
+// ---------------------------------------------------------------------------
+// Education Tab
+// ---------------------------------------------------------------------------
+
+function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const queryClient = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string | null>(null);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["employee-education", userId] });
+
+  function buildPayload() {
+    return {
+      degree: form.degree?.trim() || "",
+      institution: form.institution?.trim() || "",
+      field_of_study: form.field_of_study?.trim() || null,
+      start_year: form.start_year ? Number(form.start_year) : null,
+      end_year: form.end_year ? Number(form.end_year) : null,
+      grade: form.grade?.trim() || null,
+    };
+  }
+
+  const createMutation = useMutation({
+    mutationFn: (payload: any) => api.post(`/employees/${userId}/education`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: any }) =>
+      api.put(`/employees/${userId}/education/${id}`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/employees/${userId}/education/${id}`),
+    onSuccess: () => invalidate(),
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  function resetForm() {
+    setForm({});
+    setAdding(false);
+    setEditingId(null);
+    setError(null);
+  }
+
+  function startAdd() {
+    setForm({});
+    setEditingId(null);
+    setAdding(true);
+    setError(null);
+  }
+
+  function startEdit(edu: any) {
+    setForm({
+      degree: edu.degree || "",
+      institution: edu.institution || "",
+      field_of_study: edu.field_of_study || "",
+      start_year: edu.start_year ? String(edu.start_year) : "",
+      end_year: edu.end_year ? String(edu.end_year) : "",
+      grade: edu.grade || "",
+    });
+    setEditingId(edu.id);
+    setAdding(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    setError(null);
+    const payload = buildPayload();
+    if (!payload.degree || !payload.institution) {
+      setError("Degree and Institution are required");
+      return;
+    }
+    if (editingId) updateMutation.mutate({ id: editingId, payload });
+    else createMutation.mutate(payload);
+  }
+
+  function handleDelete(id: number) {
+    if (!confirm("Delete this education record?")) return;
+    deleteMutation.mutate(id);
+  }
+
+  const showForm = adding || editingId !== null;
+  const saving = createMutation.isPending || updateMutation.isPending;
+
   return (
-    <div className="space-y-4">
-      {data.map((exp: any) => (
-        <div key={exp.id} className="border border-gray-100 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-900">{exp.designation}</h3>
-            {exp.is_current && (
-              <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                Current
-              </span>
+    <div>
+      {canEdit && !showForm && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={startAdd}
+            className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
+          >
+            <Plus className="h-4 w-4" /> Add Education
+          </button>
+        </div>
+      )}
+
+      {showForm && (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            {editingId ? "Edit Education" : "Add Education"}
+          </h4>
+          <SubResourceError error={error} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Degree *</label>
+              <input
+                value={form.degree || ""}
+                onChange={(e) => setForm({ ...form, degree: e.target.value })}
+                className={subInputClass}
+                placeholder="e.g. B.Tech"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Institution *</label>
+              <input
+                value={form.institution || ""}
+                onChange={(e) => setForm({ ...form, institution: e.target.value })}
+                className={subInputClass}
+                placeholder="e.g. IIT Delhi"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Field of Study</label>
+              <input
+                value={form.field_of_study || ""}
+                onChange={(e) => setForm({ ...form, field_of_study: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Grade</label>
+              <input
+                value={form.grade || ""}
+                onChange={(e) => setForm({ ...form, grade: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Start Year</label>
+              <input
+                type="number"
+                value={form.start_year || ""}
+                onChange={(e) => setForm({ ...form, start_year: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">End Year</label>
+              <input
+                type="number"
+                value={form.end_year || ""}
+                onChange={(e) => setForm({ ...form, end_year: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={resetForm}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
+            >
+              <X className="h-3.5 w-3.5" /> Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!data || data.length === 0 ? (
+        !showForm && <p className="text-sm text-gray-400">No education records added yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {data.map((edu: any) => (
+            <div key={edu.id} className="border border-gray-100 rounded-lg p-4 flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-gray-900">{edu.degree}</h3>
+                <p className="text-sm text-gray-600">{edu.institution}</p>
+                {edu.field_of_study && (
+                  <p className="text-sm text-gray-500">{edu.field_of_study}</p>
+                )}
+                <p className="text-xs text-gray-400 mt-1">
+                  {edu.start_year && edu.end_year
+                    ? `${edu.start_year} - ${edu.end_year}`
+                    : edu.start_year
+                    ? `From ${edu.start_year}`
+                    : ""}
+                  {edu.grade ? ` | Grade: ${edu.grade}` : ""}
+                </p>
+              </div>
+              {canEdit && (
+                <div className="flex items-center gap-1 ml-3">
+                  <button
+                    onClick={() => startEdit(edu)}
+                    className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
+                    title="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(edu.id)}
+                    className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Experience Tab
+// ---------------------------------------------------------------------------
+
+function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const queryClient = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<{ company_name: string; designation: string; start_date: string; end_date: string; is_current: boolean; description: string }>({
+    company_name: "",
+    designation: "",
+    start_date: "",
+    end_date: "",
+    is_current: false,
+    description: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["employee-experience", userId] });
+
+  function buildPayload() {
+    return {
+      company_name: form.company_name.trim(),
+      designation: form.designation.trim(),
+      start_date: form.start_date,
+      end_date: form.is_current ? null : (form.end_date || null),
+      is_current: form.is_current,
+      description: form.description.trim() || null,
+    };
+  }
+
+  const createMutation = useMutation({
+    mutationFn: (payload: any) => api.post(`/employees/${userId}/experience`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: any }) =>
+      api.put(`/employees/${userId}/experience/${id}`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/employees/${userId}/experience/${id}`),
+    onSuccess: () => invalidate(),
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  function resetForm() {
+    setForm({ company_name: "", designation: "", start_date: "", end_date: "", is_current: false, description: "" });
+    setAdding(false);
+    setEditingId(null);
+    setError(null);
+  }
+
+  function startAdd() {
+    resetForm();
+    setAdding(true);
+  }
+
+  function startEdit(exp: any) {
+    setForm({
+      company_name: exp.company_name || "",
+      designation: exp.designation || "",
+      start_date: exp.start_date ? String(exp.start_date).slice(0, 10) : "",
+      end_date: exp.end_date ? String(exp.end_date).slice(0, 10) : "",
+      is_current: !!exp.is_current,
+      description: exp.description || "",
+    });
+    setEditingId(exp.id);
+    setAdding(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    setError(null);
+    if (!form.company_name.trim() || !form.designation.trim() || !form.start_date) {
+      setError("Company, Designation and Start Date are required");
+      return;
+    }
+    const payload = buildPayload();
+    if (editingId) updateMutation.mutate({ id: editingId, payload });
+    else createMutation.mutate(payload);
+  }
+
+  function handleDelete(id: number) {
+    if (!confirm("Delete this experience record?")) return;
+    deleteMutation.mutate(id);
+  }
+
+  const showForm = adding || editingId !== null;
+  const saving = createMutation.isPending || updateMutation.isPending;
+
+  return (
+    <div>
+      {canEdit && !showForm && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={startAdd}
+            className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
+          >
+            <Plus className="h-4 w-4" /> Add Experience
+          </button>
+        </div>
+      )}
+
+      {showForm && (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            {editingId ? "Edit Experience" : "Add Experience"}
+          </h4>
+          <SubResourceError error={error} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Company *</label>
+              <input
+                value={form.company_name}
+                onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Designation *</label>
+              <input
+                value={form.designation}
+                onChange={(e) => setForm({ ...form, designation: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Start Date *</label>
+              <input
+                type="date"
+                value={form.start_date}
+                onChange={(e) => setForm({ ...form, start_date: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">End Date</label>
+              <input
+                type="date"
+                value={form.end_date}
+                onChange={(e) => setForm({ ...form, end_date: e.target.value })}
+                disabled={form.is_current}
+                className={form.is_current ? `${subInputClass} bg-gray-100 cursor-not-allowed` : subInputClass}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={form.is_current}
+                  onChange={(e) => setForm({ ...form, is_current: e.target.checked })}
+                  className="rounded border-gray-300 text-brand-600"
+                />
+                Currently working here
+              </label>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <textarea
+                rows={3}
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={resetForm}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
+            >
+              <X className="h-3.5 w-3.5" /> Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!data || data.length === 0 ? (
+        !showForm && <p className="text-sm text-gray-400">No work experience records added yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {data.map((exp: any) => (
+            <div key={exp.id} className="border border-gray-100 rounded-lg p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-gray-900">{exp.designation}</h3>
+                    {exp.is_current && (
+                      <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                        Current
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600">{exp.company_name}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {exp.start_date ? new Date(exp.start_date).toLocaleDateString() : ""} -{" "}
+                    {exp.is_current
+                      ? "Present"
+                      : exp.end_date
+                      ? new Date(exp.end_date).toLocaleDateString()
+                      : ""}
+                  </p>
+                  {exp.description && (
+                    <p className="text-sm text-gray-500 mt-2">{exp.description}</p>
+                  )}
+                </div>
+                {canEdit && (
+                  <div className="flex items-center gap-1 ml-3">
+                    <button
+                      onClick={() => startEdit(exp)}
+                      className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
+                      title="Edit"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(exp.id)}
+                      className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Dependents Tab
+// ---------------------------------------------------------------------------
+
+function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const queryClient = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<{ name: string; relationship: string; date_of_birth: string; gender: string; is_nominee: boolean; nominee_percentage: string }>({
+    name: "",
+    relationship: "",
+    date_of_birth: "",
+    gender: "",
+    is_nominee: false,
+    nominee_percentage: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["employee-dependents", userId] });
+
+  function buildPayload() {
+    const payload: any = {
+      name: form.name.trim(),
+      relationship: form.relationship.trim(),
+      date_of_birth: form.date_of_birth || null,
+      is_nominee: form.is_nominee,
+    };
+    if (form.gender) payload.gender = form.gender;
+    if (form.is_nominee && form.nominee_percentage !== "") {
+      payload.nominee_percentage = Number(form.nominee_percentage);
+    }
+    return payload;
+  }
+
+  const createMutation = useMutation({
+    mutationFn: (payload: any) => api.post(`/employees/${userId}/dependents`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: any }) =>
+      api.put(`/employees/${userId}/dependents/${id}`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/employees/${userId}/dependents/${id}`),
+    onSuccess: () => invalidate(),
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  function resetForm() {
+    setForm({ name: "", relationship: "", date_of_birth: "", gender: "", is_nominee: false, nominee_percentage: "" });
+    setAdding(false);
+    setEditingId(null);
+    setError(null);
+  }
+
+  function startAdd() {
+    resetForm();
+    setAdding(true);
+  }
+
+  function startEdit(dep: any) {
+    setForm({
+      name: dep.name || "",
+      relationship: dep.relationship || "",
+      date_of_birth: dep.date_of_birth ? String(dep.date_of_birth).slice(0, 10) : "",
+      gender: dep.gender || "",
+      is_nominee: !!dep.is_nominee,
+      nominee_percentage: dep.nominee_percentage != null ? String(dep.nominee_percentage) : "",
+    });
+    setEditingId(dep.id);
+    setAdding(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    setError(null);
+    if (!form.name.trim() || !form.relationship.trim()) {
+      setError("Name and Relationship are required");
+      return;
+    }
+    const payload = buildPayload();
+    if (editingId) updateMutation.mutate({ id: editingId, payload });
+    else createMutation.mutate(payload);
+  }
+
+  function handleDelete(id: number) {
+    if (!confirm("Delete this dependent?")) return;
+    deleteMutation.mutate(id);
+  }
+
+  const showForm = adding || editingId !== null;
+  const saving = createMutation.isPending || updateMutation.isPending;
+
+  return (
+    <div>
+      {canEdit && !showForm && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={startAdd}
+            className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
+          >
+            <Plus className="h-4 w-4" /> Add Dependent
+          </button>
+        </div>
+      )}
+
+      {showForm && (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            {editingId ? "Edit Dependent" : "Add Dependent"}
+          </h4>
+          <SubResourceError error={error} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+              <input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Relationship *</label>
+              <input
+                value={form.relationship}
+                onChange={(e) => setForm({ ...form, relationship: e.target.value })}
+                placeholder="e.g. Spouse, Child, Parent"
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Date of Birth</label>
+              <input
+                type="date"
+                value={form.date_of_birth}
+                onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Gender</label>
+              <select
+                value={form.gender}
+                onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                className={subInputClass}
+              >
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm text-gray-700 mt-6">
+                <input
+                  type="checkbox"
+                  checked={form.is_nominee}
+                  onChange={(e) => setForm({ ...form, is_nominee: e.target.checked })}
+                  className="rounded border-gray-300 text-brand-600"
+                />
+                Is Nominee
+              </label>
+            </div>
+            {form.is_nominee && (
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Nominee %</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={form.nominee_percentage}
+                  onChange={(e) => setForm({ ...form, nominee_percentage: e.target.value })}
+                  className={subInputClass}
+                />
+              </div>
             )}
           </div>
-          <p className="text-sm text-gray-600">{exp.company_name}</p>
-          <p className="text-xs text-gray-400 mt-1">
-            {exp.start_date ? new Date(exp.start_date).toLocaleDateString() : ""} -{" "}
-            {exp.is_current
-              ? "Present"
-              : exp.end_date
-              ? new Date(exp.end_date).toLocaleDateString()
-              : ""}
-          </p>
-          {exp.description && (
-            <p className="text-sm text-gray-500 mt-2">{exp.description}</p>
-          )}
+          <div className="flex items-center gap-2 mt-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={resetForm}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
+            >
+              <X className="h-3.5 w-3.5" /> Cancel
+            </button>
+          </div>
         </div>
-      ))}
+      )}
+
+      {!data || data.length === 0 ? (
+        !showForm && <p className="text-sm text-gray-400">No dependents added yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Name</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Relationship</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">DOB</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Gender</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Nominee</th>
+                {canEdit && <th className="text-right text-xs font-medium text-gray-500 uppercase px-4 py-2">Actions</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {data.map((dep: any) => (
+                <tr key={dep.id}>
+                  <td className="px-4 py-3 text-sm text-gray-900">{dep.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{dep.relationship}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
+                    {dep.date_of_birth ? new Date(dep.date_of_birth).toLocaleDateString() : "-"}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500 capitalize">{dep.gender || "-"}</td>
+                  <td className="px-4 py-3 text-sm">
+                    {dep.is_nominee ? (
+                      <span className="text-green-700 font-medium">
+                        Yes {dep.nominee_percentage ? `(${dep.nominee_percentage}%)` : ""}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">No</span>
+                    )}
+                  </td>
+                  {canEdit && (
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => startEdit(dep)}
+                          className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
+                          title="Edit"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(dep.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
 
-function DependentsTab({ data }: { data?: any[] }) {
-  if (!data || data.length === 0) {
-    return <p className="text-sm text-gray-400">No dependents added yet.</p>;
+// ---------------------------------------------------------------------------
+// Addresses Tab
+// ---------------------------------------------------------------------------
+
+function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const queryClient = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<{ type: string; line1: string; line2: string; city: string; state: string; country: string; zipcode: string }>({
+    type: "current",
+    line1: "",
+    line2: "",
+    city: "",
+    state: "",
+    country: "IN",
+    zipcode: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["employee-addresses", userId] });
+
+  function buildPayload() {
+    return {
+      type: form.type,
+      line1: form.line1.trim(),
+      line2: form.line2.trim() || null,
+      city: form.city.trim(),
+      state: form.state.trim(),
+      country: form.country.trim() || "IN",
+      zipcode: form.zipcode.trim(),
+    };
   }
+
+  const createMutation = useMutation({
+    mutationFn: (payload: any) => api.post(`/employees/${userId}/addresses`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: any }) =>
+      api.put(`/employees/${userId}/addresses/${id}`, payload),
+    onSuccess: () => { invalidate(); resetForm(); },
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/employees/${userId}/addresses/${id}`),
+    onSuccess: () => invalidate(),
+    onError: (err: any) => setError(extractApiError(err)),
+  });
+
+  function resetForm() {
+    setForm({ type: "current", line1: "", line2: "", city: "", state: "", country: "IN", zipcode: "" });
+    setAdding(false);
+    setEditingId(null);
+    setError(null);
+  }
+
+  function startAdd() {
+    resetForm();
+    setAdding(true);
+  }
+
+  function startEdit(addr: any) {
+    setForm({
+      type: addr.type || "current",
+      line1: addr.line1 || "",
+      line2: addr.line2 || "",
+      city: addr.city || "",
+      state: addr.state || "",
+      country: addr.country || "IN",
+      zipcode: addr.zipcode || "",
+    });
+    setEditingId(addr.id);
+    setAdding(false);
+    setError(null);
+  }
+
+  function handleSave() {
+    setError(null);
+    if (!form.line1.trim() || !form.city.trim() || !form.state.trim() || !form.zipcode.trim()) {
+      setError("Address line 1, City, State and Zipcode are required");
+      return;
+    }
+    const payload = buildPayload();
+    if (editingId) updateMutation.mutate({ id: editingId, payload });
+    else createMutation.mutate(payload);
+  }
+
+  function handleDelete(id: number) {
+    if (!confirm("Delete this address?")) return;
+    deleteMutation.mutate(id);
+  }
+
+  const showForm = adding || editingId !== null;
+  const saving = createMutation.isPending || updateMutation.isPending;
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Name</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Relationship</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">DOB</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Gender</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Nominee</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {data.map((dep: any) => (
-            <tr key={dep.id}>
-              <td className="px-4 py-3 text-sm text-gray-900">{dep.name}</td>
-              <td className="px-4 py-3 text-sm text-gray-500">{dep.relationship}</td>
-              <td className="px-4 py-3 text-sm text-gray-500">
-                {dep.date_of_birth ? new Date(dep.date_of_birth).toLocaleDateString() : "-"}
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-500 capitalize">{dep.gender || "-"}</td>
-              <td className="px-4 py-3 text-sm">
-                {dep.is_nominee ? (
-                  <span className="text-green-700 font-medium">
-                    Yes {dep.nominee_percentage ? `(${dep.nominee_percentage}%)` : ""}
-                  </span>
-                ) : (
-                  <span className="text-gray-400">No</span>
-                )}
-              </td>
-            </tr>
+    <div>
+      {canEdit && !showForm && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={startAdd}
+            className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
+          >
+            <Plus className="h-4 w-4" /> Add Address
+          </button>
+        </div>
+      )}
+
+      {showForm && (
+        <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            {editingId ? "Edit Address" : "Add Address"}
+          </h4>
+          <SubResourceError error={error} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Type *</label>
+              <select
+                value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                className={subInputClass}
+              >
+                <option value="current">Current</option>
+                <option value="permanent">Permanent</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Country</label>
+              <input
+                value={form.country}
+                onChange={(e) => setForm({ ...form, country: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Address Line 1 *</label>
+              <input
+                value={form.line1}
+                onChange={(e) => setForm({ ...form, line1: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Address Line 2</label>
+              <input
+                value={form.line2}
+                onChange={(e) => setForm({ ...form, line2: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">City *</label>
+              <input
+                value={form.city}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">State *</label>
+              <input
+                value={form.state}
+                onChange={(e) => setForm({ ...form, state: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Zipcode *</label>
+              <input
+                value={form.zipcode}
+                onChange={(e) => setForm({ ...form, zipcode: e.target.value })}
+                className={subInputClass}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-4">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={resetForm}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
+            >
+              <X className="h-3.5 w-3.5" /> Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!data || data.length === 0 ? (
+        !showForm && <p className="text-sm text-gray-400">No addresses added yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {data.map((addr: any) => (
+            <div key={addr.id} className="border border-gray-100 rounded-lg p-4 flex items-start justify-between">
+              <div className="flex-1">
+                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full font-medium uppercase mb-2 inline-block">
+                  {addr.type}
+                </span>
+                <p className="text-sm text-gray-900">{addr.line1}</p>
+                {addr.line2 && <p className="text-sm text-gray-600">{addr.line2}</p>}
+                <p className="text-sm text-gray-500">
+                  {addr.city}, {addr.state} {addr.zipcode}
+                </p>
+                <p className="text-sm text-gray-400">{addr.country}</p>
+              </div>
+              {canEdit && (
+                <div className="flex items-center gap-1 ml-3">
+                  <button
+                    onClick={() => startEdit(addr)}
+                    className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
+                    title="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(addr.id)}
+                    className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function AddressesTab({ data }: { data?: any[] }) {
-  if (!data || data.length === 0) {
-    return <p className="text-sm text-gray-400">No addresses added yet.</p>;
-  }
-  return (
-    <div className="space-y-4">
-      {data.map((addr: any) => (
-        <div key={addr.id} className="border border-gray-100 rounded-lg p-4">
-          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full font-medium uppercase mb-2 inline-block">
-            {addr.type}
-          </span>
-          <p className="text-sm text-gray-900">{addr.line1}</p>
-          {addr.line2 && <p className="text-sm text-gray-600">{addr.line2}</p>}
-          <p className="text-sm text-gray-500">
-            {addr.city}, {addr.state} {addr.zipcode}
-          </p>
-          <p className="text-sm text-gray-400">{addr.country}</p>
         </div>
-      ))}
+      )}
     </div>
   );
 }
