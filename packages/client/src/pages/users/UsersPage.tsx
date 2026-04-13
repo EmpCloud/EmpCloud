@@ -1,208 +1,213 @@
-import { useUsers, useInviteUser, useCreateUser, useDepartments } from "@/api/hooks";
+import { useUsers, useInviteUser, useDepartments } from "@/api/hooks";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { useState, useRef, useCallback } from "react";
+import * as XLSX from "xlsx";
 import { UserPlus, Search, Mail, Upload, Download, X, CheckCircle2, XCircle, FileSpreadsheet, AlertTriangle, Loader2 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
-// CSV Import types & helpers
+// Bulk Import — sample template & types
+//
+// Both .xlsx and .csv uploads work. The server parses them with the same
+// xlsx library, so Excel date serials and non-ISO date strings
+// (DD/MM/YYYY, "15 Jan 2026", etc.) are handled transparently.
+//
+// The server is the source of truth for validation. The real preview comes
+// from POST /users/import which validates against the DB (unique emails,
+// existing departments/locations/managers, seat limit, etc.). Unknown
+// departments are auto-created on execute — they are NOT an error.
 // ---------------------------------------------------------------------------
 
+const TEMPLATE_HEADERS = [
+  "first_name",
+  "last_name",
+  "email",
+  "password",
+  "role",
+  "emp_code",
+  "designation",
+  "department_name",
+  "location_name",
+  "reporting_manager_email",
+  "employment_type",
+  "date_of_joining",
+  "date_of_birth",
+  "gender",
+  "contact_number",
+  "address",
+];
+
+const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
+  {
+    first_name: "John",
+    last_name: "Doe",
+    email: "john@company.com",
+    password: "Welcome@123",
+    role: "employee",
+    emp_code: "EMP001",
+    designation: "Software Engineer",
+    department_name: "Engineering",
+    location_name: "Bangalore",
+    reporting_manager_email: "manager@company.com",
+    employment_type: "full_time",
+    date_of_joining: "2026-01-15",
+    date_of_birth: "1995-05-10",
+    gender: "male",
+    contact_number: "+919876543210",
+    address: "12 MG Road, Bangalore",
+  },
+  {
+    first_name: "Jane",
+    last_name: "Smith",
+    email: "jane@company.com",
+    password: "",
+    role: "manager",
+    emp_code: "EMP002",
+    designation: "Product Manager",
+    department_name: "Product",
+    location_name: "Mumbai",
+    reporting_manager_email: "",
+    employment_type: "full_time",
+    date_of_joining: "01/06/2025",
+    date_of_birth: "22/11/1990",
+    gender: "female",
+    contact_number: "+919876543211",
+    address: "",
+  },
+  {
+    first_name: "Raj",
+    last_name: "Patel",
+    email: "raj@company.com",
+    password: "Welcome@123",
+    role: "employee",
+    emp_code: "EMP003",
+    designation: "Senior Designer",
+    department_name: "Design",
+    location_name: "",
+    reporting_manager_email: "",
+    employment_type: "contract",
+    date_of_joining: "2026-03-01",
+    date_of_birth: "",
+    gender: "",
+    contact_number: "+919876543212",
+    address: "",
+  },
+];
+
+/** Row shape after spreadsheet header normalization — matches server ImportRow */
 interface CsvRow {
   first_name: string;
   last_name: string;
   email: string;
-  emp_code: string;
-  designation: string;
-  department: string;
-  role: string;
-  employment_type: string;
-  date_of_joining: string;
-  contact_number: string;
+  password?: string;
+  role?: string;
+  emp_code?: string;
+  designation?: string;
+  department_name?: string;
+  location_name?: string;
+  reporting_manager_email?: string;
+  employment_type?: string;
+  date_of_joining?: string;
+  date_of_birth?: string;
+  date_of_exit?: string;
+  gender?: string;
+  contact_number?: string;
+  address?: string;
 }
 
-interface ParsedRow extends CsvRow {
-  _rowNum: number;
-  _errors: string[];
-  _valid: boolean;
+/** Server validation response — see backend import.service.ts */
+interface ServerImportError {
+  row: number;
+  data: CsvRow;
+  errors: string[];
 }
-
-const SAMPLE_CSV = `first_name,last_name,email,emp_code,designation,department,role,employment_type,date_of_joining,contact_number
-John,Doe,john@company.com,EMP001,Software Engineer,Engineering,employee,full_time,2026-01-15,+91-9876543210
-Jane,Smith,jane@company.com,EMP002,Product Manager,Product,manager,full_time,2025-06-01,+91-9876543211
-Raj,Patel,raj@company.com,EMP003,Senior Designer,Design,employee,full_time,2026-03-01,+91-9876543212`;
-
-const VALID_ROLES = ["employee", "manager", "hr_admin", "org_admin"];
-const VALID_EMPLOYMENT_TYPES = ["full_time", "part_time", "contract", "intern"];
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** Parse a single CSV line respecting quoted fields (handles commas inside quotes) */
-function parseCsvLine(line: string): string[] {
-  const values: string[] = [];
-  let current = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"' && line[i + 1] === '"') {
-        current += '"';
-        i++; // skip escaped quote
-      } else if (ch === '"') {
-        inQuotes = false;
-      } else {
-        current += ch;
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true;
-      } else if (ch === ",") {
-        values.push(current.trim());
-        current = "";
-      } else {
-        current += ch;
-      }
-    }
-  }
-  values.push(current.trim());
-  return values;
-}
-
-function parseCsv(text: string): CsvRow[] {
-  const lines = text.split(/\r?\n/).filter((l) => l.trim());
-  if (lines.length < 2) return [];
-  const headers = parseCsvLine(lines[0]).map((h) => h.trim().toLowerCase());
-  return lines.slice(1).map((line) => {
-    const values = parseCsvLine(line);
-    const row: any = {};
-    headers.forEach((h, i) => {
-      row[h] = values[i] || "";
-    });
-    return row as CsvRow;
-  });
-}
-
-function validateRows(rows: CsvRow[], departmentNames: string[]): ParsedRow[] {
-  const emailsSeen = new Set<string>();
-  const deptLower = departmentNames.map((d) => d.toLowerCase());
-
-  return rows.map((row, idx) => {
-    const errors: string[] = [];
-
-    if (!row.first_name) errors.push("First name is required");
-    if (!row.last_name) errors.push("Last name is required");
-    if (!row.email) {
-      errors.push("Email is required");
-    } else if (!EMAIL_RE.test(row.email)) {
-      errors.push("Invalid email format");
-    } else if (emailsSeen.has(row.email.toLowerCase())) {
-      errors.push("Duplicate email in CSV");
-    }
-    if (row.email) emailsSeen.add(row.email.toLowerCase());
-
-    if (row.department && !deptLower.includes(row.department.toLowerCase())) {
-      errors.push(`Unknown department "${row.department}"`);
-    }
-    if (row.role && !VALID_ROLES.includes(row.role)) {
-      errors.push(`Invalid role "${row.role}"`);
-    }
-    if (row.employment_type && !VALID_EMPLOYMENT_TYPES.includes(row.employment_type)) {
-      errors.push(`Invalid employment type "${row.employment_type}"`);
-    }
-
-    return { ...row, _rowNum: idx + 2, _errors: errors, _valid: errors.length === 0 };
-  });
+interface ServerImportPreview {
+  valid: CsvRow[];
+  errors: ServerImportError[];
+  totalRows: number;
 }
 
 // ---------------------------------------------------------------------------
 // CSV Import Modal
 // ---------------------------------------------------------------------------
 
-function CsvImportModal({
-  onClose,
-  departments,
-}: {
-  onClose: () => void;
-  departments: { id: number; name: string }[];
-}) {
+function CsvImportModal({ onClose }: { onClose: () => void }) {
+  const queryClient = useQueryClient();
   const [step, setStep] = useState<"upload" | "preview" | "importing" | "done">("upload");
-  const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
+  const [preview, setPreview] = useState<ServerImportPreview | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [importResults, setImportResults] = useState<{ success: number; failed: number; errors: string[] }>({ success: 0, failed: 0, errors: [] });
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [importResult, setImportResult] = useState<{ count: number; createdDepartments?: string[] } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const createUser = useCreateUser();
 
-  const departmentNames = departments.map((d) => d.name);
-
-  const handleFile = useCallback(
-    (file: File) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        const rows = parseCsv(text);
-        const validated = validateRows(rows, departmentNames);
-        setParsedRows(validated);
-        setStep("preview");
-      };
-      reader.readAsText(file);
-    },
-    [departmentNames]
-  );
+  const handleFile = useCallback(async (file: File) => {
+    setUploadError(null);
+    setSelectedFile(file);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await api.post<{ data: ServerImportPreview }>("/users/import", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setPreview(res.data.data);
+      setStep("preview");
+    } catch (err: any) {
+      const msg = err?.response?.data?.error?.message || err?.message || "Failed to parse file";
+      setUploadError(msg);
+    }
+  }, []);
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       setDragOver(false);
       const file = e.dataTransfer.files[0];
-      if (file && (file.name.endsWith(".csv") || file.type === "text/csv")) handleFile(file);
+      if (!file) return;
+      const name = file.name.toLowerCase();
+      if (name.endsWith(".xlsx") || name.endsWith(".xls") || name.endsWith(".csv")) {
+        handleFile(file);
+      }
     },
-    [handleFile]
+    [handleFile],
   );
 
   const downloadTemplate = () => {
-    const blob = new Blob([SAMPLE_CSV], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "users_import_template.csv";
-    a.click();
-    URL.revokeObjectURL(url);
+    const worksheet = XLSX.utils.json_to_sheet(TEMPLATE_SAMPLE_ROWS, {
+      header: TEMPLATE_HEADERS,
+    });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+    XLSX.writeFile(workbook, "users_import_template.xlsx");
   };
 
-  const validRows = parsedRows.filter((r) => r._valid);
-  const invalidRows = parsedRows.filter((r) => !r._valid);
+  const validRows = preview?.valid ?? [];
+  const invalidRows = preview?.errors ?? [];
 
   const handleImport = async () => {
+    if (!selectedFile) return;
     setStep("importing");
-    let success = 0;
-    let failed = 0;
-    const errors: string[] = [];
-
-    for (const row of validRows) {
-      try {
-        const deptMatch = departments.find((d) => d.name.toLowerCase() === (row.department || "").toLowerCase());
-        await createUser.mutateAsync({
-          first_name: row.first_name,
-          last_name: row.last_name,
-          email: row.email,
-          emp_code: row.emp_code || undefined,
-          designation: row.designation || undefined,
-          department_id: deptMatch?.id || undefined,
-          role: row.role || "employee",
-          employment_type: row.employment_type || "full_time",
-          date_of_joining: row.date_of_joining || undefined,
-          contact_number: row.contact_number || undefined,
-        } as any);
-        success++;
-      } catch (err: any) {
-        failed++;
-        const msg = err?.response?.data?.error?.message || err?.response?.data?.message || err.message || "Unknown error";
-        errors.push(`Row ${row._rowNum} (${row.email}): ${msg}`);
-      }
+    try {
+      const form = new FormData();
+      form.append("file", selectedFile);
+      const res = await api.post<{ data: { count: number; createdDepartments?: string[] } }>("/users/import/execute", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setImportResult(res.data.data);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setStep("done");
+    } catch (err: any) {
+      // Server rejected the batch — probably new errors surfaced between
+      // preview and execute (e.g. someone else created a duplicate email).
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "Import failed";
+      setUploadError(msg);
+      setStep("preview");
     }
-
-    setImportResults({ success, failed, errors });
-    setStep("done");
   };
 
   return (
@@ -215,7 +220,7 @@ function CsvImportModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Import Users from CSV</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Import Users from Excel / CSV</h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="h-5 w-5" />
@@ -234,7 +239,7 @@ function CsvImportModal({
                 >
                   <Download className="h-4 w-4" /> Download Template
                 </button>
-                <span className="text-sm text-gray-500">Download a sample CSV with the correct headers.</span>
+                <span className="text-sm text-gray-500">Download a sample Excel file with the correct headers.</span>
               </div>
 
               <div
@@ -247,12 +252,12 @@ function CsvImportModal({
                 onClick={() => fileRef.current?.click()}
               >
                 <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                <p className="text-sm font-medium text-gray-700">Drag & drop your CSV file here</p>
+                <p className="text-sm font-medium text-gray-700">Drag & drop your Excel or CSV file here</p>
                 <p className="text-xs text-gray-400 mt-1">or click to browse</p>
                 <input
                   ref={fileRef}
                   type="file"
-                  accept=".csv"
+                  accept=".xlsx,.xls,.csv"
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -260,11 +265,17 @@ function CsvImportModal({
                   }}
                 />
               </div>
+
+              {uploadError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                  {uploadError}
+                </div>
+              )}
             </div>
           )}
 
           {/* Preview step */}
-          {step === "preview" && (
+          {step === "preview" && preview && (
             <div className="space-y-4">
               <div className="flex items-center gap-4 text-sm">
                 <span className="flex items-center gap-1 text-green-700">
@@ -276,70 +287,80 @@ function CsvImportModal({
                   </span>
                 )}
                 <span className="text-gray-400">|</span>
-                <span className="text-gray-500">{parsedRows.length} total rows</span>
+                <span className="text-gray-500">{preview.totalRows} total rows</span>
                 <button
-                  onClick={() => { setStep("upload"); setParsedRows([]); }}
+                  onClick={() => { setStep("upload"); setPreview(null); setSelectedFile(null); }}
                   className="ml-auto text-sm text-gray-500 hover:text-gray-700 underline"
                 >
                   Upload different file
                 </button>
               </div>
 
+              {uploadError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                  {uploadError}
+                </div>
+              )}
+
               {/* Error details */}
               {invalidRows.length > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                   <div className="flex items-center gap-2 text-red-700 font-medium text-sm mb-2">
-                    <AlertTriangle className="h-4 w-4" /> Rows with errors (will be skipped)
+                    <AlertTriangle className="h-4 w-4" /> Rows with errors (fix your file and re-upload)
                   </div>
-                  <div className="space-y-1 max-h-32 overflow-y-auto">
-                    {invalidRows.map((row) => (
-                      <p key={row._rowNum} className="text-xs text-red-600">
-                        <span className="font-medium">Row {row._rowNum}:</span> {row._errors.join("; ")}
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
+                    {invalidRows.map((err, i) => (
+                      <p key={i} className="text-xs text-red-600">
+                        <span className="font-medium">Row {err.row}:</span> {err.errors.join("; ")}
                       </p>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Preview table */}
-              <div className="border border-gray-200 rounded-lg overflow-x-auto max-h-[40vh]">
-                <table className="min-w-full text-xs">
-                  <thead className="bg-gray-50 sticky top-0">
-                    <tr>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Status</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Row</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">First Name</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Last Name</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Email</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Emp Code</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Designation</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Department</th>
-                      <th className="px-3 py-2 text-left font-medium text-gray-500">Role</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {parsedRows.map((row) => (
-                      <tr key={row._rowNum} className={row._valid ? "" : "bg-red-50/50"}>
-                        <td className="px-3 py-2">
-                          {row._valid ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-red-500" />
-                          )}
-                        </td>
-                        <td className="px-3 py-2 text-gray-400">{row._rowNum}</td>
-                        <td className="px-3 py-2">{row.first_name}</td>
-                        <td className="px-3 py-2">{row.last_name}</td>
-                        <td className="px-3 py-2">{row.email}</td>
-                        <td className="px-3 py-2">{row.emp_code}</td>
-                        <td className="px-3 py-2">{row.designation}</td>
-                        <td className="px-3 py-2">{row.department}</td>
-                        <td className="px-3 py-2">{row.role}</td>
+              {/* Preview table — all valid rows that will be imported */}
+              {validRows.length > 0 && (
+                <div className="border border-gray-200 rounded-lg overflow-x-auto max-h-[40vh]">
+                  <table className="min-w-full text-xs">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">First Name</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Last Name</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Email</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Password</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Role</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Emp Code</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Designation</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Department</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Location</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Manager</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Type</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">Joining</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {validRows.map((row, i) => (
+                        <tr key={i}>
+                          <td className="px-3 py-2">{row.first_name}</td>
+                          <td className="px-3 py-2">{row.last_name}</td>
+                          <td className="px-3 py-2">{row.email}</td>
+                          <td className="px-3 py-2 text-gray-400">
+                            {row.password ? "••••••••" : <em className="text-gray-400">invite</em>}
+                          </td>
+                          <td className="px-3 py-2">{row.role || "employee"}</td>
+                          <td className="px-3 py-2">{row.emp_code}</td>
+                          <td className="px-3 py-2">{row.designation}</td>
+                          <td className="px-3 py-2">{row.department_name}</td>
+                          <td className="px-3 py-2">{row.location_name}</td>
+                          <td className="px-3 py-2">{row.reporting_manager_email}</td>
+                          <td className="px-3 py-2">{row.employment_type || "full_time"}</td>
+                          <td className="px-3 py-2">{row.date_of_joining}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
@@ -352,27 +373,26 @@ function CsvImportModal({
           )}
 
           {/* Done step */}
-          {step === "done" && (
+          {step === "done" && importResult && (
             <div className="space-y-4 py-4">
               <div className="flex items-center gap-3 text-green-700 bg-green-50 border border-green-200 rounded-lg p-4">
                 <CheckCircle2 className="h-6 w-6 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-sm">Import Complete</p>
                   <p className="text-sm mt-0.5">
-                    {importResults.success} user{importResults.success !== 1 ? "s" : ""} imported successfully.
-                    {importResults.failed > 0 && ` ${importResults.failed} failed.`}
+                    {importResult.count} user{importResult.count !== 1 ? "s" : ""} imported successfully.
                   </p>
                 </div>
               </div>
 
-              {importResults.errors.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-sm font-medium text-red-700 mb-2">Failed rows:</p>
-                  <div className="space-y-1 max-h-40 overflow-y-auto">
-                    {importResults.errors.map((err, i) => (
-                      <p key={i} className="text-xs text-red-600">{err}</p>
-                    ))}
-                  </div>
+              {importResult.createdDepartments && importResult.createdDepartments.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm font-medium text-blue-700 mb-1">
+                    New departments created ({importResult.createdDepartments.length}):
+                  </p>
+                  <p className="text-xs text-blue-600">
+                    {importResult.createdDepartments.join(", ")}
+                  </p>
                 </div>
               )}
             </div>
@@ -490,7 +510,7 @@ export default function UsersPage() {
             onClick={() => setShowCsvImport(true)}
             className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50"
           >
-            <FileSpreadsheet className="h-4 w-4" /> Import CSV
+            <FileSpreadsheet className="h-4 w-4" /> Import Users
           </button>
           <button
             onClick={() => setShowInvite(!showInvite)}
@@ -502,12 +522,7 @@ export default function UsersPage() {
       </div>
 
       {/* CSV Import Modal */}
-      {showCsvImport && (
-        <CsvImportModal
-          onClose={() => setShowCsvImport(false)}
-          departments={departments}
-        />
-      )}
+      {showCsvImport && <CsvImportModal onClose={() => setShowCsvImport(false)} />}
 
       {/* Invite form */}
       {showInvite && (

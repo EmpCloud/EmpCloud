@@ -600,41 +600,86 @@ export async function getOrgChart(orgId: number): Promise<OrgChartNode[]> {
 // Bulk Import
 // ---------------------------------------------------------------------------
 
+/**
+ * Insert many users in a single transaction. Supports the full user shape
+ * (password, DOB, gender, DOJ/DOE, location, reporting manager, employment
+ * type, address) — passwords are bcrypt-hashed per row before insert.
+ *
+ * Pre-conditions (the caller must have already validated these):
+ * - emails are unique within the batch and against existing users
+ * - department_id / location_id / reporting_manager_id exist and belong to the org
+ * - role is valid and the importer is allowed to assign it
+ * - dates are YYYY-MM-DD and pass DOB ≥ 18 / DOE > DOJ rules
+ * - org seat_limit accommodates all rows
+ */
 export async function bulkCreateUsers(
   orgId: number,
   rows: Array<{
     first_name: string;
     last_name: string;
     email: string;
-    designation?: string;
-    department_id?: number;
+    password?: string;
     role?: string;
     emp_code?: string;
+    designation?: string;
+    department_id?: number;
+    location_id?: number;
+    reporting_manager_id?: number;
+    employment_type?: string;
+    date_of_joining?: string;
+    date_of_birth?: string;
+    date_of_exit?: string;
+    gender?: string;
     contact_number?: string;
+    address?: string;
   }>,
-  importedBy: number
+  _importedBy: number,
 ): Promise<{ count: number }> {
   const db = getDB();
+  const now = new Date();
+  const todayISO = now.toISOString().slice(0, 10);
 
-  const insertRows = rows.map((row) => ({
-    organization_id: orgId,
-    first_name: row.first_name,
-    last_name: row.last_name,
-    email: row.email,
-    designation: row.designation || null,
-    department_id: row.department_id || null,
-    role: row.role || "employee",
-    emp_code: row.emp_code || null,
-    contact_number: row.contact_number || null,
-    employment_type: "full_time",
-    date_of_joining: new Date().toISOString().slice(0, 10),
-    status: 1,
-    created_at: new Date(),
-    updated_at: new Date(),
-  }));
+  // Hash all passwords in parallel before opening the transaction so bcrypt
+  // doesn't hold the DB connection while it's churning through rounds.
+  const hashedPasswords = await Promise.all(
+    rows.map((row) => (row.password ? hashPassword(row.password) : Promise.resolve(null))),
+  );
+
+  const insertRows = rows.map((row, index) => {
+    // Probation ends 6 months after date_of_joining (or today if unspecified)
+    const doj = row.date_of_joining || todayISO;
+    const probationEnd = new Date(doj);
+    probationEnd.setMonth(probationEnd.getMonth() + 6);
+
+    return {
+      organization_id: orgId,
+      first_name: row.first_name,
+      last_name: row.last_name,
+      email: row.email.toLowerCase(),
+      password: hashedPasswords[index],
+      role: row.role || "employee",
+      emp_code: row.emp_code || null,
+      designation: row.designation || null,
+      department_id: row.department_id || null,
+      location_id: row.location_id || null,
+      reporting_manager_id: row.reporting_manager_id || null,
+      employment_type: row.employment_type || "full_time",
+      date_of_joining: doj,
+      date_of_birth: row.date_of_birth || null,
+      date_of_exit: row.date_of_exit || null,
+      probation_end_date: probationEnd.toISOString().slice(0, 10),
+      gender: row.gender || null,
+      contact_number: row.contact_number || null,
+      address: row.address || null,
+      status: 1,
+      language: "en",
+      created_at: now,
+      updated_at: now,
+    };
+  });
 
   await db.transaction(async (trx) => {
-    // Insert in batches of 100
+    // Insert in batches of 100 to keep individual statements reasonable
     for (let i = 0; i < insertRows.length; i += 100) {
       await trx("users").insert(insertRows.slice(i, i + 100));
     }

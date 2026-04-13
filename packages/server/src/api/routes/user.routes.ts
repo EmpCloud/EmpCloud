@@ -216,7 +216,24 @@ router.post("/import/execute", authenticate, requireOrgAdmin, upload.single("fil
       return;
     }
     const rows = importService.parseCSV(req.file.buffer);
-    const { valid } = await importService.validateImportData(req.user!.org_id, rows);
+    const { valid, errors } = await importService.validateImportData(req.user!.org_id, rows);
+
+    // Fail the whole import if any rows have errors — forces the user to
+    // call /import first, fix the CSV, then re-submit to /import/execute.
+    if (errors.length > 0) {
+      sendSuccess(res, { error: "Validation failed", errors, totalRows: rows.length }, 400);
+      return;
+    }
+
+    // Privilege-escalation check: only super_admin importers can assign
+    // super_admin role. Block the whole batch if any row tries it.
+    if (req.user!.role !== "super_admin") {
+      const escalatingRows = valid.filter((r) => r.role === "super_admin");
+      if (escalatingRows.length > 0) {
+        throw new ForbiddenError("Only super admins can assign the super_admin role");
+      }
+    }
+
     const result = await importService.executeImport(req.user!.org_id, valid, req.user!.sub);
 
     await logAudit({
