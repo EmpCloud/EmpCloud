@@ -564,17 +564,19 @@ export const createLeaveTypeSchema = z.object({
 
 export const updateLeaveTypeSchema = createLeaveTypeSchema.partial();
 
+// #leave-policy-update — Frontend may send numeric fields as strings (e.g. "12.0"
+// from controlled inputs). Use z.coerce.number() so we accept both.
 export const createLeavePolicySchema = z.object({
-  leave_type_id: z.number().int().positive(),
+  leave_type_id: z.coerce.number().int().positive(),
   name: z.string().min(1).max(100),
-  annual_quota: z.number().min(0).max(365),
+  annual_quota: z.coerce.number().min(0).max(365),
   accrual_type: z.enum(["annual", "monthly", "quarterly"]).default("annual"),
-  accrual_rate: z.number().min(0).optional().nullable(),
-  applicable_from_months: z.number().int().min(0).default(0),
+  accrual_rate: z.coerce.number().min(0).optional().nullable(),
+  applicable_from_months: z.coerce.number().int().min(0).default(0),
   applicable_gender: z.string().optional().nullable(),
   applicable_employment_types: z.string().optional().nullable(),
-  max_consecutive_days: z.number().int().positive().optional().nullable(),
-  min_days_before_application: z.number().int().min(0).default(0),
+  max_consecutive_days: z.coerce.number().int().positive().optional().nullable(),
+  min_days_before_application: z.coerce.number().int().min(0).default(0),
 });
 
 export const applyLeaveSchema = z.object({

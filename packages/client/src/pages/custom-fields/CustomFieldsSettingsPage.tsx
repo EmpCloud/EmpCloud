@@ -331,7 +331,6 @@ export default function CustomFieldsSettingsPage() {
                     setForm({ ...form, field_type: e.target.value, options: [] })
                   }
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  disabled={!!editingId}
                 >
                   {FIELD_TYPES.map(({ value, label }) => (
                     <option key={value} value={value}>

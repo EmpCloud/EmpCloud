@@ -121,8 +121,23 @@ export default function SelfServiceDashboardPage() {
               <div>
                 <p className="text-sm font-medium text-gray-900">Checked in</p>
                 <p className="text-xs text-gray-500">
-                  {todayAttendance.check_in_time || "N/A"}
-                  {todayAttendance.check_out_time ? ` - ${todayAttendance.check_out_time}` : ""}
+                  {/* #1383 — The API returns check_in / check_out as ISO
+                      timestamps, not check_in_time / check_out_time strings */}
+                  {(() => {
+                    const ci = todayAttendance.check_in || todayAttendance.check_in_time;
+                    const co = todayAttendance.check_out || todayAttendance.check_out_time;
+                    const fmt = (v: string | null | undefined) =>
+                      v
+                        ? new Date(v).toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : null;
+                    const ciText = fmt(ci) || "N/A";
+                    const coText = fmt(co);
+                    return coText ? `${ciText} - ${coText}` : ciText;
+                  })()}
                 </p>
               </div>
             </div>
