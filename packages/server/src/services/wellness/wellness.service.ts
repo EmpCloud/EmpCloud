@@ -167,7 +167,7 @@ export async function enrollInProgram(
     throw new ForbiddenError("You are already enrolled in this program");
   }
 
-  const [id] = await db("wellness_enrollments").insert({
+  const [insertId] = await db("wellness_enrollments").insert({
     program_id: programId,
     organization_id: orgId,
     user_id: userId,
@@ -176,13 +176,24 @@ export async function enrollInProgram(
     created_at: new Date(),
   });
 
+  // #1384 — Query back to get the actual enrollment; mysql2 driver may
+  // return undefined from the insert destructure on some configurations
+  const enrollment = await db("wellness_enrollments")
+    .where({ program_id: programId, user_id: userId, organization_id: orgId })
+    .orderBy("id", "desc")
+    .first();
+
+  if (!enrollment) {
+    throw new Error("Failed to create wellness enrollment");
+  }
+
   // Increment enrolled count
   await db("wellness_programs")
     .where({ id: programId })
     .increment("enrolled_count", 1);
 
   return {
-    enrollment_id: id,
+    enrollment_id: enrollment.id ?? insertId,
     message: "Successfully enrolled in program",
   };
 }

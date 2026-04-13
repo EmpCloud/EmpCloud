@@ -96,3 +96,18 @@ export async function deleteLeaveType(orgId: number, id: number): Promise<void> 
     .where({ id })
     .update({ is_active: false, updated_at: new Date() });
 }
+
+// #1362 — Reactivate a deactivated leave type
+export async function reactivateLeaveType(orgId: number, id: number): Promise<LeaveType> {
+  const db = getDB();
+  const existing = await db("leave_types")
+    .where({ id, organization_id: orgId })
+    .first();
+  if (!existing) throw new NotFoundError("Leave type");
+
+  await db("leave_types")
+    .where({ id })
+    .update({ is_active: true, updated_at: new Date() });
+
+  return getLeaveType(orgId, id);
+}

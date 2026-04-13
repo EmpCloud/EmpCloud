@@ -93,6 +93,14 @@ router.delete("/types/:id", authenticate, requireHR, async (req: Request, res: R
   } catch (err) { next(err); }
 });
 
+// #1362 — POST /api/v1/leave/types/:id/reactivate
+router.post("/types/:id/reactivate", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const type = await leaveTypeService.reactivateLeaveType(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, type);
+  } catch (err) { next(err); }
+});
+
 // ===========================================================================
 // Leave Policies
 // ===========================================================================

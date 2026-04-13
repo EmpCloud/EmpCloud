@@ -411,15 +411,30 @@ export const createShiftSchema = shiftBaseSchema.refine(
   { message: "Start time and end time cannot be the same", path: ["end_time"] }
 );
 
-export const updateShiftSchema = shiftBaseSchema.partial().refine(
-  (data) => {
-    if (data.start_time !== undefined && data.end_time !== undefined) {
-      return data.start_time !== data.end_time;
-    }
-    return true;
-  },
-  { message: "Start time and end time cannot be the same", path: ["end_time"] }
-);
+// #1356 — updateShiftSchema must NOT inherit defaults from shiftBaseSchema
+// (partial() keeps defaults, which overwrite unchanged fields on PATCH)
+export const updateShiftSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    start_time: z.string().optional(),
+    end_time: z.string().optional(),
+    break_minutes: z.number().int().min(0).optional(),
+    grace_minutes_late: z.number().int().min(0).optional(),
+    grace_minutes_early: z.number().int().min(0).optional(),
+    is_night_shift: z.boolean().optional(),
+    is_default: z.boolean().optional(),
+    working_days: z.string().optional(),
+    half_days: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.start_time !== undefined && data.end_time !== undefined) {
+        return data.start_time !== data.end_time;
+      }
+      return true;
+    },
+    { message: "Start time and end time cannot be the same", path: ["end_time"] }
+  );
 
 export const assignShiftSchema = z.object({
   user_id: z.number().int().positive(),
@@ -476,8 +491,17 @@ export const checkOutSchema = z.object({
   remarks: z.string().optional(),
 });
 
+// #1386 — Block far-future dates and require YYYY-MM-DD format
 export const createRegularizationSchema = z.object({
-  date: z.string(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+    .refine((d) => {
+      const target = new Date(d);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      return target <= today;
+    }, "Regularization date cannot be in the future"),
   requested_check_in: z.string().optional().nullable(),
   requested_check_out: z.string().optional().nullable(),
   reason: z.string().min(1),

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { Plus, Pencil, Trash2, Settings2 } from "lucide-react";
+import { Plus, Pencil, Power, PowerOff, Settings2 } from "lucide-react";
 
 interface LeaveType {
   id: number;
@@ -93,6 +93,12 @@ export default function LeaveTypesPage() {
 
   const deleteType = useMutation({
     mutationFn: (id: number) => api.delete(`/leave/types/${id}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["leave-types"] }),
+  });
+
+  // #1362 — Reactivate a deactivated leave type
+  const reactivateType = useMutation({
+    mutationFn: (id: number) => api.post(`/leave/types/${id}/reactivate`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["leave-types"] }),
   });
 
@@ -370,15 +376,26 @@ export default function LeaveTypesPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button onClick={() => startEdit(lt)} className="p-1 hover:bg-gray-100 rounded">
+                        <button onClick={() => startEdit(lt)} className="p-1 hover:bg-gray-100 rounded" title="Edit">
                           <Pencil className="h-3.5 w-3.5 text-gray-500" />
                         </button>
-                        <button
-                          onClick={() => { if (confirm("Deactivate this leave type?")) deleteType.mutate(lt.id); }}
-                          className="p-1 hover:bg-gray-100 rounded"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                        </button>
+                        {lt.is_active ? (
+                          <button
+                            onClick={() => { if (confirm("Deactivate this leave type?")) deleteType.mutate(lt.id); }}
+                            className="p-1 hover:bg-gray-100 rounded"
+                            title="Deactivate"
+                          >
+                            <PowerOff className="h-3.5 w-3.5 text-red-500" />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => reactivateType.mutate(lt.id)}
+                            className="p-1 hover:bg-gray-100 rounded"
+                            title="Reactivate"
+                          >
+                            <Power className="h-3.5 w-3.5 text-green-500" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

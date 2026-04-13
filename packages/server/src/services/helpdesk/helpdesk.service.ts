@@ -96,9 +96,15 @@ export async function listTickets(
   if (filters?.assigned_to) query = query.where("helpdesk_tickets.assigned_to", filters.assigned_to);
   if (filters?.raised_by) query = query.where("helpdesk_tickets.raised_by", filters.raised_by);
   if (filters?.search) {
+    // #1377 — Support ticket ID search (numeric) alongside subject/description
+    const isNumeric = /^\d+$/.test(filters.search);
+    const searchTerm = filters.search;
     query = query.where(function () {
-      this.where("helpdesk_tickets.subject", "like", `%${filters.search}%`)
-        .orWhere("helpdesk_tickets.description", "like", `%${filters.search}%`);
+      if (isNumeric) {
+        this.where("helpdesk_tickets.id", searchTerm);
+      }
+      this.orWhere("helpdesk_tickets.subject", "like", `%${searchTerm}%`)
+        .orWhere("helpdesk_tickets.description", "like", `%${searchTerm}%`);
     });
   }
 
@@ -394,6 +400,16 @@ export async function closeTicket(orgId: number, ticketId: number) {
     .where({ id: ticketId, organization_id: orgId })
     .first();
   if (!ticket) throw new NotFoundError("Ticket");
+
+  // #1385 — Block closing already-closed tickets
+  if (ticket.status === "closed") {
+    throw new ValidationError("Ticket is already closed");
+  }
+
+  // #1380 — Require ticket to be resolved before closing
+  if (ticket.status !== "resolved") {
+    throw new ValidationError("Ticket must be resolved before closing");
+  }
 
   // #979 — Require at least one resolution comment before closing
   const [{ count }] = await db("ticket_comments")
