@@ -42,10 +42,14 @@ interface ModuleEndpoint {
   transform: (data: any) => Record<string, unknown> | null;
 }
 
+// Fallback ports only used when modules.api_url (and modules.base_url) are
+// both NULL in the DB. Match the actual production deployment ports on the
+// backend host — see docs/DEPLOYMENT.md Port Map. Update both here and in
+// the DB when a module's port moves.
 const MODULE_ENDPOINTS: ModuleEndpoint[] = [
   {
     slug: "emp-recruit",
-    port: 4500,
+    port: 6015,
     path: "/api/v1/analytics/overview",
     transform: (data) => ({
       openJobs: data.open_jobs ?? data.openJobs ?? 0,
@@ -55,7 +59,7 @@ const MODULE_ENDPOINTS: ModuleEndpoint[] = [
   },
   {
     slug: "emp-performance",
-    port: 4300,
+    port: 6016,
     path: "/api/v1/analytics/overview",
     transform: (data) => ({
       activeCycles: data.active_cycles ?? data.activeCycles ?? 0,
@@ -65,7 +69,7 @@ const MODULE_ENDPOINTS: ModuleEndpoint[] = [
   },
   {
     slug: "emp-rewards",
-    port: 4600,
+    port: 6014,
     path: "/api/v1/analytics/overview",
     transform: (data) => ({
       totalKudos: data.total_kudos ?? data.totalKudos ?? 0,
@@ -75,7 +79,7 @@ const MODULE_ENDPOINTS: ModuleEndpoint[] = [
   },
   {
     slug: "emp-exit",
-    port: 4400,
+    port: 6010,
     path: "/api/v1/analytics/attrition",
     transform: (data) => ({
       attritionRate: data.attrition_rate ?? data.attritionRate ?? 0,
@@ -84,7 +88,7 @@ const MODULE_ENDPOINTS: ModuleEndpoint[] = [
   },
   {
     slug: "emp-lms",
-    port: 4700,
+    port: 6008,
     path: "/api/v1/analytics/overview",
     transform: (data) => ({
       activeCourses: data.active_courses ?? data.activeCourses ?? 0,
@@ -162,19 +166,27 @@ export interface WidgetData {
 export async function getModuleWidgets(orgId: number, _userId: number): Promise<WidgetData> {
   const db = getDB();
 
-  // Get all active/trial subscriptions for this org, joined with module info
+  // Get all active/trial subscriptions for this org, joined with module info.
+  // Both api_url and base_url are selected:
+  //   - api_url      is the private/internal URL used for server-to-server
+  //                  calls (typically http://localhost:PORT on the same host).
+  //   - base_url     is the public URL used by the user's browser for SSO
+  //                  redirects (e.g. https://rewards.empcloud.com).
+  // For the widget fetch we're a backend calling another backend, so we
+  // prefer api_url. base_url is a safe fallback.
   const subscriptions = await db("org_subscriptions as s")
     .join("modules as m", "s.module_id", "m.id")
     .where({ "s.organization_id": orgId })
     .whereIn("s.status", ["active", "trial"])
-    .select("m.slug", "m.base_url");
+    .select("m.slug", "m.api_url", "m.base_url");
 
   const subscribedSlugs = new Set(subscriptions.map((s: any) => s.slug));
 
-  // Build a map of slug → base_url for modules that have a custom base_url
-  const baseUrlMap = new Map<string, string>();
+  // slug → preferred URL for internal fetches
+  const urlMap = new Map<string, string>();
   for (const sub of subscriptions) {
-    if (sub.base_url) baseUrlMap.set(sub.slug, sub.base_url);
+    const url = sub.api_url || sub.base_url;
+    if (url) urlMap.set(sub.slug, String(url).replace(/\/+$/, ""));
   }
 
   // Only fetch widgets for modules the org is subscribed to
@@ -194,8 +206,11 @@ export async function getModuleWidgets(orgId: number, _userId: number): Promise<
         return;
       }
 
-      // Determine the base URL: prefer DB base_url, fall back to localhost:port
-      const base = baseUrlMap.get(ep.slug) || `http://localhost:${ep.port}`;
+      // Prefer DB api_url (internal), fall back to localhost:port from the
+      // hardcoded MODULE_ENDPOINTS table. Both are internal URLs — the
+      // public base_url must never be used here because the fetch would
+      // hit the frontend nginx/TLS stack instead of the module backend.
+      const base = urlMap.get(ep.slug) || `http://localhost:${ep.port}`;
       const url = `${base}${ep.path}?organization_id=${orgId}`;
 
       try {
@@ -211,7 +226,7 @@ export async function getModuleWidgets(orgId: number, _userId: number): Promise<
         logger.warn(`Widget fetch failed for ${ep.slug}`, { error: err.message, url });
         results[key] = null;
       }
-    })
+    }),
   );
 
   return results;
