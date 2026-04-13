@@ -20,8 +20,8 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "ananya@technova.in",
-      password: "Welcome@123",
+      email: "",
+      password: "",
     },
   });
 
