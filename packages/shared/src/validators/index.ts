@@ -499,20 +499,36 @@ export const checkOutSchema = z.object({
 });
 
 // #1386 — Block far-future dates and require YYYY-MM-DD format
-export const createRegularizationSchema = z.object({
-  date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
-    .refine((d) => {
-      const target = new Date(d);
-      const today = new Date();
-      today.setHours(23, 59, 59, 999);
-      return target <= today;
-    }, "Regularization date cannot be in the future"),
-  requested_check_in: z.string().optional().nullable(),
-  requested_check_out: z.string().optional().nullable(),
-  reason: z.string().min(1),
-});
+// #1364 — Block check-out earlier than check-in on the same day
+export const createRegularizationSchema = z
+  .object({
+    date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+      .refine((d) => {
+        const target = new Date(d);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        return target <= today;
+      }, "Regularization date cannot be in the future"),
+    requested_check_in: z.string().optional().nullable(),
+    requested_check_out: z.string().optional().nullable(),
+    reason: z.string().min(1),
+  })
+  .refine(
+    (data) => {
+      if (data.requested_check_in && data.requested_check_out) {
+        // Accept either full datetime ("2025-01-01T09:00:00") or bare time ("09:00")
+        // — string comparison works for both when formats are consistent
+        return data.requested_check_in <= data.requested_check_out;
+      }
+      return true;
+    },
+    {
+      message: "Check-out time cannot be earlier than check-in time",
+      path: ["requested_check_out"],
+    }
+  );
 
 export const approveRegularizationSchema = z.object({
   status: z.enum(["approved", "rejected"]),

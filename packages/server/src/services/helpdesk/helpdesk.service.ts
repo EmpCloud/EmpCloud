@@ -90,7 +90,18 @@ export async function listTickets(
   let query = db("helpdesk_tickets")
     .where({ "helpdesk_tickets.organization_id": orgId });
 
-  if (filters?.status) query = query.where("helpdesk_tickets.status", filters.status);
+  // #1376 — Dashboard's "open ticket" count aggregates 4 statuses. When the
+  // client filters by status=open, return the same set so the counts align.
+  if (filters?.status === "open") {
+    query = query.whereIn("helpdesk_tickets.status", [
+      "open",
+      "in_progress",
+      "awaiting_response",
+      "reopened",
+    ]);
+  } else if (filters?.status) {
+    query = query.where("helpdesk_tickets.status", filters.status);
+  }
   if (filters?.category) query = query.where("helpdesk_tickets.category", filters.category);
   if (filters?.priority) query = query.where("helpdesk_tickets.priority", filters.priority);
   if (filters?.assigned_to) query = query.where("helpdesk_tickets.assigned_to", filters.assigned_to);

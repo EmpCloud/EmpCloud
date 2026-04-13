@@ -174,7 +174,13 @@ export async function listReports(
   let query = db("whistleblower_reports as wr")
     .where("wr.organization_id", orgId);
 
-  if (filters?.status) {
+  // #1379 — Dashboard's "resolved" count aggregates 3 statuses. When the
+  // client filters by status=resolved, return the same set so counts align.
+  if (filters?.status === "resolved") {
+    query = query.whereIn("wr.status", ["resolved", "dismissed", "closed"]);
+  } else if (filters?.status === "open") {
+    query = query.whereIn("wr.status", ["submitted", "under_investigation", "escalated"]);
+  } else if (filters?.status) {
     query = query.where("wr.status", filters.status);
   }
   if (filters?.category) {

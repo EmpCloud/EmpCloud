@@ -380,10 +380,12 @@ export async function getEventDashboard(orgId: number) {
     .whereIn("company_events.status", ["upcoming", "ongoing"])
     .count("event_rsvps.id as total_attendees");
 
-  // Type breakdown
+  // #1381 — Type breakdown must match what the Events list shows when the
+  // user filters by event_type. listEvents has no default status filter,
+  // so the dashboard counts must not either. Previously this excluded
+  // cancelled/draft events and created a visible count gap vs. the list.
   const typeBreakdown = await db("company_events")
     .where({ organization_id: orgId })
-    .whereIn("status", ["upcoming", "ongoing", "completed"])
     .select("event_type")
     .count("id as count")
     .groupBy("event_type")
