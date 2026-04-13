@@ -59,6 +59,8 @@ export default function LeaveTypesPage() {
   const [editingPolicy, setEditingPolicy] = useState<LeavePolicy | null>(null);
   const [typeForm, setTypeForm] = useState(EMPTY_TYPE);
   const [policyForm, setPolicyForm] = useState(EMPTY_POLICY);
+  // #1368 — Show API validation errors inline (duplicate code, etc.)
+  const [typeFormError, setTypeFormError] = useState<string | null>(null);
 
   const { data: leaveTypes = [], isLoading: loadingTypes } = useQuery<LeaveType[]>({
     queryKey: ["leave-types"],
@@ -77,6 +79,14 @@ export default function LeaveTypesPage() {
       qc.invalidateQueries({ queryKey: ["leave-types"] });
       setShowTypeForm(false);
       setTypeForm(EMPTY_TYPE);
+      setTypeFormError(null);
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to create leave type";
+      setTypeFormError(msg);
     },
   });
 
@@ -88,6 +98,14 @@ export default function LeaveTypesPage() {
       setEditingType(null);
       setShowTypeForm(false);
       setTypeForm(EMPTY_TYPE);
+      setTypeFormError(null);
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to update leave type";
+      setTypeFormError(msg);
     },
   });
 
@@ -136,6 +154,7 @@ export default function LeaveTypesPage() {
 
   const handleTypeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setTypeFormError(null);
     if (editingType) {
       updateType.mutate({ id: editingType.id, data: typeForm });
     } else {
@@ -144,6 +163,7 @@ export default function LeaveTypesPage() {
   };
 
   const startEdit = (lt: LeaveType) => {
+    setTypeFormError(null);
     setEditingType(lt);
     setTypeForm({
       name: lt.name,
@@ -221,6 +241,11 @@ export default function LeaveTypesPage() {
 
         {showTypeForm && (
           <form onSubmit={handleTypeSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
+            {typeFormError && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                {typeFormError}
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>

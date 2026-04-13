@@ -196,7 +196,7 @@ export default function ChatWidget() {
     return (
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 z-[9999] flex flex-col items-center gap-1 group"
+        className="fixed bottom-20 right-6 z-[9999] flex flex-col items-center gap-1 group"
         title="EMP AI — Your HR Assistant"
       >
         <div className="relative h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all flex items-center justify-center">

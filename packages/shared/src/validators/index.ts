@@ -1475,6 +1475,15 @@ export const customFieldTypeEnum = z.enum([
   "file",
 ]);
 
+// #1373 — Custom field min/max values must be bounded so we don't overflow
+// the DECIMAL(15,4) column or JavaScript number precision at the UI layer.
+const customFieldMinMax = z
+  .number()
+  .min(-99999999999, "Value too small")
+  .max(99999999999, "Value too large")
+  .optional()
+  .nullable();
+
 export const createCustomFieldDefinitionSchema = z.object({
   entity_type: customFieldEntityTypeEnum,
   field_name: z.string().min(1).max(100).optional(),
@@ -1487,8 +1496,8 @@ export const createCustomFieldDefinitionSchema = z.object({
   is_required: z.boolean().optional(),
   is_searchable: z.boolean().optional(),
   validation_regex: z.string().max(255).optional().nullable(),
-  min_value: z.number().optional().nullable(),
-  max_value: z.number().optional().nullable(),
+  min_value: customFieldMinMax,
+  max_value: customFieldMinMax,
   section: z.string().max(100).optional(),
   help_text: z.string().max(5000).optional().nullable(),
 }).transform((d) => {
@@ -1505,8 +1514,8 @@ export const createCustomFieldDefinitionSchema = z.object({
   is_required: z.boolean().optional(),
   is_searchable: z.boolean().optional(),
   validation_regex: z.string().max(255).optional().nullable(),
-  min_value: z.number().optional().nullable(),
-  max_value: z.number().optional().nullable(),
+  min_value: customFieldMinMax,
+  max_value: customFieldMinMax,
   section: z.string().max(100).optional(),
   help_text: z.string().max(5000).optional().nullable(),
 }));
@@ -1522,8 +1531,8 @@ export const updateCustomFieldDefinitionSchema = z.object({
   is_required: z.boolean().optional(),
   is_searchable: z.boolean().optional(),
   validation_regex: z.string().max(255).optional().nullable(),
-  min_value: z.number().optional().nullable(),
-  max_value: z.number().optional().nullable(),
+  min_value: customFieldMinMax,
+  max_value: customFieldMinMax,
   section: z.string().max(100).optional(),
   help_text: z.string().max(5000).optional().nullable(),
 }).transform((d) => {
