@@ -98,12 +98,19 @@ export async function approveRegularization(orgId: number, regularizationId: num
 
     // Update or create attendance record
     if (reg.attendance_id) {
-      await trx("attendance_records").where({ id: reg.attendance_id }).update({
-        check_in: reg.requested_check_in || undefined,
-        check_out: reg.requested_check_out || undefined,
+      // #1371 — Knex 3.x throws on undefined in update(). Build the object
+      // conditionally so only fields the user actually regularized are touched.
+      const attendanceUpdates: Record<string, any> = {
         status: "present",
         updated_at: new Date(),
-      });
+      };
+      if (reg.requested_check_in != null) {
+        attendanceUpdates.check_in = reg.requested_check_in;
+      }
+      if (reg.requested_check_out != null) {
+        attendanceUpdates.check_out = reg.requested_check_out;
+      }
+      await trx("attendance_records").where({ id: reg.attendance_id }).update(attendanceUpdates);
 
       // Recalculate worked minutes
       if (reg.requested_check_in && reg.requested_check_out) {

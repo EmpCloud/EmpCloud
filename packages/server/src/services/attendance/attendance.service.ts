@@ -213,13 +213,18 @@ export async function listRecords(
   const page = params?.page || 1;
   const perPage = params?.perPage || 20;
 
+  // #1382 — Use LEFT JOIN so attendance rows aren't lost when a user row is
+  // inconsistent, and filter u.status with an IS NULL check so the query
+  // doesn't silently drop records that legitimately exist.
   let query = db("attendance_records as ar")
-    .join("users as u", function () {
+    .leftJoin("users as u", function () {
       this.on("ar.user_id", "u.id").andOn("ar.organization_id", "u.organization_id");
     })
     .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
     .where("ar.organization_id", orgId)
-    .where("u.status", 1); // Only active employees — matches getDashboard filter
+    .where(function () {
+      this.where("u.status", 1).orWhereNull("u.id");
+    });
 
   if (params?.date) {
     // Exact date filter takes priority over month/year

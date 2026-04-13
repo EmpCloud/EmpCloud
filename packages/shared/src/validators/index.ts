@@ -153,23 +153,30 @@ export const oauthIntrospectSchema = z.object({
 // Organization
 // ---------------------------------------------------------------------------
 
-/** Helper: treat empty string as undefined so optional fields don't fail validation */
-const emptyToUndefined = z.preprocess((v) => (v === "" ? undefined : v), z.string());
+/**
+ * Helper: treat empty strings as undefined so optional fields don't fail validation.
+ * #1391 — The previous implementation piped `emptyToUndefined` (which
+ * returned `z.string()`) into another non-optional schema, so after the
+ * preprocess replaced "" with undefined the inner `z.string()` rejected it.
+ * Wrapping the inner schema in `.optional()` lets undefined flow through.
+ */
+const optionalOrEmpty = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess((v) => (v === "" ? undefined : v), schema.optional());
 
 export const updateOrgSchema = z.object({
   name: z.string().min(2).max(100).optional(),
-  legal_name: emptyToUndefined.pipe(z.string().max(255)).optional(),
-  email: emptyToUndefined.pipe(z.string().email()).optional(),
-  contact_number: emptyToUndefined.pipe(z.string().max(20)).optional(),
-  website: emptyToUndefined.pipe(z.string().url().max(255)).optional(),
-  timezone: emptyToUndefined.pipe(z.string().max(50)).optional(),
-  country: emptyToUndefined.pipe(z.string().max(55)).optional(),
-  state: emptyToUndefined.pipe(z.string().max(55)).optional(),
-  city: emptyToUndefined.pipe(z.string().max(55)).optional(),
-  zipcode: emptyToUndefined.pipe(z.string().max(20)).optional(),
-  address: emptyToUndefined.pipe(z.string().max(1000)).optional(),
-  language: emptyToUndefined.pipe(z.string().max(10)).optional(),
-  weekday_start: emptyToUndefined.pipe(z.string().max(10)).optional(),
+  legal_name: optionalOrEmpty(z.string().max(255)),
+  email: optionalOrEmpty(z.string().email()),
+  contact_number: optionalOrEmpty(z.string().max(20)),
+  website: optionalOrEmpty(z.string().url().max(255)),
+  timezone: optionalOrEmpty(z.string().max(50)),
+  country: optionalOrEmpty(z.string().max(55)),
+  state: optionalOrEmpty(z.string().max(55)),
+  city: optionalOrEmpty(z.string().max(55)),
+  zipcode: optionalOrEmpty(z.string().max(20)),
+  address: optionalOrEmpty(z.string().max(1000)),
+  language: optionalOrEmpty(z.string().max(10)),
+  weekday_start: optionalOrEmpty(z.string().max(10)),
 });
 
 // ---------------------------------------------------------------------------

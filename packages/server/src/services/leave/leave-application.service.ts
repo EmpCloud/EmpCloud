@@ -309,9 +309,12 @@ export async function approveLeave(
             .first();
 
           if (!existing) {
+            // #1395/#1357 — The attendance_records table does not have a "source"
+            // column. Sending it would fail the INSERT and abort the transaction,
+            // causing every leave approval to silently fail.
             await trx("attendance_records").insert({
               organization_id: orgId, user_id: application.user_id,
-              date: dateStr, status: "on_leave", source: "system",
+              date: dateStr, status: "on_leave",
               created_at: txnNow, updated_at: txnNow,
             });
           } else if (existing.status !== "on_leave") {
