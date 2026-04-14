@@ -9,6 +9,7 @@ import { UnauthorizedError, ConflictError, NotFoundError, ValidationError } from
 import { logger } from "../../utils/logger.js";
 import { logAudit } from "../audit/audit.service.js";
 import { issueTokens } from "../oauth/oauth.service.js";
+import { sendPasswordResetEmail, sendWelcomeEmail } from "../email/email.service.js";
 import { TOKEN_DEFAULTS, AuditAction } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 
@@ -89,6 +90,14 @@ export async function register(params: {
   });
 
   logger.info(`New org registered: ${org.name} (ID: ${org.id}) by ${user.email}`);
+
+  // Fire-and-forget welcome email — the service itself swallows errors so
+  // a SendGrid outage can't block registration.
+  void sendWelcomeEmail({
+    to: user.email,
+    firstName: user.first_name,
+    orgName: org.name,
+  });
 
   // Return sanitized user (no password)
   const { password: _, ...safeUser } = user;
@@ -222,6 +231,14 @@ export async function forgotPassword(email: string): Promise<{ token: string } |
     token_hash: hashToken(token),
     expires_at: expiresAt,
     created_at: new Date(),
+  });
+
+  // Fire-and-forget reset email — the service swallows errors so we don't
+  // leak whether the email exists via timing or response differences.
+  void sendPasswordResetEmail({
+    to: user.email,
+    firstName: user.first_name || "",
+    token,
   });
 
   return { token };

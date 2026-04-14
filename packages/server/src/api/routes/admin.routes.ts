@@ -186,7 +186,7 @@ router.get("/module-adoption", async (req: Request, res: Response, next: NextFun
 router.get("/platform-info", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const uptimeSeconds = Math.floor(process.uptime());
-    const smtpConfigured = !!(config.smtp.host && config.smtp.host !== "localhost");
+    const emailConfigured = !!config.email.sendgridApiKey;
 
     const info = {
       server: {
@@ -196,9 +196,9 @@ router.get("/platform-info", async (req: Request, res: Response, next: NextFunct
         environment: config.nodeEnv,
       },
       email: {
-        configured: smtpConfigured,
-        host: config.smtp.host || "-",
-        from: config.smtp.from || "-",
+        configured: emailConfigured,
+        provider: emailConfigured ? "sendgrid" : "-",
+        from: config.email.fromEmail || "-",
       },
       security: {
         bcrypt_rounds: 12,

@@ -7,6 +7,7 @@ import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { randomHex, hashToken } from "../../utils/crypto.js";
+import { sendInvitationEmail } from "../email/email.service.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -161,16 +162,25 @@ async function handleInviteTeam(orgId: number, userId: number, data: Record<stri
     return; // It's okay to skip invitations
   }
 
+  // Fetch org + inviter once so we can populate the email templates for
+  // every row without an N+1 lookup.
+  const orgRow = await db("organizations").where({ id: orgId }).first();
+  const inviter = await db("users").where({ id: userId }).first();
+  const inviterName = inviter
+    ? `${inviter.first_name || ""} ${inviter.last_name || ""}`.trim() || inviter.email
+    : "An administrator";
+
   for (const inv of invitations) {
     if (!inv.email || !inv.email.trim()) continue;
+    const email = inv.email.trim();
 
     // Skip if user already exists
-    const existingUser = await db("users").where({ email: inv.email.trim() }).first();
+    const existingUser = await db("users").where({ email }).first();
     if (existingUser) continue;
 
     // Skip if invitation already pending
     const existingInv = await db("invitations")
-      .where({ organization_id: orgId, email: inv.email.trim(), status: "pending" })
+      .where({ organization_id: orgId, email, status: "pending" })
       .first();
     if (existingInv) continue;
 
@@ -179,13 +189,23 @@ async function handleInviteTeam(orgId: number, userId: number, data: Record<stri
 
     await db("invitations").insert({
       organization_id: orgId,
-      email: inv.email.trim(),
+      email,
       role: inv.role || "employee",
       invited_by: userId,
       token_hash: hashToken(token),
       status: "pending",
       expires_at: expiresAt,
       created_at: new Date(),
+    });
+
+    // Fire-and-forget invitation email
+    void sendInvitationEmail({
+      to: email,
+      firstName: null,
+      orgName: orgRow?.name || "your organization",
+      invitedByName: inviterName,
+      role: inv.role || "employee",
+      token,
     });
   }
 }
