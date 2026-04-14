@@ -215,35 +215,39 @@ export default function EmployeeDirectoryPage() {
               </div>
             )}
 
-            {/* Preview Table */}
+            {/* Preview Table — #1418: sticky header needs a z-index and
+                 explicit background so scrolled rows no longer overlap it.
+                 Cells use whitespace-nowrap to keep columns aligned. */}
             <div className="flex-1 overflow-auto px-6 py-4">
-              <table className="min-w-full text-sm">
-                <thead className="bg-gray-50 sticky top-0">
+              <table className="min-w-full text-sm border-separate border-spacing-0">
+                <thead>
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">ID</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Emp Code</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Name</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Email</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Designation</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Department</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Role</th>
-                    {uploadResult && <th className="text-left text-xs font-medium text-gray-500 uppercase px-3 py-2">Status</th>}
+                    {["ID", "Emp Code", "Name", "Email", "Designation", "Department", "Role"]
+                      .concat(uploadResult ? ["Status"] : [])
+                      .map((h) => (
+                        <th
+                          key={h}
+                          className="sticky top-0 z-10 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase px-3 py-2 border-b border-gray-200"
+                        >
+                          {h}
+                        </th>
+                      ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {uploadRows.map((row, i) => {
                     const detail = uploadResult?.details?.[i];
                     return (
                       <tr key={i} className={detail?.status === "error" ? "bg-red-50" : ""}>
-                        <td className="px-3 py-2 text-gray-500">{row.id || "-"}</td>
-                        <td className="px-3 py-2 text-gray-600">{row.emp_code || "-"}</td>
-                        <td className="px-3 py-2 font-medium text-gray-900">{row.first_name} {row.last_name}</td>
-                        <td className="px-3 py-2 text-gray-500">{row.email || "-"}</td>
-                        <td className="px-3 py-2 text-gray-500">{row.designation || "-"}</td>
-                        <td className="px-3 py-2 text-gray-500">{row.department_name || "-"}</td>
-                        <td className="px-3 py-2 text-gray-500">{row.role || "-"}</td>
+                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.id || "-"}</td>
+                        <td className="px-3 py-2 text-gray-600 whitespace-nowrap border-b border-gray-100">{row.emp_code || "-"}</td>
+                        <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap border-b border-gray-100">{row.first_name} {row.last_name}</td>
+                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.email || "-"}</td>
+                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.designation || "-"}</td>
+                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.department_name || "-"}</td>
+                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.role || "-"}</td>
                         {uploadResult && (
-                          <td className="px-3 py-2">
+                          <td className="px-3 py-2 whitespace-nowrap border-b border-gray-100">
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                               detail?.status === "updated" ? "bg-green-100 text-green-700"
                                 : detail?.status === "unchanged" ? "bg-gray-100 text-gray-500"

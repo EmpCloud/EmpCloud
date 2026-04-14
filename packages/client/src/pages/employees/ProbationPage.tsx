@@ -73,6 +73,16 @@ export default function ProbationPage() {
     queryFn: () => api.get("/employees/probation/upcoming?days=30").then((r) => r.data.data),
   });
 
+  // #1419 — Confirmed this month list (fetched only when that card is active,
+  // because /employees/probation returns on_probation/extended rows only and
+  // would never contain confirmed employees).
+  const { data: confirmedThisMonth, isLoading: loadingConfirmed } = useQuery({
+    queryKey: ["probation-confirmed-this-month"],
+    queryFn: () =>
+      api.get("/employees/probation/confirmed-this-month").then((r) => r.data.data),
+    enabled: cardFilter === "confirmed_this_month",
+  });
+
   // Confirm mutation
   const confirmMut = useMutation({
     mutationFn: (id: number) => api.put(`/employees/${id}/probation/confirm`),
@@ -135,21 +145,22 @@ export default function ProbationPage() {
     },
   ];
 
-  // #1394 — Filter the employee list based on the active card
-  const filteredEmployees = (employees || []).filter((emp: any) => {
+  // #1394 / #1419 — Pick the source list for the active card and apply any
+  // additional client-side filtering. The confirmed-this-month card reads from
+  // a separate endpoint because the on-probation query excludes confirmed
+  // employees by design.
+  const sourceList: any[] =
+    cardFilter === "confirmed_this_month"
+      ? confirmedThisMonth || []
+      : employees || [];
+
+  const filteredEmployees = sourceList.filter((emp: any) => {
     if (cardFilter === "all") return true;
     const daysRemaining = Number(emp.days_remaining ?? 0);
     if (cardFilter === "on_probation") return emp.probation_status === "on_probation";
     if (cardFilter === "overdue") return daysRemaining < 0;
     if (cardFilter === "upcoming_30") return daysRemaining >= 0 && daysRemaining <= 30;
-    if (cardFilter === "confirmed_this_month") {
-      if (emp.probation_status !== "confirmed") return false;
-      const actualConfirmationDate = emp.actual_confirmation_date || emp.probation_end_date;
-      if (!actualConfirmationDate) return false;
-      const d = new Date(actualConfirmationDate);
-      const now = new Date();
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    }
+    // confirmed_this_month: server already filters, no extra predicate needed
     return true;
   });
 
@@ -247,10 +258,13 @@ export default function ProbationPage() {
       {/* Main Table */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Employees on Probation
+          {cardFilter === "confirmed_this_month"
+            ? "Confirmed This Month"
+            : "Employees on Probation"}
         </h2>
 
-        {isLoading ? (
+        {(isLoading && cardFilter !== "confirmed_this_month") ||
+        (cardFilter === "confirmed_this_month" && loadingConfirmed) ? (
           <div className="flex items-center justify-center h-32">
             <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
           </div>
@@ -311,34 +325,44 @@ export default function ProbationPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => setConfirmModal(emp)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
-                          >
-                            <UserCheck className="h-3.5 w-3.5" />
-                            Confirm
-                          </button>
-                          <button
-                            onClick={() => {
-                              setExtendModal(emp);
-                              setExtendDate("");
-                              setExtendReason("");
-                            }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors"
-                          >
-                            <CalendarClock className="h-3.5 w-3.5" />
-                            Extend
-                          </button>
-                        </div>
+                        {emp.probation_status === "confirmed" ? (
+                          <span className="text-xs text-gray-400">-</span>
+                        ) : (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => setConfirmModal(emp)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                            >
+                              <UserCheck className="h-3.5 w-3.5" />
+                              Confirm
+                            </button>
+                            <button
+                              onClick={() => {
+                                setExtendModal(emp);
+                                setExtendDate("");
+                                setExtendReason("");
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors"
+                            >
+                              <CalendarClock className="h-3.5 w-3.5" />
+                              Extend
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );
                 })}
-                {(!employees || employees.length === 0) && (
+                {filteredEmployees.length === 0 && (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-gray-400">
-                      No employees currently on probation.
+                      {cardFilter === "confirmed_this_month"
+                        ? "No employees confirmed this month."
+                        : cardFilter === "overdue"
+                        ? "No overdue probations."
+                        : cardFilter === "upcoming_30"
+                        ? "No upcoming confirmations in the next 30 days."
+                        : "No employees currently on probation."}
                     </td>
                   </tr>
                 )}

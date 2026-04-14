@@ -247,6 +247,14 @@ router.get("/probation/upcoming", authenticate, requireHR, async (req: Request, 
   } catch (err) { next(err); }
 });
 
+// #1419 — GET /api/v1/employees/probation/confirmed-this-month
+router.get("/probation/confirmed-this-month", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await probationService.getConfirmedThisMonth(req.user!.org_id);
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
 // PUT /api/v1/employees/:id/probation/confirm — confirm probation
 router.put("/:id/probation/confirm", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
