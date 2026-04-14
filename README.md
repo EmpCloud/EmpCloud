@@ -105,7 +105,7 @@ All modules are deployed to the test environment:
 | EMP Field | https://test-field.empcloud.com | https://test-field-api.empcloud.com |
 | EMP Billing (internal) | https://test-billing.empcloud.com | https://test-billing-api.empcloud.com |
 
-**Server ports:** Cloud 3000, Payroll 4000, Billing 4001, Performance 4300, Exit 4400, Recruit 4500, Rewards 4600, LMS 4700, Field 4800, Monitor 5000 (+ 7 microservices 5001-5007), Projects 9000/9001/3100
+**Server ports:** Cloud 3000, Payroll 4000, Billing 4001, Performance 4300, Exit 4400, Recruit 4500, Rewards 4600, LMS 6021, Field 4800, Monitor 5000 (+ 7 microservices 5001-5007), Projects 9000/9001/3100
 
 ---
 
@@ -1075,7 +1075,7 @@ EMP Cloud is designed as an **open module registry** -- adding a new module requ
 | EMP Rewards | Kudos, badges, celebrations, Slack integration, team challenges, manager dashboard | 4000 / 4414 | emp-rewards | Built |
 | EMP Performance | Reviews, OKRs, 9-box grid, succession planning, goal alignment, skills gap analysis | 4300 / 4746 | emp-performance | Built |
 | EMP Exit | Offboarding workflows, predictive attrition, buyout calculator, rehire, NPS surveys | 3800 / 4193 | emp-exit | Built |
-| EMP LMS | Learning Management & Training | 4700 / 5183 | emp-lms | Built |
+| EMP LMS | Learning Management & Training | 6021 / 5183 | emp-lms | Built |
 
 > **10 sellable modules** in the marketplace. EMP HRMS is built into EMP Cloud (not a separate module). EMP Billing is the internal billing engine (not sellable).
 

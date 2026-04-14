@@ -19,7 +19,7 @@ export async function up(knex: Knex): Promise<void> {
     "emp-performance": "http://localhost:4300/api/v1",
     "emp-exit": "http://localhost:4400/api/v1",
     "emp-rewards": "http://localhost:4600/api/v1",
-    "emp-lms": "http://localhost:4700/api/v1",
+    "emp-lms": "http://localhost:6021/api/v1",
     "emp-field": "http://localhost:4800/api/v1",
     "emp-projects": "http://localhost:9000/v1",
     "emp-biometrics": "",
