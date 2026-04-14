@@ -267,6 +267,10 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
   const [newName, setNewName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [addError, setAddError] = useState("");
+  // editId = the department row currently in edit mode (null if none)
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editError, setEditError] = useState("");
 
   const addDept = useMutation({
     mutationFn: (name: string) =>
@@ -279,6 +283,22 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
     },
     onError: (err: any) => {
       setAddError(err?.response?.data?.error?.message || "Failed to add department.");
+    },
+  });
+
+  const updateDept = useMutation({
+    mutationFn: (vars: { id: number; name: string }) =>
+      api
+        .put(`/organizations/me/departments/${vars.id}`, { name: vars.name })
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["departments"] });
+      setEditId(null);
+      setEditName("");
+      setEditError("");
+    },
+    onError: (err: any) => {
+      setEditError(err?.response?.data?.error?.message || "Failed to rename department.");
     },
   });
 
@@ -295,6 +315,23 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setDeleteError(err?.response?.data?.error?.message || "Failed to delete department.");
     },
   });
+
+  const startEdit = (d: any) => {
+    setEditId(d.id);
+    setEditName(d.name);
+    setEditError("");
+  };
+  const cancelEdit = () => {
+    setEditId(null);
+    setEditName("");
+    setEditError("");
+  };
+  const saveEdit = () => {
+    if (editId == null) return;
+    const name = editName.trim();
+    if (!name) return;
+    updateDept.mutate({ id: editId, name });
+  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -341,18 +378,74 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       )}
       <ul className="space-y-2">
         {departments.map((d: any) => (
-          <li key={d.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm">
-            {d.name}
-            <button
-              onClick={() => { setDeleteError(""); deleteDept.mutate(d.id); }}
-              className="text-gray-400 hover:text-red-500"
-              title="Delete department"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
+          <li
+            key={d.id}
+            className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm"
+          >
+            {editId === d.id ? (
+              <form
+                className="flex-1 flex items-center gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  saveEdit();
+                }}
+              >
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => {
+                    setEditName(e.target.value);
+                    setEditError("");
+                  }}
+                  autoFocus
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={updateDept.isPending || !editName.trim()}
+                  className="text-green-600 hover:text-green-700 disabled:opacity-50"
+                  title="Save"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="text-gray-400 hover:text-gray-600"
+                  title="Cancel"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </form>
+            ) : (
+              <>
+                <span>{d.name}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => startEdit(d)}
+                    className="text-gray-400 hover:text-brand-600"
+                    title="Rename department"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDeleteError("");
+                      deleteDept.mutate(d.id);
+                    }}
+                    className="text-gray-400 hover:text-red-500"
+                    title="Delete department"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
+      {editError && <p className="text-xs text-red-500 mt-2">{editError}</p>}
       {deleteError && <p className="text-xs text-red-500 mt-2">{deleteError}</p>}
     </div>
   );
@@ -367,6 +460,11 @@ function LocationsCard({ locations }: { locations: any[] }) {
   const [showAdd, setShowAdd] = useState(false);
   const [locForm, setLocForm] = useState({ name: "", timezone: "" });
   const [addError, setAddError] = useState("");
+  // Inline edit state — editId is the row currently open for edit (null = none)
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({ name: "", timezone: "" });
+  const [editError, setEditError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   const addLoc = useMutation({
     mutationFn: (data: { name: string; timezone?: string }) =>
@@ -382,11 +480,53 @@ function LocationsCard({ locations }: { locations: any[] }) {
     },
   });
 
+  const updateLoc = useMutation({
+    mutationFn: (vars: { id: number; name: string; timezone?: string }) =>
+      api
+        .put(`/organizations/me/locations/${vars.id}`, {
+          name: vars.name,
+          timezone: vars.timezone || undefined,
+        })
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["locations"] });
+      setEditId(null);
+      setEditForm({ name: "", timezone: "" });
+      setEditError("");
+    },
+    onError: (err: any) => {
+      setEditError(err?.response?.data?.error?.message || "Failed to update location.");
+    },
+  });
+
   const deleteLoc = useMutation({
     mutationFn: (id: number) =>
       api.delete(`/organizations/me/locations/${id}`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["locations"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["locations"] });
+      setDeleteError("");
+    },
+    onError: (err: any) => {
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete location.");
+    },
   });
+
+  const startEdit = (l: any) => {
+    setEditId(l.id);
+    setEditForm({ name: l.name || "", timezone: l.timezone || "" });
+    setEditError("");
+  };
+  const cancelEdit = () => {
+    setEditId(null);
+    setEditForm({ name: "", timezone: "" });
+    setEditError("");
+  };
+  const saveEdit = () => {
+    if (editId == null) return;
+    const name = editForm.name.trim();
+    if (!name) return;
+    updateLoc.mutate({ id: editId, name, timezone: editForm.timezone.trim() });
+  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -448,21 +588,89 @@ function LocationsCard({ locations }: { locations: any[] }) {
       )}
       <ul className="space-y-2">
         {locations.map((l: any) => (
-          <li key={l.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm">
-            <span>{l.name}</span>
-            <div className="flex items-center gap-2">
-              {l.timezone && <span className="text-xs text-gray-400">{l.timezone}</span>}
-              <button
-                onClick={() => deleteLoc.mutate(l.id)}
-                className="text-gray-400 hover:text-red-500"
-                title="Delete location"
+          <li
+            key={l.id}
+            className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm"
+          >
+            {editId === l.id ? (
+              <form
+                className="flex-1 flex items-center gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  saveEdit();
+                }}
               >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-            </div>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => {
+                    setEditForm({ ...editForm, name: e.target.value });
+                    setEditError("");
+                  }}
+                  autoFocus
+                  placeholder="Location name"
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                  required
+                />
+                <select
+                  value={editForm.timezone}
+                  onChange={(e) => setEditForm({ ...editForm, timezone: e.target.value })}
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm bg-white"
+                >
+                  <option value="">No timezone</option>
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  disabled={updateLoc.isPending || !editForm.name.trim()}
+                  className="text-green-600 hover:text-green-700 disabled:opacity-50"
+                  title="Save"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="text-gray-400 hover:text-gray-600"
+                  title="Cancel"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </form>
+            ) : (
+              <>
+                <span>{l.name}</span>
+                <div className="flex items-center gap-2">
+                  {l.timezone && <span className="text-xs text-gray-400">{l.timezone}</span>}
+                  <button
+                    onClick={() => startEdit(l)}
+                    className="text-gray-400 hover:text-brand-600"
+                    title="Edit location"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDeleteError("");
+                      deleteLoc.mutate(l.id);
+                    }}
+                    className="text-gray-400 hover:text-red-500"
+                    title="Delete location"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
+      {editError && <p className="text-xs text-red-500 mt-2">{editError}</p>}
+      {deleteError && <p className="text-xs text-red-500 mt-2">{deleteError}</p>}
     </div>
   );
 }
