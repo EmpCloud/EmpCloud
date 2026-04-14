@@ -218,13 +218,6 @@ router.post("/import/execute", authenticate, requireOrgAdmin, upload.single("fil
     const rows = importService.parseCSV(req.file.buffer);
     const { valid, errors } = await importService.validateImportData(req.user!.org_id, rows);
 
-    // Fail the whole import if any rows have errors — forces the user to
-    // call /import first, fix the CSV, then re-submit to /import/execute.
-    if (errors.length > 0) {
-      sendSuccess(res, { error: "Validation failed", errors, totalRows: rows.length }, 400);
-      return;
-    }
-
     // Privilege-escalation check: only super_admin importers can assign
     // super_admin role. Block the whole batch if any row tries it.
     if (req.user!.role !== "super_admin") {
@@ -234,18 +227,47 @@ router.post("/import/execute", authenticate, requireOrgAdmin, upload.single("fil
       }
     }
 
+    // Skip rows that failed validation and import the valid ones. The UI
+    // button says "Import N valid users" and lists the invalid rows in the
+    // preview step, so skipping is the expected behavior — the user has
+    // already seen and acknowledged the invalid rows. If NO rows are
+    // valid we still 400 so the client gets a clear failure.
+    if (valid.length === 0) {
+      sendSuccess(
+        res,
+        {
+          error: "Validation failed — no rows could be imported",
+          errors,
+          totalRows: rows.length,
+          count: 0,
+        },
+        400,
+      );
+      return;
+    }
+
     const result = await importService.executeImport(req.user!.org_id, valid, req.user!.sub);
 
     await logAudit({
       organizationId: req.user!.org_id,
       userId: req.user!.sub,
       action: AuditAction.USER_CREATED,
-      details: { bulk_import: true, count: result.count },
+      details: { bulk_import: true, count: result.count, skipped: errors.length },
       ipAddress: req.ip,
       userAgent: req.headers["user-agent"],
     });
 
-    sendSuccess(res, result, 201);
+    // Return both the successful import result and the skipped rows so the
+    // UI can surface "imported 229, skipped 4" instead of a silent success.
+    sendSuccess(
+      res,
+      {
+        ...result,
+        skipped: errors,
+        totalRows: rows.length,
+      },
+      201,
+    );
   } catch (err) { next(err); }
 });
 

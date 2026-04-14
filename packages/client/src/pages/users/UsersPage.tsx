@@ -173,6 +173,8 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
     count: number;
     createdDepartments?: string[];
     createdLocations?: string[];
+    skipped?: Array<{ row: number; data?: Record<string, unknown>; errors: string[] }>;
+    totalRows?: number;
   } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -225,7 +227,7 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
     try {
       const form = new FormData();
       form.append("file", selectedFile);
-      const res = await api.post<{ data: { count: number; createdDepartments?: string[]; createdLocations?: string[] } }>("/users/import/execute", form, {
+      const res = await api.post<{ data: { count: number; createdDepartments?: string[]; createdLocations?: string[]; skipped?: Array<{ row: number; data?: Record<string, unknown>; errors: string[] }>; totalRows?: number } }>("/users/import/execute", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setImportResult(res.data.data);
@@ -443,6 +445,21 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
                   <p className="text-xs text-blue-600">
                     {importResult.createdLocations.join(", ")}
                   </p>
+                </div>
+              )}
+
+              {importResult.skipped && importResult.skipped.length > 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-sm font-medium text-amber-700 mb-2">
+                    Skipped {importResult.skipped.length} row{importResult.skipped.length !== 1 ? "s" : ""} with errors:
+                  </p>
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
+                    {importResult.skipped.map((err, i) => (
+                      <p key={i} className="text-xs text-amber-700">
+                        <span className="font-medium">Row {err.row}:</span> {err.errors.join("; ")}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
