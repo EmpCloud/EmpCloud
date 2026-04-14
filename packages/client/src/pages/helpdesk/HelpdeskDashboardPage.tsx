@@ -58,30 +58,36 @@ export default function HelpdeskDashboardPage() {
 
   if (!stats) return null;
 
+  // Stat cards link to the ticket list with the matching filter so the
+  // counts are clickable — fixes issue #1398.
   const statCards = [
     {
       label: "Total Open",
       value: stats.total_open,
       icon: Clock,
       color: "text-blue-600 bg-blue-50",
+      href: "/helpdesk/tickets?status=open",
     },
     {
       label: "In Progress",
       value: stats.in_progress + stats.awaiting_response,
       icon: Headphones,
       color: "text-yellow-600 bg-yellow-50",
+      href: "/helpdesk/tickets?status=in_progress",
     },
     {
       label: "Overdue (SLA Breached)",
       value: stats.overdue,
       icon: AlertTriangle,
       color: "text-red-600 bg-red-50",
+      href: "/helpdesk/tickets?sla=breached",
     },
     {
       label: "Resolved Today",
       value: stats.resolved_today,
       icon: CheckCircle2,
       color: "text-green-600 bg-green-50",
+      href: "/helpdesk/tickets?status=resolved",
     },
   ];
 
@@ -112,9 +118,10 @@ export default function HelpdeskDashboardPage() {
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div
+            <Link
               key={card.label}
-              className="bg-white rounded-xl border border-gray-200 p-6"
+              to={card.href}
+              className="bg-white rounded-xl border border-gray-200 p-6 transition-colors hover:border-brand-400 hover:bg-brand-50/30 focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <div className="flex items-center gap-3">
                 <div className={`p-2.5 rounded-lg ${card.color}`}>
@@ -125,7 +132,7 @@ export default function HelpdeskDashboardPage() {
                   <p className="text-2xl font-bold text-gray-900">{card.value}</p>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
