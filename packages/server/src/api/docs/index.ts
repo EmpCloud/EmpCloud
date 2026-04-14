@@ -1161,6 +1161,20 @@ const spec = {
 };
 
 export function swaggerUIHandler(_req: Request, res: Response) {
+  // The global helmet() CSP only allows 'self', which blocks the unpkg CDN
+  // scripts/styles and the inline bootstrap <script> below. Override CSP
+  // *just for this response* so the rest of the API stays locked down.
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://unpkg.com",
+      "style-src 'self' 'unsafe-inline' https://unpkg.com",
+      "img-src 'self' data: https://unpkg.com",
+      "font-src 'self' data: https://unpkg.com",
+      "connect-src 'self' https://unpkg.com",
+    ].join("; "),
+  );
   res.send(`<!DOCTYPE html>
 <html><head><title>EMP Cloud API</title>
 <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
