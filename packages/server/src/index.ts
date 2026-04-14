@@ -68,7 +68,11 @@ async function main() {
     await runAllMigrations(db);
   }
 
-  // Sync module api_url from env vars (so DB stays in sync without manual SQL)
+  // Bootstrap module api_url from env vars — ONLY for rows where api_url
+  // is currently NULL. This is strictly a fresh-install seed: any value
+  // an operator has set by hand (or via SQL in production) is preserved
+  // across restarts. To reset a row back to the env-derived value, set
+  // its api_url back to NULL in the DB and restart the server.
   {
     const { getDB } = await import("./db/connection.js");
     const db = getDB();
@@ -79,7 +83,11 @@ async function main() {
     };
     for (const [slug, apiUrl] of Object.entries(moduleUrls)) {
       if (apiUrl) {
-        await db("modules").where({ slug }).update({ api_url: apiUrl }).catch(() => {});
+        await db("modules")
+          .where({ slug })
+          .whereNull("api_url")
+          .update({ api_url: apiUrl })
+          .catch(() => {});
       }
     }
   }

@@ -25,9 +25,12 @@ export async function up(knex: Knex): Promise<void> {
     "emp-biometrics": "",
   };
 
+  // Seed only rows where api_url is currently NULL so re-running this
+  // migration (e.g. after dropping knex_migrations for a reseed) never
+  // clobbers values that an operator set by hand.
   for (const [slug, apiUrl] of Object.entries(moduleApis)) {
     if (apiUrl) {
-      await knex("modules").where({ slug }).update({ api_url: apiUrl });
+      await knex("modules").where({ slug }).whereNull("api_url").update({ api_url: apiUrl });
     }
   }
 }
