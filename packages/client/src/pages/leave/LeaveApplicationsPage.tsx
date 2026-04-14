@@ -56,6 +56,14 @@ export default function LeaveApplicationsPage() {
   const applications: LeaveApplication[] = data?.data || [];
   const meta = data?.meta;
 
+  // #1411 — surface approve/reject errors instead of silently failing
+  const [actionError, setActionError] = useState<string | null>(null);
+  const extractErr = (err: any) =>
+    err?.response?.data?.error?.message ||
+    err?.response?.data?.message ||
+    err?.message ||
+    "Action failed";
+
   const approveMut = useMutation({
     mutationFn: (id: number) =>
       api.put(`/leave/applications/${id}/approve`, { remarks }).then((r) => r.data.data),
@@ -64,7 +72,9 @@ export default function LeaveApplicationsPage() {
       qc.invalidateQueries({ queryKey: ["leave-balances"] });
       setActionId(null);
       setRemarks("");
+      setActionError(null);
     },
+    onError: (err: any) => setActionError(extractErr(err)),
   });
 
   const rejectMut = useMutation({
@@ -74,7 +84,9 @@ export default function LeaveApplicationsPage() {
       qc.invalidateQueries({ queryKey: ["leave-applications"] });
       setActionId(null);
       setRemarks("");
+      setActionError(null);
     },
+    onError: (err: any) => setActionError(extractErr(err)),
   });
 
   const cancelMut = useMutation({
@@ -83,7 +95,9 @@ export default function LeaveApplicationsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["leave-applications"] });
       qc.invalidateQueries({ queryKey: ["leave-balances"] });
+      setActionError(null);
     },
+    onError: (err: any) => setActionError(extractErr(err)),
   });
 
   const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
@@ -96,6 +110,19 @@ export default function LeaveApplicationsPage() {
           <p className="text-gray-500 mt-1">Review, approve, or reject leave requests.</p>
         </div>
       </div>
+
+      {/* #1411 — action feedback */}
+      {actionError && (
+        <div className="mb-4 flex items-start justify-between gap-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+          <span>{actionError}</span>
+          <button
+            onClick={() => setActionError(null)}
+            className="text-xs text-red-500 hover:text-red-700"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-4">

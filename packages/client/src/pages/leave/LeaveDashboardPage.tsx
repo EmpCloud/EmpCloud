@@ -419,6 +419,13 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [bulkProcessing, setBulkProcessing] = useState(false);
   const [bulkResult, setBulkResult] = useState<{ type: string; success: number; failed: number } | null>(null);
+  // #1411 — show server errors instead of silently swallowing them
+  const [actionError, setActionError] = useState<string | null>(null);
+  const extractErr = (err: any) =>
+    err?.response?.data?.error?.message ||
+    err?.response?.data?.message ||
+    err?.message ||
+    "Action failed";
 
   const { data, isLoading } = useQuery({
     queryKey: ["leave-applications-pending"],
@@ -437,7 +444,9 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
       qc.invalidateQueries({ queryKey: ["leave-applications"] });
       setActionId(null);
       setRemarks("");
+      setActionError(null);
     },
+    onError: (err: any) => setActionError(extractErr(err)),
   });
 
   const rejectMut = useMutation({
@@ -448,7 +457,9 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
       qc.invalidateQueries({ queryKey: ["leave-applications"] });
       setActionId(null);
       setRemarks("");
+      setActionError(null);
     },
+    onError: (err: any) => setActionError(extractErr(err)),
   });
 
   const applications = data?.data || [];
@@ -544,6 +555,19 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         }`}>
           {bulkResult.type === "approve" ? "Approved" : "Rejected"} {bulkResult.success} request{bulkResult.success !== 1 ? "s" : ""} successfully.
           {bulkResult.failed > 0 && ` ${bulkResult.failed} failed.`}
+        </div>
+      )}
+
+      {/* #1411 — surface server errors on approve/reject actions */}
+      {actionError && (
+        <div className="flex items-start justify-between gap-3 px-6 py-3 bg-red-50 text-red-700 text-sm border-t border-red-200">
+          <span>{actionError}</span>
+          <button
+            onClick={() => setActionError(null)}
+            className="text-xs text-red-500 hover:text-red-700"
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
