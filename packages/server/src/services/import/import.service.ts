@@ -198,7 +198,6 @@ function parseDate(input: unknown): string | null {
   if (dayFirst) {
     let [, a, b, y] = dayFirst;
     let year = parseInt(y, 10);
-    if (year < 100) year += year < 50 ? 2000 : 1900;
     let day = parseInt(a, 10);
     let month = parseInt(b, 10);
     // If "day" > 12, it's unambiguously day-first. If "month" > 12, treat
@@ -207,6 +206,16 @@ function parseDate(input: unknown): string | null {
       [day, month] = [month, day];
     }
     if (day < 1 || day > 31 || month < 1 || month > 12) return null;
+    // 2-digit year disambiguation. The naive rule (year < 50 → 20xx, else
+    // 19xx) flips birthdays like "10/05/30" to 2030 (future). Compute the
+    // 20xx candidate first; if it ends up more than a year in the future,
+    // it's almost certainly the previous century (e.g. 2030 → 1930).
+    if (year < 100) {
+      const candidate = 2000 + year;
+      const candidateDate = new Date(Date.UTC(candidate, month - 1, day));
+      const oneYearFromNow = Date.now() + 366 * 86400000;
+      year = candidateDate.getTime() > oneYearFromNow ? 1900 + year : candidate;
+    }
     return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   }
 
@@ -583,117 +592,104 @@ export async function validateImportData(
     }
 
     // ------------------------------------------------------------------
-    // Resolve reporting manager → reporting_manager_id (primary) and
-    // _additional_manager_ids (rest). Each cell may contain more than one
+    // Resolve reporting manager(s). Each cell may contain more than one
     // manager separated by / \ , ; | or & — the first resolved token is
-    // the primary, anything after is additional. Missing/unresolved tokens
-    // add errors.
+    // the primary, the rest become additional managers in the junction
+    // table. Missing or unresolved tokens add row errors.
     //
-    // Priority by column: email → emp_code → name. If two columns are
-    // filled at once, only the higher-priority one is used (same behavior
-    // as before).
-    //
-    // Auto-detect: values that look like emails sitting in the NAME column
-    // are reinterpreted as emails — happens when operators squash
-    // everything into a single "manager"/"reports_to" field.
+    // The resolver is TOKEN-centric, not column-centric: for every token
+    // we try email → emp_code → name in order, regardless of which column
+    // the operator put it in. That means a cell like
+    //   reporting_manager_email = "Syamal Ghosh / Sumit Ghosh"
+    // still resolves by name even though the header says "email", and a
+    // cell like
+    //   reporting_manager_name = "alice@company.com"
+    // still resolves by email. The column name is just a hint for where
+    // the data lives, never a constraint on how we look it up.
     // ------------------------------------------------------------------
-    type ResolvedKind = "email" | "code" | "name";
     type Resolved = { id?: number; pendingEmail?: string };
 
-    const resolvedPrimary: Resolved | null = (() => null)();
-    let primary: Resolved | null = null;
-    const additional: Resolved[] = [];
+    const resolveToken = (
+      token: string,
+    ): { result: Resolved | null; error?: string } => {
+      // Try email first if the token looks like one — unambiguous match.
+      if (EMAIL_RE.test(token)) {
+        const key = token.toLowerCase();
+        const mgrId = managerByEmail.get(key);
+        if (mgrId) return { result: { id: mgrId } };
+        if (batchByEmail.has(key)) return { result: { pendingEmail: batchByEmail.get(key) } };
+        return {
+          result: null,
+          error: `Reporting manager "${token}" not found — must be an active user in your organization (or be imported in the same file).`,
+        };
+      }
 
-    const pickColumn = (): { kind: ResolvedKind; tokens: string[] } | null => {
-      const raw =
-        row.reporting_manager_email ||
-        row.reporting_manager_code ||
-        row.reporting_manager_name;
-      if (!raw) return null;
-      const kind: ResolvedKind = row.reporting_manager_email
-        ? "email"
-        : row.reporting_manager_code
-          ? "code"
-          : "name";
-      return { kind, tokens: splitManagerCell(raw) };
+      // Try emp_code next — exact match.
+      const codeKey = token.toLowerCase();
+      if (managerByCode.has(codeKey)) return { result: { id: managerByCode.get(codeKey)! } };
+      if (batchByCode.has(codeKey)) return { result: { pendingEmail: batchByCode.get(codeKey) } };
+
+      // Finally try full name — case/whitespace tolerant.
+      const nameKey = normalizeName(token);
+      const dbCandidates = managerByName.get(nameKey) || [];
+      if (dbCandidates.length === 1) return { result: { id: dbCandidates[0] } };
+      if (dbCandidates.length > 1) {
+        return {
+          result: null,
+          error: `Reporting manager "${token}" is ambiguous — ${dbCandidates.length} active users match. Use email or employee code instead.`,
+        };
+      }
+      const batchCandidates = batchByName.get(nameKey) || [];
+      if (batchCandidates.length === 1) {
+        return { result: { pendingEmail: batchCandidates[0] } };
+      }
+      if (batchCandidates.length > 1) {
+        return {
+          result: null,
+          error: `Reporting manager "${token}" is ambiguous — ${batchCandidates.length} rows in this import share that name. Use email or employee code instead.`,
+        };
+      }
+
+      return {
+        result: null,
+        error: `Reporting manager "${token}" not found — must be an active user in your organization (or be imported in the same file).`,
+      };
     };
 
-    const picked = pickColumn();
-    if (picked) {
-      for (const tokenRaw of picked.tokens) {
-        const token = tokenRaw.trim();
-        if (!token) continue;
+    const rawManagerCell =
+      row.reporting_manager_email ||
+      row.reporting_manager_code ||
+      row.reporting_manager_name;
 
-        // Auto-detect: token looks like an email even though it came from
-        // the name or code column → treat it as email.
-        const effectiveKind: ResolvedKind =
-          picked.kind !== "email" && EMAIL_RE.test(token) ? "email" : picked.kind;
-
-        let res: Resolved | "error" | "ambiguous" = "error";
-        let ambiguousCount = 0;
-
-        if (effectiveKind === "email") {
-          const key = token.toLowerCase();
-          const mgrId = managerByEmail.get(key);
-          if (mgrId) res = { id: mgrId };
-          else if (batchByEmail.has(key)) res = { pendingEmail: batchByEmail.get(key) };
-        } else if (effectiveKind === "code") {
-          const key = token.toLowerCase();
-          const mgrId = managerByCode.get(key);
-          if (mgrId) res = { id: mgrId };
-          else if (batchByCode.has(key)) res = { pendingEmail: batchByCode.get(key) };
-        } else {
-          const key = normalizeName(token);
-          const candidates = managerByName.get(key) || [];
-          if (candidates.length === 1) {
-            res = { id: candidates[0] };
-          } else if (candidates.length > 1) {
-            res = "ambiguous";
-            ambiguousCount = candidates.length;
-          } else {
-            const batchCandidates = batchByName.get(key) || [];
-            if (batchCandidates.length === 1) {
-              res = { pendingEmail: batchCandidates[0] };
-            } else if (batchCandidates.length > 1) {
-              res = "ambiguous";
-              ambiguousCount = batchCandidates.length;
-            }
-          }
-        }
-
-        if (res === "error") {
-          rowErrors.push(
-            `Reporting manager "${token}" not found — must be an active user in your organization (or be imported in the same file).`,
-          );
+    if (rawManagerCell) {
+      let primary: Resolved | null = null;
+      const additional: Resolved[] = [];
+      for (const token of splitManagerCell(rawManagerCell)) {
+        const { result, error } = resolveToken(token);
+        if (error) {
+          rowErrors.push(error);
           continue;
         }
-        if (res === "ambiguous") {
-          rowErrors.push(
-            `Reporting manager "${token}" is ambiguous — ${ambiguousCount} matches. Use email or employee code instead.`,
-          );
-          continue;
+        if (!result) continue;
+        if (!primary) primary = result;
+        else additional.push(result);
+      }
+
+      if (primary) {
+        if (primary.id) row.reporting_manager_id = primary.id;
+        if (primary.pendingEmail) row._pending_manager_email = primary.pendingEmail;
+      }
+      if (additional.length > 0) {
+        const ids: number[] = [];
+        const pending: string[] = [];
+        for (const r of additional) {
+          if (r.id) ids.push(r.id);
+          if (r.pendingEmail) pending.push(r.pendingEmail);
         }
-
-        if (!primary) primary = res;
-        else additional.push(res);
+        if (ids.length > 0) row._additional_manager_ids = ids;
+        if (pending.length > 0) row._pending_additional_manager_emails = pending;
       }
     }
-
-    if (primary) {
-      if (primary.id) row.reporting_manager_id = primary.id;
-      if (primary.pendingEmail) row._pending_manager_email = primary.pendingEmail;
-    }
-    if (additional.length > 0) {
-      const ids: number[] = [];
-      const pending: string[] = [];
-      for (const r of additional) {
-        if (r.id) ids.push(r.id);
-        if (r.pendingEmail) pending.push(r.pendingEmail);
-      }
-      if (ids.length > 0) row._additional_manager_ids = ids;
-      if (pending.length > 0) row._pending_additional_manager_emails = pending;
-    }
-    void resolvedPrimary; // keep for future use
 
     if (rowErrors.length > 0) {
       errors.push({ row: index + 2, data: row, errors: rowErrors });
