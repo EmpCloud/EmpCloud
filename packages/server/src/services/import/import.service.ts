@@ -57,6 +57,60 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const VALID_ROLES = new Set<string>(Object.values(UserRole));
 const VALID_EMPLOYMENT_TYPES = new Set<string>(Object.values(EmploymentType));
 
+/**
+ * Human-friendly values that people actually write in spreadsheets, mapped
+ * to the canonical EmploymentType enum. The comparison is case- and
+ * whitespace-insensitive. Anything not listed here and not already a valid
+ * enum value falls through to a descriptive row-level error.
+ */
+const EMPLOYMENT_TYPE_SYNONYMS: Record<string, string> = {
+  // full_time
+  permanent: "full_time",
+  regular: "full_time",
+  fulltime: "full_time",
+  full: "full_time",
+  "full-time": "full_time",
+  ft: "full_time",
+  // part_time
+  parttime: "part_time",
+  "part-time": "part_time",
+  pt: "part_time",
+  // contract
+  contractor: "contract",
+  contractual: "contract",
+  consultant: "contract",
+  consultancy: "contract",
+  freelance: "contract",
+  freelancer: "contract",
+  temporary: "contract",
+  temp: "contract",
+  // intern
+  internship: "intern",
+  trainee: "intern",
+  apprentice: "intern",
+};
+
+/** Normalize a user-provided employment type (case + whitespace + synonyms). */
+function normalizeEmploymentType(raw: string): string {
+  const key = raw.trim().toLowerCase().replace(/\s+/g, " ");
+  // Direct match against canonical values (full_time, part_time, contract, intern)
+  if (VALID_EMPLOYMENT_TYPES.has(key)) return key;
+  // Space → underscore and retry (handles "full time" → "full_time")
+  const underscored = key.replace(/\s+/g, "_");
+  if (VALID_EMPLOYMENT_TYPES.has(underscored)) return underscored;
+  // Synonym map
+  return EMPLOYMENT_TYPE_SYNONYMS[key] || EMPLOYMENT_TYPE_SYNONYMS[underscored] || key;
+}
+
+/**
+ * Normalize a person's name for lookup: collapse runs of whitespace
+ * (including Excel's non-breaking U+00A0), trim, lowercase. This makes
+ * "  Sourav   Patra " and "Sourav\u00A0Patra" both match "sourav patra".
+ */
+function normalizeName(raw: string): string {
+  return raw.replace(/[\s\u00A0]+/g, " ").trim().toLowerCase();
+}
+
 /** Pick the first non-empty value among aliases. */
 function pick(row: Record<string, string>, ...keys: string[]): string | undefined {
   for (const key of keys) {
@@ -320,7 +374,7 @@ export async function validateImportData(
   for (const m of managers) {
     if (m.email) managerByEmail.set(String(m.email).toLowerCase(), m.id);
     if (m.emp_code) managerByCode.set(String(m.emp_code).toLowerCase(), m.id);
-    const full = `${m.first_name || ""} ${m.last_name || ""}`.trim().toLowerCase();
+    const full = normalizeName(`${m.first_name || ""} ${m.last_name || ""}`);
     if (full) {
       const bucket = managerByName.get(full) || [];
       bucket.push(m.id);
@@ -393,15 +447,16 @@ export async function validateImportData(
       }
     }
 
-    // Employment type
+    // Employment type — normalize synonyms ("Permanent", "Contractor",
+    // "Full-Time", etc.) into the canonical enum value before validating.
     if (row.employment_type) {
-      const etLower = row.employment_type.toLowerCase();
-      if (!VALID_EMPLOYMENT_TYPES.has(etLower)) {
+      const normalized = normalizeEmploymentType(row.employment_type);
+      if (!VALID_EMPLOYMENT_TYPES.has(normalized)) {
         rowErrors.push(
-          `employment_type must be one of: ${Array.from(VALID_EMPLOYMENT_TYPES).join(", ")}`,
+          `employment_type "${row.employment_type}" is not recognized. Use one of: ${Array.from(VALID_EMPLOYMENT_TYPES).join(", ")} — or common synonyms like Permanent, Contractor, Internship.`,
         );
       } else {
-        row.employment_type = etLower;
+        row.employment_type = normalized;
       }
     }
 
@@ -502,16 +557,17 @@ export async function validateImportData(
         );
       }
     } else if (row.reporting_manager_name) {
-      const candidates = managerByName.get(row.reporting_manager_name.toLowerCase()) || [];
+      const candidates =
+        managerByName.get(normalizeName(row.reporting_manager_name)) || [];
       if (candidates.length === 1) {
         row.reporting_manager_id = candidates[0];
       } else if (candidates.length === 0) {
         rowErrors.push(
-          `Reporting manager "${row.reporting_manager_name}" not found or not active`,
+          `Reporting manager "${row.reporting_manager_name}" not found — the manager must already be an active user in your organization. Use reporting_manager_email or reporting_manager_code for a more reliable match.`,
         );
       } else {
         rowErrors.push(
-          `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${candidates.length} users match. Use email or employee code instead.`,
+          `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${candidates.length} active users match. Use reporting_manager_email or reporting_manager_code instead.`,
         );
       }
     }
