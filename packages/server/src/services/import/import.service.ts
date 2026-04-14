@@ -3,11 +3,14 @@
 //
 // Spreadsheet schema (CSV or XLSX):
 //   first_name, last_name, email, password, role, emp_code, designation,
-//   department_name, location_name, reporting_manager_email, employment_type,
+//   department_name, location_name, reporting_manager_email,
+//   reporting_manager_code, reporting_manager_name, employment_type,
 //   date_of_joining, date_of_birth, date_of_exit, gender, contact_number, address
 //
 // Only first_name, last_name and email are required. Department / location /
-// reporting manager are resolved by human-readable name or email, not ID.
+// reporting manager are resolved by human-readable name, email or emp_code
+// — not numeric ID. Reporting manager can be specified by email, emp_code or
+// full name (first + last); resolution priority is email → code → name.
 // Dates accept any reasonable format — see parseDate() below.
 // =============================================================================
 
@@ -28,7 +31,12 @@ export interface ImportRow {
   department_id?: number;
   location_name?: string;
   location_id?: number;
+  // Reporting manager can be specified by email, employee code, or full name.
+  // Resolution priority: email → emp_code → full name. The first non-empty
+  // value wins and the others are ignored.
   reporting_manager_email?: string;
+  reporting_manager_code?: string;
+  reporting_manager_name?: string;
   reporting_manager_id?: number;
   employment_type?: string;
   date_of_joining?: string;
@@ -183,10 +191,25 @@ export function parseFile(fileBuffer: Buffer): ImportRow[] {
       designation: pick(row, "designation", "title", "job_title"),
       department_name: pick(row, "department_name", "department", "dept"),
       location_name: pick(row, "location_name", "location", "office", "branch"),
+      // Manager can be specified three ways — email, emp_code, or name
       reporting_manager_email: pick(
         row,
         "reporting_manager_email",
         "manager_email",
+        "reports_to_email",
+      ),
+      reporting_manager_code: pick(
+        row,
+        "reporting_manager_code",
+        "manager_code",
+        "manager_emp_code",
+        "reports_to_code",
+      ),
+      reporting_manager_name: pick(
+        row,
+        "reporting_manager_name",
+        "reporting_manager",
+        "manager_name",
         "manager",
         "reports_to",
       ),
@@ -259,13 +282,25 @@ export async function validateImportData(
     locations.map((l: any) => [l.name.toLowerCase(), l.id]),
   );
 
-  // Potential reporting managers — active users in the org
+  // Potential reporting managers — active users in the org. We index them
+  // by three keys because the CSV can reference a manager by email,
+  // employee code, OR full name (first + last).
   const managers = await db("users")
     .where({ organization_id: orgId, status: 1 })
-    .select("id", "email");
-  const managerMap = new Map<string, number>(
-    managers.map((m: any) => [m.email.toLowerCase(), m.id]),
-  );
+    .select("id", "email", "emp_code", "first_name", "last_name");
+  const managerByEmail = new Map<string, number>();
+  const managerByCode = new Map<string, number>();
+  const managerByName = new Map<string, number[]>();
+  for (const m of managers) {
+    if (m.email) managerByEmail.set(String(m.email).toLowerCase(), m.id);
+    if (m.emp_code) managerByCode.set(String(m.emp_code).toLowerCase(), m.id);
+    const full = `${m.first_name || ""} ${m.last_name || ""}`.trim().toLowerCase();
+    if (full) {
+      const bucket = managerByName.get(full) || [];
+      bucket.push(m.id);
+      managerByName.set(full, bucket);
+    }
+  }
 
   // Empoy codes already in use — org-scoped unique
   const empCodeRows = await db("users")
@@ -415,14 +450,39 @@ export async function validateImportData(
       }
     }
 
-    // Resolve reporting_manager_email → reporting_manager_id
+    // Resolve reporting manager → reporting_manager_id. The CSV may
+    // reference the manager by email, emp_code, or full name (first + last).
+    // Priority: email → emp_code → name. Name lookups fail with a helpful
+    // error if more than one manager shares the same name.
     if (row.reporting_manager_email) {
-      const mgrId = managerMap.get(row.reporting_manager_email.toLowerCase());
+      const mgrId = managerByEmail.get(row.reporting_manager_email.toLowerCase());
       if (mgrId) {
         row.reporting_manager_id = mgrId;
       } else {
         rowErrors.push(
           `Reporting manager "${row.reporting_manager_email}" not found or not active`,
+        );
+      }
+    } else if (row.reporting_manager_code) {
+      const mgrId = managerByCode.get(row.reporting_manager_code.toLowerCase());
+      if (mgrId) {
+        row.reporting_manager_id = mgrId;
+      } else {
+        rowErrors.push(
+          `Reporting manager with code "${row.reporting_manager_code}" not found or not active`,
+        );
+      }
+    } else if (row.reporting_manager_name) {
+      const candidates = managerByName.get(row.reporting_manager_name.toLowerCase()) || [];
+      if (candidates.length === 1) {
+        row.reporting_manager_id = candidates[0];
+      } else if (candidates.length === 0) {
+        rowErrors.push(
+          `Reporting manager "${row.reporting_manager_name}" not found or not active`,
+        );
+      } else {
+        rowErrors.push(
+          `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${candidates.length} users match. Use email or employee code instead.`,
         );
       }
     }

@@ -226,6 +226,8 @@ export const bulkImportUserRowSchema = z.object({
   department_name: z.string().max(100).optional(),
   location_name: z.string().max(100).optional(),
   reporting_manager_email: z.string().email().max(128).optional().or(z.literal("")),
+  reporting_manager_code: z.string().max(50).optional(),
+  reporting_manager_name: z.string().max(128).optional(),
   employment_type: z.nativeEnum(EmploymentType).optional(),
   date_of_joining: z.string().optional(),
   date_of_birth: z.string().optional(),

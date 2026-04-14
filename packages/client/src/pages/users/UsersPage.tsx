@@ -29,7 +29,11 @@ const TEMPLATE_HEADERS = [
   "designation",
   "department_name",
   "location_name",
+  // Reporting manager can be given as ANY one of these three columns.
+  // Priority if multiple are set: email → code → name.
   "reporting_manager_email",
+  "reporting_manager_code",
+  "reporting_manager_name",
   "employment_type",
   "date_of_joining",
   "date_of_birth",
@@ -50,6 +54,8 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
     department_name: "Engineering",
     location_name: "Bangalore",
     reporting_manager_email: "manager@company.com",
+    reporting_manager_code: "",
+    reporting_manager_name: "",
     employment_type: "full_time",
     date_of_joining: "2026-01-15",
     date_of_birth: "1995-05-10",
@@ -67,7 +73,10 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
     designation: "Product Manager",
     department_name: "Product",
     location_name: "Mumbai",
+    // Example: looking up manager by employee code
     reporting_manager_email: "",
+    reporting_manager_code: "EMP010",
+    reporting_manager_name: "",
     employment_type: "full_time",
     date_of_joining: "01/06/2025",
     date_of_birth: "22/11/1990",
@@ -85,7 +94,10 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
     designation: "Senior Designer",
     department_name: "Design",
     location_name: "",
+    // Example: looking up manager by full name (must be unique)
     reporting_manager_email: "",
+    reporting_manager_code: "",
+    reporting_manager_name: "Priya Sharma",
     employment_type: "contract",
     date_of_joining: "2026-03-01",
     date_of_birth: "",
@@ -107,6 +119,8 @@ interface CsvRow {
   department_name?: string;
   location_name?: string;
   reporting_manager_email?: string;
+  reporting_manager_code?: string;
+  reporting_manager_name?: string;
   employment_type?: string;
   date_of_joining?: string;
   date_of_birth?: string;
@@ -352,7 +366,12 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
                           <td className="px-3 py-2">{row.designation}</td>
                           <td className="px-3 py-2">{row.department_name}</td>
                           <td className="px-3 py-2">{row.location_name}</td>
-                          <td className="px-3 py-2">{row.reporting_manager_email}</td>
+                          <td className="px-3 py-2">
+                            {row.reporting_manager_email ||
+                              row.reporting_manager_code ||
+                              row.reporting_manager_name ||
+                              ""}
+                          </td>
                           <td className="px-3 py-2">{row.employment_type || "full_time"}</td>
                           <td className="px-3 py-2">{row.date_of_joining}</td>
                         </tr>
