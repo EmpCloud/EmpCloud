@@ -41,7 +41,7 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 | **EMP Exit** | EmpCloud/emp-exit | 4400 | emp_exit | Express 5 + TypeScript | Live |
 | **EMP Recruit** | EmpCloud/emp-recruit | 4500 | emp_recruit | Express 5 + TypeScript | Live |
 | **EMP Rewards** | EmpCloud/emp-rewards | 4600 | emp_rewards | Express 5 + TypeScript | Live |
-| **EMP LMS** | EmpCloud/emp-lms | 4700 | emp_lms | Express 5 + TypeScript | Live |
+| **EMP LMS** | EmpCloud/emp-lms | 6021 | emp_lms | Express 5 + TypeScript | Live |
 | **EMP Field** | EmpCloud/emp-field | 4800 | emp_field | Express 5 + TypeScript | Live (new) |
 | **EMP Monitor** | EmpCloud/emp-monitor | 5000 | emp_monitor | Express 4 + JavaScript + MongoDB | Live (8 microservices) |
 | **EMP Projects** | EmpCloud/emp-project | 9000/9001/3100 | MongoDB | Express 4 + Next.js | Live |
@@ -63,7 +63,7 @@ Sellable modules (Payroll, Monitor, etc.) are separate apps that connect via OAu
 | EMP Exit | emp-exit | 4400 | test-exit.empcloud.com / test-exit-api.empcloud.com |
 | EMP Recruit | emp-recruit | 4500 | test-recruit.empcloud.com / test-recruit-api.empcloud.com |
 | EMP Rewards | emp-rewards | 4600 | test-rewards.empcloud.com / test-rewards-api.empcloud.com |
-| EMP LMS | emp-lms | 4700 | testlms.empcloud.com / testlms-api.empcloud.com |
+| EMP LMS | emp-lms | 6021 | testlms.empcloud.com / testlms-api.empcloud.com |
 | EMP Field | emp-field | 4800 | test-field.empcloud.com / test-field-api.empcloud.com |
 
 ### Monitor Microservices
