@@ -287,16 +287,23 @@ export function parseFile(fileBuffer: Buffer): ImportRow[] {
     if (!firstName && !lastName) {
       const fullName = pick(row, "full_name", "name", "employee_name", "fullname");
       if (fullName) {
-        const parts = fullName.split(/\s+/).filter(Boolean);
-        if (parts.length >= 2) {
-          firstName = parts[0];
-          lastName = parts.slice(1).join(" ");
-        } else if (parts.length === 1) {
-          // Single-word name (mononym, or systems that don't capture surname)
-          // — keep it as first_name and let last_name stay empty. The NOT
-          // NULL constraint is satisfied later by coercing last_name to "".
-          firstName = parts[0];
-        }
+        firstName = fullName;
+      }
+    }
+    // Auto-split a multi-word first_name when last_name is empty. Catches
+    // both the full_name fallback above AND source spreadsheets that dump
+    // the entire name into the first_name column (very common when the
+    // source HRIS doesn't model surname separately). "Aishwarya Keshav
+    // Murthy Gowda" → first="Aishwarya", last="Keshav Murthy Gowda".
+    // We do NOT split if last_name was provided explicitly — the importer
+    // shouldn't second-guess data the user typed on purpose.
+    if (firstName && !lastName) {
+      const parts = firstName.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        firstName = parts[0];
+        lastName = parts.slice(1).join(" ");
+      } else {
+        firstName = parts[0] || "";
       }
     }
 
