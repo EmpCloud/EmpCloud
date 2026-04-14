@@ -210,7 +210,17 @@ export async function getModuleWidgets(orgId: number, _userId: number): Promise<
       // hardcoded MODULE_ENDPOINTS table. Both are internal URLs — the
       // public base_url must never be used here because the fetch would
       // hit the frontend nginx/TLS stack instead of the module backend.
-      const base = urlMap.get(ep.slug) || `http://localhost:${ep.port}`;
+      //
+      // modules.api_url is usually set to the full base including the API
+      // version prefix (e.g. `https://rewards-api.empcloud.com/api/v1`,
+      // `https://monitor-admin.empcloud.com/api/v3`) because the sync
+      // service appends `/users/sync` to it. ep.path here also starts with
+      // `/api/v1/...`, so concatenating naively produces a doubled prefix
+      // like `…/api/v1/api/v1/analytics/overview`. Strip any trailing
+      // `/api/vN` (N = any digit) from the base so the final URL stays
+      // single-prefixed.
+      const rawBase = urlMap.get(ep.slug) || `http://localhost:${ep.port}`;
+      const base = rawBase.replace(/\/api\/v\d+\/?$/, "");
       const url = `${base}${ep.path}?organization_id=${orgId}`;
 
       try {
