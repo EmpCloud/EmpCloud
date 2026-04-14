@@ -60,7 +60,24 @@ export async function getUser(orgId: number, userId: number): Promise<UserPublic
   const db = getDB();
   const user = await db("users").where({ id: userId, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
-  return sanitizeUser(user);
+
+  // Attach the list of additional managers (from user_additional_managers
+  // junction table) so UI pages can show "co-managers" alongside the
+  // primary reporting_manager_id. Each entry is a thin snapshot of the
+  // manager user — enough to render, not enough to leak.
+  const additionalManagers = await db("user_additional_managers as uam")
+    .join("users as u", "uam.manager_id", "u.id")
+    .where({ "uam.user_id": userId, "u.organization_id": orgId })
+    .select(
+      "u.id",
+      "u.first_name",
+      "u.last_name",
+      "u.email",
+      "u.emp_code",
+      "u.designation",
+    );
+
+  return { ...sanitizeUser(user), additional_managers: additionalManagers } as UserPublic;
 }
 
 export async function createUser(orgId: number, data: CreateUserInput): Promise<UserPublic> {

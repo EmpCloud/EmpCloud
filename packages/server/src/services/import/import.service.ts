@@ -37,12 +37,20 @@ export interface ImportRow {
   reporting_manager_email?: string;
   reporting_manager_code?: string;
   reporting_manager_name?: string;
+  // Primary reporting manager (the first resolved value from the cell).
+  // Stored on users.reporting_manager_id for backward compatibility.
   reporting_manager_id?: number;
-  // Transient flag: the referenced manager isn't an existing user but is
-  // being imported in the same batch under this email. Set during validation
+  // Additional managers resolved from the same cell — stored in the
+  // user_additional_managers junction table during executeImport.
+  _additional_manager_ids?: number[];
+  // Transient flag: the referenced primary manager isn't an existing user but
+  // is being imported in the same batch under this email. Set during validation
   // and resolved during executeImport() in a second pass after bulkCreateUsers
   // has inserted everyone. Never persisted.
   _pending_manager_email?: string;
+  // Same idea but for additional managers whose target is another row in the
+  // same import. Each entry is the target user's email.
+  _pending_additional_manager_emails?: string[];
   employment_type?: string;
   date_of_joining?: string;
   date_of_birth?: string;
@@ -114,6 +122,22 @@ function normalizeEmploymentType(raw: string): string {
  */
 function normalizeName(raw: string): string {
   return raw.replace(/[\s\u00A0]+/g, " ").trim().toLowerCase();
+}
+
+/**
+ * Split a reporting-manager cell that may contain multiple managers.
+ * We accept '/', '\', ',', ';', '|' and '&' as delimiters (with optional
+ * whitespace on either side). These are all safe characters inside a
+ * single valid email, employee code, or human name, so a multi-value cell
+ * always uses one of them between tokens.
+ *
+ * Returns an array of trimmed non-empty tokens in the order they appear.
+ */
+function splitManagerCell(raw: string): string[] {
+  return raw
+    .split(/\s*[/\\,;|&]\s*/)
+    .map((t) => t.trim())
+    .filter(Boolean);
 }
 
 /** Pick the first non-empty value among aliases. */
@@ -558,74 +582,118 @@ export async function validateImportData(
       // the location and fill it in before insert.
     }
 
-    // Resolve reporting manager → reporting_manager_id. The CSV may
-    // reference the manager by email, emp_code, or full name (first + last).
-    // Priority: email → emp_code → name. We first look in the DB; if the
-    // manager isn't there yet we also check the in-batch cross-reference
-    // so a CSV that imports managers and reports together works in one
-    // shot (executeImport does a second-pass UPDATE after bulk insert).
+    // ------------------------------------------------------------------
+    // Resolve reporting manager → reporting_manager_id (primary) and
+    // _additional_manager_ids (rest). Each cell may contain more than one
+    // manager separated by / \ , ; | or & — the first resolved token is
+    // the primary, anything after is additional. Missing/unresolved tokens
+    // add errors.
     //
-    // Auto-detect: if the reporting_manager_name column contains an
-    // email-looking value (and no explicit reporting_manager_email is set),
-    // treat it as an email. Happens a lot when operators squash everything
-    // into a single "manager" / "reports_to" column.
-    if (
-      !row.reporting_manager_email &&
-      row.reporting_manager_name &&
-      EMAIL_RE.test(row.reporting_manager_name)
-    ) {
-      row.reporting_manager_email = row.reporting_manager_name;
-      row.reporting_manager_name = undefined;
-    }
-    if (row.reporting_manager_email) {
-      const key = row.reporting_manager_email.toLowerCase();
-      const mgrId = managerByEmail.get(key);
-      if (mgrId) {
-        row.reporting_manager_id = mgrId;
-      } else if (batchByEmail.has(key)) {
-        row._pending_manager_email = batchByEmail.get(key);
-      } else {
-        rowErrors.push(
-          `Reporting manager "${row.reporting_manager_email}" not found or not active`,
-        );
-      }
-    } else if (row.reporting_manager_code) {
-      const key = row.reporting_manager_code.toLowerCase();
-      const mgrId = managerByCode.get(key);
-      if (mgrId) {
-        row.reporting_manager_id = mgrId;
-      } else if (batchByCode.has(key)) {
-        row._pending_manager_email = batchByCode.get(key);
-      } else {
-        rowErrors.push(
-          `Reporting manager with code "${row.reporting_manager_code}" not found or not active`,
-        );
-      }
-    } else if (row.reporting_manager_name) {
-      const key = normalizeName(row.reporting_manager_name);
-      const candidates = managerByName.get(key) || [];
-      if (candidates.length === 1) {
-        row.reporting_manager_id = candidates[0];
-      } else if (candidates.length === 0) {
-        // Not in DB — maybe being created in the same batch?
-        const batchCandidates = batchByName.get(key) || [];
-        if (batchCandidates.length === 1) {
-          row._pending_manager_email = batchCandidates[0];
-        } else if (batchCandidates.length > 1) {
-          rowErrors.push(
-            `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${batchCandidates.length} rows in this import share that name. Use reporting_manager_email or reporting_manager_code instead.`,
-          );
+    // Priority by column: email → emp_code → name. If two columns are
+    // filled at once, only the higher-priority one is used (same behavior
+    // as before).
+    //
+    // Auto-detect: values that look like emails sitting in the NAME column
+    // are reinterpreted as emails — happens when operators squash
+    // everything into a single "manager"/"reports_to" field.
+    // ------------------------------------------------------------------
+    type ResolvedKind = "email" | "code" | "name";
+    type Resolved = { id?: number; pendingEmail?: string };
+
+    const resolvedPrimary: Resolved | null = (() => null)();
+    let primary: Resolved | null = null;
+    const additional: Resolved[] = [];
+
+    const pickColumn = (): { kind: ResolvedKind; tokens: string[] } | null => {
+      const raw =
+        row.reporting_manager_email ||
+        row.reporting_manager_code ||
+        row.reporting_manager_name;
+      if (!raw) return null;
+      const kind: ResolvedKind = row.reporting_manager_email
+        ? "email"
+        : row.reporting_manager_code
+          ? "code"
+          : "name";
+      return { kind, tokens: splitManagerCell(raw) };
+    };
+
+    const picked = pickColumn();
+    if (picked) {
+      for (const tokenRaw of picked.tokens) {
+        const token = tokenRaw.trim();
+        if (!token) continue;
+
+        // Auto-detect: token looks like an email even though it came from
+        // the name or code column → treat it as email.
+        const effectiveKind: ResolvedKind =
+          picked.kind !== "email" && EMAIL_RE.test(token) ? "email" : picked.kind;
+
+        let res: Resolved | "error" | "ambiguous" = "error";
+        let ambiguousCount = 0;
+
+        if (effectiveKind === "email") {
+          const key = token.toLowerCase();
+          const mgrId = managerByEmail.get(key);
+          if (mgrId) res = { id: mgrId };
+          else if (batchByEmail.has(key)) res = { pendingEmail: batchByEmail.get(key) };
+        } else if (effectiveKind === "code") {
+          const key = token.toLowerCase();
+          const mgrId = managerByCode.get(key);
+          if (mgrId) res = { id: mgrId };
+          else if (batchByCode.has(key)) res = { pendingEmail: batchByCode.get(key) };
         } else {
-          rowErrors.push(
-            `Reporting manager "${row.reporting_manager_name}" not found — the manager must already be an active user in your organization (or be imported in the same file). Use reporting_manager_email or reporting_manager_code for a more reliable match.`,
-          );
+          const key = normalizeName(token);
+          const candidates = managerByName.get(key) || [];
+          if (candidates.length === 1) {
+            res = { id: candidates[0] };
+          } else if (candidates.length > 1) {
+            res = "ambiguous";
+            ambiguousCount = candidates.length;
+          } else {
+            const batchCandidates = batchByName.get(key) || [];
+            if (batchCandidates.length === 1) {
+              res = { pendingEmail: batchCandidates[0] };
+            } else if (batchCandidates.length > 1) {
+              res = "ambiguous";
+              ambiguousCount = batchCandidates.length;
+            }
+          }
         }
-      } else {
-        rowErrors.push(
-          `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${candidates.length} active users match. Use reporting_manager_email or reporting_manager_code instead.`,
-        );
+
+        if (res === "error") {
+          rowErrors.push(
+            `Reporting manager "${token}" not found — must be an active user in your organization (or be imported in the same file).`,
+          );
+          continue;
+        }
+        if (res === "ambiguous") {
+          rowErrors.push(
+            `Reporting manager "${token}" is ambiguous — ${ambiguousCount} matches. Use email or employee code instead.`,
+          );
+          continue;
+        }
+
+        if (!primary) primary = res;
+        else additional.push(res);
       }
     }
+
+    if (primary) {
+      if (primary.id) row.reporting_manager_id = primary.id;
+      if (primary.pendingEmail) row._pending_manager_email = primary.pendingEmail;
+    }
+    if (additional.length > 0) {
+      const ids: number[] = [];
+      const pending: string[] = [];
+      for (const r of additional) {
+        if (r.id) ids.push(r.id);
+        if (r.pendingEmail) pending.push(r.pendingEmail);
+      }
+      if (ids.length > 0) row._additional_manager_ids = ids;
+      if (pending.length > 0) row._pending_additional_manager_emails = pending;
+    }
+    void resolvedPrimary; // keep for future use
 
     if (rowErrors.length > 0) {
       errors.push({ row: index + 2, data: row, errors: rowErrors });
@@ -743,38 +811,105 @@ export async function executeImport(
 
   const result = await bulkCreateUsers(orgId, validRows, importedBy);
 
-  // --- Second pass: resolve in-batch manager references -----------------
-  // Rows whose reporting manager was also being imported in this file had
-  // their reporting_manager_id left NULL by bulkCreateUsers (because the
-  // manager didn't exist yet). Now that everyone's inserted, look up the
-  // freshly-created user IDs by email and issue one UPDATE per row.
-  const pendingRefs = validRows.filter((r) => r._pending_manager_email);
-  if (pendingRefs.length > 0) {
-    const managerEmails = Array.from(
-      new Set(pendingRefs.map((r) => r._pending_manager_email!.toLowerCase())),
+  // --- Second pass: resolve in-batch manager references + write junction -
+  //
+  // Three things happen here, all keyed off the freshly-inserted user IDs:
+  //
+  // 1. Rows whose PRIMARY reporting manager was imported in the same batch
+  //    had reporting_manager_id = NULL after bulkCreateUsers. We now look up
+  //    the new IDs by email and UPDATE users.reporting_manager_id.
+  //
+  // 2. Rows whose ADDITIONAL managers were resolved at validation time
+  //    (DB hits) get inserted into user_additional_managers.
+  //
+  // 3. Rows whose ADDITIONAL managers were in-batch pending refs get
+  //    resolved the same way as #1 and inserted into the junction table.
+  //
+  // Everything happens in a single transaction so either all the post-
+  // insert wiring lands or none of it does.
+  const hasPrimaryRef = (r: ImportRow) => Boolean(r._pending_manager_email);
+  const hasAdditional = (r: ImportRow) =>
+    Boolean(
+      (r._additional_manager_ids && r._additional_manager_ids.length > 0) ||
+        (r._pending_additional_manager_emails && r._pending_additional_manager_emails.length > 0),
     );
-    const importedUserEmails = Array.from(
-      new Set(validRows.map((r) => r.email.toLowerCase())),
-    );
-    const lookupEmails = Array.from(new Set([...managerEmails, ...importedUserEmails]));
+
+  const needsSecondPass = validRows.some((r) => hasPrimaryRef(r) || hasAdditional(r));
+
+  if (needsSecondPass) {
+    // Collect every email we might need to look up: all imported user
+    // emails (for self-id lookup) plus every in-batch pending manager email
+    // referenced by any row.
+    const emailSet = new Set<string>();
+    for (const r of validRows) {
+      emailSet.add(r.email.toLowerCase());
+      if (r._pending_manager_email) emailSet.add(r._pending_manager_email.toLowerCase());
+      if (r._pending_additional_manager_emails) {
+        for (const e of r._pending_additional_manager_emails) {
+          emailSet.add(e.toLowerCase());
+        }
+      }
+    }
+
     // bulkCreateUsers lowercases the email column on insert, so a plain
     // whereIn against the lowercased list matches every freshly-created row.
     const freshUsers = await db("users")
       .where({ organization_id: orgId })
-      .whereIn("email", lookupEmails)
+      .whereIn("email", Array.from(emailSet))
       .select("id", "email");
     const byEmail = new Map<string, number>(
       freshUsers.map((u: any) => [String(u.email).toLowerCase(), u.id]),
     );
 
     await db.transaction(async (trx) => {
-      for (const row of pendingRefs) {
-        const mgrId = byEmail.get(row._pending_manager_email!.toLowerCase());
+      for (const row of validRows) {
         const selfId = byEmail.get(row.email.toLowerCase());
-        if (mgrId && selfId && mgrId !== selfId) {
-          await trx("users")
-            .where({ id: selfId, organization_id: orgId })
-            .update({ reporting_manager_id: mgrId, updated_at: new Date() });
+        if (!selfId) continue;
+
+        // 1. Primary manager was in-batch → UPDATE users.reporting_manager_id
+        if (row._pending_manager_email) {
+          const mgrId = byEmail.get(row._pending_manager_email.toLowerCase());
+          if (mgrId && mgrId !== selfId) {
+            await trx("users")
+              .where({ id: selfId, organization_id: orgId })
+              .update({ reporting_manager_id: mgrId, updated_at: new Date() });
+          }
+        }
+
+        // 2 + 3. Additional managers — dedupe against the primary so we
+        // don't insert a (user, manager) pair that duplicates users.reporting_manager_id.
+        const additionalIds = new Set<number>();
+        if (row._additional_manager_ids) {
+          for (const id of row._additional_manager_ids) additionalIds.add(id);
+        }
+        if (row._pending_additional_manager_emails) {
+          for (const email of row._pending_additional_manager_emails) {
+            const id = byEmail.get(email.toLowerCase());
+            if (id) additionalIds.add(id);
+          }
+        }
+        // Remove self-references and the primary (which is already on the
+        // users row) to avoid unique-constraint churn.
+        additionalIds.delete(selfId);
+        if (row.reporting_manager_id) additionalIds.delete(row.reporting_manager_id);
+        // If primary was only set via the pending path, re-derive it now.
+        if (row._pending_manager_email) {
+          const primaryId = byEmail.get(row._pending_manager_email.toLowerCase());
+          if (primaryId) additionalIds.delete(primaryId);
+        }
+
+        if (additionalIds.size > 0) {
+          const rows = Array.from(additionalIds).map((managerId) => ({
+            user_id: selfId,
+            manager_id: managerId,
+            created_at: new Date(),
+          }));
+          // INSERT IGNORE equivalent — the unique(user_id, manager_id) index
+          // means re-runs of the same import are idempotent.
+          await trx("user_additional_managers")
+            .insert(rows)
+            .onConflict(["user_id", "manager_id"])
+            .ignore();
         }
       }
     });

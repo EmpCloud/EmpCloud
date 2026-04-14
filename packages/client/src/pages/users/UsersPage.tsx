@@ -107,10 +107,12 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
     department_name: "Design",
     // Unknown location — the server will auto-create "Bhilai"
     location_name: "Bhilai",
-    // Example: looking up manager by full name (must be unique)
+    // Example: multiple reporting managers in one cell. Delimiters that
+    // work: / \ , ; | &. First resolved value becomes the primary
+    // reporting_manager_id; the rest go into user_additional_managers.
     reporting_manager_email: "",
     reporting_manager_code: "",
-    reporting_manager_name: "Priya Sharma",
+    reporting_manager_name: "Syamal Ghosh / Sumit Ghosh",
     employment_type: "contract",
     date_of_joining: "2026-03-01",
     date_of_birth: "",
