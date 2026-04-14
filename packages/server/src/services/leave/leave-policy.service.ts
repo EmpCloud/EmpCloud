@@ -19,10 +19,13 @@ interface CreateLeavePolicyInput {
   min_days_before_application?: number;
 }
 
+// #1413 — deleteLeavePolicy soft-deletes (is_active = false). The default
+// listing must exclude inactive rows, otherwise deleted policies keep showing
+// in the UI and the delete action appears broken.
 export async function listLeavePolicies(orgId: number): Promise<LeavePolicy[]> {
   const db = getDB();
   return db("leave_policies")
-    .where({ organization_id: orgId })
+    .where({ organization_id: orgId, is_active: true })
     .orderBy("name", "asc");
 }
 

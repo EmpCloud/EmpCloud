@@ -241,7 +241,9 @@ export default function ModuleAccessPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 sticky left-0 bg-gray-50 min-w-[220px]">Employee</th>
+              {/* #1416 — z-index keeps the sticky Employee column above
+                   horizontally scrolled toggle cells so they don't overlap. */}
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 sticky left-0 z-20 bg-gray-50 min-w-[220px] shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">Employee</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Role</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Designation</th>
               {subscribedModules.map((m: any) => (
@@ -270,7 +272,7 @@ export default function ModuleAccessPage() {
                 const enabledCount = user.modules?.length || 0;
                 return (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 sticky left-0 bg-white">
+                    <td className="px-6 py-3 sticky left-0 z-10 bg-white shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700 flex-shrink-0">
                           {user.first_name?.[0]}{user.last_name?.[0]}

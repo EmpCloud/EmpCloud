@@ -54,6 +54,17 @@ export default function SelfServiceDashboardPage() {
         .catch(() => []),
   });
 
+  // #1414 — fetch all active leave types so we can render a card per type
+  // even before balances are initialized (missing balances render as 0).
+  const { data: leaveTypes } = useQuery({
+    queryKey: ["leave-types"],
+    queryFn: () =>
+      api
+        .get("/leave/types")
+        .then((r) => r.data.data)
+        .catch(() => []),
+  });
+
   // My documents
   const { data: documentsData } = useQuery({
     queryKey: ["my-documents-pending"],
@@ -86,6 +97,19 @@ export default function SelfServiceDashboardPage() {
 
   const todayAttendance = attendanceData ?? null;
   const leaveBalances = Array.isArray(leaveBalance) ? leaveBalance : [];
+  // #1414 — render one card per active leave type, overlaying the balance row
+  // when present so every configured leave type is visible.
+  const leaveTypeList: any[] = Array.isArray(leaveTypes) ? leaveTypes : [];
+  const leaveCards = leaveTypeList
+    .filter((t: any) => Boolean(t.is_active))
+    .map((t: any) => {
+      const bal = leaveBalances.find((b: any) => b.leave_type_id === t.id);
+      return {
+        id: t.id,
+        name: t.name,
+        balance: Number(bal?.balance ?? bal?.remaining ?? 0),
+      };
+    });
   const pendingDocs = Array.isArray(documentsData) ? documentsData : [];
   const announcementList = Array.isArray(announcements) ? announcements : [];
   const policyList = Array.isArray(policies) ? policies : [];
@@ -155,20 +179,18 @@ export default function SelfServiceDashboardPage() {
             <CalendarDays className="h-5 w-5 text-brand-600" />
             <h2 className="text-lg font-semibold text-gray-900">Leave Balance</h2>
           </div>
-          {leaveBalances.length > 0 ? (
+          {leaveCards.length > 0 ? (
             <div className="grid grid-cols-2 gap-3">
-              {leaveBalances.slice(0, 4).map((lb: any) => (
-                <div key={lb.id || lb.leave_type_id} className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500">{lb.leave_type_name || lb.name || "Leave"}</p>
-                  <p className="text-lg font-bold text-gray-900">
-                    {lb.balance ?? lb.remaining ?? 0}
-                  </p>
+              {leaveCards.map((c) => (
+                <div key={c.id} className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500">{c.name}</p>
+                  <p className="text-lg font-bold text-gray-900">{c.balance}</p>
                   <p className="text-xs text-gray-400">days remaining</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No leave balances available</p>
+            <p className="text-sm text-gray-400">No leave types configured</p>
           )}
         </div>
 
