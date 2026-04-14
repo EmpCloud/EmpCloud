@@ -377,6 +377,17 @@ router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Resp
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/attendance/dashboard/breakdown?date=YYYY-MM-DD
+// Returns the list of employees grouped by attendance status for the given date
+// (defaults to today). Used by the "click stat card to view details" flow.
+router.get("/dashboard/breakdown", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const date = typeof req.query.date === "string" ? req.query.date : undefined;
+    const breakdown = await attendanceService.getDashboardBreakdown(req.user!.org_id, date);
+    sendSuccess(res, breakdown);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/attendance/monthly-report
 router.get("/monthly-report", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {

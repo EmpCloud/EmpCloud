@@ -308,6 +308,62 @@ export async function getDashboard(orgId: number) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Dashboard Breakdown — lists of employees grouped by attendance status
+// Used by the "click stat card to view details" flow on the attendance dashboard.
+// ---------------------------------------------------------------------------
+
+export async function getDashboardBreakdown(orgId: number, date?: string) {
+  const db = getDB();
+  const forDate = date || new Date().toISOString().slice(0, 10);
+
+  const employees = await db("users as u")
+    .leftJoin("organization_departments as d", "u.department_id", "d.id")
+    .leftJoin("attendance_records as ar", function () {
+      this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", forDate);
+    })
+    .where("u.organization_id", orgId)
+    .where("u.status", 1)
+    .select(
+      "u.id",
+      "u.first_name",
+      "u.last_name",
+      "u.email",
+      "u.designation",
+      "d.name as department",
+      "ar.status as attendance_status",
+      "ar.check_in as check_in_time",
+      "ar.check_out as check_out_time",
+      "ar.late_minutes"
+    )
+    .orderBy(["u.first_name", "u.last_name"]);
+
+  const present: typeof employees = [];
+  const absent: typeof employees = [];
+  const onLeave: typeof employees = [];
+  const late: typeof employees = [];
+
+  for (const emp of employees) {
+    const status = emp.attendance_status;
+    if (status === "present" || status === "half_day" || status === "checked_in") {
+      present.push(emp);
+      if (Number(emp.late_minutes) > 0) late.push(emp);
+    } else if (status === "on_leave") {
+      onLeave.push(emp);
+    } else {
+      absent.push(emp);
+    }
+  }
+
+  return {
+    date: forDate,
+    present,
+    absent,
+    on_leave: onLeave,
+    late,
+  };
+}
+
 export async function getMonthlyReport(
   orgId: number,
   params: { month: number; year: number; user_id?: number }

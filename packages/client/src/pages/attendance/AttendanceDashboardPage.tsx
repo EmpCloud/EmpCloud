@@ -189,12 +189,27 @@ export default function AttendanceDashboardPage() {
     }
   };
 
-  const stats = [
-    { label: "Total Employees", value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700" },
-    { label: "Present Today", value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700" },
-    { label: "Absent Today", value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 text-red-700" },
-    { label: "Late Today", value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700" },
-    { label: "On Leave", value: dashboard?.on_leave ?? "-", icon: Clock, color: "bg-purple-50 text-purple-700" },
+  type BreakdownCategory = "total" | "present" | "absent" | "on_leave" | "late";
+  const [breakdownOpen, setBreakdownOpen] = useState<BreakdownCategory | null>(null);
+
+  const { data: breakdown, isLoading: breakdownLoading } = useQuery({
+    queryKey: ["attendance-dashboard-breakdown"],
+    queryFn: () => api.get("/attendance/dashboard/breakdown").then((r) => r.data.data),
+    enabled: breakdownOpen !== null,
+  });
+
+  const stats: {
+    label: string;
+    value: number | string;
+    icon: any;
+    color: string;
+    category: BreakdownCategory | null;
+  }[] = [
+    { label: "Total Employees", value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", category: "total" },
+    { label: "Present Today", value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", category: "present" },
+    { label: "Absent Today", value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 text-red-700", category: "absent" },
+    { label: "Late Today", value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", category: "late" },
+    { label: "On Leave", value: dashboard?.on_leave ?? "-", icon: Clock, color: "bg-purple-50 text-purple-700", category: "on_leave" },
   ];
 
   return (
@@ -206,8 +221,9 @@ export default function AttendanceDashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        {stats.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
+        {stats.map((s) => {
+          const isClickable = s.category !== null;
+          const content = (
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${s.color}`}>
                 <s.icon className="h-5 w-5" />
@@ -217,9 +233,140 @@ export default function AttendanceDashboardPage() {
                 <p className="text-xs text-gray-500">{s.label}</p>
               </div>
             </div>
-          </div>
-        ))}
+          );
+          return isClickable ? (
+            <button
+              key={s.label}
+              type="button"
+              onClick={() => setBreakdownOpen(s.category)}
+              className="bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
+              aria-label={`View ${s.label} employee list`}
+            >
+              {content}
+            </button>
+          ) : (
+            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
+              {content}
+            </div>
+          );
+        })}
       </div>
+
+      {/* Breakdown Modal */}
+      {breakdownOpen !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setBreakdownOpen(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Attendance Details — {breakdown?.date ?? "Today"}</h3>
+              <button
+                type="button"
+                onClick={() => setBreakdownOpen(null)}
+                className="text-gray-400 hover:text-gray-600"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-6 pt-4 border-b border-gray-200">
+              <div className="flex gap-1 flex-wrap">
+                {(
+                  [
+                    { key: "total", label: "All", color: "text-blue-700 border-blue-600" },
+                    { key: "present", label: "Present", color: "text-green-700 border-green-600" },
+                    { key: "absent", label: "Absent", color: "text-red-700 border-red-600" },
+                    { key: "on_leave", label: "On Leave", color: "text-purple-700 border-purple-600" },
+                    { key: "late", label: "Late", color: "text-yellow-700 border-yellow-600" },
+                  ] as const
+                ).map((tab) => {
+                  const count = tab.key === "total"
+                    ? (breakdown?.present?.length ?? 0) + (breakdown?.absent?.length ?? 0) + (breakdown?.on_leave?.length ?? 0)
+                    : breakdown?.[tab.key]?.length ?? 0;
+                  const active = breakdownOpen === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setBreakdownOpen(tab.key)}
+                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
+                        active ? tab.color : "text-gray-500 border-transparent hover:text-gray-700"
+                      }`}
+                    >
+                      {tab.label} ({breakdownLoading ? "…" : count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="overflow-y-auto flex-1 px-6 py-4">
+              {breakdownLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                </div>
+              ) : (() => {
+                const list = breakdownOpen === "total"
+                  ? [
+                      ...(breakdown?.present ?? []),
+                      ...(breakdown?.absent ?? []),
+                      ...(breakdown?.on_leave ?? []),
+                    ]
+                  : breakdown?.[breakdownOpen] ?? [];
+                if (list.length === 0) {
+                  return <p className="text-center text-sm text-gray-500 py-12">No employees in this category.</p>;
+                }
+                const statusLabel = (emp: any) => {
+                  const s = emp.attendance_status;
+                  if (s === "present" || s === "checked_in") return { label: "Present", color: "bg-green-50 text-green-700" };
+                  if (s === "half_day") return { label: "Half Day", color: "bg-green-50 text-green-700" };
+                  if (s === "on_leave") return { label: "On Leave", color: "bg-purple-50 text-purple-700" };
+                  return { label: "Absent", color: "bg-red-50 text-red-700" };
+                };
+                return (
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                        <th className="py-2 font-medium">Employee</th>
+                        <th className="py-2 font-medium">Department</th>
+                        <th className="py-2 font-medium">Check In</th>
+                        {breakdownOpen === "total" && <th className="py-2 font-medium">Status</th>}
+                        {breakdownOpen === "late" && <th className="py-2 font-medium">Late By</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {list.map((emp: any) => {
+                        const s = breakdownOpen === "total" ? statusLabel(emp) : null;
+                        return (
+                          <tr key={emp.id} className="border-b border-gray-100 last:border-0">
+                            <td className="py-3">
+                              <div className="font-medium text-gray-900">{emp.first_name} {emp.last_name}</div>
+                              <div className="text-xs text-gray-500">{emp.email}</div>
+                            </td>
+                            <td className="py-3 text-gray-700">{emp.department || "—"}</td>
+                            <td className="py-3 text-gray-700">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                            {breakdownOpen === "total" && s && (
+                              <td className="py-3">
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${s.color}`}>{s.label}</span>
+                              </td>
+                            )}
+                            {breakdownOpen === "late" && (
+                              <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} min</td>
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Links */}
       <div className="flex gap-3 mb-6">
