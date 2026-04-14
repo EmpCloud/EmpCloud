@@ -320,7 +320,7 @@ export async function getDashboardBreakdown(orgId: number, date?: string) {
   const employees = await db("users as u")
     .leftJoin("organization_departments as d", "u.department_id", "d.id")
     .leftJoin("attendance_records as ar", function () {
-      this.on("ar.user_id", "=", "u.id").andOn("ar.date", "=", db.raw("?", [forDate]));
+      this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", forDate);
     })
     .where("u.organization_id", orgId)
     .where("u.status", 1)
@@ -332,8 +332,8 @@ export async function getDashboardBreakdown(orgId: number, date?: string) {
       "u.designation",
       "d.name as department",
       "ar.status as attendance_status",
-      "ar.check_in_time",
-      "ar.check_out_time",
+      "ar.check_in as check_in_time",
+      "ar.check_out as check_out_time",
       "ar.late_minutes"
     )
     .orderBy(["u.first_name", "u.last_name"]);

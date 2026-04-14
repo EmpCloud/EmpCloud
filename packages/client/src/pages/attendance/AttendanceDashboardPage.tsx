@@ -189,7 +189,7 @@ export default function AttendanceDashboardPage() {
     }
   };
 
-  type BreakdownCategory = "present" | "absent" | "on_leave" | "late";
+  type BreakdownCategory = "total" | "present" | "absent" | "on_leave" | "late";
   const [breakdownOpen, setBreakdownOpen] = useState<BreakdownCategory | null>(null);
 
   const { data: breakdown, isLoading: breakdownLoading } = useQuery({
@@ -205,7 +205,7 @@ export default function AttendanceDashboardPage() {
     color: string;
     category: BreakdownCategory | null;
   }[] = [
-    { label: "Total Employees", value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", category: null },
+    { label: "Total Employees", value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", category: "total" },
     { label: "Present Today", value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", category: "present" },
     { label: "Absent Today", value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 text-red-700", category: "absent" },
     { label: "Late Today", value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", category: "late" },
@@ -277,13 +277,16 @@ export default function AttendanceDashboardPage() {
               <div className="flex gap-1 flex-wrap">
                 {(
                   [
+                    { key: "total", label: "All", color: "text-blue-700 border-blue-600" },
                     { key: "present", label: "Present", color: "text-green-700 border-green-600" },
                     { key: "absent", label: "Absent", color: "text-red-700 border-red-600" },
                     { key: "on_leave", label: "On Leave", color: "text-purple-700 border-purple-600" },
                     { key: "late", label: "Late", color: "text-yellow-700 border-yellow-600" },
                   ] as const
                 ).map((tab) => {
-                  const count = breakdown?.[tab.key]?.length ?? 0;
+                  const count = tab.key === "total"
+                    ? (breakdown?.present?.length ?? 0) + (breakdown?.absent?.length ?? 0) + (breakdown?.on_leave?.length ?? 0)
+                    : breakdown?.[tab.key]?.length ?? 0;
                   const active = breakdownOpen === tab.key;
                   return (
                     <button
@@ -306,10 +309,23 @@ export default function AttendanceDashboardPage() {
                   <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                 </div>
               ) : (() => {
-                const list = breakdown?.[breakdownOpen] ?? [];
+                const list = breakdownOpen === "total"
+                  ? [
+                      ...(breakdown?.present ?? []),
+                      ...(breakdown?.absent ?? []),
+                      ...(breakdown?.on_leave ?? []),
+                    ]
+                  : breakdown?.[breakdownOpen] ?? [];
                 if (list.length === 0) {
                   return <p className="text-center text-sm text-gray-500 py-12">No employees in this category.</p>;
                 }
+                const statusLabel = (emp: any) => {
+                  const s = emp.attendance_status;
+                  if (s === "present" || s === "checked_in") return { label: "Present", color: "bg-green-50 text-green-700" };
+                  if (s === "half_day") return { label: "Half Day", color: "bg-green-50 text-green-700" };
+                  if (s === "on_leave") return { label: "On Leave", color: "bg-purple-50 text-purple-700" };
+                  return { label: "Absent", color: "bg-red-50 text-red-700" };
+                };
                 return (
                   <table className="w-full text-sm">
                     <thead>
@@ -317,23 +333,32 @@ export default function AttendanceDashboardPage() {
                         <th className="py-2 font-medium">Employee</th>
                         <th className="py-2 font-medium">Department</th>
                         <th className="py-2 font-medium">Check In</th>
+                        {breakdownOpen === "total" && <th className="py-2 font-medium">Status</th>}
                         {breakdownOpen === "late" && <th className="py-2 font-medium">Late By</th>}
                       </tr>
                     </thead>
                     <tbody>
-                      {list.map((emp: any) => (
-                        <tr key={emp.id} className="border-b border-gray-100 last:border-0">
-                          <td className="py-3">
-                            <div className="font-medium text-gray-900">{emp.first_name} {emp.last_name}</div>
-                            <div className="text-xs text-gray-500">{emp.email}</div>
-                          </td>
-                          <td className="py-3 text-gray-700">{emp.department || "—"}</td>
-                          <td className="py-3 text-gray-700">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
-                          {breakdownOpen === "late" && (
-                            <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} min</td>
-                          )}
-                        </tr>
-                      ))}
+                      {list.map((emp: any) => {
+                        const s = breakdownOpen === "total" ? statusLabel(emp) : null;
+                        return (
+                          <tr key={emp.id} className="border-b border-gray-100 last:border-0">
+                            <td className="py-3">
+                              <div className="font-medium text-gray-900">{emp.first_name} {emp.last_name}</div>
+                              <div className="text-xs text-gray-500">{emp.email}</div>
+                            </td>
+                            <td className="py-3 text-gray-700">{emp.department || "—"}</td>
+                            <td className="py-3 text-gray-700">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                            {breakdownOpen === "total" && s && (
+                              <td className="py-3">
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${s.color}`}>{s.label}</span>
+                              </td>
+                            )}
+                            {breakdownOpen === "late" && (
+                              <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} min</td>
+                            )}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 );
