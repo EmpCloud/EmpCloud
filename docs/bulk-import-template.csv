@@ -1,4 +1,4 @@
-first_name,last_name,email,password,role,emp_code,designation,department_name,location_name,reporting_manager_email,reporting_manager_code,reporting_manager_name,employment_type,date_of_joining,date_of_birth,gender,contact_number,address
-John,Doe,john@company.com,Welcome@123,employee,EMP001,Software Engineer,Engineering,Bangalore,manager@company.com,,,full_time,2026-01-15,1995-05-10,male,+919876543210,"12 MG Road, Bangalore"
-Jane,Smith,jane@company.com,,manager,EMP002,Product Manager,Product,Mumbai,,EMP010,,full_time,01/06/2025,22/11/1990,female,+919876543211,
-Raj,Patel,raj@company.com,Welcome@123,employee,EMP003,Senior Designer,Design,,,,Priya Sharma,contract,2026-03-01,,,+919876543212,
+first_name,last_name,full_name,email,password,role,emp_code,designation,department_name,location_name,reporting_manager_email,reporting_manager_code,reporting_manager_name,employment_type,date_of_joining,date_of_birth,gender,contact_number,address
+John,Doe,,john@company.com,Welcome@123,employee,EMP001,Software Engineer,Engineering,Bangalore,manager@company.com,,,full_time,2026-01-15,1995-05-10,male,+919876543210,"12 MG Road, Bangalore"
+,,Aishwarya Keshav Murthy Gowda,aishwarya@company.com,,manager,EMP002,Product Manager,Product,Mumbai,,EMP010,,full_time,01/06/2025,22/11/1990,female,+919876543211,
+Raj,Patel,,raj@company.com,Welcome@123,employee,EMP003,Senior Designer,Design,Bhilai,,,Priya Sharma,contract,2026-03-01,,,+919876543212,

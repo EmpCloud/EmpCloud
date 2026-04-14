@@ -19,9 +19,15 @@ import { UserPlus, Search, Mail, Upload, Download, X, CheckCircle2, XCircle, Fil
 // departments are auto-created on execute — they are NOT an error.
 // ---------------------------------------------------------------------------
 
+// The template includes both first_name/last_name and a full_name column.
+// Users can fill in either pair — the server accepts both. full_name is
+// split on whitespace: first token → first_name, rest → last_name. So
+// "Aishwarya Keshav Murthy Gowda" becomes first="Aishwarya",
+// last="Keshav Murthy Gowda".
 const TEMPLATE_HEADERS = [
   "first_name",
   "last_name",
+  "full_name",
   "email",
   "password",
   "role",
@@ -46,6 +52,7 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
   {
     first_name: "John",
     last_name: "Doe",
+    full_name: "",
     email: "john@company.com",
     password: "Welcome@123",
     role: "employee",
@@ -64,9 +71,13 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
     address: "12 MG Road, Bangalore",
   },
   {
-    first_name: "Jane",
-    last_name: "Smith",
-    email: "jane@company.com",
+    // Alternative — use full_name instead of first_name/last_name. This row
+    // demonstrates a multi-word name: "Aishwarya Keshav Murthy Gowda" is
+    // split into first="Aishwarya", last="Keshav Murthy Gowda".
+    first_name: "",
+    last_name: "",
+    full_name: "Aishwarya Keshav Murthy Gowda",
+    email: "aishwarya@company.com",
     password: "",
     role: "manager",
     emp_code: "EMP002",
@@ -87,13 +98,15 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
   {
     first_name: "Raj",
     last_name: "Patel",
+    full_name: "",
     email: "raj@company.com",
     password: "Welcome@123",
     role: "employee",
     emp_code: "EMP003",
     designation: "Senior Designer",
     department_name: "Design",
-    location_name: "",
+    // Unknown location — the server will auto-create "Bhilai"
+    location_name: "Bhilai",
     // Example: looking up manager by full name (must be unique)
     reporting_manager_email: "",
     reporting_manager_code: "",
@@ -111,6 +124,7 @@ const TEMPLATE_SAMPLE_ROWS: Array<Record<string, string>> = [
 interface CsvRow {
   first_name: string;
   last_name: string;
+  full_name?: string;
   email: string;
   password?: string;
   role?: string;
@@ -153,7 +167,11 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [importResult, setImportResult] = useState<{ count: number; createdDepartments?: string[] } | null>(null);
+  const [importResult, setImportResult] = useState<{
+    count: number;
+    createdDepartments?: string[];
+    createdLocations?: string[];
+  } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(async (file: File) => {
@@ -205,7 +223,7 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
     try {
       const form = new FormData();
       form.append("file", selectedFile);
-      const res = await api.post<{ data: { count: number; createdDepartments?: string[] } }>("/users/import/execute", form, {
+      const res = await api.post<{ data: { count: number; createdDepartments?: string[]; createdLocations?: string[] } }>("/users/import/execute", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setImportResult(res.data.data);
@@ -411,6 +429,17 @@ function CsvImportModal({ onClose }: { onClose: () => void }) {
                   </p>
                   <p className="text-xs text-blue-600">
                     {importResult.createdDepartments.join(", ")}
+                  </p>
+                </div>
+              )}
+
+              {importResult.createdLocations && importResult.createdLocations.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm font-medium text-blue-700 mb-1">
+                    New locations created ({importResult.createdLocations.length}):
+                  </p>
+                  <p className="text-xs text-blue-600">
+                    {importResult.createdLocations.join(", ")}
                   </p>
                 </div>
               )}

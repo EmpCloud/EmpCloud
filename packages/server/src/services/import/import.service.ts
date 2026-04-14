@@ -181,9 +181,35 @@ export function parseFile(fileBuffer: Buffer): ImportRow[] {
       row[normalized] = value;
     }
 
+    // Support a single `full_name` / `name` column as an alternative to
+    // separate first_name/last_name columns. The split rule:
+    //   first token → first_name
+    //   everything else joined with spaces → last_name
+    // This preserves Indian/South-Asian naming where the surname is usually
+    // the last word but there are often 2-4 middle names in between. So
+    // "Aishwarya Keshav Murthy Gowda" becomes first="Aishwarya",
+    // last="Keshav Murthy Gowda" — still a single DB row, still recognisable,
+    // and the email match still works.
+    let firstName = pick(row, "first_name", "firstname") || "";
+    let lastName = pick(row, "last_name", "lastname") || "";
+    if (!firstName && !lastName) {
+      const fullName = pick(row, "full_name", "name", "employee_name", "fullname");
+      if (fullName) {
+        const parts = fullName.split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+          firstName = parts[0];
+          lastName = parts.slice(1).join(" ");
+        } else if (parts.length === 1) {
+          // Single-word name — put it in first_name and leave last_name
+          // blank so the caller sees the clear "last_name is required" error.
+          firstName = parts[0];
+        }
+      }
+    }
+
     return {
-      first_name: pick(row, "first_name", "firstname") || "",
-      last_name: pick(row, "last_name", "lastname") || "",
+      first_name: firstName,
+      last_name: lastName,
       email: pick(row, "email", "email_address") || "",
       password: pick(row, "password", "initial_password"),
       role: pick(row, "role", "user_role"),
@@ -440,14 +466,17 @@ export async function validateImportData(
       // the department and fill it in before insert.
     }
 
-    // Resolve location_name → location_id
+    // Resolve location_name → location_id.
+    // Unknown locations are NOT an error — executeImport auto-creates
+    // any location name that isn't already in the org (same pattern as
+    // department_name above).
     if (row.location_name) {
       const locId = locMap.get(row.location_name.toLowerCase());
       if (locId) {
         row.location_id = locId;
-      } else {
-        rowErrors.push(`Location "${row.location_name}" not found`);
       }
+      // else: leave location_id undefined; executeImport will create
+      // the location and fill it in before insert.
     }
 
     // Resolve reporting manager → reporting_manager_id. The CSV may
@@ -525,50 +554,82 @@ export async function executeImport(
   orgId: number,
   validRows: ImportRow[],
   importedBy: number,
-): Promise<{ count: number; createdDepartments: string[] }> {
+): Promise<{ count: number; createdDepartments: string[]; createdLocations: string[] }> {
   const db = getDB();
 
-  // Collect department names that were referenced but not resolved during
-  // validation — these need to be created first.
-  const missing = new Set<string>();
+  const createdDepartments: string[] = [];
+  const createdLocations: string[] = [];
+
+  // --- Auto-create any missing departments -------------------------------
+  const missingDepts = new Set<string>();
   for (const row of validRows) {
     if (row.department_name && !row.department_id) {
-      missing.add(row.department_name.trim());
+      missingDepts.add(row.department_name.trim());
     }
   }
 
-  const createdDepartments: string[] = [];
-
-  if (missing.size > 0) {
-    // Look up existing departments one more time (case-insensitive), in case
-    // preview and execute are separated in time and someone else added them.
+  if (missingDepts.size > 0) {
+    // Refresh from DB in case preview and execute are separated in time
+    // and someone else added departments between the two calls.
     const existing = await db("organization_departments")
       .where({ organization_id: orgId })
       .select("id", "name");
-    const existingMap = new Map<string, number>(
+    const deptMap = new Map<string, number>(
       existing.map((d: any) => [String(d.name).toLowerCase(), d.id]),
     );
 
-    // Create anything still missing
-    for (const name of missing) {
+    for (const name of missingDepts) {
       const lower = name.toLowerCase();
-      if (existingMap.has(lower)) continue;
+      if (deptMap.has(lower)) continue;
       const [newId] = await db("organization_departments").insert({
         organization_id: orgId,
         name,
       });
-      existingMap.set(lower, newId);
+      deptMap.set(lower, newId);
       createdDepartments.push(name);
     }
 
-    // Fill department_id on each row that needed it
     for (const row of validRows) {
       if (row.department_name && !row.department_id) {
-        row.department_id = existingMap.get(row.department_name.toLowerCase());
+        row.department_id = deptMap.get(row.department_name.toLowerCase());
+      }
+    }
+  }
+
+  // --- Auto-create any missing locations ---------------------------------
+  const missingLocs = new Set<string>();
+  for (const row of validRows) {
+    if (row.location_name && !row.location_id) {
+      missingLocs.add(row.location_name.trim());
+    }
+  }
+
+  if (missingLocs.size > 0) {
+    const existing = await db("organization_locations")
+      .where({ organization_id: orgId })
+      .select("id", "name");
+    const locMap = new Map<string, number>(
+      existing.map((l: any) => [String(l.name).toLowerCase(), l.id]),
+    );
+
+    for (const name of missingLocs) {
+      const lower = name.toLowerCase();
+      if (locMap.has(lower)) continue;
+      const [newId] = await db("organization_locations").insert({
+        organization_id: orgId,
+        name,
+      });
+      locMap.set(lower, newId);
+      createdLocations.push(name);
+    }
+
+    for (const row of validRows) {
+      if (row.location_name && !row.location_id) {
+        row.location_id = locMap.get(row.location_name.toLowerCase());
       }
     }
   }
 
   const result = await bulkCreateUsers(orgId, validRows, importedBy);
-  return { ...result, createdDepartments };
+  return { ...result, createdDepartments, createdLocations };
 }
