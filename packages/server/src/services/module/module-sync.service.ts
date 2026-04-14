@@ -117,6 +117,13 @@ export async function enableUserForModule(
     try {
       const payload = await buildSyncPayload(orgId, userId);
       const apiKey = process.env.MODULE_SYNC_API_KEY || process.env.BILLING_API_KEY || "";
+      const keySource = process.env.MODULE_SYNC_API_KEY
+        ? "MODULE_SYNC_API_KEY"
+        : (process.env.BILLING_API_KEY ? "BILLING_API_KEY" : "NONE");
+      const mask = (s: string) => (s ? `${s.slice(0, 4)}…${s.slice(-4)} (len=${s.length})` : "<empty>");
+      logger.info(
+        `Module sync → module=${moduleId} url=${apiUrl}/users/sync keySource=${keySource} key=${mask(apiKey)}`,
+      );
       const resp = await fetch(`${apiUrl}/users/sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": apiKey },
@@ -132,6 +139,8 @@ export async function enableUserForModule(
       syncStatus = `error:${err.message}`;
       logger.warn(`Module sync error for module ${moduleId} user ${userId}: ${err.message}`);
     }
+  } else {
+    logger.warn(`Module sync skipped — no api_url configured for module ${moduleId}`);
   }
 
   const seat = await db("org_module_seats").where({ id: seatId }).first();
