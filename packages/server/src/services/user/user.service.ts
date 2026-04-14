@@ -7,6 +7,7 @@ import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
 import { ConflictError, NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 import { checkFreeTierUserLimit } from "../subscription/subscription.service.js";
+import { sendInvitationEmail } from "../email/email.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
 /** Strip sensitive fields from user records before sending to client */
@@ -477,6 +478,28 @@ export async function inviteUser(orgId: number, invitedBy: number, data: InviteU
   });
 
   const invitation = await db("invitations").where({ id }).first();
+
+  // Fire-and-forget invitation email. We look up the inviter and org here
+  // (rather than forcing every caller to pass them in) so the existing
+  // call sites — which just pass orgId + invitedBy — keep working.
+  try {
+    const inviter = await db("users").where({ id: invitedBy }).first();
+    const orgRow = org || (await db("organizations").where({ id: orgId }).first());
+    const inviterName = inviter
+      ? `${inviter.first_name || ""} ${inviter.last_name || ""}`.trim() || inviter.email
+      : "An administrator";
+    void sendInvitationEmail({
+      to: data.email,
+      firstName: data.first_name || null,
+      orgName: orgRow?.name || "your organization",
+      invitedByName: inviterName,
+      role: data.role || "employee",
+      token,
+    });
+  } catch {
+    // never block the invite on email metadata lookup
+  }
+
   return { token, invitation };
 }
 

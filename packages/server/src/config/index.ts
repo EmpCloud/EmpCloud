@@ -73,12 +73,16 @@ export const config = {
     ).split(","),
   },
 
-  smtp: {
-    host: env("SMTP_HOST", "localhost"),
-    port: envInt("SMTP_PORT", 1025),
-    user: process.env.SMTP_USER || undefined,
-    pass: process.env.SMTP_PASS || undefined,
-    from: env("SMTP_FROM", "noreply@empcloud.com"),
+  email: {
+    // SendGrid API key — leave blank in local/dev to silently no-op
+    // all sends while still logging what would have been delivered.
+    sendgridApiKey: process.env.SENDGRID_API_KEY || "",
+    fromEmail: env("SENDGRID_FROM_EMAIL", "noreply@empcloud.com"),
+    fromName: env("SENDGRID_FROM_NAME", "EMP Cloud"),
+    // Public URL of the EMP Cloud client — used to build the reset and
+    // invitation links that end up in emails. Falls back to BASE_URL so
+    // dev just works without another env var.
+    appUrl: env("APP_URL", env("BASE_URL", "http://localhost:5173")),
   },
 
   rateLimit: {
