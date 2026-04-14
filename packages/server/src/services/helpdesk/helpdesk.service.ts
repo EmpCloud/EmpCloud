@@ -558,7 +558,7 @@ export async function getMyTickets(
         `(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM users u WHERE u.id = helpdesk_tickets.assigned_to) as assigned_to_name`
       )
     )
-    .orderBy("created_at", "desc")
+    .orderBy("helpdesk_tickets.id", "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 
