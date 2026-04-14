@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import {
   Search,
@@ -35,12 +35,26 @@ const STATUSES = [
 const PRIORITIES = ["low", "medium", "high", "urgent"];
 
 export default function TicketListPage() {
+  // Initial filters come from the URL so links from the dashboard (e.g.
+  // `/helpdesk/tickets?status=open`) apply the filter automatically.
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState("");
-  const [category, setCategory] = useState("");
-  const [priority, setPriority] = useState("");
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [status, setStatus] = useState(searchParams.get("status") || "");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
+  const [priority, setPriority] = useState(searchParams.get("priority") || "");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+
+  // Keep the URL in sync with the active filters so the link stays shareable
+  // and browser back/forward navigation restores the previous filter set.
+  useEffect(() => {
+    const next: Record<string, string> = {};
+    if (status) next.status = status;
+    if (category) next.category = category;
+    if (priority) next.priority = priority;
+    if (search) next.search = search;
+    setSearchParams(next, { replace: true });
+  }, [status, category, priority, search, setSearchParams]);
   const { data, isLoading } = useQuery({
     queryKey: ["helpdesk-tickets", page, status, category, priority, search],
     queryFn: () =>
@@ -58,8 +72,16 @@ export default function TicketListPage() {
         .then((r) => r.data),
   });
 
-  const tickets = data?.data || [];
+  const allTickets = data?.data || [];
   const meta = data?.meta;
+
+  // Optional client-side SLA filter driven by the `sla` query param (used by
+  // the dashboard's "Overdue (SLA Breached)" card). Kept client-side because
+  // SLA status is computed from sla_resolution_due and the current time.
+  const slaFilter = searchParams.get("sla");
+  const tickets = slaFilter
+    ? allTickets.filter((t: any) => slaStatus(t) === slaFilter)
+    : allTickets;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
