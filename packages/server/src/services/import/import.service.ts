@@ -38,6 +38,11 @@ export interface ImportRow {
   reporting_manager_code?: string;
   reporting_manager_name?: string;
   reporting_manager_id?: number;
+  // Transient flag: the referenced manager isn't an existing user but is
+  // being imported in the same batch under this email. Set during validation
+  // and resolved during executeImport() in a second pass after bulkCreateUsers
+  // has inserted everyone. Never persisted.
+  _pending_manager_email?: string;
   employment_type?: string;
   date_of_joining?: string;
   date_of_birth?: string;
@@ -391,6 +396,25 @@ export async function validateImportData(
     empCodeRows.map((r: any) => String(r.emp_code).toLowerCase()),
   );
 
+  // Cross-reference index for managers that aren't in the DB yet but ARE
+  // being imported in the same batch — handles the common "import the whole
+  // team at once, some employees manage others" case. Stored by email (the
+  // only truly stable key across the batch) so the second pass in
+  // executeImport() can look up the freshly-inserted user's real ID.
+  const batchByEmail = new Map<string, string>();
+  const batchByCode = new Map<string, string>();
+  const batchByName = new Map<string, string[]>();
+  for (const r of rows) {
+    if (r.email) batchByEmail.set(r.email.toLowerCase(), r.email);
+    if (r.emp_code) batchByCode.set(r.emp_code.toLowerCase(), r.email);
+    const full = normalizeName(`${r.first_name || ""} ${r.last_name || ""}`);
+    if (full && r.email) {
+      const bucket = batchByName.get(full) || [];
+      bucket.push(r.email);
+      batchByName.set(full, bucket);
+    }
+  }
+
   const valid: ImportRow[] = [];
   const errors: ImportError[] = [];
   const seenEmails = new Set<string>();
@@ -536,35 +560,66 @@ export async function validateImportData(
 
     // Resolve reporting manager → reporting_manager_id. The CSV may
     // reference the manager by email, emp_code, or full name (first + last).
-    // Priority: email → emp_code → name. Name lookups fail with a helpful
-    // error if more than one manager shares the same name.
+    // Priority: email → emp_code → name. We first look in the DB; if the
+    // manager isn't there yet we also check the in-batch cross-reference
+    // so a CSV that imports managers and reports together works in one
+    // shot (executeImport does a second-pass UPDATE after bulk insert).
+    //
+    // Auto-detect: if the reporting_manager_name column contains an
+    // email-looking value (and no explicit reporting_manager_email is set),
+    // treat it as an email. Happens a lot when operators squash everything
+    // into a single "manager" / "reports_to" column.
+    if (
+      !row.reporting_manager_email &&
+      row.reporting_manager_name &&
+      EMAIL_RE.test(row.reporting_manager_name)
+    ) {
+      row.reporting_manager_email = row.reporting_manager_name;
+      row.reporting_manager_name = undefined;
+    }
     if (row.reporting_manager_email) {
-      const mgrId = managerByEmail.get(row.reporting_manager_email.toLowerCase());
+      const key = row.reporting_manager_email.toLowerCase();
+      const mgrId = managerByEmail.get(key);
       if (mgrId) {
         row.reporting_manager_id = mgrId;
+      } else if (batchByEmail.has(key)) {
+        row._pending_manager_email = batchByEmail.get(key);
       } else {
         rowErrors.push(
           `Reporting manager "${row.reporting_manager_email}" not found or not active`,
         );
       }
     } else if (row.reporting_manager_code) {
-      const mgrId = managerByCode.get(row.reporting_manager_code.toLowerCase());
+      const key = row.reporting_manager_code.toLowerCase();
+      const mgrId = managerByCode.get(key);
       if (mgrId) {
         row.reporting_manager_id = mgrId;
+      } else if (batchByCode.has(key)) {
+        row._pending_manager_email = batchByCode.get(key);
       } else {
         rowErrors.push(
           `Reporting manager with code "${row.reporting_manager_code}" not found or not active`,
         );
       }
     } else if (row.reporting_manager_name) {
-      const candidates =
-        managerByName.get(normalizeName(row.reporting_manager_name)) || [];
+      const key = normalizeName(row.reporting_manager_name);
+      const candidates = managerByName.get(key) || [];
       if (candidates.length === 1) {
         row.reporting_manager_id = candidates[0];
       } else if (candidates.length === 0) {
-        rowErrors.push(
-          `Reporting manager "${row.reporting_manager_name}" not found — the manager must already be an active user in your organization. Use reporting_manager_email or reporting_manager_code for a more reliable match.`,
-        );
+        // Not in DB — maybe being created in the same batch?
+        const batchCandidates = batchByName.get(key) || [];
+        if (batchCandidates.length === 1) {
+          row._pending_manager_email = batchCandidates[0];
+        } else if (batchCandidates.length > 1) {
+          rowErrors.push(
+            `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${batchCandidates.length} rows in this import share that name. Use reporting_manager_email or reporting_manager_code instead.`,
+          );
+        } else {
+          rowErrors.push(
+            `Reporting manager "${row.reporting_manager_name}" not found — the manager must already be an active user in your organization (or be imported in the same file). Use reporting_manager_email or reporting_manager_code for a more reliable match.`,
+          );
+        }
       } else {
         rowErrors.push(
           `Reporting manager name "${row.reporting_manager_name}" is ambiguous — ${candidates.length} active users match. Use reporting_manager_email or reporting_manager_code instead.`,
@@ -687,5 +742,43 @@ export async function executeImport(
   }
 
   const result = await bulkCreateUsers(orgId, validRows, importedBy);
+
+  // --- Second pass: resolve in-batch manager references -----------------
+  // Rows whose reporting manager was also being imported in this file had
+  // their reporting_manager_id left NULL by bulkCreateUsers (because the
+  // manager didn't exist yet). Now that everyone's inserted, look up the
+  // freshly-created user IDs by email and issue one UPDATE per row.
+  const pendingRefs = validRows.filter((r) => r._pending_manager_email);
+  if (pendingRefs.length > 0) {
+    const managerEmails = Array.from(
+      new Set(pendingRefs.map((r) => r._pending_manager_email!.toLowerCase())),
+    );
+    const importedUserEmails = Array.from(
+      new Set(validRows.map((r) => r.email.toLowerCase())),
+    );
+    const lookupEmails = Array.from(new Set([...managerEmails, ...importedUserEmails]));
+    // bulkCreateUsers lowercases the email column on insert, so a plain
+    // whereIn against the lowercased list matches every freshly-created row.
+    const freshUsers = await db("users")
+      .where({ organization_id: orgId })
+      .whereIn("email", lookupEmails)
+      .select("id", "email");
+    const byEmail = new Map<string, number>(
+      freshUsers.map((u: any) => [String(u.email).toLowerCase(), u.id]),
+    );
+
+    await db.transaction(async (trx) => {
+      for (const row of pendingRefs) {
+        const mgrId = byEmail.get(row._pending_manager_email!.toLowerCase());
+        const selfId = byEmail.get(row.email.toLowerCase());
+        if (mgrId && selfId && mgrId !== selfId) {
+          await trx("users")
+            .where({ id: selfId, organization_id: orgId })
+            .update({ reporting_manager_id: mgrId, updated_at: new Date() });
+        }
+      }
+    });
+  }
+
   return { ...result, createdDepartments, createdLocations };
 }
