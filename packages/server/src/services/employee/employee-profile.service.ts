@@ -84,13 +84,30 @@ export async function upsertProfile(
     .first();
   if (!user) throw new NotFoundError("Employee");
 
-  // Handle reporting_manager_id separately — it lives on users table, not employee_profiles
-  const { reporting_manager_id, ...profileData } = data as any;
+  // #1403 — gender, date_of_birth, contact_number, reporting_manager_id live
+  // on the users table, not employee_profiles. Split them out of the profile
+  // payload and apply them with a single users-table update.
+  const {
+    reporting_manager_id,
+    gender,
+    date_of_birth,
+    contact_number,
+    ...profileData
+  } = data as any;
+
+  const userUpdate: Record<string, unknown> = {};
   if (reporting_manager_id !== undefined) {
-    const mgrId = reporting_manager_id ? Number(reporting_manager_id) : null;
+    userUpdate.reporting_manager_id = reporting_manager_id ? Number(reporting_manager_id) : null;
+  }
+  if (gender !== undefined) userUpdate.gender = gender || null;
+  if (date_of_birth !== undefined) userUpdate.date_of_birth = date_of_birth || null;
+  if (contact_number !== undefined) userUpdate.contact_number = contact_number || null;
+
+  if (Object.keys(userUpdate).length > 0) {
+    userUpdate.updated_at = new Date();
     await db("users")
       .where({ id: userId, organization_id: orgId })
-      .update({ reporting_manager_id: mgrId, updated_at: new Date() });
+      .update(userUpdate);
   }
 
   const existing = await db("employee_profiles")

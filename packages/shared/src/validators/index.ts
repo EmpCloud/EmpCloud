@@ -354,6 +354,12 @@ export type PaginationInput = z.infer<typeof paginationSchema>;
 // ---------------------------------------------------------------------------
 
 export const upsertEmployeeProfileSchema = z.object({
+  // #1403 — gender, date_of_birth, contact_number live on users table but are
+  // edited from the profile form, so they must be accepted by this schema
+  // (the service layer routes them to the correct table).
+  gender: z.enum(["male", "female", "other"]).optional().nullable(),
+  date_of_birth: z.string().optional().nullable(),
+  contact_number: z.string().max(20).optional().nullable(),
   personal_email: z.string().email().optional().nullable(),
   emergency_contact_name: z.string().max(128).optional().nullable(),
   emergency_contact_phone: z.string().max(20).optional().nullable(),
@@ -380,10 +386,11 @@ export const createAddressSchema = z.object({
   city: z.string().min(1).max(55),
   state: z.string().min(1).max(55),
   country: z.string().max(55).default("IN"),
-  zipcode: z.string().min(1).max(20),
+  // #1407 — zipcode must be numeric only
+  zipcode: z.string().min(1).max(20).regex(/^\d+$/, "Zipcode must contain digits only"),
 });
 
-export const createEducationSchema = z.object({
+export const createEducationBaseSchema = z.object({
   degree: z.string().min(1).max(100),
   institution: z.string().min(1).max(255),
   field_of_study: z.string().max(100).optional().nullable(),
@@ -391,6 +398,20 @@ export const createEducationSchema = z.object({
   end_year: z.number().int().min(1950).max(2100).optional().nullable(),
   grade: z.string().max(20).optional().nullable(),
 });
+
+// #1405 — end_year must not be before start_year
+const educationYearOrder = (data: { start_year?: number | null; end_year?: number | null }) =>
+  !data.start_year || !data.end_year || data.end_year >= data.start_year;
+
+export const createEducationSchema = createEducationBaseSchema.refine(
+  educationYearOrder,
+  { message: "End year must be on or after start year", path: ["end_year"] }
+);
+
+export const updateEducationSchema = createEducationBaseSchema.partial().refine(
+  educationYearOrder,
+  { message: "End year must be on or after start year", path: ["end_year"] }
+);
 
 export const createExperienceBaseSchema = z.object({
   company_name: z.string().min(1).max(255),

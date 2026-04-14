@@ -371,7 +371,8 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-            <input type="date" value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} className={canEditField("date_of_birth") ? inputClass : disabledClass} disabled={!canEditField("date_of_birth")} />
+            {/* #1406 — DOB cannot be in the future */}
+            <input type="date" max={new Date().toISOString().slice(0, 10)} value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} className={canEditField("date_of_birth") ? inputClass : disabledClass} disabled={!canEditField("date_of_birth")} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
@@ -606,6 +607,15 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
     const payload = buildPayload();
     if (!payload.degree || !payload.institution) {
       setError("Degree and Institution are required");
+      return;
+    }
+    // #1405 — end year must not be before start year
+    if (
+      payload.start_year != null &&
+      payload.end_year != null &&
+      payload.end_year < payload.start_year
+    ) {
+      setError("End year must be on or after start year");
       return;
     }
     if (editingId) updateMutation.mutate({ id: editingId, payload });
@@ -1142,8 +1152,10 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Date of Birth</label>
+              {/* #1406 — DOB cannot be in the future */}
               <input
                 type="date"
+                max={new Date().toISOString().slice(0, 10)}
                 value={form.date_of_birth}
                 onChange={(e) => setForm({ ...form, date_of_birth: e.target.value })}
                 className={subInputClass}
@@ -1440,9 +1452,12 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Zipcode *</label>
+              {/* #1407 — zipcode must be digits only */}
               <input
+                inputMode="numeric"
+                pattern="\d*"
                 value={form.zipcode}
-                onChange={(e) => setForm({ ...form, zipcode: e.target.value })}
+                onChange={(e) => setForm({ ...form, zipcode: e.target.value.replace(/\D/g, "") })}
                 className={subInputClass}
               />
             </div>
