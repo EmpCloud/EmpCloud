@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { Plus, Pencil, Power, PowerOff, Trash2, Settings2 } from "lucide-react";
+import { Plus, Pencil, Power, Trash2, Settings2 } from "lucide-react";
 
 interface LeaveType {
   id: number;
@@ -404,13 +404,15 @@ export default function LeaveTypesPage() {
                         <button onClick={() => startEdit(lt)} className="p-1 hover:bg-gray-100 rounded" title="Edit">
                           <Pencil className="h-3.5 w-3.5 text-gray-500" />
                         </button>
+                        {/* #1410 — explicit delete (soft-delete) icon in the
+                            actions column so users can identify the action. */}
                         {lt.is_active ? (
                           <button
-                            onClick={() => { if (confirm("Deactivate this leave type?")) deleteType.mutate(lt.id); }}
+                            onClick={() => { if (confirm("Delete this leave type?")) deleteType.mutate(lt.id); }}
                             className="p-1 hover:bg-gray-100 rounded"
-                            title="Deactivate"
+                            title="Delete"
                           >
-                            <PowerOff className="h-3.5 w-3.5 text-red-500" />
+                            <Trash2 className="h-3.5 w-3.5 text-red-500" />
                           </button>
                         ) : (
                           <button

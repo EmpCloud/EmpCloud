@@ -68,12 +68,6 @@ export default function LeaveDashboardPage() {
     },
   });
 
-  const getTypeName = (typeId: number) =>
-    leaveTypes.find((t) => t.id === typeId)?.name ?? "Unknown";
-
-  const getTypeColor = (typeId: number) =>
-    leaveTypes.find((t) => t.id === typeId)?.color ?? "#6366f1";
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.leave_type_id || form.leave_type_id === 0) return;
@@ -106,7 +100,9 @@ export default function LeaveDashboardPage() {
         </div>
       </div>
 
-      {/* Balance Cards */}
+      {/* Balance Cards — #1409: render one card per active leave type so
+          employees see all configured types even when a balance row has not
+          yet been initialized (missing rows render as zero). */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {loadingBalances ? (
           <>
@@ -118,54 +114,60 @@ export default function LeaveDashboardPage() {
               </div>
             ))}
           </>
-        ) : balances.length === 0 ? (
+        ) : leaveTypes.filter((t) => Boolean(t.is_active)).length === 0 ? (
           <div className="col-span-full text-center text-gray-400 py-8">
-            No leave balances found. Ask HR to initialize balances.
+            No leave types configured.
           </div>
         ) : (
-          balances.map((bal) => {
-            const typeName = getTypeName(bal.leave_type_id);
-            const typeColor = getTypeColor(bal.leave_type_id);
-            const isPaid = leaveTypes.find((t) => t.id === bal.leave_type_id)?.is_paid;
-            return (
-              <div
-                key={bal.id}
-                className="bg-white rounded-xl border border-gray-200 p-5"
-              >
-                <div className="flex items-center gap-3 mb-1">
-                  <div
-                    className="h-3 w-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: typeColor }}
-                  />
-                  <h3 className="text-sm font-bold text-gray-900 truncate">
-                    {typeName}
-                  </h3>
+          leaveTypes
+            .filter((t) => Boolean(t.is_active))
+            .map((type) => {
+              const bal = balances.find((b) => b.leave_type_id === type.id);
+              const typeColor = type.color ?? "#6366f1";
+              const allocated = Number(bal?.total_allocated ?? 0);
+              const used = Number(bal?.total_used ?? 0);
+              const carry = Number(bal?.total_carry_forward ?? 0);
+              const balance = Number(bal?.balance ?? 0);
+              const total = allocated + carry;
+              return (
+                <div
+                  key={type.id}
+                  className="bg-white rounded-xl border border-gray-200 p-5"
+                >
+                  <div className="flex items-center gap-3 mb-1">
+                    <div
+                      className="h-3 w-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: typeColor }}
+                    />
+                    <h3 className="text-sm font-bold text-gray-900 truncate">
+                      {type.name}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2 mb-3 ml-6">
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${type.is_paid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"}`}>
+                      {type.is_paid ? "Paid" : "Unpaid"}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-gray-400">Leave Balance</span>
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    {balance} <span className="text-sm font-normal text-gray-400">days</span>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    {used} used of {allocated} allocated
+                    {carry > 0 && ` (+${carry} carry forward)`}
+                  </p>
+                  <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full"
+                      style={{
+                        width: `${total > 0 ? Math.min(100, (used / total) * 100) : 0}%`,
+                        backgroundColor: typeColor,
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 mb-3 ml-6">
-                  <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${isPaid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"}`}>
-                    {isPaid ? "Paid" : "Unpaid"}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-wider font-medium text-gray-400">Leave Balance</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {Number(bal.balance)} <span className="text-sm font-normal text-gray-400">days</span>
-                </div>
-                <p className="text-xs text-gray-500">
-                  {Number(bal.total_used)} used of {Number(bal.total_allocated)} allocated
-                  {Number(bal.total_carry_forward) > 0 && ` (+${Number(bal.total_carry_forward)} carry forward)`}
-                </p>
-                <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
-                  <div
-                    className="h-2 rounded-full"
-                    style={{
-                      width: `${(Number(bal.total_allocated) + Number(bal.total_carry_forward)) > 0 ? Math.min(100, (Number(bal.total_used) / (Number(bal.total_allocated) + Number(bal.total_carry_forward))) * 100) : 0}%`,
-                      backgroundColor: typeColor,
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })
+              );
+            })
         )}
       </div>
 

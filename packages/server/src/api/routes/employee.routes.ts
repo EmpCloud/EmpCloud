@@ -18,6 +18,7 @@ import {
   upsertEmployeeProfileSchema,
   createAddressSchema,
   createEducationSchema,
+  updateEducationSchema,
   createExperienceSchema,
   createExperienceBaseSchema,
   createDependentSchema,
@@ -499,7 +500,7 @@ router.post("/:id/education", authenticate, requireSelfOrHR("id"), async (req: R
 // PUT /api/v1/employees/:id/education/:educationId
 router.put("/:id/education/:educationId", authenticate, requireSelfOrHR("id"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const body = createEducationSchema.partial().parse(req.body);
+    const body = updateEducationSchema.parse(req.body);
     const record = await detailService.updateEducation(req.user!.org_id, paramInt(req.params.id), paramInt(req.params.educationId), body);
     sendSuccess(res, record);
   } catch (err) { next(err); }
