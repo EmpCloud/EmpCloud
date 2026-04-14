@@ -292,8 +292,9 @@ export function parseFile(fileBuffer: Buffer): ImportRow[] {
           firstName = parts[0];
           lastName = parts.slice(1).join(" ");
         } else if (parts.length === 1) {
-          // Single-word name — put it in first_name and leave last_name
-          // blank so the caller sees the clear "last_name is required" error.
+          // Single-word name (mononym, or systems that don't capture surname)
+          // — keep it as first_name and let last_name stay empty. The NOT
+          // NULL constraint is satisfied later by coercing last_name to "".
           firstName = parts[0];
         }
       }
@@ -461,9 +462,12 @@ export async function validateImportData(
   rows.forEach((row, index) => {
     const rowErrors: string[] = [];
 
-    // Required fields
+    // Required fields. last_name is intentionally optional — many imports
+    // come from systems that store the full name in one column, and Indian /
+    // mononym users legitimately have only one name. We coerce missing
+    // last_name to an empty string before insert so the NOT NULL DB column
+    // still gets a value.
     if (!row.first_name) rowErrors.push("first_name is required");
-    if (!row.last_name) rowErrors.push("last_name is required");
     if (!row.email) {
       rowErrors.push("email is required");
     } else if (!EMAIL_RE.test(row.email)) {
