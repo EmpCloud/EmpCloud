@@ -75,6 +75,39 @@ export async function getUpcomingConfirmations(orgId: number, days: number = 30)
 }
 
 // ---------------------------------------------------------------------------
+// #1419 — Get employees confirmed in the current calendar month
+// ---------------------------------------------------------------------------
+
+export async function getConfirmedThisMonth(orgId: number) {
+  const db = getDB();
+
+  return db("users")
+    .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
+    .where({
+      "users.organization_id": orgId,
+      "users.probation_status": "confirmed",
+    })
+    .whereRaw("users.probation_confirmed_at >= DATE_FORMAT(NOW(), '%Y-%m-01')")
+    .select(
+      "users.id",
+      "users.first_name",
+      "users.last_name",
+      "users.email",
+      "users.emp_code",
+      "users.designation",
+      "users.department_id",
+      "users.date_of_joining",
+      "users.probation_end_date",
+      "users.probation_status",
+      "users.probation_confirmed_at as actual_confirmation_date",
+      "users.photo_path",
+      "organization_departments.name as department_name",
+      db.raw("DATEDIFF(users.probation_end_date, CURDATE()) as days_remaining")
+    )
+    .orderBy("users.probation_confirmed_at", "desc");
+}
+
+// ---------------------------------------------------------------------------
 // Confirm probation
 // ---------------------------------------------------------------------------
 
