@@ -41,6 +41,7 @@ import billingRoutes from "./api/routes/billing.routes.js";
 import adminRoutes from "./api/routes/admin.routes.js";
 import onboardingRoutes from "./api/routes/onboarding.routes.js";
 import biometricsRoutes from "./api/routes/biometrics.routes.js";
+import biometricLegacyRoutes from "./api/routes/biometric-legacy.routes.js";
 import helpdeskRoutes from "./api/routes/helpdesk.routes.js";
 import surveyRoutes from "./api/routes/survey.routes.js";
 import assetRoutes from "./api/routes/asset.routes.js";
@@ -103,7 +104,12 @@ async function main() {
 
   // Global middleware
   app.use(requestIdMiddleware);
-  app.use(helmet());
+  const helmetDefault = helmet();
+  const helmetNoCSP = helmet({ contentSecurityPolicy: false });
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api/docs")) return helmetNoCSP(req, res, next);
+    return helmetDefault(req, res, next);
+  });
   app.use(cors({
     origin: config.cors.allowedOrigins,
     credentials: true,
@@ -200,6 +206,9 @@ async function main() {
   app.use("/api/v1/admin/logs", apiLimiter, logRoutes);
   app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
   app.use("/api/v1/biometrics", apiLimiter, biometricsRoutes);
+  // Legacy emp-monitor kiosk surface — same paths/responses as
+  // emp-monitor's v3/bioMetric router, backed by EmpCloud tables.
+  app.use("/api/v3/biometric", apiLimiter, biometricLegacyRoutes);
   app.use("/api/v1/helpdesk", apiLimiter, helpdeskRoutes);
   app.use("/api/v1/surveys", apiLimiter, surveyRoutes);
   app.use("/api/v1/assets", apiLimiter, assetRoutes);
