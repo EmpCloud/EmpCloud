@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail } from "lucide-react";
 import api from "@/api/client";
-import { useDepartments } from "@/api/hooks";
+import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
 import * as XLSX from "xlsx";
 
@@ -95,7 +95,8 @@ function parseUploadedFile(file: File): Promise<any[]> {
 export default function EmployeeDirectoryPage() {
   const qc = useQueryClient();
   const currentUser = useAuthStore((s) => s.user);
-  const canDelete = currentUser?.role === "org_admin" || currentUser?.role === "super_admin";
+  const isOrgAdmin = currentUser?.role === "org_admin" || currentUser?.role === "super_admin";
+  const canDelete = isOrgAdmin;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
@@ -105,6 +106,33 @@ export default function EmployeeDirectoryPage() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
   const [editTargetId, setEditTargetId] = useState<number | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
+
+  // Invite Employee — absorbed from the retired Users page.
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("employee");
+  const [inviteError, setInviteError] = useState("");
+  const inviteUser = useInviteUser();
+
+  // Pending invitations panel — only fetched for org_admin.
+  const { data: pendingInvitations } = useQuery({
+    queryKey: ["pending-invitations"],
+    queryFn: () =>
+      api
+        .get("/users/invitations", { params: { status: "pending" } })
+        .then((r) => r.data.data)
+        .catch(() => [] as any[]),
+    enabled: isOrgAdmin,
+  });
+  const invitations: any[] = (pendingInvitations as any[]) || [];
+
+  // Inline role update — only org_admin sees the dropdown editor.
+  const updateRoleMut = useMutation({
+    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
+      api.put(`/users/${userId}`, { role }).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["employee-directory"] }),
+  });
+
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: departments } = useDepartments();
@@ -198,6 +226,20 @@ export default function EmployeeDirectoryPage() {
     bulkUpdate.mutate(uploadRows);
   };
 
+  const handleInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setInviteError("");
+    try {
+      await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
+      setInviteEmail("");
+      setInviteRole("employee");
+      setShowInvite(false);
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+    } catch (err: any) {
+      setInviteError(err?.response?.data?.error?.message || "Failed to send invitation");
+    }
+  };
+
   const employees = data?.data || [];
   const meta = data?.meta;
   const deptList = departments || [];
@@ -218,7 +260,7 @@ export default function EmployeeDirectoryPage() {
             <Download className="h-4 w-4" />
             {exportQuery.isFetching ? "Exporting..." : "Export Excel"}
           </button>
-          <label className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer">
+          <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
             <Upload className="h-4 w-4" />
             Bulk Update
             <input
@@ -229,8 +271,108 @@ export default function EmployeeDirectoryPage() {
               className="hidden"
             />
           </label>
+          {isOrgAdmin && (
+            <button
+              onClick={() => setShowInvite((v) => !v)}
+              className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
+            >
+              <UserPlus className="h-4 w-4" /> Invite Employee
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Invite form (absorbed from the retired Users page) */}
+      {showInvite && isOrgAdmin && (
+        <form
+          onSubmit={handleInvite}
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-3"
+        >
+          <div className="flex items-end gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                placeholder="colleague@company.com"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+                <option value="hr_admin">HR Admin</option>
+                <option value="org_admin">Org Admin</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              disabled={inviteUser.isPending}
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Mail className="h-4 w-4" />
+              {inviteUser.isPending ? "Sending..." : "Send Invite"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowInvite(false);
+                setInviteError("");
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Cancel
+            </button>
+          </div>
+          {inviteError && <p className="text-sm text-red-600">{inviteError}</p>}
+        </form>
+      )}
+
+      {/* Pending Invitations panel — only when there is at least one. */}
+      {isOrgAdmin && invitations.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+          <h3 className="text-sm font-semibold text-amber-800 mb-2">
+            Pending Invitations ({invitations.length})
+          </h3>
+          <div className="space-y-2">
+            {invitations.map((inv: any) => (
+              <div
+                key={inv.id}
+                className="flex items-center justify-between bg-white rounded-lg px-4 py-2 border border-amber-100"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-900">{inv.email}</span>
+                    <span className="text-xs text-gray-500 ml-2 capitalize">
+                      {(inv.role || "employee").replace(/_/g, " ")}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
+                    Pending
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    Invited{" "}
+                    {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Upload Preview Modal */}
       {showUpload && (
@@ -378,6 +520,7 @@ export default function EmployeeDirectoryPage() {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Email</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Designation</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Role</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Emp Code</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
               <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
@@ -397,6 +540,7 @@ export default function EmployeeDirectoryPage() {
                     <td className="px-6 py-4"><div className="h-4 w-36 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-14 bg-gray-200 rounded-full" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded ml-auto" /></td>
@@ -405,7 +549,7 @@ export default function EmployeeDirectoryPage() {
               </>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
                   No employees found
                 </td>
               </tr>
@@ -432,6 +576,27 @@ export default function EmployeeDirectoryPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {emp.designation || "-"}
+                  </td>
+                  <td className="px-6 py-4">
+                    {isOrgAdmin && emp.id !== currentUser?.id ? (
+                      <select
+                        value={emp.role || "employee"}
+                        onChange={(e) =>
+                          updateRoleMut.mutate({ userId: emp.id, role: e.target.value })
+                        }
+                        disabled={updateRoleMut.isPending}
+                        className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 capitalize cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+                      >
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="hr_admin">HR Admin</option>
+                        <option value="org_admin">Org Admin</option>
+                      </select>
+                    ) : (
+                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full capitalize">
+                        {(emp.role || "employee").replace(/_/g, " ")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {emp.emp_code || "-"}

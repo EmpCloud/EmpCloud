@@ -189,6 +189,7 @@ export async function getDirectory(
       "users.location_id",
       "users.photo_path",
       "users.status",
+      "users.role",
       "users.date_of_joining",
       "organization_departments.name as department_name"
     )
