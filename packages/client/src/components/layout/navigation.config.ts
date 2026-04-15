@@ -112,8 +112,7 @@ export const adminNavItems: NavItem[] = [
     { path: "/modules/access", label: "Module Access", i18nKey: "nav.moduleAccess", icon: Shield },
   ]},
   { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
-  { path: "/users", label: "People", i18nKey: "nav.people", icon: Users, children: [
-    { path: "/users", label: "Users", i18nKey: "nav.users", icon: Users },
+  { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, children: [
     { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact },
     { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck },
     { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },

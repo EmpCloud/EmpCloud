@@ -142,6 +142,8 @@ export async function getDirectory(
     per_page?: number;
     search?: string;
     department_id?: number;
+    location_id?: number;
+    role?: string;
     status?: number;
   }
 ) {
@@ -176,6 +178,14 @@ export async function getDirectory(
     query = query.where("users.department_id", params.department_id);
   }
 
+  if (params.location_id) {
+    query = query.where("users.location_id", params.location_id);
+  }
+
+  if (params.role) {
+    query = query.where("users.role", params.role);
+  }
+
   const [{ count }] = await query.clone().count("* as count");
   const users = await query
     .select(
@@ -189,6 +199,7 @@ export async function getDirectory(
       "users.location_id",
       "users.photo_path",
       "users.status",
+      "users.role",
       "users.date_of_joining",
       "organization_departments.name as department_name"
     )

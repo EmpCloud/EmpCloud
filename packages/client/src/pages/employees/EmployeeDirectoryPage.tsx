@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy } from "lucide-react";
 import api from "@/api/client";
-import { useDepartments } from "@/api/hooks";
+import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
+import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import * as XLSX from "xlsx";
 
 // ---------------------------------------------------------------------------
@@ -95,20 +96,77 @@ function parseUploadedFile(file: File): Promise<any[]> {
 export default function EmployeeDirectoryPage() {
   const qc = useQueryClient();
   const currentUser = useAuthStore((s) => s.user);
-  const canDelete = currentUser?.role === "org_admin" || currentUser?.role === "super_admin";
+  const isOrgAdmin = currentUser?.role === "org_admin" || currentUser?.role === "super_admin";
+  const canDelete = isOrgAdmin;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
+  const [locationId, setLocationId] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("");
   const [showUpload, setShowUpload] = useState(false);
   const [uploadRows, setUploadRows] = useState<any[]>([]);
   const [uploadResult, setUploadResult] = useState<any>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
   const [editTargetId, setEditTargetId] = useState<number | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
+
+  // Invite Employee — absorbed from the retired Users page.
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("employee");
+  const [inviteError, setInviteError] = useState("");
+  const inviteUser = useInviteUser();
+
+  // Bulk CSV import (create new employees) — also absorbed from Users page.
+  const [showCsvImport, setShowCsvImport] = useState(false);
+
+  // Admin password reset inside the Edit modal. Password fields are
+  // deliberately kept OUT of the bulk-update payload — they submit
+  // separately via POST /users/:id/reset-password so the audit trail
+  // is a distinct PASSWORD_RESET event, and the mass-assignment
+  // whitelist on updateUser() stays closed.
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordCopied, setPasswordCopied] = useState(false);
+  const resetPassword = useMutation({
+    mutationFn: ({ userId, password }: { userId: number; password: string }) =>
+      api.post(`/users/${userId}/reset-password`, { password }).then((r) => r.data),
+    onSuccess: () => {
+      setPasswordError(null);
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error?.message || "Failed to reset password";
+      setPasswordError(msg);
+    },
+  });
+
+  // Pending invitations panel — only fetched for org_admin.
+  const { data: pendingInvitations } = useQuery({
+    queryKey: ["pending-invitations"],
+    queryFn: () =>
+      api
+        .get("/users/invitations", { params: { status: "pending" } })
+        .then((r) => r.data.data)
+        .catch(() => [] as any[]),
+    enabled: isOrgAdmin,
+  });
+  const invitations: any[] = (pendingInvitations as any[]) || [];
+
+  // Inline role update — only org_admin sees the dropdown editor.
+  const updateRoleMut = useMutation({
+    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
+      api.put(`/users/${userId}`, { role }).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["employee-directory"] }),
+  });
+
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: departments } = useDepartments();
 
+  // Locations dropdown — shared between the Location filter and the edit modal.
   const { data: locations } = useQuery({
     queryKey: ["org-locations"],
     queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
@@ -116,7 +174,16 @@ export default function EmployeeDirectoryPage() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["employee-directory", { page, search: search || undefined, department_id: departmentId || undefined }],
+    queryKey: [
+      "employee-directory",
+      {
+        page,
+        search: search || undefined,
+        department_id: departmentId || undefined,
+        location_id: locationId || undefined,
+        role: roleFilter || undefined,
+      },
+    ],
     queryFn: () =>
       api
         .get("/employees/directory", {
@@ -125,6 +192,8 @@ export default function EmployeeDirectoryPage() {
             per_page: 20,
             ...(search ? { search } : {}),
             ...(departmentId ? { department_id: departmentId } : {}),
+            ...(locationId ? { location_id: locationId } : {}),
+            ...(roleFilter ? { role: roleFilter } : {}),
           },
         })
         .then((r) => r.data),
@@ -198,6 +267,20 @@ export default function EmployeeDirectoryPage() {
     bulkUpdate.mutate(uploadRows);
   };
 
+  const handleInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setInviteError("");
+    try {
+      await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
+      setInviteEmail("");
+      setInviteRole("employee");
+      setShowInvite(false);
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+    } catch (err: any) {
+      setInviteError(err?.response?.data?.error?.message || "Failed to send invitation");
+    }
+  };
+
   const employees = data?.data || [];
   const meta = data?.meta;
   const deptList = departments || [];
@@ -218,7 +301,7 @@ export default function EmployeeDirectoryPage() {
             <Download className="h-4 w-4" />
             {exportQuery.isFetching ? "Exporting..." : "Export Excel"}
           </button>
-          <label className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer">
+          <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
             <Upload className="h-4 w-4" />
             Bulk Update
             <input
@@ -229,8 +312,124 @@ export default function EmployeeDirectoryPage() {
               className="hidden"
             />
           </label>
+          {isOrgAdmin && (
+            <button
+              onClick={() => setShowCsvImport(true)}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <FileSpreadsheet className="h-4 w-4" /> Import Employees
+            </button>
+          )}
+          {isOrgAdmin && (
+            <button
+              onClick={() => setShowInvite((v) => !v)}
+              className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
+            >
+              <UserPlus className="h-4 w-4" /> Invite Employee
+            </button>
+          )}
         </div>
       </div>
+
+      {/* CSV import modal — absorbed from the retired Users page */}
+      {showCsvImport && (
+        <CsvImportUsersModal
+          onClose={() => setShowCsvImport(false)}
+          invalidateKeys={["employee-directory"]}
+        />
+      )}
+
+      {/* Invite form (absorbed from the retired Users page) */}
+      {showInvite && isOrgAdmin && (
+        <form
+          onSubmit={handleInvite}
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-3"
+        >
+          <div className="flex items-end gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                placeholder="colleague@company.com"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+                <option value="hr_admin">HR Admin</option>
+                <option value="org_admin">Org Admin</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              disabled={inviteUser.isPending}
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            >
+              <Mail className="h-4 w-4" />
+              {inviteUser.isPending ? "Sending..." : "Send Invite"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowInvite(false);
+                setInviteError("");
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Cancel
+            </button>
+          </div>
+          {inviteError && <p className="text-sm text-red-600">{inviteError}</p>}
+        </form>
+      )}
+
+      {/* Pending Invitations panel — only when there is at least one. */}
+      {isOrgAdmin && invitations.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+          <h3 className="text-sm font-semibold text-amber-800 mb-2">
+            Pending Invitations ({invitations.length})
+          </h3>
+          <div className="space-y-2">
+            {invitations.map((inv: any) => (
+              <div
+                key={inv.id}
+                className="flex items-center justify-between bg-white rounded-lg px-4 py-2 border border-amber-100"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-900">{inv.email}</span>
+                    <span className="text-xs text-gray-500 ml-2 capitalize">
+                      {(inv.role || "employee").replace(/_/g, " ")}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
+                    Pending
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    Invited{" "}
+                    {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Upload Preview Modal */}
       {showUpload && (
@@ -367,6 +566,35 @@ export default function EmployeeDirectoryPage() {
             </option>
           ))}
         </select>
+        <select
+          value={locationId}
+          onChange={(e) => {
+            setLocationId(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+        >
+          <option value="">All Locations</option>
+          {(locations || []).map((l: any) => (
+            <option key={l.id} value={l.id}>
+              {l.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={roleFilter}
+          onChange={(e) => {
+            setRoleFilter(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+        >
+          <option value="">All Roles</option>
+          <option value="employee">Employee</option>
+          <option value="manager">Manager</option>
+          <option value="hr_admin">HR Admin</option>
+          <option value="org_admin">Org Admin</option>
+        </select>
       </div>
 
       {/* Table */}
@@ -378,6 +606,7 @@ export default function EmployeeDirectoryPage() {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Email</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Designation</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Role</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Emp Code</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
               <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
@@ -397,6 +626,7 @@ export default function EmployeeDirectoryPage() {
                     <td className="px-6 py-4"><div className="h-4 w-36 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-14 bg-gray-200 rounded-full" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded ml-auto" /></td>
@@ -405,7 +635,7 @@ export default function EmployeeDirectoryPage() {
               </>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
                   No employees found
                 </td>
               </tr>
@@ -432,6 +662,27 @@ export default function EmployeeDirectoryPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {emp.designation || "-"}
+                  </td>
+                  <td className="px-6 py-4">
+                    {isOrgAdmin && emp.id !== currentUser?.id ? (
+                      <select
+                        value={emp.role || "employee"}
+                        onChange={(e) =>
+                          updateRoleMut.mutate({ userId: emp.id, role: e.target.value })
+                        }
+                        disabled={updateRoleMut.isPending}
+                        className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 capitalize cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+                      >
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="hr_admin">HR Admin</option>
+                        <option value="org_admin">Org Admin</option>
+                      </select>
+                    ) : (
+                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full capitalize">
+                        {(emp.role || "employee").replace(/_/g, " ")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {emp.emp_code || "-"}
@@ -487,7 +738,16 @@ export default function EmployeeDirectoryPage() {
         {editTargetId !== null && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-            onClick={() => !updateEmployee.isPending && setEditTargetId(null)}
+            onClick={() => {
+                if (updateEmployee.isPending || resetPassword.isPending) return;
+                setEditTargetId(null);
+                setShowPasswordSection(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordError(null);
+                setPasswordCopied(false);
+                resetPassword.reset();
+              }}
           >
             <div
               className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col"
@@ -502,7 +762,16 @@ export default function EmployeeDirectoryPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => !updateEmployee.isPending && setEditTargetId(null)}
+                  onClick={() => {
+                if (updateEmployee.isPending || resetPassword.isPending) return;
+                setEditTargetId(null);
+                setShowPasswordSection(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordError(null);
+                setPasswordCopied(false);
+                resetPassword.reset();
+              }}
                   className="text-gray-400 hover:text-gray-600"
                   aria-label="Close"
                 >
@@ -624,11 +893,178 @@ export default function EmployeeDirectoryPage() {
                     {editError && (
                       <div className="mt-4 p-3 rounded-lg bg-red-50 text-sm text-red-700">{editError}</div>
                     )}
+
+                    {/* Password reset — org_admin only, not for own row */}
+                    {isOrgAdmin && editEmployee.id !== currentUser?.id && (
+                      <div className="mt-6 border-t border-gray-100 pt-5">
+                        {!showPasswordSection ? (
+                          <button
+                            type="button"
+                            onClick={() => setShowPasswordSection(true)}
+                            className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700"
+                          >
+                            <KeyRound className="h-4 w-4" />
+                            Change password
+                          </button>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                <KeyRound className="h-4 w-4 text-brand-600" />
+                                Change password
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowPasswordSection(false);
+                                  setNewPassword("");
+                                  setConfirmPassword("");
+                                  setPasswordError(null);
+                                }}
+                                className="text-xs text-gray-500 hover:text-gray-700"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              Set a new password for this employee. They will need to use the new
+                              password on their next sign-in. Share it with them securely.
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  New Password
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type={showNewPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => {
+                                      setNewPassword(e.target.value);
+                                      if (passwordError) setPasswordError(null);
+                                    }}
+                                    placeholder="Min 8 chars, upper, lower, digit, special"
+                                    className="w-full px-3 py-2 pr-9 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                                    autoComplete="new-password"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword((v) => !v)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-gray-600"
+                                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                                  >
+                                    {showNewPassword ? (
+                                      <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                      <Eye className="h-4 w-4" />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Confirm Password
+                                </label>
+                                <input
+                                  type={showNewPassword ? "text" : "password"}
+                                  value={confirmPassword}
+                                  onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
+                                    if (passwordError) setPasswordError(null);
+                                  }}
+                                  placeholder="Re-enter password"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                                  autoComplete="new-password"
+                                />
+                              </div>
+                            </div>
+                            {passwordError && (
+                              <p className="text-sm text-red-600">{passwordError}</p>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={resetPassword.isPending}
+                                onClick={() => {
+                                  setPasswordError(null);
+                                  if (!newPassword || !confirmPassword) {
+                                    setPasswordError("Both password fields are required");
+                                    return;
+                                  }
+                                  if (newPassword !== confirmPassword) {
+                                    setPasswordError("Passwords do not match");
+                                    return;
+                                  }
+                                  if (newPassword.length < 8) {
+                                    setPasswordError("Password must be at least 8 characters");
+                                    return;
+                                  }
+                                  if (
+                                    !/[A-Z]/.test(newPassword) ||
+                                    !/[a-z]/.test(newPassword) ||
+                                    !/[0-9]/.test(newPassword) ||
+                                    !/[^A-Za-z0-9]/.test(newPassword)
+                                  ) {
+                                    setPasswordError(
+                                      "Password must include uppercase, lowercase, digit, and special character",
+                                    );
+                                    return;
+                                  }
+                                  resetPassword.mutate(
+                                    { userId: editEmployee.id, password: newPassword },
+                                    {
+                                      onSuccess: () => {
+                                        try {
+                                          navigator.clipboard.writeText(newPassword);
+                                          setPasswordCopied(true);
+                                          setTimeout(() => setPasswordCopied(false), 2000);
+                                        } catch {
+                                          // clipboard may fail on http; ignore
+                                        }
+                                      },
+                                    },
+                                  );
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+                              >
+                                {resetPassword.isPending ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                                  </>
+                                ) : (
+                                  <>
+                                    <KeyRound className="h-4 w-4" /> Reset Password
+                                  </>
+                                )}
+                              </button>
+                              {resetPassword.isSuccess && !passwordError && (
+                                <span className="inline-flex items-center gap-1.5 text-sm text-green-700">
+                                  <CheckCircle2 className="h-4 w-4" />
+                                  {passwordCopied
+                                    ? "Password reset and copied to clipboard"
+                                    : "Password reset — share securely"}
+                                  {passwordCopied && <Copy className="h-3.5 w-3.5" />}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
                     <button
                       type="button"
-                      onClick={() => !updateEmployee.isPending && setEditTargetId(null)}
+                      onClick={() => {
+                if (updateEmployee.isPending || resetPassword.isPending) return;
+                setEditTargetId(null);
+                setShowPasswordSection(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordError(null);
+                setPasswordCopied(false);
+                resetPassword.reset();
+              }}
                       disabled={updateEmployee.isPending}
                       className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-white disabled:opacity-50"
                     >

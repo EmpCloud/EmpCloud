@@ -15,7 +15,9 @@ const HealthDashboardPage = lazy(() => import("@/pages/admin/HealthDashboardPage
 const DataSanityPage = lazy(() => import("@/pages/admin/DataSanityPage"));
 const SystemNotificationsPage = lazy(() => import("@/pages/admin/SystemNotificationsPage"));
 const AuditPage = lazy(() => import("@/pages/audit/AuditPage"));
-const UsersPage = lazy(() => import("@/pages/users/UsersPage"));
+// /users page has been merged into /employees. The old route now redirects
+// so existing bookmarks keep working. The original UsersPage file is left
+// on disk but no longer referenced from the router.
 const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
 
 const HR_ROLES = ["org_admin", "hr_admin"];
@@ -28,7 +30,7 @@ function RequireRole({ roles, children }: { roles: string[]; children: React.Rea
 
 export const adminRoutes = (
   <>
-    <Route path="/users" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><UsersPage /></RequireRole>} />
+    <Route path="/users" element={<Navigate to="/employees" replace />} />
     <Route path="/settings" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><SettingsPage /></RequireRole>} />
     <Route path="/audit" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><AuditPage /></RequireRole>} />
     <Route path="/admin" element={<RequireRole roles={["super_admin"]}><SuperAdminDashboard /></RequireRole>} />
