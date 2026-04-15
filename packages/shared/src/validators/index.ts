@@ -85,6 +85,21 @@ export const resetPasswordSchema = z.object({
     .regex(/[^A-Za-z0-9]/, "Must contain at least one special character"),
 });
 
+// Admin-initiated password reset for another user. Deliberately separate
+// from resetPasswordSchema (which requires a token from the forgot-password
+// flow) — this one is gated by requireOrgAdmin on the server side and
+// carries no token.
+export const adminResetUserPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8)
+    .max(128)
+    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Must contain at least one digit")
+    .regex(/[^A-Za-z0-9]/, "Must contain at least one special character"),
+});
+
 export const changePasswordSchema = z.object({
   current_password: z.string().min(1),
   new_password: z

@@ -400,6 +400,52 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
   return getUser(orgId, userId);
 }
 
+/**
+ * Admin-initiated password reset for another user in the same org.
+ * Deliberately kept separate from updateUser() which has a strict field
+ * whitelist that excludes `password` to prevent mass-assignment. Callers
+ * must be org_admin (enforced at the route layer). Fails if the target
+ * is a super_admin and the actor is not.
+ *
+ * The caller should NOT be able to reset their own password through this
+ * endpoint — self-serve password change has its own flow with current
+ * password verification.
+ */
+export async function resetUserPassword(
+  orgId: number,
+  targetUserId: number,
+  actorUserId: number,
+  actorRole: string,
+  newPassword: string,
+): Promise<void> {
+  const db = getDB();
+
+  if (targetUserId === actorUserId) {
+    throw new ForbiddenError(
+      "Cannot reset your own password from the admin screen. Use the account settings page instead.",
+    );
+  }
+
+  const target = await db("users")
+    .where({ id: targetUserId, organization_id: orgId })
+    .first();
+  if (!target) throw new NotFoundError("User");
+
+  // Privilege guard: only a super_admin can reset another super_admin's password.
+  if (target.role === "super_admin" && actorRole !== "super_admin") {
+    throw new ForbiddenError("Only super admins can reset a super admin's password");
+  }
+
+  const passwordHash = await hashPassword(newPassword);
+  await db("users")
+    .where({ id: targetUserId, organization_id: orgId })
+    .update({
+      password: passwordHash,
+      password_changed_at: new Date(),
+      updated_at: new Date(),
+    });
+}
+
 export async function deactivateUser(orgId: number, userId: number): Promise<void> {
   const db = getDB();
   const user = await db("users").where({ id: userId, organization_id: orgId }).first();

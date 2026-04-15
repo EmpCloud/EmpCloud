@@ -15,6 +15,7 @@ import {
   paginationSchema,
   AuditAction,
   ROLE_HIERARCHY,
+  adminResetUserPasswordSchema,
 } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 import { paramInt, param } from "../../utils/params.js";
@@ -140,6 +141,37 @@ router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Resp
     });
 
     sendSuccess(res, user);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/users/:id/reset-password — admin-initiated password reset
+// Org admins (and super_admins for other super_admins) can set a new password
+// for another user in the same org. Self-password must go through
+// /auth/change-password which requires the current password.
+router.post("/:id/reset-password", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { password } = adminResetUserPasswordSchema.parse(req.body);
+    const targetUserId = paramInt(req.params.id);
+
+    await userService.resetUserPassword(
+      req.user!.org_id,
+      targetUserId,
+      req.user!.sub,
+      req.user!.role,
+      password,
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.PASSWORD_RESET,
+      resourceType: "user",
+      resourceId: param(req.params.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, { message: "Password reset successfully" });
   } catch (err) { next(err); }
 });
 

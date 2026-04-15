@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
@@ -117,6 +117,29 @@ export default function EmployeeDirectoryPage() {
 
   // Bulk CSV import (create new employees) — also absorbed from Users page.
   const [showCsvImport, setShowCsvImport] = useState(false);
+
+  // Admin password reset inside the Edit modal. Password fields are
+  // deliberately kept OUT of the bulk-update payload — they submit
+  // separately via POST /users/:id/reset-password so the audit trail
+  // is a distinct PASSWORD_RESET event, and the mass-assignment
+  // whitelist on updateUser() stays closed.
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordCopied, setPasswordCopied] = useState(false);
+  const resetPassword = useMutation({
+    mutationFn: ({ userId, password }: { userId: number; password: string }) =>
+      api.post(`/users/${userId}/reset-password`, { password }).then((r) => r.data),
+    onSuccess: () => {
+      setPasswordError(null);
+    },
+    onError: (err: any) => {
+      const msg = err?.response?.data?.error?.message || "Failed to reset password";
+      setPasswordError(msg);
+    },
+  });
 
   // Pending invitations panel — only fetched for org_admin.
   const { data: pendingInvitations } = useQuery({
@@ -672,7 +695,16 @@ export default function EmployeeDirectoryPage() {
         {editTargetId !== null && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-            onClick={() => !updateEmployee.isPending && setEditTargetId(null)}
+            onClick={() => {
+                if (updateEmployee.isPending || resetPassword.isPending) return;
+                setEditTargetId(null);
+                setShowPasswordSection(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordError(null);
+                setPasswordCopied(false);
+                resetPassword.reset();
+              }}
           >
             <div
               className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col"
@@ -687,7 +719,16 @@ export default function EmployeeDirectoryPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => !updateEmployee.isPending && setEditTargetId(null)}
+                  onClick={() => {
+                if (updateEmployee.isPending || resetPassword.isPending) return;
+                setEditTargetId(null);
+                setShowPasswordSection(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordError(null);
+                setPasswordCopied(false);
+                resetPassword.reset();
+              }}
                   className="text-gray-400 hover:text-gray-600"
                   aria-label="Close"
                 >
@@ -809,11 +850,178 @@ export default function EmployeeDirectoryPage() {
                     {editError && (
                       <div className="mt-4 p-3 rounded-lg bg-red-50 text-sm text-red-700">{editError}</div>
                     )}
+
+                    {/* Password reset — org_admin only, not for own row */}
+                    {isOrgAdmin && editEmployee.id !== currentUser?.id && (
+                      <div className="mt-6 border-t border-gray-100 pt-5">
+                        {!showPasswordSection ? (
+                          <button
+                            type="button"
+                            onClick={() => setShowPasswordSection(true)}
+                            className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700"
+                          >
+                            <KeyRound className="h-4 w-4" />
+                            Change password
+                          </button>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                <KeyRound className="h-4 w-4 text-brand-600" />
+                                Change password
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShowPasswordSection(false);
+                                  setNewPassword("");
+                                  setConfirmPassword("");
+                                  setPasswordError(null);
+                                }}
+                                className="text-xs text-gray-500 hover:text-gray-700"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              Set a new password for this employee. They will need to use the new
+                              password on their next sign-in. Share it with them securely.
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  New Password
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type={showNewPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => {
+                                      setNewPassword(e.target.value);
+                                      if (passwordError) setPasswordError(null);
+                                    }}
+                                    placeholder="Min 8 chars, upper, lower, digit, special"
+                                    className="w-full px-3 py-2 pr-9 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                                    autoComplete="new-password"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword((v) => !v)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-gray-600"
+                                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                                  >
+                                    {showNewPassword ? (
+                                      <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                      <Eye className="h-4 w-4" />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Confirm Password
+                                </label>
+                                <input
+                                  type={showNewPassword ? "text" : "password"}
+                                  value={confirmPassword}
+                                  onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
+                                    if (passwordError) setPasswordError(null);
+                                  }}
+                                  placeholder="Re-enter password"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                                  autoComplete="new-password"
+                                />
+                              </div>
+                            </div>
+                            {passwordError && (
+                              <p className="text-sm text-red-600">{passwordError}</p>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={resetPassword.isPending}
+                                onClick={() => {
+                                  setPasswordError(null);
+                                  if (!newPassword || !confirmPassword) {
+                                    setPasswordError("Both password fields are required");
+                                    return;
+                                  }
+                                  if (newPassword !== confirmPassword) {
+                                    setPasswordError("Passwords do not match");
+                                    return;
+                                  }
+                                  if (newPassword.length < 8) {
+                                    setPasswordError("Password must be at least 8 characters");
+                                    return;
+                                  }
+                                  if (
+                                    !/[A-Z]/.test(newPassword) ||
+                                    !/[a-z]/.test(newPassword) ||
+                                    !/[0-9]/.test(newPassword) ||
+                                    !/[^A-Za-z0-9]/.test(newPassword)
+                                  ) {
+                                    setPasswordError(
+                                      "Password must include uppercase, lowercase, digit, and special character",
+                                    );
+                                    return;
+                                  }
+                                  resetPassword.mutate(
+                                    { userId: editEmployee.id, password: newPassword },
+                                    {
+                                      onSuccess: () => {
+                                        try {
+                                          navigator.clipboard.writeText(newPassword);
+                                          setPasswordCopied(true);
+                                          setTimeout(() => setPasswordCopied(false), 2000);
+                                        } catch {
+                                          // clipboard may fail on http; ignore
+                                        }
+                                      },
+                                    },
+                                  );
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+                              >
+                                {resetPassword.isPending ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                                  </>
+                                ) : (
+                                  <>
+                                    <KeyRound className="h-4 w-4" /> Reset Password
+                                  </>
+                                )}
+                              </button>
+                              {resetPassword.isSuccess && !passwordError && (
+                                <span className="inline-flex items-center gap-1.5 text-sm text-green-700">
+                                  <CheckCircle2 className="h-4 w-4" />
+                                  {passwordCopied
+                                    ? "Password reset and copied to clipboard"
+                                    : "Password reset — share securely"}
+                                  {passwordCopied && <Copy className="h-3.5 w-3.5" />}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
                     <button
                       type="button"
-                      onClick={() => !updateEmployee.isPending && setEditTargetId(null)}
+                      onClick={() => {
+                if (updateEmployee.isPending || resetPassword.isPending) return;
+                setEditTargetId(null);
+                setShowPasswordSection(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordError(null);
+                setPasswordCopied(false);
+                resetPassword.reset();
+              }}
                       disabled={updateEmployee.isPending}
                       className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-white disabled:opacity-50"
                     >
