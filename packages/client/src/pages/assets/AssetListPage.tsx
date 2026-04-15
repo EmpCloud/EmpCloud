@@ -351,14 +351,20 @@ export default function AssetListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Cost (smallest unit)</label>
-                  <input
-                    type="number"
-                    value={formPurchaseCost}
-                    onChange={(e) => setFormPurchaseCost(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="e.g. 150000 (for $1500.00)"
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Cost</label>
+                  <div className="flex items-stretch">
+                    <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-sm text-gray-600">
+                      ₹ INR
+                    </span>
+                    <input
+                      type="number"
+                      value={formPurchaseCost}
+                      onChange={(e) => setFormPurchaseCost(e.target.value)}
+                      className="flex-1 min-w-0 px-3 py-2 border border-gray-200 rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      placeholder="e.g. 150000 (for ₹1,500.00)"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Enter amount in paise (smallest currency unit).</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Warranty Expiry</label>

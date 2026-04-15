@@ -229,7 +229,11 @@ export default function AssetDetailPage() {
               {asset.purchase_cost != null && (
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Purchase Cost</p>
-                  <p className="text-sm text-gray-900">{(Number(asset.purchase_cost) / 100).toFixed(2)}</p>
+                  <p className="text-sm text-gray-900">
+                    {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
+                      Number(asset.purchase_cost) / 100,
+                    )}
+                  </p>
                 </div>
               )}
               {asset.warranty_expiry && (
