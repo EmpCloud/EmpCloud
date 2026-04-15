@@ -128,6 +128,7 @@ router.get(
         assigned_to: filters.assigned_to,
         raised_by: filters.raised_by,
         search: filters.search,
+        resolved_date: filters.resolved_date,
       });
       sendPaginated(res, result.tickets, result.total, filters.page, filters.per_page);
     } catch (err) {

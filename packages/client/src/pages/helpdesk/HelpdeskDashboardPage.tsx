@@ -87,7 +87,7 @@ export default function HelpdeskDashboardPage() {
       value: stats.resolved_today,
       icon: CheckCircle2,
       color: "text-green-600 bg-green-50",
-      href: "/helpdesk/tickets?status=resolved",
+      href: "/helpdesk/tickets?resolved_date=today",
     },
   ];
 
