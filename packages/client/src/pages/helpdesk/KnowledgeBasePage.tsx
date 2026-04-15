@@ -448,6 +448,9 @@ export default function KnowledgeBasePage() {
                 <span className="flex items-center gap-1">
                   <ThumbsUp className="h-3 w-3" /> {a.helpful_count}
                 </span>
+                <span className="flex items-center gap-1">
+                  <ThumbsDown className="h-3 w-3" /> {a.not_helpful_count ?? 0}
+                </span>
                 <span>{a.author_name}</span>
               </div>
             </button>
