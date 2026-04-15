@@ -44,6 +44,7 @@ export default function TicketListPage() {
   const [priority, setPriority] = useState(searchParams.get("priority") || "");
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const [resolvedDate, setResolvedDate] = useState(searchParams.get("resolved_date") || "");
 
   // Keep the URL in sync with the active filters so the link stays shareable
   // and browser back/forward navigation restores the previous filter set.
@@ -53,10 +54,11 @@ export default function TicketListPage() {
     if (category) next.category = category;
     if (priority) next.priority = priority;
     if (search) next.search = search;
+    if (resolvedDate) next.resolved_date = resolvedDate;
     setSearchParams(next, { replace: true });
-  }, [status, category, priority, search, setSearchParams]);
+  }, [status, category, priority, search, resolvedDate, setSearchParams]);
   const { data, isLoading } = useQuery({
-    queryKey: ["helpdesk-tickets", page, status, category, priority, search],
+    queryKey: ["helpdesk-tickets", page, status, category, priority, search, resolvedDate],
     queryFn: () =>
       api
         .get("/helpdesk/tickets", {
@@ -67,6 +69,7 @@ export default function TicketListPage() {
             ...(category && { category }),
             ...(priority && { priority }),
             ...(search && { search }),
+            ...(resolvedDate && { resolved_date: resolvedDate }),
           },
         })
         .then((r) => r.data),
@@ -175,6 +178,21 @@ export default function TicketListPage() {
             ))}
           </select>
         </div>
+        {resolvedDate && (
+          <div className="mt-3 flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium">
+              Resolved {resolvedDate === "today" ? "today" : `on ${resolvedDate}`}
+              <button
+                type="button"
+                onClick={() => { setResolvedDate(""); setPage(1); }}
+                className="hover:text-green-900"
+                aria-label="Clear resolved date filter"
+              >
+                ×
+              </button>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Tickets Table */}

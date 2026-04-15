@@ -81,6 +81,7 @@ export async function listTickets(
     assigned_to?: number;
     raised_by?: number;
     search?: string;
+    resolved_date?: string;
   }
 ) {
   const db = getDB();
@@ -89,6 +90,31 @@ export async function listTickets(
 
   let query = db("helpdesk_tickets")
     .where({ "helpdesk_tickets.organization_id": orgId });
+
+  // #1430 — "Resolved on X" filter. Matches the dashboard's resolved_today
+  // count so the list after clicking the stat card shows the same tickets,
+  // regardless of whether they've since been closed or reopened.
+  if (filters?.resolved_date) {
+    let start: Date;
+    if (filters.resolved_date === "today") {
+      start = new Date();
+      start.setHours(0, 0, 0, 0);
+    } else {
+      start = new Date(filters.resolved_date);
+      if (isNaN(start.getTime())) {
+        start = new Date();
+        start.setHours(0, 0, 0, 0);
+      } else {
+        start.setHours(0, 0, 0, 0);
+      }
+    }
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    query = query
+      .whereNotNull("helpdesk_tickets.resolved_at")
+      .where("helpdesk_tickets.resolved_at", ">=", start)
+      .where("helpdesk_tickets.resolved_at", "<", end);
+  }
 
   // #1376 — Dashboard's "open ticket" count aggregates 4 statuses. When the
   // client filters by status=open, return the same set so the counts align.

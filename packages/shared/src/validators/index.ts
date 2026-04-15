@@ -986,6 +986,11 @@ export const helpdeskQuerySchema = paginationSchema.extend({
   assigned_to: z.coerce.number().int().positive().optional(),
   raised_by: z.coerce.number().int().positive().optional(),
   search: z.string().optional(),
+  // "today" or YYYY-MM-DD. When set, only tickets whose resolved_at falls on
+  // that date are returned — regardless of current status. Used by the
+  // "Resolved Today" stat card to avoid drifting from the dashboard count
+  // when tickets are resolved and then closed or reopened.
+  resolved_date: z.string().optional(),
 });
 
 export type CreateTicketInput = z.infer<typeof createTicketSchema>;
