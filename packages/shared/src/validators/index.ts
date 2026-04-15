@@ -459,6 +459,10 @@ export const createDependentSchema = z.object({
 export const employeeDirectoryQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
   department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
+  role: z
+    .enum(["employee", "manager", "hr_admin", "org_admin", "super_admin"])
+    .optional(),
   status: z.coerce.number().int().optional(),
 });
 

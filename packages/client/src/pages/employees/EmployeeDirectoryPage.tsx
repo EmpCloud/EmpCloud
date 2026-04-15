@@ -101,6 +101,8 @@ export default function EmployeeDirectoryPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
+  const [locationId, setLocationId] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("");
   const [showUpload, setShowUpload] = useState(false);
   const [uploadRows, setUploadRows] = useState<any[]>([]);
   const [uploadResult, setUploadResult] = useState<any>(null);
@@ -164,6 +166,7 @@ export default function EmployeeDirectoryPage() {
 
   const { data: departments } = useDepartments();
 
+  // Locations dropdown — shared between the Location filter and the edit modal.
   const { data: locations } = useQuery({
     queryKey: ["org-locations"],
     queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
@@ -171,7 +174,16 @@ export default function EmployeeDirectoryPage() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["employee-directory", { page, search: search || undefined, department_id: departmentId || undefined }],
+    queryKey: [
+      "employee-directory",
+      {
+        page,
+        search: search || undefined,
+        department_id: departmentId || undefined,
+        location_id: locationId || undefined,
+        role: roleFilter || undefined,
+      },
+    ],
     queryFn: () =>
       api
         .get("/employees/directory", {
@@ -180,6 +192,8 @@ export default function EmployeeDirectoryPage() {
             per_page: 20,
             ...(search ? { search } : {}),
             ...(departmentId ? { department_id: departmentId } : {}),
+            ...(locationId ? { location_id: locationId } : {}),
+            ...(roleFilter ? { role: roleFilter } : {}),
           },
         })
         .then((r) => r.data),
@@ -551,6 +565,35 @@ export default function EmployeeDirectoryPage() {
               {d.name}
             </option>
           ))}
+        </select>
+        <select
+          value={locationId}
+          onChange={(e) => {
+            setLocationId(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+        >
+          <option value="">All Locations</option>
+          {(locations || []).map((l: any) => (
+            <option key={l.id} value={l.id}>
+              {l.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={roleFilter}
+          onChange={(e) => {
+            setRoleFilter(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+        >
+          <option value="">All Roles</option>
+          <option value="employee">Employee</option>
+          <option value="manager">Manager</option>
+          <option value="hr_admin">HR Admin</option>
+          <option value="org_admin">Org Admin</option>
         </select>
       </div>
 
