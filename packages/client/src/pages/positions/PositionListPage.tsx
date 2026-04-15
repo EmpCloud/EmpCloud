@@ -10,7 +10,7 @@ export default function PositionListPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
-  const [status, setStatus] = useState<string>("active");
+  const [status, setStatus] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
 
   const { data: departments } = useDepartments();
