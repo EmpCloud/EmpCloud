@@ -18,7 +18,7 @@ export default function PositionDetailPage() {
     title: "",
     department_id: "",
     employment_type: "full_time",
-    headcount_budget: 1,
+    headcount_budget: "1",
     is_critical: false,
     job_description: "",
     min_salary: "",
@@ -157,7 +157,7 @@ export default function PositionDetailPage() {
                 title: pos.title || "",
                 department_id: pos.department_id ? String(pos.department_id) : "",
                 employment_type: pos.employment_type || "full_time",
-                headcount_budget: pos.headcount_budget || 1,
+                headcount_budget: pos.headcount_budget != null ? String(pos.headcount_budget) : "1",
                 is_critical: pos.is_critical || false,
                 job_description: pos.job_description || "",
                 min_salary: pos.min_salary ? String(pos.min_salary) : "",
@@ -272,11 +272,16 @@ export default function PositionDetailPage() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              const budget = parseInt(editForm.headcount_budget, 10);
+              if (!Number.isFinite(budget) || budget < 1) {
+                alert("Headcount Budget must be at least 1.");
+                return;
+              }
               updateMutation.mutate({
                 title: editForm.title,
                 department_id: editForm.department_id ? Number(editForm.department_id) : null,
                 employment_type: editForm.employment_type,
-                headcount_budget: Number(editForm.headcount_budget),
+                headcount_budget: budget,
                 is_critical: editForm.is_critical,
                 job_description: editForm.job_description || null,
                 min_salary: editForm.min_salary ? Number(editForm.min_salary) : null,
@@ -327,7 +332,7 @@ export default function PositionDetailPage() {
               <input
                 type="number"
                 value={editForm.headcount_budget}
-                onChange={(e) => setEditForm({ ...editForm, headcount_budget: Number(e.target.value) })}
+                onChange={(e) => setEditForm({ ...editForm, headcount_budget: e.target.value })}
                 min={1}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
