@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
+import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import * as XLSX from "xlsx";
 
 // ---------------------------------------------------------------------------
@@ -113,6 +114,9 @@ export default function EmployeeDirectoryPage() {
   const [inviteRole, setInviteRole] = useState("employee");
   const [inviteError, setInviteError] = useState("");
   const inviteUser = useInviteUser();
+
+  // Bulk CSV import (create new employees) — also absorbed from Users page.
+  const [showCsvImport, setShowCsvImport] = useState(false);
 
   // Pending invitations panel — only fetched for org_admin.
   const { data: pendingInvitations } = useQuery({
@@ -273,6 +277,14 @@ export default function EmployeeDirectoryPage() {
           </label>
           {isOrgAdmin && (
             <button
+              onClick={() => setShowCsvImport(true)}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <FileSpreadsheet className="h-4 w-4" /> Import Employees
+            </button>
+          )}
+          {isOrgAdmin && (
+            <button
               onClick={() => setShowInvite((v) => !v)}
               className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
             >
@@ -281,6 +293,14 @@ export default function EmployeeDirectoryPage() {
           )}
         </div>
       </div>
+
+      {/* CSV import modal — absorbed from the retired Users page */}
+      {showCsvImport && (
+        <CsvImportUsersModal
+          onClose={() => setShowCsvImport(false)}
+          invalidateKeys={["employee-directory"]}
+        />
+      )}
 
       {/* Invite form (absorbed from the retired Users page) */}
       {showInvite && isOrgAdmin && (
