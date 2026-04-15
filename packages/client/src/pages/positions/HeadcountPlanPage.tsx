@@ -30,13 +30,19 @@ export default function HeadcountPlanPage() {
   const plans = data?.data || [];
   const meta = data?.meta;
 
+  const currentYear = new Date().getFullYear();
+  const fiscalYearOptions = Array.from({ length: 7 }, (_, i) => {
+    const start = currentYear - 2 + i;
+    return `${start}-${String(start + 1).slice(-2)}`;
+  });
+
   const [form, setForm] = useState({
     title: "",
     fiscal_year: "",
     quarter: "",
     department_id: "",
-    planned_headcount: 0,
-    current_headcount: 0,
+    planned_headcount: "",
+    current_headcount: "",
     budget_amount: "",
     currency: "INR",
     notes: "",
@@ -52,8 +58,8 @@ export default function HeadcountPlanPage() {
         fiscal_year: "",
         quarter: "",
         department_id: "",
-        planned_headcount: 0,
-        current_headcount: 0,
+        planned_headcount: "",
+        current_headcount: "",
         budget_amount: "",
         currency: "INR",
         notes: "",
@@ -86,13 +92,23 @@ export default function HeadcountPlanPage() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    const planned = parseInt(form.planned_headcount, 10);
+    const current = parseInt(form.current_headcount, 10);
+    if (!Number.isFinite(planned) || planned < 0) {
+      alert("Planned Headcount must be 0 or greater.");
+      return;
+    }
+    if (!Number.isFinite(current) || current < 0) {
+      alert("Current Headcount must be 0 or greater.");
+      return;
+    }
     createMutation.mutate({
       title: form.title,
       fiscal_year: form.fiscal_year,
       quarter: form.quarter || null,
       department_id: form.department_id ? Number(form.department_id) : null,
-      planned_headcount: Number(form.planned_headcount),
-      current_headcount: Number(form.current_headcount),
+      planned_headcount: planned,
+      current_headcount: current,
       budget_amount: form.budget_amount ? Number(form.budget_amount) : null,
       currency: form.currency,
       notes: form.notes || null,
@@ -152,14 +168,17 @@ export default function HeadcountPlanPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Fiscal Year *</label>
-              <input
-                type="text"
+              <select
                 value={form.fiscal_year}
                 onChange={(e) => setForm({ ...form, fiscal_year: e.target.value })}
-                placeholder="2026-27"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 required
-              />
+              >
+                <option value="">Select year</option>
+                {fiscalYearOptions.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Quarter</label>
@@ -194,8 +213,9 @@ export default function HeadcountPlanPage() {
               <input
                 type="number"
                 value={form.planned_headcount}
-                onChange={(e) => setForm({ ...form, planned_headcount: Number(e.target.value) })}
+                onChange={(e) => setForm({ ...form, planned_headcount: e.target.value })}
                 min={0}
+                placeholder="0"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
@@ -204,8 +224,9 @@ export default function HeadcountPlanPage() {
               <input
                 type="number"
                 value={form.current_headcount}
-                onChange={(e) => setForm({ ...form, current_headcount: Number(e.target.value) })}
+                onChange={(e) => setForm({ ...form, current_headcount: e.target.value })}
                 min={0}
+                placeholder="0"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
