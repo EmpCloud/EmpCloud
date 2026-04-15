@@ -299,8 +299,32 @@ function FieldRow({ label, value }: { label: string; value?: string | number | n
   );
 }
 
+// Validation patterns for Indian identity documents
+const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+const AADHAR_REGEX = /^[0-9]{12}$/;
+const PASSPORT_REGEX = /^[A-PR-WY][0-9]{7}$/; // Indian passport: 1 letter (excl. Q, X, Z), 7 digits
+
+function validateIdDoc(field: "pan_number" | "aadhar_number" | "passport_number", value: string): string | null {
+  if (!value) return null; // empty is allowed (optional field)
+  if (field === "pan_number") {
+    return PAN_REGEX.test(value)
+      ? null
+      : "PAN must be 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F)";
+  }
+  if (field === "aadhar_number") {
+    return AADHAR_REGEX.test(value) ? null : "Aadhaar must be 12 digits";
+  }
+  if (field === "passport_number") {
+    return PASSPORT_REGEX.test(value)
+      ? null
+      : "Passport must be 1 letter + 7 digits (e.g. A1234567)";
+  }
+  return null;
+}
+
 function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; userId?: number; selfService?: boolean }) {
   const [form, setForm] = useState<Record<string, string>>({});
+  const [idErrors, setIdErrors] = useState<{ pan_number?: string; aadhar_number?: string; passport_number?: string }>({});
 
   // Populate form when entering edit mode (via useEffect to avoid setState during render)
   useEffect(() => {
@@ -394,15 +418,56 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
-            <input type="text" value={form.aadhar_number} onChange={(e) => set("aadhar_number", e.target.value)} className={canEditField("aadhar_number") ? inputClass : disabledClass} disabled={!canEditField("aadhar_number")} />
+            <input
+              type="text"
+              value={form.aadhar_number}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 12);
+                set("aadhar_number", digits);
+                if (idErrors.aadhar_number) setIdErrors((p) => ({ ...p, aadhar_number: undefined }));
+              }}
+              onBlur={(e) => setIdErrors((p) => ({ ...p, aadhar_number: validateIdDoc("aadhar_number", e.target.value) || undefined }))}
+              inputMode="numeric"
+              maxLength={12}
+              placeholder="12 digits"
+              className={`${canEditField("aadhar_number") ? inputClass : disabledClass} ${idErrors.aadhar_number ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={!canEditField("aadhar_number")}
+            />
+            {idErrors.aadhar_number && <p className="text-xs text-red-600 mt-1">{idErrors.aadhar_number}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
-            <input type="text" value={form.pan_number} onChange={(e) => set("pan_number", e.target.value)} className={canEditField("pan_number") ? inputClass : disabledClass} disabled={!canEditField("pan_number")} />
+            <input
+              type="text"
+              value={form.pan_number}
+              onChange={(e) => {
+                set("pan_number", e.target.value.toUpperCase().slice(0, 10));
+                if (idErrors.pan_number) setIdErrors((p) => ({ ...p, pan_number: undefined }));
+              }}
+              onBlur={(e) => setIdErrors((p) => ({ ...p, pan_number: validateIdDoc("pan_number", e.target.value) || undefined }))}
+              maxLength={10}
+              placeholder="ABCDE1234F"
+              className={`${canEditField("pan_number") ? inputClass : disabledClass} ${idErrors.pan_number ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={!canEditField("pan_number")}
+            />
+            {idErrors.pan_number && <p className="text-xs text-red-600 mt-1">{idErrors.pan_number}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
-            <input type="text" value={form.passport_number} onChange={(e) => set("passport_number", e.target.value)} className={canEditField("passport_number") ? inputClass : disabledClass} disabled={!canEditField("passport_number")} />
+            <input
+              type="text"
+              value={form.passport_number}
+              onChange={(e) => {
+                set("passport_number", e.target.value.toUpperCase().slice(0, 8));
+                if (idErrors.passport_number) setIdErrors((p) => ({ ...p, passport_number: undefined }));
+              }}
+              onBlur={(e) => setIdErrors((p) => ({ ...p, passport_number: validateIdDoc("passport_number", e.target.value) || undefined }))}
+              maxLength={8}
+              placeholder="A1234567"
+              className={`${canEditField("passport_number") ? inputClass : disabledClass} ${idErrors.passport_number ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={!canEditField("passport_number")}
+            />
+            {idErrors.passport_number && <p className="text-xs text-red-600 mt-1">{idErrors.passport_number}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Passport Expiry</label>
@@ -446,7 +511,18 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <button
-            onClick={() => onSave?.(Object.fromEntries(Object.entries(form).filter(([k]) => canEditField(k)).map(([k, v]) => [k, v || null])))}
+            onClick={() => {
+              const errs = {
+                pan_number: validateIdDoc("pan_number", form.pan_number || "") || undefined,
+                aadhar_number: validateIdDoc("aadhar_number", form.aadhar_number || "") || undefined,
+                passport_number: validateIdDoc("passport_number", form.passport_number || "") || undefined,
+              };
+              if (errs.pan_number || errs.aadhar_number || errs.passport_number) {
+                setIdErrors(errs);
+                return;
+              }
+              onSave?.(Object.fromEntries(Object.entries(form).filter(([k]) => canEditField(k)).map(([k, v]) => [k, v || null])));
+            }}
             disabled={saving}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
           >
