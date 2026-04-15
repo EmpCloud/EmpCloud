@@ -45,6 +45,7 @@ export default function KnowledgeBasePage() {
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
+  const [currentVote, setCurrentVote] = useState<null | boolean>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -85,9 +86,10 @@ export default function KnowledgeBasePage() {
   const rateArticle = useMutation({
     mutationFn: ({ id, helpful }: { id: number; helpful: boolean }) =>
       api.post(`/helpdesk/kb/${id}/helpful`, { helpful }).then((r) => r.data.data),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["kb-articles"] });
       setHasVoted(true);
+      setCurrentVote(variables.helpful);
       if (selectedArticle) {
         setSelectedArticle(data);
       }
@@ -119,8 +121,12 @@ export default function KnowledgeBasePage() {
       try {
         const { data: ratingData } = await api.get(`/helpdesk/kb/${data.data.id}/my-rating`);
         setHasVoted(ratingData.data?.rated || false);
+        setCurrentVote(
+          ratingData.data?.rated ? Boolean(ratingData.data.helpful) : null,
+        );
       } catch {
         setHasVoted(false);
+        setCurrentVote(null);
       }
     } catch {
       // handle error silently
@@ -179,40 +185,47 @@ export default function KnowledgeBasePage() {
             <p className="text-sm font-medium text-gray-700 mb-3">
               Was this article helpful?
             </p>
-            {hasVoted ? (
-              <p className="text-sm text-green-600 flex items-center gap-2">
-                <ThumbsUp className="h-4 w-4" /> Thank you for your feedback!
+            {hasVoted && (
+              <p className="text-xs text-gray-500 mb-2">
+                You rated this {currentVote ? "helpful" : "not helpful"}. You can change your vote anytime.
               </p>
-            ) : (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() =>
-                    rateArticle.mutate({
-                      id: selectedArticle.id,
-                      helpful: true,
-                    })
-                  }
-                  disabled={rateArticle.isPending}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-green-200 text-green-700 text-sm font-medium hover:bg-green-50 disabled:opacity-50"
-                >
-                  <ThumbsUp className="h-4 w-4" /> Yes (
-                  {selectedArticle.helpful_count})
-                </button>
-                <button
-                  onClick={() =>
-                    rateArticle.mutate({
-                      id: selectedArticle.id,
-                      helpful: false,
-                    })
-                  }
-                  disabled={rateArticle.isPending}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-red-700 text-sm font-medium hover:bg-red-50 disabled:opacity-50"
-                >
-                  <ThumbsDown className="h-4 w-4" /> No (
-                  {selectedArticle.not_helpful_count})
-                </button>
-              </div>
             )}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() =>
+                  rateArticle.mutate({
+                    id: selectedArticle.id,
+                    helpful: true,
+                  })
+                }
+                disabled={rateArticle.isPending}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-50 ${
+                  currentVote === true
+                    ? "border-green-500 bg-green-50 text-green-800"
+                    : "border-green-200 text-green-700 hover:bg-green-50"
+                }`}
+              >
+                <ThumbsUp className="h-4 w-4" /> Yes (
+                {selectedArticle.helpful_count})
+              </button>
+              <button
+                onClick={() =>
+                  rateArticle.mutate({
+                    id: selectedArticle.id,
+                    helpful: false,
+                  })
+                }
+                disabled={rateArticle.isPending}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-50 ${
+                  currentVote === false
+                    ? "border-red-500 bg-red-50 text-red-800"
+                    : "border-red-200 text-red-700 hover:bg-red-50"
+                }`}
+              >
+                <ThumbsDown className="h-4 w-4" /> No (
+                {selectedArticle.not_helpful_count})
+              </button>
+            </div>
           </div>
         </div>
       </div>
