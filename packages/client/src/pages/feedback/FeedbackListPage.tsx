@@ -76,11 +76,23 @@ export default function FeedbackListPage() {
         .then((r) => r.data),
   });
 
+  const { data: dashboardData } = useQuery({
+    queryKey: ["feedback-list-stats"],
+    queryFn: () => api.get("/feedback/dashboard").then((r) => r.data),
+  });
+
+  const statusCounts: Record<string, number> = {};
+  const byStatus = dashboardData?.data?.byStatus || [];
+  for (const row of byStatus) {
+    statusCounts[row.status] = Number(row.count) || 0;
+  }
+
   const respondMutation = useMutation({
     mutationFn: ({ id, admin_response }: { id: number; admin_response: string }) =>
       api.post(`/feedback/${id}/respond`, { admin_response }).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["feedback-list"] });
+      qc.invalidateQueries({ queryKey: ["feedback-list-stats"] });
       setRespondingTo(null);
       setResponseText("");
     },
@@ -91,6 +103,7 @@ export default function FeedbackListPage() {
       api.put(`/feedback/${id}/status`, { status }).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["feedback-list"] });
+      qc.invalidateQueries({ queryKey: ["feedback-list-stats"] });
       setStatusUpdateId(null);
       setNewStatus("");
     },
@@ -101,11 +114,43 @@ export default function FeedbackListPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">All Feedback</h1>
           <p className="text-gray-500 mt-1">Anonymous feedback from employees. No identities are revealed.</p>
         </div>
+      </div>
+
+      {/* Status Count Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        {(["new", "acknowledged", "under_review", "resolved"] as const).map((s) => {
+          const cfg = STATUS_CONFIG[s];
+          const Icon = cfg.icon;
+          const active = statusFilter === s;
+          return (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                setStatusFilter(active ? "" : s);
+                setPage(1);
+              }}
+              className={`bg-white rounded-xl border p-4 text-left transition-shadow hover:shadow-md ${
+                active ? "border-brand-400 ring-1 ring-brand-200" : "border-gray-200"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${cfg.color}`}>
+                  <Icon className="h-3 w-3" />
+                  {cfg.label}
+                </span>
+              </div>
+              <div className="text-2xl font-bold text-gray-900">
+                {statusCounts[s] ?? 0}
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Filters */}
