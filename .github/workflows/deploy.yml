@@ -27,6 +27,7 @@ jobs:
             source ~/.nvm/nvm.sh
             cd /home/empcloud-development/empcloud-projects/empcloud
             git pull origin main
+            pnpm install --frozen-lockfile
             cd packages/shared && pnpm build
             cd ../client && npm run build
             pm2 delete empcloud-server 2>/dev/null || true
