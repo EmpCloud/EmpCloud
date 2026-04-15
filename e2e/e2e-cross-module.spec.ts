@@ -48,9 +48,14 @@ async function ssoExchange(
   moduleApi: string,
   ecToken: string,
 ): Promise<{ status: number; token: string }> {
-  const res = await request.post(`${moduleApi}/auth/sso`, {
-    data: { token: ecToken },
-  });
+  let res: any = undefined;
+  for (let i = 0; i < 6; i++) {
+    res = await request.post(`${moduleApi}/auth/sso`, {
+      data: { token: ecToken },
+    });
+    if (res.status() !== 429) break;
+    await new Promise(r => setTimeout(r, Math.min(60000, 5000 * (i + 1))));
+  }
   const body = await res.json();
   const token =
     body.data?.tokens?.accessToken ||

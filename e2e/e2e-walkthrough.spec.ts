@@ -444,35 +444,25 @@ test.describe('Flow 7: Module Launch', () => {
 // FLOW 8: Helpdesk
 // =============================================================================
 test.describe('Flow 8: Helpdesk', () => {
-  test('8.1 — Employee: /helpdesk loads ticket interface', async ({ browser }) => {
+  test('8.1 — Employee: /helpdesk/my-tickets loads My Tickets page', async ({ browser }) => {
     const page = await browser.newPage();
     await login(page, EMPLOYEE);
-    await page.goto(`${BASE}/helpdesk`, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(`${BASE}/helpdesk/my-tickets`, { waitUntil: 'networkidle', timeout: 30000 });
     await page.waitForTimeout(2000);
     await snap(page, '8-1-helpdesk-employee');
-    const bodyText = await page.locator('body').innerText();
-    const hasHelpdesk = bodyText.includes('Helpdesk') || bodyText.includes('helpdesk') ||
-      bodyText.includes('Ticket') || bodyText.includes('ticket') ||
-      bodyText.includes('Support') || bodyText.includes('Create') ||
-      bodyText.includes('Submit') || bodyText.includes('Help');
-    expect(hasHelpdesk).toBe(true);
-    console.log('  PASS: Employee helpdesk loaded');
+    await expect(page.locator('h1', { hasText: 'My Tickets' })).toBeVisible({ timeout: 10000 });
+    console.log('  PASS: Employee My Tickets loaded');
     await page.close();
   });
 
-  test('8.2 — Admin: /helpdesk loads admin dashboard', async ({ browser }) => {
+  test('8.2 — Admin: /helpdesk/dashboard loads Helpdesk Dashboard', async ({ browser }) => {
     const page = await browser.newPage();
     await login(page, ADMIN);
-    await page.goto(`${BASE}/helpdesk`, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(`${BASE}/helpdesk/dashboard`, { waitUntil: 'networkidle', timeout: 30000 });
     await page.waitForTimeout(2000);
     await snap(page, '8-2-helpdesk-admin');
-    const bodyText = await page.locator('body').innerText();
-    const hasHelpdesk = bodyText.includes('Helpdesk') || bodyText.includes('helpdesk') ||
-      bodyText.includes('Ticket') || bodyText.includes('ticket') ||
-      bodyText.includes('Support') || bodyText.includes('Queue') ||
-      bodyText.includes('Assigned') || bodyText.includes('Help');
-    expect(hasHelpdesk).toBe(true);
-    console.log('  PASS: Admin helpdesk loaded');
+    await expect(page.locator('h1', { hasText: 'Helpdesk Dashboard' })).toBeVisible({ timeout: 10000 });
+    console.log('  PASS: Admin Helpdesk Dashboard loaded');
     await page.close();
   });
 });
