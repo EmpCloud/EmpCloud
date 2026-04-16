@@ -46,7 +46,7 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
             location={location}
             t={t}
             activeClass={activeClass}
-
+            allItems={items}
           />
         )
       )}
