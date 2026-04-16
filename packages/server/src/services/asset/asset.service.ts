@@ -515,6 +515,102 @@ export async function reportLost(
 }
 
 // ---------------------------------------------------------------------------
+// Send to Repair — move an available or assigned asset into repair
+// ---------------------------------------------------------------------------
+
+export async function sendToRepair(
+  orgId: number,
+  assetId: number,
+  userId: number,
+  notes?: string | null
+) {
+  const db = getDB();
+
+  const asset = await db("assets")
+    .where({ id: assetId, organization_id: orgId })
+    .first();
+  if (!asset) throw new NotFoundError("Asset");
+
+  if (asset.status !== "available" && asset.status !== "assigned") {
+    throw new ForbiddenError(
+      `Cannot send an asset with status '${asset.status}' to repair`
+    );
+  }
+
+  const previousAssignedTo = asset.assigned_to;
+  const now = new Date();
+
+  await db.transaction(async (trx) => {
+    await trx("assets").where({ id: assetId }).update({
+      status: "in_repair",
+      assigned_to: null,
+      assigned_at: null,
+      assigned_by: null,
+      updated_at: now,
+    });
+
+    await trx("asset_history").insert({
+      asset_id: assetId,
+      organization_id: orgId,
+      action: "sent_to_repair",
+      from_user_id: previousAssignedTo || null,
+      to_user_id: null,
+      performed_by: userId,
+      notes: notes || "Asset sent for repair",
+      created_at: now,
+    });
+  });
+
+  logger.info(`Asset #${assetId} sent to repair by user ${userId} in org ${orgId}`);
+  return db("assets").where({ id: assetId }).first();
+}
+
+// ---------------------------------------------------------------------------
+// Complete Repair — return an in-repair asset back to available
+// ---------------------------------------------------------------------------
+
+export async function completeRepair(
+  orgId: number,
+  assetId: number,
+  userId: number,
+  notes?: string | null
+) {
+  const db = getDB();
+
+  const asset = await db("assets")
+    .where({ id: assetId, organization_id: orgId })
+    .first();
+  if (!asset) throw new NotFoundError("Asset");
+
+  if (asset.status !== "in_repair") {
+    throw new ForbiddenError("Only in-repair assets can be marked as repaired");
+  }
+
+  const now = new Date();
+
+  await db.transaction(async (trx) => {
+    await trx("assets").where({ id: assetId }).update({
+      status: "available",
+      updated_at: now,
+    });
+
+    await trx("asset_history").insert({
+      asset_id: assetId,
+      organization_id: orgId,
+      action: "repaired",
+      from_user_id: null,
+      to_user_id: null,
+      performed_by: userId,
+      notes: notes || "Repair complete, asset back to available",
+      created_at: now,
+    });
+  });
+
+  logger.info(`Asset #${assetId} repair completed by user ${userId} in org ${orgId}`);
+  return db("assets").where({ id: assetId }).first();
+}
+
+// ---------------------------------------------------------------------------
 // Mark Found — recover a previously-lost asset back to available
 // ---------------------------------------------------------------------------
 
