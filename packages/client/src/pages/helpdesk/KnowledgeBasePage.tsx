@@ -150,7 +150,7 @@ export default function KnowledgeBasePage() {
             >
               {selectedArticle.category}
             </span>
-            {selectedArticle.is_featured && (
+            {Boolean(selectedArticle.is_featured) && (
               <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded">
                 <Star className="h-3 w-3" /> Featured
               </span>
@@ -431,7 +431,7 @@ export default function KnowledgeBasePage() {
                 >
                   {a.category}
                 </span>
-                {a.is_featured && (
+                {Boolean(a.is_featured) && (
                   <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
                 )}
               </div>
