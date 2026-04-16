@@ -1250,6 +1250,13 @@ export const updateFeedbackStatusSchema = z.object({
   status: feedbackStatusEnum,
 });
 
+export const updateFeedbackSchema = z.object({
+  category: feedbackCategoryEnum.optional(),
+  subject: z.string().min(1).max(255).optional(),
+  message: z.string().min(1).optional(),
+  is_urgent: z.preprocess((v) => v === 1 || v === "1" || v === "true" || v === true, z.boolean()).optional(),
+});
+
 export const feedbackQuerySchema = paginationSchema.extend({
   category: feedbackCategoryEnum.optional(),
   status: feedbackStatusEnum.optional(),
@@ -1261,6 +1268,7 @@ export const feedbackQuerySchema = paginationSchema.extend({
 export type SubmitFeedbackInput = z.infer<typeof submitFeedbackSchema>;
 export type RespondFeedbackInput = z.infer<typeof respondFeedbackSchema>;
 export type UpdateFeedbackStatusInput = z.infer<typeof updateFeedbackStatusSchema>;
+export type UpdateFeedbackInput = z.infer<typeof updateFeedbackSchema>;
 export type FeedbackQueryInput = z.infer<typeof feedbackQuerySchema>;
 
 // ---------------------------------------------------------------------------

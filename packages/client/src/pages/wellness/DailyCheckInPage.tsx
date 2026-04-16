@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,6 +10,8 @@ import {
   CheckCircle,
   ArrowLeft,
 } from "lucide-react";
+
+const todayISO = () => new Date().toISOString().split("T")[0];
 
 const MOODS = [
   { value: "great", emoji: "😄", label: "Great", color: "border-green-400 bg-green-50 hover:bg-green-100" },
@@ -32,11 +34,26 @@ export default function DailyCheckInPage() {
     notes: "",
   });
 
+  // #1456 — Detect if the user already checked in today so we can disable the form.
+  const today = todayISO();
+  const { data: todayCheckInsData, isLoading: loadingToday } = useQuery({
+    queryKey: ["wellness-checkins-today", today],
+    queryFn: () =>
+      api
+        .get("/wellness/check-ins", {
+          params: { start_date: today, end_date: today, per_page: 1 },
+        })
+        .then((r) => r.data),
+  });
+  const todaysCheckIn = (todayCheckInsData?.data || [])[0] || null;
+  const alreadyCheckedIn = !!todaysCheckIn;
+
   const mutation = useMutation({
     mutationFn: (data: any) => api.post("/wellness/check-in", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wellness-summary"] });
       queryClient.invalidateQueries({ queryKey: ["wellness-checkins"] });
+      queryClient.invalidateQueries({ queryKey: ["wellness-checkins-today"] });
       setSubmitted(true);
     },
   });
@@ -54,14 +71,18 @@ export default function DailyCheckInPage() {
     });
   };
 
-  if (submitted) {
+  if (submitted || alreadyCheckedIn) {
     return (
       <div className="max-w-lg mx-auto mt-12">
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Check-in Complete!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {submitted ? "Check-in Complete!" : "You've checked in today"}
+          </h2>
           <p className="text-gray-500 mb-6">
-            Great job taking a moment to check in with yourself today.
+            {submitted
+              ? "Great job taking a moment to check in with yourself today."
+              : "You can submit your next check-in tomorrow."}
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
@@ -78,6 +99,14 @@ export default function DailyCheckInPage() {
             </button>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (loadingToday) {
+    return (
+      <div className="max-w-lg mx-auto mt-12 text-center text-gray-400">
+        Loading...
       </div>
     );
   }
