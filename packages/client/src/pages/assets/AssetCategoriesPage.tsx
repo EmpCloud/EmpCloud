@@ -8,6 +8,7 @@ import {
   Trash2,
   X,
   Check,
+  Loader2,
 } from "lucide-react";
 
 export default function AssetCategoriesPage() {
@@ -16,6 +17,9 @@ export default function AssetCategoriesPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formName, setFormName] = useState("");
   const [formDescription, setFormDescription] = useState("");
+  // Confirm dialog for deactivating a category. Replaces window.confirm().
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ["asset-categories"],
@@ -43,7 +47,11 @@ export default function AssetCategoriesPage() {
     mutationFn: (id: number) => api.delete(`/assets/categories/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["asset-categories"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
     },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to deactivate category"),
   });
 
   function resetForm() {
@@ -121,9 +129,8 @@ export default function AssetCategoriesPage() {
                       </button>
                       <button
                         onClick={() => {
-                          if (confirm(`Deactivate category "${cat.name}"?`)) {
-                            deleteCategory.mutate(cat.id);
-                          }
+                          setDeleteTarget({ id: cat.id, name: cat.name });
+                          setDeleteError(null);
                         }}
                         className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-600"
                         title="Delete"
@@ -190,6 +197,65 @@ export default function AssetCategoriesPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Deactivate confirmation — replaces window.confirm() */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteCategory.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Deactivate category?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Deactivate{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.name}</span>? Existing
+                    assets tagged with this category keep the tag, but no new assets can be placed
+                    here until it's restored.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteCategory.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteCategory.mutate(deleteTarget.id)}
+                disabled={deleteCategory.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteCategory.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deactivating...
+                  </>
+                ) : (
+                  "Deactivate"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

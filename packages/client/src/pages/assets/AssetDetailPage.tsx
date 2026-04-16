@@ -16,6 +16,7 @@ import {
   RotateCcw,
   Trash2,
   X,
+  Loader2,
 } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -55,6 +56,11 @@ export default function AssetDetailPage() {
   const [assignNotes, setAssignNotes] = useState("");
   const [returnCondition, setReturnCondition] = useState("good");
   const [returnNotes, setReturnNotes] = useState("");
+  // Which in-place confirm dialog is open. Replaces window.confirm() so the
+  // Retire and Report Lost flows use a styled modal consistent with the
+  // rest of the app.
+  const [confirmAction, setConfirmAction] = useState<"retire" | "lost" | null>(null);
+  const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const isHR = user && ["hr_admin", "org_admin", "super_admin"].includes(user.role);
 
@@ -90,12 +96,24 @@ export default function AssetDetailPage() {
 
   const retireMutation = useMutation({
     mutationFn: () => api.post(`/assets/${id}/retire`, { notes: "Retired via dashboard" }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["asset", id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      setConfirmAction(null);
+      setConfirmError(null);
+    },
+    onError: (err: any) =>
+      setConfirmError(err?.response?.data?.error?.message || "Failed to retire asset"),
   });
 
   const reportLostMutation = useMutation({
     mutationFn: () => api.post(`/assets/${id}/report-lost`, { notes: "Reported lost via dashboard" }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["asset", id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      setConfirmAction(null);
+      setConfirmError(null);
+    },
+    onError: (err: any) =>
+      setConfirmError(err?.response?.data?.error?.message || "Failed to report asset as lost"),
   });
 
   if (isLoading) {
@@ -151,14 +169,20 @@ export default function AssetDetailPage() {
             {asset.status !== "retired" && asset.status !== "lost" && (
               <>
                 <button
-                  onClick={() => { if (confirm("Retire this asset?")) retireMutation.mutate(); }}
+                  onClick={() => {
+                    setConfirmAction("retire");
+                    setConfirmError(null);
+                  }}
                   className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 text-sm font-medium"
                 >
                   <Trash2 className="h-4 w-4" />
                   Retire
                 </button>
                 <button
-                  onClick={() => { if (confirm("Report this asset as lost?")) reportLostMutation.mutate(); }}
+                  onClick={() => {
+                    setConfirmAction("lost");
+                    setConfirmError(null);
+                  }}
                   className="inline-flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
                 >
                   <AlertTriangle className="h-4 w-4" />
@@ -455,6 +479,85 @@ export default function AssetDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Confirmation dialog — replaces window.confirm() for Retire / Report Lost */}
+      {confirmAction && (() => {
+        const isLost = confirmAction === "lost";
+        const pending = isLost ? reportLostMutation.isPending : retireMutation.isPending;
+        const run = () => (isLost ? reportLostMutation.mutate() : retireMutation.mutate());
+        const title = isLost ? "Report asset as lost?" : "Retire this asset?";
+        const body = isLost
+          ? "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page."
+          : "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.";
+        const confirmLabel = isLost ? "Report as Lost" : "Retire Asset";
+        const iconColor = isLost ? "text-red-600 bg-red-50" : "text-gray-600 bg-gray-100";
+        const confirmBtn = isLost
+          ? "bg-red-600 hover:bg-red-700"
+          : "bg-gray-900 hover:bg-black";
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            onClick={() => !pending && setConfirmAction(null)}
+          >
+            <div
+              className="w-full max-w-md rounded-xl bg-white shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-6 py-5">
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${iconColor}`}
+                  >
+                    {isLost ? (
+                      <AlertTriangle className="h-5 w-5" />
+                    ) : (
+                      <Trash2 className="h-5 w-5" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      <span className="font-medium text-gray-700">
+                        {asset.asset_tag} — {asset.name}
+                      </span>
+                    </p>
+                    <p className="mt-2 text-sm text-gray-500">{body}</p>
+                  </div>
+                </div>
+              </div>
+              {confirmError && (
+                <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                  {confirmError}
+                </div>
+              )}
+              <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+                <button
+                  type="button"
+                  onClick={() => setConfirmAction(null)}
+                  disabled={pending}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={run}
+                  disabled={pending}
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50 ${confirmBtn}`}
+                >
+                  {pending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Working...
+                    </>
+                  ) : (
+                    confirmLabel
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
