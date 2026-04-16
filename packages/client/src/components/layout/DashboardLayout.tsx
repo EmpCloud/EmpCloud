@@ -9,6 +9,8 @@ import {
   Building2,
   Menu,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -29,6 +31,20 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // #1415 — desktop sidebar collapse state. Persisted in localStorage so the
+  // user's preference survives reloads. Only affects md+ breakpoints; on
+  // mobile the sidebar continues to work as a full-width drawer.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("empcloud-sidebar-collapsed") === "1";
+  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(
+      "empcloud-sidebar-collapsed",
+      sidebarCollapsed ? "1" : "0",
+    );
+  }, [sidebarCollapsed]);
   const sidebarNavRef = useRef<HTMLElement>(null);
 
   // Fetch org subscriptions to conditionally show module nav items (HR+ only)
@@ -65,15 +81,31 @@ export default function DashboardLayout() {
     navigate("/login");
   };
 
-  const sidebarContent = (
-    <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
-      <Link to="/" className="block p-6 border-b border-gray-200 hover:bg-gray-50 transition-colors">
-        <div className="flex items-center gap-2">
-          <Building2 className="h-8 w-8 text-brand-600" />
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">EMP Cloud</h1>
-            <p className="text-xs text-gray-500 truncate">{user?.org_name}</p>
-          </div>
+  // #1415 — when the desktop sidebar is collapsed we hide label spans so only
+  // nav icons remain. Mobile (drawer) always renders expanded. We detect the
+  // collapsed state via a CSS class on the sidebar root and hide labels with
+  // a sibling selector so we don't have to plumb a prop through every nav
+  // component.
+  const renderSidebar = (isCollapsed: boolean) => (
+    <div
+      className={`flex h-full flex-col bg-white border-r border-gray-200 transition-[width] duration-200 ${
+        isCollapsed ? "w-16 sidebar-collapsed" : "w-64"
+      }`}
+    >
+      <Link
+        to="/"
+        className={`block border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+          isCollapsed ? "p-3" : "p-6"
+        }`}
+      >
+        <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"}`}>
+          <Building2 className="h-8 w-8 text-brand-600 flex-shrink-0" />
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">EMP Cloud</h1>
+              <p className="text-xs text-gray-500 truncate">{user?.org_name}</p>
+            </div>
+          )}
         </div>
       </Link>
 
@@ -109,25 +141,28 @@ export default function DashboardLayout() {
       </nav>
 
       <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center">
-            <span className="text-sm font-semibold text-brand-700">
-              {user?.first_name?.[0]}{user?.last_name?.[0]}
-            </span>
+        {!isCollapsed && (
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-semibold text-brand-700">
+                {user?.first_name?.[0]}{user?.last_name?.[0]}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.first_name} {user?.last_name}
+              </p>
+              <p className="text-xs text-gray-500 truncate">{user?.role}</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {user?.first_name} {user?.last_name}
-            </p>
-            <p className="text-xs text-gray-500 truncate">{user?.role}</p>
-          </div>
-        </div>
+        )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          aria-label={t('nav.signOut')}
+          className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"} w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors`}
         >
-          <LogOut className="h-4 w-4" />
-          {t('nav.signOut')}
+          <LogOut className="h-4 w-4 flex-shrink-0" />
+          {!isCollapsed && t('nav.signOut')}
         </button>
       </div>
     </div>
@@ -136,8 +171,22 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Desktop sidebar */}
-      <div className="hidden md:block">
-        {sidebarContent}
+      <div className="hidden md:block relative">
+        {renderSidebar(sidebarCollapsed)}
+        {/* #1415 — collapse/expand toggle. Sits on the right edge of the
+            sidebar so it doesn't shift with the content; chevron direction
+            reflects the current state. */}
+        <button
+          onClick={() => setSidebarCollapsed((c) => !c)}
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="hidden md:flex absolute top-6 -right-3 z-10 h-6 w-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
+        >
+          {sidebarCollapsed ? (
+            <ChevronRight className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronLeft className="h-3.5 w-3.5" />
+          )}
+        </button>
       </div>
 
       {/* Mobile sidebar overlay with slide-in animation */}
@@ -148,7 +197,8 @@ export default function DashboardLayout() {
             onClick={() => setSidebarOpen(false)}
           />
           <div className="fixed left-0 top-0 z-50 h-full transform transition-transform duration-300 ease-in-out translate-x-0 animate-slide-in-left">
-            {sidebarContent}
+            {/* Mobile drawer always renders expanded. */}
+            {renderSidebar(false)}
           </div>
         </div>
       )}

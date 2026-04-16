@@ -375,6 +375,14 @@ export const upsertEmployeeProfileSchema = z.object({
   gender: z.enum(["male", "female", "other"]).optional().nullable(),
   date_of_birth: z.string().optional().nullable(),
   contact_number: z.string().max(20).optional().nullable(),
+  // #1423 / #1424 — designation and department_id also live on the users table.
+  // Accepting them here lets HR set them from the profile form without having
+  // to call a separate endpoint. Both are nullable so HR can "clear" them.
+  designation: z.string().max(100).optional().nullable(),
+  department_id: z.coerce.number().int().positive().optional().nullable(),
+  // #1423 — shift_id is not a users-table column; the service creates a
+  // user_shift_assignments row instead when this field is supplied.
+  shift_id: z.coerce.number().int().positive().optional().nullable(),
   personal_email: z.string().email().optional().nullable(),
   emergency_contact_name: z.string().max(128).optional().nullable(),
   emergency_contact_phone: z.string().max(20).optional().nullable(),

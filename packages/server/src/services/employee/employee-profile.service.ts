@@ -21,6 +21,7 @@ export async function getProfile(orgId: number, userId: number) {
       );
     })
     .leftJoin("users as manager", "users.reporting_manager_id", "manager.id")
+    .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
     .where({ "users.id": userId, "users.organization_id": orgId })
     .select(
       "users.id",
@@ -43,6 +44,7 @@ export async function getProfile(orgId: number, userId: number) {
       "users.role",
       "users.status",
       db.raw("CONCAT(manager.first_name, ' ', manager.last_name) as reporting_manager_name"),
+      "organization_departments.name as department_name",
       "employee_profiles.personal_email",
       "employee_profiles.emergency_contact_name",
       "employee_profiles.emergency_contact_phone",
@@ -64,7 +66,33 @@ export async function getProfile(orgId: number, userId: number) {
     .first();
 
   if (!row) throw new NotFoundError("Employee");
-  return row;
+
+  // #1423 — include the current active shift assignment (if any) so the
+  // client can show + edit it. Picked from the most recent assignment where
+  // effective_to is null or in the future.
+  const today = new Date();
+  const currentShift = await db("user_shift_assignments")
+    .leftJoin("shifts", "user_shift_assignments.shift_id", "shifts.id")
+    .where({ "user_shift_assignments.organization_id": orgId, "user_shift_assignments.user_id": userId })
+    .andWhere((qb) => {
+      qb.whereNull("user_shift_assignments.effective_to").orWhere(
+        "user_shift_assignments.effective_to",
+        ">=",
+        today,
+      );
+    })
+    .orderBy("user_shift_assignments.effective_from", "desc")
+    .select(
+      "user_shift_assignments.shift_id",
+      "shifts.name as shift_name",
+    )
+    .first();
+
+  return {
+    ...row,
+    shift_id: currentShift?.shift_id ?? null,
+    shift_name: currentShift?.shift_name ?? null,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -74,7 +102,14 @@ export async function getProfile(orgId: number, userId: number) {
 export async function upsertProfile(
   orgId: number,
   userId: number,
-  data: UpsertEmployeeProfileInput & { reporting_manager_id?: number | string | null }
+  data: UpsertEmployeeProfileInput & { reporting_manager_id?: number | string | null },
+  // #1423 — actor for audit trails on derived writes (shift assignments).
+  // Optional so older callers keep working; defaults to the target user.
+  actorUserId?: number,
+  // #1423 / #1424 — whether the caller has HR privileges. When the caller is
+  // editing their OWN profile without HR, we silently drop department/shift/
+  // designation changes so employees can't reassign themselves.
+  isHR: boolean = true,
 ) {
   const db = getDB();
 
@@ -87,27 +122,69 @@ export async function upsertProfile(
   // #1403 — gender, date_of_birth, contact_number, reporting_manager_id live
   // on the users table, not employee_profiles. Split them out of the profile
   // payload and apply them with a single users-table update.
+  //
+  // #1423 / #1424 — department_id and designation are also users-table columns
+  // edited from the profile form; they follow the same split pattern. shift_id
+  // does NOT live on users (it's a user_shift_assignments row) so it's handled
+  // separately below.
   const {
     reporting_manager_id,
     gender,
     date_of_birth,
     contact_number,
+    department_id,
+    designation,
+    shift_id,
     ...profileData
   } = data as any;
 
   const userUpdate: Record<string, unknown> = {};
-  if (reporting_manager_id !== undefined) {
+  if (reporting_manager_id !== undefined && isHR) {
     userUpdate.reporting_manager_id = reporting_manager_id ? Number(reporting_manager_id) : null;
   }
   if (gender !== undefined) userUpdate.gender = gender || null;
   if (date_of_birth !== undefined) userUpdate.date_of_birth = date_of_birth || null;
   if (contact_number !== undefined) userUpdate.contact_number = contact_number || null;
+  // #1423 — department is HR-only. Self-service employees cannot change their
+  // own department.
+  if (department_id !== undefined && isHR) {
+    userUpdate.department_id = department_id ? Number(department_id) : null;
+  }
+  // #1424 — designation: HR can change freely. Employees can see it read-only
+  // but cannot edit (matches the #1423/#1424 ticket's "be conservative"
+  // guidance — employees shouldn't arbitrarily rename their role).
+  if (designation !== undefined && isHR) userUpdate.designation = designation || null;
 
   if (Object.keys(userUpdate).length > 0) {
     userUpdate.updated_at = new Date();
     await db("users")
       .where({ id: userId, organization_id: orgId })
       .update(userUpdate);
+  }
+
+  // #1423 — shift assignment is HR-only. When a shift_id is supplied, end any
+  // current assignment (effective_to = today) and create a new one starting
+  // today. If shift_id is explicitly null, we end the current assignment but
+  // don't create a new one.
+  if (shift_id !== undefined && isHR) {
+    const today = new Date();
+    await db("user_shift_assignments")
+      .where({ organization_id: orgId, user_id: userId })
+      .whereNull("effective_to")
+      .update({ effective_to: today, updated_at: today });
+
+    if (shift_id) {
+      await db("user_shift_assignments").insert({
+        organization_id: orgId,
+        user_id: userId,
+        shift_id: Number(shift_id),
+        effective_from: today,
+        effective_to: null,
+        created_by: actorUserId ?? userId,
+        created_at: today,
+        updated_at: today,
+      });
+    }
   }
 
   const existing = await db("employee_profiles")

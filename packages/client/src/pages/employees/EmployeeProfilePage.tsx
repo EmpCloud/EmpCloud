@@ -84,6 +84,18 @@ export default function EmployeeProfilePage() {
     enabled: editing,
   });
 
+  // #1423 — departments and shifts for the HR-only edit dropdowns.
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: () => api.get("/departments").then((r) => r.data.data),
+    enabled: editing && isHR,
+  });
+  const { data: shifts } = useQuery({
+    queryKey: ["attendance-shifts"],
+    queryFn: () => api.get("/attendance/shifts").then((r) => r.data.data),
+    enabled: editing && isHR,
+  });
+
   const updateProfile = useMutation({
     mutationFn: (data: Record<string, unknown>) =>
       api.put(`/employees/${userId}/profile`, data).then((r) => r.data.data),
@@ -272,6 +284,8 @@ export default function EmployeeProfilePage() {
             saving={updateProfile.isPending}
             error={updateProfile.isError ? ((updateProfile.error as any)?.response?.data?.error?.message || "Failed to save") : null}
             allUsers={allUsers || []}
+            departments={departments || []}
+            shifts={shifts || []}
             userId={userId}
             selfService={isOwnProfile && !isHR}
           />
@@ -322,7 +336,7 @@ function validateIdDoc(field: "pan_number" | "aadhar_number" | "passport_number"
   return null;
 }
 
-function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; userId?: number; selfService?: boolean }) {
+function PersonalTab({ profile, editing, onSave, saving, error, allUsers, departments, shifts, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; departments?: any[]; shifts?: any[]; userId?: number; selfService?: boolean }) {
   const [form, setForm] = useState<Record<string, string>>({});
   const [idErrors, setIdErrors] = useState<{ pan_number?: string; aadhar_number?: string; passport_number?: string }>({});
 
@@ -348,6 +362,10 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
         emergency_contact_relation: profile.emergency_contact_relation || "",
         notice_period_days: profile.notice_period_days ? String(profile.notice_period_days) : "",
         reporting_manager_id: profile.reporting_manager_id ? String(profile.reporting_manager_id) : "",
+        // #1423 / #1424 — department, designation, shift on the edit form.
+        department_id: profile.department_id ? String(profile.department_id) : "",
+        designation: profile.designation || "",
+        shift_id: profile.shift_id ? String(profile.shift_id) : "",
       });
     } else if (!editing) {
       setForm({});
@@ -508,6 +526,40 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
                 ))}
             </select>
           </div>
+          {/* #1423 — Department (HR-only). Self-service users see a disabled
+              dropdown so they're aware it exists but can't change it. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+            <select value={form.department_id} onChange={(e) => set("department_id", e.target.value)} className={!selfService ? inputClass : disabledClass} disabled={selfService}>
+              <option value="">No department</option>
+              {(departments || []).map((d: any) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+          {/* #1423 — Shift (HR-only). Sent as shift_id; the server creates a
+              user_shift_assignments row starting today when this changes. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Shift</label>
+            <select value={form.shift_id} onChange={(e) => set("shift_id", e.target.value)} className={!selfService ? inputClass : disabledClass} disabled={selfService}>
+              <option value="">No shift</option>
+              {(shifts || []).map((s: any) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+          {/* #1424 — Designation. HR can edit; employees see it read-only. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+            <input
+              type="text"
+              value={form.designation}
+              onChange={(e) => set("designation", e.target.value)}
+              className={!selfService ? inputClass : disabledClass}
+              disabled={selfService}
+              placeholder={selfService ? "Contact HR to change" : "e.g. Senior Engineer"}
+            />
+          </div>
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <button
@@ -574,6 +626,12 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, userId
       />
       <FieldRow label="Notice Period (days)" value={profile.notice_period_days} />
       <FieldRow label="Reporting Manager" value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
+      {/* #1423 / #1424 — surface designation, department and current shift in
+          the read-only view so self-service employees can see them even if
+          they can't edit them. */}
+      <FieldRow label="Designation" value={profile.designation} />
+      <FieldRow label="Department" value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
+      <FieldRow label="Shift" value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
     </dl>
   );
 }
