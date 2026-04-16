@@ -12,6 +12,7 @@ import {
   submitFeedbackSchema,
   respondFeedbackSchema,
   updateFeedbackStatusSchema,
+  updateFeedbackSchema,
   feedbackQuerySchema,
   paginationSchema,
   AuditAction,
@@ -179,6 +180,64 @@ router.post(
       });
 
       sendSuccess(res, feedback);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// PUT /api/v1/feedback/:id — Update own feedback (owner only, pre-response)
+router.put(
+  "/:id",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = updateFeedbackSchema.parse(req.body);
+      const feedback = await feedbackService.updateFeedback(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        req.user!.sub,
+        data
+      );
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: null, // intentionally null — preserve anonymity
+        action: AuditAction.FEEDBACK_UPDATED,
+        resourceType: "anonymous_feedback",
+        resourceId: String(paramInt(req.params.id)),
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, feedback);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// DELETE /api/v1/feedback/:id — Delete feedback (HR only)
+router.delete(
+  "/:id",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = paramInt(req.params.id);
+      await feedbackService.deleteFeedback(req.user!.org_id, id);
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.FEEDBACK_DELETED,
+        resourceType: "anonymous_feedback",
+        resourceId: String(id),
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, { id });
     } catch (err) {
       next(err);
     }

@@ -79,6 +79,9 @@ export default function WellnessPage() {
   const programs = programsData?.data || [];
   const total = programsData?.meta?.total || 0;
   const totalPages = programsData?.meta?.total_pages || 1;
+  const enrolledProgramIds = new Set<number>(
+    (summaryData?.enrolled_programs || []).map((p: any) => p.program_id)
+  );
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
@@ -241,13 +244,22 @@ export default function WellnessPage() {
                   </span>
                 </div>
 
-                <button
-                  onClick={() => enrollMutation.mutate(program.id)}
-                  disabled={enrollMutation.isPending}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium disabled:opacity-50"
-                >
-                  Enroll Now <ArrowRight className="h-4 w-4" />
-                </button>
+                {enrolledProgramIds.has(program.id) ? (
+                  <button
+                    disabled
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 text-green-700 border border-green-200 rounded-lg text-sm font-medium cursor-not-allowed"
+                  >
+                    Enrolled
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => enrollMutation.mutate(program.id)}
+                    disabled={enrollMutation.isPending}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium disabled:opacity-50"
+                  >
+                    Enroll Now <ArrowRight className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             );
           })}
