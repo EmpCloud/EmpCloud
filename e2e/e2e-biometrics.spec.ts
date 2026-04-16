@@ -67,8 +67,10 @@ test.describe("Biometrics — Face Enrollment", () => {
         user_id: empUserId,
         face_encoding: "e2e-test-encoding-" + RUN,
         thumbnail_path: "/uploads/faces/e2e-test.jpg",
-        enrollment_method: "photo",
-        quality_score: 0.95,
+        // faceEnrollSchema.enrollment_method accepts only "webcam" | "upload" | "device"
+        enrollment_method: "upload",
+        // quality_score is 0..100 in the schema, not 0..1
+        quality_score: 95,
       },
     });
     expect(res.status()).toBe(201);
@@ -104,8 +106,8 @@ test.describe("Biometrics — Face Enrollment", () => {
     test.setTimeout(30_000);
     const res = await request.post(`${API}/biometrics/face/verify`, {
       headers: auth(empToken),
+      // faceVerifySchema only accepts { face_encoding, liveness_passed? } — no user_id
       data: {
-        user_id: empUserId,
         face_encoding: "e2e-test-encoding-" + RUN,
       },
     });
@@ -113,7 +115,8 @@ test.describe("Biometrics — Face Enrollment", () => {
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
-    expect(body.data).toHaveProperty("verified");
+    // Service returns `{ matched: boolean, ... }`, not `verified`
+    expect(body.data).toHaveProperty("matched");
   });
 
   test("HR can remove a face enrollment", async ({ request }) => {
@@ -192,11 +195,28 @@ test.describe("Biometrics — QR Code", () => {
 // =============================================================================
 
 test.describe("Biometrics — Check-in / Check-out", () => {
+  let adminToken: string;
   let empToken: string;
+  let empUserId: number;
+  let qrCode: string;
 
   test.beforeAll(async ({ request }) => {
+    const admin = await loginAndGetToken(request, ADMIN_CREDS.email, ADMIN_CREDS.password);
+    adminToken = admin.token;
+
     const emp = await loginAndGetToken(request, EMPLOYEE_CREDS.email, EMPLOYEE_CREDS.password);
     empToken = emp.token;
+    empUserId = emp.userId;
+
+    // Generate a real QR code; fabricated strings won't match a DB row so
+    // validateQRScan returns { valid: false } and check-in/out 400.
+    const qrRes = await request.post(`${API}/biometrics/qr/generate`, {
+      headers: auth(adminToken),
+      data: { user_id: empUserId },
+    });
+    expect(qrRes.status()).toBe(201);
+    const qrBody = await qrRes.json();
+    qrCode = qrBody.data.code;
   });
 
   test("Employee can biometric check-in (qr method)", async ({ request }) => {
@@ -205,7 +225,7 @@ test.describe("Biometrics — Check-in / Check-out", () => {
       headers: auth(empToken),
       data: {
         method: "qr",
-        qr_code: "e2e-qr-checkin-" + RUN,
+        qr_code: qrCode,
         latitude: 12.9716,
         longitude: 77.5946,
       },
@@ -222,7 +242,7 @@ test.describe("Biometrics — Check-in / Check-out", () => {
       headers: auth(empToken),
       data: {
         method: "qr",
-        qr_code: "e2e-qr-checkout-" + RUN,
+        qr_code: qrCode,
         latitude: 12.9716,
         longitude: 77.5946,
       },
@@ -252,9 +272,11 @@ test.describe("Biometrics — Devices", () => {
       headers: auth(adminToken),
       data: {
         name: `E2E Device ${RUN}`,
-        type: "facial_recognition",
+        // registerDeviceSchema.type enum: "face_terminal" | "fingerprint_reader" | "qr_scanner" | "multi"
+        type: "face_terminal",
         serial_number: `SN-E2E-${RUN}`,
-        location: "Main Entrance",
+        // schema uses location_name, not location
+        location_name: "Main Entrance",
         ip_address: "192.168.1.100",
       },
     });
@@ -283,7 +305,8 @@ test.describe("Biometrics — Devices", () => {
       headers: auth(adminToken),
       data: {
         name: `E2E Device Updated ${RUN}`,
-        location: "Side Entrance",
+        // updateDeviceSchema uses location_name, not location
+        location_name: "Side Entrance",
       },
     });
     expect(res.status()).toBe(200);

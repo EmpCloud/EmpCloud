@@ -44,7 +44,10 @@ function auth(token: string) {
 // Custom Fields — Definitions CRUD, Values, Search
 // =============================================================================
 
-test.describe("Custom Fields", () => {
+// These tests share state across steps (fieldId, secondFieldId set in create,
+// used later by reorder/delete). Use `.serial` so one failure doesn't start a
+// fresh worker and wipe the module-level `let`s.
+test.describe.serial("Custom Fields", () => {
   let adminToken: string;
   let empToken: string;
   let empUserId: number;
@@ -71,6 +74,9 @@ test.describe("Custom Fields", () => {
         entity_type: "employee",
         field_type: "text",
         is_required: false,
+        // Mark searchable so the "search entities by field value" test can
+        // query against this field — service rejects non-searchable fields.
+        is_searchable: true,
         help_text: "E2E test text field",
       },
     });

@@ -152,7 +152,11 @@ test.describe("Phase 2: Invoice Generation", () => {
     }
   });
 
+  // Direct billing-service API requires BILLING_API_KEY. When the secret isn't
+  // present in the runner environment, skip — this isn't a test drift bug,
+  // it's a missing secret / separate infrastructure.
   test("2.3 Invoices in billing DB match empcloud proxy", async ({ request }) => {
+    test.skip(!BILLING_KEY, "BILLING_API_KEY not set — billing-service API not reachable from this runner");
     // Direct billing API
     const billingRes = await request.get(`${BILLING_API}/invoices`, { headers: billingAuth() });
     expect(billingRes.status()).toBe(200);
@@ -233,6 +237,7 @@ test.describe("Phase 4: Subscription Renewal", () => {
   });
 
   test("4.1 List billing subscriptions", async ({ request }) => {
+    test.skip(!BILLING_KEY, "BILLING_API_KEY not set — billing-service API not reachable from this runner");
     const res = await request.get(`${BILLING_API}/subscriptions`, { headers: billingAuth() });
     expect(res.status()).toBe(200);
     const body = await res.json();
@@ -419,17 +424,20 @@ test.describe("Phase 6: Module Access Control", () => {
     employeeToken = await getToken(request, EMPLOYEE.email, EMPLOYEE.password);
   });
 
-  test("6.1 Check access endpoint works (server returns 500 — needs investigation)", async ({ request }) => {
+  test("6.1 Check access endpoint works", async ({ request }) => {
     // Get a module slug from the modules list
     const modsRes = await request.get(`${API}/modules`, { headers: auth(adminToken) });
     expect(modsRes.status()).toBe(200);
     const modules = (await modsRes.json()).data;
     const mod = modules[0];
 
-    // check-access endpoint should respond (200 with result, or 400 for invalid input)
+    // NOTE: The route reads `req.body.organization_id`, not `org_id` (server-side).
+    // Earlier iteration of this test sent `org_id: 5` which made `orgId` undefined and
+    // crashed the DB query with 500. Using `organization_id` matches the route code.
+    // (The endpoint is also unauthenticated — separate concern, not in scope here.)
     const res = await request.post(`${API}/subscriptions/check-access`, {
       headers: { "Content-Type": "application/json" },
-      data: { user_id: 1, module_slug: mod.slug, org_id: 5 },
+      data: { user_id: 1, module_slug: mod.slug, organization_id: 5 },
     });
     expect(res.status()).toBeLessThan(500);
     console.log(`check-access endpoint responded: ${res.status()}`);
@@ -527,7 +535,10 @@ test.describe("Phase 7: Update & Cancellation", () => {
 // =============================================================================
 
 test.describe("Phase 8: Dunning Workers", () => {
+  // These admin worker endpoints live on the separate emp-billing service and
+  // require BILLING_API_KEY. Skip when the secret isn't provided to the runner.
   test("8.1 Trigger dunning worker via admin endpoint", async ({ request }) => {
+    test.skip(!BILLING_KEY, "BILLING_API_KEY not set — billing-service admin endpoints not reachable");
     const res = await request.post(`${BILLING_API}/subscriptions/admin/trigger-dunning-worker`, {
       headers: billingAuth(),
     });
@@ -536,6 +547,7 @@ test.describe("Phase 8: Dunning Workers", () => {
   });
 
   test("8.2 Trigger subscription billing worker", async ({ request }) => {
+    test.skip(!BILLING_KEY, "BILLING_API_KEY not set — billing-service admin endpoints not reachable");
     const res = await request.post(`${BILLING_API}/subscriptions/admin/trigger-billing-worker`, {
       headers: billingAuth(),
     });
