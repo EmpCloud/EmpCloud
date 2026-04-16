@@ -14,6 +14,9 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Pencil,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
@@ -44,8 +47,11 @@ export default function KnowledgeBasePage() {
   const [searchInput, setSearchInput] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [currentVote, setCurrentVote] = useState<null | boolean>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -53,6 +59,26 @@ export default function KnowledgeBasePage() {
   const [formCategory, setFormCategory] = useState("general");
   const [formPublished, setFormPublished] = useState(true);
   const [formFeatured, setFormFeatured] = useState(false);
+
+  function resetForm() {
+    setEditingId(null);
+    setFormTitle("");
+    setFormContent("");
+    setFormCategory("general");
+    setFormPublished(true);
+    setFormFeatured(false);
+  }
+
+  function startEdit(article: any) {
+    setEditingId(article.id);
+    setFormTitle(article.title);
+    setFormContent(article.content);
+    setFormCategory(article.category);
+    setFormPublished(!!article.is_published);
+    setFormFeatured(!!article.is_featured);
+    setSelectedArticle(null);
+    setShowForm(true);
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["kb-articles", page, category, search],
@@ -75,12 +101,31 @@ export default function KnowledgeBasePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kb-articles"] });
       setShowForm(false);
-      setFormTitle("");
-      setFormContent("");
-      setFormCategory("general");
-      setFormPublished(true);
-      setFormFeatured(false);
+      resetForm();
     },
+  });
+
+  const updateArticle = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: object }) =>
+      api.put(`/helpdesk/kb/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["kb-articles"] });
+      setShowForm(false);
+      resetForm();
+    },
+  });
+
+  const deleteArticle = useMutation({
+    mutationFn: (id: number) =>
+      api.delete(`/helpdesk/kb/${id}`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["kb-articles"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
+      setSelectedArticle(null);
+    },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete article"),
   });
 
   const rateArticle = useMutation({
@@ -102,15 +147,20 @@ export default function KnowledgeBasePage() {
     setPage(1);
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createArticle.mutateAsync({
+    const payload = {
       title: formTitle,
       content: formContent,
       category: formCategory,
       is_published: formPublished,
       is_featured: formFeatured,
-    });
+    };
+    if (editingId) {
+      await updateArticle.mutateAsync({ id: editingId, data: payload });
+    } else {
+      await createArticle.mutateAsync(payload);
+    }
   };
 
   const handleViewArticle = async (idOrSlug: string) => {
@@ -140,12 +190,33 @@ export default function KnowledgeBasePage() {
   if (selectedArticle) {
     return (
       <div>
-        <button
-          onClick={() => setSelectedArticle(null)}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to Knowledge Base
-        </button>
+        <div className="flex items-center justify-between mb-6 max-w-3xl">
+          <button
+            onClick={() => setSelectedArticle(null)}
+            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Knowledge Base
+          </button>
+          {isHR && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => startEdit(selectedArticle)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                <Pencil className="h-3.5 w-3.5" /> Edit
+              </button>
+              <button
+                onClick={() => {
+                  setDeleteTarget({ id: selectedArticle.id, title: selectedArticle.title });
+                  setDeleteError(null);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            </div>
+          )}
+        </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-3xl">
           <div className="flex items-center gap-2 mb-3">
@@ -243,7 +314,15 @@ export default function KnowledgeBasePage() {
         </div>
         {isHR && (
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              if (showForm) {
+                setShowForm(false);
+                resetForm();
+              } else {
+                resetForm();
+                setShowForm(true);
+              }
+            }}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> New Article
@@ -251,21 +330,21 @@ export default function KnowledgeBasePage() {
         )}
       </div>
 
-      {/* Create Article Form */}
+      {/* Create / Edit Article Form */}
       {showForm && isHR && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              New Knowledge Base Article
+              {editingId ? "Edit Article" : "New Knowledge Base Article"}
             </h2>
             <button
-              onClick={() => setShowForm(false)}
+              onClick={() => { setShowForm(false); resetForm(); }}
               className="p-1 rounded-lg text-gray-400 hover:bg-gray-100"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={handleSubmitForm} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Title
@@ -335,18 +414,29 @@ export default function KnowledgeBasePage() {
             <div className="flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={() => { setShowForm(false); resetForm(); }}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={createArticle.isPending || !formTitle.trim() || !formContent.trim()}
+                disabled={
+                  createArticle.isPending ||
+                  updateArticle.isPending ||
+                  !formTitle.trim() ||
+                  !formContent.trim()
+                }
                 className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <BookMarked className="h-4 w-4" />
-                {createArticle.isPending ? "Publishing..." : "Publish Article"}
+                {editingId
+                  ? updateArticle.isPending
+                    ? "Updating..."
+                    : "Update Article"
+                  : createArticle.isPending
+                    ? "Publishing..."
+                    : "Publish Article"}
               </button>
             </div>
           </form>
@@ -431,12 +521,47 @@ export default function KnowledgeBasePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {articles.map((a: any) => (
-            <button
+            <div
               key={a.id}
+              role="button"
+              tabIndex={0}
               onClick={() => handleViewArticle(a.slug || a.id)}
-              className="text-left bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleViewArticle(a.slug || a.id);
+                }
+              }}
+              className="relative text-left bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
-              <div className="flex items-center gap-2 mb-2">
+              {isHR && (
+                <div className="absolute top-3 right-3 flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(a);
+                    }}
+                    className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                    title="Edit article"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteTarget({ id: a.id, title: a.title });
+                      setDeleteError(null);
+                    }}
+                    className="p-1.5 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600"
+                    title="Delete article"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+              <div className={`flex items-center gap-2 mb-2 ${isHR ? "pr-16" : ""}`}>
                 <span
                   className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
                     CATEGORY_COLORS[a.category] || "bg-gray-100 text-gray-600"
@@ -466,7 +591,7 @@ export default function KnowledgeBasePage() {
                 </span>
                 <span>{a.author_name}</span>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       )}
@@ -492,6 +617,64 @@ export default function KnowledgeBasePage() {
             >
               Next <ChevronRight className="h-4 w-4" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteArticle.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete article?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Delete{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
+                    This unpublishes the article so employees can no longer see it.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteArticle.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteArticle.mutate(deleteTarget.id)}
+                disabled={deleteArticle.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteArticle.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
