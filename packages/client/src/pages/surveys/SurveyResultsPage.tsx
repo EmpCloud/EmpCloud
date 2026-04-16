@@ -71,9 +71,18 @@ export default function SurveyResultsPage() {
         </button>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards — clickable, scroll to the matching section below. */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("per-question-results")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+          aria-label="Jump to per-question results"
+          className="bg-white rounded-xl border border-gray-200 p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        >
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
               <Users className="h-5 w-5" />
@@ -83,9 +92,18 @@ export default function SurveyResultsPage() {
               <p className="text-xl font-bold text-gray-900">{data.response_count}</p>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("per-question-results")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+          aria-label="Jump to questions breakdown"
+          className="bg-white rounded-xl border border-gray-200 p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        >
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center">
               <BarChart3 className="h-5 w-5" />
@@ -95,10 +113,19 @@ export default function SurveyResultsPage() {
               <p className="text-xl font-bold text-gray-900">{data.questions.length}</p>
             </div>
           </div>
-        </div>
+        </button>
 
         {data.overall_enps && (
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <button
+            type="button"
+            onClick={() =>
+              document
+                .getElementById("enps-breakdown")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+            aria-label="Jump to eNPS breakdown"
+            className="bg-white rounded-xl border border-gray-200 p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
                 data.overall_enps.score >= 0 ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
@@ -112,13 +139,13 @@ export default function SurveyResultsPage() {
                 </p>
               </div>
             </div>
-          </div>
+          </button>
         )}
       </div>
 
       {/* eNPS Breakdown */}
       {data.overall_enps && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div id="enps-breakdown" className="bg-white rounded-xl border border-gray-200 p-6 mb-6 scroll-mt-4">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">eNPS Breakdown</h2>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-4 bg-green-50 rounded-lg">
@@ -174,7 +201,7 @@ export default function SurveyResultsPage() {
       )}
 
       {/* Per-Question Results */}
-      <div className="space-y-4 pb-8">
+      <div id="per-question-results" className="space-y-4 pb-8 scroll-mt-4">
         {data.questions.map((q: any, idx: number) => (
           <div key={q.question_id} className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-start gap-3 mb-4">
