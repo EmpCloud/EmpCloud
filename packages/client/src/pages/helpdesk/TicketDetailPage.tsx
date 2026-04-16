@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { showToast } from "@/components/ui/Toast";
 import {
   ArrowLeft,
   Clock,
@@ -81,19 +82,52 @@ export default function TicketDetailPage() {
     },
   });
 
+  // #1452 — Surface mutation errors via toast so buttons don't appear to do
+  // nothing when the server rejects the transition. Also invalidate the list /
+  // dashboard queries so the ticket's new status is reflected on other pages.
+  const invalidateTicketQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ["helpdesk-ticket", id] });
+    queryClient.invalidateQueries({ queryKey: ["helpdesk-tickets"] });
+    queryClient.invalidateQueries({ queryKey: ["my-tickets"] });
+    queryClient.invalidateQueries({ queryKey: ["helpdesk-dashboard"] });
+  };
+
+  const extractErrorMessage = (err: any, fallback: string): string =>
+    err?.response?.data?.error?.message ||
+    err?.response?.data?.message ||
+    fallback;
+
   const resolveMutation = useMutation({
     mutationFn: () => api.post(`/helpdesk/tickets/${id}/resolve`).then((r) => r.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["helpdesk-ticket", id] }),
+    onSuccess: () => {
+      invalidateTicketQueries();
+      showToast("success", "Ticket marked as resolved.");
+    },
+    onError: (err: any) => {
+      showToast("error", extractErrorMessage(err, "Failed to resolve ticket."));
+    },
   });
 
   const closeMutation = useMutation({
     mutationFn: () => api.post(`/helpdesk/tickets/${id}/close`).then((r) => r.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["helpdesk-ticket", id] }),
+    onSuccess: () => {
+      invalidateTicketQueries();
+      showToast("success", "Ticket closed.");
+    },
+    onError: (err: any) => {
+      showToast("error", extractErrorMessage(err, "Failed to close ticket."));
+    },
   });
 
   const reopenMutation = useMutation({
     mutationFn: () => api.post(`/helpdesk/tickets/${id}/reopen`).then((r) => r.data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["helpdesk-ticket", id] }),
+    onSuccess: () => {
+      invalidateTicketQueries();
+      showToast("success", "Ticket reopened.");
+    },
+    onError: (err: any) => {
+      showToast("error", extractErrorMessage(err, "Failed to reopen ticket."));
+    },
   });
 
   const rateMutation = useMutation({
@@ -136,7 +170,10 @@ export default function TicketDetailPage() {
   const isOwner = user?.id === ticket.raised_by;
   const canReply = isOwner || isHR;
   const isResolvable = isHR && !["resolved", "closed"].includes(ticket.status);
-  const isClosable = (isOwner || isHR) && ticket.status !== "closed";
+  // #1452 — The server only allows closing tickets that are already resolved
+  // (see helpdesk.service closeTicket). Gate the button on that to prevent
+  // silent failures when users click Close on an open ticket.
+  const isClosable = (isOwner || isHR) && ticket.status === "resolved";
   const isReopenable = isOwner && ["resolved", "closed"].includes(ticket.status);
   const canRate =
     isOwner &&

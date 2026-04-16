@@ -270,9 +270,13 @@ router.post(
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // #1452 — Forward user context so the service can enforce "HR or ticket
+      // owner" rather than allowing any authenticated user to close tickets.
       const ticket = await helpdeskService.closeTicket(
         req.user!.org_id,
-        paramInt(req.params.id)
+        paramInt(req.params.id),
+        req.user!.sub,
+        isHRUser(req),
       );
 
       await logAudit({

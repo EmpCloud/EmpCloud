@@ -194,10 +194,11 @@ describe("Subscription Service Coverage", () => {
       await expect(assignSeat({ orgId: 1, moduleId: 1, userId: 1, assignedBy: 2 })).rejects.toThrow("Active subscription");
     });
 
-    it("throws when seats full", async () => {
+    it("throws when seats full (#1461 uses COUNT-based check)", async () => {
       const mc = getChain();
       mc.first.mockResolvedValueOnce({ id: 1, used_seats: 10, total_seats: 10 });
-      await expect(assignSeat({ orgId: 1, moduleId: 1, userId: 1, assignedBy: 2 })).rejects.toThrow("No available seats");
+      mc.count.mockResolvedValueOnce([{ seatCount: 10 }]);
+      await expect(assignSeat({ orgId: 1, moduleId: 1, userId: 1, assignedBy: 2 })).rejects.toThrow("Seat limit exceeded");
     });
 
     it("throws when already assigned", async () => {
@@ -205,6 +206,7 @@ describe("Subscription Service Coverage", () => {
       mc.first
         .mockResolvedValueOnce({ id: 1, used_seats: 5, total_seats: 10 })
         .mockResolvedValueOnce({ id: 1 });
+      mc.count.mockResolvedValueOnce([{ seatCount: 5 }]);
       await expect(assignSeat({ orgId: 1, moduleId: 1, userId: 1, assignedBy: 2 })).rejects.toThrow("already has a seat");
     });
 
@@ -214,6 +216,7 @@ describe("Subscription Service Coverage", () => {
         .mockResolvedValueOnce({ id: 1, used_seats: 5, total_seats: 10 })
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce({ id: 1 });
+      mc.count.mockResolvedValueOnce([{ seatCount: 5 }]);
       const r = await assignSeat({ orgId: 1, moduleId: 1, userId: 1, assignedBy: 2 });
       expect(r).toBeTruthy();
     });

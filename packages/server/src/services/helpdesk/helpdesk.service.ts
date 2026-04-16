@@ -430,13 +430,25 @@ export async function resolveTicket(orgId: number, ticketId: number, userId: num
 // Close Ticket
 // ---------------------------------------------------------------------------
 
-export async function closeTicket(orgId: number, ticketId: number) {
+export async function closeTicket(
+  orgId: number,
+  ticketId: number,
+  userId?: number,
+  isHR?: boolean,
+) {
   const db = getDB();
 
   const ticket = await db("helpdesk_tickets")
     .where({ id: ticketId, organization_id: orgId })
     .first();
   if (!ticket) throw new NotFoundError("Ticket");
+
+  // #1452 — Only HR or the ticket creator may close a ticket. When called
+  // without a user context (legacy/internal calls) the check is skipped to
+  // preserve backwards compatibility.
+  if (userId !== undefined && !isHR && ticket.raised_by !== userId) {
+    throw new ForbiddenError("You can only close your own tickets");
+  }
 
   // #1385 — Block closing already-closed tickets
   if (ticket.status === "closed") {

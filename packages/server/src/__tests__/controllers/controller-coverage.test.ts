@@ -1804,7 +1804,8 @@ describe("Helpdesk Routes — Controller Coverage", () => {
   it("POST /tickets/:id/close", async () => {
     const res = await request(app).post("/api/v1/helpdesk/tickets/5/close").set("x-test-user", HR_USER);
     expect(res.status).toBe(200);
-    expect(helpdeskService.closeTicket).toHaveBeenCalledWith(5, 5);
+    // #1452 — route now forwards user context for RBAC ("HR or ticket owner")
+    expect(helpdeskService.closeTicket).toHaveBeenCalledWith(5, 5, 100, true);
   });
 
   it("POST /tickets/:id/reopen", async () => {

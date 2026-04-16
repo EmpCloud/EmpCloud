@@ -184,11 +184,13 @@ describe("subscription.service", () => {
       ).rejects.toThrow("Active subscription");
     });
 
-    it("throws ValidationError when no available seats", async () => {
+    it("throws ConflictError with descriptive message when seat limit reached (#1461)", async () => {
       chain._firstResult = { id: 1, used_seats: 10, total_seats: 10 };
+      // seat-count COUNT query resolves to [{ seatCount: 10 }] — at limit
+      chain._result = [{ seatCount: 10 }];
       await expect(
         assignSeat({ orgId: 1, moduleId: 2, userId: 10, assignedBy: 5 })
-      ).rejects.toThrow("No available seats");
+      ).rejects.toThrow("Seat limit exceeded");
     });
 
     it("throws ConflictError on duplicate seat assignment", async () => {
@@ -199,6 +201,8 @@ describe("subscription.service", () => {
         if (callCount === 2) return { id: 99 }; // existing seat
         return undefined;
       });
+      // seat-count COUNT query resolves to [{ seatCount: 5 }] — under limit
+      chain._result = [{ seatCount: 5 }];
 
       await expect(
         assignSeat({ orgId: 1, moduleId: 2, userId: 10, assignedBy: 5 })
@@ -213,6 +217,8 @@ describe("subscription.service", () => {
         if (callCount === 2) return undefined; // no existing seat
         return { id: 50 }; // return newly created seat
       });
+      // seat-count COUNT query resolves to [{ seatCount: 5 }] — under limit
+      chain._result = [{ seatCount: 5 }];
       chain.insert.mockReturnValue([50]);
 
       const result = await assignSeat({ orgId: 1, moduleId: 2, userId: 10, assignedBy: 5 });
