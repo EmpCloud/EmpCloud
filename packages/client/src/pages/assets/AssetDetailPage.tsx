@@ -6,6 +6,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import {
   ArrowLeft,
   Package,
+  PackageCheck,
   UserCheck,
   Calendar,
   MapPin,
@@ -42,6 +43,7 @@ const ACTION_COLORS: Record<string, string> = {
   repaired: "bg-yellow-500",
   retired: "bg-gray-500",
   lost: "bg-red-500",
+  found: "bg-green-500",
   damaged: "bg-orange-500",
   updated: "bg-indigo-500",
 };
@@ -59,7 +61,7 @@ export default function AssetDetailPage() {
   // Which in-place confirm dialog is open. Replaces window.confirm() so the
   // Retire and Report Lost flows use a styled modal consistent with the
   // rest of the app.
-  const [confirmAction, setConfirmAction] = useState<"retire" | "lost" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"retire" | "lost" | "found" | null>(null);
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const isHR = user && ["hr_admin", "org_admin", "super_admin"].includes(user.role);
@@ -114,6 +116,17 @@ export default function AssetDetailPage() {
     },
     onError: (err: any) =>
       setConfirmError(err?.response?.data?.error?.message || "Failed to report asset as lost"),
+  });
+
+  const markFoundMutation = useMutation({
+    mutationFn: () => api.post(`/assets/${id}/mark-found`, { notes: "Marked found via dashboard" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      setConfirmAction(null);
+      setConfirmError(null);
+    },
+    onError: (err: any) =>
+      setConfirmError(err?.response?.data?.error?.message || "Failed to mark asset as found"),
   });
 
   if (isLoading) {
@@ -189,6 +202,18 @@ export default function AssetDetailPage() {
                   Report Lost
                 </button>
               </>
+            )}
+            {asset.status === "lost" && (
+              <button
+                onClick={() => {
+                  setConfirmAction("found");
+                  setConfirmError(null);
+                }}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
+              >
+                <PackageCheck className="h-4 w-4" />
+                Mark Found
+              </button>
             )}
           </div>
         )}
@@ -480,20 +505,46 @@ export default function AssetDetailPage() {
         </div>
       )}
 
-      {/* Confirmation dialog — replaces window.confirm() for Retire / Report Lost */}
+      {/* Confirmation dialog — replaces window.confirm() for Retire / Report Lost / Mark Found */}
       {confirmAction && (() => {
-        const isLost = confirmAction === "lost";
-        const pending = isLost ? reportLostMutation.isPending : retireMutation.isPending;
-        const run = () => (isLost ? reportLostMutation.mutate() : retireMutation.mutate());
-        const title = isLost ? "Report asset as lost?" : "Retire this asset?";
-        const body = isLost
-          ? "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page."
-          : "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.";
-        const confirmLabel = isLost ? "Report as Lost" : "Retire Asset";
-        const iconColor = isLost ? "text-red-600 bg-red-50" : "text-gray-600 bg-gray-100";
-        const confirmBtn = isLost
-          ? "bg-red-600 hover:bg-red-700"
-          : "bg-gray-900 hover:bg-black";
+        const mutation =
+          confirmAction === "lost"
+            ? reportLostMutation
+            : confirmAction === "found"
+              ? markFoundMutation
+              : retireMutation;
+        const pending = mutation.isPending;
+        const run = () => mutation.mutate();
+        const title =
+          confirmAction === "lost"
+            ? "Report asset as lost?"
+            : confirmAction === "found"
+              ? "Mark asset as found?"
+              : "Retire this asset?";
+        const body =
+          confirmAction === "lost"
+            ? "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page."
+            : confirmAction === "found"
+              ? "This will return the asset to active inventory as available, so it can be reassigned."
+              : "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.";
+        const confirmLabel =
+          confirmAction === "lost"
+            ? "Report as Lost"
+            : confirmAction === "found"
+              ? "Mark as Found"
+              : "Retire Asset";
+        const iconColor =
+          confirmAction === "lost"
+            ? "text-red-600 bg-red-50"
+            : confirmAction === "found"
+              ? "text-green-600 bg-green-50"
+              : "text-gray-600 bg-gray-100";
+        const confirmBtn =
+          confirmAction === "lost"
+            ? "bg-red-600 hover:bg-red-700"
+            : confirmAction === "found"
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-gray-900 hover:bg-black";
         return (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -508,8 +559,10 @@ export default function AssetDetailPage() {
                   <div
                     className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${iconColor}`}
                   >
-                    {isLost ? (
+                    {confirmAction === "lost" ? (
                       <AlertTriangle className="h-5 w-5" />
+                    ) : confirmAction === "found" ? (
+                      <PackageCheck className="h-5 w-5" />
                     ) : (
                       <Trash2 className="h-5 w-5" />
                     )}

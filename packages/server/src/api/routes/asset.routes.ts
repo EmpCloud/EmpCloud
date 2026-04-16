@@ -390,4 +390,25 @@ router.post(
   }
 );
 
+// POST /api/v1/assets/:id/mark-found — Recover a lost asset back to available (HR)
+router.post(
+  "/:id/mark-found",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = assetActionSchema.parse(req.body);
+      const asset = await assetService.markFound(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        req.user!.sub,
+        data.notes
+      );
+      sendSuccess(res, asset);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;
