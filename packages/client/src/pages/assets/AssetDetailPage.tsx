@@ -16,6 +16,8 @@ import {
   AlertTriangle,
   RotateCcw,
   Trash2,
+  Wrench,
+  CheckCircle,
   X,
   Loader2,
 } from "lucide-react";
@@ -40,6 +42,7 @@ const ACTION_COLORS: Record<string, string> = {
   created: "bg-green-500",
   assigned: "bg-blue-500",
   returned: "bg-purple-500",
+  sent_to_repair: "bg-yellow-500",
   repaired: "bg-yellow-500",
   retired: "bg-gray-500",
   lost: "bg-red-500",
@@ -61,7 +64,9 @@ export default function AssetDetailPage() {
   // Which in-place confirm dialog is open. Replaces window.confirm() so the
   // Retire and Report Lost flows use a styled modal consistent with the
   // rest of the app.
-  const [confirmAction, setConfirmAction] = useState<"retire" | "lost" | "found" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<
+    "retire" | "lost" | "found" | "repair_start" | "repair_complete" | null
+  >(null);
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const isHR = user && ["hr_admin", "org_admin", "super_admin"].includes(user.role);
@@ -129,6 +134,30 @@ export default function AssetDetailPage() {
       setConfirmError(err?.response?.data?.error?.message || "Failed to mark asset as found"),
   });
 
+  const sendToRepairMutation = useMutation({
+    mutationFn: () =>
+      api.post(`/assets/${id}/send-to-repair`, { notes: "Sent for repair via dashboard" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      setConfirmAction(null);
+      setConfirmError(null);
+    },
+    onError: (err: any) =>
+      setConfirmError(err?.response?.data?.error?.message || "Failed to send asset to repair"),
+  });
+
+  const completeRepairMutation = useMutation({
+    mutationFn: () =>
+      api.post(`/assets/${id}/complete-repair`, { notes: "Repair completed via dashboard" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      setConfirmAction(null);
+      setConfirmError(null);
+    },
+    onError: (err: any) =>
+      setConfirmError(err?.response?.data?.error?.message || "Failed to complete repair"),
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -177,6 +206,30 @@ export default function AssetDetailPage() {
               >
                 <RotateCcw className="h-4 w-4" />
                 Return
+              </button>
+            )}
+            {(asset.status === "available" || asset.status === "assigned") && (
+              <button
+                onClick={() => {
+                  setConfirmAction("repair_start");
+                  setConfirmError(null);
+                }}
+                className="inline-flex items-center gap-2 px-3 py-2 border border-yellow-200 text-yellow-700 rounded-lg hover:bg-yellow-50 text-sm font-medium"
+              >
+                <Wrench className="h-4 w-4" />
+                Send for Repair
+              </button>
+            )}
+            {asset.status === "in_repair" && (
+              <button
+                onClick={() => {
+                  setConfirmAction("repair_complete");
+                  setConfirmError(null);
+                }}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
+              >
+                <CheckCircle className="h-4 w-4" />
+                Repair Complete
               </button>
             )}
             {asset.status !== "retired" && asset.status !== "lost" && (
@@ -505,46 +558,64 @@ export default function AssetDetailPage() {
         </div>
       )}
 
-      {/* Confirmation dialog — replaces window.confirm() for Retire / Report Lost / Mark Found */}
+      {/* Confirmation dialog — styled replacement for Retire / Report Lost / Mark Found / Repair */}
       {confirmAction && (() => {
-        const mutation =
-          confirmAction === "lost"
-            ? reportLostMutation
-            : confirmAction === "found"
-              ? markFoundMutation
-              : retireMutation;
-        const pending = mutation.isPending;
-        const run = () => mutation.mutate();
-        const title =
-          confirmAction === "lost"
-            ? "Report asset as lost?"
-            : confirmAction === "found"
-              ? "Mark asset as found?"
-              : "Retire this asset?";
-        const body =
-          confirmAction === "lost"
-            ? "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page."
-            : confirmAction === "found"
-              ? "This will return the asset to active inventory as available, so it can be reassigned."
-              : "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.";
-        const confirmLabel =
-          confirmAction === "lost"
-            ? "Report as Lost"
-            : confirmAction === "found"
-              ? "Mark as Found"
-              : "Retire Asset";
-        const iconColor =
-          confirmAction === "lost"
-            ? "text-red-600 bg-red-50"
-            : confirmAction === "found"
-              ? "text-green-600 bg-green-50"
-              : "text-gray-600 bg-gray-100";
-        const confirmBtn =
-          confirmAction === "lost"
-            ? "bg-red-600 hover:bg-red-700"
-            : confirmAction === "found"
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-gray-900 hover:bg-black";
+        const CONFIG = {
+          retire: {
+            mutation: retireMutation,
+            title: "Retire this asset?",
+            body: "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.",
+            confirmLabel: "Retire Asset",
+            iconColor: "text-gray-600 bg-gray-100",
+            confirmBtn: "bg-gray-900 hover:bg-black",
+            Icon: Trash2,
+          },
+          lost: {
+            mutation: reportLostMutation,
+            title: "Report asset as lost?",
+            body: "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page.",
+            confirmLabel: "Report as Lost",
+            iconColor: "text-red-600 bg-red-50",
+            confirmBtn: "bg-red-600 hover:bg-red-700",
+            Icon: AlertTriangle,
+          },
+          found: {
+            mutation: markFoundMutation,
+            title: "Mark asset as found?",
+            body: "This will return the asset to active inventory as available, so it can be reassigned.",
+            confirmLabel: "Mark as Found",
+            iconColor: "text-green-600 bg-green-50",
+            confirmBtn: "bg-green-600 hover:bg-green-700",
+            Icon: PackageCheck,
+          },
+          repair_start: {
+            mutation: sendToRepairMutation,
+            title: "Send asset for repair?",
+            body:
+              asset.status === "assigned"
+                ? "This will unassign the asset and move it to 'In Repair'. The current holder stays recorded in the history."
+                : "This will move the asset to 'In Repair'. It won't be assignable until repair is complete.",
+            confirmLabel: "Send for Repair",
+            iconColor: "text-yellow-700 bg-yellow-50",
+            confirmBtn: "bg-yellow-600 hover:bg-yellow-700",
+            Icon: Wrench,
+          },
+          repair_complete: {
+            mutation: completeRepairMutation,
+            title: "Mark repair as complete?",
+            body: "This will return the asset to active inventory as available, so it can be reassigned.",
+            confirmLabel: "Mark as Repaired",
+            iconColor: "text-green-600 bg-green-50",
+            confirmBtn: "bg-green-600 hover:bg-green-700",
+            Icon: CheckCircle,
+          },
+        } as const;
+
+        const cfg = CONFIG[confirmAction];
+        const pending = cfg.mutation.isPending;
+        const run = () => cfg.mutation.mutate();
+        const { title, body, confirmLabel, iconColor, confirmBtn, Icon } = cfg;
+
         return (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -559,13 +630,7 @@ export default function AssetDetailPage() {
                   <div
                     className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${iconColor}`}
                   >
-                    {confirmAction === "lost" ? (
-                      <AlertTriangle className="h-5 w-5" />
-                    ) : confirmAction === "found" ? (
-                      <PackageCheck className="h-5 w-5" />
-                    ) : (
-                      <Trash2 className="h-5 w-5" />
-                    )}
+                    <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900">{title}</h3>

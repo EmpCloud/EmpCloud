@@ -411,4 +411,46 @@ router.post(
   }
 );
 
+// POST /api/v1/assets/:id/send-to-repair — Move asset into repair (HR)
+router.post(
+  "/:id/send-to-repair",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = assetActionSchema.parse(req.body);
+      const asset = await assetService.sendToRepair(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        req.user!.sub,
+        data.notes
+      );
+      sendSuccess(res, asset);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// POST /api/v1/assets/:id/complete-repair — Mark repair done, back to available (HR)
+router.post(
+  "/:id/complete-repair",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = assetActionSchema.parse(req.body);
+      const asset = await assetService.completeRepair(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        req.user!.sub,
+        data.notes
+      );
+      sendSuccess(res, asset);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;
