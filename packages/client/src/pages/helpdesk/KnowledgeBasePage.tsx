@@ -580,15 +580,21 @@ export default function KnowledgeBasePage() {
                 {a.content}
               </p>
               <div className="flex items-center gap-3 text-xs text-gray-400">
-                <span className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" /> {a.view_count}
-                </span>
-                <span className="flex items-center gap-1">
-                  <ThumbsUp className="h-3 w-3" /> {a.helpful_count}
-                </span>
-                <span className="flex items-center gap-1">
-                  <ThumbsDown className="h-3 w-3" /> {a.not_helpful_count ?? 0}
-                </span>
+                {a.view_count > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" /> {a.view_count}
+                  </span>
+                )}
+                {a.helpful_count > 0 && (
+                  <span className="flex items-center gap-1">
+                    <ThumbsUp className="h-3 w-3" /> {a.helpful_count}
+                  </span>
+                )}
+                {(a.not_helpful_count ?? 0) > 0 && (
+                  <span className="flex items-center gap-1">
+                    <ThumbsDown className="h-3 w-3" /> {a.not_helpful_count}
+                  </span>
+                )}
                 <span>{a.author_name}</span>
               </div>
             </div>
