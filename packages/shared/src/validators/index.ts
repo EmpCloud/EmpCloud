@@ -1200,6 +1200,27 @@ export type ReturnAssetInput = z.infer<typeof returnAssetSchema>;
 export type AssetActionInput = z.infer<typeof assetActionSchema>;
 export type AssetQueryInput = z.infer<typeof assetQuerySchema>;
 
+// One row of a bulk-asset-import CSV. The shape intentionally mirrors
+// createAssetSchema but every field is treated as a raw string so the
+// parser can surface per-row validation errors instead of failing the
+// whole batch on a single bad cell.
+export const bulkAssetRowSchema = z.object({
+  name: z.string().min(1).max(200),
+  category_name: z.string().max(100).optional().nullable(),
+  description: z.string().optional().nullable(),
+  serial_number: z.string().max(100).optional().nullable(),
+  brand: z.string().max(100).optional().nullable(),
+  model: z.string().max(100).optional().nullable(),
+  purchase_date: z.string().optional().nullable(),
+  purchase_cost: z.number().int().optional().nullable(),
+  warranty_expiry: z.string().optional().nullable(),
+  condition_status: assetConditionEnum.optional(),
+  location_name: z.string().max(200).optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
+export type BulkAssetRowInput = z.infer<typeof bulkAssetRowSchema>;
+
 // ---------------------------------------------------------------------------
 // HRMS — Anonymous Feedback Validators
 // ---------------------------------------------------------------------------

@@ -20,6 +20,7 @@ import {
   CheckCircle,
   X,
   Loader2,
+  Pencil,
 } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -57,10 +58,44 @@ export default function AssetDetailPage() {
   const queryClient = useQueryClient();
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showReturnModal, setShowReturnModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [assignUserId, setAssignUserId] = useState("");
   const [assignNotes, setAssignNotes] = useState("");
   const [returnCondition, setReturnCondition] = useState("good");
   const [returnNotes, setReturnNotes] = useState("");
+  // Edit-asset form state. Initialised from the loaded asset each time the
+  // modal opens so unsaved edits don't leak between sessions.
+  const [editForm, setEditForm] = useState<{
+    name: string;
+    description: string;
+    serial_number: string;
+    brand: string;
+    model: string;
+    category_id: string;
+    purchase_date: string;
+    purchase_cost: string;
+    warranty_expiry: string;
+    condition_status: string;
+    location_name: string;
+    notes: string;
+  }>({
+    name: "",
+    description: "",
+    serial_number: "",
+    brand: "",
+    model: "",
+    category_id: "",
+    purchase_date: "",
+    purchase_cost: "",
+    warranty_expiry: "",
+    condition_status: "good",
+    location_name: "",
+    notes: "",
+  });
+  const [editError, setEditError] = useState<string | null>(null);
+  // History-entry deletion — id being confirmed, or null
+  const [historyDeleteId, setHistoryDeleteId] = useState<number | null>(null);
+  const [historyDeleteError, setHistoryDeleteError] = useState<string | null>(null);
   // Which in-place confirm dialog is open. Replaces window.confirm() so the
   // Retire and Report Lost flows use a styled modal consistent with the
   // rest of the app.
@@ -81,6 +116,96 @@ export default function AssetDetailPage() {
     queryFn: () => api.get("/users", { params: { per_page: 100 } }).then((r) => r.data.data),
     enabled: showAssignModal,
   });
+
+  // Categories — loaded only when the edit modal opens so the detail page's
+  // initial render stays lean.
+  const { data: categories } = useQuery({
+    queryKey: ["asset-categories"],
+    queryFn: () => api.get("/assets/categories").then((r) => r.data.data),
+    enabled: showEditModal,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (payload: object) => api.put(`/assets/${id}`, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+      setShowEditModal(false);
+      setEditError(null);
+    },
+    onError: (err: any) =>
+      setEditError(err?.response?.data?.error?.message || "Failed to update asset"),
+  });
+
+  const deleteHistoryMutation = useMutation({
+    mutationFn: (entryId: number) =>
+      api.delete(`/assets/${id}/history/${entryId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset", id] });
+      setHistoryDeleteId(null);
+      setHistoryDeleteError(null);
+    },
+    onError: (err: any) =>
+      setHistoryDeleteError(
+        err?.response?.data?.error?.message || "Failed to delete history entry",
+      ),
+  });
+
+  // Prefill the edit form from the current asset, then open the modal. Done
+  // lazily rather than as a useEffect so we don't overwrite fields every
+  // time the asset query refetches in the background.
+  function openEditModal() {
+    if (!asset) return;
+    setEditForm({
+      name: asset.name || "",
+      description: asset.description || "",
+      serial_number: asset.serial_number || "",
+      brand: asset.brand || "",
+      model: asset.model || "",
+      category_id: asset.category_id ? String(asset.category_id) : "",
+      purchase_date: asset.purchase_date
+        ? String(asset.purchase_date).slice(0, 10)
+        : "",
+      purchase_cost:
+        asset.purchase_cost != null ? String(asset.purchase_cost) : "",
+      warranty_expiry: asset.warranty_expiry
+        ? String(asset.warranty_expiry).slice(0, 10)
+        : "",
+      condition_status: asset.condition_status || "good",
+      location_name: asset.location_name || "",
+      notes: asset.notes || "",
+    });
+    setEditError(null);
+    setShowEditModal(true);
+  }
+
+  function submitEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (
+      editForm.purchase_date &&
+      editForm.warranty_expiry &&
+      editForm.warranty_expiry < editForm.purchase_date
+    ) {
+      setEditError("Warranty expiry cannot be before the purchase date.");
+      return;
+    }
+    updateMutation.mutate({
+      name: editForm.name,
+      description: editForm.description || null,
+      serial_number: editForm.serial_number || null,
+      brand: editForm.brand || null,
+      model: editForm.model || null,
+      category_id: editForm.category_id ? Number(editForm.category_id) : null,
+      purchase_date: editForm.purchase_date || null,
+      purchase_cost: editForm.purchase_cost
+        ? Number(editForm.purchase_cost)
+        : null,
+      warranty_expiry: editForm.warranty_expiry || null,
+      condition_status: editForm.condition_status,
+      location_name: editForm.location_name || null,
+      notes: editForm.notes || null,
+    });
+  }
 
   const assignMutation = useMutation({
     mutationFn: (data: object) => api.post(`/assets/${id}/assign`, data),
@@ -189,7 +314,14 @@ export default function AssetDetailPage() {
           <p className="text-gray-500 mt-1">{asset.name}</p>
         </div>
         {isHR && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={openEditModal}
+              className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit
+            </button>
             {asset.status === "available" && (
               <button
                 onClick={() => setShowAssignModal(true)}
@@ -402,22 +534,36 @@ export default function AssetDetailPage() {
               <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200" />
               <div className="space-y-4">
                 {asset.history.map((entry: any) => (
-                  <div key={entry.id} className="relative pl-6">
+                  <div key={entry.id} className="relative pl-6 group">
                     <div className={`absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border-2 border-white ${ACTION_COLORS[entry.action] || "bg-gray-400"}`} />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 capitalize">{entry.action}</p>
-                      {entry.to_user_name && (
-                        <p className="text-xs text-gray-600">To: {entry.to_user_name}</p>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 capitalize">{entry.action}</p>
+                        {entry.to_user_name && (
+                          <p className="text-xs text-gray-600">To: {entry.to_user_name}</p>
+                        )}
+                        {entry.from_user_name && (
+                          <p className="text-xs text-gray-600">From: {entry.from_user_name}</p>
+                        )}
+                        {entry.notes && (
+                          <p className="text-xs text-gray-500 mt-0.5">{entry.notes}</p>
+                        )}
+                        <p className="text-xs text-gray-400 mt-1">
+                          {entry.performed_by_name} &middot; {new Date(entry.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                      {isHR && (
+                        <button
+                          onClick={() => {
+                            setHistoryDeleteId(entry.id);
+                            setHistoryDeleteError(null);
+                          }}
+                          title="Delete history entry"
+                          className="p-1 rounded hover:bg-red-50 text-gray-300 hover:text-red-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                       )}
-                      {entry.from_user_name && (
-                        <p className="text-xs text-gray-600">From: {entry.from_user_name}</p>
-                      )}
-                      {entry.notes && (
-                        <p className="text-xs text-gray-500 mt-0.5">{entry.notes}</p>
-                      )}
-                      <p className="text-xs text-gray-400 mt-1">
-                        {entry.performed_by_name} &middot; {new Date(entry.created_at).toLocaleString()}
-                      </p>
                     </div>
                   </div>
                 ))}
@@ -676,6 +822,246 @@ export default function AssetDetailPage() {
           </div>
         );
       })()}
+
+      {/* Edit Asset Modal */}
+      {showEditModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => !updateMutation.isPending && setShowEditModal(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Edit Asset</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="p-1 rounded hover:bg-gray-100"
+              >
+                <X className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+            <form onSubmit={submitEdit} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select
+                    value={editForm.category_id}
+                    onChange={(e) => setEditForm({ ...editForm, category_id: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="">Uncategorized</option>
+                    {(categories || []).map((c: any) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                  <input
+                    type="text"
+                    value={editForm.serial_number}
+                    onChange={(e) => setEditForm({ ...editForm, serial_number: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                  <input
+                    type="text"
+                    value={editForm.brand}
+                    onChange={(e) => setEditForm({ ...editForm, brand: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                  <input
+                    type="text"
+                    value={editForm.model}
+                    onChange={(e) => setEditForm({ ...editForm, model: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+                  <select
+                    value={editForm.condition_status}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, condition_status: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="new">New</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="poor">Poor</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
+                  <input
+                    type="date"
+                    value={editForm.purchase_date}
+                    onChange={(e) => setEditForm({ ...editForm, purchase_date: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Cost</label>
+                  <div className="flex items-stretch">
+                    <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-sm text-gray-600">
+                      ₹ INR
+                    </span>
+                    <input
+                      type="number"
+                      value={editForm.purchase_cost}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, purchase_cost: e.target.value })
+                      }
+                      className="flex-1 min-w-0 px-3 py-2 border border-gray-200 rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Amount in paise.</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Warranty Expiry</label>
+                  <input
+                    type="date"
+                    value={editForm.warranty_expiry}
+                    onChange={(e) => setEditForm({ ...editForm, warranty_expiry: e.target.value })}
+                    min={editForm.purchase_date || undefined}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={editForm.location_name}
+                    onChange={(e) => setEditForm({ ...editForm, location_name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+              {editError && (
+                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{editError}</div>
+              )}
+              <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  disabled={updateMutation.isPending}
+                  className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updateMutation.isPending}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+                >
+                  {updateMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete History Entry confirmation */}
+      {historyDeleteId !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteHistoryMutation.isPending && setHistoryDeleteId(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600">
+                  <Trash2 className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete history entry?</h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    This removes just this log row. The asset's current status stays unchanged —
+                    past assignments or actions are not reverted.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {historyDeleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {historyDeleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setHistoryDeleteId(null)}
+                disabled={deleteHistoryMutation.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteHistoryMutation.mutate(historyDeleteId)}
+                disabled={deleteHistoryMutation.isPending}
+                className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteHistoryMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete Entry"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
