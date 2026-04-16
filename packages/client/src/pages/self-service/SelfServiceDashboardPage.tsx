@@ -18,6 +18,7 @@ import {
 import { AiBadge } from "@/components/AiBadge";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
 
 function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
   return (
@@ -168,7 +169,21 @@ export default function SelfServiceDashboardPage() {
         <QuickLink to="/helpdesk/my-tickets" icon={FileText} label="Request Update" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/*
+        Two-column layout — Company Feed on the left as the focal point,
+        the existing self-service cards stacked on the right. The grid uses
+        a 3/5 + 2/5 split on lg+ so the feed gets enough width for avatars,
+        media and replies; on smaller screens it collapses to a single column
+        with the feed first.
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left column — Company Feed */}
+        <div className="lg:col-span-3">
+          <CompanyFeedWidget />
+        </div>
+
+        {/* Right column — stacked dashboard cards */}
+        <div className="lg:col-span-2 space-y-6">
         {/* Attendance Today */}
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
@@ -283,7 +298,7 @@ export default function SelfServiceDashboardPage() {
         </div>
 
         {/* Policies to Acknowledge */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 lg:col-span-2">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-brand-600" />
@@ -322,7 +337,7 @@ export default function SelfServiceDashboardPage() {
         </div>
 
         {/* AI Insights */}
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6 lg:col-span-2">
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="h-5 w-5 text-purple-600" />
             <h2 className="text-lg font-semibold text-gray-900">AI Insights</h2>
@@ -342,6 +357,7 @@ export default function SelfServiceDashboardPage() {
               <span>2 company policies updated recently. <Link to="/policies" className="text-purple-600 underline">Review them</Link>.</span>
             </li>
           </ul>
+        </div>
         </div>
       </div>
     </div>

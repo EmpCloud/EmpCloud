@@ -94,6 +94,7 @@ export const employeeNavItems: NavItem[] = [
     { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "nav.wellnessCheckIn", icon: Smile },
   ]},
   { path: "/forum", label: "Community", i18nKey: "nav.community", icon: MessagesSquare, children: [
+    { path: "/feed", label: "Feed", i18nKey: "nav.feed", icon: MessagesSquare },
     { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
     { path: "/forum/new", label: "Create Post", i18nKey: "nav.createPost", icon: PenSquare },
     { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
@@ -156,9 +157,9 @@ export const adminNavItems: NavItem[] = [
     { path: "/wellness/dashboard", label: "Wellness Dashboard", i18nKey: "nav.wellnessDashboard", icon: BarChart3 },
   ]},
   { path: "/forum", label: "Community", i18nKey: "nav.community", icon: MessagesSquare, children: [
+    { path: "/feed", label: "Feed", i18nKey: "nav.feed", icon: MessagesSquare },
     { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
     { path: "/forum/new", label: "Create Post", i18nKey: "nav.createPost", icon: PenSquare },
-    { path: "/forum/dashboard", label: "Forum Dashboard", i18nKey: "nav.forumDashboard", icon: BarChart3 },
     { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
     { path: "/events/my", label: "My Events", i18nKey: "nav.myEvents", icon: CalendarCheck },
     { path: "/events/dashboard", label: "Event Dashboard", i18nKey: "nav.eventDashboard", icon: BarChart3 },

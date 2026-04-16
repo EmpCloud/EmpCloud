@@ -15,7 +15,9 @@ import {
   updateForumPostSchema,
   forumPostQuerySchema,
   createForumReplySchema,
+  updateForumReplySchema,
   forumLikeSchema,
+  feedQuerySchema,
   paginationSchema,
   AuditAction,
 } from "@empcloud/shared";
@@ -129,6 +131,7 @@ router.put("/posts/:id", authenticate, async (req: Request, res: Response, next:
       req.user!.org_id,
       paramInt(req.params.id),
       req.user!.sub,
+      req.user!.role,
       data
     );
     sendSuccess(res, post);
@@ -186,6 +189,20 @@ router.post("/posts/:id/reply", authenticate, async (req: Request, res: Response
   } catch (err) { next(err); }
 });
 
+// PUT /api/v1/forum/replies/:id — edit own reply
+router.put("/replies/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateForumReplySchema.parse(req.body);
+    const reply = await forumService.updateReply(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.sub,
+      data
+    );
+    sendSuccess(res, reply);
+  } catch (err) { next(err); }
+});
+
 // DELETE /api/v1/forum/replies/:id
 router.delete("/replies/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -233,6 +250,25 @@ router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Resp
   try {
     const stats = await forumService.getForumDashboard(req.user!.org_id);
     sendSuccess(res, stats);
+  } catch (err) { next(err); }
+});
+
+// ---- Social Feed (cross-category, all authenticated users) ----
+
+// GET /api/v1/forum/feed — cursor-paginated feed with author chip and preview replies
+router.get("/feed", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const params = feedQuerySchema.parse(req.query);
+    const result = await forumService.listFeed(req.user!.org_id, req.user!.sub, params);
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/forum/feed/default-category — used by the dashboard composer
+router.get("/feed/default-category", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = await forumService.getDefaultFeedCategoryId(req.user!.org_id);
+    sendSuccess(res, { category_id: id });
   } catch (err) { next(err); }
 });
 
