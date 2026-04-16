@@ -55,6 +55,14 @@ router.put("/categories/:id", authenticate, requireHR, async (req: Request, res:
   } catch (err) { next(err); }
 });
 
+// DELETE /api/v1/forum/categories/:id — soft-delete a forum category (HR)
+router.delete("/categories/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await forumService.deleteCategory(req.user!.org_id, paramInt(req.params.id));
+    sendSuccess(res, { message: "Category deactivated" });
+  } catch (err) { next(err); }
+});
+
 // ---- Posts ----
 
 // POST /api/v1/forum/posts
