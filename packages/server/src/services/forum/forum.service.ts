@@ -108,6 +108,21 @@ export async function updateCategory(
   return db("forum_categories").where({ id: categoryId }).first();
 }
 
+export async function deleteCategory(orgId: number, categoryId: number) {
+  const db = getDB();
+  const existing = await db("forum_categories")
+    .where({ id: categoryId, organization_id: orgId })
+    .first();
+  if (!existing) throw new NotFoundError("Forum category");
+
+  // Soft-delete — mark inactive. Existing posts keep their category_id but
+  // the category is hidden from the listing and createPost blocks new posts
+  // since it filters on is_active=true.
+  await db("forum_categories")
+    .where({ id: categoryId })
+    .update({ is_active: false, updated_at: new Date() });
+}
+
 // ---------------------------------------------------------------------------
 // Posts
 // ---------------------------------------------------------------------------

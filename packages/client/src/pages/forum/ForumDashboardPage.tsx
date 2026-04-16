@@ -10,6 +10,8 @@ import {
   Heart,
   Plus,
   Pencil,
+  Trash2,
+  Loader2,
   BarChart3,
   MessagesSquare,
 } from "lucide-react";
@@ -32,6 +34,8 @@ export default function ForumDashboardPage() {
   const [catDescription, setCatDescription] = useState("");
   const [catIcon, setCatIcon] = useState("");
   const [catSortOrder, setCatSortOrder] = useState(0);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string; post_count: number } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const createCategory = useMutation({
     mutationFn: (data: object) => api.post("/forum/categories", data).then((r) => r.data.data),
@@ -50,6 +54,19 @@ export default function ForumDashboardPage() {
       qc.invalidateQueries({ queryKey: ["forum-categories"] });
       resetCatForm();
     },
+  });
+
+  const deleteCategory = useMutation({
+    mutationFn: (id: number) =>
+      api.delete(`/forum/categories/${id}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["forum-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["forum-categories"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
+    },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete category"),
   });
 
   const resetCatForm = () => {
@@ -330,14 +347,94 @@ export default function ForumDashboardPage() {
                 <button
                   onClick={() => startEditCategory(cat)}
                   className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                  title="Edit category"
                 >
                   <Pencil className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    setDeleteTarget({ id: cat.id, name: cat.name, post_count: Number(cat.post_count || 0) });
+                    setDeleteError(null);
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600"
+                  title="Delete category"
+                >
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteCategory.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete category?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Delete{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.name}</span>?
+                    {deleteTarget.post_count > 0 ? (
+                      <>
+                        {" "}The {deleteTarget.post_count} existing post
+                        {deleteTarget.post_count === 1 ? "" : "s"} keep their tag, but no
+                        new posts can be added here until it's restored.
+                      </>
+                    ) : (
+                      <>
+                        {" "}The category will be hidden from the forum and from new-post
+                        selection.
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteCategory.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteCategory.mutate(deleteTarget.id)}
+                disabled={deleteCategory.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteCategory.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
