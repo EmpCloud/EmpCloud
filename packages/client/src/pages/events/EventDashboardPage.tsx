@@ -138,61 +138,52 @@ export default function EventDashboardPage() {
       {/* Stats Cards */}
       {!isLoading && dashboard && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-blue-600" />
+          {([
+            { label: "Upcoming Events", value: dashboard.upcoming_count, icon: Calendar, iconBg: "bg-blue-50", iconColor: "text-blue-600", href: "/events" },
+            { label: "This Month", value: dashboard.month_count, icon: CalendarDays, iconBg: "bg-green-50", iconColor: "text-green-600", href: "/events" },
+            { label: "Total RSVPs", value: dashboard.total_attendees, icon: Users, iconBg: "bg-purple-50", iconColor: "text-purple-600", href: "/events/my" },
+            { label: "Event Types", value: dashboard.type_breakdown?.length || 0, icon: TrendingUp, iconBg: "bg-amber-50", iconColor: "text-amber-600", anchorId: "type-breakdown" },
+          ] as const).map((card) => {
+            const Icon = card.icon;
+            const content = (
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`h-10 w-10 rounded-lg ${card.iconBg} flex items-center justify-center`}>
+                  <Icon className={`h-5 w-5 ${card.iconColor}`} />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">{card.label}</p>
+                  <p className="text-xl font-bold text-gray-900">{card.value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-gray-400">Upcoming Events</p>
-                <p className="text-xl font-bold text-gray-900">{dashboard.upcoming_count}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-                <CalendarDays className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">This Month</p>
-                <p className="text-xl font-bold text-gray-900">{dashboard.month_count}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                <Users className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Total RSVPs</p>
-                <p className="text-xl font-bold text-gray-900">{dashboard.total_attendees}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Event Types</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {dashboard.type_breakdown?.length || 0}
-                </p>
-              </div>
-            </div>
-          </div>
+            );
+            const sharedClass =
+              "block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+            if ("href" in card) {
+              return (
+                <Link key={card.label} to={card.href} className={sharedClass}>
+                  {content}
+                </Link>
+              );
+            }
+            return (
+              <button
+                key={card.label}
+                type="button"
+                onClick={() => {
+                  document.getElementById(card.anchorId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className={sharedClass}
+              >
+                {content}
+              </button>
+            );
+          })}
         </div>
       )}
 
       {/* Type Breakdown */}
       {dashboard?.type_breakdown?.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div id="type-breakdown" className="bg-white rounded-xl border border-gray-200 p-6 mb-6 scroll-mt-4">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">Event Type Breakdown</h2>
           <div className="flex flex-wrap gap-3">
             {dashboard.type_breakdown.map((t: any) => (
