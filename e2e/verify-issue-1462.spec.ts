@@ -22,7 +22,8 @@ test("Issue #1462: non-featured KB cards do not render stray 0", async ({ page }
   await page.waitForLoadState("networkidle").catch(() => {});
   await page.waitForTimeout(2000);
 
-  const cards = page.locator('button:has(h3)');
+  // #1509 changed KB cards from <button> to <div role="button">. Match either.
+  const cards = page.locator('[role="button"]:has(h3), button:has(h3)');
   const count = await cards.count();
   console.log(`Found ${count} KB article cards`);
   expect(count).toBeGreaterThan(0);
@@ -30,10 +31,11 @@ test("Issue #1462: non-featured KB cards do not render stray 0", async ({ page }
   let checked = 0;
   for (let i = 0; i < count; i++) {
     const card = cards.nth(i);
-    const header = card.locator("> div").first();
-    if (!(await header.isVisible().catch(() => false))) continue;
-    const text = ((await header.innerText().catch(() => "")) || "").trim();
-    expect(text, `Card ${i} header contained stray '0': ${JSON.stringify(text)}`).not.toMatch(/(^|\s)0($|\s)/);
+    // Check the whole card text for a stray '0' segment — #1513 added {x > 0}
+    // guards so counts rendering '0' should no longer appear anywhere on the card.
+    const text = ((await card.innerText().catch(() => "")) || "").trim();
+    if (!text) continue;
+    expect(text, `Card ${i} contained stray '0': ${JSON.stringify(text)}`).not.toMatch(/(^|\s)0($|\s)/);
     checked++;
   }
   expect(checked).toBeGreaterThan(0);
