@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
+import AssetBulkUploadModal from "@/components/AssetBulkUploadModal";
 import {
   Plus,
   Package,
@@ -10,6 +12,9 @@ import {
   ChevronRight,
   X,
   AlertTriangle,
+  Upload,
+  Download,
+  ChevronDown,
 } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -37,7 +42,25 @@ export default function AssetListPage() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const isHR = user && ["hr_admin", "org_admin", "super_admin"].includes(user.role);
+
+  // Close export dropdown on outside click so it behaves like every other
+  // menu in the app.
+  useEffect(() => {
+    if (!showExportMenu) return;
+    function onDocClick(e: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [showExportMenu]);
 
   // Form state
   const [formName, setFormName] = useState("");
@@ -124,20 +147,147 @@ export default function AssetListPage() {
   const assets = data?.data || [];
   const meta = data?.meta;
 
+  // Client-side CSV export of the currently-filtered list. We already have
+  // every visible row in memory (React Query's cache), so a server round-
+  // trip would just be wasted latency. Quotes and commas in values are
+  // escaped per RFC 4180.
+  function exportCsv() {
+    const headers = [
+      "asset_tag",
+      "name",
+      "category",
+      "status",
+      "condition",
+      "assigned_to",
+      "serial_number",
+      "brand",
+      "model",
+      "location",
+      "purchase_date",
+      "purchase_cost_paise",
+      "warranty_expiry",
+    ];
+    const esc = (val: unknown): string => {
+      if (val === null || val === undefined) return "";
+      const s = String(val);
+      if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+      return s;
+    };
+    const rows = assets.map((a: any) =>
+      [
+        a.asset_tag,
+        a.name,
+        a.category_name || "",
+        a.status,
+        a.condition_status,
+        a.assigned_to_name || "",
+        a.serial_number || "",
+        a.brand || "",
+        a.model || "",
+        a.location_name || "",
+        a.purchase_date ? String(a.purchase_date).slice(0, 10) : "",
+        a.purchase_cost ?? "",
+        a.warranty_expiry ? String(a.warranty_expiry).slice(0, 10) : "",
+      ]
+        .map(esc)
+        .join(","),
+    );
+    const csv = [headers.join(","), ...rows].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `assets-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+  }
+
+  // PDF export hits the backend so the full filtered set is rendered server-
+  // side (respecting the same filters as the list view). The response is an
+  // HTML-as-PDF stream — no PDF library required, works in every browser's
+  // print-to-PDF pipeline.
+  async function exportPdf() {
+    setShowExportMenu(false);
+    try {
+      const res = await api.get("/assets/export", {
+        params: {
+          format: "pdf",
+          ...(statusFilter && { status: statusFilter }),
+          ...(categoryFilter && { category_id: Number(categoryFilter) }),
+          ...(search && { search }),
+        },
+        responseType: "blob",
+      });
+      const blob = new Blob([res.data], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `asset-report-${new Date().toISOString().slice(0, 10)}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      alert(err?.response?.data?.error?.message || "Failed to export PDF");
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Assets</h1>
           <p className="text-sm text-gray-500 mt-1">Manage IT equipment and company assets</p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
-        >
-          <Plus className="h-4 w-4" />
-          Add Asset
-        </button>
+        {isHR && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Export dropdown — CSV is client-side from the in-memory list,
+                PDF is a server round-trip that respects the same filters. */}
+            <div className="relative" ref={exportMenuRef}>
+              <button
+                onClick={() => setShowExportMenu((v) => !v)}
+                className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
+              >
+                <Download className="h-4 w-4" />
+                Export
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-40">
+                  <button
+                    onClick={exportCsv}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+                  >
+                    Export as CSV
+                  </button>
+                  <button
+                    onClick={exportPdf}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg border-t border-gray-100"
+                  >
+                    Export as PDF
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setShowBulkUpload(true)}
+              className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
+            >
+              <Upload className="h-4 w-4" />
+              Bulk Upload
+            </button>
+            <button
+              onClick={() => setShowForm(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
+            >
+              <Plus className="h-4 w-4" />
+              Add Asset
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -429,6 +579,10 @@ export default function AssetListPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {showBulkUpload && (
+        <AssetBulkUploadModal onClose={() => setShowBulkUpload(false)} />
       )}
     </div>
   );
