@@ -515,6 +515,51 @@ export async function reportLost(
 }
 
 // ---------------------------------------------------------------------------
+// Mark Found — recover a previously-lost asset back to available
+// ---------------------------------------------------------------------------
+
+export async function markFound(
+  orgId: number,
+  assetId: number,
+  userId: number,
+  notes?: string | null
+) {
+  const db = getDB();
+
+  const asset = await db("assets")
+    .where({ id: assetId, organization_id: orgId })
+    .first();
+  if (!asset) throw new NotFoundError("Asset");
+
+  if (asset.status !== "lost") {
+    throw new ForbiddenError("Only lost assets can be marked as found");
+  }
+
+  const now = new Date();
+
+  await db.transaction(async (trx) => {
+    await trx("assets").where({ id: assetId }).update({
+      status: "available",
+      updated_at: now,
+    });
+
+    await trx("asset_history").insert({
+      asset_id: assetId,
+      organization_id: orgId,
+      action: "found",
+      from_user_id: null,
+      to_user_id: null,
+      performed_by: userId,
+      notes: notes || "Asset marked as found",
+      created_at: now,
+    });
+  });
+
+  logger.info(`Asset #${assetId} marked found by user ${userId} in org ${orgId}`);
+  return db("assets").where({ id: assetId }).first();
+}
+
+// ---------------------------------------------------------------------------
 // Delete Asset (soft — retire; blocks if currently assigned)
 // ---------------------------------------------------------------------------
 

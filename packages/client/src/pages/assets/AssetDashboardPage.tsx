@@ -19,6 +19,7 @@ const ACTION_COLORS: Record<string, string> = {
   repaired: "text-yellow-600",
   retired: "text-gray-600",
   lost: "text-red-600",
+  found: "text-green-600",
   damaged: "text-orange-600",
   updated: "text-indigo-600",
 };
