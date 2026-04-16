@@ -11,6 +11,8 @@ import {
   Video,
   Clock,
   CalendarDays,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 
 const EVENT_TYPES = [
@@ -77,6 +79,21 @@ export default function EventDashboardPage() {
     },
   });
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (eventId: number) => api.delete(`/events/${eventId}`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
+    },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete event"),
+  });
+
   function resetForm() {
     setTitle("");
     setDescription("");
@@ -138,61 +155,52 @@ export default function EventDashboardPage() {
       {/* Stats Cards */}
       {!isLoading && dashboard && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-blue-600" />
+          {([
+            { label: "Upcoming Events", value: dashboard.upcoming_count, icon: Calendar, iconBg: "bg-blue-50", iconColor: "text-blue-600", href: "/events" },
+            { label: "This Month", value: dashboard.month_count, icon: CalendarDays, iconBg: "bg-green-50", iconColor: "text-green-600", href: "/events" },
+            { label: "Total RSVPs", value: dashboard.total_attendees, icon: Users, iconBg: "bg-purple-50", iconColor: "text-purple-600", href: "/events/my" },
+            { label: "Event Types", value: dashboard.type_breakdown?.length || 0, icon: TrendingUp, iconBg: "bg-amber-50", iconColor: "text-amber-600", anchorId: "type-breakdown" },
+          ] as const).map((card) => {
+            const Icon = card.icon;
+            const content = (
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`h-10 w-10 rounded-lg ${card.iconBg} flex items-center justify-center`}>
+                  <Icon className={`h-5 w-5 ${card.iconColor}`} />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">{card.label}</p>
+                  <p className="text-xl font-bold text-gray-900">{card.value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-gray-400">Upcoming Events</p>
-                <p className="text-xl font-bold text-gray-900">{dashboard.upcoming_count}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-                <CalendarDays className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">This Month</p>
-                <p className="text-xl font-bold text-gray-900">{dashboard.month_count}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                <Users className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Total RSVPs</p>
-                <p className="text-xl font-bold text-gray-900">{dashboard.total_attendees}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Event Types</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {dashboard.type_breakdown?.length || 0}
-                </p>
-              </div>
-            </div>
-          </div>
+            );
+            const sharedClass =
+              "block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+            if ("href" in card) {
+              return (
+                <Link key={card.label} to={card.href} className={sharedClass}>
+                  {content}
+                </Link>
+              );
+            }
+            return (
+              <button
+                key={card.label}
+                type="button"
+                onClick={() => {
+                  document.getElementById(card.anchorId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className={sharedClass}
+              >
+                {content}
+              </button>
+            );
+          })}
         </div>
       )}
 
       {/* Type Breakdown */}
       {dashboard?.type_breakdown?.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div id="type-breakdown" className="bg-white rounded-xl border border-gray-200 p-6 mb-6 scroll-mt-4">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">Event Type Breakdown</h2>
           <div className="flex flex-wrap gap-3">
             {dashboard.type_breakdown.map((t: any) => (
@@ -432,19 +440,31 @@ export default function EventDashboardPage() {
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3 items-center">
                   <Link
                     to={`/events/${event.id}`}
                     className="text-xs text-brand-600 hover:underline"
                   >
                     View
                   </Link>
+                  {event.status !== "cancelled" && (
+                    <button
+                      onClick={() => cancelMutation.mutate(event.id)}
+                      disabled={cancelMutation.isPending}
+                      className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  )}
                   <button
-                    onClick={() => cancelMutation.mutate(event.id)}
-                    disabled={cancelMutation.isPending}
-                    className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                    onClick={() => {
+                      setDeleteTarget({ id: event.id, title: event.title });
+                      setDeleteError(null);
+                    }}
+                    className="text-xs text-gray-400 hover:text-red-600"
+                    title="Delete event"
                   >
-                    Cancel
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
@@ -452,6 +472,64 @@ export default function EventDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete event?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Delete{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
+                    This permanently removes the event and its RSVPs. This cannot be undone.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteMutation.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteMutation.mutate(deleteTarget.id)}
+                disabled={deleteMutation.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

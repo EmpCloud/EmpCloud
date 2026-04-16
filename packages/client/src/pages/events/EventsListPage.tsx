@@ -17,6 +17,8 @@ import {
   ChevronRight,
   Filter,
   Star,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 
 const EVENT_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
@@ -60,6 +62,8 @@ export default function EventsListPage() {
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
   const queryClient = useQueryClient();
@@ -85,6 +89,18 @@ export default function EventsListPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
     },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (eventId: number) => api.delete(`/events/${eventId}`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["events-dashboard"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
+    },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete event"),
   });
 
   const events = data?.data || [];
@@ -226,47 +242,61 @@ export default function EventsListPage() {
                     </div>
                   </div>
 
-                  {/* RSVP Buttons */}
-                  {event.status !== "cancelled" && event.status !== "completed" && (
-                    <div className="flex-shrink-0 flex gap-1.5">
+                  {/* RSVP + HR actions */}
+                  <div className="flex-shrink-0 flex items-center gap-1.5">
+                    {event.status !== "cancelled" && event.status !== "completed" && (
+                      <>
+                        <button
+                          onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "attending" })}
+                          disabled={rsvpMutation.isPending}
+                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                            event.my_rsvp_status === "attending"
+                              ? "bg-green-100 border-green-400 text-green-700"
+                              : "border-green-200 text-green-600 hover:bg-green-50"
+                          }`}
+                          title="Attending"
+                        >
+                          <CheckCircle className="h-3.5 w-3.5" /> Yes
+                        </button>
+                        <button
+                          onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "maybe" })}
+                          disabled={rsvpMutation.isPending}
+                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                            event.my_rsvp_status === "maybe"
+                              ? "bg-amber-100 border-amber-400 text-amber-700"
+                              : "border-amber-200 text-amber-600 hover:bg-amber-50"
+                          }`}
+                          title="Maybe"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5" /> Maybe
+                        </button>
+                        <button
+                          onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "declined" })}
+                          disabled={rsvpMutation.isPending}
+                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                            event.my_rsvp_status === "declined"
+                              ? "bg-red-100 border-red-400 text-red-700"
+                              : "border-red-200 text-red-600 hover:bg-red-50"
+                          }`}
+                          title="Decline"
+                        >
+                          <XCircle className="h-3.5 w-3.5" /> No
+                        </button>
+                      </>
+                    )}
+                    {isHR && (
                       <button
-                        onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "attending" })}
-                        disabled={rsvpMutation.isPending}
-                        className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
-                          event.my_rsvp_status === "attending"
-                            ? "bg-green-100 border-green-400 text-green-700"
-                            : "border-green-200 text-green-600 hover:bg-green-50"
-                        }`}
-                        title="Attending"
+                        onClick={() => {
+                          setDeleteTarget({ id: event.id, title: event.title });
+                          setDeleteError(null);
+                        }}
+                        className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
+                        title="Delete event"
                       >
-                        <CheckCircle className="h-3.5 w-3.5" /> Yes
+                        <Trash2 className="h-4 w-4" />
                       </button>
-                      <button
-                        onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "maybe" })}
-                        disabled={rsvpMutation.isPending}
-                        className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
-                          event.my_rsvp_status === "maybe"
-                            ? "bg-amber-100 border-amber-400 text-amber-700"
-                            : "border-amber-200 text-amber-600 hover:bg-amber-50"
-                        }`}
-                        title="Maybe"
-                      >
-                        <HelpCircle className="h-3.5 w-3.5" /> Maybe
-                      </button>
-                      <button
-                        onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "declined" })}
-                        disabled={rsvpMutation.isPending}
-                        className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
-                          event.my_rsvp_status === "declined"
-                            ? "bg-red-100 border-red-400 text-red-700"
-                            : "border-red-200 text-red-600 hover:bg-red-50"
-                        }`}
-                        title="Decline"
-                      >
-                        <XCircle className="h-3.5 w-3.5" /> No
-                      </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -295,6 +325,64 @@ export default function EventsListPage() {
             >
               Next <ChevronRight className="h-4 w-4" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete event?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Delete{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
+                    This permanently removes the event and its RSVPs. This cannot be undone.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteMutation.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteMutation.mutate(deleteTarget.id)}
+                disabled={deleteMutation.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

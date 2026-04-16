@@ -173,12 +173,12 @@ export default function CategoryPostsPage() {
                         <TypeIcon className="h-3 w-3" />
                         {typeConfig.label}
                       </span>
-                      {post.is_pinned && (
+                      {Boolean(post.is_pinned) && (
                         <span className="inline-flex items-center gap-1 text-xs text-amber-600">
                           <Pin className="h-3 w-3" /> Pinned
                         </span>
                       )}
-                      {post.is_locked && (
+                      {Boolean(post.is_locked) && (
                         <span className="inline-flex items-center gap-1 text-xs text-gray-400">
                           <Lock className="h-3 w-3" /> Locked
                         </span>
