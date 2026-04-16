@@ -1412,18 +1412,33 @@ export const updateForumCategorySchema = z.object({
   is_active: z.boolean().optional(),
 });
 
+// Shape for post/reply media attachments stored as JSON. url is required;
+// everything else is optional metadata for rendering (filename, size, mime).
+// Phase 1 doesn't upload — the shape is fixed now so phase 2 can wire S3
+// without a schema change.
+export const mediaAttachmentSchema = z.object({
+  url: z.string().url(),
+  kind: z.enum(["image", "file"]).default("image"),
+  name: z.string().max(255).optional(),
+  size: z.number().int().nonnegative().optional(),
+  mime: z.string().max(100).optional(),
+});
+
 export const createForumPostSchema = z.object({
   category_id: z.number().int().positive(),
   title: z.string().min(1).max(255),
   content: z.string().min(1),
   post_type: forumPostTypeEnum.default("discussion"),
   tags: z.array(z.string()).optional().nullable(),
+  media: z.array(mediaAttachmentSchema).max(8).optional().nullable(),
 });
 
 export const updateForumPostSchema = z.object({
   title: z.string().min(1).max(255).optional(),
   content: z.string().min(1).optional(),
   tags: z.array(z.string()).optional().nullable(),
+  media: z.array(mediaAttachmentSchema).max(8).optional().nullable(),
+  comments_disabled: z.boolean().optional(),
 });
 
 export const forumPostQuerySchema = paginationSchema.extend({
@@ -1438,18 +1453,34 @@ export const createForumReplySchema = z.object({
   parent_reply_id: z.number().int().positive().optional().nullable(),
 });
 
+export const updateForumReplySchema = z.object({
+  content: z.string().min(1),
+});
+
 export const forumLikeSchema = z.object({
   target_type: z.enum(["post", "reply"]),
   target_id: z.number().int().positive(),
 });
 
+// Cross-category feed query — cursor is the id of the last post already
+// rendered on the client; omit for the first page.
+export const feedQuerySchema = z.object({
+  cursor: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+  search: z.string().max(255).optional(),
+  author_id: z.coerce.number().int().positive().optional(),
+});
+
+export type MediaAttachment = z.infer<typeof mediaAttachmentSchema>;
 export type CreateForumCategoryInput = z.infer<typeof createForumCategorySchema>;
 export type UpdateForumCategoryInput = z.infer<typeof updateForumCategorySchema>;
 export type CreateForumPostInput = z.infer<typeof createForumPostSchema>;
 export type UpdateForumPostInput = z.infer<typeof updateForumPostSchema>;
 export type ForumPostQueryInput = z.infer<typeof forumPostQuerySchema>;
 export type CreateForumReplyInput = z.infer<typeof createForumReplySchema>;
+export type UpdateForumReplyInput = z.infer<typeof updateForumReplySchema>;
 export type ForumLikeInput = z.infer<typeof forumLikeSchema>;
+export type FeedQueryInput = z.infer<typeof feedQuerySchema>;
 
 // ---------------------------------------------------------------------------
 // HRMS — Wellness Program Validators
