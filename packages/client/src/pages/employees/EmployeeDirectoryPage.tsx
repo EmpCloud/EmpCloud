@@ -119,6 +119,7 @@ export default function EmployeeDirectoryPage() {
 
   // Bulk CSV import (create new employees) — also absorbed from Users page.
   const [showCsvImport, setShowCsvImport] = useState(false);
+  const [showPendingInvitations, setShowPendingInvitations] = useState(false);
 
   // Admin password reset inside the Edit modal. Password fields are
   // deliberately kept OUT of the bulk-update payload — they submit
@@ -314,6 +315,24 @@ export default function EmployeeDirectoryPage() {
           </label>
           {isOrgAdmin && (
             <button
+              onClick={() => setShowPendingInvitations(true)}
+              className={`relative flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
+                invitations.length > 0
+                  ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <Mail className="h-4 w-4" />
+              Pending Invitations
+              {invitations.length > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-600 text-white text-xs font-semibold">
+                  {invitations.length}
+                </span>
+              )}
+            </button>
+          )}
+          {isOrgAdmin && (
+            <button
               onClick={() => setShowCsvImport(true)}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
@@ -393,40 +412,89 @@ export default function EmployeeDirectoryPage() {
         </form>
       )}
 
-      {/* Pending Invitations panel — only when there is at least one. */}
-      {isOrgAdmin && invitations.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-          <h3 className="text-sm font-semibold text-amber-800 mb-2">
-            Pending Invitations ({invitations.length})
-          </h3>
-          <div className="space-y-2">
-            {invitations.map((inv: any) => (
-              <div
-                key={inv.id}
-                className="flex items-center justify-between bg-white rounded-lg px-4 py-2 border border-amber-100"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-900">{inv.email}</span>
-                    <span className="text-xs text-gray-500 ml-2 capitalize">
-                      {(inv.role || "employee").replace(/_/g, " ")}
-                    </span>
-                  </div>
+      {/* Pending Invitations modal — opened via the action-bar button so the
+          directory page stays uncluttered when many invitations are queued. */}
+      {isOrgAdmin && showPendingInvitations && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setShowPendingInvitations(false)}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className="h-9 w-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                  <Mail className="h-4 w-4" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
-                    Pending
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    Invited{" "}
-                    {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
-                  </span>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Pending Invitations
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    {invitations.length} invitation{invitations.length === 1 ? "" : "s"} waiting to be accepted
+                  </p>
                 </div>
               </div>
-            ))}
+              <button
+                onClick={() => setShowPendingInvitations(false)}
+                aria-label="Close"
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              {invitations.length === 0 ? (
+                <p className="text-sm text-gray-400 py-8 text-center">
+                  No pending invitations.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {invitations.map((inv: any) => (
+                    <div
+                      key={inv.id}
+                      className="flex items-center justify-between rounded-lg px-4 py-3 border border-amber-100 bg-amber-50/40"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                          <Mail className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {inv.email}
+                          </p>
+                          <p className="text-xs text-gray-500 capitalize">
+                            {(inv.role || "employee").replace(/_/g, " ")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
+                          Pending
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          Invited{" "}
+                          {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 px-6 py-3 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => setShowPendingInvitations(false)}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
