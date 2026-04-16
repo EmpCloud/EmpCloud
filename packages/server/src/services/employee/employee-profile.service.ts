@@ -71,19 +71,19 @@ export async function getProfile(orgId: number, userId: number) {
   // client can show + edit it. Picked from the most recent assignment where
   // effective_to is null or in the future.
   const today = new Date();
-  const currentShift = await db("user_shift_assignments")
-    .leftJoin("shifts", "user_shift_assignments.shift_id", "shifts.id")
-    .where({ "user_shift_assignments.organization_id": orgId, "user_shift_assignments.user_id": userId })
+  const currentShift = await db("shift_assignments")
+    .leftJoin("shifts", "shift_assignments.shift_id", "shifts.id")
+    .where({ "shift_assignments.organization_id": orgId, "shift_assignments.user_id": userId })
     .andWhere((qb) => {
-      qb.whereNull("user_shift_assignments.effective_to").orWhere(
-        "user_shift_assignments.effective_to",
+      qb.whereNull("shift_assignments.effective_to").orWhere(
+        "shift_assignments.effective_to",
         ">=",
         today,
       );
     })
-    .orderBy("user_shift_assignments.effective_from", "desc")
+    .orderBy("shift_assignments.effective_from", "desc")
     .select(
-      "user_shift_assignments.shift_id",
+      "shift_assignments.shift_id",
       "shifts.name as shift_name",
     )
     .first();
@@ -125,7 +125,7 @@ export async function upsertProfile(
   //
   // #1423 / #1424 — department_id and designation are also users-table columns
   // edited from the profile form; they follow the same split pattern. shift_id
-  // does NOT live on users (it's a user_shift_assignments row) so it's handled
+  // does NOT live on users (it's a shift_assignments row) so it's handled
   // separately below.
   const {
     reporting_manager_id,
@@ -168,13 +168,13 @@ export async function upsertProfile(
   // don't create a new one.
   if (shift_id !== undefined && isHR) {
     const today = new Date();
-    await db("user_shift_assignments")
+    await db("shift_assignments")
       .where({ organization_id: orgId, user_id: userId })
       .whereNull("effective_to")
       .update({ effective_to: today, updated_at: today });
 
     if (shift_id) {
-      await db("user_shift_assignments").insert({
+      await db("shift_assignments").insert({
         organization_id: orgId,
         user_id: userId,
         shift_id: Number(shift_id),
