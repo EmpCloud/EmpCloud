@@ -250,8 +250,18 @@ export async function assignSeat(params: {
     .first();
   if (!sub) throw new NotFoundError("Active subscription for this module");
 
-  if (sub.used_seats >= sub.total_seats) {
-    throw new ValidationError("No available seats. Upgrade your subscription to add more.");
+  // #1461 — Enforce seat limit by COUNTing actual seat rows rather than
+  // relying on the cached `used_seats` column, which can drift under
+  // concurrent assignment. This is the authoritative check that prevents
+  // over-assignment even when two admin requests race.
+  const [{ seatCount }] = await db("org_module_seats")
+    .where({ subscription_id: sub.id })
+    .count("* as seatCount");
+  const currentSeats = Number(seatCount);
+  if (currentSeats >= sub.total_seats) {
+    throw new ConflictError(
+      `Seat limit exceeded. Current subscription allows ${sub.total_seats} seats; ${currentSeats} are already assigned. Upgrade your subscription to add more.`
+    );
   }
 
   // Check if already assigned

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
   Heart,
@@ -131,7 +132,7 @@ export default function WellnessDashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
               <Heart className="h-5 w-5 text-green-600" />
@@ -143,8 +144,8 @@ export default function WellnessDashboardPage() {
               </p>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        </Link>
+        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-blue-600" />
@@ -155,8 +156,8 @@ export default function WellnessDashboardPage() {
             </div>
           </div>
           <p className="text-xs text-gray-400">{d.total_programs || 0} total programs</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        </Link>
+        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
               <Users className="h-5 w-5 text-purple-600" />
@@ -167,8 +168,8 @@ export default function WellnessDashboardPage() {
             </div>
           </div>
           <p className="text-xs text-gray-400">{d.checkin_count_30d || 0} check-ins (30d)</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        </Link>
+        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
               <Trophy className="h-5 w-5 text-amber-600" />
@@ -181,7 +182,7 @@ export default function WellnessDashboardPage() {
           <p className="text-xs text-gray-400">
             {d.completed_goals || 0} / {d.total_goals || 0} goals
           </p>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -273,8 +274,12 @@ export default function WellnessDashboardPage() {
               </thead>
               <tbody>
                 {d.top_programs.map((p: any) => (
-                  <tr key={p.id} className="border-b border-gray-50">
-                    <td className="py-3 font-medium text-gray-900">{p.title}</td>
+                  <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 font-medium text-gray-900">
+                      <Link to="/wellness" className="text-brand-600 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500 rounded">
+                        {p.title}
+                      </Link>
+                    </td>
                     <td className="py-3 text-gray-600 capitalize">{p.program_type.replace("_", " ")}</td>
                     <td className="py-3 text-right text-gray-700">
                       {p.enrolled_count}

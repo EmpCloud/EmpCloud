@@ -693,6 +693,223 @@ export async function deleteAsset(
 }
 
 // ---------------------------------------------------------------------------
+// Delete a single history entry (audit-log trim). Does NOT revert the asset
+// state — only removes the log row.
+// ---------------------------------------------------------------------------
+
+export async function deleteHistoryEntry(
+  orgId: number,
+  assetId: number,
+  entryId: number,
+) {
+  const db = getDB();
+
+  // Confirm asset belongs to the org first
+  const asset = await db("assets")
+    .where({ id: assetId, organization_id: orgId })
+    .first();
+  if (!asset) throw new NotFoundError("Asset");
+
+  const entry = await db("asset_history")
+    .where({ id: entryId, asset_id: assetId, organization_id: orgId })
+    .first();
+  if (!entry) throw new NotFoundError("History entry");
+
+  await db("asset_history").where({ id: entryId }).del();
+
+  logger.info(`Asset history entry #${entryId} deleted (asset #${assetId}, org ${orgId})`);
+}
+
+// ---------------------------------------------------------------------------
+// Bulk Create — import many assets from a parsed CSV/XLSX. Row-level errors
+// are collected and returned; valid rows are inserted one-by-one so a single
+// bad row doesn't poison the batch. Each insert goes through the same
+// generateAssetTag() → logHistory() path as createAsset().
+// ---------------------------------------------------------------------------
+
+export interface BulkAssetRow {
+  name?: string;
+  category_name?: string | null;
+  description?: string | null;
+  serial_number?: string | null;
+  brand?: string | null;
+  model?: string | null;
+  purchase_date?: string | null;
+  purchase_cost?: number | null;
+  warranty_expiry?: string | null;
+  condition_status?: string | null;
+  location_name?: string | null;
+  notes?: string | null;
+}
+
+export interface BulkAssetError {
+  row: number;
+  data: BulkAssetRow;
+  errors: string[];
+}
+
+export async function bulkCreateAssets(
+  orgId: number,
+  userId: number,
+  rows: BulkAssetRow[],
+): Promise<{ imported: number; errors: BulkAssetError[]; createdCategories: string[] }> {
+  const db = getDB();
+
+  // Load existing categories so we can resolve / auto-create by name.
+  const categories = await db("asset_categories")
+    .where({ organization_id: orgId })
+    .select("id", "name");
+  const categoryMap = new Map<string, number>(
+    categories.map((c: any) => [String(c.name).toLowerCase(), c.id]),
+  );
+
+  const validConditions = new Set(["new", "good", "fair", "poor"]);
+  const errors: BulkAssetError[] = [];
+  const toInsert: Array<{ row: BulkAssetRow; rowNumber: number; categoryId: number | null }> = [];
+  const createdCategories: string[] = [];
+
+  // Phase 1 — per-row validation
+  rows.forEach((row, index) => {
+    const rowErrors: string[] = [];
+    const rowNumber = index + 2; // +2 for 1-based + header row
+
+    if (!row.name || !row.name.trim()) {
+      rowErrors.push("name is required");
+    } else if (row.name.length > 200) {
+      rowErrors.push("name must be at most 200 characters");
+    }
+
+    if (row.serial_number && row.serial_number.length > 100) {
+      rowErrors.push("serial_number must be at most 100 characters");
+    }
+
+    if (row.condition_status && !validConditions.has(row.condition_status)) {
+      rowErrors.push(
+        `condition_status "${row.condition_status}" is invalid. Use one of: new, good, fair, poor.`,
+      );
+    }
+
+    // Date validation
+    if (row.purchase_date) {
+      const d = new Date(row.purchase_date);
+      if (isNaN(d.getTime())) {
+        rowErrors.push(`purchase_date "${row.purchase_date}" is not a valid date`);
+      }
+    }
+    if (row.warranty_expiry) {
+      const d = new Date(row.warranty_expiry);
+      if (isNaN(d.getTime())) {
+        rowErrors.push(`warranty_expiry "${row.warranty_expiry}" is not a valid date`);
+      } else if (row.purchase_date) {
+        const pd = new Date(row.purchase_date);
+        if (!isNaN(pd.getTime()) && d < pd) {
+          rowErrors.push("warranty_expiry cannot be before purchase_date");
+        }
+      }
+    }
+
+    if (row.purchase_cost !== undefined && row.purchase_cost !== null && row.purchase_cost !== ("" as any)) {
+      const n = Number(row.purchase_cost);
+      if (!Number.isFinite(n) || !Number.isInteger(n) || n < 0) {
+        rowErrors.push(`purchase_cost "${row.purchase_cost}" must be a non-negative integer (amount in paise)`);
+      }
+    }
+
+    let categoryId: number | null = null;
+    if (row.category_name && row.category_name.trim()) {
+      const key = row.category_name.trim().toLowerCase();
+      const existing = categoryMap.get(key);
+      if (existing) categoryId = existing;
+      // else — will auto-create in phase 2
+    }
+
+    if (rowErrors.length > 0) {
+      errors.push({ row: rowNumber, data: row, errors: rowErrors });
+    } else {
+      toInsert.push({ row, rowNumber, categoryId });
+    }
+  });
+
+  // Phase 2 — auto-create missing categories
+  const missingCats = new Set<string>();
+  for (const { row, categoryId } of toInsert) {
+    if (!categoryId && row.category_name && row.category_name.trim()) {
+      missingCats.add(row.category_name.trim());
+    }
+  }
+  for (const name of missingCats) {
+    const lower = name.toLowerCase();
+    if (categoryMap.has(lower)) continue;
+    const now = new Date();
+    const [newId] = await db("asset_categories").insert({
+      organization_id: orgId,
+      name,
+      description: null,
+      is_active: true,
+      created_at: now,
+      updated_at: now,
+    });
+    categoryMap.set(lower, newId);
+    createdCategories.push(name);
+  }
+
+  // Phase 3 — insert one-by-one so tag generation stays sequential and a
+  // single failing row can't roll back the good ones.
+  let imported = 0;
+  for (const { row, rowNumber, categoryId: presetCategoryId } of toInsert) {
+    try {
+      let finalCategoryId: number | null = presetCategoryId;
+      if (!finalCategoryId && row.category_name && row.category_name.trim()) {
+        finalCategoryId = categoryMap.get(row.category_name.trim().toLowerCase()) || null;
+      }
+
+      const now = new Date();
+      const assetTag = await generateAssetTag(orgId);
+
+      const [id] = await db("assets").insert({
+        organization_id: orgId,
+        asset_tag: assetTag,
+        name: row.name!.trim(),
+        category_id: finalCategoryId,
+        description: row.description || null,
+        serial_number: row.serial_number || null,
+        brand: row.brand || null,
+        model: row.model || null,
+        purchase_date: row.purchase_date || null,
+        purchase_cost:
+          row.purchase_cost !== undefined && row.purchase_cost !== null && row.purchase_cost !== ("" as any)
+            ? Number(row.purchase_cost)
+            : null,
+        warranty_expiry: row.warranty_expiry || null,
+        status: "available",
+        condition_status: row.condition_status || "new",
+        location_name: row.location_name || null,
+        assigned_to: null,
+        assigned_at: null,
+        assigned_by: null,
+        notes: row.notes || null,
+        created_at: now,
+        updated_at: now,
+      });
+
+      await logHistory(id, orgId, "created", userId, {
+        notes: `Asset ${assetTag} created via bulk import`,
+      });
+      imported++;
+    } catch (err: any) {
+      errors.push({
+        row: rowNumber,
+        data: row,
+        errors: [err?.message || "Database insert failed"],
+      });
+    }
+  }
+
+  logger.info(`Bulk asset import: ${imported} imported, ${errors.length} errors, org ${orgId}`);
+  return { imported, errors, createdCategories };
+}
+
+// ---------------------------------------------------------------------------
 // My Assets
 // ---------------------------------------------------------------------------
 

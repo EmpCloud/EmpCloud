@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
   Clock,
@@ -11,6 +11,9 @@ import {
   XCircle,
   Sparkles,
   Pencil,
+  LogIn,
+  LogOut,
+  Loader2,
 } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import api from "@/api/client";
@@ -34,6 +37,7 @@ function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: st
 
 export default function SelfServiceDashboardPage() {
   const user = useAuthStore((s) => s.user);
+  const qc = useQueryClient();
 
   // Attendance today
   const { data: attendanceData } = useQuery({
@@ -43,6 +47,26 @@ export default function SelfServiceDashboardPage() {
         .get("/attendance/me/today")
         .then((r) => r.data.data)
         .catch(() => null),
+  });
+
+  // Check-in / check-out mutations. Invalidated keys match /attendance/my so
+  // that page refreshes too if the user navigates there after clocking in
+  // from the dashboard.
+  const checkIn = useMutation({
+    mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
+      qc.invalidateQueries({ queryKey: ["attendance-today"] });
+      qc.invalidateQueries({ queryKey: ["attendance-history"] });
+    },
+  });
+  const checkOut = useMutation({
+    mutationFn: () => api.post("/attendance/check-out", { source: "manual" }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
+      qc.invalidateQueries({ queryKey: ["attendance-today"] });
+      qc.invalidateQueries({ queryKey: ["attendance-history"] });
+    },
   });
 
   // Leave balance
@@ -117,11 +141,23 @@ export default function SelfServiceDashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.first_name}!
-        </h1>
-        <p className="text-gray-500 mt-1">Here is your self-service dashboard overview.</p>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Welcome back, {user?.first_name}!
+          </h1>
+          <p className="text-gray-500 mt-1">Here is your self-service dashboard overview.</p>
+        </div>
+        {/* Primary Check In / Check Out action — always visible in the page
+            header so it doesn't require scrolling or navigating to
+            /attendance/my to clock in for the day. */}
+        <AttendanceHeaderAction
+          todayRecord={todayAttendance}
+          onCheckIn={() => checkIn.mutate()}
+          onCheckOut={() => checkOut.mutate()}
+          checkInPending={checkIn.isPending}
+          checkOutPending={checkOut.isPending}
+        />
       </div>
 
       {/* Quick Links */}
@@ -325,5 +361,76 @@ export default function SelfServiceDashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Compact header action — a single button that flips between Check In,
+// Check Out and a "Completed" pill based on the current day's attendance.
+// Placed in the top-right of the welcome header so the action is always
+// one click away, independent of scroll position.
+// ---------------------------------------------------------------------------
+
+function AttendanceHeaderAction({
+  todayRecord,
+  onCheckIn,
+  onCheckOut,
+  checkInPending,
+  checkOutPending,
+}: {
+  todayRecord: any;
+  onCheckIn: () => void;
+  onCheckOut: () => void;
+  checkInPending: boolean;
+  checkOutPending: boolean;
+}) {
+  // The attendance API returns check_in / check_out as ISO timestamps; older
+  // code read *_time fallbacks (see #1383). Keep both for safety.
+  const ci = todayRecord?.check_in || todayRecord?.check_in_time || null;
+  const co = todayRecord?.check_out || todayRecord?.check_out_time || null;
+  const hasCheckedIn = !!ci;
+  const hasCheckedOut = !!co;
+
+  if (hasCheckedOut) {
+    return (
+      <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-2.5 text-sm font-medium text-green-700">
+        <CheckCircle2 className="h-4 w-4" />
+        Attendance complete for today
+      </div>
+    );
+  }
+
+  if (!hasCheckedIn) {
+    return (
+      <button
+        type="button"
+        onClick={onCheckIn}
+        disabled={checkInPending}
+        className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow transition-all disabled:opacity-50"
+      >
+        {checkInPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogIn className="h-4 w-4" />
+        )}
+        Check In
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onCheckOut}
+      disabled={checkOutPending}
+      className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 hover:shadow transition-all disabled:opacity-50"
+    >
+      {checkOutPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <LogOut className="h-4 w-4" />
+      )}
+      Check Out
+    </button>
   );
 }

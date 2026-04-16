@@ -46,11 +46,11 @@ export default function AssetDashboardPage() {
   if (!stats) return null;
 
   const statCards = [
-    { label: "Total Assets", value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50" },
-    { label: "Available", value: stats.available, icon: Box, color: "text-green-700 bg-green-50" },
-    { label: "Assigned", value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50" },
-    { label: "In Repair", value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50" },
-    { label: "Lost / Damaged", value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50" },
+    { label: "Total Assets", value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50", to: "/assets" },
+    { label: "Available", value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets" },
+    { label: "Assigned", value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets" },
+    { label: "In Repair", value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets" },
+    { label: "Lost / Damaged", value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets" },
   ];
 
   return (
@@ -74,7 +74,11 @@ export default function AssetDashboardPage() {
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className="bg-white rounded-xl border border-gray-200 p-4">
+            <Link
+              key={card.label}
+              to={card.to}
+              className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${card.color}`}>
                   <Icon className="h-5 w-5" />
@@ -84,7 +88,7 @@ export default function AssetDashboardPage() {
                   <p className="text-xs text-gray-500">{card.label}</p>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -162,7 +166,11 @@ export default function AssetDashboardPage() {
           {stats.top_assignees && stats.top_assignees.length > 0 ? (
             <div className="space-y-3">
               {stats.top_assignees.map((assignee: any, idx: number) => (
-                <div key={assignee.user_id} className="flex items-center justify-between">
+                <Link
+                  key={assignee.user_id}
+                  to={`/assets?assigned_to=${assignee.user_id}`}
+                  className="flex items-center justify-between rounded-lg p-2 -m-2 transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                >
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700">
                       {idx + 1}
@@ -170,7 +178,7 @@ export default function AssetDashboardPage() {
                     <span className="text-sm text-gray-700">{assignee.name}</span>
                   </div>
                   <span className="text-sm font-medium text-gray-900">{assignee.count} assets</span>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (

@@ -304,9 +304,14 @@ export default function SubscriptionsPage() {
                   <p className="text-xs text-gray-500">Plan</p>
                   <p className="text-sm font-medium text-gray-900 capitalize">{sub.plan_tier}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500">Seats</p>
-                  <p className="text-sm font-medium text-gray-900">
+                {/* #1448 — Seat tile is now a link to /users?module=<slug> so
+                    admins can quickly see which employees have this seat. */}
+                <Link
+                  to={`/users?module=${mod?.slug || ""}`}
+                  className="group"
+                >
+                  <p className="text-xs text-gray-500 group-hover:text-brand-600">Seats</p>
+                  <p className="text-sm font-medium text-gray-900 group-hover:text-brand-700 group-hover:underline">
                     {sub.used_seats}/{sub.total_seats}
                     {sub.used_seats >= sub.total_seats && (
                       <span className="text-xs text-red-500 ml-1">(full)</span>
@@ -319,7 +324,7 @@ export default function SubscriptionsPage() {
                       style={{ width: `${Math.min(100, (sub.used_seats / sub.total_seats) * 100)}%` }}
                     />
                   </div>
-                </div>
+                </Link>
                 <div>
                   <p className="text-xs text-gray-500">Price/Seat</p>
                   <p className="text-sm font-medium text-gray-900">

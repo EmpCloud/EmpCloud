@@ -281,6 +281,73 @@ export async function updateStatus(
 }
 
 // ---------------------------------------------------------------------------
+// Update Feedback (owner only — and only while not yet responded to)
+// ---------------------------------------------------------------------------
+
+export async function updateFeedback(
+  orgId: number,
+  feedbackId: number,
+  userId: number,
+  data: {
+    category?: string;
+    subject?: string;
+    message?: string;
+    is_urgent?: boolean;
+  }
+) {
+  const db = getDB();
+  const anonymousHash = hashUserId(userId);
+
+  const existing = await db("anonymous_feedback")
+    .where({ id: feedbackId, organization_id: orgId, anonymous_hash: anonymousHash })
+    .first();
+  if (!existing) throw new NotFoundError("Feedback");
+
+  if (existing.admin_response) {
+    const err: any = new Error("Feedback cannot be edited after HR has responded");
+    err.status = 403;
+    throw err;
+  }
+  if (existing.status !== "new" && existing.status !== "acknowledged") {
+    const err: any = new Error("Feedback can only be edited while pending or acknowledged");
+    err.status = 403;
+    throw err;
+  }
+
+  const update: Record<string, any> = { updated_at: new Date() };
+  if (data.category !== undefined) {
+    update.category = data.category;
+    update.sentiment = inferSentiment(data.category, null);
+  }
+  if (data.subject !== undefined) update.subject = data.subject;
+  if (data.message !== undefined) update.message = data.message;
+  if (data.is_urgent !== undefined) update.is_urgent = data.is_urgent;
+
+  await db("anonymous_feedback")
+    .where({ id: feedbackId, organization_id: orgId })
+    .update(update);
+
+  return getFeedbackById(orgId, feedbackId);
+}
+
+// ---------------------------------------------------------------------------
+// Delete Feedback (HR only)
+// ---------------------------------------------------------------------------
+
+export async function deleteFeedback(orgId: number, feedbackId: number) {
+  const db = getDB();
+
+  const existing = await db("anonymous_feedback")
+    .where({ id: feedbackId, organization_id: orgId })
+    .first();
+  if (!existing) throw new NotFoundError("Feedback");
+
+  await db("anonymous_feedback")
+    .where({ id: feedbackId, organization_id: orgId })
+    .delete();
+}
+
+// ---------------------------------------------------------------------------
 // Dashboard Stats (HR only)
 // ---------------------------------------------------------------------------
 

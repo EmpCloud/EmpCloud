@@ -146,6 +146,8 @@ export enum AuditAction {
   FEEDBACK_SUBMITTED = "feedback_submitted",
   FEEDBACK_RESPONDED = "feedback_responded",
   FEEDBACK_STATUS_UPDATED = "feedback_status_updated",
+  FEEDBACK_UPDATED = "feedback_updated",
+  FEEDBACK_DELETED = "feedback_deleted",
   // Events
   EVENT_CREATED = "event_created",
   EVENT_CANCELLED = "event_cancelled",

@@ -44,6 +44,8 @@ const GOAL_TYPES = [
 export default function MyWellnessPage() {
   const queryClient = useQueryClient();
   const [showGoalForm, setShowGoalForm] = useState(false);
+  // #1458 — filter tab for enrolled programs: active (default) vs completed.
+  const [programsTab, setProgramsTab] = useState<"active" | "completed">("active");
   const [goalForm, setGoalForm] = useState({
     title: "",
     goal_type: "exercise",
@@ -323,11 +325,54 @@ export default function MyWellnessPage() {
       </div>
 
       {/* Enrolled Programs */}
-      {s.enrolled_programs && s.enrolled_programs.length > 0 && (
+      {s.enrolled_programs && s.enrolled_programs.length > 0 && (() => {
+        // #1458 — split programs into active vs completed and render a tab to
+        // flip between them. Active is the default so this stays backward
+        // compatible with the previous single-list view.
+        const enrolled: any[] = s.enrolled_programs;
+        const completedCount = enrolled.filter((ep) => ep.enrollment_status === "completed").length;
+        const activeCount = enrolled.length - completedCount;
+        const visiblePrograms = enrolled.filter((ep) =>
+          programsTab === "completed"
+            ? ep.enrollment_status === "completed"
+            : ep.enrollment_status !== "completed"
+        );
+        return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">My Programs</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">My Programs</h3>
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setProgramsTab("active")}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                  programsTab === "active"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Active ({activeCount})
+              </button>
+              <button
+                onClick={() => setProgramsTab("completed")}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                  programsTab === "completed"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Completed ({completedCount})
+              </button>
+            </div>
+          </div>
+          {visiblePrograms.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-4">
+              {programsTab === "completed"
+                ? "No completed programs yet. Keep going!"
+                : "No active programs."}
+            </p>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {s.enrolled_programs.map((ep: any) => (
+            {visiblePrograms.map((ep: any) => (
               <div key={ep.enrollment_id} className="border border-gray-100 rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
@@ -370,8 +415,10 @@ export default function MyWellnessPage() {
               </div>
             ))}
           </div>
+          )}
         </div>
-      )}
+        );
+      })()}
 
       {/* Recent Check-ins */}
       {checkIns.length > 0 && (

@@ -252,7 +252,11 @@ export default function EventDashboardPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
               <select
                 value={eventType}
-                onChange={(e) => setEventType(e.target.value)}
+                onChange={(e) => {
+                  const nextType = e.target.value;
+                  setEventType(nextType);
+                  if (nextType === "holiday") setVirtualLink("");
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
                 {EVENT_TYPES.map((t) => (
@@ -318,19 +322,21 @@ export default function EventDashboardPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Virtual Link</label>
-              <div className="relative">
-                <Video className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="url"
-                  value={virtualLink}
-                  onChange={(e) => setVirtualLink(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  placeholder="https://meet.google.com/..."
-                />
+            {eventType !== "holiday" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Virtual Link</label>
+                <div className="relative">
+                  <Video className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <input
+                    type="url"
+                    value={virtualLink}
+                    onChange={(e) => setVirtualLink(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    placeholder="https://meet.google.com/..."
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>

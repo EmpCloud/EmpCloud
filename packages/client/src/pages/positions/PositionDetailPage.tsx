@@ -211,23 +211,40 @@ export default function PositionDetailPage() {
               <input
                 type="text"
                 value={userSearch}
-                onChange={(e) => setUserSearch(e.target.value)}
+                onChange={(e) => {
+                  setUserSearch(e.target.value);
+                  // Clear selection when the user starts a new search so the
+                  // UI doesn't keep a stale pick that no longer matches the
+                  // filter.
+                  if (assignForm.user_id) setAssignForm({ ...assignForm, user_id: "" });
+                }}
                 placeholder="Search users..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-2"
               />
-              <select
-                value={assignForm.user_id}
-                onChange={(e) => setAssignForm({ ...assignForm, user_id: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                required
-              >
-                <option value="">Select Employee</option>
-                {(usersData || []).map((u: any) => (
-                  <option key={u.id} value={u.id}>
-                    {u.first_name} {u.last_name} ({u.email})
-                  </option>
-                ))}
-              </select>
+              <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg text-sm bg-white">
+                {(usersData || []).length === 0 ? (
+                  <div className="px-3 py-2 text-gray-400">No users match</div>
+                ) : (
+                  (usersData || []).map((u: any) => {
+                    const selected = String(u.id) === String(assignForm.user_id);
+                    return (
+                      <button
+                        type="button"
+                        key={u.id}
+                        onClick={() => setAssignForm({ ...assignForm, user_id: String(u.id) })}
+                        className={`w-full text-left px-3 py-2 border-b border-gray-100 last:border-0 hover:bg-brand-50 ${
+                          selected ? "bg-brand-50 text-brand-700 font-medium" : "text-gray-700"
+                        }`}
+                      >
+                        {u.first_name} {u.last_name}{" "}
+                        <span className="text-xs text-gray-400">({u.email})</span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+              {/* Hidden input keeps the `required` semantics for the form */}
+              <input type="hidden" value={assignForm.user_id} required readOnly />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>

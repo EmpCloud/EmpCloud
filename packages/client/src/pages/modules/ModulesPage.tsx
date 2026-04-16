@@ -1,6 +1,8 @@
 import { useModules, useSubscriptions, useCreateSubscription, useCancelSubscription } from "@/api/hooks";
 import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
 
 const ADMIN_ROLES = ["org_admin", "hr_admin"];
@@ -188,6 +190,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
 }
 
 export default function ModulesPage() {
+  const { t } = useTranslation();
   const { data: modules, isLoading } = useModules();
   const { data: subscriptions } = useSubscriptions();
   const createSub = useCreateSubscription();
@@ -199,6 +202,16 @@ export default function ModulesPage() {
   const [confirmUnsubscribe, setConfirmUnsubscribe] = useState<number | null>(null);
   const user = useAuthStore((s) => s.user);
   const canManageSubscriptions = user ? ADMIN_ROLES.includes(user.role) : false;
+
+  // #1493 — Client-side name/description override. If a translation at
+  // `modules.<slug>.name` or `modules.<slug>.description` exists the UI uses
+  // it; otherwise it falls back to the DB-stored value. This lets translators
+  // localise module marketing copy without requiring backend changes.
+  const translateModuleField = (slug: string, field: "name" | "description", fallback: string) => {
+    const key = `modules.${slug}.${field}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : fallback;
+  };
 
   const activeSubscriptions = subscriptions?.filter((s: any) => s.status !== "cancelled") || [];
   const subscribedModuleIds = new Set(activeSubscriptions.map((s: any) => s.module_id));
@@ -284,8 +297,15 @@ export default function ModulesPage() {
           const isSubscribed = subscribedModuleIds.has(mod.id);
           const isExpanded = expandedId === mod.id;
           const isHRMS = mod.slug === "emp-hrms";
-          const descPreview = mod.description?.substring(0, 200);
-          const hasMore = mod.description?.length > 200;
+          // #1493 — resolve localized name/description (falls back to DB value).
+          const displayName = translateModuleField(mod.slug, "name", mod.name);
+          const displayDescription = translateModuleField(mod.slug, "description", mod.description || "");
+          const descPreview = displayDescription.substring(0, 200);
+          const hasMore = displayDescription.length > 200;
+          // #1448 — lookup the active subscription so we can show a clickable
+          // seat-count tile that navigates to the users list filtered by this
+          // module. See the tile below.
+          const activeSub = subscriptionByModuleId[mod.id];
 
           return (
             <div
@@ -309,7 +329,7 @@ export default function ModulesPage() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h3 className="font-semibold text-gray-900 text-lg">{mod.name}</h3>
+                    <h3 className="font-semibold text-gray-900 text-lg">{displayName}</h3>
                     <span className="text-xs text-gray-400">{mod.slug}</span>
                     {isHRMS && (
                       <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">
@@ -325,9 +345,25 @@ export default function ModulesPage() {
                   </div>
 
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    {isExpanded ? mod.description : descPreview}
+                    {isExpanded ? displayDescription : descPreview}
                     {!isExpanded && hasMore && "..."}
                   </p>
+
+                  {/* #1448 — Clickable seat-count tile. Shows "N of M seats" for
+                      subscribed modules and links to /users?module=<slug> so
+                      admins can drill into which employees have a seat. The
+                      /users list may not filter by module server-side yet; if
+                      not, landing on /users with the query param still gives
+                      admins a starting point. */}
+                  {isSubscribed && activeSub && (
+                    <Link
+                      to={`/users?module=${mod.slug}`}
+                      className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-brand-600 hover:text-brand-700 hover:underline"
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      {activeSub.used_seats} of {activeSub.total_seats} seats assigned
+                    </Link>
+                  )}
 
                   {hasMore && (
                     <button

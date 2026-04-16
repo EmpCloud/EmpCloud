@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
 import {
   MessageSquare,
   Clock,
@@ -11,8 +12,12 @@ import {
   Search,
   Filter,
   Reply,
+  Trash2,
+  Loader2,
   X,
 } from "lucide-react";
+
+const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   new: { label: "New", color: "bg-blue-100 text-blue-700", icon: Clock },
@@ -46,6 +51,8 @@ const STATUSES = ["new", "acknowledged", "under_review", "resolved", "archived"]
 
 export default function FeedbackListPage() {
   const qc = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+  const isHR = !!(user && HR_ROLES.includes(user.role));
   const [page, setPage] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -59,6 +66,10 @@ export default function FeedbackListPage() {
   // Status update modal state
   const [statusUpdateId, setStatusUpdateId] = useState<number | null>(null);
   const [newStatus, setNewStatus] = useState("");
+
+  // Delete confirmation state
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; subject: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["feedback-list", page, categoryFilter, statusFilter, urgentOnly, searchTerm],
@@ -107,6 +118,18 @@ export default function FeedbackListPage() {
       setStatusUpdateId(null);
       setNewStatus("");
     },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/feedback/${id}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["feedback-list"] });
+      qc.invalidateQueries({ queryKey: ["feedback-list-stats"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
+    },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete feedback"),
   });
 
   const feedbackList = data?.data || [];
@@ -285,6 +308,15 @@ export default function FeedbackListPage() {
                     >
                       Update Status
                     </button>
+                    {isHR && (
+                      <button
+                        onClick={() => { setDeleteTarget({ id: f.id, subject: f.subject }); setDeleteError(null); }}
+                        className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -353,6 +385,64 @@ export default function FeedbackListPage() {
               >
                 <Reply className="h-4 w-4" />
                 {respondMutation.isPending ? "Sending..." : "Send Response"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete feedback?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Delete{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.subject}</span>?
+                    This cannot be undone.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteMutation.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteMutation.mutate(deleteTarget.id)}
+                disabled={deleteMutation.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
               </button>
             </div>
           </div>
