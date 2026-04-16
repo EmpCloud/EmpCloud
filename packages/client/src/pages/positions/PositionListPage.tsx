@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
+import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 
@@ -12,8 +12,22 @@ export default function PositionListPage() {
   const [departmentId, setDepartmentId] = useState<string>("");
   const [status, setStatus] = useState<string>("active");
   const [showCreate, setShowCreate] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: departments } = useDepartments();
+
+  const deleteMutation = useMutation({
+    mutationFn: (positionId: number) => api.delete(`/positions/${positionId}`).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
+      setDeleteTarget(null);
+      setDeleteError(null);
+    },
+    onError: (err: any) =>
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete position"),
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["positions", { page, search, department_id: departmentId, status }],
@@ -272,16 +286,17 @@ export default function PositionListPage() {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Headcount</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Critical</th>
+              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">Loading...</td>
+                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">Loading...</td>
               </tr>
             ) : positions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">No positions found</td>
+                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">No positions found</td>
               </tr>
             ) : (
               positions.map((pos: any) => (
@@ -325,6 +340,18 @@ export default function PositionListPage() {
                       <span className="text-gray-300">-</span>
                     )}
                   </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => {
+                        setDeleteTarget({ id: pos.id, title: pos.title });
+                        setDeleteError(null);
+                      }}
+                      className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
+                      title="Delete position"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
@@ -355,6 +382,64 @@ export default function PositionListPage() {
           </div>
         )}
       </div>
+
+      {/* Delete confirmation modal */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">Delete position?</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Delete{" "}
+                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
+                    Active assignments are ended and the position is closed. This cannot be undone.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {deleteError && (
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteMutation.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteMutation.mutate(deleteTarget.id)}
+                disabled={deleteMutation.isPending}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
