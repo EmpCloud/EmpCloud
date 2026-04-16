@@ -161,7 +161,7 @@ export default function PostDetailPage() {
                   {reply.author_first_name} {reply.author_last_name}
                 </span>
                 <span className="text-xs text-gray-400">{timeAgo(reply.created_at)}</span>
-                {reply.is_accepted && (
+                {Boolean(reply.is_accepted) && (
                   <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                     <CheckCircle2 className="h-3 w-3" /> Accepted Answer
                   </span>
@@ -265,12 +265,12 @@ export default function PostDetailPage() {
                 <TypeIcon className="h-3 w-3" />
                 {typeConfig.label}
               </span>
-              {post.is_pinned && (
+              {Boolean(post.is_pinned) && (
                 <span className="inline-flex items-center gap-1 text-xs text-amber-600">
                   <Pin className="h-3 w-3" /> Pinned
                 </span>
               )}
-              {post.is_locked && (
+              {Boolean(post.is_locked) && (
                 <span className="inline-flex items-center gap-1 text-xs text-gray-400">
                   <Lock className="h-3 w-3" /> Locked
                 </span>
