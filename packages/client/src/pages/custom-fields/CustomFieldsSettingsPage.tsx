@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
@@ -79,6 +79,17 @@ export default function CustomFieldsSettingsPage() {
   const [form, setForm] = useState({ ...INITIAL_FORM });
   const [optionInput, setOptionInput] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const formRef = useRef<HTMLDivElement | null>(null);
+
+  // #1491 — After the create/edit form is rendered, scroll it into view so the
+  // user doesn't have to manually scroll up. Previously the form rendered above
+  // the list but the page stayed scrolled near the row the user clicked, making
+  // it look like nothing happened.
+  useEffect(() => {
+    if (showForm && formRef.current) {
+      formRef.current.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }, [showForm, editingId]);
 
   // Fetch definitions
   const { data: fields = [], isLoading } = useQuery<FieldDefinition[]>({
@@ -160,11 +171,8 @@ export default function CustomFieldsSettingsPage() {
     });
     setEditingId(field.id);
     setShowForm(true);
-    // #1389 — Scroll to top so the edit form is visible. Without this, the form
-    // renders above the list but stays out of view, making the page look blank.
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    // #1491 — scrollIntoView on the form ref runs via useEffect above once the
+    // form mounts; this ensures the edit form is actually visible on screen.
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -284,7 +292,10 @@ export default function CustomFieldsSettingsPage() {
 
       {/* Create / Edit Form */}
       {showForm && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div
+          ref={formRef}
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 scroll-mt-4"
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
               {editingId ? "Edit Field" : "New Field"}
@@ -614,8 +625,13 @@ export default function CustomFieldsSettingsPage() {
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
               {sectionName}
             </h3>
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <table className="w-full">
+            {/*
+              #1492 — overflow-x-auto on the scroll container and min-w on the
+              table keep the action column (edit/delete icons) reachable on
+              narrow widths instead of clipping them off-screen.
+            */}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+              <table className="w-full min-w-[720px]">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="w-10" />
@@ -700,11 +716,12 @@ export default function CustomFieldsSettingsPage() {
                           <span className="text-gray-300 text-xs">No</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1 flex-shrink-0">
                           <button
                             onClick={() => startEdit(field)}
-                            className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
+                            aria-label="Edit field"
+                            className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
@@ -718,7 +735,8 @@ export default function CustomFieldsSettingsPage() {
                                 deleteMutation.mutate(field.id);
                               }
                             }}
-                            className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
+                            aria-label="Delete field"
+                            className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

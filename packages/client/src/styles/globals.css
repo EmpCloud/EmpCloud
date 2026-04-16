@@ -45,4 +45,23 @@
     left: auto;
     right: 0;
   }
+
+  /* #1415 — Collapsed sidebar: hide text labels, section headers, badges, and
+     chevrons so only nav icons remain visible. We rely on a class toggle on
+     the sidebar root (.sidebar-collapsed) so every NavLink/NestedNavItem
+     inside it participates without prop-drilling. */
+  .sidebar-collapsed nav a,
+  .sidebar-collapsed nav button {
+    justify-content: center;
+  }
+  .sidebar-collapsed nav a > span,
+  .sidebar-collapsed nav button > span,
+  .sidebar-collapsed nav a > .inline-block,
+  .sidebar-collapsed nav .text-xs.uppercase,
+  .sidebar-collapsed nav button > svg.lucide-chevron-down {
+    display: none;
+  }
+  .sidebar-collapsed nav > div > .mt-6 {
+    margin-top: 0.5rem;
+  }
 }

@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "./client";
 
 // --- Auth ---
@@ -90,9 +91,19 @@ export function useInviteUser() {
 // --- Modules ---
 
 export function useModules() {
+  // #1493 — include the active i18n language in the queryKey so that switching
+  // language invalidates the cached list and re-renders the consumers. Reading
+  // from useTranslation().i18n.language makes this reactive: when the language
+  // switcher calls i18n.changeLanguage() the consuming component re-renders
+  // with a new queryKey and React Query fetches fresh data.
+  const { i18n } = useTranslation();
+  const lang = i18n.language || "en";
   return useQuery({
-    queryKey: ["modules"],
-    queryFn: () => api.get("/modules").then((r) => r.data.data),
+    queryKey: ["modules", lang],
+    queryFn: () =>
+      api
+        .get("/modules", { headers: { "Accept-Language": lang } })
+        .then((r) => r.data.data),
   });
 }
 
