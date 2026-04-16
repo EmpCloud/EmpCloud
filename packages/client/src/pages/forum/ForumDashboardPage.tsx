@@ -121,7 +121,7 @@ export default function ForumDashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/forum" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
               <MessagesSquare className="h-5 w-5 text-blue-600" />
@@ -131,8 +131,8 @@ export default function ForumDashboardPage() {
               <p className="text-xs text-gray-500">Total Posts</p>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        </Link>
+        <Link to="/forum" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
               <MessageCircle className="h-5 w-5 text-green-600" />
@@ -142,8 +142,8 @@ export default function ForumDashboardPage() {
               <p className="text-xs text-gray-500">Total Replies</p>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        </Link>
+        <Link to="/forum" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-purple-600" />
@@ -153,7 +153,7 @@ export default function ForumDashboardPage() {
               <p className="text-xs text-gray-500">Active This Week</p>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

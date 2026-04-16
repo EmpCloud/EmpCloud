@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
   MessageSquare,
@@ -78,7 +79,7 @@ export default function FeedbackDashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
               <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -88,9 +89,9 @@ export default function FeedbackDashboardPage() {
               <p className="text-xs text-gray-500">Total Feedback</p>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -100,9 +101,9 @@ export default function FeedbackDashboardPage() {
               <p className="text-xs text-gray-500">Urgent Items</p>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
               <Reply className="h-5 w-5 text-green-600" />
@@ -112,9 +113,9 @@ export default function FeedbackDashboardPage() {
               <p className="text-xs text-gray-500">Response Rate</p>
             </div>
           </div>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-purple-600" />
@@ -126,7 +127,7 @@ export default function FeedbackDashboardPage() {
               <p className="text-xs text-gray-500">New / Unread</p>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

@@ -3,9 +3,12 @@ import api from "@/api/client";
 import { BarChart3, ClipboardList, Users, TrendingUp, Clock, CheckCircle, FileEdit } from "lucide-react";
 import { Link } from "react-router-dom";
 
-function StatCard({ label, value, icon: Icon, color }: { label: string; value: string | number; icon: any; color: string }) {
+function StatCard({ label, value, icon: Icon, color, to }: { label: string; value: string | number; icon: any; color: string; to: string }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <Link
+      to={to}
+      className="block text-left w-full bg-white rounded-xl border border-gray-200 p-6 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+    >
       <div className="flex items-center gap-4">
         <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${color}`}>
           <Icon className="h-6 w-6" />
@@ -15,7 +18,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: s
           <p className="text-2xl font-bold text-gray-900">{value}</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -96,10 +99,10 @@ export default function SurveyDashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Active Surveys" value={d.active_count ?? 0} icon={Clock} color="bg-green-100 text-green-600" />
-        <StatCard label="Total Responses" value={d.total_responses ?? 0} icon={Users} color="bg-blue-100 text-blue-600" />
-        <StatCard label="Avg Response Rate" value={`${d.avg_response_rate ?? 0}%`} icon={TrendingUp} color="bg-purple-100 text-purple-600" />
-        <StatCard label="Total Surveys" value={d.total_count ?? 0} icon={BarChart3} color="bg-gray-100 text-gray-600" />
+        <StatCard label="Active Surveys" value={d.active_count ?? 0} icon={Clock} color="bg-green-100 text-green-600" to="/surveys/list" />
+        <StatCard label="Total Responses" value={d.total_responses ?? 0} icon={Users} color="bg-blue-100 text-blue-600" to="/surveys/list" />
+        <StatCard label="Avg Response Rate" value={`${d.avg_response_rate ?? 0}%`} icon={TrendingUp} color="bg-purple-100 text-purple-600" to="/surveys/list" />
+        <StatCard label="Total Surveys" value={d.total_count ?? 0} icon={BarChart3} color="bg-gray-100 text-gray-600" to="/surveys/list" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

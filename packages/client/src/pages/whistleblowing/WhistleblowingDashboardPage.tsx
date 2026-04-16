@@ -55,28 +55,28 @@ export default function WhistleblowingDashboardPage() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm border p-5">
+        <Link to="/whistleblowing/reports" className="block text-left w-full bg-white rounded-xl shadow-sm border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <FileText className="h-5 w-5 text-gray-400" />
             <span className="text-sm text-gray-500">Total Reports</span>
           </div>
           <p className="text-3xl font-bold text-gray-900">{data.total}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border p-5">
+        </Link>
+        <Link to="/whistleblowing/reports" className="block text-left w-full bg-white rounded-xl shadow-sm border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <Clock className="h-5 w-5 text-yellow-500" />
             <span className="text-sm text-gray-500">Open</span>
           </div>
           <p className="text-3xl font-bold text-yellow-600">{data.open}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border p-5">
+        </Link>
+        <Link to="/whistleblowing/reports" className="block text-left w-full bg-white rounded-xl shadow-sm border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
             <span className="text-sm text-gray-500">Resolved</span>
           </div>
           <p className="text-3xl font-bold text-green-600">{data.resolved}</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border p-5">
+        </Link>
+        <Link to="/whistleblowing/reports" className="block text-left w-full bg-white rounded-xl shadow-sm border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp className="h-5 w-5 text-brand-500" />
             <span className="text-sm text-gray-500">Avg. Resolution</span>
@@ -84,7 +84,7 @@ export default function WhistleblowingDashboardPage() {
           <p className="text-3xl font-bold text-gray-900">
             {data.avg_resolution_days !== null ? `${data.avg_resolution_days}d` : "--"}
           </p>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
