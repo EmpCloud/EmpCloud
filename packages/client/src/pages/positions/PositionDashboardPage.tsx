@@ -37,7 +37,7 @@ export default function PositionDashboardPage() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/positions/list" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
               <Briefcase className="h-5 w-5 text-blue-600" />
@@ -48,9 +48,9 @@ export default function PositionDashboardPage() {
             </div>
           </div>
           <p className="text-xs text-gray-400">Budget: {stats.total_budget || 0} headcount</p>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/positions/list" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
               <Users className="h-5 w-5 text-green-600" />
@@ -65,9 +65,9 @@ export default function PositionDashboardPage() {
               ? `${Math.round((stats.total_filled / stats.total_budget) * 100)}% fill rate`
               : "No budget set"}
           </p>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/positions/vacancies" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-amber-600" />
@@ -77,12 +77,10 @@ export default function PositionDashboardPage() {
               <p className="text-2xl font-bold text-gray-900">{stats.total_vacant || 0}</p>
             </div>
           </div>
-          <Link to="/positions/vacancies" className="text-xs text-brand-600 hover:underline">
-            View vacancies
-          </Link>
-        </div>
+          <span className="text-xs text-brand-600">View vacancies</span>
+        </Link>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <Link to="/positions/vacancies" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -93,7 +91,7 @@ export default function PositionDashboardPage() {
             </div>
           </div>
           <p className="text-xs text-gray-400">Unfilled critical roles</p>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
