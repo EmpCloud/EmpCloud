@@ -4,7 +4,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ValidationError, ConflictError } from "../../utils/errors.js";
+import { NotFoundError, ConflictError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 
 interface SyncUserPayload {
@@ -88,8 +88,18 @@ export async function enableUserForModule(
     .first();
   if (!sub) throw new NotFoundError("Active subscription for this module");
 
-  if (sub.used_seats >= sub.total_seats) {
-    throw new ValidationError("No available seats. Upgrade to add more.");
+  // #1461 — Enforce seat limit by COUNTing actual seat rows rather than
+  // relying on the cached `used_seats` column, which can drift under
+  // concurrent assignment. This is the authoritative check that prevents
+  // over-assignment even when two admin requests race.
+  const [{ seatCount }] = await db("org_module_seats")
+    .where({ subscription_id: sub.id })
+    .count("* as seatCount");
+  const currentSeats = Number(seatCount);
+  if (currentSeats >= sub.total_seats) {
+    throw new ConflictError(
+      `Seat limit exceeded. Current subscription allows ${sub.total_seats} seats; ${currentSeats} are already assigned. Upgrade your subscription to add more.`
+    );
   }
 
   // Check if already assigned
@@ -210,6 +220,12 @@ export async function bulkEnableUsersForModule(
     } catch (err: any) {
       if (err.message?.includes("already enabled") || err.message?.includes("already has a seat")) {
         skipped++;
+      } else if (err.message?.includes("Seat limit exceeded")) {
+        // #1461 — Stop processing once the subscription runs out of seats.
+        // Surface the exact limit message so the caller can show it.
+        errors++;
+        logger.warn(`Bulk enable stopped at user ${userId} module ${moduleId}: ${err.message}`);
+        throw err;
       } else {
         errors++;
         logger.warn(`Bulk enable failed for user ${userId} module ${moduleId}: ${err.message}`);

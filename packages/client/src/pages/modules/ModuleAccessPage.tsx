@@ -59,8 +59,18 @@ export default function ModuleAccessPage() {
       setTimeout(() => setSyncAlert(null), 5000);
     },
     onError: (err: any) => {
-      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || "Failed to enable module" });
-      setTimeout(() => setSyncAlert(null), 5000);
+      // #1461 — Surface server-side seat-limit errors so admins see *why*
+      // the assignment failed instead of the UI silently incrementing.
+      const status = err.response?.status;
+      const serverMsg = err.response?.data?.error?.message;
+      const message =
+        status === 409 && serverMsg
+          ? serverMsg
+          : serverMsg || "Failed to enable module";
+      setSyncAlert({ type: "error", message });
+      setConfirmAction(null);
+      // Seat-limit messages are longer and more important — keep them visible longer
+      setTimeout(() => setSyncAlert(null), status === 409 ? 8000 : 5000);
     },
   });
 

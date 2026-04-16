@@ -2633,7 +2633,7 @@ describe("Subscription service — edge cases", () => {
     }
   });
 
-  it("assignSeat — beyond seat limit throws", async () => {
+  it("assignSeat — beyond seat limit throws (#1461 COUNT-based check)", async () => {
     const { assignSeat } = await import("../../services/subscription/subscription.service.js");
     const db = getDB();
     const sub = await db("org_subscriptions")
@@ -2641,9 +2641,14 @@ describe("Subscription service — edge cases", () => {
       .whereIn("status", ["active", "trial"])
       .first();
     if (sub) {
-      // Temporarily set used_seats = total_seats
-      const original = sub.used_seats;
-      await db("org_subscriptions").where({ id: sub.id }).update({ used_seats: sub.total_seats });
+      // #1461 — The enforcement now counts actual seat rows; shrink total_seats
+      // below current seats to simulate "limit reached".
+      const originalTotal = sub.total_seats;
+      const [{ currentSeats }] = await db("org_module_seats")
+        .where({ subscription_id: sub.id })
+        .count("* as currentSeats");
+      const shrunk = Math.max(0, Number(currentSeats));
+      await db("org_subscriptions").where({ id: sub.id }).update({ total_seats: shrunk });
       try {
         await assignSeat({
           orgId: ORG,
@@ -2653,9 +2658,10 @@ describe("Subscription service — edge cases", () => {
         });
         expect.unreachable("Should throw");
       } catch (e: any) {
-        expect(e.message).toMatch(/no available seats/i);
+        // Accept either the legacy wording or the new #1461 message
+        expect(e.message).toMatch(/seat limit exceeded|no available seats/i);
       } finally {
-        await db("org_subscriptions").where({ id: sub.id }).update({ used_seats: original });
+        await db("org_subscriptions").where({ id: sub.id }).update({ total_seats: originalTotal });
       }
     } else {
       expect(true).toBe(true);
