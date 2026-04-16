@@ -261,15 +261,21 @@ export default function ForumPage() {
                         {post.author_first_name} {post.author_last_name}
                       </span>
                       <span>{timeAgo(post.created_at)}</span>
-                      <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" /> {post.view_count}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" /> {post.like_count}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageCircle className="h-3 w-3" /> {post.reply_count}
-                      </span>
+                      {post.view_count > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" /> {post.view_count}
+                        </span>
+                      )}
+                      {post.like_count > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-3 w-3" /> {post.like_count}
+                        </span>
+                      )}
+                      {post.reply_count > 0 && (
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="h-3 w-3" /> {post.reply_count}
+                        </span>
+                      )}
                       {safeParseTags(post.tags).length > 0 && (
                         <span className="flex items-center gap-1">
                           {safeParseTags(post.tags)
