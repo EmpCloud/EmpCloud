@@ -1,34 +1,24 @@
-import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, ArrowRight, Loader2 } from "lucide-react";
+import { MessageSquare, ArrowRight } from "lucide-react";
 import { useFeed } from "../api";
 import { PostComposer } from "../components/PostComposer";
 import { PostCard } from "../components/PostCard";
 
-// Dashboard feed card. Composer on top, every post that has been fetched, a
-// "View all" link out to /feed. Mirrors the FeedPage behaviour so the
-// dashboard is a self-contained feed reader: posts paginate in via infinite
-// scroll as the user reads down.
-export function CompanyFeedWidget() {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useFeed();
-  const posts = data?.pages.flatMap((p) => p.items) ?? [];
+// Dashboard feed card — shows a short PREVIEW of the most recent posts
+// (first page, capped at PREVIEW_LIMIT) with a "Open full feed" link to
+// the dedicated /feed page. The widget deliberately does NOT paginate —
+// infinite scroll belongs on the full feed page so the dashboard stays a
+// glanceable summary instead of growing into an endless scroll.
+const PREVIEW_LIMIT = 3;
 
-  // IntersectionObserver-driven "load more" so paging is invisible.
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+export function CompanyFeedWidget() {
+  const { data, isLoading } = useFeed();
+  // Only use the first fetched page and cap the visible posts so that
+  // cached pages from /feed don't bloat the dashboard widget.
+  const firstPagePosts = data?.pages[0]?.items ?? [];
+  const posts = firstPagePosts.slice(0, PREVIEW_LIMIT);
+  const totalInFirstPage = firstPagePosts.length;
+  const hasMore = totalInFirstPage > PREVIEW_LIMIT || (data?.pages[0]?.next_cursor ?? null) !== null;
 
   return (
     <div className="space-y-4">
@@ -63,12 +53,13 @@ export function CompanyFeedWidget() {
         </div>
       )}
 
-      <div ref={sentinelRef} />
-
-      {isFetchingNextPage && (
-        <div className="flex items-center justify-center gap-2 py-2 text-xs text-gray-400">
-          <Loader2 className="h-3 w-3 animate-spin" /> Loading more...
-        </div>
+      {hasMore && posts.length > 0 && (
+        <Link
+          to="/feed"
+          className="flex items-center justify-center gap-1 rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-brand-600 hover:bg-brand-50"
+        >
+          View more posts in the full feed <ArrowRight className="h-3 w-3" />
+        </Link>
       )}
     </div>
   );

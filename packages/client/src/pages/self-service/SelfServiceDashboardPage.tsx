@@ -9,13 +9,11 @@ import {
   ArrowRight,
   CheckCircle2,
   XCircle,
-  Sparkles,
   Pencil,
   LogIn,
   LogOut,
   Loader2,
 } from "lucide-react";
-import { AiBadge } from "@/components/AiBadge";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
@@ -165,7 +163,7 @@ export default function SelfServiceDashboardPage() {
         <QuickLink to="/my-profile" icon={FileText} label="My Profile" />
         <QuickLink to={`/employees/${user?.id}`} icon={Pencil} label="Edit My Details" />
         <QuickLink to="/leave" icon={CalendarDays} label="Apply Leave" />
-        <QuickLink to="/attendance/my" icon={Clock} label="Mark Attendance" />
+        <QuickLink to="/attendance/my" icon={Clock} label="Attendance" />
         <QuickLink to="/helpdesk/my-tickets" icon={FileText} label="Request Update" />
       </div>
 
@@ -176,47 +174,99 @@ export default function SelfServiceDashboardPage() {
         media and replies; on smaller screens it collapses to a single column
         with the feed first.
       */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         {/* Left column — Company Feed */}
         <div className="lg:col-span-3">
           <CompanyFeedWidget />
         </div>
 
-        {/* Right column — stacked dashboard cards */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Right column — stacked dashboard cards. Sticky so short content
+            doesn't leave a big empty gap beside the feed when the user scrolls. */}
+        <div className="lg:col-span-2 space-y-6 lg:sticky lg:top-4 lg:self-start">
         {/* Attendance Today */}
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-brand-600" />
             <h2 className="text-lg font-semibold text-gray-900">My Attendance Today</h2>
           </div>
-          {todayAttendance ? (
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              <div>
-                <p className="text-sm font-medium text-gray-900">Checked in</p>
-                <p className="text-xs text-gray-500">
-                  {/* #1383 — The API returns check_in / check_out as ISO
-                      timestamps, not check_in_time / check_out_time strings */}
-                  {(() => {
-                    const ci = todayAttendance.check_in || todayAttendance.check_in_time;
-                    const co = todayAttendance.check_out || todayAttendance.check_out_time;
-                    const fmt = (v: string | null | undefined) =>
-                      v
-                        ? new Date(v).toLocaleTimeString("en-IN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                        : null;
-                    const ciText = fmt(ci) || "N/A";
-                    const coText = fmt(co);
-                    return coText ? `${ciText} - ${coText}` : ciText;
-                  })()}
-                </p>
+          {todayAttendance ? (() => {
+            // #1383 — API returns check_in / check_out as ISO timestamps,
+            // not check_in_time / check_out_time strings
+            const ci = todayAttendance.check_in || todayAttendance.check_in_time;
+            const co = todayAttendance.check_out || todayAttendance.check_out_time;
+            const fmt = (v: string | null | undefined) =>
+              v
+                ? new Date(v).toLocaleTimeString("en-IN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
+                : null;
+            const ciText = fmt(ci);
+            const coText = fmt(co);
+
+            // Total worked duration when both times exist
+            let workedText: string | null = null;
+            if (ci && co) {
+              const mins = Math.max(
+                0,
+                Math.round((new Date(co).getTime() - new Date(ci).getTime()) / 60000),
+              );
+              const h = Math.floor(mins / 60);
+              const m = mins % 60;
+              workedText = h > 0 ? `${h}h ${m}m` : `${m}m`;
+            }
+
+            return (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Check In */}
+                  <div className="rounded-lg border border-green-100 bg-green-50 p-3">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-green-700">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Check In
+                    </div>
+                    <p className="mt-1 text-base font-semibold text-gray-900">
+                      {ciText || "—"}
+                    </p>
+                  </div>
+
+                  {/* Check Out */}
+                  <div
+                    className={`rounded-lg border p-3 ${
+                      co
+                        ? "border-indigo-100 bg-indigo-50"
+                        : "border-gray-200 bg-gray-50"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center gap-1.5 text-xs font-medium ${
+                        co ? "text-indigo-700" : "text-gray-500"
+                      }`}
+                    >
+                      <LogOut className="h-3.5 w-3.5" />
+                      Check Out
+                    </div>
+                    <p
+                      className={`mt-1 text-base font-semibold ${
+                        co ? "text-gray-900" : "text-gray-400"
+                      }`}
+                    >
+                      {coText || "Not yet"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Total worked */}
+                {workedText && (
+                  <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs">
+                    <span className="text-gray-500">Total worked today</span>
+                    <span className="font-semibold text-gray-900">{workedText}</span>
+                  </div>
+                )}
               </div>
-            </div>
-          ) : (
+            );
+          })() : (
             <div className="flex items-center gap-3">
               <XCircle className="h-5 w-5 text-gray-300" />
               <p className="text-sm text-gray-500">Not checked in yet today</p>
@@ -270,18 +320,18 @@ export default function SelfServiceDashboardPage() {
           )}
         </div>
 
-        {/* Recent Announcements */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Megaphone className="h-5 w-5 text-brand-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Announcements</h2>
+        {/* Recent Announcements — only render when there are items */}
+        {announcementList.length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-brand-600" />
+                <h2 className="text-lg font-semibold text-gray-900">Announcements</h2>
+              </div>
+              <Link to="/announcements" className="text-xs text-brand-600 hover:underline">
+                View all
+              </Link>
             </div>
-            <Link to="/announcements" className="text-xs text-brand-600 hover:underline">
-              View all
-            </Link>
-          </div>
-          {announcementList.length > 0 ? (
             <ul className="space-y-3">
               {announcementList.slice(0, 3).map((a: any) => (
                 <li key={a.id}>
@@ -292,23 +342,21 @@ export default function SelfServiceDashboardPage() {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="text-sm text-gray-400">No recent announcements</p>
-          )}
-        </div>
-
-        {/* Policies to Acknowledge */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-brand-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Policies</h2>
-            </div>
-            <Link to="/policies" className="text-xs text-brand-600 hover:underline">
-              View all
-            </Link>
           </div>
-          {policyList.length > 0 ? (
+        )}
+
+        {/* Policies to Acknowledge — only render when there are items */}
+        {policyList.length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-brand-600" />
+                <h2 className="text-lg font-semibold text-gray-900">Policies</h2>
+              </div>
+              <Link to="/policies" className="text-xs text-brand-600 hover:underline">
+                View all
+              </Link>
+            </div>
             <ul className="space-y-2">
               {policyList.slice(0, 5).map((p: any) => (
                 <li
@@ -331,33 +379,8 @@ export default function SelfServiceDashboardPage() {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="text-sm text-gray-400">No policies to review</p>
-          )}
-        </div>
-
-        {/* AI Insights */}
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-purple-600" />
-            <h2 className="text-lg font-semibold text-gray-900">AI Insights</h2>
-            <AiBadge label="Beta" />
           </div>
-          <ul className="space-y-3 text-sm text-gray-700">
-            <li className="flex items-start gap-2">
-              <span className="text-purple-500 mt-0.5">&#128161;</span>
-              <span>You have <strong>15 days</strong> of earned leave remaining. Consider planning time off before Q2 ends.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-purple-500 mt-0.5">&#128202;</span>
-              <span>Your attendance this month: <strong>95%</strong> &mdash; above team average of 91%.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-purple-500 mt-0.5">&#128203;</span>
-              <span>2 company policies updated recently. <Link to="/policies" className="text-purple-600 underline">Review them</Link>.</span>
-            </li>
-          </ul>
-        </div>
+        )}
         </div>
       </div>
     </div>
