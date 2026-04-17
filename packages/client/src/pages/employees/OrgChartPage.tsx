@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,6 +8,11 @@ import {
   Maximize2,
   ChevronDown,
   ChevronRight,
+  Users,
+  Briefcase,
+  Building2,
+  Search,
+  X,
 } from "lucide-react";
 import api from "@/api/client";
 
@@ -29,34 +34,124 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
+// Deterministic gradient picker — so each department has a consistent hue.
+// Using pastel 200/300 range for a softer, lighter feel.
+const DEPT_GRADIENTS = [
+  "from-indigo-200 to-violet-200",
+  "from-sky-200 to-cyan-200",
+  "from-emerald-200 to-teal-200",
+  "from-amber-200 to-orange-200",
+  "from-rose-200 to-pink-200",
+  "from-purple-200 to-fuchsia-200",
+];
+
+// Slightly more saturated for the avatar bg (so white initials still read clearly).
+const DEPT_AVATAR_GRADIENTS = [
+  "from-indigo-300 to-violet-400",
+  "from-sky-300 to-cyan-400",
+  "from-emerald-300 to-teal-400",
+  "from-amber-300 to-orange-400",
+  "from-rose-300 to-pink-400",
+  "from-purple-300 to-fuchsia-400",
+];
+
+function deptIndex(dept: string | null): number {
+  if (!dept) return -1;
+  let hash = 0;
+  for (let i = 0; i < dept.length; i++) hash = (hash * 31 + dept.charCodeAt(i)) | 0;
+  return Math.abs(hash) % DEPT_GRADIENTS.length;
+}
+
+function deptGradient(dept: string | null): string {
+  const idx = deptIndex(dept);
+  return idx === -1 ? "from-gray-200 to-gray-300" : DEPT_GRADIENTS[idx];
+}
+
+function deptAvatarGradient(dept: string | null): string {
+  const idx = deptIndex(dept);
+  return idx === -1 ? "from-gray-300 to-gray-400" : DEPT_AVATAR_GRADIENTS[idx];
+}
+
 /* ------------------------------------------------------------------ */
-/*  Compact card for each person                                      */
+/*  Rich card for each person                                         */
 /* ------------------------------------------------------------------ */
 function NodeCard({
   node,
   onNavigate,
+  isHighlighted = false,
+  hasChildren = false,
 }: {
   node: OrgChartNode;
   onNavigate: (id: number) => void;
+  isHighlighted?: boolean;
+  hasChildren?: boolean;
 }) {
+  const stripGradient = deptGradient(node.department);
+  const avatarGradient = deptAvatarGradient(node.department);
+  // Track image-load failures so we fall back to initials instead of showing
+  // a broken <img>. Some users have photo set to an invalid path or to a
+  // URL that 404s — previous behaviour was a broken-image icon.
+  const [imageFailed, setImageFailed] = useState(false);
+  const showPhoto = Boolean(node.photo) && !imageFailed;
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
         onNavigate(node.id);
       }}
-      className="bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm hover:shadow-md hover:border-brand-300 transition-all text-center w-[172px] cursor-pointer select-none"
+      className={`group relative w-[200px] overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+        isHighlighted
+          ? "border-brand-300 ring-2 ring-brand-100"
+          : "border-gray-200 hover:border-brand-200"
+      }`}
     >
-      <div className="h-9 w-9 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700 mx-auto mb-1.5">
-        {getInitials(node.name)}
+      {/* Colored top strip (department-based, pastel) */}
+      <div className={`h-1 w-full bg-gradient-to-r ${stripGradient}`} />
+
+      <div className="px-4 py-3.5">
+        <div className="flex items-start gap-3">
+          {/* Avatar with colored ring for managers */}
+          <div className="relative shrink-0">
+            {showPhoto ? (
+              <img
+                src={node.photo!}
+                alt={node.name}
+                onError={() => setImageFailed(true)}
+                className={`h-11 w-11 rounded-full object-cover ring-2 ${
+                  hasChildren ? "ring-brand-100" : "ring-gray-100"
+                }`}
+              />
+            ) : (
+              <div
+                className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${avatarGradient} text-xs font-semibold text-white ring-2 ${
+                  hasChildren ? "ring-brand-100" : "ring-white"
+                }`}
+              >
+                {getInitials(node.name)}
+              </div>
+            )}
+            {hasChildren && (
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[9px] font-bold text-white ring-2 ring-white">
+                {node.children.length}
+              </span>
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-gray-900 group-hover:text-brand-600">
+              {node.name}
+            </p>
+            <p className="mt-0.5 truncate text-[11px] font-medium text-gray-600">
+              {node.designation || "No designation"}
+            </p>
+            {node.department && (
+              <span className="mt-1 inline-block truncate rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+                {node.department}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-      <p className="text-sm font-medium text-gray-900 truncate">{node.name}</p>
-      <p className="text-[11px] text-gray-500 mt-0.5 truncate">
-        {node.designation || "No designation"}
-      </p>
-      {node.department && (
-        <p className="text-[11px] text-gray-400 truncate">{node.department}</p>
-      )}
     </button>
   );
 }
@@ -68,31 +163,40 @@ function ChartNode({
   node,
   onNavigate,
   level = 0,
+  highlightedId = null,
 }: {
   node: OrgChartNode;
   onNavigate: (id: number) => void;
   level?: number;
+  highlightedId?: number | null;
 }) {
   const [expanded, setExpanded] = useState(level < 2);
   const hasChildren = node.children.length > 0;
+  const isHighlighted = highlightedId === node.id;
 
   return (
     <div className="flex flex-col items-center">
       {/* The card itself */}
       <div className="relative">
-        <NodeCard node={node} onNavigate={onNavigate} />
+        <NodeCard
+          node={node}
+          onNavigate={onNavigate}
+          isHighlighted={isHighlighted}
+          hasChildren={hasChildren}
+        />
         {hasChildren && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               setExpanded(!expanded);
             }}
-            className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-10 h-5 w-5 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-50 text-gray-500"
+            className="absolute -bottom-3 left-1/2 z-10 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
+            title={expanded ? "Collapse team" : `Expand ${node.children.length} report${node.children.length === 1 ? "" : "s"}`}
           >
             {expanded ? (
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3.5 w-3.5" />
             ) : (
-              <ChevronRight className="h-3 w-3" />
+              <ChevronRight className="h-3.5 w-3.5" />
             )}
           </button>
         )}
@@ -102,14 +206,14 @@ function ChartNode({
       {hasChildren && expanded && (
         <div className="flex flex-col items-center">
           {/* Vertical line from parent */}
-          <div className="w-px h-6 bg-gray-300" />
+          <div className="h-7 w-0.5 bg-gradient-to-b from-gray-200 to-gray-300" />
 
           {/* Horizontal connector bar + children */}
-          <div className="relative flex gap-8">
+          <div className="relative flex gap-10">
             {/* Horizontal bar across all children */}
             {node.children.length > 1 && (
               <div
-                className="absolute top-0 h-px bg-gray-300"
+                className="absolute top-0 h-0.5 bg-gray-300"
                 style={{
                   left: `calc(50% / ${node.children.length})`,
                   right: `calc(50% / ${node.children.length})`,
@@ -120,11 +224,12 @@ function ChartNode({
             {node.children.map((child) => (
               <div key={child.id} className="flex flex-col items-center">
                 {/* Vertical stub into child */}
-                <div className="w-px h-5 bg-gray-300" />
+                <div className="h-5 w-0.5 bg-gray-300" />
                 <ChartNode
                   node={child}
                   onNavigate={onNavigate}
                   level={level + 1}
+                  highlightedId={highlightedId}
                 />
               </div>
             ))}
@@ -211,6 +316,43 @@ export default function OrgChartPage() {
   });
 
   const nodes: OrgChartNode[] = data || [];
+
+  // Search state — flatten the tree once for quick matching
+  const [search, setSearch] = useState("");
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
+
+  const flatPeople = useMemo(() => {
+    const out: OrgChartNode[] = [];
+    const walk = (n: OrgChartNode) => {
+      out.push(n);
+      n.children.forEach(walk);
+    };
+    nodes.forEach(walk);
+    return out;
+  }, [nodes]);
+
+  const stats = useMemo(() => {
+    const managers = flatPeople.filter((p) => p.children.length > 0).length;
+    const depts = new Set(flatPeople.map((p) => p.department).filter(Boolean)).size;
+    return {
+      total: flatPeople.length,
+      managers,
+      departments: depts,
+    };
+  }, [flatPeople]);
+
+  const searchResults = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return [];
+    return flatPeople
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.designation || "").toLowerCase().includes(q) ||
+          (p.department || "").toLowerCase().includes(q),
+      )
+      .slice(0, 8);
+  }, [flatPeople, search]);
 
   // --- pan / zoom state ---
   const containerRef = useRef<HTMLDivElement>(null);
@@ -370,16 +512,97 @@ export default function OrgChartPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 shrink-0">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Organization Chart
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Visualize reporting structure across your organization.
-          </p>
+      <div className="mb-4 shrink-0 space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-600">
+              <Network className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Organization Chart</h1>
+              <p className="mt-0.5 text-sm text-gray-500">
+                Visualize reporting structure across your organization.
+              </p>
+            </div>
+          </div>
+
+          {/* Stats pills */}
+          {!isLoading && nodes.length > 0 && (
+            <div className="hidden items-center gap-2 md:flex">
+              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm">
+                <Users className="h-4 w-4 text-indigo-500" />
+                <div>
+                  <p className="text-xs text-gray-500">People</p>
+                  <p className="text-sm font-semibold text-gray-900">{stats.total}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm">
+                <Briefcase className="h-4 w-4 text-emerald-500" />
+                <div>
+                  <p className="text-xs text-gray-500">Managers</p>
+                  <p className="text-sm font-semibold text-gray-900">{stats.managers}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm">
+                <Building2 className="h-4 w-4 text-amber-500" />
+                <div>
+                  <p className="text-xs text-gray-500">Departments</p>
+                  <p className="text-sm font-semibold text-gray-900">{stats.departments}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        <Network className="h-6 w-6 text-gray-400" />
+
+        {/* Search bar */}
+        {!isLoading && nodes.length > 0 && (
+          <div className="relative max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name, designation, or department..."
+              className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-9 text-sm outline-none transition focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
+            />
+            {search && (
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setHighlightedId(null);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            {searchResults.length > 0 && (
+              <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+                {searchResults.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      setHighlightedId(p.id);
+                      setSearch("");
+                    }}
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-gray-50"
+                  >
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 text-[10px] font-semibold text-white">
+                      {getInitials(p.name)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-gray-900">{p.name}</p>
+                      <p className="truncate text-xs text-gray-500">
+                        {p.designation || "No designation"}
+                        {p.department ? ` · ${p.department}` : ""}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -395,8 +618,13 @@ export default function OrgChartPage() {
           {/* ====== Desktop: pannable / zoomable viewport ====== */}
           <div
             ref={containerRef}
-            className="hidden lg:block relative flex-1 h-[calc(100vh-11rem)] overflow-hidden rounded-xl border border-gray-200 bg-gray-50/70"
-            style={{ cursor: isDragging ? "grabbing" : "grab" }}
+            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-gray-50 to-slate-100"
+            style={{
+              cursor: isDragging ? "grabbing" : "grab",
+              backgroundImage:
+                "radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -453,6 +681,7 @@ export default function OrgChartPage() {
                   key={root.id}
                   node={root}
                   onNavigate={handleNavigate}
+                  highlightedId={highlightedId}
                 />
               ))}
             </div>
