@@ -298,6 +298,140 @@
     "notCheckedInYet": "Pas encore point\u00e9 aujourd'hui",
     "attendanceComplete": "Pr\u00e9sence compl\u00e9t\u00e9e pour aujourd'hui"
   },
+  "manager": {
+    "title": "Mon \u00e9quipe",
+    "subtitle": "Tableau de bord manager \u2014 aper\u00e7u de vos collaborateurs directs.",
+    "stats": {
+      "teamSize": "Taille de l'\u00e9quipe",
+      "presentToday": "Pr\u00e9sents aujourd'hui",
+      "absentToday": "Absents aujourd'hui",
+      "onLeave": "En cong\u00e9",
+      "lateToday": "En retard aujourd'hui",
+      "pendingLeaves": "Cong\u00e9s en attente"
+    },
+    "teamAttendanceToday": "Pr\u00e9sence de l'\u00e9quipe aujourd'hui",
+    "noTeamMembers": "Aucun membre de l'\u00e9quipe trouv\u00e9",
+    "inPrefix": "Arriv\u00e9e",
+    "outPrefix": "D\u00e9part",
+    "statusHalfDay": "Demi-journ\u00e9e",
+    "statusPresent": "Pr\u00e9sent",
+    "statusAbsent": "Absent",
+    "statusOnLeave": "En cong\u00e9",
+    "teamLeaveCalendar": "Calendrier des cong\u00e9s de l'\u00e9quipe (cette semaine)",
+    "noApprovedLeaves": "Aucun cong\u00e9 approuv\u00e9 cette semaine",
+    "leaveFallback": "Cong\u00e9",
+    "halfFirst": "1re moiti\u00e9",
+    "halfSecond": "2e moiti\u00e9",
+    "pendingLeaveRequests": "Demandes de cong\u00e9 en attente",
+    "pendingBadge": "{{count}} en attente",
+    "table": {
+      "employee": "Employ\u00e9",
+      "type": "Type",
+      "dates": "Dates",
+      "days": "Jours",
+      "reason": "Motif",
+      "actions": "Actions"
+    },
+    "halfSuffix": "(Demi)",
+    "noPendingRequests": "Aucune demande de cong\u00e9 en attente",
+    "review": "Examiner",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "remarksPlaceholder": "Remarques (facultatif)",
+    "directReports": "Collaborateurs directs",
+    "loadingTeam": "Chargement de l'\u00e9quipe...",
+    "noDirectReports": "Aucun collaborateur direct trouv\u00e9. Les membres de l'\u00e9quipe appara\u00eetront ici une fois que des employ\u00e9s vous seront attribu\u00e9s en tant que manager."
+  },
+  "billing": {
+    "title": "Facturation",
+    "subtitle": "G\u00e9rez les abonnements, factures, paiements et aper\u00e7u de la facturation.",
+    "tabs": {
+      "subscriptions": "Abonnements",
+      "invoices": "Factures",
+      "payments": "Paiements",
+      "overview": "Aper\u00e7u"
+    },
+    "monthlyCost": "Co\u00fbt mensuel",
+    "perMonth": "/mois",
+    "noSubscriptions": "Aucun abonnement pour le moment. Abonnez-vous \u00e0 des modules depuis la page Modules.",
+    "labels": {
+      "plan": "Plan",
+      "seats": "Si\u00e8ges",
+      "pricePerSeat": "Prix/si\u00e8ge",
+      "billingCycle": "Cycle de facturation"
+    },
+    "full": "(complet)",
+    "editTooltip": "Modifier l'abonnement",
+    "cancelTooltip": "Annuler l'abonnement",
+    "cycles": {
+      "monthly": "Mensuel",
+      "quarterly": "Trimestriel",
+      "annual": "Annuel"
+    },
+    "editModal": {
+      "title": "Modifier l'abonnement",
+      "planTier": "Niveau du plan",
+      "totalSeats": "Si\u00e8ges totaux",
+      "currentlyUsing": "Utilise actuellement {{count}} si\u00e8ges",
+      "cannotReduce": "Impossible de r\u00e9duire en dessous de {{count}} (en cours d'utilisation)",
+      "billingCycle": "Cycle de facturation",
+      "changes": "Modifications :",
+      "plan": "Plan",
+      "seats": "Si\u00e8ges",
+      "cycle": "Cycle",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    },
+    "cancelModal": {
+      "title": "Annuler l'abonnement ?",
+      "message": "Cela annulera l'abonnement et r\u00e9voquera l'acc\u00e8s pour tous les si\u00e8ges attribu\u00e9s. Cette action ne peut pas \u00eatre annul\u00e9e.",
+      "keep": "Garder",
+      "yesCancel": "Oui, annuler",
+      "cancelling": "Annulation..."
+    },
+    "toasts": {
+      "updated": "Abonnement mis \u00e0 jour avec succ\u00e8s",
+      "updateFailed": "\u00c9chec de la mise \u00e0 jour de l'abonnement",
+      "cancelled": "Abonnement annul\u00e9",
+      "cancelFailed": "\u00c9chec de l'annulation de l'abonnement",
+      "errorPrefix": "Erreur"
+    },
+    "overview": {
+      "noData": "Aucune donn\u00e9e de facturation disponible pour le moment.",
+      "outstandingBalance": "Solde impay\u00e9",
+      "nextInvoiceDate": "Date de la prochaine facture",
+      "monthlyRecurring": "R\u00e9current mensuel",
+      "paymentStatus": "\u00c9tat du paiement",
+      "overdue": "en retard",
+      "pastDue": "en souffrance",
+      "allPaid": "tout pay\u00e9"
+    },
+    "invoices": {
+      "loading": "Chargement des factures...",
+      "none": "Aucune facture pour le moment.",
+      "number": "Facture n\u00b0",
+      "date": "Date",
+      "dueDate": "Date d'\u00e9ch\u00e9ance",
+      "amount": "Montant",
+      "status": "Statut",
+      "pagination": "Page {{page}} sur {{totalPages}} ({{total}} factures)",
+      "previous": "Pr\u00e9c\u00e9dent",
+      "next": "Suivant",
+      "downloadPdf": "T\u00e9l\u00e9charger PDF",
+      "payNow": "Payer maintenant",
+      "processing": "Traitement..."
+    },
+    "payments": {
+      "loading": "Chargement des paiements...",
+      "none": "Aucun paiement enregistr\u00e9 pour le moment.",
+      "date": "Date",
+      "amount": "Montant",
+      "method": "M\u00e9thode",
+      "reference": "R\u00e9f\u00e9rence",
+      "invoice": "Facture",
+      "pagination": "Page {{page}} sur {{totalPages}} ({{total}} paiements)"
+    }
+  },
   "roles": {
     "employee": "Employ\u00e9",
     "manager": "Manager",

@@ -298,6 +298,140 @@
     "notCheckedInYet": "\u4eca\u65e5\u5c1a\u672a\u7b7e\u5230",
     "attendanceComplete": "\u4eca\u65e5\u8003\u52e4\u5df2\u5b8c\u6210"
   },
+  "manager": {
+    "title": "\u6211\u7684\u56e2\u961f",
+    "subtitle": "\u7ecf\u7406\u4eea\u8868\u76d8 \u2014 \u60a8\u7684\u76f4\u63a5\u4e0b\u5c5e\u6982\u89c8\u3002",
+    "stats": {
+      "teamSize": "\u56e2\u961f\u89c4\u6a21",
+      "presentToday": "\u4eca\u65e5\u51fa\u52e4",
+      "absentToday": "\u4eca\u65e5\u7f3a\u52e4",
+      "onLeave": "\u4f11\u5047\u4e2d",
+      "lateToday": "\u4eca\u65e5\u8fdf\u5230",
+      "pendingLeaves": "\u5f85\u5904\u7406\u7684\u4f11\u5047"
+    },
+    "teamAttendanceToday": "\u4eca\u65e5\u56e2\u961f\u8003\u52e4",
+    "noTeamMembers": "\u672a\u627e\u5230\u56e2\u961f\u6210\u5458",
+    "inPrefix": "\u7b7e\u5230",
+    "outPrefix": "\u7b7e\u9000",
+    "statusHalfDay": "\u534a\u5929",
+    "statusPresent": "\u51fa\u52e4",
+    "statusAbsent": "\u7f3a\u52e4",
+    "statusOnLeave": "\u4f11\u5047\u4e2d",
+    "teamLeaveCalendar": "\u56e2\u961f\u4f11\u5047\u65e5\u5386\uff08\u672c\u5468\uff09",
+    "noApprovedLeaves": "\u672c\u5468\u6ca1\u6709\u6279\u51c6\u7684\u4f11\u5047",
+    "leaveFallback": "\u4f11\u5047",
+    "halfFirst": "\u4e0a\u534a",
+    "halfSecond": "\u4e0b\u534a",
+    "pendingLeaveRequests": "\u5f85\u5904\u7406\u7684\u4f11\u5047\u7533\u8bf7",
+    "pendingBadge": "{{count}} \u5f85\u5904\u7406",
+    "table": {
+      "employee": "\u5458\u5de5",
+      "type": "\u7c7b\u578b",
+      "dates": "\u65e5\u671f",
+      "days": "\u5929\u6570",
+      "reason": "\u539f\u56e0",
+      "actions": "\u64cd\u4f5c"
+    },
+    "halfSuffix": "\uff08\u534a\u5929\uff09",
+    "noPendingRequests": "\u6ca1\u6709\u5f85\u5904\u7406\u7684\u4f11\u5047\u7533\u8bf7",
+    "review": "\u67e5\u770b",
+    "approve": "\u6279\u51c6",
+    "reject": "\u62d2\u7edd",
+    "remarksPlaceholder": "\u5907\u6ce8\uff08\u53ef\u9009\uff09",
+    "directReports": "\u76f4\u63a5\u4e0b\u5c5e",
+    "loadingTeam": "\u6b63\u5728\u52a0\u8f7d\u56e2\u961f...",
+    "noDirectReports": "\u672a\u627e\u5230\u76f4\u63a5\u4e0b\u5c5e\u3002\u5f53\u5458\u5de5\u88ab\u5206\u914d\u7ed9\u60a8\u4f5c\u4e3a\u6c47\u62a5\u7ecf\u7406\u65f6\uff0c\u60a8\u5c06\u5728\u6b64\u5904\u770b\u5230\u56e2\u961f\u6210\u5458\u3002"
+  },
+  "billing": {
+    "title": "\u8d26\u5355",
+    "subtitle": "\u7ba1\u7406\u8ba2\u9605\u3001\u53d1\u7968\u3001\u4ed8\u6b3e\u548c\u8d26\u5355\u6982\u89c8\u3002",
+    "tabs": {
+      "subscriptions": "\u8ba2\u9605",
+      "invoices": "\u53d1\u7968",
+      "payments": "\u4ed8\u6b3e",
+      "overview": "\u6982\u89c8"
+    },
+    "monthlyCost": "\u6708\u8d39",
+    "perMonth": "/\u6708",
+    "noSubscriptions": "\u8fd8\u6ca1\u6709\u8ba2\u9605\u3002\u8bf7\u4ece\u6a21\u5757\u9875\u9762\u8ba2\u9605\u6a21\u5757\u3002",
+    "labels": {
+      "plan": "\u5957\u9910",
+      "seats": "\u5e2d\u4f4d",
+      "pricePerSeat": "\u5355\u5e2d\u4ef7\u683c",
+      "billingCycle": "\u8ba1\u8d39\u5468\u671f"
+    },
+    "full": "\uff08\u5df2\u6ee1\uff09",
+    "editTooltip": "\u7f16\u8f91\u8ba2\u9605",
+    "cancelTooltip": "\u53d6\u6d88\u8ba2\u9605",
+    "cycles": {
+      "monthly": "\u6708\u5ea6",
+      "quarterly": "\u5b63\u5ea6",
+      "annual": "\u5e74\u5ea6"
+    },
+    "editModal": {
+      "title": "\u7f16\u8f91\u8ba2\u9605",
+      "planTier": "\u5957\u9910\u7b49\u7ea7",
+      "totalSeats": "\u5e2d\u4f4d\u603b\u6570",
+      "currentlyUsing": "\u5f53\u524d\u4f7f\u7528 {{count}} \u4e2a\u5e2d\u4f4d",
+      "cannotReduce": "\u65e0\u6cd5\u51cf\u5c11\u5230 {{count}} \u4ee5\u4e0b\uff08\u4f7f\u7528\u4e2d\uff09",
+      "billingCycle": "\u8ba1\u8d39\u5468\u671f",
+      "changes": "\u53d8\u66f4\uff1a",
+      "plan": "\u5957\u9910",
+      "seats": "\u5e2d\u4f4d",
+      "cycle": "\u5468\u671f",
+      "save": "\u4fdd\u5b58\u66f4\u6539",
+      "saving": "\u4fdd\u5b58\u4e2d..."
+    },
+    "cancelModal": {
+      "title": "\u53d6\u6d88\u8ba2\u9605\uff1f",
+      "message": "\u6b64\u64cd\u4f5c\u5c06\u53d6\u6d88\u8ba2\u9605\u5e76\u5413\u56de\u6240\u6709\u5df2\u5206\u914d\u5e2d\u4f4d\u7684\u8bbf\u95ee\u6743\u9650\u3002\u6b64\u64cd\u4f5c\u65e0\u6cd5\u64a4\u9500\u3002",
+      "keep": "\u4fdd\u7559",
+      "yesCancel": "\u662f\uff0c\u53d6\u6d88",
+      "cancelling": "\u53d6\u6d88\u4e2d..."
+    },
+    "toasts": {
+      "updated": "\u8ba2\u9605\u66f4\u65b0\u6210\u529f",
+      "updateFailed": "\u66f4\u65b0\u8ba2\u9605\u5931\u8d25",
+      "cancelled": "\u8ba2\u9605\u5df2\u53d6\u6d88",
+      "cancelFailed": "\u53d6\u6d88\u8ba2\u9605\u5931\u8d25",
+      "errorPrefix": "\u9519\u8bef"
+    },
+    "overview": {
+      "noData": "\u6682\u65e0\u8d26\u5355\u6570\u636e\u3002",
+      "outstandingBalance": "\u672a\u7ed3\u4f59\u989d",
+      "nextInvoiceDate": "\u4e0b\u6b21\u53d1\u7968\u65e5\u671f",
+      "monthlyRecurring": "\u6708\u5ea6\u5faa\u73af",
+      "paymentStatus": "\u4ed8\u6b3e\u72b6\u6001",
+      "overdue": "\u903e\u671f",
+      "pastDue": "\u62d6\u6b20",
+      "allPaid": "\u5df2\u5168\u90e8\u652f\u4ed8"
+    },
+    "invoices": {
+      "loading": "\u6b63\u5728\u52a0\u8f7d\u53d1\u7968...",
+      "none": "\u6682\u65e0\u53d1\u7968\u3002",
+      "number": "\u53d1\u7968\u53f7",
+      "date": "\u65e5\u671f",
+      "dueDate": "\u5230\u671f\u65e5",
+      "amount": "\u91d1\u989d",
+      "status": "\u72b6\u6001",
+      "pagination": "\u7b2c {{page}} / {{totalPages}} \u9875\uff0c\u5171 {{total}} \u5f20\u53d1\u7968",
+      "previous": "\u4e0a\u4e00\u9875",
+      "next": "\u4e0b\u4e00\u9875",
+      "downloadPdf": "\u4e0b\u8f7d PDF",
+      "payNow": "\u7acb\u5373\u4ed8\u6b3e",
+      "processing": "\u5904\u7406\u4e2d..."
+    },
+    "payments": {
+      "loading": "\u6b63\u5728\u52a0\u8f7d\u4ed8\u6b3e...",
+      "none": "\u6682\u65e0\u4ed8\u6b3e\u8bb0\u5f55\u3002",
+      "date": "\u65e5\u671f",
+      "amount": "\u91d1\u989d",
+      "method": "\u65b9\u5f0f",
+      "reference": "\u53c2\u8003",
+      "invoice": "\u53d1\u7968",
+      "pagination": "\u7b2c {{page}} / {{totalPages}} \u9875\uff0c\u5171 {{total}} \u7b14\u4ed8\u6b3e"
+    }
+  },
   "roles": {
     "employee": "\u5458\u5de5",
     "manager": "\u7ecf\u7406",

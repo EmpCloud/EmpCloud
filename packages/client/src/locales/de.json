@@ -298,6 +298,140 @@
     "notCheckedInYet": "Heute noch nicht eingestempelt",
     "attendanceComplete": "Anwesenheit f\u00fcr heute abgeschlossen"
   },
+  "manager": {
+    "title": "Mein Team",
+    "subtitle": "Manager-\u00dcbersicht \u2014 \u00dcberblick \u00fcber Ihre direkten Mitarbeiter.",
+    "stats": {
+      "teamSize": "Teamgr\u00f6\u00dfe",
+      "presentToday": "Heute anwesend",
+      "absentToday": "Heute abwesend",
+      "onLeave": "Im Urlaub",
+      "lateToday": "Heute versp\u00e4tet",
+      "pendingLeaves": "Ausstehende Urlaubsantr\u00e4ge"
+    },
+    "teamAttendanceToday": "Anwesenheit des Teams heute",
+    "noTeamMembers": "Keine Teammitglieder gefunden",
+    "inPrefix": "Ein",
+    "outPrefix": "Aus",
+    "statusHalfDay": "Halbtag",
+    "statusPresent": "Anwesend",
+    "statusAbsent": "Abwesend",
+    "statusOnLeave": "Im Urlaub",
+    "teamLeaveCalendar": "Urlaubskalender des Teams (diese Woche)",
+    "noApprovedLeaves": "Keine genehmigten Urlaube diese Woche",
+    "leaveFallback": "Urlaub",
+    "halfFirst": "1. H\u00e4lfte",
+    "halfSecond": "2. H\u00e4lfte",
+    "pendingLeaveRequests": "Ausstehende Urlaubsantr\u00e4ge",
+    "pendingBadge": "{{count}} ausstehend",
+    "table": {
+      "employee": "Mitarbeiter",
+      "type": "Typ",
+      "dates": "Daten",
+      "days": "Tage",
+      "reason": "Grund",
+      "actions": "Aktionen"
+    },
+    "halfSuffix": "(Halbtag)",
+    "noPendingRequests": "Keine ausstehenden Urlaubsantr\u00e4ge",
+    "review": "Pr\u00fcfen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "remarksPlaceholder": "Bemerkungen (optional)",
+    "directReports": "Direkte Mitarbeiter",
+    "loadingTeam": "Team wird geladen...",
+    "noDirectReports": "Keine direkten Mitarbeiter gefunden. Teammitglieder erscheinen hier, sobald Mitarbeiter Ihnen als Vorgesetztem zugeordnet werden."
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Verwalten Sie Abonnements, Rechnungen, Zahlungen und Abrechnungs\u00fcbersicht.",
+    "tabs": {
+      "subscriptions": "Abonnements",
+      "invoices": "Rechnungen",
+      "payments": "Zahlungen",
+      "overview": "\u00dcbersicht"
+    },
+    "monthlyCost": "Monatliche Kosten",
+    "perMonth": "/Monat",
+    "noSubscriptions": "Noch keine Abonnements. Abonnieren Sie Module \u00fcber die Seite Module.",
+    "labels": {
+      "plan": "Plan",
+      "seats": "Pl\u00e4tze",
+      "pricePerSeat": "Preis/Platz",
+      "billingCycle": "Abrechnungszyklus"
+    },
+    "full": "(voll)",
+    "editTooltip": "Abonnement bearbeiten",
+    "cancelTooltip": "Abonnement k\u00fcndigen",
+    "cycles": {
+      "monthly": "Monatlich",
+      "quarterly": "Viertelj\u00e4hrlich",
+      "annual": "J\u00e4hrlich"
+    },
+    "editModal": {
+      "title": "Abonnement bearbeiten",
+      "planTier": "Plan-Stufe",
+      "totalSeats": "Pl\u00e4tze gesamt",
+      "currentlyUsing": "Derzeit {{count}} Pl\u00e4tze verwendet",
+      "cannotReduce": "Kann nicht unter {{count}} reduziert werden (in Verwendung)",
+      "billingCycle": "Abrechnungszyklus",
+      "changes": "\u00c4nderungen:",
+      "plan": "Plan",
+      "seats": "Pl\u00e4tze",
+      "cycle": "Zyklus",
+      "save": "\u00c4nderungen speichern",
+      "saving": "Speichern..."
+    },
+    "cancelModal": {
+      "title": "Abonnement k\u00fcndigen?",
+      "message": "Dies k\u00fcndigt das Abonnement und widerruft den Zugriff f\u00fcr alle zugewiesenen Pl\u00e4tze. Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+      "keep": "Beibehalten",
+      "yesCancel": "Ja, k\u00fcndigen",
+      "cancelling": "K\u00fcndigung..."
+    },
+    "toasts": {
+      "updated": "Abonnement erfolgreich aktualisiert",
+      "updateFailed": "Aktualisierung des Abonnements fehlgeschlagen",
+      "cancelled": "Abonnement gek\u00fcndigt",
+      "cancelFailed": "K\u00fcndigung des Abonnements fehlgeschlagen",
+      "errorPrefix": "Fehler"
+    },
+    "overview": {
+      "noData": "Noch keine Abrechnungsdaten verf\u00fcgbar.",
+      "outstandingBalance": "Offener Saldo",
+      "nextInvoiceDate": "N\u00e4chstes Rechnungsdatum",
+      "monthlyRecurring": "Monatlich wiederkehrend",
+      "paymentStatus": "Zahlungsstatus",
+      "overdue": "\u00fcberf\u00e4llig",
+      "pastDue": "in Verzug",
+      "allPaid": "alles bezahlt"
+    },
+    "invoices": {
+      "loading": "Rechnungen werden geladen...",
+      "none": "Noch keine Rechnungen.",
+      "number": "Rechnung Nr.",
+      "date": "Datum",
+      "dueDate": "F\u00e4lligkeitsdatum",
+      "amount": "Betrag",
+      "status": "Status",
+      "pagination": "Seite {{page}} von {{totalPages}} ({{total}} Rechnungen)",
+      "previous": "Zur\u00fcck",
+      "next": "Weiter",
+      "downloadPdf": "PDF herunterladen",
+      "payNow": "Jetzt bezahlen",
+      "processing": "Wird verarbeitet..."
+    },
+    "payments": {
+      "loading": "Zahlungen werden geladen...",
+      "none": "Noch keine Zahlungen erfasst.",
+      "date": "Datum",
+      "amount": "Betrag",
+      "method": "Methode",
+      "reference": "Referenz",
+      "invoice": "Rechnung",
+      "pagination": "Seite {{page}} von {{totalPages}} ({{total}} Zahlungen)"
+    }
+  },
   "roles": {
     "employee": "Mitarbeiter",
     "manager": "Manager",

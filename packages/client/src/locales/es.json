@@ -298,6 +298,140 @@
     "notCheckedInYet": "A\u00fan no has fichado hoy",
     "attendanceComplete": "Asistencia completada hoy"
   },
+  "manager": {
+    "title": "Mi Equipo",
+    "subtitle": "Panel del gerente \u2014 resumen de tus colaboradores directos.",
+    "stats": {
+      "teamSize": "Tama\u00f1o del equipo",
+      "presentToday": "Presentes hoy",
+      "absentToday": "Ausentes hoy",
+      "onLeave": "De licencia",
+      "lateToday": "Tarde hoy",
+      "pendingLeaves": "Licencias pendientes"
+    },
+    "teamAttendanceToday": "Asistencia del equipo hoy",
+    "noTeamMembers": "No se encontraron miembros del equipo",
+    "inPrefix": "Entrada",
+    "outPrefix": "Salida",
+    "statusHalfDay": "Medio d\u00eda",
+    "statusPresent": "Presente",
+    "statusAbsent": "Ausente",
+    "statusOnLeave": "De licencia",
+    "teamLeaveCalendar": "Calendario de licencias del equipo (esta semana)",
+    "noApprovedLeaves": "No hay licencias aprobadas esta semana",
+    "leaveFallback": "Licencia",
+    "halfFirst": "1.\u00aa mitad",
+    "halfSecond": "2.\u00aa mitad",
+    "pendingLeaveRequests": "Solicitudes de licencia pendientes",
+    "pendingBadge": "{{count}} pendientes",
+    "table": {
+      "employee": "Empleado",
+      "type": "Tipo",
+      "dates": "Fechas",
+      "days": "D\u00edas",
+      "reason": "Motivo",
+      "actions": "Acciones"
+    },
+    "halfSuffix": "(Medio)",
+    "noPendingRequests": "No hay solicitudes de licencia pendientes",
+    "review": "Revisar",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "remarksPlaceholder": "Comentarios (opcional)",
+    "directReports": "Colaboradores directos",
+    "loadingTeam": "Cargando equipo...",
+    "noDirectReports": "No se encontraron colaboradores directos. Ver\u00e1s aqu\u00ed a los miembros del equipo una vez que se asignen empleados con t\u00fa como gerente."
+  },
+  "billing": {
+    "title": "Facturaci\u00f3n",
+    "subtitle": "Administra suscripciones, facturas, pagos y resumen de facturaci\u00f3n.",
+    "tabs": {
+      "subscriptions": "Suscripciones",
+      "invoices": "Facturas",
+      "payments": "Pagos",
+      "overview": "Resumen"
+    },
+    "monthlyCost": "Costo mensual",
+    "perMonth": "/mes",
+    "noSubscriptions": "A\u00fan no hay suscripciones. Suscr\u00edbete a m\u00f3dulos desde la p\u00e1gina M\u00f3dulos.",
+    "labels": {
+      "plan": "Plan",
+      "seats": "Puestos",
+      "pricePerSeat": "Precio/puesto",
+      "billingCycle": "Ciclo de facturaci\u00f3n"
+    },
+    "full": "(lleno)",
+    "editTooltip": "Editar suscripci\u00f3n",
+    "cancelTooltip": "Cancelar suscripci\u00f3n",
+    "cycles": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annual": "Anual"
+    },
+    "editModal": {
+      "title": "Editar suscripci\u00f3n",
+      "planTier": "Nivel del plan",
+      "totalSeats": "Puestos totales",
+      "currentlyUsing": "Actualmente usando {{count}} puestos",
+      "cannotReduce": "No se puede reducir por debajo de {{count}} (en uso)",
+      "billingCycle": "Ciclo de facturaci\u00f3n",
+      "changes": "Cambios:",
+      "plan": "Plan",
+      "seats": "Puestos",
+      "cycle": "Ciclo",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
+    },
+    "cancelModal": {
+      "title": "\u00bfCancelar suscripci\u00f3n?",
+      "message": "Esto cancelar\u00e1 la suscripci\u00f3n y revocar\u00e1 el acceso de todos los puestos asignados. Esta acci\u00f3n no se puede deshacer.",
+      "keep": "Mantener",
+      "yesCancel": "S\u00ed, cancelar",
+      "cancelling": "Cancelando..."
+    },
+    "toasts": {
+      "updated": "Suscripci\u00f3n actualizada con \u00e9xito",
+      "updateFailed": "No se pudo actualizar la suscripci\u00f3n",
+      "cancelled": "Suscripci\u00f3n cancelada",
+      "cancelFailed": "No se pudo cancelar la suscripci\u00f3n",
+      "errorPrefix": "Error"
+    },
+    "overview": {
+      "noData": "A\u00fan no hay datos de facturaci\u00f3n disponibles.",
+      "outstandingBalance": "Saldo pendiente",
+      "nextInvoiceDate": "Fecha de la pr\u00f3xima factura",
+      "monthlyRecurring": "Recurrente mensual",
+      "paymentStatus": "Estado del pago",
+      "overdue": "vencido",
+      "pastDue": "atrasado",
+      "allPaid": "todo pagado"
+    },
+    "invoices": {
+      "loading": "Cargando facturas...",
+      "none": "A\u00fan no hay facturas.",
+      "number": "Factura #",
+      "date": "Fecha",
+      "dueDate": "Fecha de vencimiento",
+      "amount": "Monto",
+      "status": "Estado",
+      "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} facturas)",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "downloadPdf": "Descargar PDF",
+      "payNow": "Pagar ahora",
+      "processing": "Procesando..."
+    },
+    "payments": {
+      "loading": "Cargando pagos...",
+      "none": "A\u00fan no hay pagos registrados.",
+      "date": "Fecha",
+      "amount": "Monto",
+      "method": "M\u00e9todo",
+      "reference": "Referencia",
+      "invoice": "Factura",
+      "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} pagos)"
+    }
+  },
   "roles": {
     "employee": "Empleado",
     "manager": "Gerente",

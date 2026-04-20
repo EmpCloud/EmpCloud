@@ -298,6 +298,140 @@
     "notCheckedInYet": "Ainda n\u00e3o registrou entrada hoje",
     "attendanceComplete": "Presen\u00e7a conclu\u00edda para hoje"
   },
+  "manager": {
+    "title": "Minha Equipe",
+    "subtitle": "Painel do gestor \u2014 vis\u00e3o geral dos seus subordinados diretos.",
+    "stats": {
+      "teamSize": "Tamanho da equipe",
+      "presentToday": "Presentes hoje",
+      "absentToday": "Ausentes hoje",
+      "onLeave": "De licen\u00e7a",
+      "lateToday": "Atrasados hoje",
+      "pendingLeaves": "Licen\u00e7as pendentes"
+    },
+    "teamAttendanceToday": "Presen\u00e7a da equipe hoje",
+    "noTeamMembers": "Nenhum membro da equipe encontrado",
+    "inPrefix": "Entrada",
+    "outPrefix": "Sa\u00edda",
+    "statusHalfDay": "Meio per\u00edodo",
+    "statusPresent": "Presente",
+    "statusAbsent": "Ausente",
+    "statusOnLeave": "De licen\u00e7a",
+    "teamLeaveCalendar": "Calend\u00e1rio de licen\u00e7as da equipe (esta semana)",
+    "noApprovedLeaves": "Nenhuma licen\u00e7a aprovada esta semana",
+    "leaveFallback": "Licen\u00e7a",
+    "halfFirst": "1\u00ba per\u00edodo",
+    "halfSecond": "2\u00ba per\u00edodo",
+    "pendingLeaveRequests": "Solicita\u00e7\u00f5es de licen\u00e7a pendentes",
+    "pendingBadge": "{{count}} pendentes",
+    "table": {
+      "employee": "Funcion\u00e1rio",
+      "type": "Tipo",
+      "dates": "Datas",
+      "days": "Dias",
+      "reason": "Motivo",
+      "actions": "A\u00e7\u00f5es"
+    },
+    "halfSuffix": "(Meio)",
+    "noPendingRequests": "Nenhuma solicita\u00e7\u00e3o de licen\u00e7a pendente",
+    "review": "Revisar",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "remarksPlaceholder": "Observa\u00e7\u00f5es (opcional)",
+    "directReports": "Subordinados diretos",
+    "loadingTeam": "Carregando equipe...",
+    "noDirectReports": "Nenhum subordinado direto encontrado. Voc\u00ea ver\u00e1 os membros da equipe aqui assim que funcion\u00e1rios forem designados a voc\u00ea como gestor."
+  },
+  "billing": {
+    "title": "Faturamento",
+    "subtitle": "Gerencie assinaturas, faturas, pagamentos e resumo do faturamento.",
+    "tabs": {
+      "subscriptions": "Assinaturas",
+      "invoices": "Faturas",
+      "payments": "Pagamentos",
+      "overview": "Vis\u00e3o geral"
+    },
+    "monthlyCost": "Custo mensal",
+    "perMonth": "/m\u00eas",
+    "noSubscriptions": "Nenhuma assinatura ainda. Assine m\u00f3dulos na p\u00e1gina M\u00f3dulos.",
+    "labels": {
+      "plan": "Plano",
+      "seats": "Vagas",
+      "pricePerSeat": "Pre\u00e7o/vaga",
+      "billingCycle": "Ciclo de faturamento"
+    },
+    "full": "(cheio)",
+    "editTooltip": "Editar assinatura",
+    "cancelTooltip": "Cancelar assinatura",
+    "cycles": {
+      "monthly": "Mensal",
+      "quarterly": "Trimestral",
+      "annual": "Anual"
+    },
+    "editModal": {
+      "title": "Editar assinatura",
+      "planTier": "N\u00edvel do plano",
+      "totalSeats": "Vagas totais",
+      "currentlyUsing": "Atualmente usando {{count}} vagas",
+      "cannotReduce": "N\u00e3o \u00e9 poss\u00edvel reduzir abaixo de {{count}} (em uso)",
+      "billingCycle": "Ciclo de faturamento",
+      "changes": "Altera\u00e7\u00f5es:",
+      "plan": "Plano",
+      "seats": "Vagas",
+      "cycle": "Ciclo",
+      "save": "Salvar altera\u00e7\u00f5es",
+      "saving": "Salvando..."
+    },
+    "cancelModal": {
+      "title": "Cancelar assinatura?",
+      "message": "Isso cancelar\u00e1 a assinatura e revogar\u00e1 o acesso de todas as vagas atribu\u00eddas. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.",
+      "keep": "Manter",
+      "yesCancel": "Sim, cancelar",
+      "cancelling": "Cancelando..."
+    },
+    "toasts": {
+      "updated": "Assinatura atualizada com sucesso",
+      "updateFailed": "Falha ao atualizar a assinatura",
+      "cancelled": "Assinatura cancelada",
+      "cancelFailed": "Falha ao cancelar a assinatura",
+      "errorPrefix": "Erro"
+    },
+    "overview": {
+      "noData": "Ainda n\u00e3o h\u00e1 dados de faturamento dispon\u00edveis.",
+      "outstandingBalance": "Saldo pendente",
+      "nextInvoiceDate": "Data da pr\u00f3xima fatura",
+      "monthlyRecurring": "Recorrente mensal",
+      "paymentStatus": "Status do pagamento",
+      "overdue": "vencido",
+      "pastDue": "em atraso",
+      "allPaid": "tudo pago"
+    },
+    "invoices": {
+      "loading": "Carregando faturas...",
+      "none": "Nenhuma fatura ainda.",
+      "number": "Fatura #",
+      "date": "Data",
+      "dueDate": "Data de vencimento",
+      "amount": "Valor",
+      "status": "Status",
+      "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} faturas)",
+      "previous": "Anterior",
+      "next": "Pr\u00f3ximo",
+      "downloadPdf": "Baixar PDF",
+      "payNow": "Pagar agora",
+      "processing": "Processando..."
+    },
+    "payments": {
+      "loading": "Carregando pagamentos...",
+      "none": "Nenhum pagamento registrado ainda.",
+      "date": "Data",
+      "amount": "Valor",
+      "method": "M\u00e9todo",
+      "reference": "Refer\u00eancia",
+      "invoice": "Fatura",
+      "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} pagamentos)"
+    }
+  },
   "roles": {
     "employee": "Funcion\u00e1rio",
     "manager": "Gestor",

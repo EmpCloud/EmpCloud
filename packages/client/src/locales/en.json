@@ -298,6 +298,140 @@
     "notCheckedInYet": "Not checked in yet today",
     "attendanceComplete": "Attendance complete for today"
   },
+  "manager": {
+    "title": "My Team",
+    "subtitle": "Manager dashboard \u2014 overview of your direct reports.",
+    "stats": {
+      "teamSize": "Team Size",
+      "presentToday": "Present Today",
+      "absentToday": "Absent Today",
+      "onLeave": "On Leave",
+      "lateToday": "Late Today",
+      "pendingLeaves": "Pending Leaves"
+    },
+    "teamAttendanceToday": "Team Attendance Today",
+    "noTeamMembers": "No team members found",
+    "inPrefix": "In",
+    "outPrefix": "Out",
+    "statusHalfDay": "Half Day",
+    "statusPresent": "Present",
+    "statusAbsent": "Absent",
+    "statusOnLeave": "On Leave",
+    "teamLeaveCalendar": "Team Leave Calendar (This Week)",
+    "noApprovedLeaves": "No approved leaves this week",
+    "leaveFallback": "Leave",
+    "halfFirst": "1st half",
+    "halfSecond": "2nd half",
+    "pendingLeaveRequests": "Pending Leave Requests",
+    "pendingBadge": "{{count}} pending",
+    "table": {
+      "employee": "Employee",
+      "type": "Type",
+      "dates": "Dates",
+      "days": "Days",
+      "reason": "Reason",
+      "actions": "Actions"
+    },
+    "halfSuffix": "(Half)",
+    "noPendingRequests": "No pending leave requests",
+    "review": "Review",
+    "approve": "Approve",
+    "reject": "Reject",
+    "remarksPlaceholder": "Remarks (optional)",
+    "directReports": "Direct Reports",
+    "loadingTeam": "Loading team...",
+    "noDirectReports": "No direct reports found. You will see team members here once employees are assigned to you as their reporting manager."
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Manage subscriptions, invoices, payments, and billing overview.",
+    "tabs": {
+      "subscriptions": "Subscriptions",
+      "invoices": "Invoices",
+      "payments": "Payments",
+      "overview": "Overview"
+    },
+    "monthlyCost": "Monthly Cost",
+    "perMonth": "/month",
+    "noSubscriptions": "No subscriptions yet. Subscribe to modules from the Modules page.",
+    "labels": {
+      "plan": "Plan",
+      "seats": "Seats",
+      "pricePerSeat": "Price/Seat",
+      "billingCycle": "Billing Cycle"
+    },
+    "full": "(full)",
+    "editTooltip": "Edit subscription",
+    "cancelTooltip": "Cancel subscription",
+    "cycles": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annual": "Annual"
+    },
+    "editModal": {
+      "title": "Edit Subscription",
+      "planTier": "Plan Tier",
+      "totalSeats": "Total Seats",
+      "currentlyUsing": "Currently using {{count}} seats",
+      "cannotReduce": "Cannot reduce below {{count}} (in use)",
+      "billingCycle": "Billing Cycle",
+      "changes": "Changes:",
+      "plan": "Plan",
+      "seats": "Seats",
+      "cycle": "Cycle",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "cancelModal": {
+      "title": "Cancel Subscription?",
+      "message": "This will cancel the subscription and revoke access for all assigned seats. This action cannot be undone.",
+      "keep": "Keep",
+      "yesCancel": "Yes, Cancel",
+      "cancelling": "Cancelling..."
+    },
+    "toasts": {
+      "updated": "Subscription updated successfully",
+      "updateFailed": "Failed to update subscription",
+      "cancelled": "Subscription cancelled",
+      "cancelFailed": "Failed to cancel subscription",
+      "errorPrefix": "Error"
+    },
+    "overview": {
+      "noData": "No billing data available yet.",
+      "outstandingBalance": "Outstanding Balance",
+      "nextInvoiceDate": "Next Invoice Date",
+      "monthlyRecurring": "Monthly Recurring",
+      "paymentStatus": "Payment Status",
+      "overdue": "overdue",
+      "pastDue": "past due",
+      "allPaid": "all paid"
+    },
+    "invoices": {
+      "loading": "Loading invoices...",
+      "none": "No invoices yet.",
+      "number": "Invoice #",
+      "date": "Date",
+      "dueDate": "Due Date",
+      "amount": "Amount",
+      "status": "Status",
+      "pagination": "Page {{page}} of {{totalPages}} ({{total}} invoices)",
+      "previous": "Previous",
+      "next": "Next",
+      "downloadPdf": "Download PDF",
+      "payNow": "Pay Now",
+      "processing": "Processing..."
+    },
+    "payments": {
+      "loading": "Loading payments...",
+      "none": "No payments recorded yet.",
+      "date": "Date",
+      "amount": "Amount",
+      "method": "Method",
+      "reference": "Reference",
+      "invoice": "Invoice",
+      "pagination": "Page {{page}} of {{totalPages}} ({{total}} payments)"
+    }
+  },
   "roles": {
     "employee": "Employee",
     "manager": "Manager",

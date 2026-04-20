@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Users,
@@ -55,6 +56,7 @@ interface CalendarLeave {
 }
 
 export default function ManagerDashboardPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [remarks, setRemarks] = useState("");
   const [actionId, setActionId] = useState<number | null>(null);
@@ -114,27 +116,27 @@ export default function ManagerDashboardPage() {
   });
 
   const statCards = [
-    { label: "Team Size", value: stats?.team_size ?? "-", icon: Users, color: "bg-blue-50 text-blue-700" },
-    { label: "Present Today", value: stats?.present_today ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700" },
-    { label: "Absent Today", value: stats?.absent_today ?? "-", icon: UserX, color: "bg-red-50 text-red-700" },
-    { label: "On Leave", value: stats?.on_leave_today ?? "-", icon: CalendarDays, color: "bg-purple-50 text-purple-700" },
-    { label: "Late Today", value: stats?.late_today ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700" },
-    { label: "Pending Leaves", value: stats?.pending_leave_requests ?? "-", icon: Clock, color: "bg-amber-50 text-amber-700" },
+    { key: "teamSize", label: t('manager.stats.teamSize'), value: stats?.team_size ?? "-", icon: Users, color: "bg-blue-50 text-blue-700" },
+    { key: "presentToday", label: t('manager.stats.presentToday'), value: stats?.present_today ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700" },
+    { key: "absentToday", label: t('manager.stats.absentToday'), value: stats?.absent_today ?? "-", icon: UserX, color: "bg-red-50 text-red-700" },
+    { key: "onLeave", label: t('manager.stats.onLeave'), value: stats?.on_leave_today ?? "-", icon: CalendarDays, color: "bg-purple-50 text-purple-700" },
+    { key: "lateToday", label: t('manager.stats.lateToday'), value: stats?.late_today ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700" },
+    { key: "pendingLeaves", label: t('manager.stats.pendingLeaves'), value: stats?.pending_leave_requests ?? "-", icon: Clock, color: "bg-amber-50 text-amber-700" },
   ];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">My Team</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('manager.title')}</h1>
         <p className="text-gray-500 mt-1">
-          Manager dashboard -- overview of your direct reports.
+          {t('manager.subtitle')}
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
         {statCards.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
+          <div key={s.key} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${s.color}`}>
                 <s.icon className="h-5 w-5" />
@@ -154,11 +156,11 @@ export default function ManagerDashboardPage() {
         {/* Team Attendance Today */}
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Team Attendance Today</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('manager.teamAttendanceToday')}</h2>
           </div>
           <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
             {attendance?.present?.length === 0 && attendance?.absent?.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-400">No team members found</div>
+              <div className="px-6 py-8 text-center text-gray-400">{t('manager.noTeamMembers')}</div>
             ) : (
               <>
                 {(attendance?.present || []).map((r: any) => (
@@ -170,13 +172,13 @@ export default function ManagerDashboardPage() {
                       <div>
                         <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
                         <p className="text-xs text-gray-400">
-                          In: {r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}
-                          {r.check_out ? ` | Out: ${new Date(r.check_out).toLocaleTimeString()}` : ""}
+                          {t('manager.inPrefix')}: {r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}
+                          {r.check_out ? ` | ${t('manager.outPrefix')}: ${new Date(r.check_out).toLocaleTimeString()}` : ""}
                         </p>
                       </div>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 font-medium">
-                      {r.status === "half_day" ? "Half Day" : "Present"}
+                      {r.status === "half_day" ? t('manager.statusHalfDay') : t('manager.statusPresent')}
                     </span>
                   </div>
                 ))}
@@ -192,7 +194,7 @@ export default function ManagerDashboardPage() {
                       </div>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-700 font-medium">
-                      Absent
+                      {t('manager.statusAbsent')}
                     </span>
                   </div>
                 ))}
@@ -208,7 +210,7 @@ export default function ManagerDashboardPage() {
                       </div>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-700 font-medium">
-                      On Leave
+                      {t('manager.statusOnLeave')}
                     </span>
                   </div>
                 ))}
@@ -220,12 +222,12 @@ export default function ManagerDashboardPage() {
         {/* Team Leave Calendar (this week) */}
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Team Leave Calendar (This Week)</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('manager.teamLeaveCalendar')}</h2>
           </div>
           <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
             {calendar.length === 0 ? (
               <div className="px-6 py-8 text-center text-gray-400">
-                No approved leaves this week
+                {t('manager.noApprovedLeaves')}
               </div>
             ) : (
               calendar.map((leave) => (
@@ -240,11 +242,11 @@ export default function ManagerDashboardPage() {
                         {leave.first_name} {leave.last_name}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {leave.leave_type_name || "Leave"} --{" "}
+                        {leave.leave_type_name || t('manager.leaveFallback')} &mdash;{" "}
                         {leave.start_date === leave.end_date
                           ? leave.start_date
-                          : `${leave.start_date} to ${leave.end_date}`}
-                        {leave.is_half_day && ` (${leave.half_day_type === "first_half" ? "1st half" : "2nd half"})`}
+                          : `${leave.start_date} \u2013 ${leave.end_date}`}
+                        {leave.is_half_day && ` (${leave.half_day_type === "first_half" ? t('manager.halfFirst') : t('manager.halfSecond')})`}
                       </p>
                     </div>
                   </div>
@@ -259,27 +261,27 @@ export default function ManagerDashboardPage() {
       {/* Pending Leave Requests */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Pending Leave Requests</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('manager.pendingLeaveRequests')}</h2>
           <span className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full font-medium">
-            {pendingLeaves.length} pending
+            {t('manager.pendingBadge', { count: pendingLeaves.length })}
           </span>
         </div>
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Reason</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.employee')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.type')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.dates')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.days')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.reason')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {pendingLeaves.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
-                  No pending leave requests
+                  {t('manager.noPendingRequests')}
                 </td>
               </tr>
             ) : (
@@ -300,7 +302,7 @@ export default function ManagerDashboardPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">
                     {leave.leave_type_name || "-"}
-                    {leave.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
+                    {leave.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('manager.halfSuffix')}</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {leave.start_date} &mdash; {leave.end_date}
@@ -318,7 +320,7 @@ export default function ManagerDashboardPage() {
                           onClick={() => setActionId(actionId === leave.id ? null : leave.id)}
                           className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100"
                         >
-                          Review
+                          {t('manager.review')}
                         </button>
                       </div>
                       {actionId === leave.id && (
@@ -327,7 +329,7 @@ export default function ManagerDashboardPage() {
                             type="text"
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
-                            placeholder="Remarks (optional)"
+                            placeholder={t('manager.remarksPlaceholder')}
                             className="px-2 py-1 border border-gray-300 rounded text-xs flex-1 min-w-0"
                           />
                           <button
@@ -335,14 +337,14 @@ export default function ManagerDashboardPage() {
                             disabled={approveMut.isPending}
                             className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50 whitespace-nowrap"
                           >
-                            <CheckCircle2 className="h-3 w-3 inline mr-1" />Approve
+                            <CheckCircle2 className="h-3 w-3 inline mr-1" />{t('manager.approve')}
                           </button>
                           <button
                             onClick={() => rejectMut.mutate(leave.id)}
                             disabled={rejectMut.isPending}
                             className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50 whitespace-nowrap"
                           >
-                            <XCircle className="h-3 w-3 inline mr-1" />Reject
+                            <XCircle className="h-3 w-3 inline mr-1" />{t('manager.reject')}
                           </button>
                         </div>
                       )}
@@ -358,14 +360,14 @@ export default function ManagerDashboardPage() {
       {/* Direct Reports List */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Direct Reports</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('manager.directReports')}</h2>
         </div>
         <div className="divide-y divide-gray-100">
           {teamLoading ? (
-            <div className="px-6 py-8 text-center text-gray-400">Loading team...</div>
+            <div className="px-6 py-8 text-center text-gray-400">{t('manager.loadingTeam')}</div>
           ) : team.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-400">
-              No direct reports found. You will see team members here once employees are assigned to you as their reporting manager.
+              {t('manager.noDirectReports')}
             </div>
           ) : (
             team.map((member) => (
