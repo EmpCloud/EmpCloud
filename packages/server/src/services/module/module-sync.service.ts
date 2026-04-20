@@ -18,6 +18,7 @@ interface SyncUserPayload {
   department_name: string | null;
   role: string;
   contact_number: string | null;
+  password: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -49,6 +50,7 @@ async function buildSyncPayload(orgId: number, userId: number): Promise<SyncUser
       "users.designation",
       "users.contact_number",
       "users.role",
+      "users.password",
       "dept.name as department_name",
     )
     .first();
@@ -66,6 +68,7 @@ async function buildSyncPayload(orgId: number, userId: number): Promise<SyncUser
     department_name: user.department_name,
     role: user.role,
     contact_number: user.contact_number,
+    password: user.password,
   };
 }
 
