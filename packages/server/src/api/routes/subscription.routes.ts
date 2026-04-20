@@ -269,6 +269,34 @@ router.post("/bulk-enable-module", authenticate, requireOrgAdmin, async (req: Re
   } catch (err) { next(err); }
 });
 
+// POST /api/v1/subscriptions/enable-module-all — Enable a module for ALL employees
+router.post("/enable-module-all", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { module_id } = req.body;
+    if (!module_id) throw new Error("module_id required");
+
+    const result = await moduleSyncService.enableModuleForAllUsers(
+      req.user!.org_id, Number(module_id), req.user!.sub,
+    );
+
+    sendSuccess(res, result, 201);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/subscriptions/disable-module-all — Disable a module for ALL employees
+router.post("/disable-module-all", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { module_id } = req.body;
+    if (!module_id) throw new Error("module_id required");
+
+    const result = await moduleSyncService.disableModuleForAllUsers(
+      req.user!.org_id, Number(module_id),
+    );
+
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
 // POST /api/v1/subscriptions/seat-webhook — Module reports a seat change (module → EmpCloud)
 router.post("/seat-webhook", async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -236,6 +236,50 @@ export async function bulkEnableUsersForModule(
   return { enabled, skipped, errors };
 }
 
+// Enable a module for ALL employees in the organization
+export async function enableModuleForAllUsers(
+  orgId: number,
+  moduleId: number,
+  assignedBy: number,
+): Promise<{ enabled: number; skipped: number; errors: number; total: number }> {
+  const db = getDB();
+
+  // Fetch all active non-super_admin users for the org
+  const allUsers = await db("users")
+    .where({ organization_id: orgId, status: 1 })
+    .whereNot({ role: "super_admin" })
+    .select("id");
+
+  const userIds = allUsers.map((u: any) => u.id);
+  const result = await bulkEnableUsersForModule(orgId, moduleId, userIds, assignedBy);
+  return { ...result, total: userIds.length };
+}
+
+// Disable a module for ALL employees currently enabled for it
+export async function disableModuleForAllUsers(
+  orgId: number,
+  moduleId: number,
+): Promise<{ disabled: number; errors: number; total: number }> {
+  const db = getDB();
+
+  // Fetch all users who currently have the module enabled
+  const seats = await db("org_module_seats")
+    .where({ organization_id: orgId, module_id: moduleId })
+    .select("user_id");
+
+  let disabled = 0;
+  let errors = 0;
+  for (const seat of seats) {
+    try {
+      await disableUserForModule(orgId, moduleId, seat.user_id);
+      disabled++;
+    } catch {
+      errors++;
+    }
+  }
+  return { disabled, errors, total: seats.length };
+}
+
 // ---------------------------------------------------------------------------
 // Get user's module access map — which modules is a user enabled for
 // ---------------------------------------------------------------------------
