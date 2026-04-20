@@ -298,6 +298,28 @@
     "notCheckedInYet": "Not checked in yet today",
     "attendanceComplete": "Attendance complete for today"
   },
+  "modulesPage": {
+    "title": "Module Marketplace",
+    "subtitle": "Browse and subscribe to EMP modules for your organization.",
+    "aiBannerTitle": "All modules include EMP AI",
+    "aiBannerDesc": "Intelligent HR assistant powered by AI \u2014 ask questions, get insights, automate tasks across all your modules.",
+    "coreIncludedFree": "Core \u2014 Included Free",
+    "freeTier": "Free tier",
+    "comingSoon": "Coming soon",
+    "seatsAssigned": "{{used}} of {{total}} seats assigned",
+    "active": "Active",
+    "subscribed": "Subscribed",
+    "unsubscribe": "Unsubscribe",
+    "subscribe": "Subscribe",
+    "notSubscribed": "Not subscribed",
+    "loading": "Loading modules...",
+    "areYouSure": "Are you sure?",
+    "cancelling": "Cancelling...",
+    "yesCancel": "Yes, Cancel",
+    "subscriptionCancelled": "Subscription cancelled successfully.",
+    "cancelFailed": "Failed to cancel subscription.",
+    "subscriptionCreated": "Subscription created. Invoice will be generated shortly."
+  },
   "helpdesk": {
     "title": "Helpdesk",
     "myTickets": "My Tickets",

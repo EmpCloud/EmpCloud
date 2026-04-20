@@ -298,6 +298,28 @@
     "notCheckedInYet": "Heute noch nicht eingestempelt",
     "attendanceComplete": "Anwesenheit f\u00fcr heute abgeschlossen"
   },
+  "modulesPage": {
+    "title": "Modul-Marktplatz",
+    "subtitle": "Durchsuchen Sie EMP-Module und abonnieren Sie sie f\u00fcr Ihre Organisation.",
+    "aiBannerTitle": "Alle Module enthalten EMP AI",
+    "aiBannerDesc": "Intelligenter HR-Assistent mit KI \u2014 stellen Sie Fragen, erhalten Sie Einblicke und automatisieren Sie Aufgaben in allen Modulen.",
+    "coreIncludedFree": "Kern \u2014 Kostenlos enthalten",
+    "freeTier": "Kostenlose Stufe",
+    "comingSoon": "Demn\u00e4chst",
+    "seatsAssigned": "{{used}} von {{total}} Pl\u00e4tzen zugewiesen",
+    "active": "Aktiv",
+    "subscribed": "Abonniert",
+    "unsubscribe": "Abbestellen",
+    "subscribe": "Abonnieren",
+    "notSubscribed": "Nicht abonniert",
+    "loading": "Module werden geladen...",
+    "areYouSure": "Sind Sie sicher?",
+    "cancelling": "Wird storniert...",
+    "yesCancel": "Ja, stornieren",
+    "subscriptionCancelled": "Abonnement erfolgreich storniert.",
+    "cancelFailed": "Stornierung des Abonnements fehlgeschlagen.",
+    "subscriptionCreated": "Abonnement erstellt. Die Rechnung wird in K\u00fcrze generiert."
+  },
   "helpdesk": {
     "title": "Helpdesk",
     "myTickets": "Meine Tickets",

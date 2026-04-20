@@ -298,6 +298,28 @@
     "notCheckedInYet": "A\u00fan no has fichado hoy",
     "attendanceComplete": "Asistencia completada hoy"
   },
+  "modulesPage": {
+    "title": "Mercado de m\u00f3dulos",
+    "subtitle": "Explora y suscr\u00edbete a m\u00f3dulos EMP para tu organizaci\u00f3n.",
+    "aiBannerTitle": "Todos los m\u00f3dulos incluyen EMP AI",
+    "aiBannerDesc": "Asistente de RR. HH. inteligente impulsado por IA \u2014 haz preguntas, obt\u00e9n informaci\u00f3n y automatiza tareas en todos tus m\u00f3dulos.",
+    "coreIncludedFree": "Principal \u2014 Incluido gratis",
+    "freeTier": "Nivel gratuito",
+    "comingSoon": "Pr\u00f3ximamente",
+    "seatsAssigned": "{{used}} de {{total}} puestos asignados",
+    "active": "Activo",
+    "subscribed": "Suscrito",
+    "unsubscribe": "Cancelar suscripci\u00f3n",
+    "subscribe": "Suscribirse",
+    "notSubscribed": "No suscrito",
+    "loading": "Cargando m\u00f3dulos...",
+    "areYouSure": "\u00bfEst\u00e1s seguro?",
+    "cancelling": "Cancelando...",
+    "yesCancel": "S\u00ed, cancelar",
+    "subscriptionCancelled": "Suscripci\u00f3n cancelada con \u00e9xito.",
+    "cancelFailed": "No se pudo cancelar la suscripci\u00f3n.",
+    "subscriptionCreated": "Suscripci\u00f3n creada. La factura se generar\u00e1 en breve."
+  },
   "helpdesk": {
     "title": "Mesa de ayuda",
     "myTickets": "Mis tickets",

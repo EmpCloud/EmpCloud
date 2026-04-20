@@ -298,6 +298,28 @@
     "notCheckedInYet": "Ainda n\u00e3o registrou entrada hoje",
     "attendanceComplete": "Presen\u00e7a conclu\u00edda para hoje"
   },
+  "modulesPage": {
+    "title": "Mercado de m\u00f3dulos",
+    "subtitle": "Explore e assine m\u00f3dulos EMP para sua organiza\u00e7\u00e3o.",
+    "aiBannerTitle": "Todos os m\u00f3dulos incluem EMP AI",
+    "aiBannerDesc": "Assistente de RH inteligente com IA \u2014 fa\u00e7a perguntas, obtenha insights e automatize tarefas em todos os seus m\u00f3dulos.",
+    "coreIncludedFree": "Principal \u2014 Inclu\u00eddo gratuitamente",
+    "freeTier": "N\u00edvel gratuito",
+    "comingSoon": "Em breve",
+    "seatsAssigned": "{{used}} de {{total}} vagas atribu\u00eddas",
+    "active": "Ativo",
+    "subscribed": "Assinado",
+    "unsubscribe": "Cancelar assinatura",
+    "subscribe": "Assinar",
+    "notSubscribed": "N\u00e3o assinado",
+    "loading": "Carregando m\u00f3dulos...",
+    "areYouSure": "Tem certeza?",
+    "cancelling": "Cancelando...",
+    "yesCancel": "Sim, cancelar",
+    "subscriptionCancelled": "Assinatura cancelada com sucesso.",
+    "cancelFailed": "Falha ao cancelar a assinatura.",
+    "subscriptionCreated": "Assinatura criada. A fatura ser\u00e1 gerada em breve."
+  },
   "helpdesk": {
     "title": "Suporte",
     "myTickets": "Meus chamados",
