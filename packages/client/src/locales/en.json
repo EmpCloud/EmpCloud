@@ -298,6 +298,58 @@
     "notCheckedInYet": "Not checked in yet today",
     "attendanceComplete": "Attendance complete for today"
   },
+  "roles": {
+    "employee": "Employee",
+    "manager": "Manager",
+    "hr_admin": "HR Admin",
+    "org_admin": "Org Admin",
+    "super_admin": "Super Admin"
+  },
+  "modulesAccess": {
+    "title": "Module Access",
+    "subtitle": "Manage which employees have access to each module.",
+    "modulesCount": "{{count}} modules",
+    "employeesCount": "{{count}} employees",
+    "seatsAssignedCount": "{{count}} seats assigned",
+    "searchPlaceholder": "Search by name, email, designation, or emp code...",
+    "allEmployees": "All Employees",
+    "enabledFor": "Enabled for",
+    "notEnabledFor": "Not enabled for",
+    "enabledSuffix": "Enabled",
+    "notEnabledSuffix": "Not Enabled",
+    "loading": "Loading employees...",
+    "noEmployees": "No employees found",
+    "matchingSearch": "matching your search",
+    "withFilter": "with this filter",
+    "table": {
+      "employee": "Employee",
+      "role": "Role",
+      "designation": "Designation",
+      "modules": "Modules"
+    },
+    "confirm": {
+      "title": "Disable Module Access",
+      "subtitle": "This action may delete user data in the module",
+      "message": "Are you sure you want to remove <strong>{{user}}</strong>'s access to <strong>{{module}}</strong>? Their data in this module may be permanently deleted.",
+      "cancel": "Cancel",
+      "remove": "Remove Access",
+      "removing": "Removing..."
+    },
+    "pagination": {
+      "showing": "Showing {{from}}\u2013{{to}} of {{total}} employees",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "syncAlerts": {
+      "enabledSynced": "Module enabled and user synced successfully",
+      "enabledSkipped": "Seat assigned. Module has no sync API configured.",
+      "enabledPartial": "Seat assigned but module sync failed ({{status}}).",
+      "enableFailed": "Failed to enable module",
+      "disabledSynced": "Module disabled and user removed",
+      "disabledPartial": "Seat removed but module sync failed ({{status}})",
+      "disableFailed": "Failed to disable module"
+    }
+  },
   "modulesPage": {
     "title": "Module Marketplace",
     "subtitle": "Browse and subscribe to EMP modules for your organization.",

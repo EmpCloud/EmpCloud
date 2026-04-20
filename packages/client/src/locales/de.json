@@ -298,6 +298,58 @@
     "notCheckedInYet": "Heute noch nicht eingestempelt",
     "attendanceComplete": "Anwesenheit f\u00fcr heute abgeschlossen"
   },
+  "roles": {
+    "employee": "Mitarbeiter",
+    "manager": "Manager",
+    "hr_admin": "HR-Admin",
+    "org_admin": "Org.-Admin",
+    "super_admin": "Super-Admin"
+  },
+  "modulesAccess": {
+    "title": "Modulzugriff",
+    "subtitle": "Verwalten Sie, welche Mitarbeiter Zugriff auf jedes Modul haben.",
+    "modulesCount": "{{count}} Module",
+    "employeesCount": "{{count}} Mitarbeiter",
+    "seatsAssignedCount": "{{count}} Pl\u00e4tze zugewiesen",
+    "searchPlaceholder": "Suche nach Name, E-Mail, Bezeichnung oder Mitarbeitercode...",
+    "allEmployees": "Alle Mitarbeiter",
+    "enabledFor": "Aktiviert f\u00fcr",
+    "notEnabledFor": "Nicht aktiviert f\u00fcr",
+    "enabledSuffix": "Aktiviert",
+    "notEnabledSuffix": "Nicht aktiviert",
+    "loading": "Mitarbeiter werden geladen...",
+    "noEmployees": "Keine Mitarbeiter gefunden",
+    "matchingSearch": "passend zu Ihrer Suche",
+    "withFilter": "mit diesem Filter",
+    "table": {
+      "employee": "Mitarbeiter",
+      "role": "Rolle",
+      "designation": "Bezeichnung",
+      "modules": "Module"
+    },
+    "confirm": {
+      "title": "Modulzugriff deaktivieren",
+      "subtitle": "Diese Aktion kann Benutzerdaten im Modul l\u00f6schen",
+      "message": "Sind Sie sicher, dass Sie den Zugriff von <strong>{{user}}</strong> auf <strong>{{module}}</strong> entfernen m\u00f6chten? Die Daten in diesem Modul k\u00f6nnen endg\u00fcltig gel\u00f6scht werden.",
+      "cancel": "Abbrechen",
+      "remove": "Zugriff entfernen",
+      "removing": "Wird entfernt..."
+    },
+    "pagination": {
+      "showing": "Zeige {{from}}\u2013{{to}} von {{total}} Mitarbeitern",
+      "previous": "Zur\u00fcck",
+      "next": "Weiter"
+    },
+    "syncAlerts": {
+      "enabledSynced": "Modul aktiviert und Benutzer erfolgreich synchronisiert",
+      "enabledSkipped": "Platz zugewiesen. Modul hat keine Sync-API konfiguriert.",
+      "enabledPartial": "Platz zugewiesen, aber Modul-Synchronisation fehlgeschlagen ({{status}}).",
+      "enableFailed": "Modul konnte nicht aktiviert werden",
+      "disabledSynced": "Modul deaktiviert und Benutzer entfernt",
+      "disabledPartial": "Platz entfernt, aber Modul-Synchronisation fehlgeschlagen ({{status}})",
+      "disableFailed": "Modul konnte nicht deaktiviert werden"
+    }
+  },
   "modulesPage": {
     "title": "Modul-Marktplatz",
     "subtitle": "Durchsuchen Sie EMP-Module und abonnieren Sie sie f\u00fcr Ihre Organisation.",

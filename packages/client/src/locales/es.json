@@ -298,6 +298,58 @@
     "notCheckedInYet": "A\u00fan no has fichado hoy",
     "attendanceComplete": "Asistencia completada hoy"
   },
+  "roles": {
+    "employee": "Empleado",
+    "manager": "Gerente",
+    "hr_admin": "Admin de RR. HH.",
+    "org_admin": "Admin. Org.",
+    "super_admin": "Super Admin"
+  },
+  "modulesAccess": {
+    "title": "Acceso a m\u00f3dulos",
+    "subtitle": "Administra qu\u00e9 empleados tienen acceso a cada m\u00f3dulo.",
+    "modulesCount": "{{count}} m\u00f3dulos",
+    "employeesCount": "{{count}} empleados",
+    "seatsAssignedCount": "{{count}} puestos asignados",
+    "searchPlaceholder": "Buscar por nombre, correo, cargo o c\u00f3digo de empleado...",
+    "allEmployees": "Todos los empleados",
+    "enabledFor": "Habilitado para",
+    "notEnabledFor": "No habilitado para",
+    "enabledSuffix": "Habilitado",
+    "notEnabledSuffix": "No habilitado",
+    "loading": "Cargando empleados...",
+    "noEmployees": "No se encontraron empleados",
+    "matchingSearch": "que coincidan con tu b\u00fasqueda",
+    "withFilter": "con este filtro",
+    "table": {
+      "employee": "Empleado",
+      "role": "Rol",
+      "designation": "Cargo",
+      "modules": "M\u00f3dulos"
+    },
+    "confirm": {
+      "title": "Deshabilitar acceso al m\u00f3dulo",
+      "subtitle": "Esta acci\u00f3n puede eliminar los datos del usuario en el m\u00f3dulo",
+      "message": "\u00bfSeguro que deseas quitar el acceso de <strong>{{user}}</strong> a <strong>{{module}}</strong>? Sus datos en este m\u00f3dulo podr\u00edan eliminarse permanentemente.",
+      "cancel": "Cancelar",
+      "remove": "Quitar acceso",
+      "removing": "Quitando..."
+    },
+    "pagination": {
+      "showing": "Mostrando {{from}}\u2013{{to}} de {{total}} empleados",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "syncAlerts": {
+      "enabledSynced": "M\u00f3dulo habilitado y usuario sincronizado con \u00e9xito",
+      "enabledSkipped": "Puesto asignado. El m\u00f3dulo no tiene API de sincronizaci\u00f3n configurada.",
+      "enabledPartial": "Puesto asignado pero fall\u00f3 la sincronizaci\u00f3n del m\u00f3dulo ({{status}}).",
+      "enableFailed": "No se pudo habilitar el m\u00f3dulo",
+      "disabledSynced": "M\u00f3dulo deshabilitado y usuario eliminado",
+      "disabledPartial": "Puesto removido pero fall\u00f3 la sincronizaci\u00f3n del m\u00f3dulo ({{status}})",
+      "disableFailed": "No se pudo deshabilitar el m\u00f3dulo"
+    }
+  },
   "modulesPage": {
     "title": "Mercado de m\u00f3dulos",
     "subtitle": "Explora y suscr\u00edbete a m\u00f3dulos EMP para tu organizaci\u00f3n.",

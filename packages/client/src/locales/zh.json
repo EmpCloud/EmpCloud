@@ -298,6 +298,58 @@
     "notCheckedInYet": "\u4eca\u65e5\u5c1a\u672a\u7b7e\u5230",
     "attendanceComplete": "\u4eca\u65e5\u8003\u52e4\u5df2\u5b8c\u6210"
   },
+  "roles": {
+    "employee": "\u5458\u5de5",
+    "manager": "\u7ecf\u7406",
+    "hr_admin": "HR \u7ba1\u7406\u5458",
+    "org_admin": "\u7ec4\u7ec7\u7ba1\u7406\u5458",
+    "super_admin": "\u8d85\u7ea7\u7ba1\u7406\u5458"
+  },
+  "modulesAccess": {
+    "title": "\u6a21\u5757\u8bbf\u95ee\u6743\u9650",
+    "subtitle": "\u7ba1\u7406\u54ea\u4e9b\u5458\u5de5\u53ef\u4ee5\u8bbf\u95ee\u6bcf\u4e2a\u6a21\u5757\u3002",
+    "modulesCount": "{{count}} \u4e2a\u6a21\u5757",
+    "employeesCount": "{{count}} \u540d\u5458\u5de5",
+    "seatsAssignedCount": "\u5df2\u5206\u914d {{count}} \u4e2a\u5e2d\u4f4d",
+    "searchPlaceholder": "\u6309\u59d3\u540d\u3001\u90ae\u7bb1\u3001\u804c\u4f4d\u6216\u5458\u5de5\u4ee3\u7801\u641c\u7d22...",
+    "allEmployees": "\u6240\u6709\u5458\u5de5",
+    "enabledFor": "\u5df2\u542f\u7528",
+    "notEnabledFor": "\u672a\u542f\u7528",
+    "enabledSuffix": "\u5df2\u542f\u7528",
+    "notEnabledSuffix": "\u672a\u542f\u7528",
+    "loading": "\u6b63\u5728\u52a0\u8f7d\u5458\u5de5...",
+    "noEmployees": "\u672a\u627e\u5230\u5458\u5de5",
+    "matchingSearch": "\u4e0e\u60a8\u7684\u641c\u7d22\u5339\u914d",
+    "withFilter": "\u4f7f\u7528\u6b64\u7b5b\u9009",
+    "table": {
+      "employee": "\u5458\u5de5",
+      "role": "\u89d2\u8272",
+      "designation": "\u804c\u4f4d",
+      "modules": "\u6a21\u5757"
+    },
+    "confirm": {
+      "title": "\u7981\u7528\u6a21\u5757\u8bbf\u95ee\u6743\u9650",
+      "subtitle": "\u6b64\u64cd\u4f5c\u53ef\u80fd\u5220\u9664\u6a21\u5757\u4e2d\u7684\u7528\u6237\u6570\u636e",
+      "message": "\u60a8\u786e\u5b9a\u8981\u79fb\u9664 <strong>{{user}}</strong> \u5bf9 <strong>{{module}}</strong> \u7684\u8bbf\u95ee\u6743\u9650\u5417\uff1f\u6b64\u6a21\u5757\u4e2d\u7684\u6570\u636e\u53ef\u80fd\u88ab\u6c38\u4e45\u5220\u9664\u3002",
+      "cancel": "\u53d6\u6d88",
+      "remove": "\u79fb\u9664\u8bbf\u95ee",
+      "removing": "\u79fb\u9664\u4e2d..."
+    },
+    "pagination": {
+      "showing": "\u663e\u793a\u7b2c {{from}}\u2013{{to}} \u6761\uff0c\u5171 {{total}} \u540d\u5458\u5de5",
+      "previous": "\u4e0a\u4e00\u9875",
+      "next": "\u4e0b\u4e00\u9875"
+    },
+    "syncAlerts": {
+      "enabledSynced": "\u6a21\u5757\u5df2\u542f\u7528\uff0c\u7528\u6237\u540c\u6b65\u6210\u529f",
+      "enabledSkipped": "\u5e2d\u4f4d\u5df2\u5206\u914d\u3002\u6a21\u5757\u672a\u914d\u7f6e\u540c\u6b65 API\u3002",
+      "enabledPartial": "\u5e2d\u4f4d\u5df2\u5206\u914d\u4f46\u6a21\u5757\u540c\u6b65\u5931\u8d25 ({{status}})\u3002",
+      "enableFailed": "\u542f\u7528\u6a21\u5757\u5931\u8d25",
+      "disabledSynced": "\u6a21\u5757\u5df2\u7981\u7528\uff0c\u7528\u6237\u5df2\u79fb\u9664",
+      "disabledPartial": "\u5e2d\u4f4d\u5df2\u79fb\u9664\u4f46\u6a21\u5757\u540c\u6b65\u5931\u8d25 ({{status}})",
+      "disableFailed": "\u7981\u7528\u6a21\u5757\u5931\u8d25"
+    }
+  },
   "modulesPage": {
     "title": "\u6a21\u5757\u5e02\u573a",
     "subtitle": "\u4e3a\u60a8\u7684\u7ec4\u7ec7\u6d4f\u89c8\u548c\u8ba2\u9605 EMP \u6a21\u5757\u3002",

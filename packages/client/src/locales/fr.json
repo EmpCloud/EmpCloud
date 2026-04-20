@@ -298,6 +298,58 @@
     "notCheckedInYet": "Pas encore point\u00e9 aujourd'hui",
     "attendanceComplete": "Pr\u00e9sence compl\u00e9t\u00e9e pour aujourd'hui"
   },
+  "roles": {
+    "employee": "Employ\u00e9",
+    "manager": "Manager",
+    "hr_admin": "Admin RH",
+    "org_admin": "Admin. Org.",
+    "super_admin": "Super Admin"
+  },
+  "modulesAccess": {
+    "title": "Acc\u00e8s aux modules",
+    "subtitle": "G\u00e9rez les employ\u00e9s qui ont acc\u00e8s \u00e0 chaque module.",
+    "modulesCount": "{{count}} modules",
+    "employeesCount": "{{count}} employ\u00e9s",
+    "seatsAssignedCount": "{{count}} si\u00e8ges attribu\u00e9s",
+    "searchPlaceholder": "Rechercher par nom, e-mail, fonction ou code employ\u00e9...",
+    "allEmployees": "Tous les employ\u00e9s",
+    "enabledFor": "Activ\u00e9 pour",
+    "notEnabledFor": "Non activ\u00e9 pour",
+    "enabledSuffix": "Activ\u00e9",
+    "notEnabledSuffix": "Non activ\u00e9",
+    "loading": "Chargement des employ\u00e9s...",
+    "noEmployees": "Aucun employ\u00e9 trouv\u00e9",
+    "matchingSearch": "correspondant \u00e0 votre recherche",
+    "withFilter": "avec ce filtre",
+    "table": {
+      "employee": "Employ\u00e9",
+      "role": "R\u00f4le",
+      "designation": "Fonction",
+      "modules": "Modules"
+    },
+    "confirm": {
+      "title": "D\u00e9sactiver l'acc\u00e8s au module",
+      "subtitle": "Cette action peut supprimer les donn\u00e9es de l'utilisateur dans le module",
+      "message": "\u00cates-vous s\u00fbr de vouloir retirer l'acc\u00e8s de <strong>{{user}}</strong> \u00e0 <strong>{{module}}</strong> ? Leurs donn\u00e9es dans ce module peuvent \u00eatre d\u00e9finitivement supprim\u00e9es.",
+      "cancel": "Annuler",
+      "remove": "Retirer l'acc\u00e8s",
+      "removing": "Retrait en cours..."
+    },
+    "pagination": {
+      "showing": "Affichage de {{from}}\u2013{{to}} sur {{total}} employ\u00e9s",
+      "previous": "Pr\u00e9c\u00e9dent",
+      "next": "Suivant"
+    },
+    "syncAlerts": {
+      "enabledSynced": "Module activ\u00e9 et utilisateur synchronis\u00e9 avec succ\u00e8s",
+      "enabledSkipped": "Si\u00e8ge attribu\u00e9. Le module n'a pas d'API de synchronisation configur\u00e9e.",
+      "enabledPartial": "Si\u00e8ge attribu\u00e9 mais la synchronisation du module a \u00e9chou\u00e9 ({{status}}).",
+      "enableFailed": "\u00c9chec de l'activation du module",
+      "disabledSynced": "Module d\u00e9sactiv\u00e9 et utilisateur supprim\u00e9",
+      "disabledPartial": "Si\u00e8ge retir\u00e9 mais la synchronisation du module a \u00e9chou\u00e9 ({{status}})",
+      "disableFailed": "\u00c9chec de la d\u00e9sactivation du module"
+    }
+  },
   "modulesPage": {
     "title": "March\u00e9 des modules",
     "subtitle": "Parcourez et abonnez-vous aux modules EMP pour votre organisation.",

@@ -298,6 +298,58 @@
     "notCheckedInYet": "Ainda n\u00e3o registrou entrada hoje",
     "attendanceComplete": "Presen\u00e7a conclu\u00edda para hoje"
   },
+  "roles": {
+    "employee": "Funcion\u00e1rio",
+    "manager": "Gestor",
+    "hr_admin": "Admin de RH",
+    "org_admin": "Admin. Org.",
+    "super_admin": "Super Admin"
+  },
+  "modulesAccess": {
+    "title": "Acesso aos m\u00f3dulos",
+    "subtitle": "Gerencie quais funcion\u00e1rios t\u00eam acesso a cada m\u00f3dulo.",
+    "modulesCount": "{{count}} m\u00f3dulos",
+    "employeesCount": "{{count}} funcion\u00e1rios",
+    "seatsAssignedCount": "{{count}} vagas atribu\u00eddas",
+    "searchPlaceholder": "Pesquisar por nome, e-mail, cargo ou c\u00f3digo do funcion\u00e1rio...",
+    "allEmployees": "Todos os funcion\u00e1rios",
+    "enabledFor": "Habilitado para",
+    "notEnabledFor": "N\u00e3o habilitado para",
+    "enabledSuffix": "Habilitado",
+    "notEnabledSuffix": "N\u00e3o habilitado",
+    "loading": "Carregando funcion\u00e1rios...",
+    "noEmployees": "Nenhum funcion\u00e1rio encontrado",
+    "matchingSearch": "que corresponda \u00e0 sua pesquisa",
+    "withFilter": "com este filtro",
+    "table": {
+      "employee": "Funcion\u00e1rio",
+      "role": "Fun\u00e7\u00e3o",
+      "designation": "Cargo",
+      "modules": "M\u00f3dulos"
+    },
+    "confirm": {
+      "title": "Desabilitar acesso ao m\u00f3dulo",
+      "subtitle": "Esta a\u00e7\u00e3o pode excluir os dados do usu\u00e1rio no m\u00f3dulo",
+      "message": "Tem certeza que deseja remover o acesso de <strong>{{user}}</strong> a <strong>{{module}}</strong>? Os dados neste m\u00f3dulo podem ser exclu\u00eddos permanentemente.",
+      "cancel": "Cancelar",
+      "remove": "Remover acesso",
+      "removing": "Removendo..."
+    },
+    "pagination": {
+      "showing": "Exibindo {{from}}\u2013{{to}} de {{total}} funcion\u00e1rios",
+      "previous": "Anterior",
+      "next": "Pr\u00f3ximo"
+    },
+    "syncAlerts": {
+      "enabledSynced": "M\u00f3dulo habilitado e usu\u00e1rio sincronizado com sucesso",
+      "enabledSkipped": "Vaga atribu\u00edda. O m\u00f3dulo n\u00e3o tem API de sincroniza\u00e7\u00e3o configurada.",
+      "enabledPartial": "Vaga atribu\u00edda mas a sincroniza\u00e7\u00e3o do m\u00f3dulo falhou ({{status}}).",
+      "enableFailed": "Falha ao habilitar o m\u00f3dulo",
+      "disabledSynced": "M\u00f3dulo desabilitado e usu\u00e1rio removido",
+      "disabledPartial": "Vaga removida mas a sincroniza\u00e7\u00e3o do m\u00f3dulo falhou ({{status}})",
+      "disableFailed": "Falha ao desabilitar o m\u00f3dulo"
+    }
+  },
   "modulesPage": {
     "title": "Mercado de m\u00f3dulos",
     "subtitle": "Explore e assine m\u00f3dulos EMP para sua organiza\u00e7\u00e3o.",
