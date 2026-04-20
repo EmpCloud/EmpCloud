@@ -101,8 +101,8 @@ export default function DashboardPage() {
 
   // Core HRMS is the platform itself — not a module in the DB
   const hrmsModule = {
-    name: "EMP Cloud — Core HRMS",
-    description: "Your complete HR management platform. Manage employee profiles, track attendance with shifts and geo-fencing, handle leave applications with multi-level approvals, organize employee documents with expiry tracking, publish company-wide announcements, and manage policies with acknowledgment tracking. All included free with your EMP Cloud subscription.",
+    name: t('dashboard.coreHRMSName'),
+    description: t('dashboard.coreHRMSDescription'),
   };
 
   return (
@@ -264,79 +264,79 @@ export default function DashboardPage() {
             {/* Recruit Widget */}
             {subscribedSlugs.has("emp-recruit") && (
               <WidgetCard
-                title="Recruitment"
+                title={t('widgets.recruit.title')}
                 icon={Briefcase}
                 color="indigo"
                 moduleUrl={moduleBaseUrls.get("emp-recruit")}
                 isLoading={widgetsLoading}
                 isOffline={!widgetsLoading && widgets?.recruit === null}
               >
-                <Stat label="Open Jobs" value={widgets?.recruit?.openJobs as number} />
-                <Stat label="Candidates" value={widgets?.recruit?.totalCandidates as number} />
-                <Stat label="Recent Hires" value={widgets?.recruit?.recentHires as number} />
+                <Stat label={t('widgets.recruit.openJobs')} value={widgets?.recruit?.openJobs as number} />
+                <Stat label={t('widgets.recruit.candidates')} value={widgets?.recruit?.totalCandidates as number} />
+                <Stat label={t('widgets.recruit.recentHires')} value={widgets?.recruit?.recentHires as number} />
               </WidgetCard>
             )}
 
             {/* Performance Widget */}
             {subscribedSlugs.has("emp-performance") && (
               <WidgetCard
-                title="Performance"
+                title={t('widgets.performance.title')}
                 icon={Target}
                 color="green"
                 moduleUrl={moduleBaseUrls.get("emp-performance")}
                 isLoading={widgetsLoading}
                 isOffline={!widgetsLoading && widgets?.performance === null}
               >
-                <Stat label="Active Cycles" value={widgets?.performance?.activeCycles as number} />
-                <Stat label="Pending Reviews" value={widgets?.performance?.pendingReviews as number} />
-                <Stat label="Goal Completion" value={widgets?.performance?.goalCompletion != null ? `${widgets.performance.goalCompletion}%` : undefined} />
+                <Stat label={t('widgets.performance.activeCycles')} value={widgets?.performance?.activeCycles as number} />
+                <Stat label={t('widgets.performance.pendingReviews')} value={widgets?.performance?.pendingReviews as number} />
+                <Stat label={t('widgets.performance.goalCompletion')} value={widgets?.performance?.goalCompletion != null ? `${widgets.performance.goalCompletion}%` : undefined} />
               </WidgetCard>
             )}
 
             {/* Rewards Widget */}
             {subscribedSlugs.has("emp-rewards") && (
               <WidgetCard
-                title="Recognition"
+                title={t('widgets.rewards.title')}
                 icon={Award}
                 color="amber"
                 moduleUrl={moduleBaseUrls.get("emp-rewards")}
                 isLoading={widgetsLoading}
                 isOffline={!widgetsLoading && widgets?.rewards === null}
               >
-                <Stat label="Kudos This Month" value={widgets?.rewards?.totalKudos as number} />
-                <Stat label="Points Given" value={widgets?.rewards?.pointsDistributed as number} />
-                <Stat label="Badges Earned" value={widgets?.rewards?.badgesAwarded as number} />
+                <Stat label={t('widgets.rewards.kudosThisMonth')} value={widgets?.rewards?.totalKudos as number} />
+                <Stat label={t('widgets.rewards.pointsGiven')} value={widgets?.rewards?.pointsDistributed as number} />
+                <Stat label={t('widgets.rewards.badgesEarned')} value={widgets?.rewards?.badgesAwarded as number} />
               </WidgetCard>
             )}
 
             {/* Exit Widget */}
             {subscribedSlugs.has("emp-exit") && (
               <WidgetCard
-                title="Exit & Attrition"
+                title={t('widgets.exit.title')}
                 icon={UserMinus}
                 color="rose"
                 moduleUrl={moduleBaseUrls.get("emp-exit")}
                 isLoading={widgetsLoading}
                 isOffline={!widgetsLoading && widgets?.exit === null}
               >
-                <Stat label="Active Exits" value={widgets?.exit?.activeExits as number} />
-                <Stat label="Attrition Rate" value={widgets?.exit?.attritionRate != null ? `${widgets.exit.attritionRate}%` : undefined} />
+                <Stat label={t('widgets.exit.activeExits')} value={widgets?.exit?.activeExits as number} />
+                <Stat label={t('widgets.exit.attritionRate')} value={widgets?.exit?.attritionRate != null ? `${widgets.exit.attritionRate}%` : undefined} />
               </WidgetCard>
             )}
 
             {/* LMS Widget */}
             {subscribedSlugs.has("emp-lms") && (
               <WidgetCard
-                title="Learning & Development"
+                title={t('widgets.lms.title')}
                 icon={GraduationCap}
                 color="cyan"
                 moduleUrl={moduleBaseUrls.get("emp-lms")}
                 isLoading={widgetsLoading}
                 isOffline={!widgetsLoading && widgets?.lms === null}
               >
-                <Stat label="Active Courses" value={widgets?.lms?.activeCourses as number} />
-                <Stat label="Enrollments" value={widgets?.lms?.totalEnrollments as number} />
-                <Stat label="Completion Rate" value={widgets?.lms?.completionRate != null ? `${widgets.lms.completionRate}%` : undefined} />
+                <Stat label={t('widgets.lms.activeCourses')} value={widgets?.lms?.activeCourses as number} />
+                <Stat label={t('widgets.lms.enrollments')} value={widgets?.lms?.totalEnrollments as number} />
+                <Stat label={t('widgets.lms.completionRate')} value={widgets?.lms?.completionRate != null ? `${widgets.lms.completionRate}%` : undefined} />
               </WidgetCard>
             )}
           </div>
@@ -359,6 +359,19 @@ export default function DashboardPage() {
             const mod = moduleMap.get(sub.module_id);
             const isExpanded = expandedModule === sub.id;
             const hasBaseUrl = !!mod?.base_url;
+            // i18n lookup with DB fallback. t() returns the key itself when no translation exists.
+            const nameKey = `modules.${mod?.slug}.name`;
+            const descKey = `modules.${mod?.slug}.description`;
+            const translatedName = t(nameKey);
+            const translatedDesc = t(descKey);
+            const displayName = translatedName === nameKey ? (mod?.name || "Module") : translatedName;
+            const displayDesc = translatedDesc === descKey ? (mod?.description ?? "") : translatedDesc;
+            const statusKey = `common.${sub.status}`;
+            const translatedStatus = t(statusKey);
+            const displayStatus = translatedStatus === statusKey ? sub.status : translatedStatus;
+            const planKey = `plans.${sub.plan_tier?.toLowerCase?.() ?? ""}`;
+            const translatedPlan = t(planKey);
+            const displayPlan = translatedPlan === planKey ? sub.plan_tier : translatedPlan;
             return (
               <div
                 key={sub.id}
@@ -372,10 +385,10 @@ export default function DashboardPage() {
                     <div>
                       {hasBaseUrl ? (
                         <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-gray-900 hover:text-brand-600 transition-colors text-left">
-                          {mod?.name || "Module"}
+                          {displayName}
                         </button>
                       ) : (
-                        <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>
+                        <h3 className="font-semibold text-gray-900">{displayName}</h3>
                       )}
                       <p className="text-xs text-gray-400">{mod?.slug}</p>
                     </div>
@@ -385,18 +398,18 @@ export default function DashboardPage() {
                       ? "bg-green-50 text-green-700"
                       : "bg-yellow-50 text-yellow-700"
                   }`}>
-                    {sub.status}
+                    {displayStatus}
                   </span>
                 </div>
 
                 {/* Description - truncated with expand */}
                 <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                   {isExpanded
-                    ? (mod?.description ?? "")
-                    : (mod?.description ?? "").substring(0, 150) + ((mod?.description?.length ?? 0) > 150 ? "..." : "")
+                    ? displayDesc
+                    : displayDesc.substring(0, 150) + (displayDesc.length > 150 ? "..." : "")
                   }
                 </p>
-                {(mod?.description?.length ?? 0) > 150 && (
+                {displayDesc.length > 150 && (
                   <button
                     onClick={() => setExpandedModule(isExpanded ? null : sub.id)}
                     className="text-xs text-brand-600 hover:text-brand-700 font-medium mb-3 flex items-center gap-0.5"
@@ -408,7 +421,7 @@ export default function DashboardPage() {
 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
                   <span>{sub.used_seats}/{sub.total_seats} {t('dashboard.seatsUsed')}</span>
-                  <span className="capitalize text-xs bg-gray-100 px-2 py-0.5 rounded-full">{sub.plan_tier}</span>
+                  <span className="capitalize text-xs bg-gray-100 px-2 py-0.5 rounded-full">{displayPlan}</span>
                 </div>
 
                 {/* Progress bar */}

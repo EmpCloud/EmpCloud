@@ -16,6 +16,8 @@
     "surveys": "Enqu\u00eates",
     "assets": "Actifs",
     "positions": "Postes",
+    "vacancies": "Postes vacants",
+    "headcountPlans": "Plans d'effectifs",
     "feedback": "Retours",
     "events": "\u00c9v\u00e9nements",
     "wellness": "Bien-\u00eatre",
@@ -31,7 +33,44 @@
     "platformAdmin": "Admin. Plateforme",
     "myProfile": "Mon Profil",
     "selfService": "Libre-service",
-    "probation": "P\u00e9riode d'essai"
+    "probation": "P\u00e9riode d'essai",
+    "createPost": "Cr\u00e9er une publication",
+    "forumDashboard": "Tableau du forum",
+    "myEvents": "Mes \u00e9v\u00e9nements",
+    "eventDashboard": "Tableau des \u00e9v\u00e9nements",
+    "submitReport": "Soumettre un signalement",
+    "trackReport": "Suivre un signalement",
+    "allReports": "Tous les signalements",
+    "activeSurveys": "Enqu\u00eates actives",
+    "surveyDashboard": "Tableau des enqu\u00eates",
+    "allSurveys": "Toutes les enqu\u00eates",
+    "myWellness": "Mon bien-\u00eatre",
+    "dailyCheckIn": "Point quotidien",
+    "wellnessDashboard": "Tableau du bien-\u00eatre",
+    "myAssets": "Mes actifs",
+    "assetDashboard": "Tableau des actifs",
+    "allAssets": "Tous les actifs",
+    "categories": "Cat\u00e9gories",
+    "submitFeedback": "Envoyer un retour",
+    "myFeedback": "Mes retours",
+    "allFeedback": "Tous les retours",
+    "feedbackDashboard": "Tableau des retours",
+    "faceEnrollment": "Enregistrement facial",
+    "qrAttendance": "Pr\u00e9sence QR",
+    "devices": "Appareils",
+    "biometricLogs": "Journaux biom\u00e9triques",
+    "biometricSettings": "Param\u00e8tres biom\u00e9triques",
+    "overviewDashboard": "Tableau g\u00e9n\u00e9ral",
+    "organizations": "Organisations",
+    "moduleAnalytics": "Analytique des modules",
+    "revenue": "Revenus",
+    "subscriptions": "Abonnements",
+    "systemNotifications": "Notifications syst\u00e8me",
+    "serviceHealth": "\u00c9tat des services",
+    "dataSanity": "Int\u00e9grit\u00e9 des donn\u00e9es",
+    "aiConfiguration": "Configuration IA",
+    "logDashboard": "Tableau des journaux",
+    "platformSettings": "Param\u00e8tres de la plateforme"
   },
   "common": {
     "save": "Enregistrer",
@@ -61,6 +100,10 @@
     "pending": "En attente",
     "approved": "Approuv\u00e9",
     "rejected": "Rejet\u00e9",
+    "trial": "Essai",
+    "suspended": "Suspendu",
+    "cancelled": "Annul\u00e9",
+    "expired": "Expir\u00e9",
     "status": "Statut",
     "actions": "Actions",
     "date": "Date",
@@ -75,7 +118,9 @@
     "profile": "Profil",
     "notifications": "Notifications",
     "markAllRead": "Tout marquer comme lu",
-    "noNotifications": "Aucune notification pour le moment"
+    "noNotifications": "Aucune notification pour le moment",
+    "viewAll": "Voir tout",
+    "review": "Examiner"
   },
   "auth": {
     "signIn": "Se connecter",
@@ -102,6 +147,8 @@
     "moduleOffline": "Module hors ligne",
     "yourModules": "Vos modules",
     "coreHRMS": "HRMS principal",
+    "coreHRMSName": "EMP Cloud \u2014 HRMS principal",
+    "coreHRMSDescription": "Votre plateforme compl\u00e8te de gestion RH. G\u00e9rez les profils des employ\u00e9s, suivez la pr\u00e9sence avec les quarts et le g\u00e9o-rep\u00e9rage, g\u00e9rez les demandes de cong\u00e9 avec approbations multi-niveaux, organisez les documents des employ\u00e9s avec suivi d'expiration, publiez des annonces \u00e0 l'\u00e9chelle de l'entreprise et g\u00e9rez les politiques avec suivi des accus\u00e9s de r\u00e9ception. Tout inclus gratuitement avec votre abonnement EMP Cloud.",
     "includedFree": "Inclus gratuitement",
     "noModulesYet": "Aucun module payant pour le moment. Le HRMS principal est actif ci-dessus.",
     "browseModules": "Parcourir le march\u00e9 des modules",
@@ -110,6 +157,7 @@
     "showLess": "Voir moins",
     "readMore": "Lire la suite",
     "overdue": "en retard",
+    "viewDetails": "Voir les d\u00e9tails",
     "quickLinks": {
       "employees": "Annuaire des employ\u00e9s",
       "attendance": "Pr\u00e9sence",
@@ -117,6 +165,87 @@
       "documents": "Documents",
       "announcements": "Annonces",
       "policies": "Politiques"
+    }
+  },
+  "plans": {
+    "basic": "Basique",
+    "standard": "Standard",
+    "premium": "Premium",
+    "enterprise": "Entreprise",
+    "free": "Gratuit",
+    "trial": "Essai"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Reconnaissance des employ\u00e9s, badges et f\u00e9licitations"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Suivi des candidats et pipeline d'embauche"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Gestion de projets et suivi du temps"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "\u00c9valuations de performance, OKR et planification de la succession"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "Surveillance de l'activit\u00e9 et de la productivit\u00e9 des employ\u00e9s"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "Pointage GPS sur le terrain et optimisation des itin\u00e9raires"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Gestion des d\u00e9parts et solde de tout compte"
+    },
+    "emp-lms": {
+      "name": "Gestion de l'apprentissage et formation",
+      "description": "Gestion de l'apprentissage, cours, certifications et formation \u00e0 la conformit\u00e9"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Gestion de la paie, d\u00e9clarations fiscales et rapports de conformit\u00e9"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Suivi biom\u00e9trique de la pr\u00e9sence"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Recrutement",
+      "openJobs": "Postes ouverts",
+      "candidates": "Candidats",
+      "recentHires": "Embauches r\u00e9centes"
+    },
+    "performance": {
+      "title": "Performance",
+      "activeCycles": "Cycles actifs",
+      "pendingReviews": "\u00c9valuations en attente",
+      "goalCompletion": "Atteinte des objectifs"
+    },
+    "rewards": {
+      "title": "Reconnaissance",
+      "kudosThisMonth": "F\u00e9licitations ce mois-ci",
+      "pointsGiven": "Points attribu\u00e9s",
+      "badgesEarned": "Badges gagn\u00e9s"
+    },
+    "exit": {
+      "title": "D\u00e9parts et attrition",
+      "activeExits": "D\u00e9parts actifs",
+      "attritionRate": "Taux d'attrition"
+    },
+    "lms": {
+      "title": "Apprentissage et d\u00e9veloppement",
+      "activeCourses": "Cours actifs",
+      "enrollments": "Inscriptions",
+      "completionRate": "Taux d'ach\u00e8vement"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Motif",
     "daysRequested": "Jours demand\u00e9s",
     "approve": "Approuver",
-    "reject": "Rejeter"
+    "reject": "Rejeter",
+    "daysRemaining": "jours restants",
+    "noTypes": "Aucun type de cong\u00e9 configur\u00e9"
+  },
+  "documents": {
+    "title": "Documents",
+    "pending": "Documents en attente",
+    "fallbackName": "Document",
+    "noPending": "Aucun document en attente"
+  },
+  "policies": {
+    "title": "Politiques",
+    "acknowledged": "Accus\u00e9 r\u00e9ception",
+    "review": "Examiner"
+  },
+  "announcements": {
+    "title": "Annonces"
+  },
+  "selfService": {
+    "welcomeBack": "Bon retour, {{name}} !",
+    "overviewDesc": "Voici un aper\u00e7u de votre tableau de bord libre-service.",
+    "editMyDetails": "Modifier mes informations",
+    "requestUpdate": "Demander une mise \u00e0 jour"
   },
   "attendance": {
     "title": "Pr\u00e9sence",
@@ -140,7 +291,12 @@
     "late": "En retard",
     "onLeave": "En cong\u00e9",
     "todayStatus": "Statut du jour",
-    "myAttendance": "Ma pr\u00e9sence"
+    "myAttendance": "Ma pr\u00e9sence",
+    "myAttendanceToday": "Ma pr\u00e9sence aujourd'hui",
+    "notYet": "Pas encore",
+    "totalWorkedToday": "Total travaill\u00e9 aujourd'hui",
+    "notCheckedInYet": "Pas encore point\u00e9 aujourd'hui",
+    "attendanceComplete": "Pr\u00e9sence compl\u00e9t\u00e9e pour aujourd'hui"
   },
   "helpdesk": {
     "title": "Assistance",

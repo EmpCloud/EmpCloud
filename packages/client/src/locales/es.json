@@ -16,6 +16,8 @@
     "surveys": "Encuestas",
     "assets": "Activos",
     "positions": "Posiciones",
+    "vacancies": "Vacantes",
+    "headcountPlans": "Planes de plantilla",
     "feedback": "Comentarios",
     "events": "Eventos",
     "wellness": "Bienestar",
@@ -31,7 +33,44 @@
     "platformAdmin": "Admin. Plataforma",
     "myProfile": "Mi Perfil",
     "selfService": "Autoservicio",
-    "probation": "Per\u00edodo de prueba"
+    "probation": "Per\u00edodo de prueba",
+    "createPost": "Crear publicaci\u00f3n",
+    "forumDashboard": "Panel del foro",
+    "myEvents": "Mis eventos",
+    "eventDashboard": "Panel de eventos",
+    "submitReport": "Enviar denuncia",
+    "trackReport": "Seguir denuncia",
+    "allReports": "Todas las denuncias",
+    "activeSurveys": "Encuestas activas",
+    "surveyDashboard": "Panel de encuestas",
+    "allSurveys": "Todas las encuestas",
+    "myWellness": "Mi bienestar",
+    "dailyCheckIn": "Chequeo diario",
+    "wellnessDashboard": "Panel de bienestar",
+    "myAssets": "Mis activos",
+    "assetDashboard": "Panel de activos",
+    "allAssets": "Todos los activos",
+    "categories": "Categor\u00edas",
+    "submitFeedback": "Enviar comentarios",
+    "myFeedback": "Mis comentarios",
+    "allFeedback": "Todos los comentarios",
+    "feedbackDashboard": "Panel de comentarios",
+    "faceEnrollment": "Registro facial",
+    "qrAttendance": "Asistencia QR",
+    "devices": "Dispositivos",
+    "biometricLogs": "Registros biom\u00e9tricos",
+    "biometricSettings": "Configuraci\u00f3n biom\u00e9trica",
+    "overviewDashboard": "Panel general",
+    "organizations": "Organizaciones",
+    "moduleAnalytics": "Anal\u00edtica de m\u00f3dulos",
+    "revenue": "Ingresos",
+    "subscriptions": "Suscripciones",
+    "systemNotifications": "Notificaciones del sistema",
+    "serviceHealth": "Estado del servicio",
+    "dataSanity": "Integridad de datos",
+    "aiConfiguration": "Configuraci\u00f3n de IA",
+    "logDashboard": "Panel de registros",
+    "platformSettings": "Configuraci\u00f3n de plataforma"
   },
   "common": {
     "save": "Guardar",
@@ -61,6 +100,10 @@
     "pending": "Pendiente",
     "approved": "Aprobado",
     "rejected": "Rechazado",
+    "trial": "Prueba",
+    "suspended": "Suspendido",
+    "cancelled": "Cancelado",
+    "expired": "Expirado",
     "status": "Estado",
     "actions": "Acciones",
     "date": "Fecha",
@@ -75,7 +118,9 @@
     "profile": "Perfil",
     "notifications": "Notificaciones",
     "markAllRead": "Marcar todo como le\u00eddo",
-    "noNotifications": "A\u00fan no hay notificaciones"
+    "noNotifications": "A\u00fan no hay notificaciones",
+    "viewAll": "Ver todo",
+    "review": "Revisar"
   },
   "auth": {
     "signIn": "Iniciar sesi\u00f3n",
@@ -102,6 +147,8 @@
     "moduleOffline": "M\u00f3dulo sin conexi\u00f3n",
     "yourModules": "Tus m\u00f3dulos",
     "coreHRMS": "HRMS principal",
+    "coreHRMSName": "EMP Cloud \u2014 HRMS Principal",
+    "coreHRMSDescription": "Tu plataforma completa de gesti\u00f3n de RR. HH. Administra perfiles de empleados, controla la asistencia con turnos y geolocalizaci\u00f3n, gestiona solicitudes de licencias con aprobaciones multinivel, organiza los documentos de empleados con seguimiento de vencimientos, publica anuncios para toda la empresa y administra pol\u00edticas con seguimiento de acuses de recibo. Todo incluido gratis con tu suscripci\u00f3n a EMP Cloud.",
     "includedFree": "Incluido gratis",
     "noModulesYet": "A\u00fan no hay m\u00f3dulos de pago. El HRMS principal est\u00e1 activo arriba.",
     "browseModules": "Explorar mercado de m\u00f3dulos",
@@ -110,6 +157,7 @@
     "showLess": "Mostrar menos",
     "readMore": "Leer m\u00e1s",
     "overdue": "vencido",
+    "viewDetails": "Ver detalles",
     "quickLinks": {
       "employees": "Directorio de Empleados",
       "attendance": "Asistencia",
@@ -117,6 +165,87 @@
       "documents": "Documentos",
       "announcements": "Anuncios",
       "policies": "Pol\u00edticas"
+    }
+  },
+  "plans": {
+    "basic": "B\u00e1sico",
+    "standard": "Est\u00e1ndar",
+    "premium": "Premium",
+    "enterprise": "Empresarial",
+    "free": "Gratis",
+    "trial": "Prueba"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Reconocimiento de empleados, insignias y felicitaciones"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Seguimiento de candidatos y proceso de contrataci\u00f3n"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Gesti\u00f3n de proyectos y control de tiempo"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "Evaluaciones de desempe\u00f1o, OKR y planificaci\u00f3n de sucesi\u00f3n"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "Monitoreo de actividad y productividad de empleados"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "Fichaje GPS en campo y optimizaci\u00f3n de rutas"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Gesti\u00f3n de salidas y liquidaci\u00f3n final"
+    },
+    "emp-lms": {
+      "name": "Gesti\u00f3n de aprendizaje y capacitaci\u00f3n",
+      "description": "Gesti\u00f3n de aprendizaje, cursos, certificaciones y capacitaci\u00f3n de cumplimiento"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Gesti\u00f3n de n\u00f3mina, declaraciones de impuestos y reportes de cumplimiento"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Control de asistencia biom\u00e9trico"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Reclutamiento",
+      "openJobs": "Vacantes abiertas",
+      "candidates": "Candidatos",
+      "recentHires": "Contrataciones recientes"
+    },
+    "performance": {
+      "title": "Desempe\u00f1o",
+      "activeCycles": "Ciclos activos",
+      "pendingReviews": "Revisiones pendientes",
+      "goalCompletion": "Cumplimiento de objetivos"
+    },
+    "rewards": {
+      "title": "Reconocimiento",
+      "kudosThisMonth": "Felicitaciones este mes",
+      "pointsGiven": "Puntos otorgados",
+      "badgesEarned": "Insignias ganadas"
+    },
+    "exit": {
+      "title": "Salida y rotaci\u00f3n",
+      "activeExits": "Salidas activas",
+      "attritionRate": "Tasa de rotaci\u00f3n"
+    },
+    "lms": {
+      "title": "Aprendizaje y desarrollo",
+      "activeCourses": "Cursos activos",
+      "enrollments": "Inscripciones",
+      "completionRate": "Tasa de finalizaci\u00f3n"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Motivo",
     "daysRequested": "D\u00edas solicitados",
     "approve": "Aprobar",
-    "reject": "Rechazar"
+    "reject": "Rechazar",
+    "daysRemaining": "d\u00edas restantes",
+    "noTypes": "No hay tipos de licencia configurados"
+  },
+  "documents": {
+    "title": "Documentos",
+    "pending": "Documentos pendientes",
+    "fallbackName": "Documento",
+    "noPending": "No hay documentos pendientes"
+  },
+  "policies": {
+    "title": "Pol\u00edticas",
+    "acknowledged": "Acuse registrado",
+    "review": "Revisar"
+  },
+  "announcements": {
+    "title": "Anuncios"
+  },
+  "selfService": {
+    "welcomeBack": "\u00a1Bienvenido de nuevo, {{name}}!",
+    "overviewDesc": "Aqu\u00ed tienes un resumen de tu panel de autoservicio.",
+    "editMyDetails": "Editar mis datos",
+    "requestUpdate": "Solicitar actualizaci\u00f3n"
   },
   "attendance": {
     "title": "Asistencia",
@@ -140,7 +291,12 @@
     "late": "Tarde",
     "onLeave": "De licencia",
     "todayStatus": "Estado de hoy",
-    "myAttendance": "Mi asistencia"
+    "myAttendance": "Mi asistencia",
+    "myAttendanceToday": "Mi asistencia de hoy",
+    "notYet": "A\u00fan no",
+    "totalWorkedToday": "Total trabajado hoy",
+    "notCheckedInYet": "A\u00fan no has fichado hoy",
+    "attendanceComplete": "Asistencia completada hoy"
   },
   "helpdesk": {
     "title": "Mesa de ayuda",

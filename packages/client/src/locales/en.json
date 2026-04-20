@@ -16,6 +16,8 @@
     "surveys": "Surveys",
     "assets": "Assets",
     "positions": "Positions",
+    "vacancies": "Vacancies",
+    "headcountPlans": "Headcount Plans",
     "feedback": "Feedback",
     "events": "Events",
     "wellness": "Wellness",
@@ -31,7 +33,44 @@
     "platformAdmin": "Platform Admin",
     "myProfile": "My Profile",
     "selfService": "Self Service",
-    "probation": "Probation"
+    "probation": "Probation",
+    "createPost": "Create Post",
+    "forumDashboard": "Forum Dashboard",
+    "myEvents": "My Events",
+    "eventDashboard": "Event Dashboard",
+    "submitReport": "Submit Report",
+    "trackReport": "Track Report",
+    "allReports": "All Reports",
+    "activeSurveys": "Active Surveys",
+    "surveyDashboard": "Survey Dashboard",
+    "allSurveys": "All Surveys",
+    "myWellness": "My Wellness",
+    "dailyCheckIn": "Daily Check-in",
+    "wellnessDashboard": "Wellness Dashboard",
+    "myAssets": "My Assets",
+    "assetDashboard": "Asset Dashboard",
+    "allAssets": "All Assets",
+    "categories": "Categories",
+    "submitFeedback": "Submit Feedback",
+    "myFeedback": "My Feedback",
+    "allFeedback": "All Feedback",
+    "feedbackDashboard": "Feedback Dashboard",
+    "faceEnrollment": "Face Enrollment",
+    "qrAttendance": "QR Attendance",
+    "devices": "Devices",
+    "biometricLogs": "Biometric Logs",
+    "biometricSettings": "Biometric Settings",
+    "overviewDashboard": "Overview Dashboard",
+    "organizations": "Organizations",
+    "moduleAnalytics": "Module Analytics",
+    "revenue": "Revenue",
+    "subscriptions": "Subscriptions",
+    "systemNotifications": "System Notifications",
+    "serviceHealth": "Service Health",
+    "dataSanity": "Data Sanity",
+    "aiConfiguration": "AI Configuration",
+    "logDashboard": "Log Dashboard",
+    "platformSettings": "Platform Settings"
   },
   "common": {
     "save": "Save",
@@ -61,6 +100,10 @@
     "pending": "Pending",
     "approved": "Approved",
     "rejected": "Rejected",
+    "trial": "Trial",
+    "suspended": "Suspended",
+    "cancelled": "Cancelled",
+    "expired": "Expired",
     "status": "Status",
     "actions": "Actions",
     "date": "Date",
@@ -75,7 +118,9 @@
     "profile": "Profile",
     "notifications": "Notifications",
     "markAllRead": "Mark all as read",
-    "noNotifications": "No notifications yet"
+    "noNotifications": "No notifications yet",
+    "viewAll": "View all",
+    "review": "Review"
   },
   "auth": {
     "signIn": "Sign in",
@@ -102,6 +147,8 @@
     "moduleOffline": "Module offline",
     "yourModules": "Your Modules",
     "coreHRMS": "Core HRMS",
+    "coreHRMSName": "EMP Cloud \u2014 Core HRMS",
+    "coreHRMSDescription": "Your complete HR management platform. Manage employee profiles, track attendance with shifts and geo-fencing, handle leave applications with multi-level approvals, organize employee documents with expiry tracking, publish company-wide announcements, and manage policies with acknowledgment tracking. All included free with your EMP Cloud subscription.",
     "includedFree": "Included Free",
     "noModulesYet": "No paid modules yet. Core HRMS is active above.",
     "browseModules": "Browse module marketplace",
@@ -110,6 +157,7 @@
     "showLess": "Show less",
     "readMore": "Read more",
     "overdue": "overdue",
+    "viewDetails": "View Details",
     "quickLinks": {
       "employees": "Employee Directory",
       "attendance": "Attendance",
@@ -117,6 +165,87 @@
       "documents": "Documents",
       "announcements": "Announcements",
       "policies": "Policies"
+    }
+  },
+  "plans": {
+    "basic": "Basic",
+    "standard": "Standard",
+    "premium": "Premium",
+    "enterprise": "Enterprise",
+    "free": "Free",
+    "trial": "Trial"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Employee recognition, badges & kudos"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Applicant tracking & hiring pipeline"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Project management & time tracking"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "Performance reviews, OKRs & succession planning"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "Employee activity & productivity monitoring"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "Field force GPS check-in & route optimization"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Exit management & full-final settlement"
+    },
+    "emp-lms": {
+      "name": "Learning Management & Training",
+      "description": "Learning management, courses, certifications & compliance training"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Payroll management, tax filings & compliance reports"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Biometric attendance tracking"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Recruitment",
+      "openJobs": "Open Jobs",
+      "candidates": "Candidates",
+      "recentHires": "Recent Hires"
+    },
+    "performance": {
+      "title": "Performance",
+      "activeCycles": "Active Cycles",
+      "pendingReviews": "Pending Reviews",
+      "goalCompletion": "Goal Completion"
+    },
+    "rewards": {
+      "title": "Recognition",
+      "kudosThisMonth": "Kudos This Month",
+      "pointsGiven": "Points Given",
+      "badgesEarned": "Badges Earned"
+    },
+    "exit": {
+      "title": "Exit & Attrition",
+      "activeExits": "Active Exits",
+      "attritionRate": "Attrition Rate"
+    },
+    "lms": {
+      "title": "Learning & Development",
+      "activeCourses": "Active Courses",
+      "enrollments": "Enrollments",
+      "completionRate": "Completion Rate"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Reason",
     "daysRequested": "Days Requested",
     "approve": "Approve",
-    "reject": "Reject"
+    "reject": "Reject",
+    "daysRemaining": "days remaining",
+    "noTypes": "No leave types configured"
+  },
+  "documents": {
+    "title": "Documents",
+    "pending": "Pending Documents",
+    "fallbackName": "Document",
+    "noPending": "No pending documents"
+  },
+  "policies": {
+    "title": "Policies",
+    "acknowledged": "Acknowledged",
+    "review": "Review"
+  },
+  "announcements": {
+    "title": "Announcements"
+  },
+  "selfService": {
+    "welcomeBack": "Welcome back, {{name}}!",
+    "overviewDesc": "Here is your self-service dashboard overview.",
+    "editMyDetails": "Edit My Details",
+    "requestUpdate": "Request Update"
   },
   "attendance": {
     "title": "Attendance",
@@ -140,7 +291,12 @@
     "late": "Late",
     "onLeave": "On Leave",
     "todayStatus": "Today's Status",
-    "myAttendance": "My Attendance"
+    "myAttendance": "My Attendance",
+    "myAttendanceToday": "My Attendance Today",
+    "notYet": "Not yet",
+    "totalWorkedToday": "Total worked today",
+    "notCheckedInYet": "Not checked in yet today",
+    "attendanceComplete": "Attendance complete for today"
   },
   "helpdesk": {
     "title": "Helpdesk",

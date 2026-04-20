@@ -16,6 +16,8 @@
     "surveys": "Umfragen",
     "assets": "Verm\u00f6genswerte",
     "positions": "Positionen",
+    "vacancies": "Offene Stellen",
+    "headcountPlans": "Personalbedarfspl\u00e4ne",
     "feedback": "Feedback",
     "events": "Veranstaltungen",
     "wellness": "Wohlbefinden",
@@ -31,7 +33,44 @@
     "platformAdmin": "Plattform-Admin",
     "myProfile": "Mein Profil",
     "selfService": "Self-Service",
-    "probation": "Probezeit"
+    "probation": "Probezeit",
+    "createPost": "Beitrag erstellen",
+    "forumDashboard": "Forum-\u00dcbersicht",
+    "myEvents": "Meine Veranstaltungen",
+    "eventDashboard": "Veranstaltungs-\u00dcbersicht",
+    "submitReport": "Meldung einreichen",
+    "trackReport": "Meldung verfolgen",
+    "allReports": "Alle Meldungen",
+    "activeSurveys": "Aktive Umfragen",
+    "surveyDashboard": "Umfrage-\u00dcbersicht",
+    "allSurveys": "Alle Umfragen",
+    "myWellness": "Mein Wohlbefinden",
+    "dailyCheckIn": "T\u00e4glicher Check-in",
+    "wellnessDashboard": "Wohlbefindens-\u00dcbersicht",
+    "myAssets": "Meine Verm\u00f6genswerte",
+    "assetDashboard": "Verm\u00f6gens-\u00dcbersicht",
+    "allAssets": "Alle Verm\u00f6genswerte",
+    "categories": "Kategorien",
+    "submitFeedback": "Feedback senden",
+    "myFeedback": "Mein Feedback",
+    "allFeedback": "Alle Feedbacks",
+    "feedbackDashboard": "Feedback-\u00dcbersicht",
+    "faceEnrollment": "Gesichtserfassung",
+    "qrAttendance": "QR-Anwesenheit",
+    "devices": "Ger\u00e4te",
+    "biometricLogs": "Biometrische Protokolle",
+    "biometricSettings": "Biometrische Einstellungen",
+    "overviewDashboard": "Gesamt\u00fcbersicht",
+    "organizations": "Organisationen",
+    "moduleAnalytics": "Modul-Analytik",
+    "revenue": "Umsatz",
+    "subscriptions": "Abonnements",
+    "systemNotifications": "Systembenachrichtigungen",
+    "serviceHealth": "Dienststatus",
+    "dataSanity": "Datenintegrit\u00e4t",
+    "aiConfiguration": "KI-Konfiguration",
+    "logDashboard": "Protokoll-\u00dcbersicht",
+    "platformSettings": "Plattformeinstellungen"
   },
   "common": {
     "save": "Speichern",
@@ -61,6 +100,10 @@
     "pending": "Ausstehend",
     "approved": "Genehmigt",
     "rejected": "Abgelehnt",
+    "trial": "Testphase",
+    "suspended": "Ausgesetzt",
+    "cancelled": "Storniert",
+    "expired": "Abgelaufen",
     "status": "Status",
     "actions": "Aktionen",
     "date": "Datum",
@@ -75,7 +118,9 @@
     "profile": "Profil",
     "notifications": "Benachrichtigungen",
     "markAllRead": "Alle als gelesen markieren",
-    "noNotifications": "Noch keine Benachrichtigungen"
+    "noNotifications": "Noch keine Benachrichtigungen",
+    "viewAll": "Alle anzeigen",
+    "review": "Pr\u00fcfen"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -102,6 +147,8 @@
     "moduleOffline": "Modul offline",
     "yourModules": "Ihre Module",
     "coreHRMS": "Kern-HRMS",
+    "coreHRMSName": "EMP Cloud \u2014 Kern-HRMS",
+    "coreHRMSDescription": "Ihre komplette HR-Management-Plattform. Verwalten Sie Mitarbeiterprofile, verfolgen Sie die Anwesenheit mit Schichten und Geo-Fencing, bearbeiten Sie Urlaubsantr\u00e4ge mit mehrstufigen Genehmigungen, organisieren Sie Mitarbeiterdokumente mit Ablaufverfolgung, ver\u00f6ffentlichen Sie unternehmensweite Ank\u00fcndigungen und verwalten Sie Richtlinien mit Best\u00e4tigungsverfolgung. Alles kostenlos enthalten in Ihrem EMP Cloud-Abonnement.",
     "includedFree": "Kostenlos enthalten",
     "noModulesYet": "Noch keine kostenpflichtigen Module. Kern-HRMS ist oben aktiv.",
     "browseModules": "Modul-Marktplatz durchsuchen",
@@ -110,6 +157,7 @@
     "showLess": "Weniger anzeigen",
     "readMore": "Mehr lesen",
     "overdue": "\u00fcberf\u00e4llig",
+    "viewDetails": "Details anzeigen",
     "quickLinks": {
       "employees": "Mitarbeiterverzeichnis",
       "attendance": "Anwesenheit",
@@ -117,6 +165,87 @@
       "documents": "Dokumente",
       "announcements": "Ank\u00fcndigungen",
       "policies": "Richtlinien"
+    }
+  },
+  "plans": {
+    "basic": "Basis",
+    "standard": "Standard",
+    "premium": "Premium",
+    "enterprise": "Enterprise",
+    "free": "Kostenlos",
+    "trial": "Testphase"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Mitarbeiteranerkennung, Abzeichen und Lob"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Bewerbernachverfolgung und Einstellungsprozess"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Projektmanagement und Zeiterfassung"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "Leistungsbeurteilungen, OKRs und Nachfolgeplanung"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "\u00dcberwachung der Mitarbeiteraktivit\u00e4t und Produktivit\u00e4t"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "GPS-Check-in im Au\u00dfendienst und Routenoptimierung"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Austrittsverwaltung und endg\u00fcltige Abrechnung"
+    },
+    "emp-lms": {
+      "name": "Lernmanagement & Schulung",
+      "description": "Lernmanagement, Kurse, Zertifizierungen und Compliance-Schulungen"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Gehaltsabrechnung, Steuererkl\u00e4rungen und Compliance-Berichte"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Biometrische Anwesenheitserfassung"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Rekrutierung",
+      "openJobs": "Offene Stellen",
+      "candidates": "Kandidaten",
+      "recentHires": "K\u00fcrzlich eingestellt"
+    },
+    "performance": {
+      "title": "Leistung",
+      "activeCycles": "Aktive Zyklen",
+      "pendingReviews": "Ausstehende Bewertungen",
+      "goalCompletion": "Zielerreichung"
+    },
+    "rewards": {
+      "title": "Anerkennung",
+      "kudosThisMonth": "Lob diesen Monat",
+      "pointsGiven": "Vergebene Punkte",
+      "badgesEarned": "Erhaltene Abzeichen"
+    },
+    "exit": {
+      "title": "Austritt & Fluktuation",
+      "activeExits": "Aktive Austritte",
+      "attritionRate": "Fluktuationsrate"
+    },
+    "lms": {
+      "title": "Lernen & Entwicklung",
+      "activeCourses": "Aktive Kurse",
+      "enrollments": "Anmeldungen",
+      "completionRate": "Abschlussrate"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Grund",
     "daysRequested": "Beantragte Tage",
     "approve": "Genehmigen",
-    "reject": "Ablehnen"
+    "reject": "Ablehnen",
+    "daysRemaining": "Tage verbleibend",
+    "noTypes": "Keine Urlaubsarten konfiguriert"
+  },
+  "documents": {
+    "title": "Dokumente",
+    "pending": "Ausstehende Dokumente",
+    "fallbackName": "Dokument",
+    "noPending": "Keine ausstehenden Dokumente"
+  },
+  "policies": {
+    "title": "Richtlinien",
+    "acknowledged": "Best\u00e4tigt",
+    "review": "Pr\u00fcfen"
+  },
+  "announcements": {
+    "title": "Ank\u00fcndigungen"
+  },
+  "selfService": {
+    "welcomeBack": "Willkommen zur\u00fcck, {{name}}!",
+    "overviewDesc": "Hier ist Ihre Self-Service-\u00dcbersicht.",
+    "editMyDetails": "Meine Daten bearbeiten",
+    "requestUpdate": "Aktualisierung anfordern"
   },
   "attendance": {
     "title": "Anwesenheit",
@@ -140,7 +291,12 @@
     "late": "Versp\u00e4tet",
     "onLeave": "Im Urlaub",
     "todayStatus": "Heutiger Status",
-    "myAttendance": "Meine Anwesenheit"
+    "myAttendance": "Meine Anwesenheit",
+    "myAttendanceToday": "Meine Anwesenheit heute",
+    "notYet": "Noch nicht",
+    "totalWorkedToday": "Heute gesamt gearbeitet",
+    "notCheckedInYet": "Heute noch nicht eingestempelt",
+    "attendanceComplete": "Anwesenheit f\u00fcr heute abgeschlossen"
   },
   "helpdesk": {
     "title": "Helpdesk",

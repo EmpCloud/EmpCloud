@@ -16,6 +16,8 @@
     "surveys": "\u30a2\u30f3\u30b1\u30fc\u30c8",
     "assets": "\u8cc7\u7523",
     "positions": "\u5f79\u8077",
+    "vacancies": "\u6b20\u54e1",
+    "headcountPlans": "\u4eba\u54e1\u8a08\u753b",
     "feedback": "\u30d5\u30a3\u30fc\u30c9\u30d0\u30c3\u30af",
     "events": "\u30a4\u30d9\u30f3\u30c8",
     "wellness": "\u30a6\u30a7\u30eb\u30cd\u30b9",
@@ -31,7 +33,44 @@
     "platformAdmin": "\u30d7\u30e9\u30c3\u30c8\u30d5\u30a9\u30fc\u30e0\u7ba1\u7406",
     "myProfile": "\u30de\u30a4\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb",
     "selfService": "\u30bb\u30eb\u30d5\u30b5\u30fc\u30d3\u30b9",
-    "probation": "\u8a66\u7528\u671f\u9593"
+    "probation": "\u8a66\u7528\u671f\u9593",
+    "createPost": "\u6295\u7a3f\u4f5c\u6210",
+    "forumDashboard": "\u30d5\u30a9\u30fc\u30e9\u30e0\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "myEvents": "\u30de\u30a4\u30a4\u30d9\u30f3\u30c8",
+    "eventDashboard": "\u30a4\u30d9\u30f3\u30c8\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "submitReport": "\u5831\u544a\u3092\u9001\u4fe1",
+    "trackReport": "\u5831\u544a\u3092\u8ffd\u8de1",
+    "allReports": "\u3059\u3079\u3066\u306e\u5831\u544a",
+    "activeSurveys": "\u6709\u52b9\u306a\u30a2\u30f3\u30b1\u30fc\u30c8",
+    "surveyDashboard": "\u30a2\u30f3\u30b1\u30fc\u30c8\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "allSurveys": "\u3059\u3079\u3066\u306e\u30a2\u30f3\u30b1\u30fc\u30c8",
+    "myWellness": "\u30de\u30a4\u30a6\u30a7\u30eb\u30cd\u30b9",
+    "dailyCheckIn": "\u6bce\u65e5\u306e\u30c1\u30a7\u30c3\u30af\u30a4\u30f3",
+    "wellnessDashboard": "\u30a6\u30a7\u30eb\u30cd\u30b9\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "myAssets": "\u30de\u30a4\u8cc7\u7523",
+    "assetDashboard": "\u8cc7\u7523\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "allAssets": "\u3059\u3079\u3066\u306e\u8cc7\u7523",
+    "categories": "\u30ab\u30c6\u30b4\u30ea\u30fc",
+    "submitFeedback": "\u30d5\u30a3\u30fc\u30c9\u30d0\u30c3\u30af\u3092\u9001\u4fe1",
+    "myFeedback": "\u30de\u30a4\u30d5\u30a3\u30fc\u30c9\u30d0\u30c3\u30af",
+    "allFeedback": "\u3059\u3079\u3066\u306e\u30d5\u30a3\u30fc\u30c9\u30d0\u30c3\u30af",
+    "feedbackDashboard": "\u30d5\u30a3\u30fc\u30c9\u30d0\u30c3\u30af\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "faceEnrollment": "\u9854\u767b\u9332",
+    "qrAttendance": "QR\u51fa\u52e4",
+    "devices": "\u30c7\u30d0\u30a4\u30b9",
+    "biometricLogs": "\u751f\u4f53\u8a8d\u8a3c\u30ed\u30b0",
+    "biometricSettings": "\u751f\u4f53\u8a8d\u8a3c\u8a2d\u5b9a",
+    "overviewDashboard": "\u6982\u8981\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "organizations": "\u7d44\u7e54",
+    "moduleAnalytics": "\u30e2\u30b8\u30e5\u30fc\u30eb\u5206\u6790",
+    "revenue": "\u53ce\u5165",
+    "subscriptions": "\u30b5\u30d6\u30b9\u30af\u30ea\u30d7\u30b7\u30e7\u30f3",
+    "systemNotifications": "\u30b7\u30b9\u30c6\u30e0\u901a\u77e5",
+    "serviceHealth": "\u30b5\u30fc\u30d3\u30b9\u72b6\u614b",
+    "dataSanity": "\u30c7\u30fc\u30bf\u6574\u5408\u6027",
+    "aiConfiguration": "AI\u8a2d\u5b9a",
+    "logDashboard": "\u30ed\u30b0\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "platformSettings": "\u30d7\u30e9\u30c3\u30c8\u30d5\u30a9\u30fc\u30e0\u8a2d\u5b9a"
   },
   "common": {
     "save": "\u4fdd\u5b58",
@@ -61,6 +100,10 @@
     "pending": "\u4fdd\u7559\u4e2d",
     "approved": "\u627f\u8a8d\u6e08\u307f",
     "rejected": "\u5374\u4e0b",
+    "trial": "\u30c8\u30e9\u30a4\u30a2\u30eb",
+    "suspended": "\u505c\u6b62\u4e2d",
+    "cancelled": "\u30ad\u30e3\u30f3\u30bb\u30eb\u6e08\u307f",
+    "expired": "\u671f\u9650\u5207\u308c",
     "status": "\u30b9\u30c6\u30fc\u30bf\u30b9",
     "actions": "\u30a2\u30af\u30b7\u30e7\u30f3",
     "date": "\u65e5\u4ed8",
@@ -75,7 +118,9 @@
     "profile": "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb",
     "notifications": "\u901a\u77e5",
     "markAllRead": "\u3059\u3079\u3066\u65e2\u8aad\u306b\u3059\u308b",
-    "noNotifications": "\u901a\u77e5\u306f\u307e\u3060\u3042\u308a\u307e\u305b\u3093"
+    "noNotifications": "\u901a\u77e5\u306f\u307e\u3060\u3042\u308a\u307e\u305b\u3093",
+    "viewAll": "\u3059\u3079\u3066\u8868\u793a",
+    "review": "\u78ba\u8a8d"
   },
   "auth": {
     "signIn": "\u30b5\u30a4\u30f3\u30a4\u30f3",
@@ -102,6 +147,8 @@
     "moduleOffline": "\u30e2\u30b8\u30e5\u30fc\u30eb\u30aa\u30d5\u30e9\u30a4\u30f3",
     "yourModules": "\u3042\u306a\u305f\u306e\u30e2\u30b8\u30e5\u30fc\u30eb",
     "coreHRMS": "\u30b3\u30a2HRMS",
+    "coreHRMSName": "EMP Cloud \u2014 \u30b3\u30a2HRMS",
+    "coreHRMSDescription": "\u5305\u62ec\u7684\u306aHR\u7ba1\u7406\u30d7\u30e9\u30c3\u30c8\u30d5\u30a9\u30fc\u30e0\u3002\u5f93\u696d\u54e1\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u306e\u7ba1\u7406\u3001\u30b7\u30d5\u30c8\u3068\u30b8\u30aa\u30d5\u30a7\u30f3\u30b7\u30f3\u30b0\u306b\u3088\u308b\u52e4\u6020\u8ffd\u8de1\u3001\u591a\u6bb5\u968e\u627f\u8a8d\u306b\u3088\u308b\u4f11\u6687\u7533\u8acb\u306e\u51e6\u7406\u3001\u6709\u52b9\u671f\u9650\u8ffd\u8de1\u4ed8\u304d\u306e\u5f93\u696d\u54e1\u66f8\u985e\u6574\u7406\u3001\u5168\u793e\u306b\u5411\u3051\u305f\u304a\u77e5\u3089\u305b\u306e\u767a\u4fe1\u3001\u627f\u8a8d\u8ffd\u8de1\u4ed8\u304d\u306e\u30dd\u30ea\u30b7\u30fc\u7ba1\u7406\u304c\u53ef\u80fd\u3067\u3059\u3002EMP Cloud\u30b5\u30d6\u30b9\u30af\u30ea\u30d7\u30b7\u30e7\u30f3\u306b\u7121\u6599\u3067\u542b\u307e\u308c\u3066\u3044\u307e\u3059\u3002",
     "includedFree": "\u7121\u6599\u542b\u307e\u308c\u3066\u3044\u307e\u3059",
     "noModulesYet": "\u6709\u6599\u30e2\u30b8\u30e5\u30fc\u30eb\u306f\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002\u30b3\u30a2HRMS\u306f\u4e0a\u8a18\u3067\u6709\u52b9\u3067\u3059\u3002",
     "browseModules": "\u30e2\u30b8\u30e5\u30fc\u30eb\u30de\u30fc\u30b1\u30c3\u30c8\u30d7\u30ec\u30a4\u30b9\u3092\u898b\u308b",
@@ -110,6 +157,7 @@
     "showLess": "\u5c11\u306a\u304f\u8868\u793a",
     "readMore": "\u3082\u3063\u3068\u8aad\u3080",
     "overdue": "\u671f\u9650\u8d85\u904e",
+    "viewDetails": "\u8a73\u7d30\u3092\u898b\u308b",
     "quickLinks": {
       "employees": "\u5f93\u696d\u54e1\u30c7\u30a3\u30ec\u30af\u30c8\u30ea",
       "attendance": "\u52e4\u6020",
@@ -117,6 +165,87 @@
       "documents": "\u30c9\u30ad\u30e5\u30e1\u30f3\u30c8",
       "announcements": "\u304a\u77e5\u3089\u305b",
       "policies": "\u30dd\u30ea\u30b7\u30fc"
+    }
+  },
+  "plans": {
+    "basic": "\u30d9\u30fc\u30b7\u30c3\u30af",
+    "standard": "\u30b9\u30bf\u30f3\u30c0\u30fc\u30c9",
+    "premium": "\u30d7\u30ec\u30df\u30a2\u30e0",
+    "enterprise": "\u30a8\u30f3\u30bf\u30fc\u30d7\u30e9\u30a4\u30ba",
+    "free": "\u7121\u6599",
+    "trial": "\u30c8\u30e9\u30a4\u30a2\u30eb"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "\u5f93\u696d\u54e1\u306e\u8a8d\u8b58\u3001\u30d0\u30c3\u30b8\u3001\u8cdb\u8f9e"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "\u5fdc\u52df\u8005\u8ffd\u8de1\u3068\u63a1\u7528\u30d1\u30a4\u30d7\u30e9\u30a4\u30f3"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u7ba1\u7406\u3068\u6642\u9593\u8ffd\u8de1"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "\u30d1\u30d5\u30a9\u30fc\u30de\u30f3\u30b9\u30ec\u30d3\u30e5\u30fc\u3001OKR\u3001\u5f8c\u7d99\u8005\u8a08\u753b"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "\u5f93\u696d\u54e1\u306e\u6d3b\u52d5\u3068\u751f\u7523\u6027\u306e\u30e2\u30cb\u30bf\u30ea\u30f3\u30b0"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "\u30d5\u30a3\u30fc\u30eb\u30c9\u306eGPS\u30c1\u30a7\u30c3\u30af\u30a4\u30f3\u3068\u30eb\u30fc\u30c8\u6700\u9069\u5316"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "\u9000\u8077\u7ba1\u7406\u3068\u6700\u7d42\u7cbe\u7b97"
+    },
+    "emp-lms": {
+      "name": "\u5b66\u7fd2\u7ba1\u7406\u3068\u30c8\u30ec\u30fc\u30cb\u30f3\u30b0",
+      "description": "\u5b66\u7fd2\u7ba1\u7406\u3001\u30b3\u30fc\u30b9\u3001\u8a8d\u5b9a\u3001\u30b3\u30f3\u30d7\u30e9\u30a4\u30a2\u30f3\u30b9\u30c8\u30ec\u30fc\u30cb\u30f3\u30b0"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "\u7d66\u4e0e\u7ba1\u7406\u3001\u7a0e\u52d9\u7533\u544a\u3001\u30b3\u30f3\u30d7\u30e9\u30a4\u30a2\u30f3\u30b9\u30ec\u30dd\u30fc\u30c8"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "\u751f\u4f53\u8a8d\u8a3c\u52e4\u6020\u8ffd\u8de1"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "\u63a1\u7528",
+      "openJobs": "\u52df\u96c6\u4e2d\u306e\u30dd\u30b8\u30b7\u30e7\u30f3",
+      "candidates": "\u5019\u88dc\u8005",
+      "recentHires": "\u6700\u8fd1\u306e\u63a1\u7528"
+    },
+    "performance": {
+      "title": "\u30d1\u30d5\u30a9\u30fc\u30de\u30f3\u30b9",
+      "activeCycles": "\u6709\u52b9\u306a\u30b5\u30a4\u30af\u30eb",
+      "pendingReviews": "\u4fdd\u7559\u4e2d\u306e\u30ec\u30d3\u30e5\u30fc",
+      "goalCompletion": "\u76ee\u6a19\u9054\u6210"
+    },
+    "rewards": {
+      "title": "\u8a8d\u8b58",
+      "kudosThisMonth": "\u4eca\u6708\u306e\u8cdb\u8f9e",
+      "pointsGiven": "\u4ed8\u4e0e\u3055\u308c\u305f\u30dd\u30a4\u30f3\u30c8",
+      "badgesEarned": "\u7372\u5f97\u3057\u305f\u30d0\u30c3\u30b8"
+    },
+    "exit": {
+      "title": "\u9000\u8077\u3068\u79bb\u8077",
+      "activeExits": "\u30a2\u30af\u30c6\u30a3\u30d6\u306a\u9000\u8077",
+      "attritionRate": "\u79bb\u8077\u7387"
+    },
+    "lms": {
+      "title": "\u5b66\u7fd2\u3068\u958b\u767a",
+      "activeCourses": "\u6709\u52b9\u306a\u30b3\u30fc\u30b9",
+      "enrollments": "\u767b\u9332",
+      "completionRate": "\u5b8c\u4e86\u7387"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "\u7406\u7531",
     "daysRequested": "\u7533\u8acb\u65e5\u6570",
     "approve": "\u627f\u8a8d",
-    "reject": "\u5374\u4e0b"
+    "reject": "\u5374\u4e0b",
+    "daysRemaining": "\u6b8b\u308a\u65e5\u6570",
+    "noTypes": "\u4f11\u6687\u7a2e\u5225\u304c\u8a2d\u5b9a\u3055\u308c\u3066\u3044\u307e\u305b\u3093"
+  },
+  "documents": {
+    "title": "\u30c9\u30ad\u30e5\u30e1\u30f3\u30c8",
+    "pending": "\u4fdd\u7559\u4e2d\u306e\u30c9\u30ad\u30e5\u30e1\u30f3\u30c8",
+    "fallbackName": "\u30c9\u30ad\u30e5\u30e1\u30f3\u30c8",
+    "noPending": "\u4fdd\u7559\u4e2d\u306e\u30c9\u30ad\u30e5\u30e1\u30f3\u30c8\u306f\u3042\u308a\u307e\u305b\u3093"
+  },
+  "policies": {
+    "title": "\u30dd\u30ea\u30b7\u30fc",
+    "acknowledged": "\u627f\u8a8d\u6e08\u307f",
+    "review": "\u78ba\u8a8d"
+  },
+  "announcements": {
+    "title": "\u304a\u77e5\u3089\u305b"
+  },
+  "selfService": {
+    "welcomeBack": "\u304a\u304b\u3048\u308a\u306a\u3055\u3044\u3001{{name}}\u3055\u3093\uff01",
+    "overviewDesc": "\u3053\u3061\u3089\u304c\u3042\u306a\u305f\u306e\u30bb\u30eb\u30d5\u30b5\u30fc\u30d3\u30b9\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9\u306e\u6982\u8981\u3067\u3059\u3002",
+    "editMyDetails": "\u8a73\u7d30\u3092\u7de8\u96c6",
+    "requestUpdate": "\u66f4\u65b0\u3092\u30ea\u30af\u30a8\u30b9\u30c8"
   },
   "attendance": {
     "title": "\u52e4\u6020",
@@ -140,7 +291,12 @@
     "late": "\u9045\u523b",
     "onLeave": "\u4f11\u6687\u4e2d",
     "todayStatus": "\u4eca\u65e5\u306e\u72b6\u6cc1",
-    "myAttendance": "\u79c1\u306e\u52e4\u6020"
+    "myAttendance": "\u79c1\u306e\u52e4\u6020",
+    "myAttendanceToday": "\u4eca\u65e5\u306e\u79c1\u306e\u52e4\u6020",
+    "notYet": "\u307e\u3060",
+    "totalWorkedToday": "\u4eca\u65e5\u306e\u7dcf\u52b4\u50cd\u6642\u9593",
+    "notCheckedInYet": "\u4eca\u65e5\u306f\u307e\u3060\u51fa\u52e4\u3057\u3066\u3044\u307e\u305b\u3093",
+    "attendanceComplete": "\u4eca\u65e5\u306e\u52e4\u6020\u306f\u5b8c\u4e86\u3057\u307e\u3057\u305f"
   },
   "helpdesk": {
     "title": "\u30d8\u30eb\u30d7\u30c7\u30b9\u30af",
