@@ -18,6 +18,11 @@ export default function ModuleAccessPage() {
     userName: string;
     action: "enable" | "disable";
   } | null>(null);
+  const [confirmAllAction, setConfirmAllAction] = useState<{
+    moduleId: number;
+    moduleName: string;
+    action: "enable" | "disable";
+  } | null>(null);
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users-module-map"],
@@ -94,6 +99,44 @@ export default function ModuleAccessPage() {
     },
   });
 
+  const enableModuleAll = useMutation({
+    mutationFn: (module_id: number) =>
+      api.post("/subscriptions/enable-module-all", { module_id }).then((r) => r.data.data),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ["users-module-map"] });
+      qc.invalidateQueries({ queryKey: ["org-subscriptions"] });
+      setConfirmAllAction(null);
+      setSyncAlert({
+        type: "success",
+        message: `Enabled for ${data.enabled} employee(s)${data.skipped > 0 ? ` (${data.skipped} already had access)` : ""}.`,
+      });
+      setTimeout(() => setSyncAlert(null), 6000);
+    },
+    onError: (err: any) => {
+      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || "Failed to enable for all" });
+      setTimeout(() => setSyncAlert(null), 5000);
+    },
+  });
+
+  const disableModuleAll = useMutation({
+    mutationFn: (module_id: number) =>
+      api.post("/subscriptions/disable-module-all", { module_id }).then((r) => r.data.data),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ["users-module-map"] });
+      qc.invalidateQueries({ queryKey: ["org-subscriptions"] });
+      setConfirmAllAction(null);
+      setSyncAlert({
+        type: "success",
+        message: `Removed access for ${data.disabled} employee(s)${data.errors > 0 ? ` (${data.errors} failed)` : ""}.`,
+      });
+      setTimeout(() => setSyncAlert(null), 6000);
+    },
+    onError: (err: any) => {
+      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || "Failed to disable for all" });
+      setTimeout(() => setSyncAlert(null), 5000);
+    },
+  });
+
   const handleToggle = (userId: number, moduleId: number, moduleName: string, userName: string, currentlyEnabled: boolean) => {
     if (currentlyEnabled) {
       setConfirmAction({ userId, moduleId, moduleName, userName, action: "disable" });
@@ -161,6 +204,22 @@ export default function ModuleAccessPage() {
                 <div className="text-lg font-bold text-gray-900">{used}<span className="text-sm font-normal text-gray-400">/{total}</span></div>
                 <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
                   <div className="bg-brand-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                </div>
+                <div className="flex gap-1 mt-3">
+                  <button
+                    onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "enable" })}
+                    disabled={enableModuleAll.isPending || disableModuleAll.isPending}
+                    className="flex-1 text-xs py-1.5 px-2 rounded bg-brand-50 text-brand-700 hover:bg-brand-100 font-medium disabled:opacity-50 transition-colors"
+                  >
+                    Enable All
+                  </button>
+                  <button
+                    onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "disable" })}
+                    disabled={enableModuleAll.isPending || disableModuleAll.isPending}
+                    className="flex-1 text-xs py-1.5 px-2 rounded bg-red-50 text-red-600 hover:bg-red-100 font-medium disabled:opacity-50 transition-colors"
+                  >
+                    Disable All
+                  </button>
                 </div>
               </div>
             );
@@ -240,6 +299,53 @@ export default function ModuleAccessPage() {
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
                 {disableModule.isPending ? "Removing..." : "Remove Access"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm All Action Modal */}
+      {confirmAllAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${confirmAllAction.action === "enable" ? "bg-brand-50" : "bg-red-50"}`}>
+                <AlertTriangle className={`h-5 w-5 ${confirmAllAction.action === "enable" ? "text-brand-600" : "text-red-600"}`} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {confirmAllAction.action === "enable" ? "Enable for All Employees" : "Disable for All Employees"}
+                </h3>
+                <p className="text-xs text-gray-400">
+                  {confirmAllAction.action === "enable" ? "This will enable access for all employees" : "This will remove access from all employees"}
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to <strong>{confirmAllAction.action}</strong> <strong>{confirmAllAction.moduleName}</strong> for{" "}
+              <strong>all employees</strong>?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setConfirmAllAction(null)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</button>
+              <button
+                onClick={() => {
+                  if (confirmAllAction.action === "enable") {
+                    enableModuleAll.mutate(confirmAllAction.moduleId);
+                  } else {
+                    disableModuleAll.mutate(confirmAllAction.moduleId);
+                  }
+                }}
+                disabled={enableModuleAll.isPending || disableModuleAll.isPending}
+                className={`px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 ${
+                  confirmAllAction.action === "enable"
+                    ? "bg-brand-600 hover:bg-brand-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
+              >
+                {enableModuleAll.isPending || disableModuleAll.isPending
+                  ? confirmAllAction.action === "enable" ? "Enabling..." : "Disabling..."
+                  : confirmAllAction.action === "enable" ? "Enable for All" : "Disable for All"}
               </button>
             </div>
           </div>
