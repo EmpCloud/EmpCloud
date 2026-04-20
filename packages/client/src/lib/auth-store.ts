@@ -4,6 +4,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { queryClient } from "@/main";
 
 interface AuthUser {
   id: number;
@@ -41,21 +42,28 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) =>
         set({ user, isAuthenticated: true }),
 
-      login: (user, tokens) =>
+      login: (user, tokens) => {
+        // Purge any cached queries from a previous session on the same
+        // browser — otherwise the new user briefly sees the old user's
+        // attendance status, leave balances, notifications, etc.
+        queryClient.clear();
         set({
           user,
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
           isAuthenticated: true,
-        }),
+        });
+      },
 
-      logout: () =>
+      logout: () => {
+        queryClient.clear();
         set({
           accessToken: null,
           refreshToken: null,
           user: null,
           isAuthenticated: false,
-        }),
+        });
+      },
     }),
     { name: "empcloud-auth" }
   )

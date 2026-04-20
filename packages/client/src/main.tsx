@@ -54,7 +54,11 @@ window.addEventListener("unhandledrejection", (event) => {
 // Export for use in api/client.ts
 export { reportClientError };
 
-const queryClient = new QueryClient({
+// Exported so auth-store can clear cached queries on login/logout —
+// otherwise when user A logs out and user B logs in on the same browser,
+// user B sees user A's cached data (e.g. "my-attendance-today" survives
+// across sessions and leaks the previous user's check-in state).
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
