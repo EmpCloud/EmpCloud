@@ -121,9 +121,15 @@ export default function WellnessPage() {
       </div>
 
       {/* Quick Stats */}
+      {/* #1538 — Each stat card is now a <Link> so the cards are
+          clickable and route to the relevant destination page. Previously
+          these were plain <div>s, so clicking them did nothing. */}
       {summaryData && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <Link
+            to="/wellness/check-in"
+            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
                 <Heart className="h-5 w-5 text-green-600" />
@@ -133,8 +139,11 @@ export default function WellnessPage() {
                 <p className="text-xl font-bold text-gray-900">{summaryData.checkin_streak} days</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          </Link>
+          <Link
+            to="/wellness/my"
+            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
                 <Dumbbell className="h-5 w-5 text-blue-600" />
@@ -144,8 +153,11 @@ export default function WellnessPage() {
                 <p className="text-xl font-bold text-gray-900">{summaryData.enrolled_programs?.length || 0}</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          </Link>
+          <Link
+            to="/wellness/my"
+            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
                 <Trophy className="h-5 w-5 text-purple-600" />
@@ -155,8 +167,11 @@ export default function WellnessPage() {
                 <p className="text-xl font-bold text-gray-900">{summaryData.completed_goals_count || 0}</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          </Link>
+          <Link
+            to="/wellness/check-in"
+            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
                 <Sparkles className="h-5 w-5 text-amber-600" />
@@ -166,7 +181,7 @@ export default function WellnessPage() {
                 <p className="text-xl font-bold text-gray-900 capitalize">{summaryData.latest_mood || "---"}</p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       )}
 
