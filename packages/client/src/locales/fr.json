@@ -70,7 +70,20 @@
     "dataSanity": "Int\u00e9grit\u00e9 des donn\u00e9es",
     "aiConfiguration": "Configuration IA",
     "logDashboard": "Tableau des journaux",
-    "platformSettings": "Param\u00e8tres de la plateforme"
+    "platformSettings": "Param\u00e8tres de la plateforme",
+    "people": "Personnes",
+    "attendanceDashboard": "Tableau de bord",
+    "shiftSettings": "Param\u00e8tres des horaires",
+    "shiftSchedule": "Planning des horaires",
+    "regularizations": "R\u00e9gularisations",
+    "leaveManagement": "Cong\u00e9s",
+    "holidays": "Jours f\u00e9ri\u00e9s",
+    "company": "Entreprise",
+    "workplace": "Lieu de travail",
+    "community": "Communaut\u00e9",
+    "feed": "Fil d'actualit\u00e9",
+    "moduleAccess": "Acc\u00e8s aux modules",
+    "wellnessCheckIn": "Check-in quotidien"
   },
   "common": {
     "save": "Enregistrer",

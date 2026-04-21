@@ -70,7 +70,20 @@
     "dataSanity": "Data Sanity",
     "aiConfiguration": "AI Configuration",
     "logDashboard": "Log Dashboard",
-    "platformSettings": "Platform Settings"
+    "platformSettings": "Platform Settings",
+    "people": "People",
+    "attendanceDashboard": "Dashboard",
+    "shiftSettings": "Shift Settings",
+    "shiftSchedule": "Shift Schedule",
+    "regularizations": "Regularizations",
+    "leaveManagement": "Leave",
+    "holidays": "Holidays",
+    "company": "Company",
+    "workplace": "Workplace",
+    "community": "Community",
+    "feed": "Feed",
+    "moduleAccess": "Module Access",
+    "wellnessCheckIn": "Daily Check-in"
   },
   "common": {
     "save": "Save",

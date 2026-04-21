@@ -70,7 +70,20 @@
     "dataSanity": "Integridad de datos",
     "aiConfiguration": "Configuraci\u00f3n de IA",
     "logDashboard": "Panel de registros",
-    "platformSettings": "Configuraci\u00f3n de plataforma"
+    "platformSettings": "Configuraci\u00f3n de plataforma",
+    "people": "Personas",
+    "attendanceDashboard": "Panel",
+    "shiftSettings": "Configuraci\u00f3n de turnos",
+    "shiftSchedule": "Planificaci\u00f3n de turnos",
+    "regularizations": "Regularizaciones",
+    "leaveManagement": "Licencias",
+    "holidays": "Festivos",
+    "company": "Empresa",
+    "workplace": "Lugar de trabajo",
+    "community": "Comunidad",
+    "feed": "Novedades",
+    "moduleAccess": "Acceso a m\u00f3dulos",
+    "wellnessCheckIn": "Check-in diario"
   },
   "common": {
     "save": "Guardar",

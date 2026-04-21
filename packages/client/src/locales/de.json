@@ -70,7 +70,20 @@
     "dataSanity": "Datenintegrit\u00e4t",
     "aiConfiguration": "KI-Konfiguration",
     "logDashboard": "Protokoll-\u00dcbersicht",
-    "platformSettings": "Plattformeinstellungen"
+    "platformSettings": "Plattformeinstellungen",
+    "people": "Mitarbeiter",
+    "attendanceDashboard": "Dashboard",
+    "shiftSettings": "Schichteinstellungen",
+    "shiftSchedule": "Schichtplanung",
+    "regularizations": "Regularisierungen",
+    "leaveManagement": "Urlaub",
+    "holidays": "Feiertage",
+    "company": "Unternehmen",
+    "workplace": "Arbeitsplatz",
+    "community": "Community",
+    "feed": "Feed",
+    "moduleAccess": "Modulzugriff",
+    "wellnessCheckIn": "T\u00e4gliches Check-in"
   },
   "common": {
     "save": "Speichern",

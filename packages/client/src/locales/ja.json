@@ -70,7 +70,20 @@
     "dataSanity": "\u30c7\u30fc\u30bf\u6574\u5408\u6027",
     "aiConfiguration": "AI\u8a2d\u5b9a",
     "logDashboard": "\u30ed\u30b0\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
-    "platformSettings": "\u30d7\u30e9\u30c3\u30c8\u30d5\u30a9\u30fc\u30e0\u8a2d\u5b9a"
+    "platformSettings": "\u30d7\u30e9\u30c3\u30c8\u30d5\u30a9\u30fc\u30e0\u8a2d\u5b9a",
+    "people": "\u4eba\u4e8b",
+    "attendanceDashboard": "\u30c0\u30c3\u30b7\u30e5\u30dc\u30fc\u30c9",
+    "shiftSettings": "\u30b7\u30d5\u30c8\u8a2d\u5b9a",
+    "shiftSchedule": "\u30b7\u30d5\u30c8\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb",
+    "regularizations": "\u4fee\u6b63\u7533\u8acb",
+    "leaveManagement": "\u4f11\u6687",
+    "holidays": "\u795d\u65e5",
+    "company": "\u4f1a\u793e",
+    "workplace": "\u8077\u5834",
+    "community": "\u30b3\u30df\u30e5\u30cb\u30c6\u30a3",
+    "feed": "\u30d5\u30a3\u30fc\u30c9",
+    "moduleAccess": "\u30e2\u30b8\u30e5\u30fc\u30eb\u30a2\u30af\u30bb\u30b9",
+    "wellnessCheckIn": "\u6bce\u65e5\u306e\u30c1\u30a7\u30c3\u30af\u30a4\u30f3"
   },
   "common": {
     "save": "\u4fdd\u5b58",

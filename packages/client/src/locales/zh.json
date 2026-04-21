@@ -70,7 +70,20 @@
     "dataSanity": "\u6570\u636e\u5b8c\u6574\u6027",
     "aiConfiguration": "AI\u914d\u7f6e",
     "logDashboard": "\u65e5\u5fd7\u4eea\u8868\u76d8",
-    "platformSettings": "\u5e73\u53f0\u8bbe\u7f6e"
+    "platformSettings": "\u5e73\u53f0\u8bbe\u7f6e",
+    "people": "\u4eba\u5458",
+    "attendanceDashboard": "\u4eea\u8868\u677f",
+    "shiftSettings": "\u73ed\u6b21\u8bbe\u7f6e",
+    "shiftSchedule": "\u73ed\u6b21\u5b89\u6392",
+    "regularizations": "\u8865\u7b7e",
+    "leaveManagement": "\u8bf7\u5047",
+    "holidays": "\u8282\u5047\u65e5",
+    "company": "\u516c\u53f8",
+    "workplace": "\u5de5\u4f5c\u573a\u6240",
+    "community": "\u793e\u533a",
+    "feed": "\u52a8\u6001",
+    "moduleAccess": "\u6a21\u5757\u8bbf\u95ee",
+    "wellnessCheckIn": "\u6bcf\u65e5\u6253\u5361"
   },
   "common": {
     "save": "\u4fdd\u5b58",
