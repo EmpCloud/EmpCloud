@@ -416,6 +416,40 @@
         "fri": "Sex",
         "sat": "Sáb"
       }
+    },
+    "regularizations": {
+      "title": "Regulariza\u00e7\u00f5es de presen\u00e7a",
+      "subtitle": "Gerencie as solicita\u00e7\u00f5es de corre\u00e7\u00e3o de presen\u00e7a.",
+      "newRequest": "Nova solicita\u00e7\u00e3o",
+      "submitTitle": "Enviar solicita\u00e7\u00e3o de regulariza\u00e7\u00e3o",
+      "date": "Data",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Motivo da regulariza\u00e7\u00e3o",
+      "requestedCheckIn": "Entrada solicitada",
+      "requestedCheckOut": "Sa\u00edda solicitada",
+      "checkoutAfterCheckin": "O hor\u00e1rio de sa\u00edda deve ser posterior ao hor\u00e1rio de entrada.",
+      "submit": "Enviar",
+      "rejectionPrompt": "Motivo da rejei\u00e7\u00e3o (opcional):",
+      "noRecords": "Nenhuma solicita\u00e7\u00e3o de regulariza\u00e7\u00e3o",
+      "approve": "Aprovar",
+      "reject": "Rejeitar",
+      "statusPending": "Pendente",
+      "statusApproved": "Aprovada",
+      "statusRejected": "Rejeitada",
+      "tabs": {
+        "pending": "Pendentes",
+        "all": "Todas",
+        "my": "Minhas solicita\u00e7\u00f5es"
+      },
+      "table": {
+        "employee": "Colaborador",
+        "date": "Data",
+        "originalInOut": "Entrada/Sa\u00edda original",
+        "requestedInOut": "Entrada/Sa\u00edda solicitada",
+        "reason": "Motivo",
+        "status": "Status",
+        "actions": "A\u00e7\u00f5es"
+      }
     }
   },
   "manager": {

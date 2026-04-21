@@ -416,6 +416,40 @@
         "fri": "五",
         "sat": "六"
       }
+    },
+    "regularizations": {
+      "title": "\u8003\u52e4\u8865\u7b7e",
+      "subtitle": "\u7ba1\u7406\u8003\u52e4\u66f4\u6b63\u7533\u8bf7\u3002",
+      "newRequest": "\u65b0\u7533\u8bf7",
+      "submitTitle": "\u63d0\u4ea4\u8865\u7b7e\u7533\u8bf7",
+      "date": "\u65e5\u671f",
+      "reason": "\u539f\u56e0",
+      "reasonPlaceholder": "\u8865\u7b7e\u539f\u56e0",
+      "requestedCheckIn": "\u7533\u8bf7\u7b7e\u5230\u65f6\u95f4",
+      "requestedCheckOut": "\u7533\u8bf7\u7b7e\u9000\u65f6\u95f4",
+      "checkoutAfterCheckin": "\u7b7e\u9000\u65f6\u95f4\u5fc5\u987b\u665a\u4e8e\u7b7e\u5230\u65f6\u95f4\u3002",
+      "submit": "\u63d0\u4ea4",
+      "rejectionPrompt": "\u62d2\u7edd\u539f\u56e0\uff08\u53ef\u9009\uff09\uff1a",
+      "noRecords": "\u6682\u65e0\u8865\u7b7e\u7533\u8bf7",
+      "approve": "\u6279\u51c6",
+      "reject": "\u62d2\u7edd",
+      "statusPending": "\u5f85\u5904\u7406",
+      "statusApproved": "\u5df2\u6279\u51c6",
+      "statusRejected": "\u5df2\u62d2\u7edd",
+      "tabs": {
+        "pending": "\u5f85\u5904\u7406\u7533\u8bf7",
+        "all": "\u5168\u90e8\u7533\u8bf7",
+        "my": "\u6211\u7684\u7533\u8bf7"
+      },
+      "table": {
+        "employee": "\u5458\u5de5",
+        "date": "\u65e5\u671f",
+        "originalInOut": "\u539f\u59cb\u7b7e\u5230/\u7b7e\u9000",
+        "requestedInOut": "\u7533\u8bf7\u7b7e\u5230/\u7b7e\u9000",
+        "reason": "\u539f\u56e0",
+        "status": "\u72b6\u6001",
+        "actions": "\u64cd\u4f5c"
+      }
     }
   },
   "manager": {

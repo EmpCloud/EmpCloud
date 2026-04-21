@@ -416,6 +416,40 @@
         "fri": "Fri",
         "sat": "Sat"
       }
+    },
+    "regularizations": {
+      "title": "Attendance Regularizations",
+      "subtitle": "Manage attendance correction requests.",
+      "newRequest": "New Request",
+      "submitTitle": "Submit Regularization Request",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "Reason for regularization",
+      "requestedCheckIn": "Requested Check In",
+      "requestedCheckOut": "Requested Check Out",
+      "checkoutAfterCheckin": "Check-out time must be after check-in time.",
+      "submit": "Submit",
+      "rejectionPrompt": "Rejection reason (optional):",
+      "noRecords": "No regularization requests",
+      "approve": "Approve",
+      "reject": "Reject",
+      "statusPending": "Pending",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "tabs": {
+        "pending": "Pending Requests",
+        "all": "All Requests",
+        "my": "My Requests"
+      },
+      "table": {
+        "employee": "Employee",
+        "date": "Date",
+        "originalInOut": "Original In/Out",
+        "requestedInOut": "Requested In/Out",
+        "reason": "Reason",
+        "status": "Status",
+        "actions": "Actions"
+      }
     }
   },
   "manager": {

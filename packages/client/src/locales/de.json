@@ -416,6 +416,40 @@
         "fri": "Fr",
         "sat": "Sa"
       }
+    },
+    "regularizations": {
+      "title": "Anwesenheitsregularisierungen",
+      "subtitle": "Verwalten Sie Antr\u00e4ge auf Anwesenheitskorrektur.",
+      "newRequest": "Neuer Antrag",
+      "submitTitle": "Regularisierungsantrag einreichen",
+      "date": "Datum",
+      "reason": "Grund",
+      "reasonPlaceholder": "Grund f\u00fcr die Regularisierung",
+      "requestedCheckIn": "Beantragte Einstempelung",
+      "requestedCheckOut": "Beantragte Ausstempelung",
+      "checkoutAfterCheckin": "Die Ausstempelzeit muss nach der Einstempelzeit liegen.",
+      "submit": "Einreichen",
+      "rejectionPrompt": "Ablehnungsgrund (optional):",
+      "noRecords": "Keine Regularisierungsantr\u00e4ge",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "statusPending": "Ausstehend",
+      "statusApproved": "Genehmigt",
+      "statusRejected": "Abgelehnt",
+      "tabs": {
+        "pending": "Ausstehende Antr\u00e4ge",
+        "all": "Alle Antr\u00e4ge",
+        "my": "Meine Antr\u00e4ge"
+      },
+      "table": {
+        "employee": "Mitarbeiter",
+        "date": "Datum",
+        "originalInOut": "Urspr\u00fcngliche Ein-/Ausstempelung",
+        "requestedInOut": "Beantragte Ein-/Ausstempelung",
+        "reason": "Grund",
+        "status": "Status",
+        "actions": "Aktionen"
+      }
     }
   },
   "manager": {

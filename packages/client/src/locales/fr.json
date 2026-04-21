@@ -416,6 +416,40 @@
         "fri": "Ven",
         "sat": "Sam"
       }
+    },
+    "regularizations": {
+      "title": "R\u00e9gularisations de pr\u00e9sence",
+      "subtitle": "G\u00e9rez les demandes de correction de pr\u00e9sence.",
+      "newRequest": "Nouvelle demande",
+      "submitTitle": "Soumettre une demande de r\u00e9gularisation",
+      "date": "Date",
+      "reason": "Motif",
+      "reasonPlaceholder": "Motif de la r\u00e9gularisation",
+      "requestedCheckIn": "Arriv\u00e9e demand\u00e9e",
+      "requestedCheckOut": "Sortie demand\u00e9e",
+      "checkoutAfterCheckin": "L'heure de sortie doit \u00eatre post\u00e9rieure \u00e0 l'heure d'arriv\u00e9e.",
+      "submit": "Soumettre",
+      "rejectionPrompt": "Motif du refus (facultatif) :",
+      "noRecords": "Aucune demande de r\u00e9gularisation",
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "statusPending": "En attente",
+      "statusApproved": "Approuv\u00e9e",
+      "statusRejected": "Refus\u00e9e",
+      "tabs": {
+        "pending": "En attente",
+        "all": "Toutes",
+        "my": "Mes demandes"
+      },
+      "table": {
+        "employee": "Employ\u00e9",
+        "date": "Date",
+        "originalInOut": "Arriv\u00e9e/Sortie d'origine",
+        "requestedInOut": "Arriv\u00e9e/Sortie demand\u00e9e",
+        "reason": "Motif",
+        "status": "Statut",
+        "actions": "Actions"
+      }
     }
   },
   "manager": {

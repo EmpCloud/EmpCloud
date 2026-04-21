@@ -416,6 +416,40 @@
         "fri": "Vie",
         "sat": "Sáb"
       }
+    },
+    "regularizations": {
+      "title": "Regularizaciones de asistencia",
+      "subtitle": "Gestiona las solicitudes de correcci\u00f3n de asistencia.",
+      "newRequest": "Nueva solicitud",
+      "submitTitle": "Enviar solicitud de regularizaci\u00f3n",
+      "date": "Fecha",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Motivo de la regularizaci\u00f3n",
+      "requestedCheckIn": "Entrada solicitada",
+      "requestedCheckOut": "Salida solicitada",
+      "checkoutAfterCheckin": "La hora de salida debe ser posterior a la hora de entrada.",
+      "submit": "Enviar",
+      "rejectionPrompt": "Motivo del rechazo (opcional):",
+      "noRecords": "No hay solicitudes de regularizaci\u00f3n",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "statusPending": "Pendiente",
+      "statusApproved": "Aprobada",
+      "statusRejected": "Rechazada",
+      "tabs": {
+        "pending": "Pendientes",
+        "all": "Todas",
+        "my": "Mis solicitudes"
+      },
+      "table": {
+        "employee": "Empleado",
+        "date": "Fecha",
+        "originalInOut": "Entrada/Salida original",
+        "requestedInOut": "Entrada/Salida solicitada",
+        "reason": "Motivo",
+        "status": "Estado",
+        "actions": "Acciones"
+      }
     }
   },
   "manager": {
