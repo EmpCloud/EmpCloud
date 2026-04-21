@@ -50,7 +50,10 @@ export default function PositionDashboardPage() {
           <p className="text-xs text-gray-400">Budget: {stats.total_budget || 0} headcount</p>
         </Link>
 
-        <Link to="/positions/list" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        {/* #1553 — Filled card deep-links to the list filtered to status=filled
+            so users actually see filled positions, not every position. The
+            Total Positions card above stays unfiltered (that's the point). */}
+        <Link to="/positions/list?status=filled" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
             <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
               <Users className="h-5 w-5 text-green-600" />
