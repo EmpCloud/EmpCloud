@@ -246,8 +246,10 @@ export default function SurveyListPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
+          {/* #1533 — Show the per-page count alongside the total so admins can
+              tell at a glance how many surveys are in view, not just the total. */}
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            Showing {surveys.length} of {meta.total} surveys &middot; Page {meta.page} of {meta.total_pages}
           </p>
           <div className="flex gap-2">
             <button
