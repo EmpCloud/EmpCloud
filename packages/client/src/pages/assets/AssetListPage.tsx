@@ -392,8 +392,11 @@ export default function AssetListPage() {
           {/* Pagination */}
           {meta && meta.total_pages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+              {/* #1534 — Show the per-page count alongside the total. Previously
+                  only "Page N of M (T total)" was rendered, so admins couldn't
+                  tell how many rows were in view. */}
               <p className="text-sm text-gray-500">
-                Page {meta.page} of {meta.total_pages} ({meta.total} total)
+                Showing {assets.length} of {meta.total} assets &middot; Page {meta.page} of {meta.total_pages}
               </p>
               <div className="flex gap-2">
                 <button
