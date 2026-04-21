@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
 import {
   useBillingInvoices,
@@ -98,11 +99,14 @@ const statusColors: Record<string, string> = {
 };
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  const translatedStatus = t(`common.${status}`);
+  const display = translatedStatus !== `common.${status}` ? translatedStatus : status;
   return (
     <span
       className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[status] || "bg-gray-100 text-gray-600"}`}
     >
-      {status}
+      {display}
     </span>
   );
 }
@@ -120,20 +124,21 @@ interface EditModalProps {
 }
 
 function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLoading }: EditModalProps) {
+  const { t } = useTranslation();
   const [planTier, setPlanTier] = useState(subscription.plan_tier);
   const [totalSeats, setTotalSeats] = useState(subscription.total_seats);
   const [billingCycle, setBillingCycle] = useState(subscription.billing_cycle);
 
   const plans = [
-    { value: "basic", label: "Basic" },
-    { value: "professional", label: "Professional" },
-    { value: "enterprise", label: "Enterprise" },
+    { value: "basic", label: t('plans.basic') },
+    { value: "professional", label: t('plans.premium') },
+    { value: "enterprise", label: t('plans.enterprise') },
   ];
 
   const cycles = [
-    { value: "monthly", label: "Monthly" },
-    { value: "quarterly", label: "Quarterly" },
-    { value: "annual", label: "Annual" },
+    { value: "monthly", label: t('billing.cycles.monthly') },
+    { value: "quarterly", label: t('billing.cycles.quarterly') },
+    { value: "annual", label: t('billing.cycles.annual') },
   ];
 
   const hasChanges = planTier !== subscription.plan_tier || totalSeats !== subscription.total_seats || billingCycle !== subscription.billing_cycle;
@@ -144,7 +149,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Edit Subscription</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('billing.editModal.title')}</h2>
             <p className="text-sm text-gray-500">{moduleName}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -155,7 +160,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         <div className="p-6 space-y-5">
           {/* Plan Tier */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Plan Tier</label>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">{t('billing.editModal.planTier')}</label>
             <div className="grid grid-cols-3 gap-2">
               {plans.map(plan => (
                 <button
@@ -176,7 +181,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Total Seats */}
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Users className="h-4 w-4" /> Total Seats
+              <Users className="h-4 w-4" /> {t('billing.editModal.totalSeats')}
             </label>
             <div className="flex items-center gap-3">
               <button
@@ -201,9 +206,9 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
               </button>
             </div>
             <div className="flex justify-between mt-1">
-              <p className="text-xs text-gray-400">Currently using {subscription.used_seats} seats</p>
+              <p className="text-xs text-gray-400">{t('billing.editModal.currentlyUsing', { count: subscription.used_seats })}</p>
               {seatsReduced && (
-                <p className="text-xs text-red-500 font-medium">Cannot reduce below {subscription.used_seats} (in use)</p>
+                <p className="text-xs text-red-500 font-medium">{t('billing.editModal.cannotReduce', { count: subscription.used_seats })}</p>
               )}
             </div>
           </div>
@@ -211,7 +216,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Billing Cycle */}
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Calendar className="h-4 w-4" /> Billing Cycle
+              <Calendar className="h-4 w-4" /> {t('billing.editModal.billingCycle')}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {cycles.map(cycle => (
@@ -233,16 +238,16 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Change Summary */}
           {hasChanges && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
-              <p className="font-medium text-amber-800 mb-1">Changes:</p>
+              <p className="font-medium text-amber-800 mb-1">{t('billing.editModal.changes')}</p>
               <ul className="text-amber-700 space-y-0.5">
                 {planTier !== subscription.plan_tier && (
-                  <li>Plan: <span className="line-through">{subscription.plan_tier}</span> → <span className="font-medium">{planTier}</span></li>
+                  <li>{t('billing.editModal.plan')}: <span className="line-through">{subscription.plan_tier}</span> → <span className="font-medium">{planTier}</span></li>
                 )}
                 {totalSeats !== subscription.total_seats && (
-                  <li>Seats: <span className="line-through">{subscription.total_seats}</span> → <span className="font-medium">{totalSeats}</span></li>
+                  <li>{t('billing.editModal.seats')}: <span className="line-through">{subscription.total_seats}</span> → <span className="font-medium">{totalSeats}</span></li>
                 )}
                 {billingCycle !== subscription.billing_cycle && (
-                  <li>Cycle: <span className="line-through">{subscription.billing_cycle}</span> → <span className="font-medium">{billingCycle}</span></li>
+                  <li>{t('billing.editModal.cycle')}: <span className="line-through">{subscription.billing_cycle}</span> → <span className="font-medium">{billingCycle}</span></li>
                 )}
               </ul>
             </div>
@@ -250,13 +255,13 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         </div>
 
         <div className="flex items-center justify-between p-6 border-t bg-gray-50 rounded-b-2xl">
-          <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+          <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-700">{t('common.cancel')}</button>
           <button
             onClick={() => onSave(subscription.id, { plan_tier: planTier, total_seats: totalSeats, billing_cycle: billingCycle })}
             disabled={isLoading || !hasChanges || seatsReduced}
             className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? t('billing.editModal.saving') : t('billing.editModal.save')}
           </button>
         </div>
       </div>
@@ -269,10 +274,10 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 // ---------------------------------------------------------------------------
 
 const TABS = [
-  { id: "subscriptions", label: "Subscriptions", icon: CreditCard },
-  { id: "invoices", label: "Invoices", icon: Receipt },
-  { id: "payments", label: "Payments", icon: DollarSign },
-  { id: "overview", label: "Overview", icon: FileText },
+  { id: "subscriptions", labelKey: "billing.tabs.subscriptions", icon: CreditCard },
+  { id: "invoices", labelKey: "billing.tabs.invoices", icon: Receipt },
+  { id: "payments", labelKey: "billing.tabs.payments", icon: DollarSign },
+  { id: "overview", labelKey: "billing.tabs.overview", icon: FileText },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -282,14 +287,15 @@ type TabId = (typeof TABS)[number]["id"];
 // ---------------------------------------------------------------------------
 
 export default function BillingPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabId>("subscriptions");
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('billing.title')}</h1>
         <p className="text-gray-500 mt-1">
-          Manage subscriptions, invoices, payments, and billing overview.
+          {t('billing.subtitle')}
         </p>
       </div>
 
@@ -310,7 +316,7 @@ export default function BillingPage() {
                 }`}
               >
                 <Icon className="h-4 w-4" />
-                {tab.label}
+                {t(tab.labelKey)}
               </button>
             );
           })}
@@ -331,6 +337,7 @@ export default function BillingPage() {
 // ---------------------------------------------------------------------------
 
 function SubscriptionsTab() {
+  const { t } = useTranslation();
   const { data: subscriptions, isLoading } = useSubscriptions();
   const { data: billing } = useBillingSummary();
   const { data: modules } = useModules();
@@ -341,18 +348,21 @@ function SubscriptionsTab() {
   const [toast, setToast] = useState<string | null>(null);
 
   const moduleMap = new Map(modules?.map((m: any) => [m.id, m]) || []);
+  const errorPrefix = t('billing.toasts.errorPrefix');
+  // #i18n — prefix detection with a localized prefix needs a flag, not a startsWith check
+  const isErrorToast = typeof toast === "string" && toast.startsWith(`${errorPrefix}:`);
 
   const handleUpdate = async (id: number, data: object) => {
     try {
       await updateSub.mutateAsync({ id, data });
       setEditingSub(null);
-      setToast("Subscription updated successfully");
+      setToast(t('billing.toasts.updated'));
       setTimeout(() => setToast(null), 4000);
     } catch (err: any) {
-      const msg = err?.response?.data?.error?.message || "Failed to update subscription";
+      const msg = err?.response?.data?.error?.message || t('billing.toasts.updateFailed');
       setToast(null);
       // Show error inline — reuse toast slot with prefix
-      setToast(`Error: ${msg}`);
+      setToast(`${errorPrefix}: ${msg}`);
       setTimeout(() => setToast(null), 5000);
     }
   };
@@ -361,12 +371,12 @@ function SubscriptionsTab() {
     try {
       await cancelSub.mutateAsync(id);
       setCancelConfirm(null);
-      setToast("Subscription cancelled");
+      setToast(t('billing.toasts.cancelled'));
       setTimeout(() => setToast(null), 4000);
     } catch (err: any) {
-      const msg = err?.response?.data?.error?.message || "Failed to cancel subscription";
+      const msg = err?.response?.data?.error?.message || t('billing.toasts.cancelFailed');
       setCancelConfirm(null);
-      setToast(`Error: ${msg}`);
+      setToast(`${errorPrefix}: ${msg}`);
       setTimeout(() => setToast(null), 5000);
     }
   };
@@ -391,8 +401,8 @@ function SubscriptionsTab() {
   return (
     <div>
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 ${toast.startsWith("Error:") ? "bg-red-600" : "bg-green-600"} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2`}>
-          {toast.startsWith("Error:") ? <AlertCircle className="h-4 w-4" /> : <Check className="h-4 w-4" />}{toast}
+        <div className={`fixed bottom-6 right-6 z-50 ${isErrorToast ? "bg-red-600" : "bg-green-600"} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2`}>
+          {isErrorToast ? <AlertCircle className="h-4 w-4" /> : <Check className="h-4 w-4" />}{toast}
         </div>
       )}
 
@@ -410,16 +420,16 @@ function SubscriptionsTab() {
       {cancelConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(null)}>
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Cancel Subscription?</h3>
-            <p className="text-sm text-gray-500 mb-4">This will cancel the subscription and revoke access for all assigned seats. This action cannot be undone.</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">{t('billing.cancelModal.title')}</h3>
+            <p className="text-sm text-gray-500 mb-4">{t('billing.cancelModal.message')}</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Keep</button>
+              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">{t('billing.cancelModal.keep')}</button>
               <button
                 onClick={() => handleCancel(cancelConfirm)}
                 disabled={cancelSub.isPending}
                 className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                {cancelSub.isPending ? "Cancelling..." : "Yes, Cancel"}
+                {cancelSub.isPending ? t('billing.cancelModal.cancelling') : t('billing.cancelModal.yesCancel')}
               </button>
             </div>
           </div>
@@ -431,11 +441,11 @@ function SubscriptionsTab() {
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp className="h-5 w-5 text-brand-600" />
-            <h2 className="font-semibold text-gray-900">Monthly Cost</h2>
+            <h2 className="font-semibold text-gray-900">{t('billing.monthlyCost')}</h2>
           </div>
           <p className="text-3xl font-bold text-gray-900">
             {formatCurrency(billing.total_monthly_cost, billing.currency)}
-            <span className="text-sm font-normal text-gray-500"> /month</span>
+            <span className="text-sm font-normal text-gray-500"> {t('billing.perMonth')}</span>
           </p>
         </div>
       )}
@@ -444,7 +454,7 @@ function SubscriptionsTab() {
       {(!subscriptions || subscriptions.length === 0) ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
           <CreditCard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No subscriptions yet. Subscribe to modules from the Modules page.</p>
+          <p className="text-gray-500">{t('billing.noSubscriptions')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -469,21 +479,21 @@ function SubscriptionsTab() {
                       sub.status === "cancelled" ? "bg-gray-100 text-gray-500" :
                       "bg-red-50 text-red-700"
                     }`}>
-                      {sub.status}
+                      {(() => { const k = `common.${sub.status}`; const tr = t(k); return tr !== k ? tr : sub.status; })()}
                     </span>
                     {sub.status !== "cancelled" && (
                       <>
                         <button
                           onClick={() => setEditingSub(sub)}
                           className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
-                          title="Edit subscription"
+                          title={t('billing.editTooltip')}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setCancelConfirm(sub.id)}
                           className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Cancel subscription"
+                          title={t('billing.cancelTooltip')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -494,15 +504,15 @@ function SubscriptionsTab() {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-100">
                   <div>
-                    <p className="text-xs text-gray-500">Plan</p>
-                    <p className="text-sm font-medium text-gray-900 capitalize">{sub.plan_tier}</p>
+                    <p className="text-xs text-gray-500">{t('billing.labels.plan')}</p>
+                    <p className="text-sm font-medium text-gray-900 capitalize">{(() => { const k = `plans.${sub.plan_tier?.toLowerCase?.() ?? ""}`; const tr = t(k); return tr !== k ? tr : sub.plan_tier; })()}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Seats</p>
+                    <p className="text-xs text-gray-500">{t('billing.labels.seats')}</p>
                     <p className="text-sm font-medium text-gray-900">
                       {sub.used_seats}/{sub.total_seats}
                       {sub.used_seats >= sub.total_seats && (
-                        <span className="text-xs text-red-500 ml-1">(full)</span>
+                        <span className="text-xs text-red-500 ml-1">{t('billing.full')}</span>
                       )}
                     </p>
                     {/* Seat usage bar */}
@@ -514,14 +524,14 @@ function SubscriptionsTab() {
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Price/Seat</p>
+                    <p className="text-xs text-gray-500">{t('billing.labels.pricePerSeat')}</p>
                     <p className="text-sm font-medium text-gray-900">
                       {formatCurrency(Number(sub.price_per_seat), sub.currency)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Billing Cycle</p>
-                    <p className="text-sm font-medium text-gray-900 capitalize">{sub.billing_cycle}</p>
+                    <p className="text-xs text-gray-500">{t('billing.labels.billingCycle')}</p>
+                    <p className="text-sm font-medium text-gray-900 capitalize">{(() => { const k = `billing.cycles.${sub.billing_cycle}`; const tr = t(k); return tr !== k ? tr : sub.billing_cycle; })()}</p>
                   </div>
                 </div>
               </div>
@@ -538,6 +548,7 @@ function SubscriptionsTab() {
 // ---------------------------------------------------------------------------
 
 function OverviewTab() {
+  const { t } = useTranslation();
   const { data: summary, isLoading } = useBillingOverviewSummary();
 
   if (isLoading) {
@@ -557,22 +568,22 @@ function OverviewTab() {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
         <AlertCircle className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">No billing data available yet.</p>
+        <p className="text-gray-500">{t('billing.overview.noData')}</p>
       </div>
     );
   }
 
-  const paymentStatus =
+  const paymentStatusKey =
     (summary.overdueCount ?? 0) > 0
       ? "overdue"
       : (summary.outstandingAmount ?? 0) > 0
-        ? "past due"
-        : "all paid";
+        ? "pastDue"
+        : "allPaid";
 
   const paymentStatusColor =
-    paymentStatus === "overdue"
+    paymentStatusKey === "overdue"
       ? "bg-red-50 text-red-700"
-      : paymentStatus === "past due"
+      : paymentStatusKey === "pastDue"
         ? "bg-yellow-50 text-yellow-700"
         : "bg-green-50 text-green-700";
 
@@ -584,7 +595,7 @@ function OverviewTab() {
           <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center">
             <AlertCircle className="h-5 w-5 text-red-600" />
           </div>
-          <p className="text-sm text-gray-500">Outstanding Balance</p>
+          <p className="text-sm text-gray-500">{t('billing.overview.outstandingBalance')}</p>
         </div>
         <p className="text-3xl font-bold text-gray-900">
           {formatCurrency(summary.outstandingAmount ?? 0, summary.currency)}
@@ -597,7 +608,7 @@ function OverviewTab() {
           <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
             <Calendar className="h-5 w-5 text-blue-600" />
           </div>
-          <p className="text-sm text-gray-500">Next Invoice Date</p>
+          <p className="text-sm text-gray-500">{t('billing.overview.nextInvoiceDate')}</p>
         </div>
         <p className="text-2xl font-bold text-gray-900">
           {summary.nextInvoiceDate ? formatDate(summary.nextInvoiceDate) : "N/A"}
@@ -610,7 +621,7 @@ function OverviewTab() {
           <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center">
             <DollarSign className="h-5 w-5 text-brand-600" />
           </div>
-          <p className="text-sm text-gray-500">Monthly Recurring</p>
+          <p className="text-sm text-gray-500">{t('billing.overview.monthlyRecurring')}</p>
         </div>
         <p className="text-3xl font-bold text-gray-900">
           {formatCurrency(summary.monthlyRecurring ?? 0, summary.currency)}
@@ -623,10 +634,10 @@ function OverviewTab() {
           <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
             <CreditCard className="h-5 w-5 text-green-600" />
           </div>
-          <p className="text-sm text-gray-500">Payment Status</p>
+          <p className="text-sm text-gray-500">{t('billing.overview.paymentStatus')}</p>
         </div>
         <span className={`text-sm px-3 py-1 rounded-full font-semibold capitalize ${paymentStatusColor}`}>
-          {paymentStatus}
+          {t(`billing.overview.${paymentStatusKey}`)}
         </span>
       </div>
     </div>
@@ -638,6 +649,7 @@ function OverviewTab() {
 // ---------------------------------------------------------------------------
 
 function InvoicesTab() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { data: rawData, isLoading } = useBillingInvoices({ page, per_page: 10 });
@@ -646,13 +658,13 @@ function InvoicesTab() {
   const invoices = invoiceData?.invoices ?? invoiceData?.data ?? [];
   const meta = { page: invoiceData?.page ?? 1, totalPages: invoiceData?.totalPages ?? 1, total: invoiceData?.total ?? 0 };
 
-  if (isLoading) return <div className="text-gray-400">Loading invoices...</div>;
+  if (isLoading) return <div className="text-gray-400">{t('billing.invoices.loading')}</div>;
 
   if (invoices.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
         <Receipt className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">No invoices yet.</p>
+        <p className="text-gray-500">{t('billing.invoices.none')}</p>
       </div>
     );
   }
@@ -664,11 +676,11 @@ function InvoicesTab() {
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
               <th className="text-left px-4 py-3 font-medium text-gray-500 w-8" />
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Invoice #</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Date</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Due Date</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-500">Amount</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-500">Status</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.invoices.number')}</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.invoices.date')}</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.invoices.dueDate')}</th>
+              <th className="text-right px-4 py-3 font-medium text-gray-500">{t('billing.invoices.amount')}</th>
+              <th className="text-center px-4 py-3 font-medium text-gray-500">{t('billing.invoices.status')}</th>
               <th className="text-right px-4 py-3 font-medium text-gray-500" />
             </tr>
           </thead>
@@ -692,7 +704,7 @@ function InvoicesTab() {
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.totalPages} ({meta.total} invoices)
+            {t('billing.invoices.pagination', { page: meta.page, totalPages: meta.totalPages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -700,14 +712,14 @@ function InvoicesTab() {
               onClick={() => setPage((p) => p - 1)}
               className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
             >
-              Previous
+              {t('billing.invoices.previous')}
             </button>
             <button
               disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
               className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
             >
-              Next
+              {t('billing.invoices.next')}
             </button>
           </div>
         </div>
@@ -717,6 +729,7 @@ function InvoicesTab() {
 }
 
 function PayNowButton({ invoiceId }: { invoiceId: string }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [showGateways, setShowGateways] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -767,7 +780,7 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
       >
         <CreditCard className="h-3.5 w-3.5" />
-        {loading ? "Processing..." : "Pay Now"}
+        {loading ? t('billing.invoices.processing') : t('billing.invoices.payNow')}
       </button>
       {showGateways && (
         <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[160px]">
@@ -828,6 +841,7 @@ function InvoiceRow({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   const handleDownloadPdf = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -993,7 +1007,7 @@ function InvoiceRow({
                 onClick={(e) => { e.stopPropagation(); handleDownloadPdf(e); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand-600 text-white rounded-lg hover:bg-brand-700"
               >
-                <Download className="h-3.5 w-3.5" /> Download PDF
+                <Download className="h-3.5 w-3.5" /> {t('billing.invoices.downloadPdf')}
               </button>
               {amountDue > 0 && (
                 <PayNowButton invoiceId={invoice.id} />
@@ -1014,6 +1028,7 @@ function InvoiceRow({
 // ---------------------------------------------------------------------------
 
 function PaymentsTab() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const { data: rawData, isLoading } = useBillingPayments({ page, per_page: 10 });
 
@@ -1021,13 +1036,13 @@ function PaymentsTab() {
   const payments = paymentData?.payments ?? paymentData?.data ?? [];
   const meta = { page: paymentData?.page ?? 1, totalPages: paymentData?.totalPages ?? 1, total: paymentData?.total ?? 0 };
 
-  if (isLoading) return <div className="text-gray-400">Loading payments...</div>;
+  if (isLoading) return <div className="text-gray-400">{t('billing.payments.loading')}</div>;
 
   if (payments.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
         <CreditCard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">No payments recorded yet.</p>
+        <p className="text-gray-500">{t('billing.payments.none')}</p>
       </div>
     );
   }
@@ -1038,11 +1053,11 @@ function PaymentsTab() {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Date</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-500">Amount</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Method</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Reference</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">Invoice</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.date')}</th>
+              <th className="text-right px-4 py-3 font-medium text-gray-500">{t('billing.payments.amount')}</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.method')}</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.reference')}</th>
+              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.invoice')}</th>
             </tr>
           </thead>
           <tbody>
@@ -1064,7 +1079,7 @@ function PaymentsTab() {
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.totalPages} ({meta.total} payments)
+            {t('billing.payments.pagination', { page: meta.page, totalPages: meta.totalPages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -1072,14 +1087,14 @@ function PaymentsTab() {
               onClick={() => setPage((p) => p - 1)}
               className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
             >
-              Previous
+              {t('billing.invoices.previous')}
             </button>
             <button
               disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
               className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
             >
-              Next
+              {t('billing.invoices.next')}
             </button>
           </div>
         </div>

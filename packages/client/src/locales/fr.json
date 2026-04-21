@@ -16,6 +16,8 @@
     "surveys": "Enqu\u00eates",
     "assets": "Actifs",
     "positions": "Postes",
+    "vacancies": "Postes vacants",
+    "headcountPlans": "Plans d'effectifs",
     "feedback": "Retours",
     "events": "\u00c9v\u00e9nements",
     "wellness": "Bien-\u00eatre",
@@ -31,7 +33,44 @@
     "platformAdmin": "Admin. Plateforme",
     "myProfile": "Mon Profil",
     "selfService": "Libre-service",
-    "probation": "P\u00e9riode d'essai"
+    "probation": "P\u00e9riode d'essai",
+    "createPost": "Cr\u00e9er une publication",
+    "forumDashboard": "Tableau du forum",
+    "myEvents": "Mes \u00e9v\u00e9nements",
+    "eventDashboard": "Tableau des \u00e9v\u00e9nements",
+    "submitReport": "Soumettre un signalement",
+    "trackReport": "Suivre un signalement",
+    "allReports": "Tous les signalements",
+    "activeSurveys": "Enqu\u00eates actives",
+    "surveyDashboard": "Tableau des enqu\u00eates",
+    "allSurveys": "Toutes les enqu\u00eates",
+    "myWellness": "Mon bien-\u00eatre",
+    "dailyCheckIn": "Point quotidien",
+    "wellnessDashboard": "Tableau du bien-\u00eatre",
+    "myAssets": "Mes actifs",
+    "assetDashboard": "Tableau des actifs",
+    "allAssets": "Tous les actifs",
+    "categories": "Cat\u00e9gories",
+    "submitFeedback": "Envoyer un retour",
+    "myFeedback": "Mes retours",
+    "allFeedback": "Tous les retours",
+    "feedbackDashboard": "Tableau des retours",
+    "faceEnrollment": "Enregistrement facial",
+    "qrAttendance": "Pr\u00e9sence QR",
+    "devices": "Appareils",
+    "biometricLogs": "Journaux biom\u00e9triques",
+    "biometricSettings": "Param\u00e8tres biom\u00e9triques",
+    "overviewDashboard": "Tableau g\u00e9n\u00e9ral",
+    "organizations": "Organisations",
+    "moduleAnalytics": "Analytique des modules",
+    "revenue": "Revenus",
+    "subscriptions": "Abonnements",
+    "systemNotifications": "Notifications syst\u00e8me",
+    "serviceHealth": "\u00c9tat des services",
+    "dataSanity": "Int\u00e9grit\u00e9 des donn\u00e9es",
+    "aiConfiguration": "Configuration IA",
+    "logDashboard": "Tableau des journaux",
+    "platformSettings": "Param\u00e8tres de la plateforme"
   },
   "common": {
     "save": "Enregistrer",
@@ -61,6 +100,10 @@
     "pending": "En attente",
     "approved": "Approuv\u00e9",
     "rejected": "Rejet\u00e9",
+    "trial": "Essai",
+    "suspended": "Suspendu",
+    "cancelled": "Annul\u00e9",
+    "expired": "Expir\u00e9",
     "status": "Statut",
     "actions": "Actions",
     "date": "Date",
@@ -75,7 +118,9 @@
     "profile": "Profil",
     "notifications": "Notifications",
     "markAllRead": "Tout marquer comme lu",
-    "noNotifications": "Aucune notification pour le moment"
+    "noNotifications": "Aucune notification pour le moment",
+    "viewAll": "Voir tout",
+    "review": "Examiner"
   },
   "auth": {
     "signIn": "Se connecter",
@@ -102,6 +147,8 @@
     "moduleOffline": "Module hors ligne",
     "yourModules": "Vos modules",
     "coreHRMS": "HRMS principal",
+    "coreHRMSName": "EMP Cloud \u2014 HRMS principal",
+    "coreHRMSDescription": "Votre plateforme compl\u00e8te de gestion RH. G\u00e9rez les profils des employ\u00e9s, suivez la pr\u00e9sence avec les quarts et le g\u00e9o-rep\u00e9rage, g\u00e9rez les demandes de cong\u00e9 avec approbations multi-niveaux, organisez les documents des employ\u00e9s avec suivi d'expiration, publiez des annonces \u00e0 l'\u00e9chelle de l'entreprise et g\u00e9rez les politiques avec suivi des accus\u00e9s de r\u00e9ception. Tout inclus gratuitement avec votre abonnement EMP Cloud.",
     "includedFree": "Inclus gratuitement",
     "noModulesYet": "Aucun module payant pour le moment. Le HRMS principal est actif ci-dessus.",
     "browseModules": "Parcourir le march\u00e9 des modules",
@@ -110,6 +157,7 @@
     "showLess": "Voir moins",
     "readMore": "Lire la suite",
     "overdue": "en retard",
+    "viewDetails": "Voir les d\u00e9tails",
     "quickLinks": {
       "employees": "Annuaire des employ\u00e9s",
       "attendance": "Pr\u00e9sence",
@@ -117,6 +165,87 @@
       "documents": "Documents",
       "announcements": "Annonces",
       "policies": "Politiques"
+    }
+  },
+  "plans": {
+    "basic": "Basique",
+    "standard": "Standard",
+    "premium": "Premium",
+    "enterprise": "Entreprise",
+    "free": "Gratuit",
+    "trial": "Essai"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Reconnaissance des employ\u00e9s, badges et f\u00e9licitations"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Suivi des candidats et pipeline d'embauche"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Gestion de projets et suivi du temps"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "\u00c9valuations de performance, OKR et planification de la succession"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "Surveillance de l'activit\u00e9 et de la productivit\u00e9 des employ\u00e9s"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "Pointage GPS sur le terrain et optimisation des itin\u00e9raires"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Gestion des d\u00e9parts et solde de tout compte"
+    },
+    "emp-lms": {
+      "name": "Gestion de l'apprentissage et formation",
+      "description": "Gestion de l'apprentissage, cours, certifications et formation \u00e0 la conformit\u00e9"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Gestion de la paie, d\u00e9clarations fiscales et rapports de conformit\u00e9"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Suivi biom\u00e9trique de la pr\u00e9sence"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Recrutement",
+      "openJobs": "Postes ouverts",
+      "candidates": "Candidats",
+      "recentHires": "Embauches r\u00e9centes"
+    },
+    "performance": {
+      "title": "Performance",
+      "activeCycles": "Cycles actifs",
+      "pendingReviews": "\u00c9valuations en attente",
+      "goalCompletion": "Atteinte des objectifs"
+    },
+    "rewards": {
+      "title": "Reconnaissance",
+      "kudosThisMonth": "F\u00e9licitations ce mois-ci",
+      "pointsGiven": "Points attribu\u00e9s",
+      "badgesEarned": "Badges gagn\u00e9s"
+    },
+    "exit": {
+      "title": "D\u00e9parts et attrition",
+      "activeExits": "D\u00e9parts actifs",
+      "attritionRate": "Taux d'attrition"
+    },
+    "lms": {
+      "title": "Apprentissage et d\u00e9veloppement",
+      "activeCourses": "Cours actifs",
+      "enrollments": "Inscriptions",
+      "completionRate": "Taux d'ach\u00e8vement"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Motif",
     "daysRequested": "Jours demand\u00e9s",
     "approve": "Approuver",
-    "reject": "Rejeter"
+    "reject": "Rejeter",
+    "daysRemaining": "jours restants",
+    "noTypes": "Aucun type de cong\u00e9 configur\u00e9"
+  },
+  "documents": {
+    "title": "Documents",
+    "pending": "Documents en attente",
+    "fallbackName": "Document",
+    "noPending": "Aucun document en attente"
+  },
+  "policies": {
+    "title": "Politiques",
+    "acknowledged": "Accus\u00e9 r\u00e9ception",
+    "review": "Examiner"
+  },
+  "announcements": {
+    "title": "Annonces"
+  },
+  "selfService": {
+    "welcomeBack": "Bon retour, {{name}} !",
+    "overviewDesc": "Voici un aper\u00e7u de votre tableau de bord libre-service.",
+    "editMyDetails": "Modifier mes informations",
+    "requestUpdate": "Demander une mise \u00e0 jour"
   },
   "attendance": {
     "title": "Pr\u00e9sence",
@@ -140,7 +291,278 @@
     "late": "En retard",
     "onLeave": "En cong\u00e9",
     "todayStatus": "Statut du jour",
-    "myAttendance": "Ma pr\u00e9sence"
+    "myAttendance": "Ma pr\u00e9sence",
+    "myAttendanceToday": "Ma pr\u00e9sence aujourd'hui",
+    "notYet": "Pas encore",
+    "totalWorkedToday": "Total travaill\u00e9 aujourd'hui",
+    "notCheckedInYet": "Pas encore point\u00e9 aujourd'hui",
+    "attendanceComplete": "Pr\u00e9sence compl\u00e9t\u00e9e pour aujourd'hui",
+    "dashboardTitle": "Tableau de bord de pr\u00e9sence",
+    "aiInsights": "Insights IA",
+    "dashboardSubtitle": "Aper\u00e7u de la pr\u00e9sence d'aujourd'hui pour votre organisation.",
+    "totalEmployees": "Total employ\u00e9s",
+    "presentToday": "Pr\u00e9sents aujourd'hui",
+    "absentToday": "Absents aujourd'hui",
+    "lateToday": "En retard aujourd'hui",
+    "regularizationRequests": "Demandes de r\u00e9gularisation",
+    "shiftManagement": "Gestion des quarts",
+    "filters": "Filtres",
+    "month": "Mois",
+    "year": "Ann\u00e9e",
+    "department": "D\u00e9partement",
+    "dateFrom": "Du",
+    "dateTo": "Au",
+    "apply": "Appliquer",
+    "clearFilters": "Effacer les filtres",
+    "exportReport": "Exporter le rapport",
+    "allDepartments": "Tous les d\u00e9partements",
+    "recordsTitle": "Enregistrements de pr\u00e9sence \u2014 {{month}} {{year}}",
+    "filteredSuffix": "(filtr\u00e9)",
+    "tableWorked": "Travaill\u00e9",
+    "noRecords": "Aucun enregistrement de pr\u00e9sence trouv\u00e9 pour les filtres s\u00e9lectionn\u00e9s",
+    "pagination": "Page {{page}} sur {{totalPages}} ({{total}} au total)",
+    "previous": "Pr\u00e9c\u00e9dent",
+    "next": "Suivant",
+    "statusCheckedIn": "Point\u00e9",
+    "statusHalfDay": "Demi-journ\u00e9e",
+    "breakdown": {
+      "title": "D\u00e9tails de pr\u00e9sence \u2014 {{date}}",
+      "todayFallback": "Aujourd'hui",
+      "tabAll": "Tous",
+      "noEmployeesInCategory": "Aucun employ\u00e9 dans cette cat\u00e9gorie.",
+      "lateBy": "Retard",
+      "minSuffix": "min",
+      "close": "Fermer"
+    },
+    "export": {
+      "title": "Exporter le rapport de pr\u00e9sence",
+      "subtitle": "Choisissez le type de rapport et les filtres",
+      "reportType": "Type de rapport",
+      "detailed": "Rapport d\u00e9taill\u00e9",
+      "detailedDesc": "Chaque enregistrement d'arriv\u00e9e/d\u00e9part",
+      "consolidated": "Consolid\u00e9",
+      "consolidatedDesc": "R\u00e9sum\u00e9 mensuel par employ\u00e9",
+      "monthYear": "Mois/Ann\u00e9e",
+      "customRange": "Plage de dates personnalis\u00e9e",
+      "from": "Du",
+      "to": "Au",
+      "allStatuses": "Tous les statuts",
+      "includes": "Ce rapport inclut :",
+      "includesDetailed": "Nom de l'employ\u00e9, code, e-mail, d\u00e9partement, fonction, date, info quart, heures arriv\u00e9e/d\u00e9part, heures travaill\u00e9es, heures suppl\u00e9mentaires, minutes de retard, d\u00e9part anticip\u00e9, statut",
+      "includesConsolidated": "Nom de l'employ\u00e9, code, e-mail, d\u00e9partement, fonction, jours pr\u00e9sents/demi/absents/cong\u00e9, nombre de retards, total travaill\u00e9, moyenne journali\u00e8re, heures suppl\u00e9mentaires, retard, d\u00e9part anticip\u00e9, % de pr\u00e9sence",
+      "cancel": "Annuler",
+      "exporting": "Exportation...",
+      "downloadExcel": "T\u00e9l\u00e9charger Excel",
+      "exportFailed": "\u00c9chec de l'exportation. Veuillez r\u00e9essayer."
+    }
+  },
+  "manager": {
+    "title": "Mon \u00e9quipe",
+    "subtitle": "Tableau de bord manager \u2014 aper\u00e7u de vos collaborateurs directs.",
+    "stats": {
+      "teamSize": "Taille de l'\u00e9quipe",
+      "presentToday": "Pr\u00e9sents aujourd'hui",
+      "absentToday": "Absents aujourd'hui",
+      "onLeave": "En cong\u00e9",
+      "lateToday": "En retard aujourd'hui",
+      "pendingLeaves": "Cong\u00e9s en attente"
+    },
+    "teamAttendanceToday": "Pr\u00e9sence de l'\u00e9quipe aujourd'hui",
+    "noTeamMembers": "Aucun membre de l'\u00e9quipe trouv\u00e9",
+    "inPrefix": "Arriv\u00e9e",
+    "outPrefix": "D\u00e9part",
+    "statusHalfDay": "Demi-journ\u00e9e",
+    "statusPresent": "Pr\u00e9sent",
+    "statusAbsent": "Absent",
+    "statusOnLeave": "En cong\u00e9",
+    "teamLeaveCalendar": "Calendrier des cong\u00e9s de l'\u00e9quipe (cette semaine)",
+    "noApprovedLeaves": "Aucun cong\u00e9 approuv\u00e9 cette semaine",
+    "leaveFallback": "Cong\u00e9",
+    "halfFirst": "1re moiti\u00e9",
+    "halfSecond": "2e moiti\u00e9",
+    "pendingLeaveRequests": "Demandes de cong\u00e9 en attente",
+    "pendingBadge": "{{count}} en attente",
+    "table": {
+      "employee": "Employ\u00e9",
+      "type": "Type",
+      "dates": "Dates",
+      "days": "Jours",
+      "reason": "Motif",
+      "actions": "Actions"
+    },
+    "halfSuffix": "(Demi)",
+    "noPendingRequests": "Aucune demande de cong\u00e9 en attente",
+    "review": "Examiner",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "remarksPlaceholder": "Remarques (facultatif)",
+    "directReports": "Collaborateurs directs",
+    "loadingTeam": "Chargement de l'\u00e9quipe...",
+    "noDirectReports": "Aucun collaborateur direct trouv\u00e9. Les membres de l'\u00e9quipe appara\u00eetront ici une fois que des employ\u00e9s vous seront attribu\u00e9s en tant que manager."
+  },
+  "billing": {
+    "title": "Facturation",
+    "subtitle": "G\u00e9rez les abonnements, factures, paiements et aper\u00e7u de la facturation.",
+    "tabs": {
+      "subscriptions": "Abonnements",
+      "invoices": "Factures",
+      "payments": "Paiements",
+      "overview": "Aper\u00e7u"
+    },
+    "monthlyCost": "Co\u00fbt mensuel",
+    "perMonth": "/mois",
+    "noSubscriptions": "Aucun abonnement pour le moment. Abonnez-vous \u00e0 des modules depuis la page Modules.",
+    "labels": {
+      "plan": "Plan",
+      "seats": "Si\u00e8ges",
+      "pricePerSeat": "Prix/si\u00e8ge",
+      "billingCycle": "Cycle de facturation"
+    },
+    "full": "(complet)",
+    "editTooltip": "Modifier l'abonnement",
+    "cancelTooltip": "Annuler l'abonnement",
+    "cycles": {
+      "monthly": "Mensuel",
+      "quarterly": "Trimestriel",
+      "annual": "Annuel"
+    },
+    "editModal": {
+      "title": "Modifier l'abonnement",
+      "planTier": "Niveau du plan",
+      "totalSeats": "Si\u00e8ges totaux",
+      "currentlyUsing": "Utilise actuellement {{count}} si\u00e8ges",
+      "cannotReduce": "Impossible de r\u00e9duire en dessous de {{count}} (en cours d'utilisation)",
+      "billingCycle": "Cycle de facturation",
+      "changes": "Modifications :",
+      "plan": "Plan",
+      "seats": "Si\u00e8ges",
+      "cycle": "Cycle",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    },
+    "cancelModal": {
+      "title": "Annuler l'abonnement ?",
+      "message": "Cela annulera l'abonnement et r\u00e9voquera l'acc\u00e8s pour tous les si\u00e8ges attribu\u00e9s. Cette action ne peut pas \u00eatre annul\u00e9e.",
+      "keep": "Garder",
+      "yesCancel": "Oui, annuler",
+      "cancelling": "Annulation..."
+    },
+    "toasts": {
+      "updated": "Abonnement mis \u00e0 jour avec succ\u00e8s",
+      "updateFailed": "\u00c9chec de la mise \u00e0 jour de l'abonnement",
+      "cancelled": "Abonnement annul\u00e9",
+      "cancelFailed": "\u00c9chec de l'annulation de l'abonnement",
+      "errorPrefix": "Erreur"
+    },
+    "overview": {
+      "noData": "Aucune donn\u00e9e de facturation disponible pour le moment.",
+      "outstandingBalance": "Solde impay\u00e9",
+      "nextInvoiceDate": "Date de la prochaine facture",
+      "monthlyRecurring": "R\u00e9current mensuel",
+      "paymentStatus": "\u00c9tat du paiement",
+      "overdue": "en retard",
+      "pastDue": "en souffrance",
+      "allPaid": "tout pay\u00e9"
+    },
+    "invoices": {
+      "loading": "Chargement des factures...",
+      "none": "Aucune facture pour le moment.",
+      "number": "Facture n\u00b0",
+      "date": "Date",
+      "dueDate": "Date d'\u00e9ch\u00e9ance",
+      "amount": "Montant",
+      "status": "Statut",
+      "pagination": "Page {{page}} sur {{totalPages}} ({{total}} factures)",
+      "previous": "Pr\u00e9c\u00e9dent",
+      "next": "Suivant",
+      "downloadPdf": "T\u00e9l\u00e9charger PDF",
+      "payNow": "Payer maintenant",
+      "processing": "Traitement..."
+    },
+    "payments": {
+      "loading": "Chargement des paiements...",
+      "none": "Aucun paiement enregistr\u00e9 pour le moment.",
+      "date": "Date",
+      "amount": "Montant",
+      "method": "M\u00e9thode",
+      "reference": "R\u00e9f\u00e9rence",
+      "invoice": "Facture",
+      "pagination": "Page {{page}} sur {{totalPages}} ({{total}} paiements)"
+    }
+  },
+  "roles": {
+    "employee": "Employ\u00e9",
+    "manager": "Manager",
+    "hr_admin": "Admin RH",
+    "org_admin": "Admin. Org.",
+    "super_admin": "Super Admin"
+  },
+  "modulesAccess": {
+    "title": "Acc\u00e8s aux modules",
+    "subtitle": "G\u00e9rez les employ\u00e9s qui ont acc\u00e8s \u00e0 chaque module.",
+    "modulesCount": "{{count}} modules",
+    "employeesCount": "{{count}} employ\u00e9s",
+    "seatsAssignedCount": "{{count}} si\u00e8ges attribu\u00e9s",
+    "searchPlaceholder": "Rechercher par nom, e-mail, fonction ou code employ\u00e9...",
+    "allEmployees": "Tous les employ\u00e9s",
+    "enabledFor": "Activ\u00e9 pour",
+    "notEnabledFor": "Non activ\u00e9 pour",
+    "enabledSuffix": "Activ\u00e9",
+    "notEnabledSuffix": "Non activ\u00e9",
+    "loading": "Chargement des employ\u00e9s...",
+    "noEmployees": "Aucun employ\u00e9 trouv\u00e9",
+    "matchingSearch": "correspondant \u00e0 votre recherche",
+    "withFilter": "avec ce filtre",
+    "table": {
+      "employee": "Employ\u00e9",
+      "role": "R\u00f4le",
+      "designation": "Fonction",
+      "modules": "Modules"
+    },
+    "confirm": {
+      "title": "D\u00e9sactiver l'acc\u00e8s au module",
+      "subtitle": "Cette action peut supprimer les donn\u00e9es de l'utilisateur dans le module",
+      "message": "\u00cates-vous s\u00fbr de vouloir retirer l'acc\u00e8s de <strong>{{user}}</strong> \u00e0 <strong>{{module}}</strong> ? Leurs donn\u00e9es dans ce module peuvent \u00eatre d\u00e9finitivement supprim\u00e9es.",
+      "cancel": "Annuler",
+      "remove": "Retirer l'acc\u00e8s",
+      "removing": "Retrait en cours..."
+    },
+    "pagination": {
+      "showing": "Affichage de {{from}}\u2013{{to}} sur {{total}} employ\u00e9s",
+      "previous": "Pr\u00e9c\u00e9dent",
+      "next": "Suivant"
+    },
+    "syncAlerts": {
+      "enabledSynced": "Module activ\u00e9 et utilisateur synchronis\u00e9 avec succ\u00e8s",
+      "enabledSkipped": "Si\u00e8ge attribu\u00e9. Le module n'a pas d'API de synchronisation configur\u00e9e.",
+      "enabledPartial": "Si\u00e8ge attribu\u00e9 mais la synchronisation du module a \u00e9chou\u00e9 ({{status}}).",
+      "enableFailed": "\u00c9chec de l'activation du module",
+      "disabledSynced": "Module d\u00e9sactiv\u00e9 et utilisateur supprim\u00e9",
+      "disabledPartial": "Si\u00e8ge retir\u00e9 mais la synchronisation du module a \u00e9chou\u00e9 ({{status}})",
+      "disableFailed": "\u00c9chec de la d\u00e9sactivation du module"
+    }
+  },
+  "modulesPage": {
+    "title": "March\u00e9 des modules",
+    "subtitle": "Parcourez et abonnez-vous aux modules EMP pour votre organisation.",
+    "aiBannerTitle": "Tous les modules incluent EMP AI",
+    "aiBannerDesc": "Assistant RH intelligent propuls\u00e9 par l'IA \u2014 posez des questions, obtenez des informations, automatisez les t\u00e2ches dans tous vos modules.",
+    "coreIncludedFree": "Principal \u2014 Inclus gratuitement",
+    "freeTier": "Offre gratuite",
+    "comingSoon": "Bient\u00f4t disponible",
+    "seatsAssigned": "{{used}} sur {{total}} si\u00e8ges attribu\u00e9s",
+    "active": "Actif",
+    "subscribed": "Abonn\u00e9",
+    "unsubscribe": "Se d\u00e9sabonner",
+    "subscribe": "S'abonner",
+    "notSubscribed": "Non abonn\u00e9",
+    "loading": "Chargement des modules...",
+    "areYouSure": "\u00cates-vous s\u00fbr ?",
+    "cancelling": "Annulation...",
+    "yesCancel": "Oui, annuler",
+    "subscriptionCancelled": "Abonnement annul\u00e9 avec succ\u00e8s.",
+    "cancelFailed": "\u00c9chec de l'annulation de l'abonnement.",
+    "subscriptionCreated": "Abonnement cr\u00e9\u00e9. La facture sera g\u00e9n\u00e9r\u00e9e sous peu."
   },
   "helpdesk": {
     "title": "Assistance",

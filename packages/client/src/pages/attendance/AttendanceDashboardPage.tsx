@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2 } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
@@ -10,6 +11,7 @@ import * as XLSX from "xlsx";
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function AttendanceDashboardPage() {
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
 
@@ -28,9 +30,10 @@ export default function AttendanceDashboardPage() {
   const [appliedDateFrom, setAppliedDateFrom] = useState("");
   const [appliedDateTo, setAppliedDateTo] = useState("");
 
+  // Month names use the active i18n locale so the dropdown follows the UI language.
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
-    label: new Date(2000, i).toLocaleString("default", { month: "long" }),
+    label: new Date(2000, i).toLocaleString(i18n.language, { month: "long" }),
   }));
 
   // Fetch departments for the dropdown filter
@@ -183,7 +186,7 @@ export default function AttendanceDashboardPage() {
       }
       setShowExport(false);
     } catch (err) {
-      alert("Export failed. Please try again.");
+      alert(t('attendance.export.exportFailed'));
     } finally {
       setExporting(false);
     }
@@ -205,18 +208,18 @@ export default function AttendanceDashboardPage() {
     color: string;
     category: BreakdownCategory | null;
   }[] = [
-    { label: "Total Employees", value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", category: "total" },
-    { label: "Present Today", value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", category: "present" },
-    { label: "Absent Today", value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 text-red-700", category: "absent" },
-    { label: "Late Today", value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", category: "late" },
-    { label: "On Leave", value: dashboard?.on_leave ?? "-", icon: Clock, color: "bg-purple-50 text-purple-700", category: "on_leave" },
+    { label: t('attendance.totalEmployees'), value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", category: "total" },
+    { label: t('attendance.presentToday'), value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", category: "present" },
+    { label: t('attendance.absentToday'), value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 text-red-700", category: "absent" },
+    { label: t('attendance.lateToday'), value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", category: "late" },
+    { label: t('attendance.onLeave'), value: dashboard?.on_leave ?? "-", icon: Clock, color: "bg-purple-50 text-purple-700", category: "on_leave" },
   ];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">Attendance Dashboard <AiBadge label="AI Insights" /></h1>
-        <p className="text-gray-500 mt-1">Today's attendance overview for your organization.</p>
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">{t('attendance.dashboardTitle')} <AiBadge label={t('attendance.aiInsights')} /></h1>
+        <p className="text-gray-500 mt-1">{t('attendance.dashboardSubtitle')}</p>
       </div>
 
       {/* Stats Cards */}
@@ -240,7 +243,7 @@ export default function AttendanceDashboardPage() {
               type="button"
               onClick={() => setBreakdownOpen(s.category)}
               className="bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
-              aria-label={`View ${s.label} employee list`}
+              aria-label={s.label}
             >
               {content}
             </button>
@@ -263,12 +266,12 @@ export default function AttendanceDashboardPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Attendance Details — {breakdown?.date ?? "Today"}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('attendance.breakdown.title', { date: breakdown?.date ?? t('attendance.breakdown.todayFallback') })}</h3>
               <button
                 type="button"
                 onClick={() => setBreakdownOpen(null)}
                 className="text-gray-400 hover:text-gray-600"
-                aria-label="Close"
+                aria-label={t('attendance.breakdown.close')}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -277,11 +280,11 @@ export default function AttendanceDashboardPage() {
               <div className="flex gap-1 flex-wrap">
                 {(
                   [
-                    { key: "total", label: "All", color: "text-blue-700 border-blue-600" },
-                    { key: "present", label: "Present", color: "text-green-700 border-green-600" },
-                    { key: "absent", label: "Absent", color: "text-red-700 border-red-600" },
-                    { key: "on_leave", label: "On Leave", color: "text-purple-700 border-purple-600" },
-                    { key: "late", label: "Late", color: "text-yellow-700 border-yellow-600" },
+                    { key: "total", label: t('attendance.breakdown.tabAll'), color: "text-blue-700 border-blue-600" },
+                    { key: "present", label: t('attendance.present'), color: "text-green-700 border-green-600" },
+                    { key: "absent", label: t('attendance.absent'), color: "text-red-700 border-red-600" },
+                    { key: "on_leave", label: t('attendance.onLeave'), color: "text-purple-700 border-purple-600" },
+                    { key: "late", label: t('attendance.late'), color: "text-yellow-700 border-yellow-600" },
                   ] as const
                 ).map((tab) => {
                   const count = tab.key === "total"
@@ -317,24 +320,24 @@ export default function AttendanceDashboardPage() {
                     ]
                   : breakdown?.[breakdownOpen] ?? [];
                 if (list.length === 0) {
-                  return <p className="text-center text-sm text-gray-500 py-12">No employees in this category.</p>;
+                  return <p className="text-center text-sm text-gray-500 py-12">{t('attendance.breakdown.noEmployeesInCategory')}</p>;
                 }
                 const statusLabel = (emp: any) => {
                   const s = emp.attendance_status;
-                  if (s === "present" || s === "checked_in") return { label: "Present", color: "bg-green-50 text-green-700" };
-                  if (s === "half_day") return { label: "Half Day", color: "bg-green-50 text-green-700" };
-                  if (s === "on_leave") return { label: "On Leave", color: "bg-purple-50 text-purple-700" };
-                  return { label: "Absent", color: "bg-red-50 text-red-700" };
+                  if (s === "present" || s === "checked_in") return { label: t('attendance.present'), color: "bg-green-50 text-green-700" };
+                  if (s === "half_day") return { label: t('attendance.statusHalfDay'), color: "bg-green-50 text-green-700" };
+                  if (s === "on_leave") return { label: t('attendance.onLeave'), color: "bg-purple-50 text-purple-700" };
+                  return { label: t('attendance.absent'), color: "bg-red-50 text-red-700" };
                 };
                 return (
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
-                        <th className="py-2 font-medium">Employee</th>
-                        <th className="py-2 font-medium">Department</th>
-                        <th className="py-2 font-medium">Check In</th>
-                        {breakdownOpen === "total" && <th className="py-2 font-medium">Status</th>}
-                        {breakdownOpen === "late" && <th className="py-2 font-medium">Late By</th>}
+                        <th className="py-2 font-medium">{t('common.name')}</th>
+                        <th className="py-2 font-medium">{t('attendance.department')}</th>
+                        <th className="py-2 font-medium">{t('attendance.checkIn')}</th>
+                        {breakdownOpen === "total" && <th className="py-2 font-medium">{t('common.status')}</th>}
+                        {breakdownOpen === "late" && <th className="py-2 font-medium">{t('attendance.breakdown.lateBy')}</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -354,7 +357,7 @@ export default function AttendanceDashboardPage() {
                               </td>
                             )}
                             {breakdownOpen === "late" && (
-                              <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} min</td>
+                              <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} {t('attendance.breakdown.minSuffix')}</td>
                             )}
                           </tr>
                         );
@@ -375,14 +378,14 @@ export default function AttendanceDashboardPage() {
           className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <ClipboardCheck className="h-4 w-4 text-amber-600" />
-          Regularization Requests
+          {t('attendance.regularizationRequests')}
         </Link>
         <Link
           to="/attendance/shifts"
           className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
         >
           <SlidersHorizontal className="h-4 w-4 text-brand-600" />
-          Shift Management
+          {t('attendance.shiftManagement')}
         </Link>
       </div>
 
@@ -390,11 +393,11 @@ export default function AttendanceDashboardPage() {
       <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-gray-500" />
-          <h3 className="text-sm font-semibold text-gray-700">Filters</h3>
+          <h3 className="text-sm font-semibold text-gray-700">{t('attendance.filters')}</h3>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Month</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.month')}</label>
             <select
               value={month}
               onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
@@ -406,7 +409,7 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Year</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.year')}</label>
             <select
               value={year}
               onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
@@ -418,13 +421,13 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.department')}</label>
             <select
               value={departmentId ?? ""}
               onChange={(e) => { setDepartmentId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
             >
-              <option value="">All Departments</option>
+              <option value="">{t('attendance.allDepartments')}</option>
               {departments.map((d: any) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}
@@ -432,7 +435,7 @@ export default function AttendanceDashboardPage() {
           </div>
           <div className="border-l border-gray-200 pl-3 flex items-end gap-2">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Date From</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateFrom')}</label>
               <input
                 type="date"
                 value={dateFrom}
@@ -441,7 +444,7 @@ export default function AttendanceDashboardPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Date To</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateTo')}</label>
               <input
                 type="date"
                 value={dateTo}
@@ -454,20 +457,20 @@ export default function AttendanceDashboardPage() {
               disabled={!dateFrom}
               className="flex items-center gap-1.5 px-3 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
-              <CalendarDays className="h-4 w-4" /> Apply
+              <CalendarDays className="h-4 w-4" /> {t('attendance.apply')}
             </button>
           </div>
           <button
             onClick={handleClearFilters}
             className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            Clear Filters
+            {t('attendance.clearFilters')}
           </button>
           <button
             onClick={() => { setExportMonth(month); setExportYear(year); setShowExport(true); }}
             className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
           >
-            <Download className="h-4 w-4" /> Export Report
+            <Download className="h-4 w-4" /> {t('attendance.exportReport')}
           </button>
         </div>
       </div>
@@ -482,8 +485,8 @@ export default function AttendanceDashboardPage() {
                   <Download className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Export Attendance Report</h3>
-                  <p className="text-xs text-gray-400">Choose report type and filters</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{t('attendance.export.title')}</h3>
+                  <p className="text-xs text-gray-400">{t('attendance.export.subtitle')}</p>
                 </div>
               </div>
               <button onClick={() => setShowExport(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
@@ -492,7 +495,7 @@ export default function AttendanceDashboardPage() {
             <div className="px-6 py-5 space-y-5">
               {/* Report Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('attendance.export.reportType')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -501,8 +504,8 @@ export default function AttendanceDashboardPage() {
                   >
                     <FileSpreadsheet className={`h-5 w-5 ${exportType === "detailed" ? "text-brand-600" : "text-gray-400"}`} />
                     <div className="text-left">
-                      <p className="text-sm font-medium text-gray-900">Detailed Report</p>
-                      <p className="text-xs text-gray-400">Every check-in/out record</p>
+                      <p className="text-sm font-medium text-gray-900">{t('attendance.export.detailed')}</p>
+                      <p className="text-xs text-gray-400">{t('attendance.export.detailedDesc')}</p>
                     </div>
                   </button>
                   <button
@@ -512,8 +515,8 @@ export default function AttendanceDashboardPage() {
                   >
                     <BarChart3 className={`h-5 w-5 ${exportType === "consolidated" ? "text-brand-600" : "text-gray-400"}`} />
                     <div className="text-left">
-                      <p className="text-sm font-medium text-gray-900">Consolidated</p>
-                      <p className="text-xs text-gray-400">Employee-wise monthly summary</p>
+                      <p className="text-sm font-medium text-gray-900">{t('attendance.export.consolidated')}</p>
+                      <p className="text-xs text-gray-400">{t('attendance.export.consolidatedDesc')}</p>
                     </div>
                   </button>
                 </div>
@@ -524,11 +527,11 @@ export default function AttendanceDashboardPage() {
                 <div className="flex items-center gap-3 mb-2">
                   <label className="flex items-center gap-2 text-sm">
                     <input type="radio" checked={!exportUseRange} onChange={() => setExportUseRange(false)} className="text-brand-600" />
-                    Month/Year
+                    {t('attendance.export.monthYear')}
                   </label>
                   <label className="flex items-center gap-2 text-sm">
                     <input type="radio" checked={exportUseRange} onChange={() => setExportUseRange(true)} className="text-brand-600" />
-                    Custom Date Range
+                    {t('attendance.export.customRange')}
                   </label>
                 </div>
                 {!exportUseRange ? (
@@ -543,11 +546,11 @@ export default function AttendanceDashboardPage() {
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">From</label>
+                      <label className="block text-xs text-gray-500 mb-1">{t('attendance.export.from')}</label>
                       <input type="date" value={exportDateFrom} onChange={(e) => setExportDateFrom(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">To</label>
+                      <label className="block text-xs text-gray-500 mb-1">{t('attendance.export.to')}</label>
                       <input type="date" value={exportDateTo} onChange={(e) => setExportDateTo(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                     </div>
                   </div>
@@ -557,22 +560,22 @@ export default function AttendanceDashboardPage() {
               {/* Filters */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.department')}</label>
                   <select value={exportDept} onChange={(e) => setExportDept(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                    <option value="">All Departments</option>
+                    <option value="">{t('attendance.allDepartments')}</option>
                     {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
                   </select>
                 </div>
                 {exportType === "detailed" && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('common.status')}</label>
                     <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                      <option value="">All Statuses</option>
-                      <option value="present">Present</option>
-                      <option value="checked_in">Checked In</option>
-                      <option value="half_day">Half Day</option>
-                      <option value="absent">Absent</option>
-                      <option value="on_leave">On Leave</option>
+                      <option value="">{t('attendance.export.allStatuses')}</option>
+                      <option value="present">{t('attendance.present')}</option>
+                      <option value="checked_in">{t('attendance.statusCheckedIn')}</option>
+                      <option value="half_day">{t('attendance.statusHalfDay')}</option>
+                      <option value="absent">{t('attendance.absent')}</option>
+                      <option value="on_leave">{t('attendance.onLeave')}</option>
                     </select>
                   </div>
                 )}
@@ -580,23 +583,23 @@ export default function AttendanceDashboardPage() {
 
               {/* What's included */}
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs font-medium text-gray-500 mb-1">This report includes:</p>
+                <p className="text-xs font-medium text-gray-500 mb-1">{t('attendance.export.includes')}</p>
                 {exportType === "detailed" ? (
-                  <p className="text-xs text-gray-400">Employee name, emp code, email, department, designation, date, shift info, check-in/out times, worked hours, overtime, late minutes, early departure, status</p>
+                  <p className="text-xs text-gray-400">{t('attendance.export.includesDetailed')}</p>
                 ) : (
-                  <p className="text-xs text-gray-400">Employee name, emp code, email, department, designation, present/half/absent/leave days, late count, total worked, avg daily worked, overtime, late, early departure, attendance %</p>
+                  <p className="text-xs text-gray-400">{t('attendance.export.includesConsolidated')}</p>
                 )}
               </div>
             </div>
 
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</button>
+              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">{t('attendance.export.cancel')}</button>
               <button
                 onClick={handleExport}
                 disabled={exporting || (exportUseRange && !exportDateFrom)}
                 className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50"
               >
-                {exporting ? <><Loader2 className="h-4 w-4 animate-spin" /> Exporting...</> : <><Download className="h-4 w-4" /> Download Excel</>}
+                {exporting ? <><Loader2 className="h-4 w-4 animate-spin" /> {t('attendance.export.exporting')}</> : <><Download className="h-4 w-4" /> {t('attendance.export.downloadExcel')}</>}
               </button>
             </div>
           </div>
@@ -607,21 +610,21 @@ export default function AttendanceDashboardPage() {
       <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
-            Attendance Records &mdash; {months.find((m) => m.value === month)?.label} {year}
-            {departmentId ? ` (Filtered)` : ""}
+            {t('attendance.recordsTitle', { month: months.find((m) => m.value === month)?.label, year })}
+            {departmentId ? ` ${t('attendance.filteredSuffix')}` : ""}
           </h2>
         </div>
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Date</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check In</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check Out</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Worked</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Late</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.checkIn')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.checkOut')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.status')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.late')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -641,7 +644,7 @@ export default function AttendanceDashboardPage() {
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No attendance records found for the selected filters</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
             ) : (
               records.map((r: any) => (
                 <tr key={r.id} className="hover:bg-gray-50">
@@ -679,7 +682,13 @@ export default function AttendanceDashboardPage() {
                         : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
                         : "bg-red-50 text-red-700"
                     }`}>
-                      {r.status === "checked_in" ? "checked in" : r.status.replace(/_/g, " ")}
+                      {(() => {
+                        if (r.status === "checked_in") return t('attendance.statusCheckedIn');
+                        if (r.status === "half_day") return t('attendance.statusHalfDay');
+                        const k = `attendance.${r.status}`;
+                        const tr = t(k);
+                        return tr !== k ? tr : r.status.replace(/_/g, " ");
+                      })()}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
@@ -693,10 +702,10 @@ export default function AttendanceDashboardPage() {
 
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">Page {meta.page} of {meta.total_pages} ({meta.total} total)</p>
+            <p className="text-sm text-gray-500">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">Next</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">{t('attendance.previous')}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">{t('attendance.next')}</button>
             </div>
           </div>
         )}

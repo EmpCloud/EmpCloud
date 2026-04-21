@@ -5,6 +5,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
 import axios from "axios";
 
@@ -111,6 +112,7 @@ function WidgetOffline({ title, icon: Icon, color: _color = "indigo" }: {
   color?: string;
 }) {
   void _color;
+  const { t } = useTranslation();
   return (
     <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
       <div className="flex items-center gap-3 mb-4">
@@ -119,7 +121,7 @@ function WidgetOffline({ title, icon: Icon, color: _color = "indigo" }: {
         </div>
         <h3 className="font-semibold text-gray-400">{title}</h3>
       </div>
-      <p className="text-sm text-gray-400 text-center py-4">Module offline</p>
+      <p className="text-sm text-gray-400 text-center py-4">{t('dashboard.moduleOffline')}</p>
     </div>
   );
 }
@@ -147,6 +149,7 @@ export default function WidgetCard({
   isOffline,
   children,
 }: WidgetCardProps) {
+  const { t } = useTranslation();
   const c = colorMap[color] || colorMap.indigo;
 
   if (isLoading) return <WidgetSkeleton color={color} />;
@@ -192,7 +195,7 @@ export default function WidgetCard({
           }}
           className={`mt-4 flex items-center gap-1.5 text-xs font-medium ${c.icon} hover:underline`}
         >
-          View Details <ExternalLink className="h-3 w-3" />
+          {t('dashboard.viewDetails')} <ExternalLink className="h-3 w-3" />
         </button>
       )}
     </div>
