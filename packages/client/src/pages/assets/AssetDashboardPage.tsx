@@ -45,12 +45,17 @@ export default function AssetDashboardPage() {
 
   if (!stats) return null;
 
+  // #1531 — Each card deep-links into /assets with the matching status filter
+  // preselected. AssetListPage reads `?status=<v>` from the URL on mount.
+  // "Lost / Damaged" is a combined card but the list currently only filters on
+  // a single status — link to lost as the default; user can swap to damaged
+  // from the dropdown. A "multi-status" filter is a follow-up.
   const statCards = [
     { label: "Total Assets", value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50", to: "/assets" },
-    { label: "Available", value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets" },
-    { label: "Assigned", value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets" },
-    { label: "In Repair", value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets" },
-    { label: "Lost / Damaged", value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets" },
+    { label: "Available", value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets?status=available" },
+    { label: "Assigned", value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets?status=assigned" },
+    { label: "In Repair", value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets?status=in_repair" },
+    { label: "Lost / Damaged", value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets?status=lost" },
   ];
 
   return (
