@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText, X } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 
@@ -9,6 +9,10 @@ export default function HeadcountPlanPage() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
+  // #1548 — Detail modal: plans are clickable and open this full-detail view
+  // so the notes, budget and all other fields captured at creation time are
+  // viewable. Previously the table only surfaced a handful of columns.
+  const [viewingPlan, setViewingPlan] = useState<any>(null);
 
   const { data: departments } = useDepartments();
   const deptList = departments || [];
@@ -306,7 +310,22 @@ export default function HeadcountPlanPage() {
               <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No headcount plans found</td></tr>
             ) : (
               plans.map((plan: any) => (
-                <tr key={plan.id} className="hover:bg-gray-50">
+                // #1548 — Row is clickable and opens the details modal. Action
+                // buttons stopPropagation so clicking Submit/Approve/Reject
+                // doesn't also open the modal.
+                <tr
+                  key={plan.id}
+                  onClick={() => setViewingPlan(plan)}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setViewingPlan(plan);
+                    }
+                  }}
+                >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       {statusIcon(plan.status)}
@@ -322,7 +341,7 @@ export default function HeadcountPlanPage() {
                   <td className="px-6 py-4">
                     <span className={statusBadge(plan.status)}>{plan.status}</span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <div className="flex gap-2">
                       {plan.status === "draft" && (
                         <button
@@ -361,6 +380,101 @@ export default function HeadcountPlanPage() {
             )}
           </tbody>
         </table>
+
+        {/* #1548 — Plan details modal. Opens on row click so admins can see
+            every field captured at creation (including notes, budget, dates). */}
+        {viewingPlan && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setViewingPlan(null)}
+          >
+            <div
+              className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center gap-2">
+                  {statusIcon(viewingPlan.status)}
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">{viewingPlan.title}</h2>
+                    <span className={statusBadge(viewingPlan.status)}>{viewingPlan.status}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setViewingPlan(null)}
+                  aria-label="Close"
+                  className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Fiscal Year</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.fiscal_year || "\u2014"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Quarter</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.quarter || "\u2014"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Department</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.department_name || "Org-wide"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Currency</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.currency || "\u2014"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Planned Headcount</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.planned_headcount}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Approved Headcount</p>
+                  <p className="text-green-600 font-medium">{viewingPlan.approved_headcount}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Current Headcount</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.current_headcount}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Budget</p>
+                  <p className="text-gray-900 font-medium">
+                    {viewingPlan.budget_amount != null
+                      ? `${viewingPlan.budget_amount} ${viewingPlan.currency || ""}`.trim()
+                      : "\u2014"}
+                  </p>
+                </div>
+                {viewingPlan.created_by_name && (
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Created By</p>
+                    <p className="text-gray-900 font-medium">{viewingPlan.created_by_name}</p>
+                  </div>
+                )}
+                {viewingPlan.created_at && (
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Created</p>
+                    <p className="text-gray-900 font-medium">{new Date(viewingPlan.created_at).toLocaleString()}</p>
+                  </div>
+                )}
+                {viewingPlan.notes && (
+                  <div className="sm:col-span-2">
+                    <p className="text-xs text-gray-500 mb-1">Notes</p>
+                    <p className="text-gray-800 whitespace-pre-wrap bg-gray-50 rounded-lg border border-gray-200 px-3 py-2">{viewingPlan.notes}</p>
+                  </div>
+                )}
+              </div>
+              <div className="px-6 py-3 border-t border-gray-200 flex justify-end">
+                <button
+                  onClick={() => setViewingPlan(null)}
+                  className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
