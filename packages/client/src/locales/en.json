@@ -450,6 +450,69 @@
         "status": "Status",
         "actions": "Actions"
       }
+    },
+    "shiftSchedule": {
+      "title": "Shift Schedule",
+      "subtitle": "View and manage shift assignments across your team.",
+      "bulkAssign": "Bulk Assign",
+      "tabs": {
+        "schedule": "Team Schedule",
+        "mySchedule": "My Schedule",
+        "swapRequests": "Swap Requests"
+      },
+      "team": {
+        "employee": "Employee",
+        "loading": "Loading schedule...",
+        "noEmployees": "No employees found",
+        "editTooltip": "Edit assignment",
+        "removeTooltip": "Remove assignment",
+        "assignTooltip": "Assign shift",
+        "removeConfirm": "Remove this shift assignment?"
+      },
+      "bulk": {
+        "title": "Bulk Assign Shift",
+        "shiftLabel": "Shift",
+        "selectShift": "Select shift",
+        "employees": "Employees",
+        "selectedCount": "{{count}} selected",
+        "from": "From",
+        "toOptional": "To (optional)",
+        "assigning": "Assigning...",
+        "assignShift": "Assign Shift"
+      },
+      "quick": {
+        "title": "Assign Shift",
+        "dateLabel": "Date",
+        "assign": "Assign"
+      },
+      "edit": {
+        "title": "Edit Assignment",
+        "shiftLabel": "Shift",
+        "from": "From",
+        "toOptional": "To (optional)",
+        "saving": "Saving...",
+        "save": "Save"
+      },
+      "my": {
+        "loading": "Loading your schedule...",
+        "noAssignments": "No shift assignments found for the current period.",
+        "showingFromTo": "Showing your shifts from {{from}} to {{to}}",
+        "nightSuffix": "(Night)",
+        "breakSuffix": "{{minutes}}min break",
+        "from": "From",
+        "to": "To"
+      },
+      "swaps": {
+        "loading": "Loading swap requests...",
+        "none": "No shift swap requests.",
+        "wantsToSwap": "wants to swap with",
+        "dateLabel": "Date",
+        "reasonLabel": "Reason",
+        "approve": "Approve",
+        "reject": "Reject",
+        "statusApproved": "Approved",
+        "statusRejected": "Rejected"
+      }
     }
   },
   "manager": {

@@ -450,6 +450,69 @@
         "status": "Estado",
         "actions": "Acciones"
       }
+    },
+    "shiftSchedule": {
+      "title": "Planificaci\u00f3n de turnos",
+      "subtitle": "Visualiza y gestiona las asignaciones de turnos de tu equipo.",
+      "bulkAssign": "Asignaci\u00f3n masiva",
+      "tabs": {
+        "schedule": "Horario del equipo",
+        "mySchedule": "Mi horario",
+        "swapRequests": "Solicitudes de cambio"
+      },
+      "team": {
+        "employee": "Empleado",
+        "loading": "Cargando horario...",
+        "noEmployees": "No se encontraron empleados",
+        "editTooltip": "Editar asignaci\u00f3n",
+        "removeTooltip": "Quitar asignaci\u00f3n",
+        "assignTooltip": "Asignar turno",
+        "removeConfirm": "\u00bfQuitar esta asignaci\u00f3n de turno?"
+      },
+      "bulk": {
+        "title": "Asignaci\u00f3n masiva de turno",
+        "shiftLabel": "Turno",
+        "selectShift": "Seleccionar turno",
+        "employees": "Empleados",
+        "selectedCount": "{{count}} seleccionados",
+        "from": "Desde",
+        "toOptional": "Hasta (opcional)",
+        "assigning": "Asignando...",
+        "assignShift": "Asignar turno"
+      },
+      "quick": {
+        "title": "Asignar turno",
+        "dateLabel": "Fecha",
+        "assign": "Asignar"
+      },
+      "edit": {
+        "title": "Editar asignaci\u00f3n",
+        "shiftLabel": "Turno",
+        "from": "Desde",
+        "toOptional": "Hasta (opcional)",
+        "saving": "Guardando...",
+        "save": "Guardar"
+      },
+      "my": {
+        "loading": "Cargando tu horario...",
+        "noAssignments": "No se encontraron asignaciones de turno para el per\u00edodo actual.",
+        "showingFromTo": "Mostrando tus turnos del {{from}} al {{to}}",
+        "nightSuffix": "(Nocturno)",
+        "breakSuffix": "{{minutes}} min de descanso",
+        "from": "Desde",
+        "to": "Hasta"
+      },
+      "swaps": {
+        "loading": "Cargando solicitudes de cambio...",
+        "none": "No hay solicitudes de cambio de turno.",
+        "wantsToSwap": "quiere cambiar con",
+        "dateLabel": "Fecha",
+        "reasonLabel": "Motivo",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "statusApproved": "Aprobada",
+        "statusRejected": "Rechazada"
+      }
     }
   },
   "manager": {

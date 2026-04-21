@@ -450,6 +450,69 @@
         "status": "Status",
         "actions": "A\u00e7\u00f5es"
       }
+    },
+    "shiftSchedule": {
+      "title": "Escala de turnos",
+      "subtitle": "Visualize e gerencie as atribui\u00e7\u00f5es de turno da sua equipe.",
+      "bulkAssign": "Atribui\u00e7\u00e3o em massa",
+      "tabs": {
+        "schedule": "Escala da equipe",
+        "mySchedule": "Minha escala",
+        "swapRequests": "Solicita\u00e7\u00f5es de troca"
+      },
+      "team": {
+        "employee": "Colaborador",
+        "loading": "Carregando escala...",
+        "noEmployees": "Nenhum colaborador encontrado",
+        "editTooltip": "Editar atribui\u00e7\u00e3o",
+        "removeTooltip": "Remover atribui\u00e7\u00e3o",
+        "assignTooltip": "Atribuir turno",
+        "removeConfirm": "Remover esta atribui\u00e7\u00e3o de turno?"
+      },
+      "bulk": {
+        "title": "Atribui\u00e7\u00e3o em massa de turno",
+        "shiftLabel": "Turno",
+        "selectShift": "Selecionar turno",
+        "employees": "Colaboradores",
+        "selectedCount": "{{count}} selecionados",
+        "from": "De",
+        "toOptional": "At\u00e9 (opcional)",
+        "assigning": "Atribuindo...",
+        "assignShift": "Atribuir turno"
+      },
+      "quick": {
+        "title": "Atribuir turno",
+        "dateLabel": "Data",
+        "assign": "Atribuir"
+      },
+      "edit": {
+        "title": "Editar atribui\u00e7\u00e3o",
+        "shiftLabel": "Turno",
+        "from": "De",
+        "toOptional": "At\u00e9 (opcional)",
+        "saving": "Salvando...",
+        "save": "Salvar"
+      },
+      "my": {
+        "loading": "Carregando sua escala...",
+        "noAssignments": "Nenhuma atribui\u00e7\u00e3o de turno encontrada para o per\u00edodo atual.",
+        "showingFromTo": "Mostrando seus turnos de {{from}} at\u00e9 {{to}}",
+        "nightSuffix": "(Noturno)",
+        "breakSuffix": "{{minutes}} min de pausa",
+        "from": "De",
+        "to": "At\u00e9"
+      },
+      "swaps": {
+        "loading": "Carregando solicita\u00e7\u00f5es de troca...",
+        "none": "Sem solicita\u00e7\u00f5es de troca de turno.",
+        "wantsToSwap": "quer trocar com",
+        "dateLabel": "Data",
+        "reasonLabel": "Motivo",
+        "approve": "Aprovar",
+        "reject": "Rejeitar",
+        "statusApproved": "Aprovada",
+        "statusRejected": "Rejeitada"
+      }
     }
   },
   "manager": {

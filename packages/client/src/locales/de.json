@@ -450,6 +450,69 @@
         "status": "Status",
         "actions": "Aktionen"
       }
+    },
+    "shiftSchedule": {
+      "title": "Schichtplanung",
+      "subtitle": "Schichtzuweisungen Ihres Teams anzeigen und verwalten.",
+      "bulkAssign": "Massenzuweisung",
+      "tabs": {
+        "schedule": "Teamplan",
+        "mySchedule": "Mein Plan",
+        "swapRequests": "Tauschanfragen"
+      },
+      "team": {
+        "employee": "Mitarbeiter",
+        "loading": "Plan wird geladen...",
+        "noEmployees": "Keine Mitarbeiter gefunden",
+        "editTooltip": "Zuweisung bearbeiten",
+        "removeTooltip": "Zuweisung entfernen",
+        "assignTooltip": "Schicht zuweisen",
+        "removeConfirm": "Diese Schichtzuweisung entfernen?"
+      },
+      "bulk": {
+        "title": "Schicht in Masse zuweisen",
+        "shiftLabel": "Schicht",
+        "selectShift": "Schicht ausw\u00e4hlen",
+        "employees": "Mitarbeiter",
+        "selectedCount": "{{count}} ausgew\u00e4hlt",
+        "from": "Von",
+        "toOptional": "Bis (optional)",
+        "assigning": "Wird zugewiesen...",
+        "assignShift": "Schicht zuweisen"
+      },
+      "quick": {
+        "title": "Schicht zuweisen",
+        "dateLabel": "Datum",
+        "assign": "Zuweisen"
+      },
+      "edit": {
+        "title": "Zuweisung bearbeiten",
+        "shiftLabel": "Schicht",
+        "from": "Von",
+        "toOptional": "Bis (optional)",
+        "saving": "Wird gespeichert...",
+        "save": "Speichern"
+      },
+      "my": {
+        "loading": "Ihr Plan wird geladen...",
+        "noAssignments": "Keine Schichtzuweisungen f\u00fcr den aktuellen Zeitraum gefunden.",
+        "showingFromTo": "Ihre Schichten vom {{from}} bis {{to}}",
+        "nightSuffix": "(Nacht)",
+        "breakSuffix": "{{minutes}} Min. Pause",
+        "from": "Von",
+        "to": "Bis"
+      },
+      "swaps": {
+        "loading": "Tauschanfragen werden geladen...",
+        "none": "Keine Schichttausch-Anfragen.",
+        "wantsToSwap": "m\u00f6chte tauschen mit",
+        "dateLabel": "Datum",
+        "reasonLabel": "Grund",
+        "approve": "Genehmigen",
+        "reject": "Ablehnen",
+        "statusApproved": "Genehmigt",
+        "statusRejected": "Abgelehnt"
+      }
     }
   },
   "manager": {

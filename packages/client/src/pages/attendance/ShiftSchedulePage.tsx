@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Calendar,
@@ -33,9 +34,10 @@ function getWeekDates(offset: number): { start: string; end: string; dates: stri
   };
 }
 
-function formatDate(dateStr: string): string {
+// Uses the active i18n locale so column headers match the UI language.
+function formatDate(dateStr: string, locale: string): string {
   const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  return d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
 }
 
 function isDateInRange(date: string, from: string, to: string | null): boolean {
@@ -93,6 +95,7 @@ function useEmployees() {
 type Tab = "schedule" | "my-schedule" | "swap-requests";
 
 export default function ShiftSchedulePage() {
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("schedule");
   const [weekOffset, setWeekOffset] = useState(0);
@@ -236,35 +239,36 @@ export default function ShiftSchedulePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Shift Schedule</h1>
-          <p className="text-gray-500 mt-1">View and manage shift assignments across your team.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('attendance.shiftSchedule.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('attendance.shiftSchedule.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowBulkAssign(true)}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Users className="h-4 w-4" /> Bulk Assign
+          <Users className="h-4 w-4" /> {t('attendance.shiftSchedule.bulkAssign')}
         </button>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-gray-200 mb-6">
         {([
-          { key: "schedule", label: "Team Schedule", icon: Calendar },
-          { key: "my-schedule", label: "My Schedule", icon: Calendar },
-          { key: "swap-requests", label: `Swap Requests${pendingSwapCount > 0 ? ` (${pendingSwapCount})` : ""}`, icon: ArrowLeftRight },
-        ] as const).map((t) => (
+          { key: "schedule", labelKey: "attendance.shiftSchedule.tabs.schedule", icon: Calendar },
+          { key: "my-schedule", labelKey: "attendance.shiftSchedule.tabs.mySchedule", icon: Calendar },
+          { key: "swap-requests", labelKey: "attendance.shiftSchedule.tabs.swapRequests", icon: ArrowLeftRight },
+        ] as const).map((tab_) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={tab_.key}
+            onClick={() => setTab(tab_.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
-              tab === t.key
+              tab === tab_.key
                 ? "border-brand-600 text-brand-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            <t.icon className="h-4 w-4" />
-            {t.label}
+            <tab_.icon className="h-4 w-4" />
+            {t(tab_.labelKey)}
+            {tab_.key === "swap-requests" && pendingSwapCount > 0 ? ` (${pendingSwapCount})` : ""}
           </button>
         ))}
       </div>
@@ -277,21 +281,21 @@ export default function ShiftSchedulePage() {
             className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 mx-4"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Bulk Assign Shift</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('attendance.shiftSchedule.bulk.title')}</h3>
               <button type="button" onClick={() => setShowBulkAssign(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Shift *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.bulk.shiftLabel')} *</label>
                 <select
                   value={bulkShiftId}
                   onChange={(e) => setBulkShiftId(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   required
                 >
-                  <option value="">Select shift</option>
+                  <option value="">{t('attendance.shiftSchedule.bulk.selectShift')}</option>
                   {shifts.map((s: any) => (
                     <option key={s.id} value={s.id}>
                       {s.name} ({s.start_time} - {s.end_time})
@@ -301,7 +305,7 @@ export default function ShiftSchedulePage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Employees * ({bulkUserIds.length} selected)
+                  {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
                 </label>
                 <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
                   {employees.map((emp: any) => (
@@ -320,7 +324,7 @@ export default function ShiftSchedulePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">From *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.bulk.from')} *</label>
                   <input
                     type="date"
                     value={bulkFrom}
@@ -330,7 +334,7 @@ export default function ShiftSchedulePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">To (optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.bulk.toOptional')}</label>
                   <input
                     type="date"
                     value={bulkTo}
@@ -342,14 +346,14 @@ export default function ShiftSchedulePage() {
             </div>
             <div className="mt-6 flex justify-end gap-2">
               <button type="button" onClick={() => setShowBulkAssign(false)} className="px-4 py-2 text-sm border border-gray-300 rounded-lg">
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={bulkAssign.isPending}
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
-                {bulkAssign.isPending ? "Assigning..." : "Assign Shift"}
+                {bulkAssign.isPending ? t('attendance.shiftSchedule.bulk.assigning') : t('attendance.shiftSchedule.bulk.assignShift')}
               </button>
             </div>
           </form>
@@ -361,19 +365,19 @@ export default function ShiftSchedulePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <form onSubmit={handleQuickAssign} className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-900">Assign Shift</h3>
+              <h3 className="text-sm font-semibold text-gray-900">{t('attendance.shiftSchedule.quick.title')}</h3>
               <button type="button" onClick={() => setShowAssign(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-sm text-gray-500 mb-3">Date: {formatDate(showAssign.date)}</p>
+            <p className="text-sm text-gray-500 mb-3">{t('attendance.shiftSchedule.quick.dateLabel')}: {formatDate(showAssign.date, i18n.language)}</p>
             <select
               value={assignShiftId}
               onChange={(e) => setAssignShiftId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4"
               required
             >
-              <option value="">Select shift</option>
+              <option value="">{t('attendance.shiftSchedule.bulk.selectShift')}</option>
               {shifts.map((s: any) => (
                 <option key={s.id} value={s.id}>
                   {s.name} ({s.start_time} - {s.end_time})
@@ -382,14 +386,14 @@ export default function ShiftSchedulePage() {
             </select>
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowAssign(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={quickAssign.isPending}
                 className="bg-brand-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
-                Assign
+                {t('attendance.shiftSchedule.quick.assign')}
               </button>
             </div>
           </form>
@@ -401,14 +405,14 @@ export default function ShiftSchedulePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <form onSubmit={handleEditAssignment} className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-900">Edit Assignment</h3>
+              <h3 className="text-sm font-semibold text-gray-900">{t('attendance.shiftSchedule.edit.title')}</h3>
               <button type="button" onClick={() => setEditAssignment(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-4 w-4" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Shift</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.shiftLabel')}</label>
                 <select
                   value={editAssignment.shift_id}
                   onChange={(e) => setEditAssignment({ ...editAssignment, shift_id: Number(e.target.value) })}
@@ -423,7 +427,7 @@ export default function ShiftSchedulePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.from')}</label>
                 <input
                   type="date"
                   value={editAssignment.effective_from}
@@ -433,7 +437,7 @@ export default function ShiftSchedulePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">To (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.toOptional')}</label>
                 <input
                   type="date"
                   value={editAssignment.effective_to || ""}
@@ -444,14 +448,14 @@ export default function ShiftSchedulePage() {
             </div>
             <div className="mt-6 flex justify-end gap-2">
               <button type="button" onClick={() => setEditAssignment(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={updateAssignment.isPending}
                 className="bg-brand-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
-                {updateAssignment.isPending ? "Saving..." : "Save"}
+                {updateAssignment.isPending ? t('attendance.shiftSchedule.edit.saving') : t('attendance.shiftSchedule.edit.save')}
               </button>
             </div>
           </form>
@@ -467,16 +471,16 @@ export default function ShiftSchedulePage() {
               onClick={() => setWeekOffset((w) => w - 1)}
               className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
+              <ChevronLeft className="h-4 w-4" /> {t('attendance.previous')}
             </button>
             <span className="text-sm font-medium text-gray-700">
-              {formatDate(week.start)} &mdash; {formatDate(week.end)}
+              {formatDate(week.start, i18n.language)} &mdash; {formatDate(week.end, i18n.language)}
             </span>
             <button
               onClick={() => setWeekOffset((w) => w + 1)}
               className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
             >
-              Next <ChevronRight className="h-4 w-4" />
+              {t('attendance.next')} <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
@@ -497,11 +501,11 @@ export default function ShiftSchedulePage() {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 bg-gray-50 min-w-[180px]">
-                    Employee
+                    {t('attendance.shiftSchedule.team.employee')}
                   </th>
                   {week.dates.map((date) => (
                     <th key={date} className="text-center text-xs font-medium text-gray-500 uppercase px-2 py-3 min-w-[120px]">
-                      {formatDate(date)}
+                      {formatDate(date, i18n.language)}
                     </th>
                   ))}
                 </tr>
@@ -510,13 +514,13 @@ export default function ShiftSchedulePage() {
                 {scheduleLoading ? (
                   <tr>
                     <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
-                      Loading schedule...
+                      {t('attendance.shiftSchedule.team.loading')}
                     </td>
                   </tr>
                 ) : schedule.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
-                      No employees found
+                      {t('attendance.shiftSchedule.team.noEmployees')}
                     </td>
                   </tr>
                 ) : (
@@ -560,18 +564,18 @@ export default function ShiftSchedulePage() {
                                       })
                                     }
                                     className="text-gray-400 hover:text-brand-600 p-0.5"
-                                    title="Edit assignment"
+                                    title={t('attendance.shiftSchedule.team.editTooltip')}
                                   >
                                     <Pencil className="h-3 w-3" />
                                   </button>
                                   <button
                                     onClick={() => {
-                                      if (confirm("Remove this shift assignment?")) {
+                                      if (confirm(t('attendance.shiftSchedule.team.removeConfirm'))) {
                                         deleteAssignment.mutate(assignment.assignment_id);
                                       }
                                     }}
                                     className="text-gray-400 hover:text-red-600 p-0.5"
-                                    title="Remove assignment"
+                                    title={t('attendance.shiftSchedule.team.removeTooltip')}
                                   >
                                     <Trash2 className="h-3 w-3" />
                                   </button>
@@ -583,7 +587,7 @@ export default function ShiftSchedulePage() {
                                   setShowAssign({ userId: emp.user_id, date })
                                 }
                                 className="text-gray-300 hover:text-brand-500 transition"
-                                title="Assign shift"
+                                title={t('attendance.shiftSchedule.team.assignTooltip')}
                               >
                                 <Plus className="h-4 w-4 mx-auto" />
                               </button>
@@ -604,13 +608,13 @@ export default function ShiftSchedulePage() {
       {tab === "my-schedule" && (
         <div>
           {!mySchedule ? (
-            <div className="text-center py-12 text-gray-400">Loading your schedule...</div>
+            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.my.loading')}</div>
           ) : mySchedule.assignments.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">No shift assignments found for the current period.</div>
+            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.my.noAssignments')}</div>
           ) : (
             <div className="space-y-3">
               <p className="text-sm text-gray-500 mb-4">
-                Showing your shifts from {formatDate(mySchedule.start_date)} to {formatDate(mySchedule.end_date)}
+                {t('attendance.shiftSchedule.my.showingFromTo', { from: formatDate(mySchedule.start_date, i18n.language), to: formatDate(mySchedule.end_date, i18n.language) })}
               </p>
               {mySchedule.assignments.map((a: any) => (
                 <div
@@ -621,17 +625,17 @@ export default function ShiftSchedulePage() {
                     <p className="text-sm font-medium text-gray-900">{a.shift_name}</p>
                     <p className="text-xs text-gray-500">
                       {a.start_time} - {a.end_time}
-                      {a.is_night_shift ? " (Night)" : ""}
-                      {a.break_minutes ? ` | ${a.break_minutes}min break` : ""}
+                      {a.is_night_shift ? ` ${t('attendance.shiftSchedule.my.nightSuffix')}` : ""}
+                      {a.break_minutes ? ` | ${t('attendance.shiftSchedule.my.breakSuffix', { minutes: a.break_minutes })}` : ""}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">
-                      From: {new Date(a.effective_from).toLocaleDateString()}
+                      {t('attendance.shiftSchedule.my.from')}: {new Date(a.effective_from).toLocaleDateString(i18n.language)}
                     </p>
                     {a.effective_to && (
                       <p className="text-xs text-gray-400">
-                        To: {new Date(a.effective_to).toLocaleDateString()}
+                        {t('attendance.shiftSchedule.my.to')}: {new Date(a.effective_to).toLocaleDateString(i18n.language)}
                       </p>
                     )}
                   </div>
@@ -646,9 +650,9 @@ export default function ShiftSchedulePage() {
       {tab === "swap-requests" && (
         <div>
           {swapsLoading ? (
-            <div className="text-center py-12 text-gray-400">Loading swap requests...</div>
+            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.swaps.loading')}</div>
           ) : swapRequests.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">No shift swap requests.</div>
+            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.swaps.none')}</div>
           ) : (
             <div className="space-y-3">
               {swapRequests.map((req: any) => (
@@ -663,7 +667,7 @@ export default function ShiftSchedulePage() {
                         <span className="text-sm font-medium text-gray-900">
                           {req.requester_first_name} {req.requester_last_name}
                         </span>
-                        <span className="text-xs text-gray-400">wants to swap with</span>
+                        <span className="text-xs text-gray-400">{t('attendance.shiftSchedule.swaps.wantsToSwap')}</span>
                         <span className="text-sm font-medium text-gray-900">
                           {req.target_first_name} {req.target_last_name}
                         </span>
@@ -672,10 +676,10 @@ export default function ShiftSchedulePage() {
                         <span>
                           {req.requester_shift_name} &harr; {req.target_shift_name}
                         </span>
-                        <span>Date: {new Date(req.date).toLocaleDateString()}</span>
+                        <span>{t('attendance.shiftSchedule.swaps.dateLabel')}: {new Date(req.date).toLocaleDateString(i18n.language)}</span>
                       </div>
                       {req.reason && (
-                        <p className="text-xs text-gray-500 mt-1">Reason: {req.reason}</p>
+                        <p className="text-xs text-gray-500 mt-1">{t('attendance.shiftSchedule.swaps.reasonLabel')}: {req.reason}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2 ml-4">
@@ -686,14 +690,14 @@ export default function ShiftSchedulePage() {
                             disabled={approveSwap.isPending}
                             className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-lg font-medium hover:bg-green-100"
                           >
-                            <Check className="h-3 w-3" /> Approve
+                            <Check className="h-3 w-3" /> {t('attendance.shiftSchedule.swaps.approve')}
                           </button>
                           <button
                             onClick={() => rejectSwap.mutate(req.id)}
                             disabled={rejectSwap.isPending}
                             className="flex items-center gap-1 text-xs bg-red-50 text-red-700 px-3 py-1.5 rounded-lg font-medium hover:bg-red-100"
                           >
-                            <X className="h-3 w-3" /> Reject
+                            <X className="h-3 w-3" /> {t('attendance.shiftSchedule.swaps.reject')}
                           </button>
                         </>
                       ) : (
@@ -704,7 +708,7 @@ export default function ShiftSchedulePage() {
                               : "bg-red-50 text-red-700"
                           }`}
                         >
-                          {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                          {req.status === "approved" ? t('attendance.shiftSchedule.swaps.statusApproved') : t('attendance.shiftSchedule.swaps.statusRejected')}
                         </span>
                       )}
                     </div>

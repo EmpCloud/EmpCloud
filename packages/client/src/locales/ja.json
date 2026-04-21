@@ -450,6 +450,69 @@
         "status": "\u30b9\u30c6\u30fc\u30bf\u30b9",
         "actions": "\u64cd\u4f5c"
       }
+    },
+    "shiftSchedule": {
+      "title": "\u30b7\u30d5\u30c8\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb",
+      "subtitle": "\u30c1\u30fc\u30e0\u306e\u30b7\u30d5\u30c8\u5272\u308a\u5f53\u3066\u3092\u8868\u793a\u30fb\u7ba1\u7406\u3057\u307e\u3059\u3002",
+      "bulkAssign": "\u4e00\u62ec\u5272\u308a\u5f53\u3066",
+      "tabs": {
+        "schedule": "\u30c1\u30fc\u30e0\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb",
+        "mySchedule": "\u81ea\u5206\u306e\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb",
+        "swapRequests": "\u4ea4\u4ee3\u7533\u8acb"
+      },
+      "team": {
+        "employee": "\u5f93\u696d\u54e1",
+        "loading": "\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb\u3092\u8aad\u307f\u8fbc\u307f\u4e2d...",
+        "noEmployees": "\u5f93\u696d\u54e1\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093",
+        "editTooltip": "\u5272\u308a\u5f53\u3066\u3092\u7de8\u96c6",
+        "removeTooltip": "\u5272\u308a\u5f53\u3066\u3092\u524a\u9664",
+        "assignTooltip": "\u30b7\u30d5\u30c8\u3092\u5272\u308a\u5f53\u3066",
+        "removeConfirm": "\u3053\u306e\u30b7\u30d5\u30c8\u5272\u308a\u5f53\u3066\u3092\u524a\u9664\u3057\u307e\u3059\u304b\uff1f"
+      },
+      "bulk": {
+        "title": "\u30b7\u30d5\u30c8\u306e\u4e00\u62ec\u5272\u308a\u5f53\u3066",
+        "shiftLabel": "\u30b7\u30d5\u30c8",
+        "selectShift": "\u30b7\u30d5\u30c8\u3092\u9078\u629e",
+        "employees": "\u5f93\u696d\u54e1",
+        "selectedCount": "{{count}}\u4eba\u9078\u629e\u4e2d",
+        "from": "\u958b\u59cb",
+        "toOptional": "\u7d42\u4e86\uff08\u4efb\u610f\uff09",
+        "assigning": "\u5272\u308a\u5f53\u3066\u4e2d...",
+        "assignShift": "\u30b7\u30d5\u30c8\u3092\u5272\u308a\u5f53\u3066"
+      },
+      "quick": {
+        "title": "\u30b7\u30d5\u30c8\u3092\u5272\u308a\u5f53\u3066",
+        "dateLabel": "\u65e5\u4ed8",
+        "assign": "\u5272\u308a\u5f53\u3066"
+      },
+      "edit": {
+        "title": "\u5272\u308a\u5f53\u3066\u3092\u7de8\u96c6",
+        "shiftLabel": "\u30b7\u30d5\u30c8",
+        "from": "\u958b\u59cb",
+        "toOptional": "\u7d42\u4e86\uff08\u4efb\u610f\uff09",
+        "saving": "\u4fdd\u5b58\u4e2d...",
+        "save": "\u4fdd\u5b58"
+      },
+      "my": {
+        "loading": "\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb\u3092\u8aad\u307f\u8fbc\u307f\u4e2d...",
+        "noAssignments": "\u73fe\u5728\u306e\u671f\u9593\u306b\u30b7\u30d5\u30c8\u5272\u308a\u5f53\u3066\u306f\u3042\u308a\u307e\u305b\u3093\u3002",
+        "showingFromTo": "{{from}} \u304b\u3089 {{to}} \u307e\u3067\u306e\u30b7\u30d5\u30c8\u3092\u8868\u793a\u4e2d",
+        "nightSuffix": "\uff08\u591c\u52e4\uff09",
+        "breakSuffix": "\u4f11\u61a9 {{minutes}} \u5206",
+        "from": "\u958b\u59cb",
+        "to": "\u7d42\u4e86"
+      },
+      "swaps": {
+        "loading": "\u4ea4\u4ee3\u7533\u8acb\u3092\u8aad\u307f\u8fbc\u307f\u4e2d...",
+        "none": "\u30b7\u30d5\u30c8\u4ea4\u4ee3\u7533\u8acb\u306f\u3042\u308a\u307e\u305b\u3093\u3002",
+        "wantsToSwap": "\u3068\u306e\u4ea4\u4ee3\u3092\u5e0c\u671b",
+        "dateLabel": "\u65e5\u4ed8",
+        "reasonLabel": "\u7406\u7531",
+        "approve": "\u627f\u8a8d",
+        "reject": "\u5374\u4e0b",
+        "statusApproved": "\u627f\u8a8d\u6e08\u307f",
+        "statusRejected": "\u5374\u4e0b"
+      }
     }
   },
   "manager": {

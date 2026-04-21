@@ -450,6 +450,69 @@
         "status": "Statut",
         "actions": "Actions"
       }
+    },
+    "shiftSchedule": {
+      "title": "Planning des horaires",
+      "subtitle": "Consultez et g\u00e9rez les affectations d'horaires de votre \u00e9quipe.",
+      "bulkAssign": "Affectation en masse",
+      "tabs": {
+        "schedule": "Planning de l'\u00e9quipe",
+        "mySchedule": "Mon planning",
+        "swapRequests": "Demandes d'\u00e9change"
+      },
+      "team": {
+        "employee": "Employ\u00e9",
+        "loading": "Chargement du planning...",
+        "noEmployees": "Aucun employ\u00e9 trouv\u00e9",
+        "editTooltip": "Modifier l'affectation",
+        "removeTooltip": "Retirer l'affectation",
+        "assignTooltip": "Affecter un horaire",
+        "removeConfirm": "Retirer cette affectation d'horaire ?"
+      },
+      "bulk": {
+        "title": "Affectation en masse d'un horaire",
+        "shiftLabel": "Horaire",
+        "selectShift": "S\u00e9lectionner un horaire",
+        "employees": "Employ\u00e9s",
+        "selectedCount": "{{count}} s\u00e9lectionn\u00e9s",
+        "from": "Du",
+        "toOptional": "Au (facultatif)",
+        "assigning": "Affectation en cours...",
+        "assignShift": "Affecter l'horaire"
+      },
+      "quick": {
+        "title": "Affecter un horaire",
+        "dateLabel": "Date",
+        "assign": "Affecter"
+      },
+      "edit": {
+        "title": "Modifier l'affectation",
+        "shiftLabel": "Horaire",
+        "from": "Du",
+        "toOptional": "Au (facultatif)",
+        "saving": "Enregistrement...",
+        "save": "Enregistrer"
+      },
+      "my": {
+        "loading": "Chargement de votre planning...",
+        "noAssignments": "Aucune affectation d'horaire trouv\u00e9e pour la p\u00e9riode actuelle.",
+        "showingFromTo": "Affichage de vos horaires du {{from}} au {{to}}",
+        "nightSuffix": "(Nuit)",
+        "breakSuffix": "pause de {{minutes}} min",
+        "from": "Du",
+        "to": "Au"
+      },
+      "swaps": {
+        "loading": "Chargement des demandes d'\u00e9change...",
+        "none": "Aucune demande d'\u00e9change d'horaire.",
+        "wantsToSwap": "souhaite \u00e9changer avec",
+        "dateLabel": "Date",
+        "reasonLabel": "Motif",
+        "approve": "Approuver",
+        "reject": "Refuser",
+        "statusApproved": "Approuv\u00e9e",
+        "statusRejected": "Refus\u00e9e"
+      }
     }
   },
   "manager": {

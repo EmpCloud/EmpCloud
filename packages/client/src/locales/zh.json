@@ -450,6 +450,69 @@
         "status": "\u72b6\u6001",
         "actions": "\u64cd\u4f5c"
       }
+    },
+    "shiftSchedule": {
+      "title": "\u73ed\u6b21\u5b89\u6392",
+      "subtitle": "\u67e5\u770b\u5e76\u7ba1\u7406\u60a8\u56e2\u961f\u7684\u73ed\u6b21\u5206\u914d\u3002",
+      "bulkAssign": "\u6279\u91cf\u5206\u914d",
+      "tabs": {
+        "schedule": "\u56e2\u961f\u6392\u73ed",
+        "mySchedule": "\u6211\u7684\u6392\u73ed",
+        "swapRequests": "\u6362\u73ed\u7533\u8bf7"
+      },
+      "team": {
+        "employee": "\u5458\u5de5",
+        "loading": "\u6b63\u5728\u52a0\u8f7d\u6392\u73ed...",
+        "noEmployees": "\u672a\u627e\u5230\u5458\u5de5",
+        "editTooltip": "\u7f16\u8f91\u5206\u914d",
+        "removeTooltip": "\u79fb\u9664\u5206\u914d",
+        "assignTooltip": "\u5206\u914d\u73ed\u6b21",
+        "removeConfirm": "\u8981\u79fb\u9664\u6b64\u73ed\u6b21\u5206\u914d\u5417\uff1f"
+      },
+      "bulk": {
+        "title": "\u6279\u91cf\u5206\u914d\u73ed\u6b21",
+        "shiftLabel": "\u73ed\u6b21",
+        "selectShift": "\u9009\u62e9\u73ed\u6b21",
+        "employees": "\u5458\u5de5",
+        "selectedCount": "\u5df2\u9009 {{count}} \u4eba",
+        "from": "\u4ece",
+        "toOptional": "\u81f3\uff08\u53ef\u9009\uff09",
+        "assigning": "\u6b63\u5728\u5206\u914d...",
+        "assignShift": "\u5206\u914d\u73ed\u6b21"
+      },
+      "quick": {
+        "title": "\u5206\u914d\u73ed\u6b21",
+        "dateLabel": "\u65e5\u671f",
+        "assign": "\u5206\u914d"
+      },
+      "edit": {
+        "title": "\u7f16\u8f91\u5206\u914d",
+        "shiftLabel": "\u73ed\u6b21",
+        "from": "\u4ece",
+        "toOptional": "\u81f3\uff08\u53ef\u9009\uff09",
+        "saving": "\u4fdd\u5b58\u4e2d...",
+        "save": "\u4fdd\u5b58"
+      },
+      "my": {
+        "loading": "\u6b63\u5728\u52a0\u8f7d\u60a8\u7684\u6392\u73ed...",
+        "noAssignments": "\u5f53\u524d\u671f\u95f4\u672a\u627e\u5230\u73ed\u6b21\u5206\u914d\u3002",
+        "showingFromTo": "\u663e\u793a {{from}} \u81f3 {{to}} \u7684\u73ed\u6b21",
+        "nightSuffix": "\uff08\u591c\u73ed\uff09",
+        "breakSuffix": "\u4f11\u606f {{minutes}} \u5206\u949f",
+        "from": "\u4ece",
+        "to": "\u81f3"
+      },
+      "swaps": {
+        "loading": "\u6b63\u5728\u52a0\u8f7d\u6362\u73ed\u7533\u8bf7...",
+        "none": "\u6682\u65e0\u6362\u73ed\u7533\u8bf7\u3002",
+        "wantsToSwap": "\u5e0c\u671b\u4e0e\u4ee5\u4e0b\u4eba\u5458\u6362\u73ed",
+        "dateLabel": "\u65e5\u671f",
+        "reasonLabel": "\u539f\u56e0",
+        "approve": "\u6279\u51c6",
+        "reject": "\u62d2\u7edd",
+        "statusApproved": "\u5df2\u6279\u51c6",
+        "statusRejected": "\u5df2\u62d2\u7edd"
+      }
     }
   },
   "manager": {
