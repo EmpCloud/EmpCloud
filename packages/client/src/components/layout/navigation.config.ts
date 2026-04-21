@@ -176,42 +176,42 @@ export const adminNavItems: NavItem[] = [
 export const positionNavItems: NavItem[] = [
   { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
   { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
-  { path: "/positions/vacancies", label: "Vacancies", i18nKey: "", icon: Target },
-  { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "", icon: ClipboardList },
+  { path: "/positions/vacancies", label: "Vacancies", i18nKey: "nav.vacancies", icon: Target },
+  { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "nav.headcountPlans", icon: ClipboardList },
 ];
 
 export const forumNavItems: NavItem[] = [
   { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
-  { path: "/forum/new", label: "Create Post", i18nKey: "", icon: PenSquare },
+  { path: "/forum/new", label: "Create Post", i18nKey: "nav.createPost", icon: PenSquare },
 ];
 
 export const forumHRNavItems: NavItem[] = [
   { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
-  { path: "/forum/new", label: "Create Post", i18nKey: "", icon: PenSquare },
-  { path: "/forum/dashboard", label: "Forum Dashboard", i18nKey: "", icon: BarChart3 },
+  { path: "/forum/new", label: "Create Post", i18nKey: "nav.createPost", icon: PenSquare },
+  { path: "/forum/dashboard", label: "Forum Dashboard", i18nKey: "nav.forumDashboard", icon: BarChart3 },
 ];
 
 export const eventNavItems: NavItem[] = [
   { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
-  { path: "/events/my", label: "My Events", i18nKey: "", icon: CalendarCheck },
+  { path: "/events/my", label: "My Events", i18nKey: "nav.myEvents", icon: CalendarCheck },
 ];
 
 export const eventHRNavItems: NavItem[] = [
   { path: "/events", label: "Events", i18nKey: "nav.events", icon: PartyPopper },
-  { path: "/events/my", label: "My Events", i18nKey: "", icon: CalendarCheck },
-  { path: "/events/dashboard", label: "Event Dashboard", i18nKey: "", icon: BarChart3 },
+  { path: "/events/my", label: "My Events", i18nKey: "nav.myEvents", icon: CalendarCheck },
+  { path: "/events/dashboard", label: "Event Dashboard", i18nKey: "nav.eventDashboard", icon: BarChart3 },
 ];
 
 export const whistleblowingNavItems: NavItem[] = [
-  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "", icon: ShieldAlert },
-  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "", icon: Search },
+  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "nav.submitReport", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "nav.trackReport", icon: Search },
 ];
 
 export const whistleblowingHRNavItems: NavItem[] = [
-  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "", icon: ShieldAlert },
-  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "", icon: Search },
+  { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "nav.submitReport", icon: ShieldAlert },
+  { path: "/whistleblowing/track", label: "Track Report", i18nKey: "nav.trackReport", icon: Search },
   { path: "/whistleblowing/dashboard", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
-  { path: "/whistleblowing/reports", label: "All Reports", i18nKey: "", icon: ClipboardList },
+  { path: "/whistleblowing/reports", label: "All Reports", i18nKey: "nav.allReports", icon: ClipboardList },
 ];
 
 export const helpdeskNavItems: NavItem[] = [
@@ -227,72 +227,72 @@ export const helpdeskHRNavItems: NavItem[] = [
 ];
 
 export const surveyNavItems: NavItem[] = [
-  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.activeSurveys", icon: ClipboardList },
 ];
 
 export const surveyHRNavItems: NavItem[] = [
-  { path: "/surveys/dashboard", label: "Survey Dashboard", i18nKey: "", icon: BarChart3 },
-  { path: "/surveys/list", label: "All Surveys", i18nKey: "", icon: ClipboardList },
-  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "", icon: ClipboardList },
+  { path: "/surveys/dashboard", label: "Survey Dashboard", i18nKey: "nav.surveyDashboard", icon: BarChart3 },
+  { path: "/surveys/list", label: "All Surveys", i18nKey: "nav.allSurveys", icon: ClipboardList },
+  { path: "/surveys/respond", label: "Active Surveys", i18nKey: "nav.activeSurveys", icon: ClipboardList },
 ];
 
 export const wellnessNavItems: NavItem[] = [
   { path: "/wellness", label: "Wellness", i18nKey: "nav.wellness", icon: Heart },
-  { path: "/wellness/my", label: "My Wellness", i18nKey: "", icon: Dumbbell },
-  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "", icon: Smile },
+  { path: "/wellness/my", label: "My Wellness", i18nKey: "nav.myWellness", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "nav.dailyCheckIn", icon: Smile },
 ];
 
 export const wellnessHRNavItems: NavItem[] = [
   { path: "/wellness", label: "Wellness", i18nKey: "nav.wellness", icon: Heart },
-  { path: "/wellness/my", label: "My Wellness", i18nKey: "", icon: Dumbbell },
-  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "", icon: Smile },
-  { path: "/wellness/dashboard", label: "Wellness Dashboard", i18nKey: "", icon: BarChart3 },
+  { path: "/wellness/my", label: "My Wellness", i18nKey: "nav.myWellness", icon: Dumbbell },
+  { path: "/wellness/check-in", label: "Daily Check-in", i18nKey: "nav.dailyCheckIn", icon: Smile },
+  { path: "/wellness/dashboard", label: "Wellness Dashboard", i18nKey: "nav.wellnessDashboard", icon: BarChart3 },
 ];
 
 export const assetNavItems: NavItem[] = [
-  { path: "/assets/my", label: "My Assets", i18nKey: "", icon: Laptop },
+  { path: "/assets/my", label: "My Assets", i18nKey: "nav.myAssets", icon: Laptop },
 ];
 
 export const assetHRNavItems: NavItem[] = [
-  { path: "/assets/dashboard", label: "Asset Dashboard", i18nKey: "", icon: BarChart3 },
-  { path: "/assets", label: "All Assets", i18nKey: "", icon: Laptop },
-  { path: "/assets/categories", label: "Categories", i18nKey: "", icon: FolderOpen },
+  { path: "/assets/dashboard", label: "Asset Dashboard", i18nKey: "nav.assetDashboard", icon: BarChart3 },
+  { path: "/assets", label: "All Assets", i18nKey: "nav.allAssets", icon: Laptop },
+  { path: "/assets/categories", label: "Categories", i18nKey: "nav.categories", icon: FolderOpen },
 ];
 
 export const feedbackNavItems: NavItem[] = [
-  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "", icon: MessageSquarePlus },
-  { path: "/feedback/my", label: "My Feedback", i18nKey: "", icon: MessageSquare },
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.submitFeedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.myFeedback", icon: MessageSquare },
 ];
 
 export const feedbackHRNavItems: NavItem[] = [
-  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "", icon: MessageSquarePlus },
-  { path: "/feedback/my", label: "My Feedback", i18nKey: "", icon: MessageSquare },
-  { path: "/feedback", label: "All Feedback", i18nKey: "", icon: MessageSquare },
-  { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "", icon: BarChart3 },
+  { path: "/feedback/submit", label: "Submit Feedback", i18nKey: "nav.submitFeedback", icon: MessageSquarePlus },
+  { path: "/feedback/my", label: "My Feedback", i18nKey: "nav.myFeedback", icon: MessageSquare },
+  { path: "/feedback", label: "All Feedback", i18nKey: "nav.allFeedback", icon: MessageSquare },
+  { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "nav.feedbackDashboard", icon: BarChart3 },
 ];
 
 export const biometricsNavItems: NavItem[] = [
   { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
-  { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "", icon: Fingerprint },
-  { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "", icon: QrCode },
-  { path: "/biometrics/devices", label: "Devices", i18nKey: "", icon: Smartphone },
-  { path: "/biometrics/logs", label: "Biometric Logs", i18nKey: "", icon: ScrollText },
-  { path: "/biometrics/settings", label: "Biometric Settings", i18nKey: "", icon: Settings },
+  { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "nav.faceEnrollment", icon: Fingerprint },
+  { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "nav.qrAttendance", icon: QrCode },
+  { path: "/biometrics/devices", label: "Devices", i18nKey: "nav.devices", icon: Smartphone },
+  { path: "/biometrics/logs", label: "Biometric Logs", i18nKey: "nav.biometricLogs", icon: ScrollText },
+  { path: "/biometrics/settings", label: "Biometric Settings", i18nKey: "nav.biometricSettings", icon: Settings },
 ];
 
 export const platformAdminNavItems: NavItem[] = [
-  { path: "/admin", label: "Overview Dashboard", icon: Crown },
-  { path: "/admin/organizations", label: "Organizations", icon: Building2 },
-  { path: "/admin/modules", label: "Module Analytics", icon: Package },
-  { path: "/admin/revenue", label: "Revenue", icon: TrendingUp },
-  { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
-  { path: "/admin/notifications", label: "System Notifications", icon: Bell },
-  { path: "/admin/health", label: "Service Health", icon: Activity },
-  { path: "/admin/data-sanity", label: "Data Sanity", icon: DatabaseZap },
-  { path: "/admin/ai-config", label: "AI Configuration", icon: Sparkles },
-  { path: "/admin/logs", label: "Log Dashboard", icon: ScrollText },
-  { path: "/admin/audit", label: "Audit Log", icon: Shield },
-  { path: "/admin/settings", label: "Platform Settings", icon: Settings },
+  { path: "/admin", label: "Overview Dashboard", i18nKey: "nav.overviewDashboard", icon: Crown },
+  { path: "/admin/organizations", label: "Organizations", i18nKey: "nav.organizations", icon: Building2 },
+  { path: "/admin/modules", label: "Module Analytics", i18nKey: "nav.moduleAnalytics", icon: Package },
+  { path: "/admin/revenue", label: "Revenue", i18nKey: "nav.revenue", icon: TrendingUp },
+  { path: "/admin/subscriptions", label: "Subscriptions", i18nKey: "nav.subscriptions", icon: CreditCard },
+  { path: "/admin/notifications", label: "System Notifications", i18nKey: "nav.systemNotifications", icon: Bell },
+  { path: "/admin/health", label: "Service Health", i18nKey: "nav.serviceHealth", icon: Activity },
+  { path: "/admin/data-sanity", label: "Data Sanity", i18nKey: "nav.dataSanity", icon: DatabaseZap },
+  { path: "/admin/ai-config", label: "AI Configuration", i18nKey: "nav.aiConfiguration", icon: Sparkles },
+  { path: "/admin/logs", label: "Log Dashboard", i18nKey: "nav.logDashboard", icon: ScrollText },
+  { path: "/admin/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield },
+  { path: "/admin/settings", label: "Platform Settings", i18nKey: "nav.platformSettings", icon: Settings },
 ];
 
 export const HR_ROLES = ["hr_admin", "org_admin"];

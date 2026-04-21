@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Package, Loader2, AlertTriangle, ChevronLeft, ChevronRight, Filter, Check, X } from "lucide-react";
 import api from "@/api/client";
 
 const PAGE_SIZE = 20;
 
 export default function ModuleAccessPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -55,11 +57,11 @@ export default function ModuleAccessPage() {
       qc.invalidateQueries({ queryKey: ["org-subscriptions"] });
       setConfirmAction(null);
       if (data.sync_status === "synced") {
-        setSyncAlert({ type: "success", message: "Module enabled and user synced successfully" });
+        setSyncAlert({ type: "success", message: t('modulesAccess.syncAlerts.enabledSynced') });
       } else if (data.sync_status === "skipped") {
-        setSyncAlert({ type: "warning", message: "Seat assigned. Module has no sync API configured." });
+        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.enabledSkipped') });
       } else {
-        setSyncAlert({ type: "warning", message: `Seat assigned but module sync failed (${data.sync_status}).` });
+        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.enabledPartial', { status: data.sync_status }) });
       }
       setTimeout(() => setSyncAlert(null), 5000);
     },
@@ -71,7 +73,7 @@ export default function ModuleAccessPage() {
       const message =
         status === 409 && serverMsg
           ? serverMsg
-          : serverMsg || "Failed to enable module";
+          : serverMsg || t('modulesAccess.syncAlerts.enableFailed');
       setSyncAlert({ type: "error", message });
       setConfirmAction(null);
       // Seat-limit messages are longer and more important — keep them visible longer
@@ -87,14 +89,14 @@ export default function ModuleAccessPage() {
       qc.invalidateQueries({ queryKey: ["org-subscriptions"] });
       setConfirmAction(null);
       if (data.sync_status === "synced") {
-        setSyncAlert({ type: "success", message: "Module disabled and user removed" });
+        setSyncAlert({ type: "success", message: t('modulesAccess.syncAlerts.disabledSynced') });
       } else {
-        setSyncAlert({ type: "warning", message: `Seat removed but module sync failed (${data.sync_status})` });
+        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.disabledPartial', { status: data.sync_status }) });
       }
       setTimeout(() => setSyncAlert(null), 5000);
     },
     onError: (err: any) => {
-      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || "Failed to disable module" });
+      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || t('modulesAccess.syncAlerts.disableFailed') });
       setTimeout(() => setSyncAlert(null), 5000);
     },
   });
@@ -177,13 +179,13 @@ export default function ModuleAccessPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Module Access</h1>
-          <p className="text-gray-500 mt-1">Manage which employees have access to each module.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('modulesAccess.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('modulesAccess.subtitle')}</p>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-500">
-          <span className="flex items-center gap-1.5"><Package className="h-4 w-4" /> {subscribedModules.length} modules</span>
-          <span>{users.length} employees</span>
-          <span>{totalEnabled} seats assigned</span>
+          <span className="flex items-center gap-1.5"><Package className="h-4 w-4" /> {t('modulesAccess.modulesCount', { count: subscribedModules.length })}</span>
+          <span>{t('modulesAccess.employeesCount', { count: users.length })}</span>
+          <span>{t('modulesAccess.seatsAssignedCount', { count: totalEnabled })}</span>
         </div>
       </div>
 
@@ -195,16 +197,37 @@ export default function ModuleAccessPage() {
             const used = sub?.used_seats || 0;
             const total = sub?.total_seats || 0;
             const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
+            const isFilteredOnThis = filterModule === `enabled:${m.id}`;
             return (
-              <div key={m.id} className="bg-white rounded-xl border border-gray-200 p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-gray-300"}`} />
-                  <span className="text-xs font-medium text-gray-700 truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
-                </div>
-                <div className="text-lg font-bold text-gray-900">{used}<span className="text-sm font-normal text-gray-400">/{total}</span></div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
-                  <div className="bg-brand-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                </div>
+              <div
+                key={m.id}
+                className={`bg-white rounded-xl border p-3 ${
+                  isFilteredOnThis ? "border-brand-400 ring-1 ring-brand-200" : "border-gray-200"
+                }`}
+              >
+                {/* #1537 — Card header is a button that filters the employee
+                    table below to only show people enabled for this module.
+                    Clicking again clears the filter (toggle). The Enable/
+                    Disable All buttons below are separate so they don't
+                    trigger the filter. */}
+                <button
+                  type="button"
+                  onClick={() => setFilterModule(isFilteredOnThis ? "all" : `enabled:${m.id}`)}
+                  aria-label={isFilteredOnThis
+                    ? `Clear filter for ${m.name}`
+                    : `Show employees enabled for ${m.name}`}
+                  aria-pressed={isFilteredOnThis}
+                  className="w-full text-left rounded-md -m-1 p-1 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-gray-300"}`} />
+                    <span className="text-xs font-medium text-gray-700 truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">{used}<span className="text-sm font-normal text-gray-400">/{total}</span></div>
+                  <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
+                    <div className="bg-brand-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </button>
                 <div className="flex gap-1 mt-3">
                   <button
                     onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "enable" })}
@@ -249,7 +272,7 @@ export default function ModuleAccessPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-            placeholder="Search by name, email, designation, or emp code..."
+            placeholder={t('modulesAccess.searchPlaceholder')}
           />
         </div>
         <div className="flex items-center gap-2">
@@ -259,15 +282,15 @@ export default function ModuleAccessPage() {
             onChange={(e) => { setFilterModule(e.target.value); setPage(1); }}
             className="px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           >
-            <option value="all">All Employees</option>
-            <optgroup label="Enabled for">
+            <option value="all">{t('modulesAccess.allEmployees')}</option>
+            <optgroup label={t('modulesAccess.enabledFor')}>
               {subscribedModules.map((m: any) => (
-                <option key={`e-${m.id}`} value={`enabled:${m.id}`}>{m.name.replace(/^EMP\s+/i, "")} — Enabled</option>
+                <option key={`e-${m.id}`} value={`enabled:${m.id}`}>{m.name.replace(/^EMP\s+/i, "")} — {t('modulesAccess.enabledSuffix')}</option>
               ))}
             </optgroup>
-            <optgroup label="Not enabled for">
+            <optgroup label={t('modulesAccess.notEnabledFor')}>
               {subscribedModules.map((m: any) => (
-                <option key={`d-${m.id}`} value={`disabled:${m.id}`}>{m.name.replace(/^EMP\s+/i, "")} — Not Enabled</option>
+                <option key={`d-${m.id}`} value={`disabled:${m.id}`}>{m.name.replace(/^EMP\s+/i, "")} — {t('modulesAccess.notEnabledSuffix')}</option>
               ))}
             </optgroup>
           </select>
@@ -283,22 +306,23 @@ export default function ModuleAccessPage() {
                 <AlertTriangle className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Disable Module Access</h3>
-                <p className="text-xs text-gray-400">This action may delete user data in the module</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('modulesAccess.confirm.title')}</h3>
+                <p className="text-xs text-gray-400">{t('modulesAccess.confirm.subtitle')}</p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to remove <strong>{confirmAction.userName}</strong>'s access to{" "}
-              <strong>{confirmAction.moduleName}</strong>? Their data in this module may be permanently deleted.
-            </p>
+            <p className="text-sm text-gray-600 mb-6"
+               dangerouslySetInnerHTML={{
+                 __html: t('modulesAccess.confirm.message', { user: confirmAction.userName, module: confirmAction.moduleName })
+               }}
+            />
             <div className="flex justify-end gap-3">
-              <button onClick={() => setConfirmAction(null)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</button>
+              <button onClick={() => setConfirmAction(null)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">{t('modulesAccess.confirm.cancel')}</button>
               <button
                 onClick={() => disableModule.mutate({ module_id: confirmAction.moduleId, user_id: confirmAction.userId })}
                 disabled={disableModule.isPending}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                {disableModule.isPending ? "Removing..." : "Remove Access"}
+                {disableModule.isPending ? t('modulesAccess.confirm.removing') : t('modulesAccess.confirm.remove')}
               </button>
             </div>
           </div>
@@ -359,28 +383,28 @@ export default function ModuleAccessPage() {
             <tr>
               {/* #1416 — z-index keeps the sticky Employee column above
                    horizontally scrolled toggle cells so they don't overlap. */}
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 sticky left-0 z-20 bg-gray-50 min-w-[220px] shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">Employee</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Role</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Designation</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 sticky left-0 z-20 bg-gray-50 min-w-[220px] shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">{t('modulesAccess.table.employee')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">{t('modulesAccess.table.role')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">{t('modulesAccess.table.designation')}</th>
               {subscribedModules.map((m: any) => (
                 <th key={m.id} className="text-center text-xs font-medium text-gray-500 uppercase px-3 py-3 min-w-[90px]">
                   {m.slug.replace("emp-", "").charAt(0).toUpperCase() + m.slug.replace("emp-", "").slice(1)}
                 </th>
               ))}
-              <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">Modules</th>
+              <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">{t('modulesAccess.table.modules')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
               <tr>
                 <td colSpan={4 + subscribedModules.length} className="px-6 py-12 text-center text-gray-400">
-                  <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" /> Loading employees...
+                  <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" /> {t('modulesAccess.loading')}
                 </td>
               </tr>
             ) : pagedUsers.length === 0 ? (
               <tr>
                 <td colSpan={4 + subscribedModules.length} className="px-6 py-12 text-center text-gray-400">
-                  No employees found {search && "matching your search"} {filterModule !== "all" && "with this filter"}
+                  {t('modulesAccess.noEmployees')} {search && t('modulesAccess.matchingSearch')} {filterModule !== "all" && t('modulesAccess.withFilter')}
                 </td>
               </tr>
             ) : (
@@ -400,7 +424,7 @@ export default function ModuleAccessPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">{user.role?.replace(/_/g, " ")}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">{user.role ? (t(`roles.${user.role}`) !== `roles.${user.role}` ? t(`roles.${user.role}`) : user.role.replace(/_/g, " ")) : ""}</span>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[120px]">{user.designation || "-"}</td>
                     {subscribedModules.map((m: any) => {
@@ -435,7 +459,7 @@ export default function ModuleAccessPage() {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 bg-gray-50">
             <p className="text-sm text-gray-500">
-              Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalUsers)} of {totalUsers} employees
+              {t('modulesAccess.pagination.showing', { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, totalUsers), total: totalUsers })}
             </p>
             <div className="flex gap-2">
               <button
@@ -443,14 +467,14 @@ export default function ModuleAccessPage() {
                 disabled={page === 1}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-white"
               >
-                <ChevronLeft className="h-4 w-4" /> Previous
+                <ChevronLeft className="h-4 w-4" /> {t('modulesAccess.pagination.previous')}
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-white"
               >
-                Next <ChevronRight className="h-4 w-4" />
+                {t('modulesAccess.pagination.next')} <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>

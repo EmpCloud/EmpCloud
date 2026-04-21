@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { Bell } from "lucide-react";
 
 export function NotificationDropdown() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
@@ -68,20 +70,20 @@ export function NotificationDropdown() {
       {open && (
         <div className="fixed right-4 top-14 w-96 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden" style={{ zIndex: 9999 }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('common.notifications')}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllRead.mutate()}
                 className="text-xs text-brand-600 hover:underline"
               >
-                Mark all as read
+                {t('common.markAllRead')}
               </button>
             )}
           </div>
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-gray-400">
-                No notifications yet
+                {t('common.noNotifications')}
               </div>
             ) : (
               notifications.map((n: any) => (

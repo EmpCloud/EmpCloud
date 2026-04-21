@@ -16,6 +16,8 @@
     "surveys": "Pesquisas",
     "assets": "Ativos",
     "positions": "Cargos",
+    "vacancies": "Vagas",
+    "headcountPlans": "Planos de quadro",
     "feedback": "Feedback",
     "events": "Eventos",
     "wellness": "Bem-estar",
@@ -31,7 +33,44 @@
     "platformAdmin": "Admin. Plataforma",
     "myProfile": "Meu Perfil",
     "selfService": "Autoatendimento",
-    "probation": "Período probatório"
+    "probation": "Per\u00edodo probat\u00f3rio",
+    "createPost": "Criar publica\u00e7\u00e3o",
+    "forumDashboard": "Painel do f\u00f3rum",
+    "myEvents": "Meus eventos",
+    "eventDashboard": "Painel de eventos",
+    "submitReport": "Enviar den\u00fancia",
+    "trackReport": "Rastrear den\u00fancia",
+    "allReports": "Todas as den\u00fancias",
+    "activeSurveys": "Pesquisas ativas",
+    "surveyDashboard": "Painel de pesquisas",
+    "allSurveys": "Todas as pesquisas",
+    "myWellness": "Meu bem-estar",
+    "dailyCheckIn": "Check-in di\u00e1rio",
+    "wellnessDashboard": "Painel de bem-estar",
+    "myAssets": "Meus ativos",
+    "assetDashboard": "Painel de ativos",
+    "allAssets": "Todos os ativos",
+    "categories": "Categorias",
+    "submitFeedback": "Enviar feedback",
+    "myFeedback": "Meus feedbacks",
+    "allFeedback": "Todos os feedbacks",
+    "feedbackDashboard": "Painel de feedback",
+    "faceEnrollment": "Cadastro facial",
+    "qrAttendance": "Presen\u00e7a por QR",
+    "devices": "Dispositivos",
+    "biometricLogs": "Logs biom\u00e9tricos",
+    "biometricSettings": "Configura\u00e7\u00f5es biom\u00e9tricas",
+    "overviewDashboard": "Painel geral",
+    "organizations": "Organiza\u00e7\u00f5es",
+    "moduleAnalytics": "Anal\u00edtica de m\u00f3dulos",
+    "revenue": "Receita",
+    "subscriptions": "Assinaturas",
+    "systemNotifications": "Notifica\u00e7\u00f5es do sistema",
+    "serviceHealth": "Sa\u00fade dos servi\u00e7os",
+    "dataSanity": "Integridade de dados",
+    "aiConfiguration": "Configura\u00e7\u00e3o de IA",
+    "logDashboard": "Painel de logs",
+    "platformSettings": "Configura\u00e7\u00f5es da plataforma"
   },
   "common": {
     "save": "Salvar",
@@ -61,6 +100,10 @@
     "pending": "Pendente",
     "approved": "Aprovado",
     "rejected": "Rejeitado",
+    "trial": "Teste",
+    "suspended": "Suspenso",
+    "cancelled": "Cancelado",
+    "expired": "Expirado",
     "status": "Status",
     "actions": "A\u00e7\u00f5es",
     "date": "Data",
@@ -75,7 +118,9 @@
     "profile": "Perfil",
     "notifications": "Notifica\u00e7\u00f5es",
     "markAllRead": "Marcar tudo como lido",
-    "noNotifications": "Nenhuma notifica\u00e7\u00e3o ainda"
+    "noNotifications": "Nenhuma notifica\u00e7\u00e3o ainda",
+    "viewAll": "Ver tudo",
+    "review": "Revisar"
   },
   "auth": {
     "signIn": "Entrar",
@@ -102,7 +147,9 @@
     "moduleOffline": "M\u00f3dulo offline",
     "yourModules": "Seus m\u00f3dulos",
     "coreHRMS": "HRMS principal",
-    "includedFree": "Incluso gratuitamente",
+    "coreHRMSName": "EMP Cloud \u2014 HRMS Principal",
+    "coreHRMSDescription": "Sua plataforma completa de gest\u00e3o de RH. Gerencie perfis de funcion\u00e1rios, controle a presen\u00e7a com turnos e geolocaliza\u00e7\u00e3o, trate solicita\u00e7\u00f5es de licen\u00e7a com aprova\u00e7\u00f5es em v\u00e1rios n\u00edveis, organize documentos de funcion\u00e1rios com rastreamento de validade, publique comunicados para toda a empresa e gerencie pol\u00edticas com rastreamento de confirma\u00e7\u00f5es. Tudo inclu\u00eddo gratuitamente na sua assinatura EMP Cloud.",
+    "includedFree": "Inclu\u00eddo gratuitamente",
     "noModulesYet": "Nenhum m\u00f3dulo pago ainda. O HRMS principal est\u00e1 ativo acima.",
     "browseModules": "Explorar mercado de m\u00f3dulos",
     "seatsUsed": "vagas usadas",
@@ -110,6 +157,7 @@
     "showLess": "Mostrar menos",
     "readMore": "Ler mais",
     "overdue": "vencido",
+    "viewDetails": "Ver detalhes",
     "quickLinks": {
       "employees": "Diret\u00f3rio de Funcion\u00e1rios",
       "attendance": "Frequ\u00eancia",
@@ -117,6 +165,87 @@
       "documents": "Documentos",
       "announcements": "Avisos",
       "policies": "Pol\u00edticas"
+    }
+  },
+  "plans": {
+    "basic": "B\u00e1sico",
+    "standard": "Padr\u00e3o",
+    "premium": "Premium",
+    "enterprise": "Empresarial",
+    "free": "Gratuito",
+    "trial": "Teste"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Reconhecimento de funcion\u00e1rios, insignias e elogios"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Acompanhamento de candidatos e pipeline de contrata\u00e7\u00e3o"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Gest\u00e3o de projetos e controle de tempo"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "Avalia\u00e7\u00f5es de desempenho, OKRs e planejamento de sucess\u00e3o"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "Monitoramento de atividade e produtividade dos funcion\u00e1rios"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "Check-in GPS em campo e otimiza\u00e7\u00e3o de rotas"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Gest\u00e3o de desligamentos e quita\u00e7\u00e3o final"
+    },
+    "emp-lms": {
+      "name": "Gest\u00e3o de Aprendizagem e Treinamento",
+      "description": "Gest\u00e3o de aprendizagem, cursos, certifica\u00e7\u00f5es e treinamento de conformidade"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Gest\u00e3o de folha de pagamento, declara\u00e7\u00f5es fiscais e relat\u00f3rios de conformidade"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Controle biom\u00e9trico de presen\u00e7a"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Recrutamento",
+      "openJobs": "Vagas abertas",
+      "candidates": "Candidatos",
+      "recentHires": "Contrata\u00e7\u00f5es recentes"
+    },
+    "performance": {
+      "title": "Desempenho",
+      "activeCycles": "Ciclos ativos",
+      "pendingReviews": "Avalia\u00e7\u00f5es pendentes",
+      "goalCompletion": "Cumprimento de metas"
+    },
+    "rewards": {
+      "title": "Reconhecimento",
+      "kudosThisMonth": "Elogios este m\u00eas",
+      "pointsGiven": "Pontos concedidos",
+      "badgesEarned": "Insignias obtidas"
+    },
+    "exit": {
+      "title": "Desligamento e rotatividade",
+      "activeExits": "Desligamentos ativos",
+      "attritionRate": "Taxa de rotatividade"
+    },
+    "lms": {
+      "title": "Aprendizagem e Desenvolvimento",
+      "activeCourses": "Cursos ativos",
+      "enrollments": "Inscri\u00e7\u00f5es",
+      "completionRate": "Taxa de conclus\u00e3o"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Motivo",
     "daysRequested": "Dias solicitados",
     "approve": "Aprovar",
-    "reject": "Rejeitar"
+    "reject": "Rejeitar",
+    "daysRemaining": "dias restantes",
+    "noTypes": "Nenhum tipo de licen\u00e7a configurado"
+  },
+  "documents": {
+    "title": "Documentos",
+    "pending": "Documentos pendentes",
+    "fallbackName": "Documento",
+    "noPending": "Nenhum documento pendente"
+  },
+  "policies": {
+    "title": "Pol\u00edticas",
+    "acknowledged": "Confirmado",
+    "review": "Revisar"
+  },
+  "announcements": {
+    "title": "Comunicados"
+  },
+  "selfService": {
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
+    "overviewDesc": "Aqui est\u00e1 um resumo do seu painel de autoatendimento.",
+    "editMyDetails": "Editar meus dados",
+    "requestUpdate": "Solicitar atualiza\u00e7\u00e3o"
   },
   "attendance": {
     "title": "Presen\u00e7a",
@@ -140,7 +291,278 @@
     "late": "Atrasado",
     "onLeave": "De licen\u00e7a",
     "todayStatus": "Status de hoje",
-    "myAttendance": "Minha presen\u00e7a"
+    "myAttendance": "Minha presen\u00e7a",
+    "myAttendanceToday": "Minha presen\u00e7a hoje",
+    "notYet": "Ainda n\u00e3o",
+    "totalWorkedToday": "Total trabalhado hoje",
+    "notCheckedInYet": "Ainda n\u00e3o registrou entrada hoje",
+    "attendanceComplete": "Presen\u00e7a conclu\u00edda para hoje",
+    "dashboardTitle": "Painel de presen\u00e7a",
+    "aiInsights": "Insights de IA",
+    "dashboardSubtitle": "Vis\u00e3o geral da presen\u00e7a de hoje na sua organiza\u00e7\u00e3o.",
+    "totalEmployees": "Total de funcion\u00e1rios",
+    "presentToday": "Presentes hoje",
+    "absentToday": "Ausentes hoje",
+    "lateToday": "Atrasados hoje",
+    "regularizationRequests": "Solicita\u00e7\u00f5es de regulariza\u00e7\u00e3o",
+    "shiftManagement": "Gest\u00e3o de turnos",
+    "filters": "Filtros",
+    "month": "M\u00eas",
+    "year": "Ano",
+    "department": "Departamento",
+    "dateFrom": "De",
+    "dateTo": "At\u00e9",
+    "apply": "Aplicar",
+    "clearFilters": "Limpar filtros",
+    "exportReport": "Exportar relat\u00f3rio",
+    "allDepartments": "Todos os departamentos",
+    "recordsTitle": "Registros de presen\u00e7a \u2014 {{month}} {{year}}",
+    "filteredSuffix": "(filtrado)",
+    "tableWorked": "Trabalhado",
+    "noRecords": "Nenhum registro de presen\u00e7a encontrado para os filtros selecionados",
+    "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} no total)",
+    "previous": "Anterior",
+    "next": "Pr\u00f3ximo",
+    "statusCheckedIn": "Registrado",
+    "statusHalfDay": "Meio per\u00edodo",
+    "breakdown": {
+      "title": "Detalhes de presen\u00e7a \u2014 {{date}}",
+      "todayFallback": "Hoje",
+      "tabAll": "Todos",
+      "noEmployeesInCategory": "Nenhum funcion\u00e1rio nesta categoria.",
+      "lateBy": "Atraso",
+      "minSuffix": "min",
+      "close": "Fechar"
+    },
+    "export": {
+      "title": "Exportar relat\u00f3rio de presen\u00e7a",
+      "subtitle": "Escolha o tipo de relat\u00f3rio e filtros",
+      "reportType": "Tipo de relat\u00f3rio",
+      "detailed": "Relat\u00f3rio detalhado",
+      "detailedDesc": "Cada registro de entrada/sa\u00edda",
+      "consolidated": "Consolidado",
+      "consolidatedDesc": "Resumo mensal por funcion\u00e1rio",
+      "monthYear": "M\u00eas/Ano",
+      "customRange": "Intervalo de datas personalizado",
+      "from": "De",
+      "to": "At\u00e9",
+      "allStatuses": "Todos os status",
+      "includes": "Este relat\u00f3rio inclui:",
+      "includesDetailed": "Nome do funcion\u00e1rio, c\u00f3digo, e-mail, departamento, cargo, data, info do turno, hor\u00e1rios de entrada/sa\u00edda, horas trabalhadas, horas extras, minutos de atraso, sa\u00edda antecipada, status",
+      "includesConsolidated": "Nome do funcion\u00e1rio, c\u00f3digo, e-mail, departamento, cargo, dias presentes/meio/ausentes/licen\u00e7a, contagem de atrasos, total trabalhado, m\u00e9dia di\u00e1ria, horas extras, atraso, sa\u00edda antecipada, % de presen\u00e7a",
+      "cancel": "Cancelar",
+      "exporting": "Exportando...",
+      "downloadExcel": "Baixar Excel",
+      "exportFailed": "Falha ao exportar. Por favor, tente novamente."
+    }
+  },
+  "manager": {
+    "title": "Minha Equipe",
+    "subtitle": "Painel do gestor \u2014 vis\u00e3o geral dos seus subordinados diretos.",
+    "stats": {
+      "teamSize": "Tamanho da equipe",
+      "presentToday": "Presentes hoje",
+      "absentToday": "Ausentes hoje",
+      "onLeave": "De licen\u00e7a",
+      "lateToday": "Atrasados hoje",
+      "pendingLeaves": "Licen\u00e7as pendentes"
+    },
+    "teamAttendanceToday": "Presen\u00e7a da equipe hoje",
+    "noTeamMembers": "Nenhum membro da equipe encontrado",
+    "inPrefix": "Entrada",
+    "outPrefix": "Sa\u00edda",
+    "statusHalfDay": "Meio per\u00edodo",
+    "statusPresent": "Presente",
+    "statusAbsent": "Ausente",
+    "statusOnLeave": "De licen\u00e7a",
+    "teamLeaveCalendar": "Calend\u00e1rio de licen\u00e7as da equipe (esta semana)",
+    "noApprovedLeaves": "Nenhuma licen\u00e7a aprovada esta semana",
+    "leaveFallback": "Licen\u00e7a",
+    "halfFirst": "1\u00ba per\u00edodo",
+    "halfSecond": "2\u00ba per\u00edodo",
+    "pendingLeaveRequests": "Solicita\u00e7\u00f5es de licen\u00e7a pendentes",
+    "pendingBadge": "{{count}} pendentes",
+    "table": {
+      "employee": "Funcion\u00e1rio",
+      "type": "Tipo",
+      "dates": "Datas",
+      "days": "Dias",
+      "reason": "Motivo",
+      "actions": "A\u00e7\u00f5es"
+    },
+    "halfSuffix": "(Meio)",
+    "noPendingRequests": "Nenhuma solicita\u00e7\u00e3o de licen\u00e7a pendente",
+    "review": "Revisar",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "remarksPlaceholder": "Observa\u00e7\u00f5es (opcional)",
+    "directReports": "Subordinados diretos",
+    "loadingTeam": "Carregando equipe...",
+    "noDirectReports": "Nenhum subordinado direto encontrado. Voc\u00ea ver\u00e1 os membros da equipe aqui assim que funcion\u00e1rios forem designados a voc\u00ea como gestor."
+  },
+  "billing": {
+    "title": "Faturamento",
+    "subtitle": "Gerencie assinaturas, faturas, pagamentos e resumo do faturamento.",
+    "tabs": {
+      "subscriptions": "Assinaturas",
+      "invoices": "Faturas",
+      "payments": "Pagamentos",
+      "overview": "Vis\u00e3o geral"
+    },
+    "monthlyCost": "Custo mensal",
+    "perMonth": "/m\u00eas",
+    "noSubscriptions": "Nenhuma assinatura ainda. Assine m\u00f3dulos na p\u00e1gina M\u00f3dulos.",
+    "labels": {
+      "plan": "Plano",
+      "seats": "Vagas",
+      "pricePerSeat": "Pre\u00e7o/vaga",
+      "billingCycle": "Ciclo de faturamento"
+    },
+    "full": "(cheio)",
+    "editTooltip": "Editar assinatura",
+    "cancelTooltip": "Cancelar assinatura",
+    "cycles": {
+      "monthly": "Mensal",
+      "quarterly": "Trimestral",
+      "annual": "Anual"
+    },
+    "editModal": {
+      "title": "Editar assinatura",
+      "planTier": "N\u00edvel do plano",
+      "totalSeats": "Vagas totais",
+      "currentlyUsing": "Atualmente usando {{count}} vagas",
+      "cannotReduce": "N\u00e3o \u00e9 poss\u00edvel reduzir abaixo de {{count}} (em uso)",
+      "billingCycle": "Ciclo de faturamento",
+      "changes": "Altera\u00e7\u00f5es:",
+      "plan": "Plano",
+      "seats": "Vagas",
+      "cycle": "Ciclo",
+      "save": "Salvar altera\u00e7\u00f5es",
+      "saving": "Salvando..."
+    },
+    "cancelModal": {
+      "title": "Cancelar assinatura?",
+      "message": "Isso cancelar\u00e1 a assinatura e revogar\u00e1 o acesso de todas as vagas atribu\u00eddas. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.",
+      "keep": "Manter",
+      "yesCancel": "Sim, cancelar",
+      "cancelling": "Cancelando..."
+    },
+    "toasts": {
+      "updated": "Assinatura atualizada com sucesso",
+      "updateFailed": "Falha ao atualizar a assinatura",
+      "cancelled": "Assinatura cancelada",
+      "cancelFailed": "Falha ao cancelar a assinatura",
+      "errorPrefix": "Erro"
+    },
+    "overview": {
+      "noData": "Ainda n\u00e3o h\u00e1 dados de faturamento dispon\u00edveis.",
+      "outstandingBalance": "Saldo pendente",
+      "nextInvoiceDate": "Data da pr\u00f3xima fatura",
+      "monthlyRecurring": "Recorrente mensal",
+      "paymentStatus": "Status do pagamento",
+      "overdue": "vencido",
+      "pastDue": "em atraso",
+      "allPaid": "tudo pago"
+    },
+    "invoices": {
+      "loading": "Carregando faturas...",
+      "none": "Nenhuma fatura ainda.",
+      "number": "Fatura #",
+      "date": "Data",
+      "dueDate": "Data de vencimento",
+      "amount": "Valor",
+      "status": "Status",
+      "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} faturas)",
+      "previous": "Anterior",
+      "next": "Pr\u00f3ximo",
+      "downloadPdf": "Baixar PDF",
+      "payNow": "Pagar agora",
+      "processing": "Processando..."
+    },
+    "payments": {
+      "loading": "Carregando pagamentos...",
+      "none": "Nenhum pagamento registrado ainda.",
+      "date": "Data",
+      "amount": "Valor",
+      "method": "M\u00e9todo",
+      "reference": "Refer\u00eancia",
+      "invoice": "Fatura",
+      "pagination": "P\u00e1gina {{page}} de {{totalPages}} ({{total}} pagamentos)"
+    }
+  },
+  "roles": {
+    "employee": "Funcion\u00e1rio",
+    "manager": "Gestor",
+    "hr_admin": "Admin de RH",
+    "org_admin": "Admin. Org.",
+    "super_admin": "Super Admin"
+  },
+  "modulesAccess": {
+    "title": "Acesso aos m\u00f3dulos",
+    "subtitle": "Gerencie quais funcion\u00e1rios t\u00eam acesso a cada m\u00f3dulo.",
+    "modulesCount": "{{count}} m\u00f3dulos",
+    "employeesCount": "{{count}} funcion\u00e1rios",
+    "seatsAssignedCount": "{{count}} vagas atribu\u00eddas",
+    "searchPlaceholder": "Pesquisar por nome, e-mail, cargo ou c\u00f3digo do funcion\u00e1rio...",
+    "allEmployees": "Todos os funcion\u00e1rios",
+    "enabledFor": "Habilitado para",
+    "notEnabledFor": "N\u00e3o habilitado para",
+    "enabledSuffix": "Habilitado",
+    "notEnabledSuffix": "N\u00e3o habilitado",
+    "loading": "Carregando funcion\u00e1rios...",
+    "noEmployees": "Nenhum funcion\u00e1rio encontrado",
+    "matchingSearch": "que corresponda \u00e0 sua pesquisa",
+    "withFilter": "com este filtro",
+    "table": {
+      "employee": "Funcion\u00e1rio",
+      "role": "Fun\u00e7\u00e3o",
+      "designation": "Cargo",
+      "modules": "M\u00f3dulos"
+    },
+    "confirm": {
+      "title": "Desabilitar acesso ao m\u00f3dulo",
+      "subtitle": "Esta a\u00e7\u00e3o pode excluir os dados do usu\u00e1rio no m\u00f3dulo",
+      "message": "Tem certeza que deseja remover o acesso de <strong>{{user}}</strong> a <strong>{{module}}</strong>? Os dados neste m\u00f3dulo podem ser exclu\u00eddos permanentemente.",
+      "cancel": "Cancelar",
+      "remove": "Remover acesso",
+      "removing": "Removendo..."
+    },
+    "pagination": {
+      "showing": "Exibindo {{from}}\u2013{{to}} de {{total}} funcion\u00e1rios",
+      "previous": "Anterior",
+      "next": "Pr\u00f3ximo"
+    },
+    "syncAlerts": {
+      "enabledSynced": "M\u00f3dulo habilitado e usu\u00e1rio sincronizado com sucesso",
+      "enabledSkipped": "Vaga atribu\u00edda. O m\u00f3dulo n\u00e3o tem API de sincroniza\u00e7\u00e3o configurada.",
+      "enabledPartial": "Vaga atribu\u00edda mas a sincroniza\u00e7\u00e3o do m\u00f3dulo falhou ({{status}}).",
+      "enableFailed": "Falha ao habilitar o m\u00f3dulo",
+      "disabledSynced": "M\u00f3dulo desabilitado e usu\u00e1rio removido",
+      "disabledPartial": "Vaga removida mas a sincroniza\u00e7\u00e3o do m\u00f3dulo falhou ({{status}})",
+      "disableFailed": "Falha ao desabilitar o m\u00f3dulo"
+    }
+  },
+  "modulesPage": {
+    "title": "Mercado de m\u00f3dulos",
+    "subtitle": "Explore e assine m\u00f3dulos EMP para sua organiza\u00e7\u00e3o.",
+    "aiBannerTitle": "Todos os m\u00f3dulos incluem EMP AI",
+    "aiBannerDesc": "Assistente de RH inteligente com IA \u2014 fa\u00e7a perguntas, obtenha insights e automatize tarefas em todos os seus m\u00f3dulos.",
+    "coreIncludedFree": "Principal \u2014 Inclu\u00eddo gratuitamente",
+    "freeTier": "N\u00edvel gratuito",
+    "comingSoon": "Em breve",
+    "seatsAssigned": "{{used}} de {{total}} vagas atribu\u00eddas",
+    "active": "Ativo",
+    "subscribed": "Assinado",
+    "unsubscribe": "Cancelar assinatura",
+    "subscribe": "Assinar",
+    "notSubscribed": "N\u00e3o assinado",
+    "loading": "Carregando m\u00f3dulos...",
+    "areYouSure": "Tem certeza?",
+    "cancelling": "Cancelando...",
+    "yesCancel": "Sim, cancelar",
+    "subscriptionCancelled": "Assinatura cancelada com sucesso.",
+    "cancelFailed": "Falha ao cancelar a assinatura.",
+    "subscriptionCreated": "Assinatura criada. A fatura ser\u00e1 gerada em breve."
   },
   "helpdesk": {
     "title": "Suporte",

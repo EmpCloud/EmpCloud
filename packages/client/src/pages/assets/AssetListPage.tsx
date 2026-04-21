@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import AssetBulkUploadModal from "@/components/AssetBulkUploadModal";
@@ -37,8 +37,17 @@ const STATUSES = ["available", "assigned", "in_repair", "retired", "lost", "dama
 const CONDITIONS = ["new", "good", "fair", "poor"];
 
 export default function AssetListPage() {
+  // #1531 — Seed `statusFilter` from ?status= so deep-links from the Asset
+  // Dashboard top cards land on a pre-filtered list instead of showing every
+  // asset. Whitelisted against known values so a bad URL doesn't wedge the
+  // filter UI into an unlisted state.
+  const [searchParams] = useSearchParams();
+  const initialStatus = (() => {
+    const raw = searchParams.get("status") || "";
+    return ["available", "assigned", "in_repair", "retired", "lost", "damaged"].includes(raw) ? raw : "";
+  })();
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -392,8 +401,11 @@ export default function AssetListPage() {
           {/* Pagination */}
           {meta && meta.total_pages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+              {/* #1534 — Show the per-page count alongside the total. Previously
+                  only "Page N of M (T total)" was rendered, so admins couldn't
+                  tell how many rows were in view. */}
               <p className="text-sm text-gray-500">
-                Page {meta.page} of {meta.total_pages} ({meta.total} total)
+                Showing {assets.length} of {meta.total} assets &middot; Page {meta.page} of {meta.total_pages}
               </p>
               <div className="flex gap-2">
                 <button

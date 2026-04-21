@@ -225,11 +225,11 @@ export default function ModulesPage() {
     if (!sub) return;
     try {
       await cancelSub.mutateAsync(sub.id);
-      setToast("Subscription cancelled successfully.");
+      setToast(t('modulesPage.subscriptionCancelled'));
       setTimeout(() => setToast(null), 5000);
       setConfirmUnsubscribe(null);
     } catch {
-      setToast("Failed to cancel subscription.");
+      setToast(t('modulesPage.cancelFailed'));
       setTimeout(() => setToast(null), 5000);
     }
   };
@@ -238,7 +238,7 @@ export default function ModulesPage() {
     setSubscribing(data.module_id);
     try {
       await createSub.mutateAsync(data);
-      setToast("Subscription created. Invoice will be generated shortly.");
+      setToast(t('modulesPage.subscriptionCreated'));
       setTimeout(() => setToast(null), 5000);
       setSubscribeModule(null);
     } finally {
@@ -246,7 +246,7 @@ export default function ModulesPage() {
     }
   };
 
-  if (isLoading) return <div className="text-gray-500">Loading modules...</div>;
+  if (isLoading) return <div className="text-gray-500">{t('modulesPage.loading')}</div>;
 
   const sortedModules = [...(modules || [])].sort((a: any, b: any) => {
     if (a.slug === "emp-hrms") return -1;
@@ -257,8 +257,8 @@ export default function ModulesPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Module Marketplace</h1>
-        <p className="text-gray-500 mt-1">Browse and subscribe to EMP modules for your organization.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('modulesPage.title')}</h1>
+        <p className="text-gray-500 mt-1">{t('modulesPage.subtitle')}</p>
       </div>
 
       {toast && (
@@ -284,9 +284,9 @@ export default function ModulesPage() {
             <Sparkles className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">All modules include EMP AI</h2>
+            <h2 className="text-lg font-bold">{t('modulesPage.aiBannerTitle')}</h2>
             <p className="text-purple-100 text-sm mt-1">
-              Intelligent HR assistant powered by AI &mdash; ask questions, get insights, automate tasks across all your modules.
+              {t('modulesPage.aiBannerDesc')}
             </p>
           </div>
         </div>
@@ -333,14 +333,14 @@ export default function ModulesPage() {
                     <span className="text-xs text-gray-400">{mod.slug}</span>
                     {isHRMS && (
                       <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">
-                        Core — Included Free
+                        {t('modulesPage.coreIncludedFree')}
                       </span>
                     )}
                     {!!mod.has_free_tier && !isHRMS && (
-                      <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">Free tier</span>
+                      <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">{t('modulesPage.freeTier')}</span>
                     )}
                     {!mod.is_active && (
-                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Coming soon</span>
+                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{t('modulesPage.comingSoon')}</span>
                     )}
                   </div>
 
@@ -361,7 +361,7 @@ export default function ModulesPage() {
                       className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-brand-600 hover:text-brand-700 hover:underline"
                     >
                       <Users className="h-3.5 w-3.5" />
-                      {activeSub.used_seats} of {activeSub.total_seats} seats assigned
+                      {t('modulesPage.seatsAssigned', { used: activeSub.used_seats, total: activeSub.total_seats })}
                     </Link>
                   )}
 
@@ -371,9 +371,9 @@ export default function ModulesPage() {
                       className="text-xs text-brand-600 hover:text-brand-700 font-medium mt-2 flex items-center gap-0.5"
                     >
                       {isExpanded ? (
-                        <>Show less <ChevronUp className="h-3 w-3" /></>
+                        <>{t('dashboard.showLess')} <ChevronUp className="h-3 w-3" /></>
                       ) : (
-                        <>Read more <ChevronDown className="h-3 w-3" /></>
+                        <>{t('dashboard.readMore')} <ChevronDown className="h-3 w-3" /></>
                       )}
                     </button>
                   )}
@@ -382,29 +382,29 @@ export default function ModulesPage() {
                 <div className="flex-shrink-0 ml-4">
                   {isHRMS ? (
                     <span className="flex items-center gap-1.5 text-sm font-medium text-brand-600">
-                      <Check className="h-4 w-4" /> Active
+                      <Check className="h-4 w-4" /> {t('modulesPage.active')}
                     </span>
                   ) : isSubscribed ? (
                     <div className="flex flex-col items-end gap-2">
                       <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
-                        <Check className="h-4 w-4" /> Subscribed
+                        <Check className="h-4 w-4" /> {t('modulesPage.subscribed')}
                       </span>
                       {canManageSubscriptions && (
                         confirmUnsubscribe === mod.id ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">Are you sure?</span>
+                            <span className="text-xs text-gray-500">{t('modulesPage.areYouSure')}</span>
                             <button
                               onClick={() => handleUnsubscribe(mod.id)}
                               disabled={cancelSub.isPending}
                               className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
                             >
-                              {cancelSub.isPending ? "Cancelling..." : "Yes, Cancel"}
+                              {cancelSub.isPending ? t('modulesPage.cancelling') : t('modulesPage.yesCancel')}
                             </button>
                             <button
                               onClick={() => setConfirmUnsubscribe(null)}
                               className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
                             >
-                              No
+                              {t('common.no')}
                             </button>
                           </div>
                         ) : (
@@ -412,7 +412,7 @@ export default function ModulesPage() {
                             onClick={() => setConfirmUnsubscribe(mod.id)}
                             className="text-xs text-red-500 hover:text-red-700 font-medium"
                           >
-                            Unsubscribe
+                            {t('modulesPage.unsubscribe')}
                           </button>
                         )
                       )}
@@ -424,10 +424,10 @@ export default function ModulesPage() {
                       className="flex items-center gap-1.5 text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 disabled:opacity-50 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
-                      Subscribe
+                      {t('modulesPage.subscribe')}
                     </button>
                   ) : (
-                    <span className="text-xs text-gray-400">Not subscribed</span>
+                    <span className="text-xs text-gray-400">{t('modulesPage.notSubscribed')}</span>
                   )}
                 </div>
               </div>

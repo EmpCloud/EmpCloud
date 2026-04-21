@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Plus, Trash2, Play, Square, Eye, Edit } from "lucide-react";
 
 const STATUS_BADGE: Record<string, string> = {
@@ -21,8 +21,16 @@ const TYPE_BADGE: Record<string, string> = {
 };
 
 export default function SurveyListPage() {
+  // #1532 — Seed statusFilter from ?status= so deep-links from the Survey
+  // Dashboard top cards land on the matching filter instead of the full list.
+  // Whitelisted against known values.
+  const [searchParams] = useSearchParams();
+  const initialStatus = (() => {
+    const raw = searchParams.get("status") || "";
+    return ["draft", "active", "closed", "archived"].includes(raw) ? raw : "";
+  })();
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [typeFilter, setTypeFilter] = useState("");
   const qc = useQueryClient();
 
@@ -246,8 +254,10 @@ export default function SurveyListPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
+          {/* #1533 — Show the per-page count alongside the total so admins can
+              tell at a glance how many surveys are in view, not just the total. */}
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            Showing {surveys.length} of {meta.total} surveys &middot; Page {meta.page} of {meta.total_pages}
           </p>
           <div className="flex gap-2">
             <button

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Clock,
   CalendarDays,
@@ -34,6 +35,7 @@ function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: st
 }
 
 export default function SelfServiceDashboardPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
 
@@ -142,9 +144,9 @@ export default function SelfServiceDashboardPage() {
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {user?.first_name}!
+            {t('selfService.welcomeBack', { name: user?.first_name })}
           </h1>
-          <p className="text-gray-500 mt-1">Here is your self-service dashboard overview.</p>
+          <p className="text-gray-500 mt-1">{t('selfService.overviewDesc')}</p>
         </div>
         {/* Primary Check In / Check Out action — always visible in the page
             header so it doesn't require scrolling or navigating to
@@ -160,11 +162,11 @@ export default function SelfServiceDashboardPage() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
-        <QuickLink to="/my-profile" icon={FileText} label="My Profile" />
-        <QuickLink to={`/employees/${user?.id}`} icon={Pencil} label="Edit My Details" />
-        <QuickLink to="/leave" icon={CalendarDays} label="Apply Leave" />
-        <QuickLink to="/attendance/my" icon={Clock} label="Attendance" />
-        <QuickLink to="/helpdesk/my-tickets" icon={FileText} label="Request Update" />
+        <QuickLink to="/my-profile" icon={FileText} label={t('nav.myProfile')} />
+        <QuickLink to={`/employees/${user?.id}`} icon={Pencil} label={t('selfService.editMyDetails')} />
+        <QuickLink to="/leave" icon={CalendarDays} label={t('leave.applyLeave')} />
+        <QuickLink to="/attendance/my" icon={Clock} label={t('nav.attendance')} />
+        <QuickLink to="/helpdesk/my-tickets" icon={FileText} label={t('selfService.requestUpdate')} />
       </div>
 
       {/*
@@ -187,7 +189,7 @@ export default function SelfServiceDashboardPage() {
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">My Attendance Today</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('attendance.myAttendanceToday')}</h2>
           </div>
           {todayAttendance ? (() => {
             // #1383 — API returns check_in / check_out as ISO timestamps,
@@ -224,7 +226,7 @@ export default function SelfServiceDashboardPage() {
                   <div className="rounded-lg border border-green-100 bg-green-50 p-3">
                     <div className="flex items-center gap-1.5 text-xs font-medium text-green-700">
                       <CheckCircle2 className="h-3.5 w-3.5" />
-                      Check In
+                      {t('attendance.checkIn')}
                     </div>
                     <p className="mt-1 text-base font-semibold text-gray-900">
                       {ciText || "—"}
@@ -245,14 +247,14 @@ export default function SelfServiceDashboardPage() {
                       }`}
                     >
                       <LogOut className="h-3.5 w-3.5" />
-                      Check Out
+                      {t('attendance.checkOut')}
                     </div>
                     <p
                       className={`mt-1 text-base font-semibold ${
                         co ? "text-gray-900" : "text-gray-400"
                       }`}
                     >
-                      {coText || "Not yet"}
+                      {coText || t('attendance.notYet')}
                     </p>
                   </div>
                 </div>
@@ -260,7 +262,7 @@ export default function SelfServiceDashboardPage() {
                 {/* Total worked */}
                 {workedText && (
                   <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs">
-                    <span className="text-gray-500">Total worked today</span>
+                    <span className="text-gray-500">{t('attendance.totalWorkedToday')}</span>
                     <span className="font-semibold text-gray-900">{workedText}</span>
                   </div>
                 )}
@@ -269,7 +271,7 @@ export default function SelfServiceDashboardPage() {
           })() : (
             <div className="flex items-center gap-3">
               <XCircle className="h-5 w-5 text-gray-300" />
-              <p className="text-sm text-gray-500">Not checked in yet today</p>
+              <p className="text-sm text-gray-500">{t('attendance.notCheckedInYet')}</p>
             </div>
           )}
         </div>
@@ -278,7 +280,7 @@ export default function SelfServiceDashboardPage() {
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <CalendarDays className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Leave Balance</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('leave.leaveBalance')}</h2>
           </div>
           {leaveCards.length > 0 ? (
             <div className="grid grid-cols-2 gap-3">
@@ -286,12 +288,12 @@ export default function SelfServiceDashboardPage() {
                 <div key={c.id} className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">{c.name}</p>
                   <p className="text-lg font-bold text-gray-900">{c.balance}</p>
-                  <p className="text-xs text-gray-400">days remaining</p>
+                  <p className="text-xs text-gray-400">{t('leave.daysRemaining')}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No leave types configured</p>
+            <p className="text-sm text-gray-400">{t('leave.noTypes')}</p>
           )}
         </div>
 
@@ -300,10 +302,10 @@ export default function SelfServiceDashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-brand-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Pending Documents</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('documents.pending')}</h2>
             </div>
             <Link to="/documents" className="text-xs text-brand-600 hover:underline">
-              View all
+              {t('common.viewAll')}
             </Link>
           </div>
           {pendingDocs.length > 0 ? (
@@ -311,12 +313,12 @@ export default function SelfServiceDashboardPage() {
               {pendingDocs.slice(0, 5).map((doc: any) => (
                 <li key={doc.id} className="flex items-center gap-2 text-sm text-gray-600">
                   <FileText className="h-4 w-4 text-gray-400 shrink-0" />
-                  <span className="truncate">{doc.title || doc.original_name || doc.file_name || doc.category_name || "Document"}</span>
+                  <span className="truncate">{doc.title || doc.original_name || doc.file_name || doc.category_name || t('documents.fallbackName')}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-gray-400">No pending documents</p>
+            <p className="text-sm text-gray-400">{t('documents.noPending')}</p>
           )}
         </div>
 
@@ -326,10 +328,10 @@ export default function SelfServiceDashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Megaphone className="h-5 w-5 text-brand-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Announcements</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('announcements.title')}</h2>
               </div>
               <Link to="/announcements" className="text-xs text-brand-600 hover:underline">
-                View all
+                {t('common.viewAll')}
               </Link>
             </div>
             <ul className="space-y-3">
@@ -351,10 +353,10 @@ export default function SelfServiceDashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-brand-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Policies</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('policies.title')}</h2>
               </div>
               <Link to="/policies" className="text-xs text-brand-600 hover:underline">
-                View all
+                {t('common.viewAll')}
               </Link>
             </div>
             <ul className="space-y-2">
@@ -366,14 +368,14 @@ export default function SelfServiceDashboardPage() {
                   <span>{p.title}</span>
                   {p.acknowledged ? (
                     <span className="text-xs text-green-600 flex items-center gap-1">
-                      <CheckCircle2 className="h-3 w-3" /> Acknowledged
+                      <CheckCircle2 className="h-3 w-3" /> {t('policies.acknowledged')}
                     </span>
                   ) : (
                     <Link
                       to="/policies"
                       className="text-xs text-brand-600 hover:underline"
                     >
-                      Review
+                      {t('policies.review')}
                     </Link>
                   )}
                 </li>
@@ -407,6 +409,7 @@ function AttendanceHeaderAction({
   checkInPending: boolean;
   checkOutPending: boolean;
 }) {
+  const { t } = useTranslation();
   // The attendance API returns check_in / check_out as ISO timestamps; older
   // code read *_time fallbacks (see #1383). Keep both for safety.
   const ci = todayRecord?.check_in || todayRecord?.check_in_time || null;
@@ -418,7 +421,7 @@ function AttendanceHeaderAction({
     return (
       <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-2.5 text-sm font-medium text-green-700">
         <CheckCircle2 className="h-4 w-4" />
-        Attendance complete for today
+        {t('attendance.attendanceComplete')}
       </div>
     );
   }
@@ -436,7 +439,7 @@ function AttendanceHeaderAction({
         ) : (
           <LogIn className="h-4 w-4" />
         )}
-        Check In
+        {t('attendance.checkIn')}
       </button>
     );
   }
@@ -453,7 +456,7 @@ function AttendanceHeaderAction({
       ) : (
         <LogOut className="h-4 w-4" />
       )}
-      Check Out
+      {t('attendance.checkOut')}
     </button>
   );
 }

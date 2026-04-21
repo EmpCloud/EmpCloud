@@ -9,6 +9,9 @@ export default function RegularizationsPage() {
   const [tab, setTab] = useState<"pending" | "all" | "my">("pending");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ date: "", requested_check_in: "", requested_check_out: "", reason: "" });
+  // #1559 — Inline validation error so users see why the form wasn't submitted
+  // (e.g. check-out earlier than check-in) without a jarring native alert.
+  const [formError, setFormError] = useState<string | null>(null);
 
   const { data: pendingData, isLoading: pendingLoading } = useQuery({
     queryKey: ["regularizations", "pending", page],
@@ -61,6 +64,16 @@ export default function RegularizationsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+    // #1559 — Reject check-out earlier than or equal to check-in. The backend
+    // may also validate this, but catching it client-side gives an immediate,
+    // focused error message instead of a generic API failure.
+    if (form.requested_check_in && form.requested_check_out) {
+      if (new Date(form.requested_check_out).getTime() <= new Date(form.requested_check_in).getTime()) {
+        setFormError("Check-out time must be after check-in time.");
+        return;
+      }
+    }
     submitReg.mutate(form);
   };
 
@@ -106,12 +119,26 @@ export default function RegularizationsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Requested Check Out</label>
-              <input type="datetime-local" value={form.requested_check_out} onChange={(e) => setField("requested_check_out", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+              {/* #1559 — `min` ties the check-out picker to the current check-in value
+                  so users can't even pick an earlier time from the popover; the
+                  handleSubmit check below is the authoritative enforcement. */}
+              <input
+                type="datetime-local"
+                value={form.requested_check_out}
+                min={form.requested_check_in || undefined}
+                onChange={(e) => setField("requested_check_out", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
             </div>
           </div>
+          {formError && (
+            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {formError}
+            </div>
+          )}
           <div className="mt-4 flex gap-2">
             <button type="submit" disabled={submitReg.isPending} className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50">Submit</button>
-            <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>
+            <button type="button" onClick={() => { setShowForm(false); setFormError(null); }} className="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>
           </div>
         </form>
       )}

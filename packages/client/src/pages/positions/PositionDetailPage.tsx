@@ -218,31 +218,38 @@ export default function PositionDetailPage() {
                   // filter.
                   if (assignForm.user_id) setAssignForm({ ...assignForm, user_id: "" });
                 }}
-                placeholder="Search users..."
+                placeholder="Start typing to search users..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-2"
               />
-              <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg text-sm bg-white">
-                {(usersData || []).length === 0 ? (
-                  <div className="px-3 py-2 text-gray-400">No users match</div>
-                ) : (
-                  (usersData || []).map((u: any) => {
-                    const selected = String(u.id) === String(assignForm.user_id);
-                    return (
-                      <button
-                        type="button"
-                        key={u.id}
-                        onClick={() => setAssignForm({ ...assignForm, user_id: String(u.id) })}
-                        className={`w-full text-left px-3 py-2 border-b border-gray-100 last:border-0 hover:bg-brand-50 ${
-                          selected ? "bg-brand-50 text-brand-700 font-medium" : "text-gray-700"
-                        }`}
-                      >
-                        {u.first_name} {u.last_name}{" "}
-                        <span className="text-xs text-gray-400">({u.email})</span>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
+              {/* #1547 — The user list was previously always rendered with every
+                  user in the org, making it look like a dropdown "auto-opened".
+                  Only render results after the user has typed at least one
+                  character — or after a valid selection has been stored (so the
+                  picked row stays visible). */}
+              {(userSearch.trim().length > 0 || assignForm.user_id) && (
+                <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg text-sm bg-white">
+                  {(usersData || []).length === 0 ? (
+                    <div className="px-3 py-2 text-gray-400">No users match</div>
+                  ) : (
+                    (usersData || []).map((u: any) => {
+                      const selected = String(u.id) === String(assignForm.user_id);
+                      return (
+                        <button
+                          type="button"
+                          key={u.id}
+                          onClick={() => setAssignForm({ ...assignForm, user_id: String(u.id) })}
+                          className={`w-full text-left px-3 py-2 border-b border-gray-100 last:border-0 hover:bg-brand-50 ${
+                            selected ? "bg-brand-50 text-brand-700 font-medium" : "text-gray-700"
+                          }`}
+                        >
+                          {u.first_name} {u.last_name}{" "}
+                          <span className="text-xs text-gray-400">({u.email})</span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              )}
               {/* Hidden input keeps the `required` semantics for the form */}
               <input type="hidden" value={assignForm.user_id} required readOnly />
             </div>

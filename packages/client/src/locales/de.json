@@ -16,6 +16,8 @@
     "surveys": "Umfragen",
     "assets": "Verm\u00f6genswerte",
     "positions": "Positionen",
+    "vacancies": "Offene Stellen",
+    "headcountPlans": "Personalbedarfspl\u00e4ne",
     "feedback": "Feedback",
     "events": "Veranstaltungen",
     "wellness": "Wohlbefinden",
@@ -31,7 +33,44 @@
     "platformAdmin": "Plattform-Admin",
     "myProfile": "Mein Profil",
     "selfService": "Self-Service",
-    "probation": "Probezeit"
+    "probation": "Probezeit",
+    "createPost": "Beitrag erstellen",
+    "forumDashboard": "Forum-\u00dcbersicht",
+    "myEvents": "Meine Veranstaltungen",
+    "eventDashboard": "Veranstaltungs-\u00dcbersicht",
+    "submitReport": "Meldung einreichen",
+    "trackReport": "Meldung verfolgen",
+    "allReports": "Alle Meldungen",
+    "activeSurveys": "Aktive Umfragen",
+    "surveyDashboard": "Umfrage-\u00dcbersicht",
+    "allSurveys": "Alle Umfragen",
+    "myWellness": "Mein Wohlbefinden",
+    "dailyCheckIn": "T\u00e4glicher Check-in",
+    "wellnessDashboard": "Wohlbefindens-\u00dcbersicht",
+    "myAssets": "Meine Verm\u00f6genswerte",
+    "assetDashboard": "Verm\u00f6gens-\u00dcbersicht",
+    "allAssets": "Alle Verm\u00f6genswerte",
+    "categories": "Kategorien",
+    "submitFeedback": "Feedback senden",
+    "myFeedback": "Mein Feedback",
+    "allFeedback": "Alle Feedbacks",
+    "feedbackDashboard": "Feedback-\u00dcbersicht",
+    "faceEnrollment": "Gesichtserfassung",
+    "qrAttendance": "QR-Anwesenheit",
+    "devices": "Ger\u00e4te",
+    "biometricLogs": "Biometrische Protokolle",
+    "biometricSettings": "Biometrische Einstellungen",
+    "overviewDashboard": "Gesamt\u00fcbersicht",
+    "organizations": "Organisationen",
+    "moduleAnalytics": "Modul-Analytik",
+    "revenue": "Umsatz",
+    "subscriptions": "Abonnements",
+    "systemNotifications": "Systembenachrichtigungen",
+    "serviceHealth": "Dienststatus",
+    "dataSanity": "Datenintegrit\u00e4t",
+    "aiConfiguration": "KI-Konfiguration",
+    "logDashboard": "Protokoll-\u00dcbersicht",
+    "platformSettings": "Plattformeinstellungen"
   },
   "common": {
     "save": "Speichern",
@@ -61,6 +100,10 @@
     "pending": "Ausstehend",
     "approved": "Genehmigt",
     "rejected": "Abgelehnt",
+    "trial": "Testphase",
+    "suspended": "Ausgesetzt",
+    "cancelled": "Storniert",
+    "expired": "Abgelaufen",
     "status": "Status",
     "actions": "Aktionen",
     "date": "Datum",
@@ -75,7 +118,9 @@
     "profile": "Profil",
     "notifications": "Benachrichtigungen",
     "markAllRead": "Alle als gelesen markieren",
-    "noNotifications": "Noch keine Benachrichtigungen"
+    "noNotifications": "Noch keine Benachrichtigungen",
+    "viewAll": "Alle anzeigen",
+    "review": "Pr\u00fcfen"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -102,6 +147,8 @@
     "moduleOffline": "Modul offline",
     "yourModules": "Ihre Module",
     "coreHRMS": "Kern-HRMS",
+    "coreHRMSName": "EMP Cloud \u2014 Kern-HRMS",
+    "coreHRMSDescription": "Ihre komplette HR-Management-Plattform. Verwalten Sie Mitarbeiterprofile, verfolgen Sie die Anwesenheit mit Schichten und Geo-Fencing, bearbeiten Sie Urlaubsantr\u00e4ge mit mehrstufigen Genehmigungen, organisieren Sie Mitarbeiterdokumente mit Ablaufverfolgung, ver\u00f6ffentlichen Sie unternehmensweite Ank\u00fcndigungen und verwalten Sie Richtlinien mit Best\u00e4tigungsverfolgung. Alles kostenlos enthalten in Ihrem EMP Cloud-Abonnement.",
     "includedFree": "Kostenlos enthalten",
     "noModulesYet": "Noch keine kostenpflichtigen Module. Kern-HRMS ist oben aktiv.",
     "browseModules": "Modul-Marktplatz durchsuchen",
@@ -110,6 +157,7 @@
     "showLess": "Weniger anzeigen",
     "readMore": "Mehr lesen",
     "overdue": "\u00fcberf\u00e4llig",
+    "viewDetails": "Details anzeigen",
     "quickLinks": {
       "employees": "Mitarbeiterverzeichnis",
       "attendance": "Anwesenheit",
@@ -117,6 +165,87 @@
       "documents": "Dokumente",
       "announcements": "Ank\u00fcndigungen",
       "policies": "Richtlinien"
+    }
+  },
+  "plans": {
+    "basic": "Basis",
+    "standard": "Standard",
+    "premium": "Premium",
+    "enterprise": "Enterprise",
+    "free": "Kostenlos",
+    "trial": "Testphase"
+  },
+  "modules": {
+    "emp-rewards": {
+      "name": "EMP Rewards",
+      "description": "Mitarbeiteranerkennung, Abzeichen und Lob"
+    },
+    "emp-recruit": {
+      "name": "EMP Recruit",
+      "description": "Bewerbernachverfolgung und Einstellungsprozess"
+    },
+    "emp-projects": {
+      "name": "EMP Projects",
+      "description": "Projektmanagement und Zeiterfassung"
+    },
+    "emp-performance": {
+      "name": "EMP Performance",
+      "description": "Leistungsbeurteilungen, OKRs und Nachfolgeplanung"
+    },
+    "emp-monitor": {
+      "name": "EMP Monitor",
+      "description": "\u00dcberwachung der Mitarbeiteraktivit\u00e4t und Produktivit\u00e4t"
+    },
+    "emp-field": {
+      "name": "EMP Field",
+      "description": "GPS-Check-in im Au\u00dfendienst und Routenoptimierung"
+    },
+    "emp-exit": {
+      "name": "EMP Exit",
+      "description": "Austrittsverwaltung und endg\u00fcltige Abrechnung"
+    },
+    "emp-lms": {
+      "name": "Lernmanagement & Schulung",
+      "description": "Lernmanagement, Kurse, Zertifizierungen und Compliance-Schulungen"
+    },
+    "emp-payroll": {
+      "name": "EMP Payroll",
+      "description": "Gehaltsabrechnung, Steuererkl\u00e4rungen und Compliance-Berichte"
+    },
+    "emp-biometrics": {
+      "name": "EMP Biometrics",
+      "description": "Biometrische Anwesenheitserfassung"
+    }
+  },
+  "widgets": {
+    "recruit": {
+      "title": "Rekrutierung",
+      "openJobs": "Offene Stellen",
+      "candidates": "Kandidaten",
+      "recentHires": "K\u00fcrzlich eingestellt"
+    },
+    "performance": {
+      "title": "Leistung",
+      "activeCycles": "Aktive Zyklen",
+      "pendingReviews": "Ausstehende Bewertungen",
+      "goalCompletion": "Zielerreichung"
+    },
+    "rewards": {
+      "title": "Anerkennung",
+      "kudosThisMonth": "Lob diesen Monat",
+      "pointsGiven": "Vergebene Punkte",
+      "badgesEarned": "Erhaltene Abzeichen"
+    },
+    "exit": {
+      "title": "Austritt & Fluktuation",
+      "activeExits": "Aktive Austritte",
+      "attritionRate": "Fluktuationsrate"
+    },
+    "lms": {
+      "title": "Lernen & Entwicklung",
+      "activeCourses": "Aktive Kurse",
+      "enrollments": "Anmeldungen",
+      "completionRate": "Abschlussrate"
     }
   },
   "leave": {
@@ -129,7 +258,29 @@
     "reason": "Grund",
     "daysRequested": "Beantragte Tage",
     "approve": "Genehmigen",
-    "reject": "Ablehnen"
+    "reject": "Ablehnen",
+    "daysRemaining": "Tage verbleibend",
+    "noTypes": "Keine Urlaubsarten konfiguriert"
+  },
+  "documents": {
+    "title": "Dokumente",
+    "pending": "Ausstehende Dokumente",
+    "fallbackName": "Dokument",
+    "noPending": "Keine ausstehenden Dokumente"
+  },
+  "policies": {
+    "title": "Richtlinien",
+    "acknowledged": "Best\u00e4tigt",
+    "review": "Pr\u00fcfen"
+  },
+  "announcements": {
+    "title": "Ank\u00fcndigungen"
+  },
+  "selfService": {
+    "welcomeBack": "Willkommen zur\u00fcck, {{name}}!",
+    "overviewDesc": "Hier ist Ihre Self-Service-\u00dcbersicht.",
+    "editMyDetails": "Meine Daten bearbeiten",
+    "requestUpdate": "Aktualisierung anfordern"
   },
   "attendance": {
     "title": "Anwesenheit",
@@ -140,7 +291,278 @@
     "late": "Versp\u00e4tet",
     "onLeave": "Im Urlaub",
     "todayStatus": "Heutiger Status",
-    "myAttendance": "Meine Anwesenheit"
+    "myAttendance": "Meine Anwesenheit",
+    "myAttendanceToday": "Meine Anwesenheit heute",
+    "notYet": "Noch nicht",
+    "totalWorkedToday": "Heute gesamt gearbeitet",
+    "notCheckedInYet": "Heute noch nicht eingestempelt",
+    "attendanceComplete": "Anwesenheit f\u00fcr heute abgeschlossen",
+    "dashboardTitle": "Anwesenheits-\u00dcbersicht",
+    "aiInsights": "KI-Einblicke",
+    "dashboardSubtitle": "Heutige Anwesenheits\u00fcbersicht Ihrer Organisation.",
+    "totalEmployees": "Mitarbeiter insgesamt",
+    "presentToday": "Heute anwesend",
+    "absentToday": "Heute abwesend",
+    "lateToday": "Heute versp\u00e4tet",
+    "regularizationRequests": "Regularisierungsantr\u00e4ge",
+    "shiftManagement": "Schichtverwaltung",
+    "filters": "Filter",
+    "month": "Monat",
+    "year": "Jahr",
+    "department": "Abteilung",
+    "dateFrom": "Von",
+    "dateTo": "Bis",
+    "apply": "Anwenden",
+    "clearFilters": "Filter zur\u00fccksetzen",
+    "exportReport": "Bericht exportieren",
+    "allDepartments": "Alle Abteilungen",
+    "recordsTitle": "Anwesenheitsdaten \u2014 {{month}} {{year}}",
+    "filteredSuffix": "(gefiltert)",
+    "tableWorked": "Gearbeitet",
+    "noRecords": "Keine Anwesenheitsdaten f\u00fcr die ausgew\u00e4hlten Filter gefunden",
+    "pagination": "Seite {{page}} von {{totalPages}} ({{total}} insgesamt)",
+    "previous": "Zur\u00fcck",
+    "next": "Weiter",
+    "statusCheckedIn": "Eingestempelt",
+    "statusHalfDay": "Halbtag",
+    "breakdown": {
+      "title": "Anwesenheitsdetails \u2014 {{date}}",
+      "todayFallback": "Heute",
+      "tabAll": "Alle",
+      "noEmployeesInCategory": "Keine Mitarbeiter in dieser Kategorie.",
+      "lateBy": "Versp\u00e4tet um",
+      "minSuffix": "Min.",
+      "close": "Schlie\u00dfen"
+    },
+    "export": {
+      "title": "Anwesenheitsbericht exportieren",
+      "subtitle": "W\u00e4hlen Sie Berichtstyp und Filter",
+      "reportType": "Berichtstyp",
+      "detailed": "Detaillierter Bericht",
+      "detailedDesc": "Jeder Check-in/Check-out-Eintrag",
+      "consolidated": "Konsolidiert",
+      "consolidatedDesc": "Monatliche Zusammenfassung je Mitarbeiter",
+      "monthYear": "Monat/Jahr",
+      "customRange": "Benutzerdefinierter Datumsbereich",
+      "from": "Von",
+      "to": "Bis",
+      "allStatuses": "Alle Status",
+      "includes": "Dieser Bericht enth\u00e4lt:",
+      "includesDetailed": "Mitarbeitername, Code, E-Mail, Abteilung, Bezeichnung, Datum, Schichtinfo, Check-in/out-Zeiten, Arbeitsstunden, \u00dcberstunden, Versp\u00e4tungsminuten, fr\u00fcher Feierabend, Status",
+      "includesConsolidated": "Mitarbeitername, Code, E-Mail, Abteilung, Bezeichnung, Anwesenheit/Halbtag/Abwesenheit/Urlaub, Versp\u00e4tungsanzahl, Gesamtarbeit, durchschn. pro Tag, \u00dcberstunden, Versp\u00e4tung, fr\u00fcher Feierabend, Anwesenheit %",
+      "cancel": "Abbrechen",
+      "exporting": "Wird exportiert...",
+      "downloadExcel": "Excel herunterladen",
+      "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen."
+    }
+  },
+  "manager": {
+    "title": "Mein Team",
+    "subtitle": "Manager-\u00dcbersicht \u2014 \u00dcberblick \u00fcber Ihre direkten Mitarbeiter.",
+    "stats": {
+      "teamSize": "Teamgr\u00f6\u00dfe",
+      "presentToday": "Heute anwesend",
+      "absentToday": "Heute abwesend",
+      "onLeave": "Im Urlaub",
+      "lateToday": "Heute versp\u00e4tet",
+      "pendingLeaves": "Ausstehende Urlaubsantr\u00e4ge"
+    },
+    "teamAttendanceToday": "Anwesenheit des Teams heute",
+    "noTeamMembers": "Keine Teammitglieder gefunden",
+    "inPrefix": "Ein",
+    "outPrefix": "Aus",
+    "statusHalfDay": "Halbtag",
+    "statusPresent": "Anwesend",
+    "statusAbsent": "Abwesend",
+    "statusOnLeave": "Im Urlaub",
+    "teamLeaveCalendar": "Urlaubskalender des Teams (diese Woche)",
+    "noApprovedLeaves": "Keine genehmigten Urlaube diese Woche",
+    "leaveFallback": "Urlaub",
+    "halfFirst": "1. H\u00e4lfte",
+    "halfSecond": "2. H\u00e4lfte",
+    "pendingLeaveRequests": "Ausstehende Urlaubsantr\u00e4ge",
+    "pendingBadge": "{{count}} ausstehend",
+    "table": {
+      "employee": "Mitarbeiter",
+      "type": "Typ",
+      "dates": "Daten",
+      "days": "Tage",
+      "reason": "Grund",
+      "actions": "Aktionen"
+    },
+    "halfSuffix": "(Halbtag)",
+    "noPendingRequests": "Keine ausstehenden Urlaubsantr\u00e4ge",
+    "review": "Pr\u00fcfen",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "remarksPlaceholder": "Bemerkungen (optional)",
+    "directReports": "Direkte Mitarbeiter",
+    "loadingTeam": "Team wird geladen...",
+    "noDirectReports": "Keine direkten Mitarbeiter gefunden. Teammitglieder erscheinen hier, sobald Mitarbeiter Ihnen als Vorgesetztem zugeordnet werden."
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Verwalten Sie Abonnements, Rechnungen, Zahlungen und Abrechnungs\u00fcbersicht.",
+    "tabs": {
+      "subscriptions": "Abonnements",
+      "invoices": "Rechnungen",
+      "payments": "Zahlungen",
+      "overview": "\u00dcbersicht"
+    },
+    "monthlyCost": "Monatliche Kosten",
+    "perMonth": "/Monat",
+    "noSubscriptions": "Noch keine Abonnements. Abonnieren Sie Module \u00fcber die Seite Module.",
+    "labels": {
+      "plan": "Plan",
+      "seats": "Pl\u00e4tze",
+      "pricePerSeat": "Preis/Platz",
+      "billingCycle": "Abrechnungszyklus"
+    },
+    "full": "(voll)",
+    "editTooltip": "Abonnement bearbeiten",
+    "cancelTooltip": "Abonnement k\u00fcndigen",
+    "cycles": {
+      "monthly": "Monatlich",
+      "quarterly": "Viertelj\u00e4hrlich",
+      "annual": "J\u00e4hrlich"
+    },
+    "editModal": {
+      "title": "Abonnement bearbeiten",
+      "planTier": "Plan-Stufe",
+      "totalSeats": "Pl\u00e4tze gesamt",
+      "currentlyUsing": "Derzeit {{count}} Pl\u00e4tze verwendet",
+      "cannotReduce": "Kann nicht unter {{count}} reduziert werden (in Verwendung)",
+      "billingCycle": "Abrechnungszyklus",
+      "changes": "\u00c4nderungen:",
+      "plan": "Plan",
+      "seats": "Pl\u00e4tze",
+      "cycle": "Zyklus",
+      "save": "\u00c4nderungen speichern",
+      "saving": "Speichern..."
+    },
+    "cancelModal": {
+      "title": "Abonnement k\u00fcndigen?",
+      "message": "Dies k\u00fcndigt das Abonnement und widerruft den Zugriff f\u00fcr alle zugewiesenen Pl\u00e4tze. Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+      "keep": "Beibehalten",
+      "yesCancel": "Ja, k\u00fcndigen",
+      "cancelling": "K\u00fcndigung..."
+    },
+    "toasts": {
+      "updated": "Abonnement erfolgreich aktualisiert",
+      "updateFailed": "Aktualisierung des Abonnements fehlgeschlagen",
+      "cancelled": "Abonnement gek\u00fcndigt",
+      "cancelFailed": "K\u00fcndigung des Abonnements fehlgeschlagen",
+      "errorPrefix": "Fehler"
+    },
+    "overview": {
+      "noData": "Noch keine Abrechnungsdaten verf\u00fcgbar.",
+      "outstandingBalance": "Offener Saldo",
+      "nextInvoiceDate": "N\u00e4chstes Rechnungsdatum",
+      "monthlyRecurring": "Monatlich wiederkehrend",
+      "paymentStatus": "Zahlungsstatus",
+      "overdue": "\u00fcberf\u00e4llig",
+      "pastDue": "in Verzug",
+      "allPaid": "alles bezahlt"
+    },
+    "invoices": {
+      "loading": "Rechnungen werden geladen...",
+      "none": "Noch keine Rechnungen.",
+      "number": "Rechnung Nr.",
+      "date": "Datum",
+      "dueDate": "F\u00e4lligkeitsdatum",
+      "amount": "Betrag",
+      "status": "Status",
+      "pagination": "Seite {{page}} von {{totalPages}} ({{total}} Rechnungen)",
+      "previous": "Zur\u00fcck",
+      "next": "Weiter",
+      "downloadPdf": "PDF herunterladen",
+      "payNow": "Jetzt bezahlen",
+      "processing": "Wird verarbeitet..."
+    },
+    "payments": {
+      "loading": "Zahlungen werden geladen...",
+      "none": "Noch keine Zahlungen erfasst.",
+      "date": "Datum",
+      "amount": "Betrag",
+      "method": "Methode",
+      "reference": "Referenz",
+      "invoice": "Rechnung",
+      "pagination": "Seite {{page}} von {{totalPages}} ({{total}} Zahlungen)"
+    }
+  },
+  "roles": {
+    "employee": "Mitarbeiter",
+    "manager": "Manager",
+    "hr_admin": "HR-Admin",
+    "org_admin": "Org.-Admin",
+    "super_admin": "Super-Admin"
+  },
+  "modulesAccess": {
+    "title": "Modulzugriff",
+    "subtitle": "Verwalten Sie, welche Mitarbeiter Zugriff auf jedes Modul haben.",
+    "modulesCount": "{{count}} Module",
+    "employeesCount": "{{count}} Mitarbeiter",
+    "seatsAssignedCount": "{{count}} Pl\u00e4tze zugewiesen",
+    "searchPlaceholder": "Suche nach Name, E-Mail, Bezeichnung oder Mitarbeitercode...",
+    "allEmployees": "Alle Mitarbeiter",
+    "enabledFor": "Aktiviert f\u00fcr",
+    "notEnabledFor": "Nicht aktiviert f\u00fcr",
+    "enabledSuffix": "Aktiviert",
+    "notEnabledSuffix": "Nicht aktiviert",
+    "loading": "Mitarbeiter werden geladen...",
+    "noEmployees": "Keine Mitarbeiter gefunden",
+    "matchingSearch": "passend zu Ihrer Suche",
+    "withFilter": "mit diesem Filter",
+    "table": {
+      "employee": "Mitarbeiter",
+      "role": "Rolle",
+      "designation": "Bezeichnung",
+      "modules": "Module"
+    },
+    "confirm": {
+      "title": "Modulzugriff deaktivieren",
+      "subtitle": "Diese Aktion kann Benutzerdaten im Modul l\u00f6schen",
+      "message": "Sind Sie sicher, dass Sie den Zugriff von <strong>{{user}}</strong> auf <strong>{{module}}</strong> entfernen m\u00f6chten? Die Daten in diesem Modul k\u00f6nnen endg\u00fcltig gel\u00f6scht werden.",
+      "cancel": "Abbrechen",
+      "remove": "Zugriff entfernen",
+      "removing": "Wird entfernt..."
+    },
+    "pagination": {
+      "showing": "Zeige {{from}}\u2013{{to}} von {{total}} Mitarbeitern",
+      "previous": "Zur\u00fcck",
+      "next": "Weiter"
+    },
+    "syncAlerts": {
+      "enabledSynced": "Modul aktiviert und Benutzer erfolgreich synchronisiert",
+      "enabledSkipped": "Platz zugewiesen. Modul hat keine Sync-API konfiguriert.",
+      "enabledPartial": "Platz zugewiesen, aber Modul-Synchronisation fehlgeschlagen ({{status}}).",
+      "enableFailed": "Modul konnte nicht aktiviert werden",
+      "disabledSynced": "Modul deaktiviert und Benutzer entfernt",
+      "disabledPartial": "Platz entfernt, aber Modul-Synchronisation fehlgeschlagen ({{status}})",
+      "disableFailed": "Modul konnte nicht deaktiviert werden"
+    }
+  },
+  "modulesPage": {
+    "title": "Modul-Marktplatz",
+    "subtitle": "Durchsuchen Sie EMP-Module und abonnieren Sie sie f\u00fcr Ihre Organisation.",
+    "aiBannerTitle": "Alle Module enthalten EMP AI",
+    "aiBannerDesc": "Intelligenter HR-Assistent mit KI \u2014 stellen Sie Fragen, erhalten Sie Einblicke und automatisieren Sie Aufgaben in allen Modulen.",
+    "coreIncludedFree": "Kern \u2014 Kostenlos enthalten",
+    "freeTier": "Kostenlose Stufe",
+    "comingSoon": "Demn\u00e4chst",
+    "seatsAssigned": "{{used}} von {{total}} Pl\u00e4tzen zugewiesen",
+    "active": "Aktiv",
+    "subscribed": "Abonniert",
+    "unsubscribe": "Abbestellen",
+    "subscribe": "Abonnieren",
+    "notSubscribed": "Nicht abonniert",
+    "loading": "Module werden geladen...",
+    "areYouSure": "Sind Sie sicher?",
+    "cancelling": "Wird storniert...",
+    "yesCancel": "Ja, stornieren",
+    "subscriptionCancelled": "Abonnement erfolgreich storniert.",
+    "cancelFailed": "Stornierung des Abonnements fehlgeschlagen.",
+    "subscriptionCreated": "Abonnement erstellt. Die Rechnung wird in K\u00fcrze generiert."
   },
   "helpdesk": {
     "title": "Helpdesk",
