@@ -1,32 +1,68 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 
 export default function PositionListPage() {
   const queryClient = useQueryClient();
+  // #1553 — Seed the status filter from ?status= so deep-links from the
+  // Position Dashboard top cards land on the matching filtered list.
+  // Whitelisted against known values so a bad URL doesn't wedge the dropdown.
+  const [searchParams] = useSearchParams();
+  const initialStatus = (() => {
+    const raw = searchParams.get("status") || "";
+    return ["active", "filled", "frozen", "closed"].includes(raw) ? raw : "";
+  })();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
+  const [status, setStatus] = useState<string>(initialStatus);
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: departments } = useDepartments();
 
+  // #1545 / #1551 — Delete reported as "says deleted but doesn't disappear".
+  // The backend soft-closes the position (status="closed") rather than hard-
+  // deleting, so when the list refetches the same row comes back under the
+  // current filter. Two fixes layered here:
+  //  1. Optimistically strip the row from every cached `positions` query so
+  //     the user sees immediate feedback.
+  //  2. After the server confirms, invalidate so any background changes
+  //     (e.g. status counts on the dashboard) sync up.
   const deleteMutation = useMutation({
     mutationFn: (positionId: number) => api.delete(`/positions/${positionId}`).then((r) => r.data),
+    onMutate: async (positionId: number) => {
+      await queryClient.cancelQueries({ queryKey: ["positions"] });
+      const snapshots: { key: unknown; value: any }[] = [];
+      queryClient.getQueryCache().findAll({ queryKey: ["positions"] }).forEach((q) => {
+        snapshots.push({ key: q.queryKey, value: q.state.data });
+        const data = q.state.data as any;
+        if (data?.data) {
+          queryClient.setQueryData(q.queryKey, {
+            ...data,
+            data: data.data.filter((p: any) => p.id !== positionId),
+            meta: data.meta ? { ...data.meta, total: Math.max(0, (data.meta.total || 1) - 1) } : data.meta,
+          });
+        }
+      });
+      return { snapshots };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["positions"] });
       queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setDeleteTarget(null);
       setDeleteError(null);
     },
-    onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete position"),
+    onError: (err: any, _positionId, context) => {
+      // Roll the optimistic removal back so the row reappears if the server
+      // rejected the delete.
+      context?.snapshots?.forEach(({ key, value }) => queryClient.setQueryData(key as any, value));
+      setDeleteError(err?.response?.data?.error?.message || "Failed to delete position");
+    },
   });
 
   const { data, isLoading } = useQuery({
