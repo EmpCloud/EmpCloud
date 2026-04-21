@@ -197,16 +197,37 @@ export default function ModuleAccessPage() {
             const used = sub?.used_seats || 0;
             const total = sub?.total_seats || 0;
             const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
+            const isFilteredOnThis = filterModule === `enabled:${m.id}`;
             return (
-              <div key={m.id} className="bg-white rounded-xl border border-gray-200 p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-gray-300"}`} />
-                  <span className="text-xs font-medium text-gray-700 truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
-                </div>
-                <div className="text-lg font-bold text-gray-900">{used}<span className="text-sm font-normal text-gray-400">/{total}</span></div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
-                  <div className="bg-brand-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                </div>
+              <div
+                key={m.id}
+                className={`bg-white rounded-xl border p-3 ${
+                  isFilteredOnThis ? "border-brand-400 ring-1 ring-brand-200" : "border-gray-200"
+                }`}
+              >
+                {/* #1537 — Card header is a button that filters the employee
+                    table below to only show people enabled for this module.
+                    Clicking again clears the filter (toggle). The Enable/
+                    Disable All buttons below are separate so they don't
+                    trigger the filter. */}
+                <button
+                  type="button"
+                  onClick={() => setFilterModule(isFilteredOnThis ? "all" : `enabled:${m.id}`)}
+                  aria-label={isFilteredOnThis
+                    ? `Clear filter for ${m.name}`
+                    : `Show employees enabled for ${m.name}`}
+                  aria-pressed={isFilteredOnThis}
+                  className="w-full text-left rounded-md -m-1 p-1 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-gray-300"}`} />
+                    <span className="text-xs font-medium text-gray-700 truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
+                  </div>
+                  <div className="text-lg font-bold text-gray-900">{used}<span className="text-sm font-normal text-gray-400">/{total}</span></div>
+                  <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
+                    <div className="bg-brand-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </button>
                 <div className="flex gap-1 mt-3">
                   <button
                     onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "enable" })}
