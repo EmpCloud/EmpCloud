@@ -98,8 +98,12 @@ export default function SurveyDashboardPage() {
       </div>
 
       {/* Stats Grid */}
+      {/* #1532 — Active Surveys deep-links to the list filtered to status=active.
+          Total Responses / Avg Response Rate / Total Surveys don't map to any
+          single list filter (responses & response-rate aren't filterable fields;
+          Total = unfiltered = correct already), so they stay on /surveys/list. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Active Surveys" value={d.active_count ?? 0} icon={Clock} color="bg-green-100 text-green-600" to="/surveys/list" />
+        <StatCard label="Active Surveys" value={d.active_count ?? 0} icon={Clock} color="bg-green-100 text-green-600" to="/surveys/list?status=active" />
         <StatCard label="Total Responses" value={d.total_responses ?? 0} icon={Users} color="bg-blue-100 text-blue-600" to="/surveys/list" />
         <StatCard label="Avg Response Rate" value={`${d.avg_response_rate ?? 0}%`} icon={TrendingUp} color="bg-purple-100 text-purple-600" to="/surveys/list" />
         <StatCard label="Total Surveys" value={d.total_count ?? 0} icon={BarChart3} color="bg-gray-100 text-gray-600" to="/surveys/list" />
