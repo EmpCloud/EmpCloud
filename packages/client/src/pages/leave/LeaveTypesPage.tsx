@@ -573,7 +573,7 @@ export default function LeaveTypesPage() {
                           <Pencil className="h-3.5 w-3.5 text-gray-500" />
                         </button>
                         <button
-                          onClick={() => { if (confirm("Deactivate this policy?")) deletePolicy.mutate(p.id); }}
+                          onClick={() => { if (confirm("Delete this leave policy? This action cannot be undone.")) deletePolicy.mutate(p.id); }}
                           className="p-1 hover:bg-gray-100 rounded"
                         >
                           <Trash2 className="h-3.5 w-3.5 text-red-500" />
