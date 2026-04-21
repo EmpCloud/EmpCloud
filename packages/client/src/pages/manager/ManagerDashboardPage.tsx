@@ -113,14 +113,23 @@ export default function ManagerDashboardPage() {
     },
   });
 
+  // #1557 — Each card scrolls to the matching section on this same page.
+  // The data is all already present below; the cards just needed a way to
+  // act on a click. Team Size → Direct Reports; attendance stats → Team
+  // Attendance Today; Pending Leaves → Pending Leave Requests.
   const statCards = [
-    { label: "Team Size", value: stats?.team_size ?? "-", icon: Users, color: "bg-blue-50 text-blue-700" },
-    { label: "Present Today", value: stats?.present_today ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700" },
-    { label: "Absent Today", value: stats?.absent_today ?? "-", icon: UserX, color: "bg-red-50 text-red-700" },
-    { label: "On Leave", value: stats?.on_leave_today ?? "-", icon: CalendarDays, color: "bg-purple-50 text-purple-700" },
-    { label: "Late Today", value: stats?.late_today ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700" },
-    { label: "Pending Leaves", value: stats?.pending_leave_requests ?? "-", icon: Clock, color: "bg-amber-50 text-amber-700" },
+    { label: "Team Size", value: stats?.team_size ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", section: "direct-reports" },
+    { label: "Present Today", value: stats?.present_today ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", section: "team-attendance" },
+    { label: "Absent Today", value: stats?.absent_today ?? "-", icon: UserX, color: "bg-red-50 text-red-700", section: "team-attendance" },
+    { label: "On Leave", value: stats?.on_leave_today ?? "-", icon: CalendarDays, color: "bg-purple-50 text-purple-700", section: "team-attendance" },
+    { label: "Late Today", value: stats?.late_today ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", section: "team-attendance" },
+    { label: "Pending Leaves", value: stats?.pending_leave_requests ?? "-", icon: Clock, color: "bg-amber-50 text-amber-700", section: "pending-leaves" },
   ];
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div>
@@ -134,7 +143,13 @@ export default function ManagerDashboardPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
         {statCards.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
+          <button
+            key={s.label}
+            type="button"
+            onClick={() => scrollToSection(s.section)}
+            aria-label={`Jump to ${s.label}`}
+            className="bg-white rounded-xl border border-gray-200 p-5 text-left transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${s.color}`}>
                 <s.icon className="h-5 w-5" />
@@ -146,13 +161,13 @@ export default function ManagerDashboardPage() {
                 <p className="text-xs text-gray-500">{s.label}</p>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Team Attendance Today */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div id="team-attendance" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-4">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Team Attendance Today</h2>
           </div>
@@ -257,7 +272,7 @@ export default function ManagerDashboardPage() {
       </div>
 
       {/* Pending Leave Requests */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+      <div id="pending-leaves" className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8 scroll-mt-4">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Pending Leave Requests</h2>
           <span className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full font-medium">
@@ -356,7 +371,7 @@ export default function ManagerDashboardPage() {
       </div>
 
       {/* Direct Reports List */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div id="direct-reports" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-4">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Direct Reports</h2>
         </div>
