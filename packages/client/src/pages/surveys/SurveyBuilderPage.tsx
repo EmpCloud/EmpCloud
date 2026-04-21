@@ -292,18 +292,25 @@ export default function SurveyBuilderPage() {
               </select>
             </div>
 
+            {/* #1541 — These inputs are type="datetime-local", so the browser's
+                native picker opens a date calendar AND a time selector side by
+                side. Previously the labels said "Start Date" / "End Date" only,
+                which made users think the time-picker popover was a bug. The
+                labels now say "Start Date & Time" and there's a helper line
+                under each input making the expectation explicit. */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date &amp; Time</label>
               <input
                 type="datetime-local"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
+              <p className="text-xs text-gray-400 mt-1">Pick a date and a time of day.</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">End Date &amp; Time</label>
               <input
                 type="datetime-local"
                 value={endDate}
@@ -311,6 +318,7 @@ export default function SurveyBuilderPage() {
                 min={startDate || undefined}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
+              <p className="text-xs text-gray-400 mt-1">Pick a date and a time of day.</p>
             </div>
 
             <div className="flex items-center gap-3 pt-6">
