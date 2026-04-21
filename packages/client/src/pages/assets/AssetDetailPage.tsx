@@ -553,13 +553,19 @@ export default function AssetDetailPage() {
                         </p>
                       </div>
                       {isHR && (
+                        // #1535 — Button was previously opacity-0 group-hover:opacity-100,
+                        // making it invisible until hover and completely unreachable on
+                        // touch devices. Reporter assumed there was no way to delete
+                        // history entries. Now always visible for HR admins, with a
+                        // subtle default color that emphasizes on hover.
                         <button
                           onClick={() => {
                             setHistoryDeleteId(entry.id);
                             setHistoryDeleteError(null);
                           }}
                           title="Delete history entry"
-                          className="p-1 rounded hover:bg-red-50 text-gray-300 hover:text-red-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                          aria-label="Delete history entry"
+                          className="p-1 rounded text-gray-400 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
