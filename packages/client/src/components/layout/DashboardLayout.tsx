@@ -94,19 +94,29 @@ export default function DashboardLayout() {
     >
       <Link
         to="/"
+        title={isCollapsed ? "EMP Cloud" : undefined}
         className={`block border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-          isCollapsed ? "p-3" : "p-6"
+          isCollapsed ? "p-2" : "p-6"
         }`}
       >
-        <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"}`}>
-          <Building2 className="h-8 w-8 text-brand-600 flex-shrink-0" />
-          {!isCollapsed && (
+        {isCollapsed ? (
+          // #1529 — Compact brand mark when collapsed: icon + "EMP" wordmark
+          // so the brand is identifiable at a glance. Previously only the
+          // generic Building2 icon showed, which the reporter flagged as
+          // "logo not visible".
+          <div className="flex flex-col items-center gap-0.5">
+            <Building2 className="h-6 w-6 text-brand-600 flex-shrink-0" />
+            <span className="text-[10px] font-bold text-brand-600 leading-none tracking-wide">EMP</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Building2 className="h-8 w-8 text-brand-600 flex-shrink-0" />
             <div>
               <h1 className="text-lg font-bold text-gray-900">EMP Cloud</h1>
               <p className="text-xs text-gray-500 truncate">{user?.org_name}</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </Link>
 
       {/* Close button on mobile */}
