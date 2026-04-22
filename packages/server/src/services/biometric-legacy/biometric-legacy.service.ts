@@ -8,20 +8,21 @@
 // Data sources (EmpCloud only — no emp-monitor DB access):
 //   - users, organizations, organization_locations, organization_departments
 //   - attendance_records (via attendanceService.checkIn / checkOut)
-//   - biometric_legacy_credentials (new, migration 042) — stores the
-//     finger1/finger2/bio_code/secret_key/is_bio_enabled fields that have
-//     no home in the modern biometrics schema
+//   - biometric_legacy_credentials (migration 042) — finger1/finger2/
+//     bio_code/secret_key/is_bio_enabled per-user shim
+//   - organization_holidays, biometric_departments,
+//     biometric_access_counters, biometric_access_logs (migration 046)
+//   - organizations.camera_overlay_status / biometrics_confirmation_status /
+//     is_biometrics_employee / org_secret_key_hash / attendance_hours_seconds
+//     (added in migration 046)
 //
 // Intentional simplifications vs. emp-monitor:
-//   - Access counters + biometric_department access logs are dropped
-//     (they were emp-monitor's per-org device metering; EmpCloud doesn't
-//     meter this way and this was flagged as out-of-scope in the plan).
-//   - camera_overlay_status, department_status, attendance_hours settings,
-//     and the holidays table have no EmpCloud equivalent — we return
-//     safe defaults so response shapes stay intact.
 //   - secret_key is stored bcrypt-hashed instead of symmetrically
 //     encrypted; the forgot-password OTP flow still works identically
 //     from the client's perspective.
+//   - Face images land on local disk (served via GET /face/:id.jpg) instead
+//     of Google Cloud Storage. The response field is still a public HTTPS
+//     URL — kiosks don't care about the backing store.
 // =============================================================================
 
 import bcrypt from "bcryptjs";
@@ -95,6 +96,13 @@ export async function clearOtp(email: string): Promise<void> {
 }
 
 const DEFAULT_ATTENDANCE_SECONDS = 28800; // 8 hours — emp-monitor's fallback
+
+async function getAttendanceHoursSeconds(orgId: number): Promise<number> {
+  const db = getDB();
+  const org = await db("organizations").where({ id: orgId }).first();
+  const val = Number(org?.attendance_hours_seconds);
+  return Number.isFinite(val) && val > 0 ? val : DEFAULT_ATTENDANCE_SECONDS;
+}
 
 // ---------------------------------------------------------------------------
 // Date / timezone helpers
@@ -309,9 +317,14 @@ export async function kioskAuth(body: { userName?: string; email?: string; secre
   };
   const accessToken = signKioskToken(userData);
 
-  // Mirror emp-monitor's /auth response payload shape. camera_overlay_status
-  // and department_status have no EmpCloud equivalent — return safe defaults
-  // so the kiosk UI keeps rendering. See plan notes in the service header.
+  // Real values sourced from organizations + biometric_departments so the
+  // kiosk UI branches correctly on camera overlay / dept routing.
+  const cameraOverlay = Number(org?.camera_overlay_status ?? 0);
+  const [deptCountRow] = await db("biometric_departments")
+    .where({ organization_id: user.organization_id })
+    .count<{ count: number | string }[]>({ count: "*" });
+  const deptStatus = Number(deptCountRow?.count ?? 0) > 0 ? 1 : 0;
+
   return {
     data: {
       userData: [
@@ -328,8 +341,8 @@ export async function kioskAuth(body: { userName?: string; email?: string; secre
         },
       ],
       accessToken,
-      camera_overlay_status: 0,
-      department_status: 0,
+      camera_overlay_status: cameraOverlay,
+      department_status: deptStatus,
     },
     message: "log in success",
   };
@@ -351,6 +364,7 @@ export async function fetchUsersForKiosk(
     location_id?: string;
     user_id?: string;
     department_id?: string;
+    count?: string;
   },
 ) {
   const db = getDB();
@@ -360,10 +374,20 @@ export async function fetchUsersForKiosk(
   const org = await db("organizations").where({ id: orgId }).first();
   if (!org) return { error: { code: 400, message: "Organization not found" } };
 
-  const confirmationStatus = 0; // no emp-monitor `biometrics_confirmation_status` in EmpCloud
+  const confirmationStatus = Number(org.biometrics_confirmation_status ?? 0);
 
-  const column = params.sortColumn === "email" ? "u.email" : "u.first_name";
-  const order = params.sortOrder === "ASC" ? "ASC" : "ASC"; // emp-monitor quirk: always ASC by default
+  // emp-monitor's sort quirks (biometric.model.js fetchUsers):
+  //   - sortColumn "firstname" or "email" → that column
+  //   - anything else → first_name ASC (forced)
+  //   - sortOrder != "ASC" → DESC (so "A" or missing → ASC, "D" → DESC)
+  const column =
+    params.sortColumn === "email"
+      ? "u.email"
+      : params.sortColumn === "firstname"
+        ? "u.first_name"
+        : "u.first_name";
+  const defaultForcedAsc = params.sortColumn !== "email" && params.sortColumn !== "firstname";
+  const order = defaultForcedAsc ? "ASC" : params.sortOrder === "ASC" ? "ASC" : "DESC";
 
   if (params.user_id) {
     const row = await db("users as u")
@@ -394,6 +418,35 @@ export async function fetchUsersForKiosk(
     if (!row.length) return { error: { code: 400, message: "No users found with provided user_id" } };
     // Rewrite face to a served URL
     for (const r of row) r.face = faceUrlFor(baseUrl, r.id, r.face ?? null);
+
+    // emp-monitor side-effects that a kiosk scan with ?user_id= triggers:
+    //   1. Bump (or create) the per-org/per-dept access counter for today,
+    //      incrementing by ?count (default 1).
+    //   2. When department_id is given, append/update an access log row —
+    //      re-use the open one (no end_time) or start a new one.
+    try {
+      const today = todayYMD();
+      const increment = params.count ? Number(params.count) : 1;
+      await upsertAccessCounter({
+        orgId,
+        departmentId: params.department_id ? Number(params.department_id) : null,
+        date: today,
+        increment: Number.isFinite(increment) && increment > 0 ? increment : 1,
+      });
+      if (params.department_id) {
+        await upsertAccessLog({
+          userId: Number(params.user_id),
+          orgId,
+          departmentId: Number(params.department_id),
+          date: today,
+        });
+      }
+    } catch (err) {
+      logger.warn("biometric access counter/log update failed", {
+        err: (err as Error).message,
+      });
+    }
+
     return {
       data: { userData: row, confirmationStatus },
       message: "Biometric details fetched successfully",
@@ -449,6 +502,78 @@ export async function fetchUsersForKiosk(
     data: { count: total, usersData: rows, confirmationStatus },
     message: "Biometric details fetched successfully",
   };
+}
+
+// ---------------------------------------------------------------------------
+// Access counter / access log helpers (called from fetchUsersForKiosk when
+// the device scans a specific user_id — mirrors emp-monitor's
+// updateCountersOnMatch + addLogsDepartment behaviors).
+// ---------------------------------------------------------------------------
+
+async function upsertAccessCounter(opts: {
+  orgId: number;
+  departmentId: number | null;
+  date: string;
+  increment: number;
+}) {
+  const db = getDB();
+  const { orgId, departmentId, date, increment } = opts;
+  const row = await db("biometric_access_counters")
+    .where({ organization_id: orgId, date })
+    .modify((q) => {
+      if (departmentId === null) q.whereNull("department_id");
+      else q.where("department_id", departmentId);
+    })
+    .first();
+  if (row) {
+    await db("biometric_access_counters")
+      .where({ id: row.id })
+      .update({ access_count: Number(row.access_count) + increment, updated_at: new Date() });
+  } else {
+    await db("biometric_access_counters").insert({
+      organization_id: orgId,
+      department_id: departmentId,
+      date,
+      access_count: increment,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+  }
+}
+
+async function upsertAccessLog(opts: {
+  userId: number;
+  orgId: number;
+  departmentId: number;
+  date: string; // YYYY-MM-DD
+}) {
+  const db = getDB();
+  const { userId, orgId, departmentId, date } = opts;
+  const nowIso = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const yyyymmdd = Number(date.split("-").join(""));
+
+  // Mirror emp-monitor: if there's an open log (no end_time) reuse it by
+  // stamping end_time; otherwise start a new row. findOne + sort desc.
+  const existing = await db("biometric_access_logs")
+    .where({ user_id: userId, organization_id: orgId, department_id: departmentId, yyyymmdd })
+    .orderBy("created_at", "desc")
+    .first();
+
+  if (existing && !existing.end_time) {
+    await db("biometric_access_logs")
+      .where({ id: existing.id })
+      .update({ end_time: nowIso, updated_at: new Date() });
+    return;
+  }
+  await db("biometric_access_logs").insert({
+    user_id: userId,
+    organization_id: orgId,
+    department_id: departmentId,
+    start_time: nowIso,
+    yyyymmdd,
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -545,7 +670,6 @@ export async function matchAndPunch(
   const user = await db("users").where({ id: creds.user_id }).first();
   if (!user) return { error: { code: 400, message: "No data matched" } };
 
-  const loggedIn = await db("users").where({ id: loggedInUserId }).first();
   const loggedInCreds = await db("biometric_legacy_credentials").where({ user_id: loggedInUserId }).first();
   if (!loggedInCreds?.is_bio_enabled) {
     return { error: { code: 400, message: "BioMetric not enabled" } };
@@ -558,9 +682,14 @@ export async function matchAndPunch(
 
   const department = await db("organization_departments").where({ id: user.department_id }).first();
   const location = await db("organization_locations").where({ id: user.location_id }).first();
+  // emp-monitor's employees table had a separate numeric primary key. In
+  // EmpCloud the user row is the employee row, so we expose `emp_code` as
+  // `employee_id` when set (typical format is "EMP-0001" or numeric) and
+  // fall back to user.id so the field is never null.
+  const empIdentifier: string | number = user.emp_code ?? user.id;
   const employeeDetails = [
     {
-      employee_id: user.id,
+      employee_id: empIdentifier,
       user_id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
@@ -650,9 +779,17 @@ export async function getLocations(orgId: number) {
 
 export async function getDepartments(orgId: number) {
   const db = getDB();
-  return db("organization_departments")
-    .where({ organization_id: orgId, is_deleted: false })
-    .select("id", "name", "organization_id");
+  // emp-monitor returned rows from the `biometric_department` table —
+  // the subset of departments enabled for kiosk device attendance.
+  return db("biometric_departments as bd")
+    .leftJoin("organization_departments as od", "od.id", "bd.department_id")
+    .where("bd.organization_id", orgId)
+    .select(
+      "bd.id",
+      "bd.organization_id",
+      "bd.department_id",
+      db.raw("COALESCE(bd.name, od.name) as name"),
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -696,6 +833,7 @@ async function countSuspend(orgId: number, locationId: number) {
 
 async function countAbsent(orgId: number, locationId: number, date: string, custom: boolean) {
   const db = getDB();
+  const attendanceHours = await getAttendanceHoursSeconds(orgId);
   const q = db("users as u")
     .leftJoin("attendance_records as ar", function () {
       this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", date);
@@ -709,7 +847,7 @@ async function countAbsent(orgId: number, locationId: number, date: string, cust
         .orWhereNull("ar.check_out")
         .orWhereRaw(
           "TIMESTAMPDIFF(SECOND, ar.check_in, ar.check_out) < ?",
-          [DEFAULT_ATTENDANCE_SECONDS],
+          [attendanceHours],
         );
     });
   } else {
@@ -721,12 +859,13 @@ async function countAbsent(orgId: number, locationId: number, date: string, cust
 
 async function countPresent(orgId: number, locationId: number, date: string) {
   const db = getDB();
+  const attendanceHours = await getAttendanceHoursSeconds(orgId);
   const [row] = await db("attendance_records as ar")
     .join("users as u", "u.id", "ar.user_id")
     .where("ar.organization_id", orgId)
     .where("ar.date", date)
     .where("u.location_id", locationId)
-    .whereRaw("TIMESTAMPDIFF(SECOND, ar.check_in, ar.check_out) >= ?", [DEFAULT_ATTENDANCE_SECONDS])
+    .whereRaw("TIMESTAMPDIFF(SECOND, ar.check_in, ar.check_out) >= ?", [attendanceHours])
     .count<{ present: number | string }[]>({ present: "*" });
   return Number(row?.present ?? 0);
 }
@@ -801,10 +940,17 @@ export async function attendanceDetails(
 
   const skip = Number(query.skip || 0);
   const limit = Number(query.limit || 10);
+  // emp-monitor sort quirk (fetchAttendance): valid columns are "firstname"
+  // (→ u.first_name) and "email" (→ u.email); any other value forces
+  // first_name ASC. For valid columns, sortOrder "ASC" stays ASC; anything
+  // else becomes DESC.
+  const validCol = query.sortColumn === "firstname" || query.sortColumn === "email";
   const column = query.sortColumn === "email" ? "u.email" : "u.first_name";
+  const order = !validCol ? "ASC" : query.sortOrder === "ASC" ? "ASC" : "DESC";
 
   const today = todayYMD();
   const isPast = body.date < today;
+  const attendanceHours = await getAttendanceHoursSeconds(orgId);
 
   const [total, checkedIn, checkedOut, suspend, absent] = await Promise.all([
     countTotalUsers(orgId, body.location_id),
@@ -830,7 +976,7 @@ export async function attendanceDetails(
     if (isPast) {
       listQ = listQ.where("u.status", 1).where(function () {
         this.whereNull("ar.id")
-          .orWhereRaw("TIMESTAMPDIFF(SECOND, ar.check_in, ar.check_out) < ?", [DEFAULT_ATTENDANCE_SECONDS]);
+          .orWhereRaw("TIMESTAMPDIFF(SECOND, ar.check_in, ar.check_out) < ?", [attendanceHours]);
       });
     } else {
       listQ = listQ.where("u.status", 1).whereNull("ar.id");
@@ -850,7 +996,7 @@ export async function attendanceDetails(
       "ar.check_in as checkIn",
       "ar.check_out as checkOut",
     )
-    .orderByRaw(`${column} ASC`)
+    .orderByRaw(`${column} ${order}`)
     .limit(limit)
     .offset(skip);
 
@@ -873,25 +1019,47 @@ export async function attendanceDetails(
 }
 
 // ---------------------------------------------------------------------------
-// /holidays — EmpCloud has no holidays table; return empty for shape parity
+// /holidays — lists upcoming holidays from organization_holidays, sorted
+// by date ascending (emp-monitor's fetchholidaysByYear filtered on
+// holiday_date >= current_date).
 // ---------------------------------------------------------------------------
 
-export async function getHolidays(_orgId: number): Promise<unknown[]> {
-  return [];
+export async function getHolidays(orgId: number): Promise<unknown[]> {
+  const db = getDB();
+  const today = todayYMD();
+  const rows = await db("organization_holidays")
+    .where({ organization_id: orgId })
+    .andWhere("holiday_date", ">=", today)
+    .orderBy("holiday_date", "asc")
+    .select("id", "organization_id", "holiday_name", "holiday_date", "description");
+  return rows;
 }
 
 // ---------------------------------------------------------------------------
 // /fetch-employee-password-enable-status + /verify-secretKey (org-level secret)
 // ---------------------------------------------------------------------------
 
-export async function employeePasswordStatus(_orgId: number) {
-  // No EmpCloud equivalent — org-level biometrics password gate not modeled.
-  // Return 0 so the kiosk UI treats this feature as off.
-  return { status: 0 };
+export async function employeePasswordStatus(orgId: number) {
+  const db = getDB();
+  const org = await db("organizations").where({ id: orgId }).first();
+  if (!org) return { status: 0 };
+  return { status: Number(org.is_biometrics_employee ?? 0) };
 }
 
-export async function verifyOrgSecret(_orgId: number, _secretKey: string) {
-  return { error: { code: 400, message: "Passowrd check not enable" } };
+export async function verifyOrgSecret(orgId: number, secretKey: string | undefined) {
+  const db = getDB();
+  const org = await db("organizations").where({ id: orgId }).first();
+  if (!org) return { error: { code: 400, message: "Organization not found" } };
+  const gateOn = Number(org.is_biometrics_employee ?? 0) === 1;
+  // emp-monitor's parity: when the gate is off, emit its exact (typo'd)
+  // "Passowrd check not enable" message so client branches still work.
+  if (!gateOn) return { error: { code: 400, message: "Passowrd check not enable" } };
+  if (!secretKey || !org.org_secret_key_hash) {
+    return { error: { code: 400, message: "Invalid SecretKey" } };
+  }
+  const ok = await bcrypt.compare(String(secretKey), org.org_secret_key_hash);
+  if (!ok) return { error: { code: 400, message: "Invalid SecretKey" } };
+  return { ok: true };
 }
 
 // ---------------------------------------------------------------------------
