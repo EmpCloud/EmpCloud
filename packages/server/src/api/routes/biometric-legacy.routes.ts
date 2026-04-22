@@ -197,6 +197,7 @@ router.get("/get-users", kioskAuthenticate, async (req, res, next) => {
       location_id: req.query.location_id as string,
       user_id: req.query.user_id as string,
       department_id: req.query.department_id as string,
+      count: req.query.count as string,
     });
     if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
     return resp(res, 200, result.data, result.message);
