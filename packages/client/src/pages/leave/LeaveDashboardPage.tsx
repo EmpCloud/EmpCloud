@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
@@ -33,6 +33,15 @@ export default function LeaveDashboardPage() {
   const user = useAuthStore((s) => s.user);
   const isAdmin = user ? HR_ROLES.includes(user.role) : false;
   const [showApply, setShowApply] = useState(false);
+  // #1578 — form renders below the fold on smaller viewports, so clicks on
+  // Apply Leave looked like nothing happened. Scroll the form into view once
+  // it mounts so the user sees the apply flow.
+  const applyFormRef = useRef<HTMLFormElement | null>(null);
+  useEffect(() => {
+    if (showApply) {
+      applyFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showApply]);
 
   const { data: balances = [], isLoading: loadingBalances } = useQuery<LeaveBalance[]>({
     queryKey: ["leave-balances"],
@@ -94,8 +103,9 @@ export default function LeaveDashboardPage() {
             </Link>
           )}
           <button
+            type="button"
             onClick={() => setShowApply(true)}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer"
           >
             <PlusCircle className="h-4 w-4" /> {t('leave.applyLeave')}
           </button>
@@ -176,8 +186,9 @@ export default function LeaveDashboardPage() {
       {/* Quick Apply Form */}
       {showApply && (
         <form
+          ref={applyFormRef}
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl border border-gray-200 p-6 mb-8"
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-8 scroll-mt-4"
         >
           <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('leave.dashboard.applyTitle')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
