@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { Link } from "react-router-dom";
@@ -27,10 +28,20 @@ interface LeaveType {
 }
 
 export default function LeaveDashboardPage() {
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const isAdmin = user ? HR_ROLES.includes(user.role) : false;
   const [showApply, setShowApply] = useState(false);
+  // #1578 — form renders below the fold on smaller viewports, so clicks on
+  // Apply Leave looked like nothing happened. Scroll the form into view once
+  // it mounts so the user sees the apply flow.
+  const applyFormRef = useRef<HTMLFormElement | null>(null);
+  useEffect(() => {
+    if (showApply) {
+      applyFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showApply]);
 
   const { data: balances = [], isLoading: loadingBalances } = useQuery<LeaveBalance[]>({
     queryKey: ["leave-balances"],
@@ -79,8 +90,8 @@ export default function LeaveDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Leave Dashboard</h1>
-          <p className="text-gray-500 mt-1">View your leave balances and apply for leave.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('leave.dashboard.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('leave.dashboard.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           {isAdmin && (
@@ -88,14 +99,15 @@ export default function LeaveDashboardPage() {
               to="/leave/settings"
               className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200"
             >
-              <Settings2 className="h-4 w-4" /> Leave Settings
+              <Settings2 className="h-4 w-4" /> {t('leave.dashboard.leaveSettings')}
             </Link>
           )}
           <button
+            type="button"
             onClick={() => setShowApply(true)}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer"
           >
-            <PlusCircle className="h-4 w-4" /> Apply Leave
+            <PlusCircle className="h-4 w-4" /> {t('leave.applyLeave')}
           </button>
         </div>
       </div>
@@ -114,13 +126,13 @@ export default function LeaveDashboardPage() {
               </div>
             ))}
           </>
-        ) : leaveTypes.filter((t) => Boolean(t.is_active)).length === 0 ? (
+        ) : leaveTypes.filter((lt) => Boolean(lt.is_active)).length === 0 ? (
           <div className="col-span-full text-center text-gray-400 py-8">
-            No leave types configured.
+            {t('leave.noTypes')}
           </div>
         ) : (
           leaveTypes
-            .filter((t) => Boolean(t.is_active))
+            .filter((lt) => Boolean(lt.is_active))
             .map((type) => {
               const bal = balances.find((b) => b.leave_type_id === type.id);
               const typeColor = type.color ?? "#6366f1";
@@ -145,16 +157,16 @@ export default function LeaveDashboardPage() {
                   </div>
                   <div className="flex items-center gap-2 mb-3 ml-6">
                     <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${type.is_paid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"}`}>
-                      {type.is_paid ? "Paid" : "Unpaid"}
+                      {type.is_paid ? t('leave.dashboard.paid') : t('leave.dashboard.unpaid')}
                     </span>
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-gray-400">Leave Balance</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-gray-400">{t('leave.leaveBalance')}</span>
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-1">
-                    {balance} <span className="text-sm font-normal text-gray-400">days</span>
+                    {balance} <span className="text-sm font-normal text-gray-400">{t('leave.dashboard.days')}</span>
                   </div>
                   <p className="text-xs text-gray-500">
-                    {used} used of {allocated} allocated
-                    {carry > 0 && ` (+${carry} carry forward)`}
+                    {t('leave.dashboard.usedOfAllocated', { used, allocated })}
+                    {carry > 0 && ` ${t('leave.dashboard.carrySuffix', { carry })}`}
                   </p>
                   <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
                     <div
@@ -174,30 +186,31 @@ export default function LeaveDashboardPage() {
       {/* Quick Apply Form */}
       {showApply && (
         <form
+          ref={applyFormRef}
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl border border-gray-200 p-6 mb-8"
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-8 scroll-mt-4"
         >
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Apply for Leave</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('leave.dashboard.applyTitle')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.leaveType')} <span className="text-red-500">*</span></label>
               <select
                 value={form.leave_type_id}
                 onChange={(e) => setForm({ ...form, leave_type_id: Number(e.target.value) })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               >
-                <option value={0} disabled>Select type</option>
+                <option value={0} disabled>{t('leave.dashboard.selectType')}</option>
                 {leaveTypes
-                  .filter((t) => Boolean(t.is_active))
-                  .filter((t, i, arr) => arr.findIndex((x) => x.name === t.name) === i)
-                  .map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
+                  .filter((lt) => Boolean(lt.is_active))
+                  .filter((lt, i, arr) => arr.findIndex((x) => x.name === lt.name) === i)
+                  .map((lt) => (
+                    <option key={lt.id} value={lt.id}>{lt.name}</option>
                   ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.startDate')} <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.start_date}
@@ -215,7 +228,7 @@ export default function LeaveDashboardPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.endDate')} <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.end_date}
@@ -233,7 +246,7 @@ export default function LeaveDashboardPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Number of Days <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.dashboard.numberOfDays')} <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 step="0.5"
@@ -256,7 +269,7 @@ export default function LeaveDashboardPage() {
                   onChange={(e) => setForm({ ...form, is_half_day: e.target.checked, half_day_type: e.target.checked ? "first_half" : "" })}
                   className="rounded border-gray-300"
                 />
-                Half Day
+                {t('leave.dashboard.halfDay')}
               </label>
               {form.is_half_day && (
                 <select
@@ -264,13 +277,13 @@ export default function LeaveDashboardPage() {
                   onChange={(e) => setForm({ ...form, half_day_type: e.target.value })}
                   className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 >
-                  <option value="first_half">First Half</option>
-                  <option value="second_half">Second Half</option>
+                  <option value="first_half">{t('leave.dashboard.firstHalf')}</option>
+                  <option value="second_half">{t('leave.dashboard.secondHalf')}</option>
                 </select>
               )}
             </div>
             <div className="md:col-span-2 lg:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.reason')} <span className="text-red-500">*</span></label>
               <textarea
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
@@ -282,7 +295,7 @@ export default function LeaveDashboardPage() {
           </div>
           {applyLeave.isError && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
-              {(applyLeave.error && typeof applyLeave.error === "object" && "response" in applyLeave.error ? (applyLeave.error as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message : null) || "Failed to submit leave application. Please check all fields and try again."}
+              {(applyLeave.error && typeof applyLeave.error === "object" && "response" in applyLeave.error ? (applyLeave.error as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message : null) || t('leave.dashboard.submitError')}
             </div>
           )}
           <div className="flex justify-end gap-3 mt-4">
@@ -295,14 +308,14 @@ export default function LeaveDashboardPage() {
               }}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={applyLeave.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              <CalendarDays className="h-4 w-4" /> {applyLeave.isPending ? "Submitting..." : "Submit Application"}
+              <CalendarDays className="h-4 w-4" /> {applyLeave.isPending ? t('leave.dashboard.submitting') : t('leave.dashboard.submitApplication')}
             </button>
           </div>
         </form>
@@ -312,13 +325,13 @@ export default function LeaveDashboardPage() {
       {isAdmin && <PendingApprovals leaveTypes={leaveTypes} />}
 
       {/* Recent Applications */}
-      <RecentApplications leaveTypes={leaveTypes} />
+      <RecentApplications leaveTypes={leaveTypes} locale={i18n.language} />
 
       {/* Legend */}
       <div className="flex items-center gap-6 text-xs text-gray-500 mt-6">
-        <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-amber-500" /> Pending</span>
-        <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> Approved</span>
-        <span className="flex items-center gap-1"><XCircle className="h-3.5 w-3.5 text-red-500" /> Rejected</span>
+        <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-amber-500" /> {t('common.pending')}</span>
+        <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> {t('common.approved')}</span>
+        <span className="flex items-center gap-1"><XCircle className="h-3.5 w-3.5 text-red-500" /> {t('common.rejected')}</span>
       </div>
     </div>
   );
@@ -335,7 +348,8 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
   cancelled: { bg: "bg-gray-50", text: "text-gray-500", icon: Ban },
 };
 
-function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
+function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; locale: string }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["leave-applications-me"],
     queryFn: () =>
@@ -345,20 +359,24 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   });
 
   const applications = data?.data || [];
-  const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
+  const getTypeName = (id: number) => leaveTypes.find((lt) => lt.id === id)?.name ?? "-";
+  const statusLabel = (s: string) => {
+    const key = s === "pending" ? "common.pending" : s === "approved" ? "common.approved" : s === "rejected" ? "common.rejected" : s === "cancelled" ? "common.cancelled" : "";
+    return key ? t(key) : s;
+  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Recent Applications</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t('leave.dashboard.recentTitle')}</h2>
       </div>
       <table className="min-w-full">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.typeHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.datesHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.daysHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.statusHeader')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -375,7 +393,7 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             </>
           ) : applications.length === 0 ? (
             <tr>
-              <td colSpan={4} className="px-6 py-8 text-center text-gray-400">No applications yet.</td>
+              <td colSpan={4} className="px-6 py-8 text-center text-gray-400">{t('leave.dashboard.noApplications')}</td>
             </tr>
           ) : (
             applications.map((app: any) => {
@@ -385,17 +403,17 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                 <tr key={app.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {getTypeName(app.leave_type_id)}
-                    {app.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
+                    {app.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('leave.dashboard.halfSuffix')}</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {new Date(app.start_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                    {new Date(app.start_date).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 font-medium">
                     {Number(app.days_count)}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
-                      <Icon className="h-3 w-3" /> {app.status}
+                      <Icon className="h-3 w-3" /> {statusLabel(app.status)}
                     </span>
                   </td>
                 </tr>
@@ -413,6 +431,7 @@ function RecentApplications({ leaveTypes }: { leaveTypes: LeaveType[] }) {
 // ---------------------------------------------------------------------------
 
 function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const [remarks, setRemarks] = useState("");
   const [actionId, setActionId] = useState<number | null>(null);
@@ -425,7 +444,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
     err?.response?.data?.error?.message ||
     err?.response?.data?.message ||
     err?.message ||
-    "Action failed";
+    t('leave.dashboard.actionFailed');
 
   const { data, isLoading } = useQuery({
     queryKey: ["leave-applications-pending"],
@@ -463,7 +482,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   });
 
   const applications = data?.data || [];
-  const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
+  const getTypeName = (id: number) => leaveTypes.find((lt) => lt.id === id)?.name ?? "-";
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) => {
@@ -525,24 +544,24 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-500" />
-            Pending Leave Requests ({applications.length})
+            {t('leave.dashboard.pendingTitle')} ({applications.length})
           </h2>
           {selectedIds.size > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">{selectedIds.size} selected</span>
+              <span className="text-sm text-gray-600">{t('leave.dashboard.selectedCount', { count: selectedIds.size })}</span>
               <button
                 onClick={() => handleBulkAction("approve")}
                 disabled={bulkProcessing}
                 className="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
               >
-                {bulkProcessing ? "Processing..." : "Approve Selected"}
+                {bulkProcessing ? t('leave.dashboard.processing') : t('leave.dashboard.approveSelected')}
               </button>
               <button
                 onClick={() => handleBulkAction("reject")}
                 disabled={bulkProcessing}
                 className="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"
               >
-                {bulkProcessing ? "Processing..." : "Reject Selected"}
+                {bulkProcessing ? t('leave.dashboard.processing') : t('leave.dashboard.rejectSelected')}
               </button>
             </div>
           )}
@@ -553,8 +572,10 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         <div className={`px-6 py-3 text-sm font-medium ${
           bulkResult.type === "approve" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
         }`}>
-          {bulkResult.type === "approve" ? "Approved" : "Rejected"} {bulkResult.success} request{bulkResult.success !== 1 ? "s" : ""} successfully.
-          {bulkResult.failed > 0 && ` ${bulkResult.failed} failed.`}
+          {bulkResult.type === "approve"
+            ? t('leave.dashboard.bulkApproved', { count: bulkResult.success })
+            : t('leave.dashboard.bulkRejected', { count: bulkResult.success })}
+          {bulkResult.failed > 0 && ` ${t('leave.dashboard.bulkFailed', { count: bulkResult.failed })}`}
         </div>
       )}
 
@@ -566,7 +587,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             onClick={() => setActionError(null)}
             className="text-xs text-red-500 hover:text-red-700"
           >
-            Dismiss
+            {t('leave.dashboard.dismiss')}
           </button>
         </div>
       )}
@@ -582,12 +603,12 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                 className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
               />
             </th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Reason</th>
-            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.employeeHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.typeHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.datesHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.daysHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.reasonHeader')}</th>
+            <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.actionsHeader')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -602,14 +623,14 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                 />
               </td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                {app.user_first_name ? `${app.user_first_name} ${app.user_last_name || ""}` : `User #${app.user_id}`}
+                {app.user_first_name ? `${app.user_first_name} ${app.user_last_name || ""}` : t('leave.dashboard.userFallback', { id: app.user_id })}
               </td>
               <td className="px-6 py-4 text-sm text-gray-700">
                 {getTypeName(app.leave_type_id)}
-                {app.is_half_day && <span className="ml-1 text-xs text-gray-400">(Half)</span>}
+                {app.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('leave.dashboard.halfSuffix')}</span>}
               </td>
               <td className="px-6 py-4 text-sm text-gray-500">
-                {new Date(app.start_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                {new Date(app.start_date).toLocaleDateString(i18n.language, { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString(i18n.language, { day: "2-digit", month: "short", year: "numeric" })}
               </td>
               <td className="px-6 py-4 text-sm text-gray-700 font-medium">{Number(app.days_count)}</td>
               <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{app.reason}</td>
@@ -620,7 +641,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                       type="text"
                       value={remarks}
                       onChange={(e) => setRemarks(e.target.value)}
-                      placeholder="Remarks (optional)"
+                      placeholder={t('leave.dashboard.remarksPlaceholder')}
                       className="px-2 py-1 border border-gray-300 rounded text-xs flex-1 min-w-[120px]"
                     />
                     <button
@@ -628,20 +649,20 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                       disabled={approveMut.isPending}
                       className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50"
                     >
-                      Approve
+                      {t('leave.approve')}
                     </button>
                     <button
                       onClick={() => rejectMut.mutate({ id: app.id, remarks })}
                       disabled={rejectMut.isPending}
                       className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
                     >
-                      Reject
+                      {t('leave.reject')}
                     </button>
                     <button
                       onClick={() => { setActionId(null); setRemarks(""); }}
                       className="text-xs text-gray-500 px-1"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </button>
                   </div>
                 ) : (
@@ -649,7 +670,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                     onClick={() => setActionId(app.id)}
                     className="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-lg hover:bg-amber-100 font-medium"
                   >
-                    Review
+                    {t('leave.dashboard.review')}
                   </button>
                 )}
               </td>
