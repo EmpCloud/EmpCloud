@@ -20,9 +20,11 @@
 //   - secret_key is stored bcrypt-hashed instead of symmetrically
 //     encrypted; the forgot-password OTP flow still works identically
 //     from the client's perspective.
-//   - Face images land on local disk (served via GET /face/:id.jpg) instead
-//     of Google Cloud Storage. The response field is still a public HTTPS
-//     URL — kiosks don't care about the backing store.
+//   - Face images land on NAS (SFTP) when NAS_SFTP_* env vars are set,
+//     falling back to local disk otherwise. The kiosk-visible URL stays
+//     `/api/v3/biometric/face/:id.jpg` regardless of backing store — the
+//     route handler dispatches to NAS or disk based on the stored
+//     `face_url` scheme (`nas:…` vs `local:…`).
 // =============================================================================
 
 import bcrypt from "bcryptjs";
@@ -35,6 +37,7 @@ import { config } from "../../config/index.js";
 import { logger } from "../../utils/logger.js";
 import * as attendanceService from "../attendance/attendance.service.js";
 import { signKioskToken, KioskUserData } from "./kiosk-auth.middleware.js";
+import * as nasService from "../nas/nas.service.js";
 
 // ---------------------------------------------------------------------------
 // Redis singleton for the forgot-password OTP cache. Follows the same
@@ -608,9 +611,39 @@ export async function updateBiometricUser(
 
   let face_url: string | null = creds.face_url ?? null;
   if (file) {
-    const dest = legacyFacePath(orgId, userId);
-    fs.writeFileSync(dest, file.buffer);
-    face_url = `local:${dest}`; // sentinel — list endpoints rewrite to HTTP URL
+    if (nasService.isConfigured()) {
+      // Best-effort delete of a previously-uploaded file under the same
+      // user folder, matching emp-monitor's behaviour of clearing the prior
+      // `<firstName>_face_<userId>.jpg` before writing the new upload.
+      if (face_url && face_url.startsWith("nas:")) {
+        try {
+          await nasService.deleteFile(face_url.slice(4));
+        } catch (err) {
+          logger.debug("NAS old-face delete skipped", { err: (err as Error)?.message });
+        }
+      }
+      const folderName = user.email;
+      const newFileName = file.originalname.replace(/ /g, "_");
+      try {
+        await nasService.uploadBuffer(file.buffer, newFileName, {
+          email: folderName,
+          projectName: config.nas.projectName,
+        });
+        face_url = `nas:${config.nas.projectName}/${folderName}/${newFileName}`;
+      } catch (err) {
+        logger.error("NAS face upload failed — falling back to local disk", {
+          err: (err as Error)?.message,
+          userId,
+        });
+        const dest = legacyFacePath(orgId, userId);
+        fs.writeFileSync(dest, file.buffer);
+        face_url = `local:${dest}`;
+      }
+    } else {
+      const dest = legacyFacePath(orgId, userId);
+      fs.writeFileSync(dest, file.buffer);
+      face_url = `local:${dest}`; // sentinel — list endpoints rewrite to HTTP URL
+    }
   }
 
   await db("biometric_legacy_credentials")
@@ -1070,12 +1103,29 @@ export async function deleteFaceImage(userId: number) {
   const db = getDB();
   const user = await db("users").where({ id: userId }).first();
   if (!user) return { error: { code: 400, message: "User not found" } };
-  const dest = legacyFacePath(user.organization_id, userId);
-  try {
-    if (fs.existsSync(dest)) fs.unlinkSync(dest);
-  } catch {
-    /* ignore */
+
+  const creds = await db("biometric_legacy_credentials")
+    .where({ user_id: userId })
+    .first();
+  const stored: string | null = creds?.face_url ?? null;
+
+  // Delete whichever backing store the row points at. Swallow errors — the
+  // DB row update below is the source of truth for "image no longer exists".
+  if (stored && stored.startsWith("nas:")) {
+    try {
+      await nasService.deleteFile(stored.slice(4));
+    } catch (err) {
+      logger.debug("NAS face delete skipped", { err: (err as Error)?.message });
+    }
+  } else {
+    const dest = legacyFacePath(user.organization_id, userId);
+    try {
+      if (fs.existsSync(dest)) fs.unlinkSync(dest);
+    } catch {
+      /* ignore */
+    }
   }
+
   await db("biometric_legacy_credentials")
     .where({ user_id: userId })
     .update({ face_url: null, updated_at: new Date() });
