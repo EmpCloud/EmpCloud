@@ -115,4 +115,20 @@ export const config = {
     level: env("LOG_LEVEL", "debug"),
     format: env("LOG_FORMAT", "pretty"),
   },
+
+  nas: {
+    sftp: {
+      host: process.env.NAS_SFTP_HOST || "",
+      port: envInt("NAS_SFTP_PORT", 22),
+      user: process.env.NAS_SFTP_USER || "",
+      password: process.env.NAS_SFTP_PASSWORD || "",
+      basePath: process.env.NAS_SFTP_BASE_PATH || "",
+    },
+    projectName: process.env.NAS_PROJECT_NAME || "emp-biometric-user-profiles",
+    // Shared secret that clients pass as `secretKey` on write/list endpoints.
+    // Matches emp-monitor's `NAS_SECRET_KEY` so existing kiosk firmware can
+    // use the same credential. Fail-closed: if unset, the middleware 503s
+    // every call.
+    secretKey: process.env.NAS_SECRET_KEY || "",
+  },
 } as const;

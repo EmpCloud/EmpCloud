@@ -17,6 +17,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { kioskAuthenticate } from "../../services/biometric-legacy/kiosk-auth.middleware.js";
 import { sendLegacyResponse } from "../../utils/legacy-response.js";
 import * as svc from "../../services/biometric-legacy/biometric-legacy.service.js";
+import * as nasService from "../../services/nas/nas.service.js";
 import { sendEmail } from "../../services/email/email.service.js";
 import { forgotPasswordBiometricEmail } from "../../services/biometric-legacy/biometric-legacy.email.js";
 import { getDB } from "../../db/connection.js";
@@ -153,27 +154,36 @@ router.get("/qr-code", async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// GET /face/:id.jpg — serves legacy face images; emp-monitor returned GCS
-// public URLs so this endpoint is intentionally unauthenticated to keep
-// parity with kiosk expectations. No directory traversal possible because
-// we construct the path from a numeric id.
-router.get("/face/:id.jpg", (req: Request, res: Response) => {
+// GET /face/:id.jpg — serves legacy face images. Dispatches to NAS (SFTP)
+// or local disk based on the `face_url` sentinel scheme stored on the
+// biometric_legacy_credentials row. emp-monitor returned GCS public URLs
+// so this endpoint stays unauthenticated to preserve kiosk expectations;
+// directory traversal isn't possible because the user-facing path is a
+// numeric id and NAS lookup is constrained to the stored server-owned path.
+router.get("/face/:id.jpg", async (req: Request, res: Response) => {
   const userId = Number(req.params.id);
   if (!Number.isFinite(userId) || userId <= 0) {
     res.status(400).end();
     return;
   }
-  getDB()("biometric_legacy_credentials")
-    .where({ user_id: userId })
-    .first()
-    .then((creds) => {
-      if (!creds) { res.status(404).end(); return; }
-      const file = svc.legacyFaceFile(creds.organization_id, userId);
-      if (!fs.existsSync(file)) { res.status(404).end(); return; }
-      res.setHeader("Content-Type", "image/jpeg");
-      fs.createReadStream(file).pipe(res);
-    })
-    .catch(() => res.status(500).end());
+  try {
+    const creds = await getDB()("biometric_legacy_credentials")
+      .where({ user_id: userId })
+      .first();
+    if (!creds) { res.status(404).end(); return; }
+    const stored: string | null = creds.face_url ?? null;
+    if (stored && stored.startsWith("nas:")) {
+      await nasService.streamFile(stored.slice(4), res);
+      return;
+    }
+    // local disk fallback (legacy rows stored under `local:…` or unset)
+    const file = svc.legacyFaceFile(creds.organization_id, userId);
+    if (!fs.existsSync(file)) { res.status(404).end(); return; }
+    res.setHeader("Content-Type", "image/jpeg");
+    fs.createReadStream(file).pipe(res);
+  } catch {
+    if (!res.headersSent) res.status(500).end();
+  }
 });
 
 // ---------------------------------------------------------------------------
