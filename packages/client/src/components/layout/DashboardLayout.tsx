@@ -181,7 +181,11 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Desktop sidebar */}
-      <div className="hidden md:block relative">
+      {/* #1575 — overflow-visible on the relative wrapper so the collapse
+          chevron (which intentionally protrudes at -right-3) isn't clipped
+          by an ancestor's flex-item overflow context. z-30 also raises it
+          above the main content's any-z layers (modals stay z-50). */}
+      <div className="hidden md:block relative overflow-visible">
         {renderSidebar(sidebarCollapsed)}
         {/* #1415 — collapse/expand toggle. Sits on the right edge of the
             sidebar so it doesn't shift with the content; chevron direction
@@ -189,7 +193,7 @@ export default function DashboardLayout() {
         <button
           onClick={() => setSidebarCollapsed((c) => !c)}
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden md:flex absolute top-6 -right-3 z-10 h-6 w-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
+          className="hidden md:flex absolute top-6 -right-3 z-30 h-6 w-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
         >
           {sidebarCollapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />

@@ -460,8 +460,27 @@ export default function OrgChartPage() {
     setIsTouching(false);
   }, []);
 
-  // Fit-to-screen: measure content, compute ideal scale & offset
-  const fitToScreen = useCallback(() => {
+  // #1556 — Maximize button now does what the icon implies: enter browser
+  // fullscreen on the chart container, then re-fit so the chart fills the
+  // newly-larger viewport. Toggle exits fullscreen if already in it.
+  const toggleFullscreen = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const inFullscreen = !!document.fullscreenElement;
+    const after = () => setTimeout(() => fitToScreenInternal(), 100);
+    if (inFullscreen) {
+      void document.exitFullscreen().then(after);
+    } else if (el.requestFullscreen) {
+      void el.requestFullscreen().then(after);
+    } else {
+      // Browser doesn't support Fullscreen API — at least re-fit.
+      fitToScreenInternal();
+    }
+  }, []);
+
+  // Fit-to-screen: measure content, compute ideal scale & offset.
+  // Extracted to a ref-stable inner so toggleFullscreen can call it.
+  const fitToScreenInternal = () => {
     if (!containerRef.current || !contentRef.current) return;
     const container = containerRef.current.getBoundingClientRect();
     const content = contentRef.current.getBoundingClientRect();
@@ -485,7 +504,7 @@ export default function OrgChartPage() {
       x: (container.width - scaledW) / 2,
       y: (container.height - scaledH) / 2,
     });
-  }, [scale]);
+  };
 
   // Auto-fit once data loads
   const didAutoFit = useRef(false);
@@ -493,12 +512,12 @@ export default function OrgChartPage() {
     if (nodes.length > 0 && !didAutoFit.current) {
       // Wait a tick for the DOM to render
       const id = setTimeout(() => {
-        fitToScreen();
+        fitToScreenInternal();
         didAutoFit.current = true;
       }, 200);
       return () => clearTimeout(id);
     }
-  }, [nodes.length, fitToScreen]);
+  }, [nodes.length]);
 
   const zoomPercent = Math.round(scale * 100);
 
@@ -654,9 +673,9 @@ export default function OrgChartPage() {
                 <Minus className="h-4 w-4" />
               </button>
               <button
-                onClick={fitToScreen}
+                onClick={toggleFullscreen}
                 className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600 mt-1"
-                title="Fit to screen"
+                title="Toggle fullscreen"
               >
                 <Maximize2 className="h-4 w-4" />
               </button>
