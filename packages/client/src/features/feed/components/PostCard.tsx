@@ -120,7 +120,22 @@ export function PostCard({ post, compactComments }: Props) {
             </div>
           </form>
         ) : (
-          <p className="whitespace-pre-wrap break-words text-sm text-gray-800 leading-relaxed">
+          // #1554 — clicking the post body toggles the comments section,
+          // matching reader expectation that "tap the post to see replies".
+          // The composer / edit form / footer buttons remain non-interactive
+          // here because they're outside this <p>.
+          <p
+            role="button"
+            tabIndex={0}
+            onClick={() => setShowComments((v) => !v)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setShowComments((v) => !v);
+              }
+            }}
+            className="whitespace-pre-wrap break-words text-sm text-gray-800 leading-relaxed cursor-pointer hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 rounded"
+          >
             {post.content}
           </p>
         )}

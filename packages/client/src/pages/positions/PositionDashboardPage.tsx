@@ -168,12 +168,19 @@ export default function PositionDashboardPage() {
       </div>
 
       {/* Status Breakdown */}
+      {/* #1543 — make each status row a Link so clicking it filters the list
+          to that status. Previously rendered as inert spans. Whitelist of
+          statuses matches positionStatusEnum on the backend. */}
       {(stats.status_breakdown || []).length > 0 && (
         <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Position Status</h2>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-3">
             {(stats.status_breakdown || []).map((s: any) => (
-              <div key={s.status} className="flex items-center gap-2">
+              <Link
+                key={s.status}
+                to={`/positions/list?status=${encodeURIComponent(s.status)}`}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 hover:border-brand-300 hover:bg-brand-50 transition-colors"
+              >
                 <span
                   className={`inline-block h-3 w-3 rounded-full ${
                     s.status === "active" ? "bg-green-500" : s.status === "frozen" ? "bg-amber-500" : "bg-gray-400"
@@ -181,7 +188,7 @@ export default function PositionDashboardPage() {
                 />
                 <span className="text-sm text-gray-600 capitalize">{s.status}</span>
                 <span className="text-sm font-semibold text-gray-900">{s.count}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

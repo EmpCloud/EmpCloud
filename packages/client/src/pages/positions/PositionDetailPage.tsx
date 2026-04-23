@@ -46,12 +46,23 @@ export default function PositionDetailPage() {
     enabled: showAssign,
   });
 
+  // #1549 — surface backend errors. Without this the assign POST silently
+  // fails (no toast, no inline message) and the user sees the position drop
+  // off the vacancy list (because optimistic invalidation + a stale row from
+  // a different code path looks like "vacancy got removed").
   const assignMutation = useMutation({
     mutationFn: (body: object) => api.post(`/positions/${id}/assign`, body).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       setShowAssign(false);
       setAssignForm({ user_id: "", start_date: "", is_primary: true });
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to assign employee to this position.";
+      alert(msg);
     },
   });
 
@@ -71,6 +82,9 @@ export default function PositionDetailPage() {
     },
   });
 
+  // #1544 — surface server-side validation errors. The form was previously
+  // failing silently, so users saw "Save Changes" do nothing and assumed
+  // the feature was broken. Toast the actual error so they can correct it.
   const updateMutation = useMutation({
     mutationFn: (data: object) =>
       api.put(`/positions/${id}`, data).then((r) => r.data.data),
@@ -78,6 +92,13 @@ export default function PositionDetailPage() {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
       setShowEdit(false);
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to save position changes.";
+      alert(msg);
     },
   });
 

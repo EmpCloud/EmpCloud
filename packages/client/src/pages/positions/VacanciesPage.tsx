@@ -80,9 +80,9 @@ export default function VacanciesPage() {
                           <h3 className="text-sm font-semibold text-gray-900 group-hover:text-brand-600">
                             {pos.title}
                           </h3>
-                          {pos.code && (
+                          {pos.code ? (
                             <span className="text-xs font-mono text-gray-400">{pos.code}</span>
-                          )}
+                          ) : null}
                         </div>
                         {pos.is_critical && (
                           <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
@@ -110,11 +110,14 @@ export default function VacanciesPage() {
                         </span>
                       </div>
 
-                      {(pos.min_salary || pos.max_salary) && (
+                      {/* #1550 — render guard via ternary, not `0 && ...`,
+                          so when both salaries are 0/null React doesn't print
+                          a stray "0" instead of skipping the block. */}
+                      {pos.min_salary || pos.max_salary ? (
                         <div className="mt-2 text-xs text-gray-400">
                           {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
                         </div>
-                      )}
+                      ) : null}
                     </Link>
 
                     {/* #1468 — Filled button: explicitly mark this position's status
