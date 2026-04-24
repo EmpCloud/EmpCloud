@@ -60,6 +60,7 @@
     "devices": "\u8bbe\u5907",
     "biometricLogs": "\u751f\u7269\u8bc6\u522b\u65e5\u5fd7",
     "biometricSettings": "\u751f\u7269\u8bc6\u522b\u8bbe\u7f6e",
+    "biometricPin": "\u751f\u7269\u8bc6\u522bPIN\u7801",
     "overviewDashboard": "\u603b\u89c8\u4eea\u8868\u76d8",
     "organizations": "\u7ec4\u7ec7",
     "moduleAnalytics": "\u6a21\u5757\u5206\u6790",
