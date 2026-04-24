@@ -3,8 +3,33 @@
 // Loads environment variables and exports a typed config object.
 // =============================================================================
 
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { config as dotenvConfig } from "dotenv";
-dotenvConfig();
+
+// Load .env by walking up from this file until we find one. The default
+// `dotenvConfig()` (no args) reads <cwd>/.env, which silently misses the
+// file when PM2's cwd isn't packages/server/ — and we've been bitten by
+// exactly that (BASE_URL falling through to the localhost default in
+// prod because the .env was never read). Walking up makes us independent
+// of cwd whether we're run via tsx from src/ or node from dist/.
+{
+  let dir = path.dirname(fileURLToPath(import.meta.url));
+  for (let i = 0; i < 8; i++) {
+    const candidate = path.join(dir, ".env");
+    if (fs.existsSync(candidate)) {
+      dotenvConfig({ path: candidate });
+      break;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  // Fall through to default cwd-based load too, in case someone explicitly
+  // arranged their deployment to rely on it (harmless no-op otherwise).
+  dotenvConfig();
+}
 
 function env(key: string, fallback?: string): string {
   const value = process.env[key] ?? fallback;
