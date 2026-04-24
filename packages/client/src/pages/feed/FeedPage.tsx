@@ -117,10 +117,16 @@ export default function FeedPage() {
         </div>
       </header>
 
-      {/* ───────────────────── Body grid ───────────────────── */}
-      <div className={isHR ? "grid grid-cols-1 lg:grid-cols-3 gap-6" : ""}>
-        {/* Main column */}
-        <div className={isHR ? "lg:col-span-2 space-y-4" : "space-y-4"}>
+      {/* ───────────────────── Body layout ─────────────────────
+          On lg+ the HR sidebar is positioned absolutely on the right so
+          it doesn't contribute to page flow. This keeps the scrollable
+          page height equal to the main column's content height — a grid
+          layout would force the row (and the page) to grow to the taller
+          of the two columns, producing a big blank canvas below the last
+          post when the feed has few items. */}
+      <div className={isHR ? "relative" : ""}>
+        {/* Main column — reserve 1/3 + gap on the right for the sidebar */}
+        <div className={isHR ? "space-y-4 lg:pr-[calc(33.333%+1.5rem)]" : "space-y-4"}>
           {/* Search + filter chips */}
           <div className="rounded-xl border border-gray-200 bg-white p-3 space-y-3">
             <form
@@ -187,9 +193,15 @@ export default function FeedPage() {
           )}
         </div>
 
-        {/* HR sidebar — sticky, mobile collapses to top */}
+        {/* HR sidebar.
+            - Mobile / tablet: stacks below main (normal flow, mt-6).
+            - lg+: absolutely positioned on the right so it does NOT
+              lengthen the page; internal wrapper uses sticky so it
+              follows scroll, and max-h + overflow cap it to the
+              viewport when the sidebar content is tall. */}
         {isHR && (
-          <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <aside className="mt-6 space-y-4 lg:mt-0 lg:absolute lg:right-0 lg:top-0 lg:w-1/3">
+            <div className="space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
             {/* KPI grid */}
             {stats && (
               <div className="grid grid-cols-2 gap-3">
@@ -288,6 +300,7 @@ export default function FeedPage() {
                 </ul>
               </div>
             )}
+            </div>
           </aside>
         )}
       </div>
