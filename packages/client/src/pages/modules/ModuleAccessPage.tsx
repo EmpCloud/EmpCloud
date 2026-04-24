@@ -429,16 +429,48 @@ export default function ModuleAccessPage() {
                     <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[120px]">{user.designation || "-"}</td>
                     {subscribedModules.map((m: any) => {
                       const isEnabled = user.modules?.some((um: any) => um.module_id === m.id);
+                      // Policy: once EmpMonitor is enabled for an org_admin,
+                      // the toggle locks. Org admins are expected to retain
+                      // access to the monitoring module so they can manage the
+                      // rest of the workforce, so we stop this from being
+                      // toggled off by mistake (or by another admin) from here.
+                      // Use Settings → Subscriptions to fully unsubscribe.
+                      const isOrgAdminMonitorLock =
+                        user.role === "org_admin" && m.slug === "emp-monitor" && isEnabled;
                       return (
                         <td key={m.id} className="px-3 py-3 text-center">
                           <button
-                            onClick={() => handleToggle(user.id, m.id, m.name, `${user.first_name} ${user.last_name}`, isEnabled)}
-                            disabled={isPending}
+                            onClick={() =>
+                              handleToggle(
+                                user.id,
+                                m.id,
+                                m.name,
+                                `${user.first_name} ${user.last_name}`,
+                                isEnabled,
+                              )
+                            }
+                            disabled={isPending || isOrgAdminMonitorLock}
+                            title={
+                              isOrgAdminMonitorLock
+                                ? "EmpMonitor stays enabled for Org Admins. Disable the module in Settings → Subscriptions if you need to remove it."
+                                : undefined
+                            }
+                            aria-label={
+                              isOrgAdminMonitorLock
+                                ? `${m.name} is locked on for Org Admin`
+                                : undefined
+                            }
                             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                               isEnabled ? "bg-brand-600" : "bg-gray-200 hover:bg-gray-300"
-                            } disabled:opacity-50`}
+                            } ${
+                              isOrgAdminMonitorLock
+                                ? "cursor-not-allowed opacity-60"
+                                : "disabled:opacity-50"
+                            }`}
                           >
-                            <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${isEnabled ? "translate-x-4" : "translate-x-0.5"}`} />
+                            <span
+                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${isEnabled ? "translate-x-4" : "translate-x-0.5"}`}
+                            />
                           </button>
                         </td>
                       );
