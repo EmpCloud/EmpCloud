@@ -176,15 +176,27 @@ export default function SelfServiceDashboardPage() {
         media and replies; on smaller screens it collapses to a single column
         with the feed first.
       */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-        {/* Left column — Company Feed */}
-        <div className="lg:col-span-3">
+      {/* #1530 — the right column (self-service cards) was previously a grid
+          cell that forced the grid row to match its height. When the feed on
+          the left had few items the row grew to match the card stack, leaving
+          a large empty gap below the feed and an outer scrollbar past the
+          content. Fix: take the right column out of document flow on `lg+`
+          via absolute positioning, keep sticky + internal scroll intact, and
+          have the left column reserve its gutter. Mobile still stacks in
+          natural flow. */}
+      <div className="lg:relative">
+        {/* Left column — Company Feed. Reserves 2/5 width + gap on the right
+            for the absolutely positioned card stack. */}
+        <div className="lg:pr-[calc(40%+1.5rem)]">
           <CompanyFeedWidget />
         </div>
 
-        {/* Right column — stacked dashboard cards. Sticky so short content
-            doesn't leave a big empty gap beside the feed when the user scrolls. */}
-        <div className="lg:col-span-2 space-y-6 lg:sticky lg:top-4 lg:self-start">
+        {/* Right column — stacked dashboard cards. Absolute on lg+ so the
+            page height is driven by the feed column only. Inner wrapper is
+            sticky + internally scrollable so tall card stacks remain
+            accessible. */}
+        <div className="mt-6 lg:mt-0 lg:absolute lg:right-0 lg:top-0 lg:w-2/5">
+          <div className="space-y-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
         {/* Attendance Today */}
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
@@ -383,6 +395,7 @@ export default function SelfServiceDashboardPage() {
             </ul>
           </div>
         )}
+          </div>
         </div>
       </div>
     </div>
