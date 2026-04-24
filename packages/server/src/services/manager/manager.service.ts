@@ -156,6 +156,7 @@ export async function getTeamLeaveCalendar(
       "u.last_name",
       "u.emp_code",
       "lt.name as leave_type_name",
+      "lt.code as leave_type_code",
       "lt.color as leave_type_color",
     )
     .orderBy("la.start_date", "asc");

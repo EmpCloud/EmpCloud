@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 import {
   Users,
   UserCheck,
@@ -38,6 +39,7 @@ interface PendingLeave {
   last_name: string;
   emp_code: string | null;
   leave_type_name: string | null;
+  leave_type_code?: string | null;
   created_at: string;
 }
 
@@ -52,6 +54,7 @@ interface CalendarLeave {
   first_name: string;
   last_name: string;
   leave_type_name: string | null;
+  leave_type_code?: string | null;
   leave_type_color: string | null;
 }
 
@@ -257,7 +260,7 @@ export default function ManagerDashboardPage() {
                         {leave.first_name} {leave.last_name}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {leave.leave_type_name || t('manager.leaveFallback')} &mdash;{" "}
+                        {leave.leave_type_name ? leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name }) : t('manager.leaveFallback')} &mdash;{" "}
                         {leave.start_date === leave.end_date
                           ? leave.start_date
                           : `${leave.start_date} \u2013 ${leave.end_date}`}
@@ -316,7 +319,7 @@ export default function ManagerDashboardPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">
-                    {leave.leave_type_name || "-"}
+                    {leave.leave_type_name ? leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name }) : "-"}
                     {leave.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('manager.halfSuffix')}</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { Plus, Pencil, Power, Trash2, Settings2 } from "lucide-react";
 
 interface LeaveType {
@@ -52,6 +54,7 @@ const EMPTY_POLICY = {
 };
 
 export default function LeaveTypesPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [showTypeForm, setShowTypeForm] = useState(false);
   const [showPolicyForm, setShowPolicyForm] = useState(false);
@@ -382,7 +385,7 @@ export default function LeaveTypesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-full" style={{ backgroundColor: lt.color ?? "#6366f1" }} />
-                        <span className="text-sm font-medium text-gray-900">{lt.name}</span>
+                        <span className="text-sm font-medium text-gray-900">{leaveTypeLabel(t, lt)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 font-mono">{lt.code}</td>
@@ -457,8 +460,8 @@ export default function LeaveTypesPage() {
                   required
                 >
                   <option value={0} disabled>Select type</option>
-                  {leaveTypes.filter((t) => t.is_active).map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
+                  {leaveTypes.filter((lt) => lt.is_active).map((lt) => (
+                    <option key={lt.id} value={lt.id}>{leaveTypeLabel(t, lt)}</option>
                   ))}
                 </select>
               </div>
@@ -559,7 +562,10 @@ export default function LeaveTypesPage() {
                   <tr key={p.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{p.name}</td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {leaveTypes.find((t) => t.id === p.leave_type_id)?.name ?? "-"}
+                      {(() => {
+                        const lt = leaveTypes.find((x) => x.id === p.leave_type_id);
+                        return lt ? leaveTypeLabel(t, lt) : "-";
+                      })()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 font-medium">{Number(p.annual_quota)} days</td>
                     <td className="px-6 py-4">

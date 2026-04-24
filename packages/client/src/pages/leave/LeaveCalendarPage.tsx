@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarLeave {
@@ -13,6 +15,7 @@ interface CalendarLeave {
   last_name: string;
   emp_code: string | null;
   leave_type_name: string;
+  leave_type_code?: string | null;
   leave_type_color: string | null;
 }
 
@@ -31,6 +34,7 @@ function getFirstDayOfMonth(year: number, month: number) {
 }
 
 export default function LeaveCalendarPage() {
+  const { t } = useTranslation();
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [year, setYear] = useState(today.getFullYear());
@@ -137,7 +141,7 @@ export default function LeaveCalendarPage() {
                               backgroundColor: (leave.leave_type_color ?? "#6366f1") + "20",
                               color: leave.leave_type_color ?? "#6366f1",
                             }}
-                            title={`${leave.first_name} ${leave.last_name} - ${leave.leave_type_name}`}
+                            title={`${leave.first_name} ${leave.last_name} - ${leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name })}`}
                           >
                             {leave.first_name} {leave.last_name[0]}.
                           </div>

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
 
 function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
@@ -132,6 +133,7 @@ export default function SelfServiceDashboardPage() {
       return {
         id: t.id,
         name: t.name,
+        code: t.code,
         balance: Number(bal?.balance ?? bal?.remaining ?? 0),
       };
     });
@@ -286,7 +288,7 @@ export default function SelfServiceDashboardPage() {
             <div className="grid grid-cols-2 gap-3">
               {leaveCards.map((c) => (
                 <div key={c.id} className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500">{c.name}</p>
+                  <p className="text-xs text-gray-500">{leaveTypeLabel(t, c)}</p>
                   <p className="text-lg font-bold text-gray-900">{c.balance}</p>
                   <p className="text-xs text-gray-400">{t('leave.daysRemaining')}</p>
                 </div>

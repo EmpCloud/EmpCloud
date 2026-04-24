@@ -5,6 +5,7 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { Link } from "react-router-dom";
 import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2 } from "lucide-react";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
 
@@ -152,7 +153,7 @@ export default function LeaveDashboardPage() {
                       style={{ backgroundColor: typeColor }}
                     />
                     <h3 className="text-sm font-bold text-gray-900 truncate">
-                      {type.name}
+                      {leaveTypeLabel(t, type)}
                     </h3>
                   </div>
                   <div className="flex items-center gap-2 mb-3 ml-6">
@@ -205,7 +206,7 @@ export default function LeaveDashboardPage() {
                   .filter((lt) => Boolean(lt.is_active))
                   .filter((lt, i, arr) => arr.findIndex((x) => x.name === lt.name) === i)
                   .map((lt) => (
-                    <option key={lt.id} value={lt.id}>{lt.name}</option>
+                    <option key={lt.id} value={lt.id}>{leaveTypeLabel(t, lt)}</option>
                   ))}
               </select>
             </div>
@@ -359,7 +360,10 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
   });
 
   const applications = data?.data || [];
-  const getTypeName = (id: number) => leaveTypes.find((lt) => lt.id === id)?.name ?? "-";
+  const getTypeName = (id: number) => {
+    const lt = leaveTypes.find((x) => x.id === id);
+    return lt ? leaveTypeLabel(t, lt) : "-";
+  };
   const statusLabel = (s: string) => {
     const key = s === "pending" ? "common.pending" : s === "approved" ? "common.approved" : s === "rejected" ? "common.rejected" : s === "cancelled" ? "common.cancelled" : "";
     return key ? t(key) : s;
@@ -482,7 +486,10 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   });
 
   const applications = data?.data || [];
-  const getTypeName = (id: number) => leaveTypes.find((lt) => lt.id === id)?.name ?? "-";
+  const getTypeName = (id: number) => {
+    const lt = leaveTypes.find((x) => x.id === id);
+    return lt ? leaveTypeLabel(t, lt) : "-";
+  };
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) => {

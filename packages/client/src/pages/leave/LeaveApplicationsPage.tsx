@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { CheckCircle2, XCircle, Clock, Ban, Filter } from "lucide-react";
 
 interface LeaveApplication {
@@ -20,6 +22,7 @@ interface LeaveApplication {
 interface LeaveType {
   id: number;
   name: string;
+  code?: string;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
@@ -32,6 +35,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
 
 export default function LeaveApplicationsPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const canApprove = user ? HR_ROLES.includes(user.role) : false;
@@ -100,7 +104,10 @@ export default function LeaveApplicationsPage() {
     onError: (err: any) => setActionError(extractErr(err)),
   });
 
-  const getTypeName = (id: number) => leaveTypes.find((t) => t.id === id)?.name ?? "-";
+  const getTypeName = (id: number) => {
+    const lt = leaveTypes.find((x) => x.id === id);
+    return lt ? leaveTypeLabel(t, lt) : "-";
+  };
 
   return (
     <div>
