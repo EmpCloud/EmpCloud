@@ -57,13 +57,12 @@ export const config = {
     authCodeExpiry: env("AUTH_CODE_EXPIRY", "10m"),
     idTokenExpiry: env("ID_TOKEN_EXPIRY", "1h"),
     // Use JWT_ISSUER if set explicitly; otherwise derive from BASE_URL.
-    // In production, always use the public domain — never leak internal IPs.
-    issuer: env(
-      "JWT_ISSUER",
-      env("NODE_ENV", "development") === "production"
-        ? "https://test-empcloud-api.empcloud.com"
-        : env("BASE_URL", "http://localhost:3000"),
-    ),
+    // The old fallback hardcoded the TEST api URL when NODE_ENV=production,
+    // which meant real prod JWTs carried `iss: test-empcloud-api…` until
+    // ops remembered to set JWT_ISSUER. Drop the branch: BASE_URL is
+    // already meant to be the environment's canonical external origin, so
+    // deriving from it works for both dev and prod.
+    issuer: env("JWT_ISSUER", env("BASE_URL", "http://localhost:3000")),
   },
 
   cors: {
