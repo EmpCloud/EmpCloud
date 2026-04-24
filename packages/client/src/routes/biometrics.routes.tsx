@@ -7,6 +7,7 @@ const QRAttendancePage = lazy(() => import("@/pages/biometrics/QRAttendancePage"
 const DeviceManagementPage = lazy(() => import("@/pages/biometrics/DeviceManagementPage"));
 const BiometricSettingsPage = lazy(() => import("@/pages/biometrics/BiometricSettingsPage"));
 const BiometricLogsPage = lazy(() => import("@/pages/biometrics/BiometricLogsPage"));
+const KioskBiometricPage = lazy(() => import("@/pages/biometrics/KioskBiometricPage"));
 
 export const biometricRoutes = (
   <>
@@ -16,5 +17,7 @@ export const biometricRoutes = (
     <Route path="/biometrics/devices" element={<DeviceManagementPage />} />
     <Route path="/biometrics/settings" element={<BiometricSettingsPage />} />
     <Route path="/biometrics/logs" element={<BiometricLogsPage />} />
+    {/* Self-service: per-user 6-digit kiosk PIN — talks to /api/v3/biometric/* */}
+    <Route path="/biometrics/kiosk-pin" element={<KioskBiometricPage />} />
   </>
 );
