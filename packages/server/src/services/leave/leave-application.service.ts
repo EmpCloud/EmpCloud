@@ -507,6 +507,7 @@ export async function getLeaveCalendar(
       "users.last_name",
       "users.emp_code",
       "leave_types.name as leave_type_name",
+      "leave_types.code as leave_type_code",
       "leave_types.color as leave_type_color",
     );
 

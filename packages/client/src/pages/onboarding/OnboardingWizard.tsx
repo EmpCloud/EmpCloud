@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { leaveTypeLabel } from "@/lib/leave-type-label";
 import {
   Building2,
   Users,
@@ -1060,6 +1062,7 @@ function Step5QuickSetup({
   setShiftEnd: (v: string) => void;
   workDays: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6 pt-2">
       {/* Leave Types */}
@@ -1086,7 +1089,7 @@ function Step5QuickSetup({
                 {lt.enabled && <Check className="h-3.5 w-3.5" />}
               </button>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-900">{lt.name}</div>
+                <div className="text-sm font-medium text-gray-900">{leaveTypeLabel(t, lt)}</div>
                 <div className="text-xs text-gray-500">{lt.code}</div>
               </div>
               <div className="flex items-center gap-2">

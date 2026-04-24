@@ -24,6 +24,7 @@ export async function getBalances(
     .select(
       "leave_balances.*",
       "leave_types.name as leave_type_name",
+      "leave_types.code as leave_type_code",
       "leave_types.color as leave_type_color",
     )
     .orderBy("leave_balances.leave_type_id", "asc");
