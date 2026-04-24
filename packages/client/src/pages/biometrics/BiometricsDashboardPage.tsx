@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
   Scan,
@@ -9,6 +10,7 @@ import {
   QrCode,
   Fingerprint,
   Camera,
+  ChevronRight,
 } from "lucide-react";
 
 const methodIcons: Record<string, any> = {
@@ -62,6 +64,26 @@ export default function BiometricsDashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Self-service: per-user 6-digit kiosk PIN. Discoverable from the
+           dashboard so employees don't have to know the URL. */}
+      <Link
+        to="/biometrics/kiosk-pin"
+        className="mb-8 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 hover:border-brand-300 hover:shadow-sm transition"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-700">
+            <Fingerprint className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-900">My Kiosk PIN</p>
+            <p className="text-xs text-gray-500">
+              Enable, disable, or change your 6-digit PIN for biometric kiosk sign-in.
+            </p>
+          </div>
+        </div>
+        <ChevronRight className="h-5 w-5 text-gray-400" />
+      </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Method Breakdown */}
