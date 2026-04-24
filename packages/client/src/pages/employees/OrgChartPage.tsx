@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
   Network,
   Plus,
@@ -15,6 +16,8 @@ import {
   X,
 } from "lucide-react";
 import api from "@/api/client";
+
+type StatModalMode = "people" | "managers" | "departments" | null;
 
 interface OrgChartNode {
   id: number;
@@ -341,6 +344,25 @@ export default function OrgChartPage() {
     };
   }, [flatPeople]);
 
+  const [statModal, setStatModal] = useState<StatModalMode>(null);
+
+  const managerList = useMemo(
+    () => flatPeople.filter((p) => p.children.length > 0),
+    [flatPeople],
+  );
+
+  const departmentList = useMemo(() => {
+    const byDept = new Map<string, OrgChartNode[]>();
+    for (const p of flatPeople) {
+      const key = p.department || "Unassigned";
+      const arr = byDept.get(key);
+      if (arr) arr.push(p);
+      else byDept.set(key, [p]);
+    }
+    return Array.from(byDept, ([name, people]) => ({ name, people }))
+      .sort((a, b) => b.people.length - a.people.length);
+  }, [flatPeople]);
+
   const searchResults = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return [];
@@ -545,30 +567,45 @@ export default function OrgChartPage() {
             </div>
           </div>
 
-          {/* Stats pills */}
+          {/* Stats pills — clickable, open a list modal */}
           {!isLoading && nodes.length > 0 && (
             <div className="hidden items-center gap-2 md:flex">
-              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setStatModal("people")}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                title="View all people"
+              >
                 <Users className="h-4 w-4 text-indigo-500" />
-                <div>
+                <div className="text-left">
                   <p className="text-xs text-gray-500">People</p>
                   <p className="text-sm font-semibold text-gray-900">{stats.total}</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm">
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatModal("managers")}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                title="View all managers"
+              >
                 <Briefcase className="h-4 w-4 text-emerald-500" />
-                <div>
+                <div className="text-left">
                   <p className="text-xs text-gray-500">Managers</p>
                   <p className="text-sm font-semibold text-gray-900">{stats.managers}</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm">
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatModal("departments")}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                title="View all departments"
+              >
                 <Building2 className="h-4 w-4 text-amber-500" />
-                <div>
+                <div className="text-left">
                   <p className="text-xs text-gray-500">Departments</p>
                   <p className="text-sm font-semibold text-gray-900">{stats.departments}</p>
                 </div>
-              </div>
+              </button>
             </div>
           )}
         </div>
@@ -719,6 +756,202 @@ export default function OrgChartPage() {
           </div>
         </>
       )}
+
+      <StatListModal
+        mode={statModal}
+        onClose={() => setStatModal(null)}
+        people={flatPeople}
+        managers={managerList}
+        departments={departmentList}
+        onNavigate={(id) => {
+          setStatModal(null);
+          handleNavigate(id);
+        }}
+      />
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Stat-pill list modal (People / Managers / Departments)            */
+/* ------------------------------------------------------------------ */
+function StatListModal({
+  mode,
+  onClose,
+  people,
+  managers,
+  departments,
+  onNavigate,
+}: {
+  mode: StatModalMode;
+  onClose: () => void;
+  people: OrgChartNode[];
+  managers: OrgChartNode[];
+  departments: { name: string; people: OrgChartNode[] }[];
+  onNavigate: (id: number) => void;
+}) {
+  const open = mode !== null;
+  const title =
+    mode === "people"
+      ? `People (${people.length})`
+      : mode === "managers"
+      ? `Managers (${managers.length})`
+      : mode === "departments"
+      ? `Departments (${departments.length})`
+      : "";
+
+  const [filter, setFilter] = useState("");
+  useEffect(() => {
+    if (open) setFilter("");
+  }, [open, mode]);
+
+  const q = filter.trim().toLowerCase();
+  const filterPerson = (p: OrgChartNode) =>
+    !q ||
+    p.name.toLowerCase().includes(q) ||
+    (p.designation || "").toLowerCase().includes(q) ||
+    (p.department || "").toLowerCase().includes(q);
+
+  return (
+    <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl bg-white shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+          <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+            <Dialog.Title className="text-base font-semibold text-gray-900">
+              {title}
+            </Dialog.Title>
+            <Dialog.Close asChild>
+              <button className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                <X className="h-4 w-4" />
+              </button>
+            </Dialog.Close>
+          </div>
+
+          <div className="border-b border-gray-100 px-6 py-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                placeholder={
+                  mode === "departments"
+                    ? "Filter departments or people..."
+                    : "Filter by name, designation, or department..."
+                }
+                className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-2 py-2">
+            {mode === "people" && <PersonList people={people.filter(filterPerson)} onNavigate={onNavigate} />}
+            {mode === "managers" && <PersonList people={managers.filter(filterPerson)} onNavigate={onNavigate} />}
+            {mode === "departments" && (
+              <DepartmentList
+                departments={departments
+                  .map((d) => ({ ...d, people: d.people.filter(filterPerson) }))
+                  .filter((d) =>
+                    !q
+                      ? true
+                      : d.name.toLowerCase().includes(q) || d.people.length > 0,
+                  )}
+                onNavigate={onNavigate}
+              />
+            )}
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+function PersonList({
+  people,
+  onNavigate,
+}: {
+  people: OrgChartNode[];
+  onNavigate: (id: number) => void;
+}) {
+  if (people.length === 0) {
+    return <p className="px-4 py-8 text-center text-sm text-gray-400">No matches.</p>;
+  }
+  return (
+    <ul className="divide-y divide-gray-100">
+      {people.map((p) => (
+        <li key={p.id}>
+          <button
+            type="button"
+            onClick={() => onNavigate(p.id)}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 text-[11px] font-semibold text-white">
+              {getInitials(p.name)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-gray-900">{p.name}</p>
+              <p className="truncate text-xs text-gray-500">
+                {p.designation || "No designation"}
+                {p.department ? ` · ${p.department}` : ""}
+              </p>
+            </div>
+            {p.children.length > 0 && (
+              <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-600">
+                {p.children.length} report{p.children.length === 1 ? "" : "s"}
+              </span>
+            )}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function DepartmentList({
+  departments,
+  onNavigate,
+}: {
+  departments: { name: string; people: OrgChartNode[] }[];
+  onNavigate: (id: number) => void;
+}) {
+  const [openDept, setOpenDept] = useState<string | null>(null);
+  if (departments.length === 0) {
+    return <p className="px-4 py-8 text-center text-sm text-gray-400">No matches.</p>;
+  }
+  return (
+    <ul className="divide-y divide-gray-100">
+      {departments.map((d) => {
+        const expanded = openDept === d.name;
+        return (
+          <li key={d.name}>
+            <button
+              type="button"
+              onClick={() => setOpenDept(expanded ? null : d.name)}
+              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                <Building2 className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-gray-900">{d.name}</p>
+                <p className="text-xs text-gray-500">
+                  {d.people.length} {d.people.length === 1 ? "person" : "people"}
+                </p>
+              </div>
+              {expanded ? (
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
+            {expanded && d.people.length > 0 && (
+              <div className="border-l-2 border-gray-100 ml-7 mb-2">
+                <PersonList people={d.people} onNavigate={onNavigate} />
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
