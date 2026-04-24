@@ -1,10 +1,19 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Briefcase, AlertTriangle, MapPin, CheckCircle2 } from "lucide-react";
 import api from "@/api/client";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { showToast } from "@/components/ui/Toast";
+
+interface PendingConfirm {
+  id: number;
+  title: string;
+}
 
 export default function VacanciesPage() {
   const queryClient = useQueryClient();
+  const [pending, setPending] = useState<PendingConfirm | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["position-vacancies"],
     queryFn: () => api.get("/positions/vacancies").then((r) => r.data.data),
@@ -21,9 +30,12 @@ export default function VacanciesPage() {
       queryClient.invalidateQueries({ queryKey: ["position-vacancies"] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
       queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
+      showToast("success", pending ? `"${pending.title}" marked as filled.` : "Position marked as filled.");
+      setPending(null);
     },
     onError: (err: any) => {
-      alert(err?.response?.data?.error?.message || "Failed to mark position as filled");
+      showToast("error", err?.response?.data?.error?.message || "Failed to mark position as filled");
+      setPending(null);
     },
   });
 
@@ -130,13 +142,7 @@ export default function VacanciesPage() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (
-                          confirm(
-                            `Mark "${pos.title}" as filled? It will be removed from the open vacancies list.`
-                          )
-                        ) {
-                          markFilledMutation.mutate(pos.id);
-                        }
+                        setPending({ id: pos.id, title: pos.title });
                       }}
                       disabled={markFilledMutation.isPending}
                       className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-green-600 hover:text-green-700 disabled:opacity-50"
@@ -153,6 +159,17 @@ export default function VacanciesPage() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={pending !== null}
+        title={pending ? `Mark "${pending.title}" as filled?` : ""}
+        description="This position will be removed from the open vacancies list."
+        confirmText="Mark as Filled"
+        variant="success"
+        loading={markFilledMutation.isPending}
+        onConfirm={() => pending && markFilledMutation.mutate(pending.id)}
+        onCancel={() => !markFilledMutation.isPending && setPending(null)}
+      />
     </div>
   );
 }
