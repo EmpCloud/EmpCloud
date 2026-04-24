@@ -72,6 +72,10 @@ export const employeeNavItems: NavItem[] = [
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI" },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
   { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+  // Self-service: every user can set their own 6-digit kiosk PIN.
+  // Placed at top level (not under the biometrics section) because that
+  // section is HR + active-subscription gated.
+  { path: "/biometrics/kiosk-pin", label: "Biometric PIN", i18nKey: "nav.biometricPin", icon: KeyRound },
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, children: [
     { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays },
     { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
@@ -127,6 +131,8 @@ export const adminNavItems: NavItem[] = [
     { path: "/attendance/shift-schedule", label: "Shift Schedule", i18nKey: "nav.shiftSchedule", icon: CalendarRange },
     { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList },
   ]},
+  // Self-service — visible to HR too so they can manage their own PIN.
+  { path: "/biometrics/kiosk-pin", label: "Biometric PIN", i18nKey: "nav.biometricPin", icon: KeyRound },
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, children: [
     { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays },
     { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
@@ -274,7 +280,11 @@ export const feedbackHRNavItems: NavItem[] = [
 
 export const biometricsNavItems: NavItem[] = [
   { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
-  { path: "/biometrics/kiosk-pin", label: "Biometric PIN", i18nKey: "nav.biometricPin", icon: KeyRound },
+  // The self-service 'Biometric PIN' item used to live here, but this
+  // section is HR-only (only rendered when the org has an active
+  // emp-biometrics subscription AND the user is HR). Moved to the
+  // main employee/admin nav groups so every logged-in user can manage
+  // their own PIN regardless of module subscription.
   { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "nav.faceEnrollment", icon: Fingerprint },
   { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "nav.qrAttendance", icon: QrCode },
   { path: "/biometrics/devices", label: "Devices", i18nKey: "nav.devices", icon: Smartphone },
