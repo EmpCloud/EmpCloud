@@ -53,6 +53,7 @@ import {
   DatabaseZap,
   Bell,
   UserCheck,
+  KeyRound,
 } from "lucide-react";
 
 export type NavItem = {
@@ -273,6 +274,7 @@ export const feedbackHRNavItems: NavItem[] = [
 
 export const biometricsNavItems: NavItem[] = [
   { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
+  { path: "/biometrics/kiosk-pin", label: "Biometric PIN", i18nKey: "nav.biometricPin", icon: KeyRound },
   { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "nav.faceEnrollment", icon: Fingerprint },
   { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "nav.qrAttendance", icon: QrCode },
   { path: "/biometrics/devices", label: "Devices", i18nKey: "nav.devices", icon: Smartphone },
