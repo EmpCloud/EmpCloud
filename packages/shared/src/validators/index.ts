@@ -382,6 +382,10 @@ export const upsertEmployeeProfileSchema = z.object({
   // to call a separate endpoint. Both are nullable so HR can "clear" them.
   designation: z.string().max(100).optional().nullable(),
   department_id: z.coerce.number().int().positive().optional().nullable(),
+  // emp-payroll#246 — emp_code lives on users too. Without an editable field
+  // on the EmpCloud profile form, HR couldn't set it post-creation, and
+  // payroll showed an empty Employee Code as a result.
+  emp_code: z.string().max(50).optional().nullable(),
   // #1423 — shift_id is not a users-table column; the service creates a
   // user_shift_assignments row instead when this field is supplied.
   shift_id: z.coerce.number().int().positive().optional().nullable(),

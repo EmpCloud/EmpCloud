@@ -84,11 +84,16 @@ export default function EmployeeProfilePage() {
     enabled: editing,
   });
 
-  // #1423 — departments and shifts for the HR-only edit dropdowns.
+  // #1423 — departments and shifts for the HR-only edit dropdowns. We fetch
+  // departments whenever the form is open (not just for HR) so self-service
+  // users can see their own department's name in the disabled dropdown
+  // instead of an empty list (emp-payroll#250 — was confusing because the
+  // user couldn't tell whether they had no department or the dropdown was
+  // broken).
   const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: () => api.get("/departments").then((r) => r.data.data),
-    enabled: editing && isHR,
+    enabled: editing,
   });
   const { data: shifts } = useQuery({
     queryKey: ["attendance-shifts"],
@@ -374,6 +379,8 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
         department_id: profile.department_id ? String(profile.department_id) : "",
         designation: profile.designation || "",
         shift_id: profile.shift_id ? String(profile.shift_id) : "",
+        // emp-payroll#246 — employee code, HR-editable.
+        emp_code: profile.emp_code || "",
       });
     } else if (!editing) {
       setForm({});
@@ -587,6 +594,21 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               placeholder={selfService ? "Contact HR to change" : "e.g. Senior Engineer"}
             />
           </div>
+          {/* emp-payroll#246 — Employee Code. HR-editable; employees see it
+              read-only. Used downstream by emp-payroll for the My Profile
+              header and the salary slip. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Employee Code</label>
+            <input
+              type="text"
+              value={form.emp_code}
+              onChange={(e) => set("emp_code", e.target.value)}
+              className={!selfService ? inputClass : disabledClass}
+              disabled={selfService}
+              maxLength={50}
+              placeholder={selfService ? "Contact HR to set" : "e.g. EMP001"}
+            />
+          </div>
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <button
@@ -659,6 +681,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
           the read-only view so self-service employees can see them even if
           they can't edit them. */}
       <FieldRow label="Designation" value={profile.designation} />
+      <FieldRow label="Employee Code" value={profile.emp_code} />
       <FieldRow label="Department" value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
       <FieldRow label="Shift" value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
     </dl>
