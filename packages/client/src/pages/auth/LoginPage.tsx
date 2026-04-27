@@ -95,6 +95,15 @@ export default function LoginPage() {
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
           </div>
 
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+            >
+              {t('auth.forgotPassword')}
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={isSubmitting}

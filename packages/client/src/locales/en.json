@@ -148,7 +148,22 @@
     "loginSuccess": "Login successful",
     "noAccount": "Don't have an account?",
     "registerOrg": "Register your organization",
-    "enterprisePlatform": "Enterprise HRMS Platform"
+    "enterprisePlatform": "Enterprise HRMS Platform",
+    "forgotPasswordTitle": "Reset your password",
+    "forgotPasswordDescription": "Enter your account email and we'll send you a link to reset your password.",
+    "sendResetLink": "Send reset link",
+    "sendingResetLink": "Sending...",
+    "resetLinkSent": "If an account exists for that email, a reset link has been sent. Check your inbox.",
+    "backToLogin": "Back to sign in",
+    "resetPasswordTitle": "Choose a new password",
+    "resetPasswordDescription": "Enter your new password below.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordsDontMatch": "Passwords don't match",
+    "resetPassword": "Reset password",
+    "resettingPassword": "Resetting...",
+    "passwordResetSuccess": "Password reset successful. Please sign in with your new password.",
+    "missingResetToken": "This reset link is missing or invalid. Request a new one."
   },
   "dashboard": {
     "title": "Dashboard",

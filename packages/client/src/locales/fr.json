@@ -148,7 +148,22 @@
     "loginSuccess": "Connexion r\u00e9ussie",
     "noAccount": "Vous n'avez pas de compte ?",
     "registerOrg": "Enregistrez votre organisation",
-    "enterprisePlatform": "Plateforme HRMS d'entreprise"
+    "enterprisePlatform": "Plateforme HRMS d'entreprise",
+    "forgotPasswordTitle": "R\u00e9initialiser votre mot de passe",
+    "forgotPasswordDescription": "Saisissez l'adresse e-mail de votre compte et nous vous enverrons un lien pour r\u00e9initialiser votre mot de passe.",
+    "sendResetLink": "Envoyer le lien",
+    "sendingResetLink": "Envoi...",
+    "resetLinkSent": "Si un compte existe pour cet e-mail, un lien de r\u00e9initialisation a \u00e9t\u00e9 envoy\u00e9. V\u00e9rifiez votre bo\u00eete de r\u00e9ception.",
+    "backToLogin": "Retour \u00e0 la connexion",
+    "resetPasswordTitle": "Choisissez un nouveau mot de passe",
+    "resetPasswordDescription": "Saisissez votre nouveau mot de passe ci-dessous.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+    "resetPassword": "R\u00e9initialiser le mot de passe",
+    "resettingPassword": "R\u00e9initialisation...",
+    "passwordResetSuccess": "Mot de passe r\u00e9initialis\u00e9. Connectez-vous avec votre nouveau mot de passe.",
+    "missingResetToken": "Ce lien de r\u00e9initialisation est manquant ou invalide. Demandez-en un nouveau."
   },
   "dashboard": {
     "title": "Tableau de bord",

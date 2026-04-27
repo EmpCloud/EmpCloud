@@ -1,32 +1,53 @@
 // =============================================================================
 // EMP CLOUD — Email Service
 //
-// Thin wrapper around @sendgrid/mail with inline HTML templates for the
-// transactional emails EMP Cloud sends: password reset, user invitation,
-// and post-registration welcome.
+// Inline HTML templates for the transactional emails EMP Cloud sends:
+// password reset, user invitation, and post-registration welcome.
 //
-// Behavior:
-// - If SENDGRID_API_KEY is not set, sendEmail() becomes a no-op and logs
-//   the message at info level. This keeps local dev working without a real
-//   SendGrid account and also keeps tests deterministic.
-// - If the SendGrid call throws, the error is caught and logged but NOT
-//   rethrown — email failures never block the underlying flow (password
-//   reset token is still created, invitation is still stored in the DB,
-//   etc.). Users can always retry or the admin can re-send manually.
+// Transport selection (in order):
+//   1. SendGrid — when SENDGRID_API_KEY is set. Preferred in prod.
+//   2. SMTP via nodemailer — when SMTP_HOST is set. Used by local dev
+//      pointing at Mailpit/MailHog (no SendGrid account required) and by
+//      self-hosted deployments using their own mail relay.
+//   3. No-op — neither configured. sendEmail() logs the would-be delivery
+//      at info level and returns. Keeps dev working with zero config and
+//      keeps tests deterministic.
+//
+// Failures are caught and logged but NEVER rethrown — email failures must
+// never break the underlying flow (the reset token is still created in
+// the DB, the invitation row is still stored, etc.). Users can retry or
+// the admin can re-send manually.
 // =============================================================================
 
 import sgMail from "@sendgrid/mail";
+import nodemailer, { type Transporter } from "nodemailer";
 import { config } from "../../config/index.js";
 import { logger } from "../../utils/logger.js";
 
-let initialized = false;
+let sendgridReady = false;
+let smtpTransporter: Transporter | null = null;
 
-function ensureInitialized() {
-  if (initialized) return;
-  if (config.email.sendgridApiKey) {
-    sgMail.setApiKey(config.email.sendgridApiKey);
-  }
-  initialized = true;
+function ensureSendgrid(): boolean {
+  if (sendgridReady) return true;
+  if (!config.email.sendgridApiKey) return false;
+  sgMail.setApiKey(config.email.sendgridApiKey);
+  sendgridReady = true;
+  return true;
+}
+
+function ensureSmtp(): Transporter | null {
+  if (smtpTransporter) return smtpTransporter;
+  const { smtp } = config.email;
+  if (!smtp.host) return null;
+  smtpTransporter = nodemailer.createTransport({
+    host: smtp.host,
+    port: smtp.port,
+    secure: smtp.secure,
+    // Mailpit/MailHog accept anonymous SMTP — only attach auth when both
+    // user and pass are set so empty values don't trigger an auth attempt.
+    auth: smtp.user && smtp.pass ? { user: smtp.user, pass: smtp.pass } : undefined,
+  });
+  return smtpTransporter;
 }
 
 interface SendEmailParams {
@@ -37,41 +58,61 @@ interface SendEmailParams {
 }
 
 /**
- * Send a transactional email via SendGrid. Silently no-ops (with a log
- * line) when SENDGRID_API_KEY is missing so dev environments don't need
- * to be configured.
+ * Send a transactional email. Tries SendGrid first, falls back to SMTP,
+ * and finally no-ops with a log line when neither is configured.
  */
 export async function sendEmail(params: SendEmailParams): Promise<void> {
-  ensureInitialized();
-
-  if (!config.email.sendgridApiKey) {
-    logger.info(
-      `[email] SENDGRID_API_KEY not set — skipping send to ${params.to} "${params.subject}"`,
-    );
-    return;
+  if (ensureSendgrid()) {
+    try {
+      await sgMail.send({
+        to: params.to,
+        from: {
+          email: config.email.fromEmail,
+          name: config.email.fromName,
+        },
+        subject: params.subject,
+        html: params.html,
+        text: params.text || htmlToPlainText(params.html),
+      });
+      logger.info(`[email] sent via SendGrid "${params.subject}" to ${params.to}`);
+      return;
+    } catch (err: any) {
+      const detail =
+        err?.response?.body?.errors?.map((e: any) => e.message).join("; ") ||
+        err?.message ||
+        String(err);
+      logger.error(
+        `[email] SendGrid send failed for ${params.to} "${params.subject}": ${detail}`,
+      );
+      // Don't rethrow — fall through and try SMTP if configured. If SMTP
+      // also fails, the error is logged and the caller's flow continues.
+    }
   }
 
-  try {
-    await sgMail.send({
-      to: params.to,
-      from: {
-        email: config.email.fromEmail,
-        name: config.email.fromName,
-      },
-      subject: params.subject,
-      html: params.html,
-      text: params.text || htmlToPlainText(params.html),
-    });
-    logger.info(`[email] sent "${params.subject}" to ${params.to}`);
-  } catch (err: any) {
-    // SendGrid errors carry helpful info in err.response.body — surface it.
-    const detail =
-      err?.response?.body?.errors
-        ?.map((e: any) => e.message)
-        .join("; ") || err?.message || String(err);
-    logger.error(`[email] send failed for ${params.to} "${params.subject}": ${detail}`);
-    // Swallow — caller's flow shouldn't break on email failure.
+  const smtp = ensureSmtp();
+  if (smtp) {
+    try {
+      await smtp.sendMail({
+        from: { address: config.email.fromEmail, name: config.email.fromName },
+        to: params.to,
+        subject: params.subject,
+        html: params.html,
+        text: params.text || htmlToPlainText(params.html),
+      });
+      logger.info(`[email] sent via SMTP "${params.subject}" to ${params.to}`);
+      return;
+    } catch (err: any) {
+      logger.error(
+        `[email] SMTP send failed for ${params.to} "${params.subject}": ${err?.message || err}`,
+      );
+      // Swallow — caller's flow continues even if delivery fails.
+      return;
+    }
   }
+
+  logger.info(
+    `[email] no transport configured (set SENDGRID_API_KEY or SMTP_HOST) — skipping send to ${params.to} "${params.subject}"`,
+  );
 }
 
 /** Very rough HTML → plain-text fallback for the `text` body. */

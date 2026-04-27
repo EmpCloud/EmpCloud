@@ -26,6 +26,8 @@ import { customFieldRoutes } from "./routes/custom-fields.routes";
 // Lazy-loaded pages (kept in App for public/top-level routes)
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("@/pages/auth/RegisterPage"));
+const ForgotPasswordPage = lazy(() => import("@/pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 const AcceptInvitationPage = lazy(() => import("@/pages/auth/AcceptInvitationPage"));
 const DashboardPage = lazy(() => import("@/pages/dashboard/DashboardPage"));
 const OnboardingWizard = lazy(() => import("@/pages/onboarding/OnboardingWizard"));
@@ -117,6 +119,9 @@ export default function App() {
         {/* Public routes */}
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+        <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+        {/* Reset link from the email lands here as /reset-password?token=... */}
+        <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
         {/* Accept-invitation flow: lands here from the invitation email
             (?token=...). Wrapped in PublicRoute so already-authenticated
             users get bounced to the dashboard instead of accidentally

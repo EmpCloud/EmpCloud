@@ -351,6 +351,8 @@ export const createOAuthClientSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type OAuthAuthorizeInput = z.infer<typeof oauthAuthorizeSchema>;
 export type OAuthTokenInput = z.infer<typeof oauthTokenSchema>;
 export type CreateUserInput = z.infer<typeof createUserSchema>;
