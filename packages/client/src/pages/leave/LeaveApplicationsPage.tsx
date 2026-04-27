@@ -180,7 +180,9 @@ export default function LeaveApplicationsPage() {
                     )}
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {getTypeName(app.leave_type_id)}
-                      {app.is_half_day && (
+                      {/* #1609 — guard with Boolean(): MySQL tinyint 0 would
+                          render as a literal "0" via JSX `&&` short-circuit. */}
+                      {Boolean(app.is_half_day) && (
                         <span className="ml-1 text-xs text-gray-400">(Half)</span>
                       )}
                     </td>

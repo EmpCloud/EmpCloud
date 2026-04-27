@@ -141,6 +141,18 @@ export default function SelfServiceDashboardPage() {
   const leaveTypeList: any[] = Array.isArray(leaveTypes) ? leaveTypes : [];
   const leaveCards = leaveTypeList
     .filter((t: any) => Boolean(t.is_active))
+    // #1612 — dedupe by display name (keep the row with an allocated balance
+    // when duplicates exist) so users don't see two "Sick Leave" cards with
+    // conflicting balances on the home dashboard.
+    .filter((lt: any, _i: number, arr: any[]) => {
+      const sameName = arr.filter((x: any) => x.name === lt.name);
+      if (sameName.length === 1) return true;
+      const withAllocation = sameName.find((x: any) => {
+        const b = leaveBalances.find((bb: any) => bb.leave_type_id === x.id);
+        return b && Number(b.total_allocated ?? 0) > 0;
+      });
+      return withAllocation ? withAllocation.id === lt.id : sameName[0].id === lt.id;
+    })
     .map((t: any) => {
       const bal = leaveBalances.find((b: any) => b.leave_type_id === t.id);
       return {
