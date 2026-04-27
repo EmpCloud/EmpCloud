@@ -21,6 +21,7 @@ import {
   adminNavItems,
   positionNavItems,
   biometricsNavItems,
+  orgAdminOnlyNavItems,
   platformAdminNavItems,
   HR_ROLES,
 } from "./navigation.config";
@@ -60,6 +61,7 @@ export default function DashboardLayout() {
   );
 
   const isHR = !!(user && HR_ROLES.includes(user.role));
+  const isOrgAdmin = user?.role === "org_admin";
 
   // Auto-close sidebar on navigation
   useEffect(() => {
@@ -135,6 +137,9 @@ export default function DashboardLayout() {
           )}
           {hasBiometrics && (
             <NavSection label={t('nav.biometrics')} items={biometricsNavItems} location={location} t={t} />
+          )}
+          {isOrgAdmin && (
+            <NavSection label="" items={orgAdminOnlyNavItems} location={location} t={t} />
           )}
         </>}
 
