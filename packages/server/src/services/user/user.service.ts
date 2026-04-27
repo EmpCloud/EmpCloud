@@ -1106,35 +1106,62 @@ export async function acceptInvitation(params: {
   const passwordHash = await hashPassword(params.password);
 
   const user = await db.transaction(async (trx) => {
-    // Calculate probation end date (6 months from today)
-    const inviteJoinDate = new Date().toISOString().slice(0, 10);
-    const inviteProbationEnd = new Date();
-    inviteProbationEnd.setMonth(inviteProbationEnd.getMonth() + 6);
-
     const inviteNow = new Date();
-    const [userId] = await trx("users").insert({
-      organization_id: invitation.organization_id,
-      first_name: resolvedFirstName,
-      last_name: resolvedLastName,
-      email: invitation.email,
-      password: passwordHash,
-      password_changed_at: inviteNow,
-      role: invitation.role,
-      status: 1,
-      date_of_joining: inviteJoinDate,
-      probation_end_date: inviteProbationEnd.toISOString().slice(0, 10),
-      probation_status: "on_probation",
-      created_at: inviteNow,
-      updated_at: inviteNow,
-    });
+
+    // Re-invite case: a user with this email already exists in the org
+    // (created via "Also re-invite already-activated employees" or by an
+    // earlier admin-side create). Don't INSERT — that hits the unique
+    // email constraint. UPDATE password + names instead, and don't touch
+    // current_user_count (the seat is already counted).
+    const existingUser = await trx("users")
+      .where({ email: invitation.email, organization_id: invitation.organization_id })
+      .first();
+
+    let userId: number;
+    if (existingUser) {
+      await trx("users").where({ id: existingUser.id }).update({
+        first_name: resolvedFirstName,
+        last_name: resolvedLastName,
+        password: passwordHash,
+        password_changed_at: inviteNow,
+        // Re-activate the seat in case the user had been deactivated.
+        status: 1,
+        updated_at: inviteNow,
+      });
+      userId = existingUser.id;
+    } else {
+      // Calculate probation end date (6 months from today) for genuine
+      // new joiners only — re-invited users keep their original probation.
+      const inviteJoinDate = new Date().toISOString().slice(0, 10);
+      const inviteProbationEnd = new Date();
+      inviteProbationEnd.setMonth(inviteProbationEnd.getMonth() + 6);
+
+      const [insertedId] = await trx("users").insert({
+        organization_id: invitation.organization_id,
+        first_name: resolvedFirstName,
+        last_name: resolvedLastName,
+        email: invitation.email,
+        password: passwordHash,
+        password_changed_at: inviteNow,
+        role: invitation.role,
+        status: 1,
+        date_of_joining: inviteJoinDate,
+        probation_end_date: inviteProbationEnd.toISOString().slice(0, 10),
+        probation_status: "on_probation",
+        created_at: inviteNow,
+        updated_at: inviteNow,
+      });
+      userId = insertedId;
+
+      // Only fresh seats bump the org user count.
+      await trx("organizations")
+        .where({ id: invitation.organization_id })
+        .increment("current_user_count", 1);
+    }
 
     await trx("invitations")
       .where({ id: invitation.id })
       .update({ status: "accepted", accepted_at: new Date() });
-
-    await trx("organizations")
-      .where({ id: invitation.organization_id })
-      .increment("current_user_count", 1);
 
     return trx("users").where({ id: userId }).first();
   });
