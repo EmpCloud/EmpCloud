@@ -607,7 +607,14 @@
         "reject": "Ablehnen",
         "statusApproved": "Genehmigt",
         "statusRejected": "Abgelehnt"
-      }
+      },
+      "search": {
+      "placeholder": "Nach Name oder Code suchen...",
+      "show": "Zeige",
+      "entries": "Eintr\u00e4ge",
+      "showingRange": "Zeige {{from}} bis {{to}} von {{total}}",
+      "noResults": "Keine Mitarbeiter entsprechen Ihrer Suche."
+    }
     }
   },
   "manager": {

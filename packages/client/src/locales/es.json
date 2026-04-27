@@ -607,7 +607,14 @@
         "reject": "Rechazar",
         "statusApproved": "Aprobada",
         "statusRejected": "Rechazada"
-      }
+      },
+      "search": {
+      "placeholder": "Buscar por nombre o c\u00f3digo...",
+      "show": "Mostrar",
+      "entries": "Entradas",
+      "showingRange": "Mostrando {{from}} a {{to}} de {{total}}",
+      "noResults": "Ning\u00fan empleado coincide con tu b\u00fasqueda."
+    }
     }
   },
   "manager": {

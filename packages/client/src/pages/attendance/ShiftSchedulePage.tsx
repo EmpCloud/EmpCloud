@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
@@ -13,7 +13,10 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Search,
 } from "lucide-react";
+
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
 // --- Helpers ---
 
@@ -119,6 +122,11 @@ export default function ShiftSchedulePage() {
     effective_to: string | null;
   } | null>(null);
 
+  // Team Schedule grid: client-side search + pagination
+  const [search, setSearch] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState(1);
+
   const week = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
   const { data: shifts = [] } = useShifts();
@@ -218,6 +226,28 @@ export default function ShiftSchedulePage() {
   };
 
   const pendingSwapCount = swapRequests.filter((r: any) => r.status === "pending").length;
+
+  // Filtered + paginated schedule for the Team Schedule grid.
+  const filteredSchedule = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return schedule;
+    return schedule.filter((emp: any) => {
+      const name = `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.toLowerCase();
+      const code = String(emp.emp_code ?? "").toLowerCase();
+      return name.includes(q) || code.includes(q);
+    });
+  }, [schedule, search]);
+
+  const totalEntries = filteredSchedule.length;
+  const totalPages = Math.max(1, Math.ceil(totalEntries / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const startIdx = (safePage - 1) * pageSize;
+  const endIdx = Math.min(startIdx + pageSize, totalEntries);
+  const pagedSchedule = filteredSchedule.slice(startIdx, endIdx);
+
+  // Reset to first page when the search or page-size changes so the user
+  // doesn't get stranded on an out-of-range page after filtering.
+  useEffect(() => { setPage(1); }, [search, pageSize]);
 
   // Shift color map
   const shiftColors: Record<number, string> = {};
@@ -495,6 +525,35 @@ export default function ShiftSchedulePage() {
             </div>
           )}
 
+          {/* Search + Page size controls */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>{t('attendance.shiftSchedule.search.show')}</span>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm bg-white"
+                aria-label={t('attendance.shiftSchedule.search.show')}
+              >
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              <span>{t('attendance.shiftSchedule.search.entries')}</span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t('attendance.shiftSchedule.search.placeholder')}
+                className="pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm w-64 max-w-full focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                aria-label={t('attendance.shiftSchedule.search.placeholder')}
+              />
+            </div>
+          </div>
+
           {/* Schedule Grid */}
           <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
             <table className="min-w-full">
@@ -523,8 +582,14 @@ export default function ShiftSchedulePage() {
                       {t('attendance.shiftSchedule.team.noEmployees')}
                     </td>
                   </tr>
+                ) : pagedSchedule.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
+                      {t('attendance.shiftSchedule.search.noResults')}
+                    </td>
+                  </tr>
                 ) : (
-                  schedule.map((emp: any) => (
+                  pagedSchedule.map((emp: any) => (
                     <tr key={emp.user_id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 sticky left-0 bg-white">
                         <div className="text-sm font-medium text-gray-900">
@@ -601,6 +666,40 @@ export default function ShiftSchedulePage() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination footer */}
+          {totalEntries > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-3 px-1 text-sm text-gray-600">
+              <span>
+                {t('attendance.shiftSchedule.search.showingRange', {
+                  from: startIdx + 1,
+                  to: endIdx,
+                  total: totalEntries,
+                })}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage <= 1}
+                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4" /> {t('attendance.previous')}
+                </button>
+                <span className="px-3 py-1.5 text-sm font-medium text-gray-700">
+                  {safePage} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage >= totalPages}
+                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {t('attendance.next')} <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

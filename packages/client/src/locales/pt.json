@@ -607,7 +607,14 @@
         "reject": "Rejeitar",
         "statusApproved": "Aprovada",
         "statusRejected": "Rejeitada"
-      }
+      },
+      "search": {
+      "placeholder": "Buscar por nome ou c\u00f3digo...",
+      "show": "Mostrar",
+      "entries": "Entradas",
+      "showingRange": "Mostrando {{from}} a {{to}} de {{total}}",
+      "noResults": "Nenhum colaborador corresponde \u00e0 sua busca."
+    }
     }
   },
   "manager": {
