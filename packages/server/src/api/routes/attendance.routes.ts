@@ -4,13 +4,14 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR, requireRole } from "../middleware/rbac.middleware.js";
+import { requireHR, requireOrgAdmin, requireRole } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
 import * as attendanceService from "../../services/attendance/attendance.service.js";
 import * as geoFenceService from "../../services/attendance/geo-fence.service.js";
 import * as regularizationService from "../../services/attendance/regularization.service.js";
+import * as settingsService from "../../services/attendance/attendance-settings.service.js";
 import {
   createShiftSchema,
   updateShiftSchema,
@@ -26,6 +27,9 @@ import {
   approveRegularizationSchema,
   attendanceQuerySchema,
   paginationSchema,
+  updateAttendanceSettingsSchema,
+  createUserAttendanceOverrideSchema,
+  updateUserAttendanceOverrideSchema,
   AuditAction,
 } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
@@ -278,6 +282,152 @@ router.delete("/geo-fences/:id", authenticate, requireHR, async (req: Request, r
     sendSuccess(res, { message: "Geo-fence deactivated" });
   } catch (err) { next(err); }
 });
+
+// =============================================================================
+// ATTENDANCE SETTINGS — channels + geofence delivery
+//
+// `/me/policy` is the resolver-backed endpoint the EmpCloud mobile app calls
+// on launch (and before each check-in tap) to learn which channels are
+// allowed for the signed-in user and which geofences to validate against
+// locally. Server does NOT enforce distance — it only enforces channel.
+// =============================================================================
+
+// GET /api/v1/attendance/me/policy
+router.get("/me/policy", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const date = typeof req.query.date === "string" ? req.query.date : undefined;
+    const policy = await settingsService.resolveAttendancePolicy(req.user!.org_id, req.user!.sub, date);
+    sendSuccess(res, policy);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/settings — org settings (HR / org_admin)
+router.get("/settings", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const settings = await settingsService.getSettings(req.user!.org_id);
+    sendSuccess(res, settings);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/attendance/settings — update org settings
+router.put("/settings", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateAttendanceSettingsSchema.parse(req.body);
+    const settings = await settingsService.updateSettings(req.user!.org_id, data);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.ATTENDANCE_SETTINGS_UPDATED,
+      resourceType: "attendance_settings",
+      details: data,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, settings);
+  } catch (err) { next(err); }
+});
+
+// GET /api/v1/attendance/overrides/users/:userId — list overrides for one user
+router.get(
+  "/overrides/users/:userId",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const overrides = await settingsService.listUserOverrides(
+        req.user!.org_id,
+        paramInt(req.params.userId),
+      );
+      sendSuccess(res, overrides);
+    } catch (err) { next(err); }
+  },
+);
+
+// POST /api/v1/attendance/overrides/users/:userId — create a new override
+router.post(
+  "/overrides/users/:userId",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = createUserAttendanceOverrideSchema.parse(req.body);
+      const userId = paramInt(req.params.userId);
+      const created = await settingsService.createUserOverride(
+        req.user!.org_id,
+        userId,
+        req.user!.sub,
+        data,
+      );
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.ATTENDANCE_OVERRIDE_CREATED,
+        resourceType: "attendance_override",
+        resourceId: String(created!.id),
+        details: { user_id: userId, ...data },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, created, 201);
+    } catch (err) { next(err); }
+  },
+);
+
+// PUT /api/v1/attendance/overrides/:id — edit an override
+router.put(
+  "/overrides/:id",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = updateUserAttendanceOverrideSchema.parse(req.body);
+      const id = paramInt(req.params.id);
+      const updated = await settingsService.updateUserOverride(req.user!.org_id, id, data);
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.ATTENDANCE_OVERRIDE_UPDATED,
+        resourceType: "attendance_override",
+        resourceId: String(id),
+        details: data,
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, updated);
+    } catch (err) { next(err); }
+  },
+);
+
+// DELETE /api/v1/attendance/overrides/:id — drop an override (immediate fallback)
+router.delete(
+  "/overrides/:id",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = paramInt(req.params.id);
+      await settingsService.deleteUserOverride(req.user!.org_id, id);
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.ATTENDANCE_OVERRIDE_DELETED,
+        resourceType: "attendance_override",
+        resourceId: String(id),
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, { message: "Override deleted" });
+    } catch (err) { next(err); }
+  },
+);
 
 // =============================================================================
 // ATTENDANCE RECORDS
