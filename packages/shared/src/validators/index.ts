@@ -394,6 +394,7 @@ export const upsertEmployeeProfileSchema = z.object({
   nationality: z.string().max(55).optional().nullable(),
   aadhar_number: z.string().length(12).optional().nullable(),
   pan_number: z.string().length(10).optional().nullable(),
+  uan_number: z.string().length(12).optional().nullable(),
   passport_number: z.string().max(20).optional().nullable(),
   passport_expiry: z.string().optional().nullable(),
   visa_status: z.string().max(50).optional().nullable(),
