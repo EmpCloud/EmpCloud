@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
+import GeofenceMapPicker from "@/components/maps/GeofenceMapPicker";
 
 type Channel = "dashboard" | "biometric" | "app";
 const ALL_CHANNELS: Channel[] = ["dashboard", "biometric", "app"];
@@ -388,7 +389,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl border border-gray-200 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-xl border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
@@ -417,6 +418,29 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
             />
           </div>
 
+          {/* Map picker — click anywhere or drag the marker to set the
+              coordinates. Circle overlay shows the current radius. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <GeofenceMapPicker
+              latitude={latitude === "" || Number.isNaN(Number(latitude)) ? null : Number(latitude)}
+              longitude={
+                longitude === "" || Number.isNaN(Number(longitude)) ? null : Number(longitude)
+              }
+              radiusMeters={Number(radius) || 0}
+              onChange={({ latitude: lat, longitude: lng }) => {
+                // Round to 7 decimal places (the column precision) so the
+                // input doesn't show a 17-digit float after every drag.
+                setLatitude(lat.toFixed(7));
+                setLongitude(lng.toFixed(7));
+              }}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Click anywhere on the map or drag the pin to set the location. The shaded circle
+              shows the current radius.
+            </p>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
@@ -441,9 +465,6 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               />
             </div>
           </div>
-          <p className="text-xs text-gray-500 -mt-2">
-            Tip: search the address on Google Maps, right-click the pin, and copy the lat/lng pair.
-          </p>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
