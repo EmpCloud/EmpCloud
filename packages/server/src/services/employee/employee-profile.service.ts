@@ -135,6 +135,7 @@ export async function upsertProfile(
     contact_number,
     department_id,
     designation,
+    emp_code,
     shift_id,
     ...profileData
   } = data as any;
@@ -155,6 +156,9 @@ export async function upsertProfile(
   // but cannot edit (matches the #1423/#1424 ticket's "be conservative"
   // guidance — employees shouldn't arbitrarily rename their role).
   if (designation !== undefined && isHR) userUpdate.designation = designation || null;
+  // emp-payroll#246 — emp_code: HR-only edit. Employees can see it but
+  // cannot rewrite their own employee code.
+  if (emp_code !== undefined && isHR) userUpdate.emp_code = emp_code || null;
 
   if (Object.keys(userUpdate).length > 0) {
     userUpdate.updated_at = new Date();
