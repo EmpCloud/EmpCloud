@@ -562,19 +562,64 @@ export const createGeoFenceSchema = z.object({
   radius_meters: z.number().int().min(10).max(50000),
 });
 
+// `source` doubles as the channel the policy guard checks against:
+//   dashboard / biometric / app  → real channels enforced by attendance_settings
+//   manual / geo                 → legacy values, treated as 'dashboard' for the
+//                                  channel guard (kept so the existing web UI
+//                                  and any older clients keep working).
+export const ATTENDANCE_CHANNELS = ["dashboard", "biometric", "app"] as const;
+export type AttendanceChannel = (typeof ATTENDANCE_CHANNELS)[number];
+
 export const checkInSchema = z.object({
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
-  source: z.enum(["manual", "biometric", "geo"]).default("manual"),
+  source: z.enum(["manual", "biometric", "geo", "dashboard", "app"]).default("manual"),
   remarks: z.string().optional(),
 });
 
 export const checkOutSchema = z.object({
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
-  source: z.enum(["manual", "biometric", "geo"]).default("manual"),
+  source: z.enum(["manual", "biometric", "geo", "dashboard", "app"]).default("manual"),
   remarks: z.string().optional(),
 });
+
+// ---- Attendance settings (org level) ----
+export const updateAttendanceSettingsSchema = z.object({
+  allowed_channels: z
+    .array(z.enum(ATTENDANCE_CHANNELS))
+    .min(1, "At least one channel must be allowed")
+    .optional(),
+  geofence_advisory: z.boolean().optional(),
+});
+
+// ---- User-level attendance override ----
+export const createUserAttendanceOverrideSchema = z
+  .object({
+    allowed_channels: z.array(z.enum(ATTENDANCE_CHANNELS)).min(1).optional().nullable(),
+    geofence_mode: z.enum(["inherit", "off", "custom"]).default("inherit"),
+    custom_geofence_id: z.number().int().positive().optional().nullable(),
+    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "start_date must be YYYY-MM-DD"),
+    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "end_date must be YYYY-MM-DD").optional().nullable(),
+    note: z.string().max(255).optional().nullable(),
+  })
+  .refine(
+    (v) => v.geofence_mode !== "custom" || !!v.custom_geofence_id,
+    { message: "custom_geofence_id is required when geofence_mode is 'custom'", path: ["custom_geofence_id"] },
+  )
+  .refine(
+    (v) => !v.end_date || v.end_date >= v.start_date,
+    { message: "end_date must be on or after start_date", path: ["end_date"] },
+  );
+
+export const updateUserAttendanceOverrideSchema = z
+  .object({
+    allowed_channels: z.array(z.enum(ATTENDANCE_CHANNELS)).min(1).optional().nullable(),
+    geofence_mode: z.enum(["inherit", "off", "custom"]).optional(),
+    custom_geofence_id: z.number().int().positive().optional().nullable(),
+    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "end_date must be YYYY-MM-DD").optional().nullable(),
+    note: z.string().max(255).optional().nullable(),
+  });
 
 // #1386 — Block far-future dates and require YYYY-MM-DD format
 // #1364 — Block check-out earlier than check-in on the same day
@@ -770,6 +815,9 @@ export type BulkAssignShiftInput = z.infer<typeof bulkAssignShiftSchema>;
 export type UpdateShiftAssignmentInput = z.infer<typeof updateShiftAssignmentSchema>;
 export type ShiftSwapRequestInput = z.infer<typeof shiftSwapRequestSchema>;
 export type RejectDocumentInput = z.infer<typeof rejectDocumentSchema>;
+export type UpdateAttendanceSettingsInput = z.infer<typeof updateAttendanceSettingsSchema>;
+export type CreateUserAttendanceOverrideInput = z.infer<typeof createUserAttendanceOverrideSchema>;
+export type UpdateUserAttendanceOverrideInput = z.infer<typeof updateUserAttendanceOverrideSchema>;
 
 // ---------------------------------------------------------------------------
 // HRMS — Biometrics Validators

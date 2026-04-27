@@ -5,10 +5,15 @@
 import { getDB } from "../../db/connection.js";
 import { ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
 import { calculateOvertime } from "../../utils/payroll-rules.js";
+import { assertChannelAllowed } from "./attendance-settings.service.js";
 import type { CheckInInput, CheckOutInput } from "@empcloud/shared";
 
 export async function checkIn(orgId: number, userId: number, data: CheckInInput) {
   const db = getDB();
+  // Guard before any DB writes — if the channel is disabled at org level
+  // (or by an active per-user override) this throws ChannelNotAllowedError
+  // which the route layer renders as a 403 with a stable error code.
+  await assertChannelAllowed(orgId, userId, data.source);
   const today = new Date().toISOString().slice(0, 10);
 
   // Check for existing record today
@@ -82,6 +87,7 @@ export async function checkIn(orgId: number, userId: number, data: CheckInInput)
 
 export async function checkOut(orgId: number, userId: number, data: CheckOutInput) {
   const db = getDB();
+  await assertChannelAllowed(orgId, userId, data.source);
   const today = new Date().toISOString().slice(0, 10);
 
   const record = await db("attendance_records")
