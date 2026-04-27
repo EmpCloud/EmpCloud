@@ -38,6 +38,7 @@ async function ensureActiveLeaveType(
       is_encashable: false,
       requires_approval: true,
       color: '#4CAF50',
+      annual_quota: 12,
     },
   });
   const createBody = await createResp.json();
@@ -108,6 +109,7 @@ test.describe('Leave Advanced', () => {
           is_encashable: false,
           requires_approval: true,
           color: '#FF5733',
+          annual_quota: 12,
         },
       });
       expect(resp.status()).toBe(201);
