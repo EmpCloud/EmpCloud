@@ -446,12 +446,36 @@ export async function resetUserPassword(
     });
 }
 
-export async function deactivateUser(orgId: number, userId: number): Promise<void> {
+// Hard-delete a user. Frees the email so the same address can be re-added
+// later (the previous soft-delete left a row with status=2 which kept the
+// unique email constraint locked).
+//
+// FK landscape (audited 2026-04-27 across migrations 001–047):
+//   • Most child tables declare ON DELETE CASCADE / SET NULL — MySQL handles
+//     them automatically when the user row goes away.
+//   • A handful of `created_by` / `assigned_by` / `invited_by` columns are
+//     NOT NULL with no ON DELETE clause (default RESTRICT). These would
+//     block the DELETE with a FK constraint error, so we reassign them to
+//     the actor performing the delete.
+//   • A few columns reference users by name only (no DB constraint). Those
+//     get explicit NULL'd in the same transaction so the orphan rows don't
+//     point at a missing user_id.
+//   • `users.reporting_manager_id` is a self-FK with default RESTRICT, so
+//     direct reports must have their manager unset before the row dies.
+//
+// `actorUserId` is the admin performing the delete and inherits ownership
+// of any historical "created by" rows that can't be deleted.
+export async function deactivateUser(
+  orgId: number,
+  userId: number,
+  actorUserId?: number,
+): Promise<void> {
   const db = getDB();
   const user = await db("users").where({ id: userId, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
 
-  // Rule: Cannot deactivate employee with pending items
+  // Rule: Cannot delete employee with pending items — these would silently
+  // disappear via CASCADE and we'd lose the audit trail / accountability.
   const pendingItems: string[] = [];
 
   const [{ count: pendingLeaves }] = await db("leave_applications")
@@ -478,13 +502,86 @@ export async function deactivateUser(orgId: number, userId: number): Promise<voi
 
   if (pendingItems.length > 0) {
     throw new ValidationError(
-      `Cannot deactivate employee with pending items: ${pendingItems.join(", ")}. Please resolve these first.`
+      `Cannot delete employee with pending items: ${pendingItems.join(", ")}. Please resolve these first.`
     );
   }
 
-  await db("users").where({ id: userId }).update({ status: 2, updated_at: new Date() });
-  await db("organizations").where({ id: orgId }).decrement("current_user_count", 1);
+  await db.transaction(async (trx) => {
+    await purgeUserHard(trx, orgId, userId, actorUserId);
+    await trx("organizations").where({ id: orgId }).decrement("current_user_count", 1);
+  });
 }
+
+// Strip all references to a user and DELETE the row. Caller is responsible
+// for the surrounding transaction and any business-rule guards (pending
+// leaves / assets / tickets). Used by both the user-facing delete endpoint
+// and migration 048 which purges legacy soft-deleted rows.
+async function purgeUserHard(
+  trx: import("knex").Knex.Transaction,
+  orgId: number,
+  userId: number,
+  actorUserId?: number,
+): Promise<void> {
+  // Pick a fallback owner for created_by reassignment when the caller
+  // didn't supply one (e.g. data-cleanup migration). First org_admin is the
+  // safest bet — every active org has at least one.
+  let reassignTo = actorUserId ?? null;
+  if (!reassignTo || reassignTo === userId) {
+    const fallback = await trx("users")
+      .where({ organization_id: orgId, role: "org_admin", status: 1 })
+      .whereNot({ id: userId })
+      .orderBy("id", "asc")
+      .first("id");
+    reassignTo = fallback?.id ?? null;
+  }
+
+  // 1. Self-FK: clear the manager pointer on this user's direct reports.
+  //    (RESTRICT by default, so MySQL would block the DELETE otherwise.)
+  await trx("users")
+    .where({ reporting_manager_id: userId })
+    .update({ reporting_manager_id: null });
+
+  // 2. created_by / assigned_by / invited_by — NOT NULL columns with no
+  //    cascade. Reassign so historical authorship survives the delete.
+  if (reassignTo) {
+    const reassignTargets: Array<{ table: string; column: string }> = [
+      { table: "org_module_seats",  column: "assigned_by" },
+      { table: "invitations",       column: "invited_by"  },
+      { table: "shift_assignments", column: "created_by"  },
+      { table: "announcements",     column: "created_by"  },
+      { table: "company_policies",  column: "created_by"  },
+      { table: "surveys",           column: "created_by"  },
+      { table: "positions",         column: "created_by"  },
+      { table: "headcount_plans",   column: "created_by"  },
+    ];
+    for (const { table, column } of reassignTargets) {
+      const exists = await trx.schema.hasTable(table);
+      if (!exists) continue;
+      await trx(table).where({ [column]: userId }).update({ [column]: reassignTo });
+    }
+  }
+
+  // 3. App-level user references with no FK constraint (won't block the
+  //    DELETE, but would leave dangling user_ids the app might dereference).
+  const nullableOrphans: Array<{ table: string; column: string }> = [
+    { table: "survey_responses",   column: "user_id"      },
+    { table: "headcount_plans",    column: "approved_by"  },
+    { table: "anonymous_feedback", column: "responded_by" },
+  ];
+  for (const { table, column } of nullableOrphans) {
+    const exists = await trx.schema.hasTable(table);
+    if (!exists) continue;
+    await trx(table).where({ [column]: userId }).update({ [column]: null });
+  }
+
+  // 4. Finally drop the user row. Cascading FKs handle the long tail
+  //    (leave_*, attendance_*, helpdesk_*, forum_*, biometric_*, etc.).
+  await trx("users").where({ id: userId }).delete();
+}
+
+// Exposed for migration 048 (legacy soft-deleted user cleanup). Not part of
+// the public service surface; route handlers should call deactivateUser.
+export { purgeUserHard as _purgeUserHard };
 
 // ---------------------------------------------------------------------------
 // Invitations

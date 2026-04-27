@@ -81,6 +81,7 @@ export enum AuditAction {
   USER_CREATED = "user_created",
   USER_UPDATED = "user_updated",
   USER_DEACTIVATED = "user_deactivated",
+  USER_DELETED = "user_deleted",
   USER_INVITED = "user_invited",
   ORG_UPDATED = "org_updated",
   SUBSCRIPTION_CREATED = "subscription_created",
