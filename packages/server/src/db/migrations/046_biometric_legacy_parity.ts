@@ -20,13 +20,42 @@ import { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   // ---- organizations columns ----
-  await knex.schema.alterTable("organizations", (t) => {
-    t.tinyint("camera_overlay_status").notNullable().defaultTo(0);
-    t.tinyint("biometrics_confirmation_status").notNullable().defaultTo(0);
-    t.tinyint("is_biometrics_employee").notNullable().defaultTo(0);
-    t.string("org_secret_key_hash", 255).nullable();
-    t.integer("attendance_hours_seconds").notNullable().defaultTo(28800);
-  });
+  // Idempotency: KnexAdapter re-runs every migration on each server start.
+  // Without per-column hasColumn guards each restart would log a noisy
+  // "Duplicate column name" warning for every column already added on the
+  // first run (caught + warned, never fatal — but pollutes the log).
+  const existingOrgCols = {
+    camera_overlay_status: await knex.schema.hasColumn("organizations", "camera_overlay_status"),
+    biometrics_confirmation_status: await knex.schema.hasColumn(
+      "organizations",
+      "biometrics_confirmation_status",
+    ),
+    is_biometrics_employee: await knex.schema.hasColumn("organizations", "is_biometrics_employee"),
+    org_secret_key_hash: await knex.schema.hasColumn("organizations", "org_secret_key_hash"),
+    attendance_hours_seconds: await knex.schema.hasColumn(
+      "organizations",
+      "attendance_hours_seconds",
+    ),
+  };
+  if (Object.values(existingOrgCols).some((has) => !has)) {
+    await knex.schema.alterTable("organizations", (t) => {
+      if (!existingOrgCols.camera_overlay_status) {
+        t.tinyint("camera_overlay_status").notNullable().defaultTo(0);
+      }
+      if (!existingOrgCols.biometrics_confirmation_status) {
+        t.tinyint("biometrics_confirmation_status").notNullable().defaultTo(0);
+      }
+      if (!existingOrgCols.is_biometrics_employee) {
+        t.tinyint("is_biometrics_employee").notNullable().defaultTo(0);
+      }
+      if (!existingOrgCols.org_secret_key_hash) {
+        t.string("org_secret_key_hash", 255).nullable();
+      }
+      if (!existingOrgCols.attendance_hours_seconds) {
+        t.integer("attendance_hours_seconds").notNullable().defaultTo(28800);
+      }
+    });
+  }
 
   // ---- organization_holidays ----
   if (!(await knex.schema.hasTable("organization_holidays"))) {
