@@ -4,22 +4,6 @@ import { useState, useEffect } from "react";
 import { LogIn, LogOut, Clock, AlertCircle, PlusCircle, Lock } from "lucide-react";
 import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 
-// Add `n` days to a YYYY-MM-DD string and return the result in the same
-// format. Used by the regularization form to bump the check-out date when
-// the user is reporting a night shift.
-//
-// Uses UTC throughout so we don't trip the DST / timezone trap where
-// `new Date("2026-04-25T00:00:00")` parses as local midnight, then
-// `toISOString()` formats in UTC and rolls the day back in any UTC+X
-// timezone (e.g. IST). Splitting the string and going via Date.UTC keeps
-// the calendar arithmetic timezone-independent.
-function addDays(isoDate: string, n: number): string {
-  const [y, m, d] = isoDate.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
-  dt.setUTCDate(dt.getUTCDate() + n);
-  return dt.toISOString().slice(0, 10);
-}
-
 function useToday() {
   const [today, setToday] = useState(() => new Date());
   // Re-check the date on window focus so we never show a stale day after midnight
@@ -77,39 +61,48 @@ export default function AttendancePage() {
   const [showRegForm, setShowRegForm] = useState(false);
   const [regForm, setRegForm] = useState({
     date: "",
-    check_in: "",
-    check_out: "",
+    requested_check_in: "",
+    requested_check_out: "",
     reason: "",
   });
+  // Inline validation message — surfaced before we even hit the API when
+  // the form is missing fields or check-out is not strictly after check-in.
+  const [regFormError, setRegFormError] = useState<string | null>(null);
 
   const submitRegularization = useMutation({
-    mutationFn: (data: typeof regForm) => {
-      // Night-shift handling: if the user picked a check-out time that's
-      // earlier in the day than the check-in time (e.g. 22:00 → 07:00),
-      // the check-out actually falls on the next calendar day. Sending
-      // both with the same date trips the server's "check-out cannot be
-      // earlier than check-in" guard.
-      const checkOutDate =
-        data.check_out < data.check_in ? addDays(data.date, 1) : data.date;
-      return api
+    mutationFn: (data: typeof regForm) =>
+      api
         .post("/attendance/regularizations", {
           date: data.date,
-          requested_check_in: `${data.date}T${data.check_in}:00`,
-          requested_check_out: `${checkOutDate}T${data.check_out}:00`,
+          requested_check_in: data.requested_check_in || null,
+          requested_check_out: data.requested_check_out || null,
           reason: data.reason,
         })
-        .then((r) => r.data.data);
-    },
+        .then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
       setShowRegForm(false);
-      setRegForm({ date: "", check_in: "", check_out: "", reason: "" });
+      setRegForm({ date: "", requested_check_in: "", requested_check_out: "", reason: "" });
+      setRegFormError(null);
     },
   });
 
+  const setRegField = (key: keyof typeof regForm, value: string) =>
+    setRegForm((f) => ({ ...f, [key]: value }));
+
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regForm.date || !regForm.check_in || !regForm.check_out || !regForm.reason) return;
+    setRegFormError(null);
+    if (!regForm.date || !regForm.reason) return;
+    if (regForm.requested_check_in && regForm.requested_check_out) {
+      if (
+        new Date(regForm.requested_check_out).getTime() <=
+        new Date(regForm.requested_check_in).getTime()
+      ) {
+        setRegFormError("Check-out time must be after check-in time.");
+        return;
+      }
+    }
     submitRegularization.mutate(regForm);
   };
 
@@ -227,54 +220,68 @@ export default function AttendancePage() {
             Request Attendance Regularization
           </h2>
           <p className="text-sm text-gray-500 mb-4">
-            Submit a request to correct a missed or incorrect check-in/check-out.
-            For night shifts, set check-out to the time you ended your shift — the system
-            automatically rolls it to the next day when it's earlier than check-in.
+            Submit a request to correct a missed or incorrect check-in/check-out. Pick the full
+            date and time for each — for a night shift, set the check-out to the next day.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date <span className="text-red-500">*</span>
+              </label>
               <input
                 type="date"
                 value={regForm.date}
-                onChange={(e) => setRegForm({ ...regForm, date: e.target.value })}
+                onChange={(e) => setRegField("date", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Check In Time</label>
-              <input
-                type="time"
-                value={regForm.check_in}
-                onChange={(e) => setRegForm({ ...regForm, check_in: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Check Out Time</label>
-              <input
-                type="time"
-                value={regForm.check_out}
-                onChange={(e) => setRegForm({ ...regForm, check_out: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reason <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={regForm.reason}
-                onChange={(e) => setRegForm({ ...regForm, reason: e.target.value })}
+                onChange={(e) => setRegField("reason", e.target.value)}
                 placeholder="e.g. Forgot to check in"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Requested Check In
+              </label>
+              <input
+                type="datetime-local"
+                value={regForm.requested_check_in}
+                onChange={(e) => setRegField("requested_check_in", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Requested Check Out
+              </label>
+              {/* `min` ties the check-out picker to the current check-in value so users
+                  can't even pick an earlier moment from the popover; the handleRegSubmit
+                  check above is the authoritative enforcement. */}
+              <input
+                type="datetime-local"
+                value={regForm.requested_check_out}
+                min={regForm.requested_check_in || undefined}
+                onChange={(e) => setRegField("requested_check_out", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
           </div>
-          {submitRegularization.isError && (
+          {regFormError && (
+            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {regFormError}
+            </div>
+          )}
+          {submitRegularization.isError && !regFormError && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
               {(submitRegularization.error && typeof submitRegularization.error === "object" && "response" in submitRegularization.error
                 ? (submitRegularization.error as any).response?.data?.error?.message
