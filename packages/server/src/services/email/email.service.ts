@@ -158,9 +158,17 @@ Sent by EMP Cloud &bull; If you didn't expect this email, you can safely ignore 
 }
 
 function button(label: string, href: string): string {
-  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0;">
+  // Centered via an outer wrapper table with align="center" + text-align,
+  // which is the only combo that holds across Gmail, Apple Mail, Outlook
+  // (incl. older Outlook on Windows which ignores `margin:auto` on tables)
+  // and the major webmail clients. The inner table keeps the rounded
+  // background pill that wraps the anchor.
+  return `<table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:24px 0;border-collapse:collapse;">
+<tr><td align="center" style="text-align:center;">
+<table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;border-collapse:collapse;">
 <tr><td style="border-radius:8px;background:#2563eb;">
 <a href="${escapeHtml(href)}" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">${escapeHtml(label)}</a>
+</td></tr></table>
 </td></tr></table>`;
 }
 
