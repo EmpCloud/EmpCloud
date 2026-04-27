@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { LogIn, LogOut, Clock, AlertCircle, PlusCircle, Lock } from "lucide-react";
 import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 
+// Add `n` days to a YYYY-MM-DD string and return the result in the same
+// format. Used by the regularization form to bump the check-out date when
+// the user is reporting a night shift.
+function addDays(isoDate: string, n: number): string {
+  const d = new Date(`${isoDate}T00:00:00`);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
 function useToday() {
   const [today, setToday] = useState(() => new Date());
   // Re-check the date on window focus so we never show a stale day after midnight
@@ -67,13 +76,23 @@ export default function AttendancePage() {
   });
 
   const submitRegularization = useMutation({
-    mutationFn: (data: typeof regForm) =>
-      api.post("/attendance/regularizations", {
-        date: data.date,
-        requested_check_in: `${data.date}T${data.check_in}:00`,
-        requested_check_out: `${data.date}T${data.check_out}:00`,
-        reason: data.reason,
-      }).then((r) => r.data.data),
+    mutationFn: (data: typeof regForm) => {
+      // Night-shift handling: if the user picked a check-out time that's
+      // earlier in the day than the check-in time (e.g. 22:00 → 07:00),
+      // the check-out actually falls on the next calendar day. Sending
+      // both with the same date trips the server's "check-out cannot be
+      // earlier than check-in" guard.
+      const checkOutDate =
+        data.check_out < data.check_in ? addDays(data.date, 1) : data.date;
+      return api
+        .post("/attendance/regularizations", {
+          date: data.date,
+          requested_check_in: `${data.date}T${data.check_in}:00`,
+          requested_check_out: `${checkOutDate}T${data.check_out}:00`,
+          reason: data.reason,
+        })
+        .then((r) => r.data.data);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
       setShowRegForm(false);
@@ -200,7 +219,11 @@ export default function AttendancePage() {
             <AlertCircle className="h-5 w-5 text-amber-500" />
             Request Attendance Regularization
           </h2>
-          <p className="text-sm text-gray-500 mb-4">Submit a request to correct a missed or incorrect check-in/check-out.</p>
+          <p className="text-sm text-gray-500 mb-4">
+            Submit a request to correct a missed or incorrect check-in/check-out.
+            For night shifts, set check-out to the time you ended your shift — the system
+            automatically rolls it to the next day when it's earlier than check-in.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
