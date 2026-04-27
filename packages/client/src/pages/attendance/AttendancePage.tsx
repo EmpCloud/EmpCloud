@@ -7,10 +7,17 @@ import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 // Add `n` days to a YYYY-MM-DD string and return the result in the same
 // format. Used by the regularization form to bump the check-out date when
 // the user is reporting a night shift.
+//
+// Uses UTC throughout so we don't trip the DST / timezone trap where
+// `new Date("2026-04-25T00:00:00")` parses as local midnight, then
+// `toISOString()` formats in UTC and rolls the day back in any UTC+X
+// timezone (e.g. IST). Splitting the string and going via Date.UTC keeps
+// the calendar arithmetic timezone-independent.
 function addDays(isoDate: string, n: number): string {
-  const d = new Date(`${isoDate}T00:00:00`);
-  d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + n);
+  return dt.toISOString().slice(0, 10);
 }
 
 function useToday() {
