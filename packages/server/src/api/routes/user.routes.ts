@@ -175,22 +175,29 @@ router.post("/:id/reset-password", authenticate, requireOrgAdmin, async (req: Re
   } catch (err) { next(err); }
 });
 
-// DELETE /api/v1/users/:id
+// DELETE /api/v1/users/:id — hard-deletes the user. Cascading FKs wipe
+// owned data (leave / attendance / forum / biometric records). Authored
+// records (announcements, policies, etc.) are reassigned to the deleting
+// admin so history survives. Frees the email for re-use.
 router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await userService.deactivateUser(req.user!.org_id, paramInt(req.params.id));
+    await userService.deactivateUser(
+      req.user!.org_id,
+      paramInt(req.params.id),
+      req.user!.sub,
+    );
 
     await logAudit({
       organizationId: req.user!.org_id,
       userId: req.user!.sub,
-      action: AuditAction.USER_DEACTIVATED,
+      action: AuditAction.USER_DELETED,
       resourceType: "user",
       resourceId: param(req.params.id),
       ipAddress: req.ip,
       userAgent: req.headers["user-agent"],
     });
 
-    sendSuccess(res, { message: "User deactivated" });
+    sendSuccess(res, { message: "User deleted" });
   } catch (err) { next(err); }
 });
 
