@@ -31,4 +31,5 @@ testing/screenshots/
 test-artifacts/
 test-screenshots/
 *.png
+!packages/server/public/*.png
 packages/server/logs/
