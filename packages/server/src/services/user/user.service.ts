@@ -749,7 +749,7 @@ export async function bulkInviteFromDirectory(
   // password reset).
   let candidatesQuery = db("users")
     .where({ organization_id: orgId, status: 1 })
-    .select("id", "email", "first_name", "last_name", "role");
+    .select("id", "email", "first_name", "last_name", "role", "password_changed_at");
   if (!options.includeActivated) {
     candidatesQuery = candidatesQuery.whereNull("password_changed_at");
   }
@@ -759,6 +759,7 @@ export async function bulkInviteFromDirectory(
     first_name: string | null;
     last_name: string | null;
     role: string;
+    password_changed_at: Date | null;
   }> = await candidatesQuery;
 
   if (candidates.length === 0) {
@@ -779,16 +780,27 @@ export async function bulkInviteFromDirectory(
   // Pre-flight seat-limit check — refuse the batch outright if it would
   // bust the cap. Better to fail loudly than to invite N/M and leak the
   // remainder.
+  //
+  // Only NEW seats count against the limit. An already-activated user
+  // (password_changed_at IS NOT NULL) is already in
+  // organizations.current_user_count, so re-inviting them with
+  // includeActivated does not consume a fresh seat. Without this,
+  // re-invite-all on a fully-seated org always 403'd ("7 new invites
+  // vs 0 seats remaining") even though no actual new seats were being
+  // requested.
+  const newSeatInvites = toInvite.filter((u) => !u.password_changed_at);
   const org = await db("organizations").where({ id: orgId }).first();
-  if (org && org.total_allowed_user_count > 0) {
+  if (org && org.total_allowed_user_count > 0 && newSeatInvites.length > 0) {
     const [{ count: pendingInvitations }] = await db("invitations")
       .where({ organization_id: orgId, status: "pending" })
       .count("* as count");
     const totalCommitted = org.current_user_count + Number(pendingInvitations);
     const remainingSeats = org.total_allowed_user_count - totalCommitted;
-    if (toInvite.length > remainingSeats) {
+    if (newSeatInvites.length > remainingSeats) {
       throw new ForbiddenError(
-        `Bulk invite would exceed the user limit (${toInvite.length} new invites vs ${remainingSeats} seats remaining). Upgrade your subscription or invite users one by one.`,
+        `Bulk invite would exceed the user limit (${newSeatInvites.length} new seat${
+          newSeatInvites.length === 1 ? "" : "s"
+        } needed vs ${remainingSeats} remaining). Upgrade your subscription or invite users one by one.`,
       );
     }
   }
