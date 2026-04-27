@@ -366,6 +366,10 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
         department_id: profile.department_id ? String(profile.department_id) : "",
         designation: profile.designation || "",
         shift_id: profile.shift_id ? String(profile.shift_id) : "",
+        // #246 — employee code is now editable from the profile so payroll
+        // can pick it up. Lives on the users table; the upsertProfile
+        // service routes it through.
+        emp_code: profile.emp_code || "",
       });
     } else if (!editing) {
       setForm({});
@@ -377,11 +381,22 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
     const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
     const disabledClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-not-allowed";
 
-    // Self-service employees can only edit personal/contact fields, not admin fields
+    // Self-service employees can edit personal, contact, statutory IDs,
+    // employee code, and their own department. Statutory IDs and the
+    // employee code were previously HR-only (#246, #251), and the
+    // department dropdown was disabled (#250) — which left the payroll
+    // side reading empty/wrong because the employee had no way to enter
+    // them. Designation, shift, and reporting_manager remain HR-only
+    // (employees shouldn't arbitrarily rename their role or pick their
+    // own manager).
     const SELF_SERVICE_FIELDS = [
       "personal_email", "contact_number", "gender", "date_of_birth",
       "blood_group", "marital_status", "nationality",
       "emergency_contact_name", "emergency_contact_phone", "emergency_contact_relation",
+      "emp_code",
+      "department_id",
+      "aadhar_number", "pan_number", "passport_number", "passport_expiry",
+      "visa_status", "visa_expiry",
     ];
     const canEditField = (field: string) => !selfService || SELF_SERVICE_FIELDS.includes(field);
 
@@ -394,6 +409,22 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* #246 — Employee code lives on users.emp_code. Render it here so
+              self-service users can fill it in if HR didn't seed it; the
+              field is what feeds emp-payroll's Employee Code column on the
+              employee profile, which would otherwise stay blank. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Employee Code</label>
+            <input
+              type="text"
+              value={form.emp_code || ""}
+              onChange={(e) => set("emp_code", e.target.value)}
+              className={canEditField("emp_code") ? inputClass : disabledClass}
+              disabled={!canEditField("emp_code")}
+              maxLength={50}
+              placeholder="e.g. EMP-1024"
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Personal Email</label>
             <input type="email" value={form.personal_email} onChange={(e) => set("personal_email", e.target.value)} className={canEditField("personal_email") ? inputClass : disabledClass} disabled={!canEditField("personal_email")} />
@@ -526,12 +557,26 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
                 ))}
             </select>
           </div>
-          {/* #1423 — Department (HR-only). Self-service users see a disabled
-              dropdown so they're aware it exists but can't change it. */}
+          {/* #250 — Department was previously HR-only with a disabled
+              dropdown for self-service. Allow self-service to set their
+              own department off the org's department list so the value
+              actually flows through to emp-payroll instead of defaulting
+              to whatever the seed had (often 'HR'). When the org has no
+              departments configured the dropdown is empty; surface that
+              explicitly. */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
-            <select value={form.department_id} onChange={(e) => set("department_id", e.target.value)} className={!selfService ? inputClass : disabledClass} disabled={selfService}>
-              <option value="">No department</option>
+            <select
+              value={form.department_id}
+              onChange={(e) => set("department_id", e.target.value)}
+              className={canEditField("department_id") ? inputClass : disabledClass}
+              disabled={!canEditField("department_id")}
+            >
+              <option value="">
+                {(departments || []).length === 0
+                  ? "No departments configured — contact your admin"
+                  : "Select department"}
+              </option>
               {(departments || []).map((d: any) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}

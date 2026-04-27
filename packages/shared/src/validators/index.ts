@@ -377,6 +377,10 @@ export const upsertEmployeeProfileSchema = z.object({
   gender: z.enum(["male", "female", "other"]).optional().nullable(),
   date_of_birth: z.string().optional().nullable(),
   contact_number: z.string().max(20).optional().nullable(),
+  // #246 — emp_code lives on users.emp_code. Accept it here so the same
+  // upsert endpoint can write it; self-service users can fill in their
+  // own employee code instead of relying on HR to seed it.
+  emp_code: z.string().max(50).optional().nullable(),
   // #1423 / #1424 — designation and department_id also live on the users table.
   // Accepting them here lets HR set them from the profile form without having
   // to call a separate endpoint. Both are nullable so HR can "clear" them.

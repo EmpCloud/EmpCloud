@@ -132,6 +132,7 @@ export async function upsertProfile(
     gender,
     date_of_birth,
     contact_number,
+    emp_code,
     department_id,
     designation,
     shift_id,
@@ -145,9 +146,18 @@ export async function upsertProfile(
   if (gender !== undefined) userUpdate.gender = gender || null;
   if (date_of_birth !== undefined) userUpdate.date_of_birth = date_of_birth || null;
   if (contact_number !== undefined) userUpdate.contact_number = contact_number || null;
-  // #1423 — department is HR-only. Self-service employees cannot change their
-  // own department.
-  if (department_id !== undefined && isHR) {
+  // #246 — employee code lives on users.emp_code. Self-service users may
+  // set their own when HR hasn't seeded it, so the payroll-side employee
+  // record finally has a code to display.
+  if (emp_code !== undefined) {
+    const trimmed = typeof emp_code === "string" ? emp_code.trim() : emp_code;
+    userUpdate.emp_code = trimmed ? trimmed : null;
+  }
+  // #250 — department was previously HR-only. Allow self-service users to
+  // set/clear their own department off the org's department list, since
+  // the payroll-side profile pulls department_id from the users row and
+  // had no other way to be filled.
+  if (department_id !== undefined) {
     userUpdate.department_id = department_id ? Number(department_id) : null;
   }
   // #1424 — designation: HR can change freely. Employees can see it read-only
