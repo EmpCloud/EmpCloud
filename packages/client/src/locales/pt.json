@@ -148,7 +148,22 @@
     "loginSuccess": "Login realizado com sucesso",
     "noAccount": "N\u00e3o tem uma conta?",
     "registerOrg": "Registre sua organiza\u00e7\u00e3o",
-    "enterprisePlatform": "Plataforma HRMS empresarial"
+    "enterprisePlatform": "Plataforma HRMS empresarial",
+    "forgotPasswordTitle": "Redefinir sua senha",
+    "forgotPasswordDescription": "Insira o e-mail da sua conta e enviaremos um link para redefinir sua senha.",
+    "sendResetLink": "Enviar link",
+    "sendingResetLink": "Enviando...",
+    "resetLinkSent": "Se existir uma conta para esse e-mail, um link foi enviado. Verifique sua caixa de entrada.",
+    "backToLogin": "Voltar ao in\u00edcio de sess\u00e3o",
+    "resetPasswordTitle": "Escolha uma nova senha",
+    "resetPasswordDescription": "Digite sua nova senha abaixo.",
+    "newPassword": "Nova senha",
+    "confirmPassword": "Confirmar senha",
+    "passwordsDontMatch": "As senhas n\u00e3o coincidem",
+    "resetPassword": "Redefinir senha",
+    "resettingPassword": "Redefinindo...",
+    "passwordResetSuccess": "Senha redefinida. Entre com a nova senha.",
+    "missingResetToken": "Este link \u00e9 inv\u00e1lido ou est\u00e1 ausente. Solicite um novo."
   },
   "dashboard": {
     "title": "Painel",

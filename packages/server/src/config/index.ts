@@ -98,11 +98,25 @@ export const config = {
   },
 
   email: {
-    // SendGrid API key — leave blank in local/dev to silently no-op
-    // all sends while still logging what would have been delivered.
+    // SendGrid API key — leave blank to fall through to the SMTP path
+    // below. With neither SendGrid nor SMTP configured, sendEmail() is
+    // a no-op (still logs the would-be delivery for debugging).
     sendgridApiKey: process.env.SENDGRID_API_KEY || "",
-    fromEmail: env("SENDGRID_FROM_EMAIL", "noreply@empcloud.com"),
+    fromEmail: env("SENDGRID_FROM_EMAIL", env("SMTP_FROM", "noreply@empcloud.com")),
     fromName: env("SENDGRID_FROM_NAME", "EMP Cloud"),
+    // SMTP fallback — used when SENDGRID_API_KEY is empty but SMTP_HOST
+    // is set. Lets local dev with Mailpit/MailHog (host=localhost,
+    // port=1025, no auth) actually receive password-reset & invite
+    // emails without provisioning a SendGrid account.
+    smtp: {
+      host: process.env.SMTP_HOST || "",
+      port: envInt("SMTP_PORT", 587),
+      user: process.env.SMTP_USER || "",
+      pass: process.env.SMTP_PASS || "",
+      // STARTTLS by default; some providers (port 465) want implicit TLS.
+      // Auto-pick implicit TLS for port 465; everything else upgrades.
+      secure: envInt("SMTP_PORT", 587) === 465,
+    },
     // Public URL of the EMP Cloud client — used to build the reset and
     // invitation links that end up in emails. Falls back to BASE_URL so
     // dev just works without another env var.

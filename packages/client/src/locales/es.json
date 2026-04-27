@@ -148,7 +148,22 @@
     "loginSuccess": "Inicio de sesi\u00f3n exitoso",
     "noAccount": "\u00bfNo tienes una cuenta?",
     "registerOrg": "Registra tu organizaci\u00f3n",
-    "enterprisePlatform": "Plataforma HRMS empresarial"
+    "enterprisePlatform": "Plataforma HRMS empresarial",
+    "forgotPasswordTitle": "Restablecer tu contrase\u00f1a",
+    "forgotPasswordDescription": "Ingresa el correo de tu cuenta y te enviaremos un enlace para restablecer tu contrase\u00f1a.",
+    "sendResetLink": "Enviar enlace",
+    "sendingResetLink": "Enviando...",
+    "resetLinkSent": "Si existe una cuenta con ese correo, hemos enviado un enlace de restablecimiento. Revisa tu bandeja de entrada.",
+    "backToLogin": "Volver a iniciar sesi\u00f3n",
+    "resetPasswordTitle": "Elige una nueva contrase\u00f1a",
+    "resetPasswordDescription": "Ingresa tu nueva contrase\u00f1a a continuaci\u00f3n.",
+    "newPassword": "Nueva contrase\u00f1a",
+    "confirmPassword": "Confirmar contrase\u00f1a",
+    "passwordsDontMatch": "Las contrase\u00f1as no coinciden",
+    "resetPassword": "Restablecer contrase\u00f1a",
+    "resettingPassword": "Restableciendo...",
+    "passwordResetSuccess": "Contrase\u00f1a restablecida. Inicia sesi\u00f3n con tu nueva contrase\u00f1a.",
+    "missingResetToken": "Este enlace de restablecimiento es inv\u00e1lido o falta. Solicita uno nuevo."
   },
   "dashboard": {
     "title": "Panel",

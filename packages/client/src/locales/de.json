@@ -148,7 +148,22 @@
     "loginSuccess": "Anmeldung erfolgreich",
     "noAccount": "Noch kein Konto?",
     "registerOrg": "Organisation registrieren",
-    "enterprisePlatform": "Enterprise-HRMS-Plattform"
+    "enterprisePlatform": "Enterprise-HRMS-Plattform",
+    "forgotPasswordTitle": "Passwort zur\u00fccksetzen",
+    "forgotPasswordDescription": "Geben Sie Ihre Konto-E-Mail-Adresse ein, und wir senden Ihnen einen Link zum Zur\u00fccksetzen Ihres Passworts.",
+    "sendResetLink": "Link senden",
+    "sendingResetLink": "Wird gesendet...",
+    "resetLinkSent": "Falls ein Konto f\u00fcr diese E-Mail existiert, wurde ein Link zum Zur\u00fccksetzen gesendet. Pr\u00fcfen Sie Ihren Posteingang.",
+    "backToLogin": "Zur\u00fcck zur Anmeldung",
+    "resetPasswordTitle": "Neues Passwort w\u00e4hlen",
+    "resetPasswordDescription": "Geben Sie unten Ihr neues Passwort ein.",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort best\u00e4tigen",
+    "passwordsDontMatch": "Passw\u00f6rter stimmen nicht \u00fcberein",
+    "resetPassword": "Passwort zur\u00fccksetzen",
+    "resettingPassword": "Wird zur\u00fcckgesetzt...",
+    "passwordResetSuccess": "Passwort zur\u00fcckgesetzt. Bitte mit dem neuen Passwort anmelden.",
+    "missingResetToken": "Dieser Link fehlt oder ist ung\u00fcltig. Bitte fordern Sie einen neuen an."
   },
   "dashboard": {
     "title": "\u00dcbersicht",
