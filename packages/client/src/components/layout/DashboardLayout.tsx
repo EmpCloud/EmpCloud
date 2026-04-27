@@ -192,13 +192,17 @@ export default function DashboardLayout() {
           above the main content's any-z layers (modals stay z-50). */}
       <div className="hidden md:block relative overflow-visible">
         {renderSidebar(sidebarCollapsed)}
-        {/* #1415 — collapse/expand toggle. Sits on the right edge of the
-            sidebar so it doesn't shift with the content; chevron direction
-            reflects the current state. */}
+        {/* #1587 — collapse/expand toggle. Previously anchored at top-6 which
+            overlapped the brand header (h-10 collapsed, h-20 expanded), so
+            the chevron sat awkwardly on top of the EMP wordmark and was
+            barely discoverable. Anchor it to the vertical middle of the
+            sidebar's right edge instead — a position that's stable across
+            both width states, far from any other clickable target, and
+            matches the dominant convention (Slack, Linear, Notion). */}
         <button
           onClick={() => setSidebarCollapsed((c) => !c)}
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden md:flex absolute top-6 -right-3 z-30 h-6 w-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
+          className="hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
         >
           {sidebarCollapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />
