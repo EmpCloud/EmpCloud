@@ -26,11 +26,13 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "i18next": "^25.10.9",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.460.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.53.0",
     "react-i18next": "^16.6.6",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.0.0",
     "recharts": "^3.8.0",
     "tailwind-merge": "^2.6.0",
@@ -39,6 +41,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.21",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
