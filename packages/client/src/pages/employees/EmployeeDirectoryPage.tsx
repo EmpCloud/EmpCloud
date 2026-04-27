@@ -179,11 +179,20 @@ export default function EmployeeDirectoryPage() {
   // doesn't already have a pending invitation. Backend respects the org's
   // seat limit and refuses the whole batch if it would overflow.
   const [showBulkInviteConfirm, setShowBulkInviteConfirm] = useState(false);
+  // Opt-in: also re-invite users who already activated. Sends them a fresh
+  // token-based link that, once clicked, overwrites their current password.
+  // Effectively a bulk password-reset. Default off because the common case
+  // is "onboard new joiners" and we don't want HR to nuke existing
+  // passwords by accident.
+  const [bulkInviteIncludeActivated, setBulkInviteIncludeActivated] = useState(false);
   const bulkInvite = useMutation({
-    mutationFn: () =>
-      api.post("/users/bulk-invite-employees").then((r) => r.data.data),
+    mutationFn: (includeActivated: boolean) =>
+      api
+        .post("/users/bulk-invite-employees", { include_activated: includeActivated })
+        .then((r) => r.data.data),
     onSuccess: (data: { invited: number; skipped: number; total_eligible: number }) => {
       setShowBulkInviteConfirm(false);
+      setBulkInviteIncludeActivated(false);
       qc.invalidateQueries({ queryKey: ["pending-invitations"] });
       qc.invalidateQueries({ queryKey: ["employee-directory"] });
       if (data.invited === 0) {
@@ -204,6 +213,7 @@ export default function EmployeeDirectoryPage() {
     },
     onError: (err: any) => {
       setShowBulkInviteConfirm(false);
+      setBulkInviteIncludeActivated(false);
       showToast(
         "error",
         err?.response?.data?.error?.message || "Bulk invite failed.",
@@ -432,12 +442,45 @@ export default function EmployeeDirectoryPage() {
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Invite all unactivated employees</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {bulkInviteIncludeActivated
+                    ? "Invite all employees"
+                    : "Invite all unactivated employees"}
+                </h3>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  This sends an invitation email to every active employee in the directory who hasn't set a password yet. Anyone with a pending invitation is skipped.
+                  {bulkInviteIncludeActivated
+                    ? "This sends a fresh invitation email to every active employee in the directory — including users who have already set a password. When they click the link, their existing password will be overwritten with the new one they pick."
+                    : "This sends an invitation email to every active employee in the directory who hasn't set a password yet. Anyone with a pending invitation is skipped."}
                 </p>
               </div>
             </div>
+
+            {/* Opt-in to also re-invite already-activated users (bulk
+                password reset). Off by default to prevent accidental
+                mass-resets. */}
+            <label className="mt-2 mb-2 flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 cursor-pointer hover:bg-gray-100">
+              <input
+                type="checkbox"
+                checked={bulkInviteIncludeActivated}
+                onChange={(e) => setBulkInviteIncludeActivated(e.target.checked)}
+                disabled={bulkInvite.isPending}
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+              />
+              <div className="text-xs text-gray-700">
+                <span className="font-medium">Also re-invite already-activated employees</span>
+                <p className="text-gray-500 mt-0.5">
+                  Existing users will receive a fresh link. Clicking it resets their current password.
+                </p>
+              </div>
+            </label>
+
+            {bulkInviteIncludeActivated && (
+              <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <strong>Heads-up:</strong> every active employee will receive a fresh invitation email.
+                Their current password will be overwritten when they click the link.
+              </div>
+            )}
+
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
@@ -449,7 +492,7 @@ export default function EmployeeDirectoryPage() {
               </button>
               <button
                 type="button"
-                onClick={() => bulkInvite.mutate()}
+                onClick={() => bulkInvite.mutate(bulkInviteIncludeActivated)}
                 disabled={bulkInvite.isPending}
                 className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >

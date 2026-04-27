@@ -719,10 +719,13 @@ export async function resendInvitation(
 }
 
 /**
- * Bulk invite every active user in this org who has never set a password
- * (e.g. created via bulk-import or by an admin without a password) and who
- * doesn't already have a pending invitation. Skips users who've already
- * logged in (have `password_changed_at`) and users with an open invite.
+ * Bulk invite every active user in this org who doesn't already have a
+ * pending invitation. By default, restricts to users who haven't set a
+ * password yet (the typical onboarding case). Pass
+ * `includeActivated: true` to also re-invite users who DO have a
+ * password — useful when HR wants a bulk-reset (e.g. post-migration).
+ * The token-based link lands on AcceptInvitationPage either way and
+ * overwrites whatever password the user had.
  *
  * Returns counts so the UI can show a useful summary toast and a per-row
  * detail list for any failures.
@@ -730,6 +733,7 @@ export async function resendInvitation(
 export async function bulkInviteFromDirectory(
   orgId: number,
   invitedBy: number,
+  options: { includeActivated?: boolean } = {},
 ): Promise<{
   total_eligible: number;
   invited: number;
@@ -738,17 +742,24 @@ export async function bulkInviteFromDirectory(
 }> {
   const db = getDB();
 
-  // Active users who haven't set a password yet — these are the candidates.
+  // Active users in the org. By default we limit to users who haven't
+  // set a password yet (the typical onboarding case). When the caller
+  // opts in to includeActivated, we lift that filter so already-active
+  // employees also get a fresh invite link (effectively a bulk
+  // password reset).
+  let candidatesQuery = db("users")
+    .where({ organization_id: orgId, status: 1 })
+    .select("id", "email", "first_name", "last_name", "role");
+  if (!options.includeActivated) {
+    candidatesQuery = candidatesQuery.whereNull("password_changed_at");
+  }
   const candidates: Array<{
     id: number;
     email: string;
     first_name: string | null;
     last_name: string | null;
     role: string;
-  }> = await db("users")
-    .where({ organization_id: orgId, status: 1 })
-    .whereNull("password_changed_at")
-    .select("id", "email", "first_name", "last_name", "role");
+  }> = await candidatesQuery;
 
   if (candidates.length === 0) {
     return { total_eligible: 0, invited: 0, skipped: 0, results: [] };
