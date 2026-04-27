@@ -607,7 +607,14 @@
         "reject": "Reject",
         "statusApproved": "Approved",
         "statusRejected": "Rejected"
-      }
+      },
+      "search": {
+      "placeholder": "Search by name or code...",
+      "show": "Show",
+      "entries": "Entries",
+      "showingRange": "Showing {{from}} to {{to}} of {{total}}",
+      "noResults": "No employees match your search."
+    }
     }
   },
   "manager": {

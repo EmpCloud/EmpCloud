@@ -607,7 +607,14 @@
         "reject": "\u62d2\u7edd",
         "statusApproved": "\u5df2\u6279\u51c6",
         "statusRejected": "\u5df2\u62d2\u7edd"
-      }
+      },
+      "search": {
+      "placeholder": "\u6309\u59d3\u540d\u6216\u7f16\u53f7\u641c\u7d22...",
+      "show": "\u663e\u793a",
+      "entries": "\u6761",
+      "showingRange": "\u663e\u793a {{total}} \u6761\u4e2d\u7684 {{from}} \u81f3 {{to}} \u6761",
+      "noResults": "\u6ca1\u6709\u5458\u5de5\u7b26\u5408\u60a8\u7684\u641c\u7d22\u3002"
+    }
     }
   },
   "manager": {
