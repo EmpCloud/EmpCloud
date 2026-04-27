@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy, Send, Users } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
 import CsvImportUsersModal from "@/components/CsvImportUsersModal";
+import { showToast } from "@/components/ui/Toast";
 import * as XLSX from "xlsx";
 
 // ---------------------------------------------------------------------------
@@ -155,6 +156,60 @@ export default function EmployeeDirectoryPage() {
     enabled: isOrgAdmin,
   });
   const invitations: any[] = (pendingInvitations as any[]) || [];
+
+  // Re-send a single pending invitation. Rotates the token server-side
+  // (so any old link the user might still have stops working) and
+  // re-emails them.
+  const resendInvitation = useMutation({
+    mutationFn: (invitationId: number) =>
+      api.post(`/users/invitations/${invitationId}/resend`).then((r) => r.data.data),
+    onSuccess: (_data, _id) => {
+      showToast("success", "Invitation resent.");
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+    },
+    onError: (err: any) => {
+      showToast(
+        "error",
+        err?.response?.data?.error?.message || "Could not resend the invitation.",
+      );
+    },
+  });
+
+  // Bulk-invite every directory user who hasn't set a password yet and
+  // doesn't already have a pending invitation. Backend respects the org's
+  // seat limit and refuses the whole batch if it would overflow.
+  const [showBulkInviteConfirm, setShowBulkInviteConfirm] = useState(false);
+  const bulkInvite = useMutation({
+    mutationFn: () =>
+      api.post("/users/bulk-invite-employees").then((r) => r.data.data),
+    onSuccess: (data: { invited: number; skipped: number; total_eligible: number }) => {
+      setShowBulkInviteConfirm(false);
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+      qc.invalidateQueries({ queryKey: ["employee-directory"] });
+      if (data.invited === 0) {
+        showToast(
+          "success",
+          data.total_eligible === 0
+            ? "Nothing to do — every employee has an account or a pending invitation."
+            : `Skipped ${data.skipped} (already invited). Nothing else to send.`,
+        );
+      } else {
+        showToast(
+          "success",
+          `Invited ${data.invited} employee${data.invited === 1 ? "" : "s"}` +
+            (data.skipped > 0 ? ` (${data.skipped} already had pending invites)` : "") +
+            ".",
+        );
+      }
+    },
+    onError: (err: any) => {
+      setShowBulkInviteConfirm(false);
+      showToast(
+        "error",
+        err?.response?.data?.error?.message || "Bulk invite failed.",
+      );
+    },
+  });
 
   // Inline role update — only org_admin sees the dropdown editor.
   const updateRoleMut = useMutation({
@@ -341,6 +396,16 @@ export default function EmployeeDirectoryPage() {
           )}
           {isOrgAdmin && (
             <button
+              onClick={() => setShowBulkInviteConfirm(true)}
+              disabled={bulkInvite.isPending}
+              title="Send invitations to every employee who hasn't set a password yet"
+              className="flex items-center gap-2 px-4 py-2 border border-brand-300 bg-brand-50 text-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 disabled:opacity-50"
+            >
+              <Users className="h-4 w-4" /> Invite All
+            </button>
+          )}
+          {isOrgAdmin && (
+            <button
               onClick={() => setShowInvite((v) => !v)}
               className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
             >
@@ -349,6 +414,52 @@ export default function EmployeeDirectoryPage() {
           )}
         </div>
       </div>
+
+      {/* Bulk-invite confirmation. Server enforces seat limits and skips
+           anyone with a pending invite, but a friendly heads-up is still
+           the right UX before firing N emails. */}
+      {isOrgAdmin && showBulkInviteConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !bulkInvite.isPending && setShowBulkInviteConfirm(false)}
+        >
+          <div
+            className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3 mb-4">
+              <div className="h-10 w-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Invite all unactivated employees</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  This sends an invitation email to every active employee in the directory who hasn't set a password yet. Anyone with a pending invitation is skipped.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowBulkInviteConfirm(false)}
+                disabled={bulkInvite.isPending}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => bulkInvite.mutate()}
+                disabled={bulkInvite.isPending}
+                className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+              >
+                {bulkInvite.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {bulkInvite.isPending ? "Inviting..." : "Send Invitations"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CSV import modal — absorbed from the retired Users page */}
       {showCsvImport && (
@@ -479,6 +590,22 @@ export default function EmployeeDirectoryPage() {
                           Invited{" "}
                           {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
                         </span>
+                        <button
+                          type="button"
+                          onClick={() => resendInvitation.mutate(inv.id)}
+                          disabled={
+                            resendInvitation.isPending && resendInvitation.variables === inv.id
+                          }
+                          title="Rotate token and re-send invitation email"
+                          className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-xs font-medium text-amber-800 hover:bg-amber-100 disabled:opacity-50"
+                        >
+                          {resendInvitation.isPending && resendInvitation.variables === inv.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Send className="h-3 w-3" />
+                          )}
+                          Resend
+                        </button>
                       </div>
                     </div>
                   ))}

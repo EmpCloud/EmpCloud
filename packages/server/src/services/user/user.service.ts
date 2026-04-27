@@ -566,6 +566,182 @@ export async function inviteUser(orgId: number, invitedBy: number, data: InviteU
   return { token, invitation };
 }
 
+/**
+ * Resend a pending invitation: regenerate the token (so the old link is
+ * invalidated), refresh the expiry, and re-send the email. Only valid while
+ * the invitation is still in `pending` state — accepted/cancelled rows can't
+ * be resurrected this way.
+ */
+export async function resendInvitation(
+  orgId: number,
+  invitationId: number,
+  invitedBy: number,
+): Promise<{ resent: true; expires_at: Date; email: string }> {
+  const db = getDB();
+
+  const inv = await db("invitations")
+    .where({ id: invitationId, organization_id: orgId })
+    .first();
+  if (!inv) throw new NotFoundError("Invitation");
+  if (inv.status !== "pending") {
+    throw new ConflictError(`Cannot resend an invitation in '${inv.status}' state`);
+  }
+
+  const newToken = randomHex(32);
+  const newExpiresAt = new Date(Date.now() + TOKEN_DEFAULTS.INVITATION_EXPIRY * 1000);
+
+  await db("invitations").where({ id: invitationId }).update({
+    token_hash: hashToken(newToken),
+    expires_at: newExpiresAt,
+    updated_at: new Date(),
+  });
+
+  // Look up inviter + org for the email body. Failure here is non-fatal —
+  // the rotation already happened; if email metadata is gone we still want
+  // the new token / expiry to stick. Email-send failure is also non-fatal
+  // (mirrors inviteUser's behaviour above).
+  try {
+    const inviter = await db("users").where({ id: invitedBy }).first();
+    const org = await db("organizations").where({ id: orgId }).first();
+    const inviterName = inviter
+      ? `${inviter.first_name || ""} ${inviter.last_name || ""}`.trim() || inviter.email
+      : "An administrator";
+    void sendInvitationEmail({
+      to: inv.email,
+      firstName: inv.first_name || null,
+      orgName: org?.name || "your organization",
+      invitedByName: inviterName,
+      role: inv.role || "employee",
+      token: newToken,
+    });
+  } catch {
+    // never block the resend on email metadata lookup
+  }
+
+  return { resent: true, expires_at: newExpiresAt, email: inv.email };
+}
+
+/**
+ * Bulk invite every active user in this org who has never set a password
+ * (e.g. created via bulk-import or by an admin without a password) and who
+ * doesn't already have a pending invitation. Skips users who've already
+ * logged in (have `password_changed_at`) and users with an open invite.
+ *
+ * Returns counts so the UI can show a useful summary toast and a per-row
+ * detail list for any failures.
+ */
+export async function bulkInviteFromDirectory(
+  orgId: number,
+  invitedBy: number,
+): Promise<{
+  total_eligible: number;
+  invited: number;
+  skipped: number;
+  results: Array<{ email: string; status: "invited" | "skipped" | "failed"; error?: string }>;
+}> {
+  const db = getDB();
+
+  // Active users who haven't set a password yet — these are the candidates.
+  const candidates: Array<{
+    id: number;
+    email: string;
+    first_name: string | null;
+    last_name: string | null;
+    role: string;
+  }> = await db("users")
+    .where({ organization_id: orgId, status: 1 })
+    .whereNull("password_changed_at")
+    .select("id", "email", "first_name", "last_name", "role");
+
+  if (candidates.length === 0) {
+    return { total_eligible: 0, invited: 0, skipped: 0, results: [] };
+  }
+
+  // Skip anyone with an existing pending invitation.
+  const emails = candidates.map((u) => u.email);
+  const pending: Array<{ email: string }> = await db("invitations")
+    .whereIn("email", emails)
+    .where({ status: "pending" })
+    .select("email");
+  const pendingEmails = new Set(pending.map((p) => p.email.toLowerCase()));
+
+  const toInvite = candidates.filter((u) => !pendingEmails.has(u.email.toLowerCase()));
+  const skippedAlreadyPending = candidates.length - toInvite.length;
+
+  // Pre-flight seat-limit check — refuse the batch outright if it would
+  // bust the cap. Better to fail loudly than to invite N/M and leak the
+  // remainder.
+  const org = await db("organizations").where({ id: orgId }).first();
+  if (org && org.total_allowed_user_count > 0) {
+    const [{ count: pendingInvitations }] = await db("invitations")
+      .where({ organization_id: orgId, status: "pending" })
+      .count("* as count");
+    const totalCommitted = org.current_user_count + Number(pendingInvitations);
+    const remainingSeats = org.total_allowed_user_count - totalCommitted;
+    if (toInvite.length > remainingSeats) {
+      throw new ForbiddenError(
+        `Bulk invite would exceed the user limit (${toInvite.length} new invites vs ${remainingSeats} seats remaining). Upgrade your subscription or invite users one by one.`,
+      );
+    }
+  }
+
+  // Look up inviter + org name once for every email body.
+  const inviter = await db("users").where({ id: invitedBy }).first();
+  const inviterName = inviter
+    ? `${inviter.first_name || ""} ${inviter.last_name || ""}`.trim() || inviter.email
+    : "An administrator";
+  const orgName = org?.name || "your organization";
+
+  const results: Array<{
+    email: string;
+    status: "invited" | "skipped" | "failed";
+    error?: string;
+  }> = pending.map((p) => ({ email: p.email, status: "skipped" as const }));
+  let invited = 0;
+
+  for (const u of toInvite) {
+    try {
+      const token = randomHex(32);
+      const expiresAt = new Date(Date.now() + TOKEN_DEFAULTS.INVITATION_EXPIRY * 1000);
+      await db("invitations").insert({
+        organization_id: orgId,
+        email: u.email,
+        role: u.role || "employee",
+        first_name: u.first_name,
+        last_name: u.last_name,
+        invited_by: invitedBy,
+        token_hash: hashToken(token),
+        status: "pending",
+        expires_at: expiresAt,
+        created_at: new Date(),
+      });
+      void sendInvitationEmail({
+        to: u.email,
+        firstName: u.first_name,
+        orgName,
+        invitedByName: inviterName,
+        role: u.role || "employee",
+        token,
+      });
+      invited++;
+      results.push({ email: u.email, status: "invited" });
+    } catch (err: any) {
+      results.push({
+        email: u.email,
+        status: "failed",
+        error: err?.message || String(err),
+      });
+    }
+  }
+
+  return {
+    total_eligible: candidates.length,
+    invited,
+    skipped: skippedAlreadyPending,
+    results,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Org Chart
 // ---------------------------------------------------------------------------

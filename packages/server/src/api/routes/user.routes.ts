@@ -213,6 +213,65 @@ router.post("/invite", authenticate, requireOrgAdmin, async (req: Request, res: 
   } catch (err) { next(err); }
 });
 
+// POST /api/v1/users/invitations/:id/resend — rotate token + re-email a pending invite
+router.post(
+  "/invitations/:id/resend",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(String(req.params.id), 10);
+      if (!Number.isFinite(id)) {
+        return res.status(400).json({
+          success: false,
+          error: { code: "INVALID_ID", message: "Invitation id must be a number" },
+        });
+      }
+      const result = await userService.resendInvitation(req.user!.org_id, id, req.user!.sub);
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.USER_INVITED,
+        details: { resent: true, invitation_id: id, email: result.email },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, result);
+    } catch (err) { next(err); }
+  },
+);
+
+// POST /api/v1/users/bulk-invite-employees — invite every directory user
+// who hasn't set a password yet and doesn't already have a pending invite
+router.post(
+  "/bulk-invite-employees",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await userService.bulkInviteFromDirectory(req.user!.org_id, req.user!.sub);
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.USER_INVITED,
+        details: {
+          bulk: true,
+          invited: result.invited,
+          skipped: result.skipped,
+          total_eligible: result.total_eligible,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, result);
+    } catch (err) { next(err); }
+  },
+);
+
 // POST /api/v1/users/accept-invitation
 router.post("/accept-invitation", async (req: Request, res: Response, next: NextFunction) => {
   try {
