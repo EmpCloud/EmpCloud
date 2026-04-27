@@ -126,6 +126,7 @@ export const adminNavItems: NavItem[] = [
     { path: "/attendance/shifts", label: "Shift Settings", i18nKey: "nav.shiftSettings", icon: AlarmClock },
     { path: "/attendance/shift-schedule", label: "Shift Schedule", i18nKey: "nav.shiftSchedule", icon: CalendarRange },
     { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList },
+    { path: "/attendance/settings", label: "Attendance Settings", i18nKey: "nav.attendanceSettings", icon: SlidersHorizontal },
   ]},
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, children: [
     { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays },
