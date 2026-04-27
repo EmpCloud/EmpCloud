@@ -14,10 +14,13 @@ import {
   LogIn,
   LogOut,
   Loader2,
+  Lock,
 } from "lucide-react";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
+import { useAttendancePolicy } from "@/lib/use-attendance-policy";
+import { showToast } from "@/components/ui/Toast";
 import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
 
 function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
@@ -39,6 +42,7 @@ export default function SelfServiceDashboardPage() {
   const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
+  const { dashboardAllowed } = useAttendancePolicy();
 
   // Attendance today
   const { data: attendanceData } = useQuery({
@@ -53,13 +57,20 @@ export default function SelfServiceDashboardPage() {
   // Check-in / check-out mutations. Invalidated keys match /attendance/my so
   // that page refreshes too if the user navigates there after clocking in
   // from the dashboard.
+  const onAttendanceError = (err: any) =>
+    showToast(
+      "error",
+      err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.",
+    );
   const checkIn = useMutation({
     mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
       qc.invalidateQueries({ queryKey: ["attendance-today"] });
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
     },
+    onError: onAttendanceError,
   });
   const checkOut = useMutation({
     mutationFn: () => api.post("/attendance/check-out", { source: "manual" }).then((r) => r.data.data),
@@ -67,7 +78,9 @@ export default function SelfServiceDashboardPage() {
       qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
       qc.invalidateQueries({ queryKey: ["attendance-today"] });
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
     },
+    onError: onAttendanceError,
   });
 
   // Leave balance
@@ -159,6 +172,7 @@ export default function SelfServiceDashboardPage() {
           onCheckOut={() => checkOut.mutate()}
           checkInPending={checkIn.isPending}
           checkOutPending={checkOut.isPending}
+          dashboardAllowed={dashboardAllowed}
         />
       </div>
 
@@ -417,12 +431,14 @@ function AttendanceHeaderAction({
   onCheckOut,
   checkInPending,
   checkOutPending,
+  dashboardAllowed,
 }: {
   todayRecord: any;
   onCheckIn: () => void;
   onCheckOut: () => void;
   checkInPending: boolean;
   checkOutPending: boolean;
+  dashboardAllowed: boolean;
 }) {
   const { t } = useTranslation();
   // The attendance API returns check_in / check_out as ISO timestamps; older
@@ -437,6 +453,21 @@ function AttendanceHeaderAction({
       <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-2.5 text-sm font-medium text-green-700">
         <CheckCircle2 className="h-4 w-4" />
         {t('attendance.attendanceComplete')}
+      </div>
+    );
+  }
+
+  // Web check-in disabled by org / override — show a small explanation
+  // pill instead of an actionable button. The user can still check out via
+  // a biometric device or the mobile app if those channels are enabled.
+  if (!dashboardAllowed) {
+    return (
+      <div
+        className="inline-flex items-center gap-2 rounded-xl bg-gray-50 border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600"
+        title="Use the EmpCloud mobile app or a biometric device to check in / out."
+      >
+        <Lock className="h-4 w-4" />
+        Web check-in disabled
       </div>
     );
   }

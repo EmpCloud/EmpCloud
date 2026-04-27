@@ -203,45 +203,284 @@ export default function AttendanceSettingsPage() {
         </div>
       </section>
 
-      {/* Geofence list (read-only summary; CRUD lives on the existing geofence flow) */}
-      <section className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Geofences</h2>
-            <p className="text-sm text-gray-500">
-              {fencesQ.data?.length ?? 0} active location{(fencesQ.data?.length ?? 0) === 1 ? "" : "s"}.
-              The mobile app receives this list via <code>GET /me/policy</code> and validates the
-              user's GPS locally.
-            </p>
-          </div>
-        </div>
-        {fencesQ.isLoading ? (
-          <div className="text-sm text-gray-500">Loading…</div>
-        ) : (fencesQ.data ?? []).length === 0 ? (
-          <div className="text-sm text-gray-500 italic">No geofences configured.</div>
-        ) : (
-          <div className="grid sm:grid-cols-2 gap-3">
-            {fencesQ.data!.map((f) => (
-              <div
-                key={f.id}
-                className="border border-gray-200 rounded-lg p-3 flex items-start gap-3"
-              >
-                <MapPin className="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" />
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-gray-900 truncate">{f.name}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    {Number(f.latitude).toFixed(4)}, {Number(f.longitude).toFixed(4)} ·{" "}
-                    {f.radius_meters} m
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      {/* Geofences with inline CRUD */}
+      <GeofencesSection geofences={fencesQ.data ?? []} isLoading={fencesQ.isLoading} />
+
 
       {/* Per-user overrides */}
       <OverridesSection geofences={fencesQ.data ?? []} />
+    </div>
+  );
+}
+
+// ===========================================================================
+// Geofences (org-level, inline CRUD)
+// ===========================================================================
+
+function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isLoading: boolean }) {
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState<Geofence | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  const removeFence = useMutation({
+    mutationFn: (id: number) => api.delete(`/attendance/geo-fences/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["attendance-geo-fences"] });
+      showToast("success", "Geofence removed");
+    },
+    onError: (err: any) =>
+      showToast("error", err?.response?.data?.error?.message ?? "Could not remove geofence"),
+  });
+
+  return (
+    <section className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Geofences</h2>
+          <p className="text-sm text-gray-500">
+            {geofences.length} active location{geofences.length === 1 ? "" : "s"}. The mobile app
+            receives this list via <code>GET /me/policy</code> and validates the user's GPS
+            locally.
+          </p>
+        </div>
+        <button
+          onClick={() => setCreating(true)}
+          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3 py-2 rounded-lg shrink-0"
+        >
+          <Plus className="h-4 w-4" /> Add geofence
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="text-sm text-gray-500 flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+        </div>
+      ) : geofences.length === 0 ? (
+        <div className="text-sm text-gray-500 italic py-6 text-center border border-dashed border-gray-200 rounded-lg">
+          No geofences configured. Click <strong>Add geofence</strong> to create one.
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-3">
+          {geofences.map((f) => (
+            <div
+              key={f.id}
+              className="border border-gray-200 rounded-lg p-3 flex items-start gap-3"
+            >
+              <MapPin className="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-gray-900 truncate">{f.name}</div>
+                <div className="text-xs text-gray-500 mt-0.5">
+                  {Number(f.latitude).toFixed(6)}, {Number(f.longitude).toFixed(6)} ·{" "}
+                  {f.radius_meters} m radius
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setEditing(f)}
+                  className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded"
+                  aria-label="Edit geofence"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    if (
+                      confirm(
+                        `Remove geofence "${f.name}"? Any per-user overrides pinned to it will fall back to inheriting org defaults.`,
+                      )
+                    ) {
+                      removeFence.mutate(f.id);
+                    }
+                  }}
+                  className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                  aria-label="Delete geofence"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {creating && (
+        <GeofenceModal
+          mode="create"
+          onClose={() => setCreating(false)}
+          onSaved={() => {
+            setCreating(false);
+            qc.invalidateQueries({ queryKey: ["attendance-geo-fences"] });
+          }}
+        />
+      )}
+      {editing && (
+        <GeofenceModal
+          mode="edit"
+          existing={editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
+            qc.invalidateQueries({ queryKey: ["attendance-geo-fences"] });
+          }}
+        />
+      )}
+    </section>
+  );
+}
+
+interface GeofenceModalProps {
+  mode: "create" | "edit";
+  existing?: Geofence;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps) {
+  const [name, setName] = useState(existing?.name ?? "");
+  const [latitude, setLatitude] = useState<string>(
+    existing ? String(existing.latitude) : "",
+  );
+  const [longitude, setLongitude] = useState<string>(
+    existing ? String(existing.longitude) : "",
+  );
+  const [radius, setRadius] = useState<string>(
+    existing ? String(existing.radius_meters) : "200",
+  );
+
+  const save = useMutation({
+    mutationFn: () => {
+      const payload = {
+        name: name.trim(),
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        radius_meters: Number(radius),
+      };
+      if (mode === "create") {
+        return api.post("/attendance/geo-fences", payload).then((r) => r.data.data);
+      }
+      return api.put(`/attendance/geo-fences/${existing!.id}`, payload).then((r) => r.data.data);
+    },
+    onSuccess: () => {
+      showToast("success", mode === "create" ? "Geofence created" : "Geofence updated");
+      onSaved();
+    },
+    onError: (err: any) =>
+      showToast("error", err?.response?.data?.error?.message ?? "Could not save geofence"),
+  });
+
+  const submit = () => {
+    if (!name.trim()) return showToast("error", "Name is required");
+    const lat = Number(latitude);
+    const lng = Number(longitude);
+    const rad = Number(radius);
+    if (Number.isNaN(lat) || lat < -90 || lat > 90)
+      return showToast("error", "Latitude must be between -90 and 90");
+    if (Number.isNaN(lng) || lng < -180 || lng > 180)
+      return showToast("error", "Longitude must be between -180 and 180");
+    if (Number.isNaN(rad) || rad < 10 || rad > 50000)
+      return showToast("error", "Radius must be between 10 and 50000 metres");
+    save.mutate();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-xl border border-gray-200 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
+          <h3 className="text-lg font-semibold text-gray-900">
+            {mode === "create" ? "Add geofence" : "Edit geofence"}
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="HQ Bangalore"
+              maxLength={100}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+              <input
+                type="number"
+                step="0.0000001"
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
+                placeholder="12.9716"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+              <input
+                type="number"
+                step="0.0000001"
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
+                placeholder="77.5946"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 -mt-2">
+            Tip: search the address on Google Maps, right-click the pin, and copy the lat/lng pair.
+          </p>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Radius (metres)
+            </label>
+            <input
+              type="number"
+              min={10}
+              max={50000}
+              value={radius}
+              onChange={(e) => setRadius(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Mobile app considers the user "inside" if they're within this distance of the
+              coordinates.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={submit}
+            disabled={save.isPending}
+            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
+          >
+            {save.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+            {mode === "create" ? "Add geofence" : "Save changes"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -261,15 +500,28 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
   const [creating, setCreating] = useState(false);
 
   // Pull all employees once for both the table-side join and the picker in
-  // the create modal. This page is org_admin-only and orgs typically have
-  // small enough headcount that one fetch is fine; if it ever needs to
-  // scale, swap to a search-on-type pattern.
+  // the create modal. The directory endpoint caps per_page at 100, so we
+  // walk pages until we've fetched everyone. Orgs in the tens-of-thousands
+  // would want a search-on-type picker instead — leave as a follow-up.
   const directoryQ = useQuery({
     queryKey: ["attendance-overrides-directory"],
-    queryFn: () =>
-      api
-        .get("/employees/directory", { params: { page: 1, per_page: 1000 } })
-        .then((r) => (r.data?.data ?? []) as DirectoryEntry[]),
+    queryFn: async () => {
+      const all: DirectoryEntry[] = [];
+      let page = 1;
+      const perPage = 100;
+      // Hard ceiling so a misbehaving server can't make us loop forever.
+      for (let i = 0; i < 100; i++) {
+        const r = await api.get("/employees/directory", { params: { page, per_page: perPage } });
+        const rows = (r.data?.data ?? []) as DirectoryEntry[];
+        all.push(...rows);
+        const total: number | undefined =
+          r.data?.meta?.total ?? r.data?.pagination?.total ?? undefined;
+        if (rows.length < perPage) break;
+        if (typeof total === "number" && all.length >= total) break;
+        page += 1;
+      }
+      return all;
+    },
   });
 
   // Naive: list overrides for every employee that has at least one. We do

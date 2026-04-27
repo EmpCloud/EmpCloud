@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useState, useEffect } from "react";
-import { LogIn, LogOut, Clock, AlertCircle, PlusCircle } from "lucide-react";
+import { LogIn, LogOut, Clock, AlertCircle, PlusCircle, Lock } from "lucide-react";
+import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 
 function useToday() {
   const [today, setToday] = useState(() => new Date());
@@ -35,12 +36,16 @@ export default function AttendancePage() {
     queryFn: () => api.get("/attendance/me/history", { params: { month, year, page } }).then((r) => r.data),
   });
 
+  const onAttendanceError = (err: any) =>
+    alert(err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.");
   const checkIn = useMutation({
     mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-today"] });
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
     },
+    onError: onAttendanceError,
   });
 
   const checkOut = useMutation({
@@ -48,7 +53,9 @@ export default function AttendancePage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-today"] });
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
     },
+    onError: onAttendanceError,
   });
 
   const [showRegForm, setShowRegForm] = useState(false);
@@ -85,6 +92,7 @@ export default function AttendancePage() {
 
   const hasCheckedIn = !!todayRecord?.check_in;
   const hasCheckedOut = !!todayRecord?.check_out;
+  const { dashboardAllowed } = useAttendancePolicy();
 
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
@@ -138,26 +146,38 @@ export default function AttendancePage() {
             </>
           )}
           <div className="ml-auto flex gap-2">
-            {!hasCheckedIn && (
-              <button
-                onClick={() => checkIn.mutate()}
-                disabled={checkIn.isPending}
-                className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+            {!dashboardAllowed && !hasCheckedOut ? (
+              <span
+                className="inline-flex items-center gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg"
+                title="Web check-in is disabled by your administrator. Use the EmpCloud mobile app or a biometric device."
               >
-                <LogIn className="h-4 w-4" /> Check In
-              </button>
-            )}
-            {hasCheckedIn && !hasCheckedOut && (
-              <button
-                onClick={() => checkOut.mutate()}
-                disabled={checkOut.isPending}
-                className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
-              >
-                <LogOut className="h-4 w-4" /> Check Out
-              </button>
-            )}
-            {hasCheckedOut && (
-              <span className="text-sm text-gray-500 py-2">Completed for today</span>
+                <Lock className="h-3.5 w-3.5" />
+                Web check-in disabled
+              </span>
+            ) : (
+              <>
+                {!hasCheckedIn && (
+                  <button
+                    onClick={() => checkIn.mutate()}
+                    disabled={checkIn.isPending}
+                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+                  >
+                    <LogIn className="h-4 w-4" /> Check In
+                  </button>
+                )}
+                {hasCheckedIn && !hasCheckedOut && (
+                  <button
+                    onClick={() => checkOut.mutate()}
+                    disabled={checkOut.isPending}
+                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
+                  >
+                    <LogOut className="h-4 w-4" /> Check Out
+                  </button>
+                )}
+                {hasCheckedOut && (
+                  <span className="text-sm text-gray-500 py-2">Completed for today</span>
+                )}
+              </>
             )}
           </div>
         </div>
