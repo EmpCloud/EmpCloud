@@ -2,6 +2,8 @@
 // EMP CLOUD — Server Entry Point
 // =============================================================================
 
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -119,6 +121,19 @@ async function main() {
   }));
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true }));
+
+  // Serve bundled public assets (e.g. the logo embedded in transactional
+  // emails). Resolved relative to this file so it works whether running
+  // from src/ via tsx or from dist/ via node — both sit one level under
+  // packages/server/, so ../public points at the same committed folder.
+  const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public");
+  app.use(
+    "/static",
+    express.static(publicDir, {
+      maxAge: "30d",
+      immutable: false,
+    }),
+  );
 
   // Rate limiting (disabled when RATE_LIMIT_DISABLED=true)
   const disabled = process.env.RATE_LIMIT_DISABLED === "true";

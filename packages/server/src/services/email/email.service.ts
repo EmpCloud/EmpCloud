@@ -134,6 +134,10 @@ function htmlToPlainText(html: string): string {
 // Shared layout
 // ---------------------------------------------------------------------------
 
+function logoUrl(): string {
+  return `${config.baseUrl.replace(/\/+$/, "")}/static/empcloud.png`;
+}
+
 function layout(innerHtml: string, preheader: string): string {
   return `<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -143,8 +147,8 @@ function layout(innerHtml: string, preheader: string): string {
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f6f8;padding:32px 16px;">
 <tr><td align="center">
 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
-<tr><td style="padding:28px 32px;border-bottom:1px solid #e5e7eb;">
-<div style="font-weight:700;font-size:18px;color:#2563eb;">EMP Cloud</div>
+<tr><td align="center" style="padding:28px 32px;border-bottom:1px solid #e5e7eb;text-align:center;">
+<img src="${escapeHtml(logoUrl())}" alt="EMP Cloud" width="160" style="display:block;margin:0 auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
 </td></tr>
 <tr><td style="padding:32px;">${innerHtml}</td></tr>
 <tr><td style="padding:20px 32px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:12px;text-align:center;">
