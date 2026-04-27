@@ -970,6 +970,19 @@ export async function acceptInvitation(params: {
     throw new NotFoundError("Invitation has expired");
   }
 
+  // Resolve names: caller's value wins, otherwise fall back to whatever the
+  // admin stored on the invitation. Either source can legitimately be
+  // empty — admins often invite by email only — so reject the request with
+  // a 400 instead of letting MySQL crash on the NOT NULL constraint.
+  const resolvedFirstName = (params.firstName || invitation.first_name || "").trim();
+  const resolvedLastName = (params.lastName || invitation.last_name || "").trim();
+  if (!resolvedFirstName || !resolvedLastName) {
+    throw new ValidationError("First name and last name are required");
+  }
+  if (!params.password || params.password.length < 8) {
+    throw new ValidationError("Password must be at least 8 characters");
+  }
+
   const passwordHash = await hashPassword(params.password);
 
   const user = await db.transaction(async (trx) => {
@@ -981,8 +994,8 @@ export async function acceptInvitation(params: {
     const inviteNow = new Date();
     const [userId] = await trx("users").insert({
       organization_id: invitation.organization_id,
-      first_name: params.firstName || invitation.first_name,
-      last_name: params.lastName || invitation.last_name,
+      first_name: resolvedFirstName,
+      last_name: resolvedLastName,
       email: invitation.email,
       password: passwordHash,
       password_changed_at: inviteNow,

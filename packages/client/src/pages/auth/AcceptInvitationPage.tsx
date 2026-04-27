@@ -62,10 +62,14 @@ export default function AcceptInvitationPage() {
       // already used elsewhere; calling axios directly here keeps the
       // request out of the auth interceptor that would try to refresh a
       // missing access token.
+      // Server destructures snake_case (route handler reads
+      // { first_name, last_name }) — camelCase keys would be silently
+      // dropped, falling back to the invitation's stored names which
+      // are NULL when the admin invited by email only.
       await axios.post("/api/v1/users/accept-invitation", {
         token,
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
         password,
       });
       showToast("success", "Invitation accepted. You can now sign in.");
