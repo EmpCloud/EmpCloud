@@ -368,15 +368,21 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
 
 function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; locale: string }) {
   const { t } = useTranslation();
+  // #1613 — Recent Applications used to fetch only 5 rows, so each new
+  // application pushed older ones off the table and there was no way to view
+  // history without leaving the dashboard. Fetch a larger window (50) and
+  // make the body scroll vertically; also surface a "View all" link to the
+  // full Applications page for users who want pagination.
   const { data, isLoading } = useQuery({
     queryKey: ["leave-applications-me"],
     queryFn: () =>
       api
-        .get("/leave/applications/me", { params: { page: 1, per_page: 5 } })
+        .get("/leave/applications/me", { params: { page: 1, per_page: 50 } })
         .then((r) => r.data),
   });
 
   const applications = data?.data || [];
+  const total = Number(data?.meta?.total ?? applications.length);
   const getTypeName = (id: number) => {
     const lt = leaveTypes.find((x) => x.id === id);
     return lt ? leaveTypeLabel(t, lt) : "-";
@@ -388,9 +394,15 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">{t('leave.dashboard.recentTitle')}</h2>
+        {total > applications.length && (
+          <Link to="/leave/applications" className="text-xs text-brand-600 hover:underline font-medium">
+            {t('common.viewAll')} ({total})
+          </Link>
+        )}
       </div>
+      <div className="max-h-96 overflow-y-auto">
       <table className="min-w-full">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
@@ -446,6 +458,7 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

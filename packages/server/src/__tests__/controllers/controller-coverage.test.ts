@@ -507,7 +507,9 @@ describe("Leave Routes — Controller Coverage", () => {
       const res = await request(app)
         .post("/api/v1/leave/types")
         .set("x-test-user", HR_USER)
-        .send({ name: "Sick Leave", code: "SL", is_paid: true, is_carry_forward: false });
+        // #1614 — annual_quota now required so the server can auto-create
+        // a default policy alongside the type.
+        .send({ name: "Sick Leave", code: "SL", is_paid: true, is_carry_forward: false, annual_quota: 6 });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(leaveTypeService.createLeaveType).toHaveBeenCalledWith(5, expect.objectContaining({ name: "Sick Leave" }));

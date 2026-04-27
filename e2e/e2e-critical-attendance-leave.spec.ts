@@ -657,6 +657,7 @@ test.describe('Critical Attendance & Leave Coverage', () => {
           is_encashable: false,
           requires_approval: true,
           color: '#FF5722',
+          annual_quota: 12,
         },
       });
       const createBody = await createResp.json();
@@ -1027,6 +1028,7 @@ test.describe('Critical Attendance & Leave Coverage', () => {
           is_encashable: false,
           requires_approval: true,
           color: '#9E9E9E',
+          annual_quota: 12,
         },
       });
       expect([200, 201]).toContain(createResp.status());
