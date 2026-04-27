@@ -264,7 +264,8 @@ export default function ManagerDashboardPage() {
                         {leave.start_date === leave.end_date
                           ? leave.start_date
                           : `${leave.start_date} \u2013 ${leave.end_date}`}
-                        {leave.is_half_day && ` (${leave.half_day_type === "first_half" ? t('manager.halfFirst') : t('manager.halfSecond')})`}
+                        {/* #1609 — guard with Boolean(): MySQL tinyint 0 renders as literal "0". */}
+                        {Boolean(leave.is_half_day) && ` (${leave.half_day_type === "first_half" ? t('manager.halfFirst') : t('manager.halfSecond')})`}
                       </p>
                     </div>
                   </div>
@@ -320,7 +321,8 @@ export default function ManagerDashboardPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">
                     {leave.leave_type_name ? leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name }) : "-"}
-                    {leave.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('manager.halfSuffix')}</span>}
+                    {/* #1609 — guard with Boolean(): MySQL tinyint 0 renders as literal "0". */}
+                    {Boolean(leave.is_half_day) && <span className="ml-1 text-xs text-gray-400">{t('manager.halfSuffix')}</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {leave.start_date} &mdash; {leave.end_date}
