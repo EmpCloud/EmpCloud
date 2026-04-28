@@ -399,13 +399,36 @@ export async function getAnniversaries(orgId: number) {
 // Headcount — GROUP BY department_id
 // ---------------------------------------------------------------------------
 
+// #1822 — Bug 9: the dashboard "Headcount by Department" chart was rendering
+// the literal string "null" as a legend entry for employees with
+// department_id IS NULL. The API previously returned only the raw
+// department_id + count, leaving label-resolution to the client (which
+// happily stringified `null`). We now resolve the department name
+// server-side and bucket employees with no department under
+// "Unassigned" so the chart always shows a human-readable label.
 export async function getHeadcount(orgId: number) {
   const db = getDB();
-  return db("users")
-    .where({ organization_id: orgId, status: 1 })
-    .select("department_id")
+  const rows = await db("users")
+    .leftJoin("organization_departments", function () {
+      this.on("users.department_id", "=", "organization_departments.id").andOn(
+        "organization_departments.organization_id",
+        "=",
+        db.raw("?", [orgId]),
+      );
+    })
+    .where({ "users.organization_id": orgId, "users.status": 1 })
+    .select(
+      "users.department_id",
+      "organization_departments.name as department_name",
+    )
     .count("* as count")
-    .groupBy("department_id");
+    .groupBy("users.department_id", "organization_departments.name");
+
+  return rows.map((r: any) => ({
+    department_id: r.department_id,
+    department_name: r.department_name ?? "Unassigned",
+    count: Number(r.count),
+  }));
 }
 
 // ---------------------------------------------------------------------------
