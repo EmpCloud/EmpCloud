@@ -519,6 +519,22 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/attendance/records/:id/punches
+// Returns the multi-punch timeline for a single attendance record.
+// HR sees any record in their org; non-HR can only fetch their own.
+router.get("/records/:id/punches", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const recordId = paramInt(req.params.id);
+    const result = await attendanceService.listPunches(req.user!.org_id, recordId);
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    if (!isHR && Number(result.record.user_id) !== Number(req.user!.sub)) {
+      return res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Cannot view another user's punches" } });
+    }
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/attendance/dashboard
 router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
   try {
