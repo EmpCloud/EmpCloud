@@ -16,6 +16,44 @@ interface Holiday {
   status: string;
 }
 
+// Holidays were created with their type stuffed into the description as
+// "[type:regional]" / "[type:optional]" because there's no dedicated
+// holiday_type column on the events table. Parse the tag out so the list
+// can render a clean badge instead of leaking the raw bracket notation
+// to the user (#1637). Returns the cleaned description (tag removed) and
+// the formatted type label.
+const TYPE_LABELS: Record<string, string> = {
+  regional: "Regional",
+  optional: "Optional",
+  public: "Public",
+  national: "National",
+  religious: "Religious",
+};
+const TYPE_BADGE: Record<string, string> = {
+  regional: "bg-blue-100 text-blue-700",
+  optional: "bg-amber-100 text-amber-700",
+  public: "bg-green-100 text-green-700",
+  national: "bg-rose-100 text-rose-700",
+  religious: "bg-purple-100 text-purple-700",
+};
+
+function parseHolidayType(description: string | null): {
+  type: string | null;
+  label: string | null;
+  description: string;
+} {
+  if (!description) return { type: null, label: null, description: "" };
+  const match = description.match(/\[type:([a-z_]+)\]/i);
+  if (!match) return { type: null, label: null, description };
+  const raw = match[1].toLowerCase();
+  const cleaned = description.replace(match[0], "").trim();
+  return {
+    type: raw,
+    label: TYPE_LABELS[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1),
+    description: cleaned,
+  };
+}
+
 export default function HolidaysPage() {
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -195,16 +233,34 @@ export default function HolidaysPage() {
                     <CalendarDays className="h-5 w-5 text-brand-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{h.title}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-semibold text-gray-900">{h.title}</p>
+                      {(() => {
+                        const parsed = parseHolidayType(h.description);
+                        if (!parsed.label || !parsed.type) return null;
+                        return (
+                          <span
+                            className={`text-[10px] uppercase tracking-wide font-medium px-1.5 py-0.5 rounded ${
+                              TYPE_BADGE[parsed.type] || "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {parsed.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
                     <p className="text-xs text-gray-500">
                       {formatDate(h.start_date)}
                       {h.end_date && h.end_date !== h.start_date && (
                         <> &mdash; {formatDate(h.end_date)}</>
                       )}
                     </p>
-                    {h.description && (
-                      <p className="text-xs text-gray-400 mt-0.5">{h.description}</p>
-                    )}
+                    {(() => {
+                      const cleaned = parseHolidayType(h.description).description;
+                      return cleaned ? (
+                        <p className="text-xs text-gray-400 mt-0.5">{cleaned}</p>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

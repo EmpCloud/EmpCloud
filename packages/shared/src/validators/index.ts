@@ -800,8 +800,15 @@ export const updateAnnouncementSchema = createAnnouncementSchema.partial();
 // ---------------------------------------------------------------------------
 
 export const createPolicySchema = z.object({
-  title: z.string().min(1).max(255),
-  content: z.string().min(1),
+  // Trim before length-check so a whitespace-only title doesn't slip past
+  // .min(1) and produce a row that renders blank on the policies list
+  // (#1636).
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required")
+    .max(255),
+  content: z.string().trim().min(1, "Content is required"),
   category: z.string().max(50).optional().nullable(),
   effective_date: z.string().optional().nullable(),
 });

@@ -25,6 +25,16 @@ const CATEGORIES = [
   "leave", "payroll", "benefits", "it", "facilities", "onboarding", "policy", "general",
 ];
 
+// Display labels override the default Tailwind `capitalize` rendering for
+// values that aren't title-cased — "it" → "IT" because it's an acronym
+// (#1646).
+const CATEGORY_LABELS: Record<string, string> = {
+  it: "IT",
+};
+function categoryLabel(c: string): string {
+  return CATEGORY_LABELS[c] ?? c.charAt(0).toUpperCase() + c.slice(1);
+}
+
 const CATEGORY_COLORS: Record<string, string> = {
   leave: "bg-blue-100 text-blue-700",
   payroll: "bg-green-100 text-green-700",
@@ -221,11 +231,11 @@ export default function KnowledgeBasePage() {
         <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-3xl">
           <div className="flex items-center gap-2 mb-3">
             <span
-              className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
+              className={`text-xs font-medium px-2 py-0.5 rounded ${
                 CATEGORY_COLORS[selectedArticle.category] || "bg-gray-100 text-gray-600"
               }`}
             >
-              {selectedArticle.category}
+              {categoryLabel(selectedArticle.category)}
             </span>
             {Boolean(selectedArticle.is_featured) && (
               <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded">
@@ -248,9 +258,13 @@ export default function KnowledgeBasePage() {
             </span>
           </div>
 
-          <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap mb-8">
-            {selectedArticle.content}
-          </div>
+          {/* Content is sanitized server-side; render as HTML so authored
+              markup doesn't leak as literal <p>...</p> tags to readers
+              (#1634). whitespace-pre-wrap stays for legacy plaintext. */}
+          <div
+            className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap mb-8"
+            dangerouslySetInnerHTML={{ __html: selectedArticle.content || "" }}
+          />
 
           <div className="border-t border-gray-200 pt-6">
             <p className="text-sm font-medium text-gray-700 mb-3">
@@ -371,7 +385,7 @@ export default function KnowledgeBasePage() {
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
-                      {c.charAt(0).toUpperCase() + c.slice(1)}
+                      {categoryLabel(c)}
                     </option>
                   ))}
                 </select>
@@ -489,13 +503,13 @@ export default function KnowledgeBasePage() {
                 setCategory(c);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 category === c
                   ? "bg-brand-50 text-brand-700"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              {c}
+              {categoryLabel(c)}
             </button>
           ))}
         </div>
@@ -563,11 +577,11 @@ export default function KnowledgeBasePage() {
               )}
               <div className={`flex items-center gap-2 mb-2 ${isHR ? "pr-16" : ""}`}>
                 <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
+                  className={`text-xs font-medium px-2 py-0.5 rounded ${
                     CATEGORY_COLORS[a.category] || "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {a.category}
+                  {categoryLabel(a.category)}
                 </span>
                 {Boolean(a.is_featured) && (
                   <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
@@ -576,8 +590,12 @@ export default function KnowledgeBasePage() {
               <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2">
                 {a.title}
               </h3>
+              {/* Card previews strip HTML so the snippet stays readable
+                  even when authors saved their content with markup
+                  (#1634). The detail view above still renders the
+                  sanitized HTML. */}
               <p className="text-xs text-gray-500 line-clamp-3 mb-3">
-                {a.content}
+                {(a.content || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
               </p>
               <div className="flex items-center gap-3 text-xs text-gray-400">
                 {a.view_count > 0 && (
