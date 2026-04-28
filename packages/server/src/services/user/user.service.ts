@@ -719,10 +719,13 @@ export async function resendInvitation(
 }
 
 /**
- * Bulk invite every active user in this org who has never set a password
- * (e.g. created via bulk-import or by an admin without a password) and who
- * doesn't already have a pending invitation. Skips users who've already
- * logged in (have `password_changed_at`) and users with an open invite.
+ * Bulk invite every active user in this org who doesn't already have a
+ * pending invitation. By default, restricts to users who haven't set a
+ * password yet (the typical onboarding case). Pass
+ * `includeActivated: true` to also re-invite users who DO have a
+ * password — useful when HR wants a bulk-reset (e.g. post-migration).
+ * The token-based link lands on AcceptInvitationPage either way and
+ * overwrites whatever password the user had.
  *
  * Returns counts so the UI can show a useful summary toast and a per-row
  * detail list for any failures.
@@ -730,6 +733,7 @@ export async function resendInvitation(
 export async function bulkInviteFromDirectory(
   orgId: number,
   invitedBy: number,
+  options: { includeActivated?: boolean } = {},
 ): Promise<{
   total_eligible: number;
   invited: number;
@@ -738,17 +742,25 @@ export async function bulkInviteFromDirectory(
 }> {
   const db = getDB();
 
-  // Active users who haven't set a password yet — these are the candidates.
+  // Active users in the org. By default we limit to users who haven't
+  // set a password yet (the typical onboarding case). When the caller
+  // opts in to includeActivated, we lift that filter so already-active
+  // employees also get a fresh invite link (effectively a bulk
+  // password reset).
+  let candidatesQuery = db("users")
+    .where({ organization_id: orgId, status: 1 })
+    .select("id", "email", "first_name", "last_name", "role", "password_changed_at");
+  if (!options.includeActivated) {
+    candidatesQuery = candidatesQuery.whereNull("password_changed_at");
+  }
   const candidates: Array<{
     id: number;
     email: string;
     first_name: string | null;
     last_name: string | null;
     role: string;
-  }> = await db("users")
-    .where({ organization_id: orgId, status: 1 })
-    .whereNull("password_changed_at")
-    .select("id", "email", "first_name", "last_name", "role");
+    password_changed_at: Date | null;
+  }> = await candidatesQuery;
 
   if (candidates.length === 0) {
     return { total_eligible: 0, invited: 0, skipped: 0, results: [] };
@@ -768,16 +780,27 @@ export async function bulkInviteFromDirectory(
   // Pre-flight seat-limit check — refuse the batch outright if it would
   // bust the cap. Better to fail loudly than to invite N/M and leak the
   // remainder.
+  //
+  // Only NEW seats count against the limit. An already-activated user
+  // (password_changed_at IS NOT NULL) is already in
+  // organizations.current_user_count, so re-inviting them with
+  // includeActivated does not consume a fresh seat. Without this,
+  // re-invite-all on a fully-seated org always 403'd ("7 new invites
+  // vs 0 seats remaining") even though no actual new seats were being
+  // requested.
+  const newSeatInvites = toInvite.filter((u) => !u.password_changed_at);
   const org = await db("organizations").where({ id: orgId }).first();
-  if (org && org.total_allowed_user_count > 0) {
+  if (org && org.total_allowed_user_count > 0 && newSeatInvites.length > 0) {
     const [{ count: pendingInvitations }] = await db("invitations")
       .where({ organization_id: orgId, status: "pending" })
       .count("* as count");
     const totalCommitted = org.current_user_count + Number(pendingInvitations);
     const remainingSeats = org.total_allowed_user_count - totalCommitted;
-    if (toInvite.length > remainingSeats) {
+    if (newSeatInvites.length > remainingSeats) {
       throw new ForbiddenError(
-        `Bulk invite would exceed the user limit (${toInvite.length} new invites vs ${remainingSeats} seats remaining). Upgrade your subscription or invite users one by one.`,
+        `Bulk invite would exceed the user limit (${newSeatInvites.length} new seat${
+          newSeatInvites.length === 1 ? "" : "s"
+        } needed vs ${remainingSeats} remaining). Upgrade your subscription or invite users one by one.`,
       );
     }
   }
@@ -1083,35 +1106,62 @@ export async function acceptInvitation(params: {
   const passwordHash = await hashPassword(params.password);
 
   const user = await db.transaction(async (trx) => {
-    // Calculate probation end date (6 months from today)
-    const inviteJoinDate = new Date().toISOString().slice(0, 10);
-    const inviteProbationEnd = new Date();
-    inviteProbationEnd.setMonth(inviteProbationEnd.getMonth() + 6);
-
     const inviteNow = new Date();
-    const [userId] = await trx("users").insert({
-      organization_id: invitation.organization_id,
-      first_name: resolvedFirstName,
-      last_name: resolvedLastName,
-      email: invitation.email,
-      password: passwordHash,
-      password_changed_at: inviteNow,
-      role: invitation.role,
-      status: 1,
-      date_of_joining: inviteJoinDate,
-      probation_end_date: inviteProbationEnd.toISOString().slice(0, 10),
-      probation_status: "on_probation",
-      created_at: inviteNow,
-      updated_at: inviteNow,
-    });
+
+    // Re-invite case: a user with this email already exists in the org
+    // (created via "Also re-invite already-activated employees" or by an
+    // earlier admin-side create). Don't INSERT — that hits the unique
+    // email constraint. UPDATE password + names instead, and don't touch
+    // current_user_count (the seat is already counted).
+    const existingUser = await trx("users")
+      .where({ email: invitation.email, organization_id: invitation.organization_id })
+      .first();
+
+    let userId: number;
+    if (existingUser) {
+      await trx("users").where({ id: existingUser.id }).update({
+        first_name: resolvedFirstName,
+        last_name: resolvedLastName,
+        password: passwordHash,
+        password_changed_at: inviteNow,
+        // Re-activate the seat in case the user had been deactivated.
+        status: 1,
+        updated_at: inviteNow,
+      });
+      userId = existingUser.id;
+    } else {
+      // Calculate probation end date (6 months from today) for genuine
+      // new joiners only — re-invited users keep their original probation.
+      const inviteJoinDate = new Date().toISOString().slice(0, 10);
+      const inviteProbationEnd = new Date();
+      inviteProbationEnd.setMonth(inviteProbationEnd.getMonth() + 6);
+
+      const [insertedId] = await trx("users").insert({
+        organization_id: invitation.organization_id,
+        first_name: resolvedFirstName,
+        last_name: resolvedLastName,
+        email: invitation.email,
+        password: passwordHash,
+        password_changed_at: inviteNow,
+        role: invitation.role,
+        status: 1,
+        date_of_joining: inviteJoinDate,
+        probation_end_date: inviteProbationEnd.toISOString().slice(0, 10),
+        probation_status: "on_probation",
+        created_at: inviteNow,
+        updated_at: inviteNow,
+      });
+      userId = insertedId;
+
+      // Only fresh seats bump the org user count.
+      await trx("organizations")
+        .where({ id: invitation.organization_id })
+        .increment("current_user_count", 1);
+    }
 
     await trx("invitations")
       .where({ id: invitation.id })
       .update({ status: "accepted", accepted_at: new Date() });
-
-    await trx("organizations")
-      .where({ id: invitation.organization_id })
-      .increment("current_user_count", 1);
 
     return trx("users").where({ id: userId }).first();
   });

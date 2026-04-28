@@ -7,6 +7,12 @@ dist/
 Thumbs.db
 coverage/
 .turbo/
+# TypeScript incremental build cache. Per-machine artifact — when committed
+# it tells `tsc` "everything is up to date" on whatever box pulls it,
+# causing the compiler to skip emit and ship stale dist/. Real cause of
+# the recurring "Property X does not exist on type AuditAction" errors
+# during prod deploys.
+*.tsbuildinfo
 keys/*.pem
 keys/*.key
 **/keys/*.pem
@@ -25,4 +31,5 @@ testing/screenshots/
 test-artifacts/
 test-screenshots/
 *.png
+!packages/server/public/*.png
 packages/server/logs/

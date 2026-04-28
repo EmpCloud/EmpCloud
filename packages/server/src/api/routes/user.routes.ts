@@ -251,14 +251,23 @@ router.post(
 );
 
 // POST /api/v1/users/bulk-invite-employees — invite every directory user
-// who hasn't set a password yet and doesn't already have a pending invite
+// who doesn't already have a pending invite. By default restricts to
+// users who haven't set a password yet (onboarding). Body
+// { include_activated: true } lifts that filter so already-activated
+// users also get a fresh invite link (effectively a bulk password
+// reset).
 router.post(
   "/bulk-invite-employees",
   authenticate,
   requireOrgAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await userService.bulkInviteFromDirectory(req.user!.org_id, req.user!.sub);
+      const includeActivated = req.body?.include_activated === true;
+      const result = await userService.bulkInviteFromDirectory(
+        req.user!.org_id,
+        req.user!.sub,
+        { includeActivated },
+      );
 
       await logAudit({
         organizationId: req.user!.org_id,
@@ -266,6 +275,7 @@ router.post(
         action: AuditAction.USER_INVITED,
         details: {
           bulk: true,
+          include_activated: includeActivated,
           invited: result.invited,
           skipped: result.skipped,
           total_eligible: result.total_eligible,

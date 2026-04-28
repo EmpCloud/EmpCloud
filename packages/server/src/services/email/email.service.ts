@@ -134,6 +134,10 @@ function htmlToPlainText(html: string): string {
 // Shared layout
 // ---------------------------------------------------------------------------
 
+function logoUrl(): string {
+  return `${config.baseUrl.replace(/\/+$/, "")}/static/empcloud.png`;
+}
+
 function layout(innerHtml: string, preheader: string): string {
   return `<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -143,8 +147,8 @@ function layout(innerHtml: string, preheader: string): string {
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f6f8;padding:32px 16px;">
 <tr><td align="center">
 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
-<tr><td style="padding:28px 32px;border-bottom:1px solid #e5e7eb;">
-<div style="font-weight:700;font-size:18px;color:#2563eb;">EMP Cloud</div>
+<tr><td align="center" style="padding:28px 32px;border-bottom:1px solid #e5e7eb;text-align:center;">
+<img src="${escapeHtml(logoUrl())}" alt="EMP Cloud" width="160" style="display:block;margin:0 auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
 </td></tr>
 <tr><td style="padding:32px;">${innerHtml}</td></tr>
 <tr><td style="padding:20px 32px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:12px;text-align:center;">
@@ -154,9 +158,17 @@ Sent by EMP Cloud &bull; If you didn't expect this email, you can safely ignore 
 }
 
 function button(label: string, href: string): string {
-  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0;">
+  // Centered via an outer wrapper table with align="center" + text-align,
+  // which is the only combo that holds across Gmail, Apple Mail, Outlook
+  // (incl. older Outlook on Windows which ignores `margin:auto` on tables)
+  // and the major webmail clients. The inner table keeps the rounded
+  // background pill that wraps the anchor.
+  return `<table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:24px 0;border-collapse:collapse;">
+<tr><td align="center" style="text-align:center;">
+<table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;border-collapse:collapse;">
 <tr><td style="border-radius:8px;background:#2563eb;">
 <a href="${escapeHtml(href)}" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">${escapeHtml(label)}</a>
+</td></tr></table>
 </td></tr></table>`;
 }
 

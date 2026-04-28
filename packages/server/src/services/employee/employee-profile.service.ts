@@ -54,6 +54,7 @@ export async function getProfile(orgId: number, userId: number) {
       "employee_profiles.nationality",
       "employee_profiles.aadhar_number",
       "employee_profiles.pan_number",
+      "employee_profiles.uan_number",
       "employee_profiles.passport_number",
       "employee_profiles.passport_expiry",
       "employee_profiles.visa_status",

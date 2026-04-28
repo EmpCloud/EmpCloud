@@ -31,6 +31,9 @@ interface LeavePolicy {
   is_active: boolean;
 }
 
+// #1614 — annual_quota is required at create time so the server auto-creates
+// a matching default policy. Without it the type was useless (0 allocation +
+// applyLeave rejection from #1610).
 const EMPTY_TYPE = {
   name: "",
   code: "",
@@ -41,6 +44,7 @@ const EMPTY_TYPE = {
   is_encashable: false,
   requires_approval: true,
   color: "#6366f1",
+  annual_quota: 12,
 };
 
 const EMPTY_POLICY = {
@@ -150,9 +154,17 @@ export default function LeaveTypesPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["leave-policies"] }),
   });
 
+  // #1616 — invalidate the dashboard balance queries when init runs so the
+  // newly-created leave_balances rows show up immediately. Without this the
+  // mutation succeeded but no UI updated, making the button look like a
+  // no-op even when records were created.
   const initBalances = useMutation({
     mutationFn: () =>
       api.post("/leave/balances/initialize", { year: new Date().getFullYear() }).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leave-balances"] });
+      qc.invalidateQueries({ queryKey: ["my-leave-balance"] });
+    },
   });
 
   const handleTypeSubmit = (e: React.FormEvent) => {
@@ -178,6 +190,10 @@ export default function LeaveTypesPage() {
       is_encashable: lt.is_encashable,
       requires_approval: lt.requires_approval,
       color: lt.color ?? "#6366f1",
+      // #1614 — quota only matters on create (server uses .partial() for
+      // update); keep the placeholder default so the controlled input is
+      // happy if the form is reused.
+      annual_quota: 12,
     });
     setShowTypeForm(true);
   };
@@ -226,7 +242,11 @@ export default function LeaveTypesPage() {
 
       {initBalances.isSuccess && (
         <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-lg text-sm">
-          Balances initialized: {(initBalances.data as any)?.initialized ?? 0} records created.
+          {/* #1616 — distinguish "already initialized" from "freshly created"
+              so the button doesn't look broken when nothing changed. */}
+          {((initBalances.data as any)?.initialized ?? 0) > 0
+            ? `Balances initialized: ${(initBalances.data as any).initialized} record(s) created.`
+            : "All users already have balance rows for every active policy. No new records were created."}
         </div>
       )}
 
@@ -280,6 +300,28 @@ export default function LeaveTypesPage() {
                   className="w-full h-10 border border-gray-300 rounded-lg"
                 />
               </div>
+              {/* #1614 — Annual Quota is required so the server can auto-create
+                  a default policy alongside the type. Hidden during edit
+                  because policies are managed in the Leave Policies section
+                  once a type exists. */}
+              {!editingType && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Annual Quota (days) <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={typeForm.annual_quota}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      if (val >= 1 && val <= 365) setTypeForm({ ...typeForm, annual_quota: val });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">A default policy will be created with this quota.</p>
+                </div>
+              )}
               <div className="md:col-span-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <input

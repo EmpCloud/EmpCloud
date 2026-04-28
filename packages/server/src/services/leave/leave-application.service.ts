@@ -58,12 +58,25 @@ export async function applyLeave(
   }
 
   // Validate balance
+  // #1610/#1611 — reject when no balance row exists OR balance < requested.
+  // Previously the check was `if (balance && balance.balance < days_count)` which
+  // silently passed when a leave_balances row was missing for the (user,
+  // leave_type, year) tuple. Approval would then succeed without deducting
+  // anything (approveLeave's `if (balance) { update }` is a no-op when the row
+  // is absent), so users could apply for — and have approved — leave types
+  // they had zero allocation for, with the dashboard still showing the full
+  // (wrong) balance.
   const year = new Date(data.start_date).getFullYear();
   const balances = await balanceService.getBalances(orgId, userId, year);
   const balance = balances.find((b) => b.leave_type_id === data.leave_type_id);
+  const typeName = (balance as any)?.leave_type_name || leaveType.name || "this leave type";
 
-  if (balance && Number(balance.balance) < data.days_count) {
-    const typeName = (balance as any).leave_type_name || leaveType.name || "this leave type";
+  if (!balance) {
+    throw new ValidationError(
+      `No leave balance allocated for ${typeName}. Please contact HR to initialize your balance.`,
+    );
+  }
+  if (Number(balance.balance) < data.days_count) {
     throw new ValidationError(
       `Insufficient balance for ${typeName}. Available: ${balance.balance} day(s), Requested: ${data.days_count} day(s).`,
     );
@@ -286,6 +299,18 @@ export async function approveLeave(
           balance: Number(balance.balance) - Number(application.days_count),
           updated_at: new Date(),
         });
+    } else {
+      // #1611 — applyLeave now blocks applications with no balance row, so we
+      // should never reach this path. Log if we somehow do (e.g. a pre-fix
+      // application that's still pending), so the missing deduction is
+      // traceable instead of silently lost.
+      logger.warn("Leave approval: missing balance row, deduction skipped", {
+        organizationId: orgId,
+        userId: application.user_id,
+        leaveTypeId: application.leave_type_id,
+        applicationId,
+        year,
+      });
     }
 
     // Auto-create on_leave attendance records for each day of the leave

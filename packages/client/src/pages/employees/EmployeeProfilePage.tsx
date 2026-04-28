@@ -84,11 +84,16 @@ export default function EmployeeProfilePage() {
     enabled: editing,
   });
 
-  // #1423 — departments and shifts for the HR-only edit dropdowns.
+  // #1423 — departments and shifts for the HR-only edit dropdowns. We fetch
+  // departments whenever the form is open (not just for HR) so self-service
+  // users can see their own department's name in the disabled dropdown
+  // instead of an empty list (emp-payroll#250 — was confusing because the
+  // user couldn't tell whether they had no department or the dropdown was
+  // broken).
   const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: () => api.get("/departments").then((r) => r.data.data),
-    enabled: editing && isHR,
+    enabled: editing,
   });
   const { data: shifts } = useQuery({
     queryKey: ["attendance-shifts"],
@@ -316,9 +321,13 @@ function FieldRow({ label, value }: { label: string; value?: string | number | n
 // Validation patterns for Indian identity documents
 const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 const AADHAR_REGEX = /^[0-9]{12}$/;
+const UAN_REGEX = /^[0-9]{12}$/; // EPFO Universal Account Number — always 12 digits
 const PASSPORT_REGEX = /^[A-PR-WY][0-9]{7}$/; // Indian passport: 1 letter (excl. Q, X, Z), 7 digits
 
-function validateIdDoc(field: "pan_number" | "aadhar_number" | "passport_number", value: string): string | null {
+function validateIdDoc(
+  field: "pan_number" | "aadhar_number" | "uan_number" | "passport_number",
+  value: string,
+): string | null {
   if (!value) return null; // empty is allowed (optional field)
   if (field === "pan_number") {
     return PAN_REGEX.test(value)
@@ -327,6 +336,9 @@ function validateIdDoc(field: "pan_number" | "aadhar_number" | "passport_number"
   }
   if (field === "aadhar_number") {
     return AADHAR_REGEX.test(value) ? null : "Aadhaar must be 12 digits";
+  }
+  if (field === "uan_number") {
+    return UAN_REGEX.test(value) ? null : "UAN must be 12 digits";
   }
   if (field === "passport_number") {
     return PASSPORT_REGEX.test(value)
@@ -338,7 +350,7 @@ function validateIdDoc(field: "pan_number" | "aadhar_number" | "passport_number"
 
 function PersonalTab({ profile, editing, onSave, saving, error, allUsers, departments, shifts, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; departments?: any[]; shifts?: any[]; userId?: number; selfService?: boolean }) {
   const [form, setForm] = useState<Record<string, string>>({});
-  const [idErrors, setIdErrors] = useState<{ pan_number?: string; aadhar_number?: string; passport_number?: string }>({});
+  const [idErrors, setIdErrors] = useState<{ pan_number?: string; aadhar_number?: string; uan_number?: string; passport_number?: string }>({});
 
   // Populate form when entering edit mode (via useEffect to avoid setState during render)
   useEffect(() => {
@@ -353,6 +365,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
         nationality: profile.nationality || "",
         aadhar_number: profile.aadhar_number || "",
         pan_number: profile.pan_number || "",
+        uan_number: profile.uan_number || "",
         passport_number: profile.passport_number || "",
         passport_expiry: profile.passport_expiry ? profile.passport_expiry.slice(0, 10) : "",
         visa_status: profile.visa_status || "",
@@ -502,6 +515,25 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
             {idErrors.pan_number && <p className="text-xs text-red-600 mt-1">{idErrors.pan_number}</p>}
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">UAN Number</label>
+            <input
+              type="text"
+              value={form.uan_number}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 12);
+                set("uan_number", digits);
+                if (idErrors.uan_number) setIdErrors((p) => ({ ...p, uan_number: undefined }));
+              }}
+              onBlur={(e) => setIdErrors((p) => ({ ...p, uan_number: validateIdDoc("uan_number", e.target.value) || undefined }))}
+              inputMode="numeric"
+              maxLength={12}
+              placeholder="12 digits"
+              className={`${canEditField("uan_number") ? inputClass : disabledClass} ${idErrors.uan_number ? "border-red-500 focus:ring-red-500" : ""}`}
+              disabled={!canEditField("uan_number")}
+            />
+            {idErrors.uan_number && <p className="text-xs text-red-600 mt-1">{idErrors.uan_number}</p>}
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
             <input
               type="text"
@@ -605,6 +637,21 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               placeholder={selfService ? "Contact HR to change" : "e.g. Senior Engineer"}
             />
           </div>
+          {/* emp-payroll#246 — Employee Code. HR-editable; employees see it
+              read-only. Used downstream by emp-payroll for the My Profile
+              header and the salary slip. */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Employee Code</label>
+            <input
+              type="text"
+              value={form.emp_code}
+              onChange={(e) => set("emp_code", e.target.value)}
+              className={!selfService ? inputClass : disabledClass}
+              disabled={selfService}
+              maxLength={50}
+              placeholder={selfService ? "Contact HR to set" : "e.g. EMP001"}
+            />
+          </div>
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <button
@@ -612,9 +659,10 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               const errs = {
                 pan_number: validateIdDoc("pan_number", form.pan_number || "") || undefined,
                 aadhar_number: validateIdDoc("aadhar_number", form.aadhar_number || "") || undefined,
+                uan_number: validateIdDoc("uan_number", form.uan_number || "") || undefined,
                 passport_number: validateIdDoc("passport_number", form.passport_number || "") || undefined,
               };
-              if (errs.pan_number || errs.aadhar_number || errs.passport_number) {
+              if (errs.pan_number || errs.aadhar_number || errs.uan_number || errs.passport_number) {
                 setIdErrors(errs);
                 return;
               }
@@ -644,6 +692,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
       <FieldRow label="Nationality" value={profile.nationality} />
       <FieldRow label="Aadhar Number" value={profile.aadhar_number} />
       <FieldRow label="PAN Number" value={profile.pan_number} />
+      <FieldRow label="UAN Number" value={profile.uan_number} />
       <FieldRow label="Passport Number" value={profile.passport_number} />
       <FieldRow
         label="Passport Expiry"
@@ -675,6 +724,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
           the read-only view so self-service employees can see them even if
           they can't edit them. */}
       <FieldRow label="Designation" value={profile.designation} />
+      <FieldRow label="Employee Code" value={profile.emp_code} />
       <FieldRow label="Department" value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
       <FieldRow label="Shift" value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
     </dl>

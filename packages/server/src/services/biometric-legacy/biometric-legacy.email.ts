@@ -8,6 +8,8 @@
 // details and the kiosk UI only reads the OTP.
 // =============================================================================
 
+import { config } from "../../config/index.js";
+
 export function forgotPasswordBiometricEmail(params: {
   otp: number | string;
   brandName?: string;
@@ -16,6 +18,7 @@ export function forgotPasswordBiometricEmail(params: {
   const brand = params.brandName || "EMP Cloud";
   const support = params.supportEmail || "support@empcloud.com";
   const otp = String(params.otp);
+  const logo = `${config.baseUrl.replace(/\/+$/, "")}/static/empcloud.png`;
 
   return `<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -24,8 +27,8 @@ export function forgotPasswordBiometricEmail(params: {
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f4f6f8;padding:32px 16px;">
 <tr><td align="center">
 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#ffffff;border-radius:12px;border:1px solid #e5e7eb;">
-<tr><td style="padding:28px 32px;border-bottom:1px solid #e5e7eb;">
-<div style="font-weight:700;font-size:18px;color:#2563eb;">${escape(brand)}</div>
+<tr><td align="center" style="padding:28px 32px;border-bottom:1px solid #e5e7eb;text-align:center;">
+<img src="${escape(logo)}" alt="${escape(brand)}" width="160" style="display:block;margin:0 auto;max-width:160px;height:auto;border:0;outline:none;text-decoration:none;">
 </td></tr>
 <tr><td style="padding:32px;">
 <h1 style="margin:0 0 16px;font-size:22px;color:#111827;">Biometric password reset</h1>

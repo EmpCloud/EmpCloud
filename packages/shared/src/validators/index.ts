@@ -398,6 +398,7 @@ export const upsertEmployeeProfileSchema = z.object({
   nationality: z.string().max(55).optional().nullable(),
   aadhar_number: z.string().length(12).optional().nullable(),
   pan_number: z.string().length(10).optional().nullable(),
+  uan_number: z.string().length(12).optional().nullable(),
   passport_number: z.string().max(20).optional().nullable(),
   passport_expiry: z.string().optional().nullable(),
   visa_status: z.string().max(50).optional().nullable(),
@@ -689,6 +690,12 @@ export const createLeaveTypeSchema = z.object({
   is_encashable: z.boolean().default(false),
   requires_approval: z.boolean().default(true),
   color: z.string().max(7).optional().nullable(),
+  // #1614 — Annual quota is now mandatory at create time so every new leave
+  // type gets an auto-created default policy. Without a policy the type
+  // surfaces with 0 allocation and applyLeave (#1610) rejects it as having
+  // no balance — the type ends up useless. Requiring it here pushes the
+  // requirement to the form so HR can't create an orphan type.
+  annual_quota: z.coerce.number().min(1).max(365),
 });
 
 export const updateLeaveTypeSchema = createLeaveTypeSchema.partial();

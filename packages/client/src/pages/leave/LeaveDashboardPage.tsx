@@ -134,6 +134,23 @@ export default function LeaveDashboardPage() {
         ) : (
           leaveTypes
             .filter((lt) => Boolean(lt.is_active))
+            // #1612 — when the org has multiple leave_types rows with the same
+            // display name (e.g. an old "SL" + a re-added "SL_440514" both
+            // labelled "Sick Leave"), the dashboard rendered one card per row
+            // even though the apply form deduped by name. Users saw two
+            // identical labels with conflicting balances and assumed the
+            // counts were wrong. Dedupe by display name here too, preferring
+            // the type that actually has an allocated balance so we surface
+            // the row the policy is attached to.
+            .filter((lt, _i, arr) => {
+              const sameName = arr.filter((x) => x.name === lt.name);
+              if (sameName.length === 1) return true;
+              const withAllocation = sameName.find((x) => {
+                const b = balances.find((bb) => bb.leave_type_id === x.id);
+                return b && Number(b.total_allocated) > 0;
+              });
+              return withAllocation ? withAllocation.id === lt.id : sameName[0].id === lt.id;
+            })
             .map((type) => {
               const bal = balances.find((b) => b.leave_type_id === type.id);
               const typeColor = type.color ?? "#6366f1";
@@ -351,15 +368,21 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
 
 function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; locale: string }) {
   const { t } = useTranslation();
+  // #1613 — Recent Applications used to fetch only 5 rows, so each new
+  // application pushed older ones off the table and there was no way to view
+  // history without leaving the dashboard. Fetch a larger window (50) and
+  // make the body scroll vertically; also surface a "View all" link to the
+  // full Applications page for users who want pagination.
   const { data, isLoading } = useQuery({
     queryKey: ["leave-applications-me"],
     queryFn: () =>
       api
-        .get("/leave/applications/me", { params: { page: 1, per_page: 5 } })
+        .get("/leave/applications/me", { params: { page: 1, per_page: 50 } })
         .then((r) => r.data),
   });
 
   const applications = data?.data || [];
+  const total = Number(data?.meta?.total ?? applications.length);
   const getTypeName = (id: number) => {
     const lt = leaveTypes.find((x) => x.id === id);
     return lt ? leaveTypeLabel(t, lt) : "-";
@@ -371,9 +394,15 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">{t('leave.dashboard.recentTitle')}</h2>
+        {total > applications.length && (
+          <Link to="/leave/applications" className="text-xs text-brand-600 hover:underline font-medium">
+            {t('common.viewAll')} ({total})
+          </Link>
+        )}
       </div>
+      <div className="max-h-96 overflow-y-auto">
       <table className="min-w-full">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
@@ -407,7 +436,10 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
                 <tr key={app.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {getTypeName(app.leave_type_id)}
-                    {app.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('leave.dashboard.halfSuffix')}</span>}
+                    {/* #1609 — guard with Boolean(): MySQL tinyint returns 0/1,
+                        and `0 && ...` evaluates to 0 which React renders as a
+                        literal "0" right after the leave label ("Sick Leave0"). */}
+                    {Boolean(app.is_half_day) && <span className="ml-1 text-xs text-gray-400">{t('leave.dashboard.halfSuffix')}</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {new Date(app.start_date).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })}
@@ -426,6 +458,7 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -634,7 +667,8 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
               </td>
               <td className="px-6 py-4 text-sm text-gray-700">
                 {getTypeName(app.leave_type_id)}
-                {app.is_half_day && <span className="ml-1 text-xs text-gray-400">{t('leave.dashboard.halfSuffix')}</span>}
+                {/* #1609 — see comment above; MySQL returns 0/1 not boolean */}
+                {Boolean(app.is_half_day) && <span className="ml-1 text-xs text-gray-400">{t('leave.dashboard.halfSuffix')}</span>}
               </td>
               <td className="px-6 py-4 text-sm text-gray-500">
                 {new Date(app.start_date).toLocaleDateString(i18n.language, { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString(i18n.language, { day: "2-digit", month: "short", year: "numeric" })}
