@@ -501,8 +501,32 @@ export const employeeDirectoryQuerySchema = paginationSchema.extend({
 // HRMS — Attendance Validators
 // ---------------------------------------------------------------------------
 
+// Allowed characters for human-readable names: letters (incl. accented),
+// digits, spaces, and a small set of punctuation that occurs in real
+// shift names ("Day Shift (UK)", "On-call/Standby"). Rejects characters
+// commonly seen in SQL injection / XSS payloads (`<`, `>`, `'`, `"`,
+// `;`, backticks, backslashes, curly braces) so a value like
+// `'; DROP TABLE shifts; --` or `<script>alert(1)</script>` is refused
+// at the API boundary instead of landing in the DB.
+const SHIFT_NAME_REGEX = /^[\p{L}\p{N} _\-./()&]+$/u;
+const shiftNameField = z
+  .string()
+  .min(1)
+  .max(100)
+  .regex(SHIFT_NAME_REGEX, "Shift name contains disallowed characters");
+
+// Day CSV: comma-separated digits 0-6 with no spaces / SQL fragments.
+// "" is allowed (no half-days). Examples: "1,2,3,4,5", "0,6", "".
+const DAY_CSV_REGEX = /^([0-6](,[0-6])*)?$/;
+const workingDaysField = z
+  .string()
+  .regex(DAY_CSV_REGEX, "working_days must be comma-separated day numbers (0-6) with no spaces");
+const halfDaysField = z
+  .string()
+  .regex(DAY_CSV_REGEX, "half_days must be comma-separated day numbers (0-6) with no spaces");
+
 const shiftBaseSchema = z.object({
-  name: z.string().min(1).max(100),
+  name: shiftNameField,
   start_time: z.string(),
   end_time: z.string(),
   break_minutes: z.number().int().min(0).default(0),
@@ -510,8 +534,8 @@ const shiftBaseSchema = z.object({
   grace_minutes_early: z.number().int().min(0).default(0),
   is_night_shift: z.boolean().default(false),
   is_default: z.boolean().default(false),
-  working_days: z.string().default("1,2,3,4,5"), // comma-separated: 0=Sun,1=Mon,...6=Sat
-  half_days: z.string().default(""), // comma-separated day numbers for half-day
+  working_days: workingDaysField.default("1,2,3,4,5"), // 0=Sun,1=Mon,...6=Sat
+  half_days: halfDaysField.default(""),
 });
 
 export const createShiftSchema = shiftBaseSchema.refine(
@@ -523,7 +547,7 @@ export const createShiftSchema = shiftBaseSchema.refine(
 // (partial() keeps defaults, which overwrite unchanged fields on PATCH)
 export const updateShiftSchema = z
   .object({
-    name: z.string().min(1).max(100).optional(),
+    name: shiftNameField.optional(),
     start_time: z.string().optional(),
     end_time: z.string().optional(),
     break_minutes: z.number().int().min(0).optional(),
@@ -531,8 +555,8 @@ export const updateShiftSchema = z
     grace_minutes_early: z.number().int().min(0).optional(),
     is_night_shift: z.boolean().optional(),
     is_default: z.boolean().optional(),
-    working_days: z.string().optional(),
-    half_days: z.string().optional(),
+    working_days: workingDaysField.optional(),
+    half_days: halfDaysField.optional(),
   })
   .refine(
     (data) => {
