@@ -587,10 +587,19 @@ export { purgeUserHard as _purgeUserHard };
 // Invitations
 // ---------------------------------------------------------------------------
 
+// #1647 — Placeholder invitations of the form `invite-NNNNNN@<domain>` were
+// inserted into a few tenants outside of the regular invite path (e.g. via a
+// bulk seed script). They have no real recipient — admins can't identify or
+// re-send them — so hide them from the panel. Migration 052 deletes the
+// existing rows; this filter prevents any stragglers from leaking into the
+// UI even before the migration runs.
+const PLACEHOLDER_INVITE_LIKE = "invite-______@%";
+
 export async function listInvitations(orgId: number, status: string = "pending") {
   const db = getDB();
   return db("invitations")
     .where({ organization_id: orgId, status })
+    .whereNot("email", "like", PLACEHOLDER_INVITE_LIKE)
     .select("id", "email", "role", "status", "created_at", "expires_at")
     .orderBy("created_at", "desc");
 }
