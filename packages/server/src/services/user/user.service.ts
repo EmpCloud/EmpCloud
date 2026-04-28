@@ -769,12 +769,27 @@ export async function cancelInvitation(
       .where({ email: inv.email, organization_id: orgId })
       .first();
     if (user && user.password_changed_at == null) {
-      // Reuse the same FK-cleanup chain that deactivateUser uses so
-      // we don't leave orphans. The user has never activated so they
-      // can't possibly have pending leave/assets/tickets that the
-      // hard-delete guards would block on, but call deactivateUser
-      // anyway so any future references stay consistent. Decrement
-      // the seat count too.
+      // FK cleanup before the hard delete. The users table self-FK on
+      // reporting_manager_id has no ON DELETE clause, so MySQL defaults
+      // to RESTRICT — if anyone in the org has this user set as their
+      // manager (e.g. HR set the manager link before the invite was
+      // accepted), a raw DELETE would fail with FK violation. NULL
+      // those out first so the delete proceeds cleanly.
+      //
+      // Bucket-C `created_by` columns (announcements, policies, etc.)
+      // cannot reference a never-activated user — they require a logged-
+      // in actor — so no cleanup is needed for them. The other
+      // Bucket-A FKs to users (employee_profiles, attendance_records,
+      // leave_balances, etc.) all have ON DELETE CASCADE on this row's
+      // user_id and will clean themselves up.
+      //
+      // Not reusing deactivateUser() here because it runs its own
+      // transaction (no trx parameter), which would break the atomicity
+      // of cancel-invitation + user-removal that this flow guarantees.
+      await trx("users").where({ reporting_manager_id: user.id }).update({
+        reporting_manager_id: null,
+        updated_at: new Date(),
+      });
       await trx("users").where({ id: user.id }).delete();
       await trx("organizations")
         .where({ id: orgId })
