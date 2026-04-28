@@ -365,6 +365,25 @@ export async function handleModuleSeatWebhook(data: {
       .first();
     if (existing) return;
 
+    // #1632 — Webhooks from sub-modules were inserting seat rows without
+    // checking the subscription's total_seats cap, so a module that did its
+    // own bulk-enable could push EmpCloud into "28 of 10 seats assigned".
+    // Mirror the count-based check that assignSeat / enableUserForModule
+    // already use so this third entry point can't bypass the cap.
+    const [{ seatCount }] = await db("org_module_seats")
+      .where({ subscription_id: sub.id })
+      .count("* as seatCount");
+    const currentSeats = Number(seatCount);
+    if (sub.total_seats != null && currentSeats >= sub.total_seats) {
+      logger.warn(
+        `Seat webhook rejected: module=${data.module_slug} user=${user.id} ` +
+        `currentSeats=${currentSeats} total_seats=${sub.total_seats}`,
+      );
+      throw new ConflictError(
+        `Seat limit exceeded for module '${data.module_slug}'. Subscription allows ${sub.total_seats} seats; ${currentSeats} are already assigned.`,
+      );
+    }
+
     await db("org_module_seats").insert({
       subscription_id: sub.id,
       organization_id: orgId,

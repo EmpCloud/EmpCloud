@@ -638,22 +638,46 @@ export async function getHelpdeskDashboard(orgId: number) {
     .where("resolved_at", ">=", todayStart)
     .count("id as count");
 
-  // SLA compliance: resolved tickets where resolved_at <= sla_resolution_due
-  const [{ count: totalResolved }] = await db("helpdesk_tickets")
+  // #1633 — SLA compliance must include open-but-breached tickets in the
+  // denominator. Previously the metric only looked at resolved tickets,
+  // which made it possible to show "100% compliance" while 36 still-open
+  // tickets had already blown past their resolution due date.
+  //
+  // Compliant   = resolved AND resolved_at <= sla_resolution_due
+  // Breached    = resolved AND resolved_at >  sla_resolution_due
+  //             + still-open AND NOW()      >  sla_resolution_due
+  // Compliance  = compliant / (compliant + breached)
+  //
+  // Tickets without an sla_resolution_due (e.g. legacy rows pre-SLA-rollout)
+  // are excluded from both buckets so they don't distort the rate.
+  const [{ count: compliantCount }] = await db("helpdesk_tickets")
     .where({ organization_id: orgId })
     .whereNotNull("resolved_at")
-    .count("id as count");
-
-  const [{ count: withinSLA }] = await db("helpdesk_tickets")
-    .where({ organization_id: orgId })
-    .whereNotNull("resolved_at")
+    .whereNotNull("sla_resolution_due")
     .whereRaw("resolved_at <= sla_resolution_due")
     .count("id as count");
 
-  const slaCompliance =
-    Number(totalResolved) > 0
-      ? Math.round((Number(withinSLA) / Number(totalResolved)) * 100)
-      : 100;
+  const [{ count: resolvedLateCount }] = await db("helpdesk_tickets")
+    .where({ organization_id: orgId })
+    .whereNotNull("resolved_at")
+    .whereNotNull("sla_resolution_due")
+    .whereRaw("resolved_at > sla_resolution_due")
+    .count("id as count");
+
+  // Re-uses the same overdue criterion as the `overdue` KPI so the two
+  // numbers always agree: any ticket the dashboard counts as "SLA breached"
+  // is also counted as a breach for compliance purposes.
+  const [{ count: openBreachedCount }] = await db("helpdesk_tickets")
+    .where({ organization_id: orgId })
+    .whereIn("status", ["open", "in_progress", "awaiting_response", "reopened"])
+    .whereNotNull("sla_resolution_due")
+    .where("sla_resolution_due", "<", now)
+    .count("id as count");
+
+  const compliant = Number(compliantCount);
+  const breached = Number(resolvedLateCount) + Number(openBreachedCount);
+  const slaTotal = compliant + breached;
+  const slaCompliance = slaTotal > 0 ? Math.round((compliant / slaTotal) * 100) : 100;
 
   // Average resolution time (in hours)
   const [avgResult] = await db("helpdesk_tickets")
