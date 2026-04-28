@@ -4,6 +4,22 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, X, Clock, Plus } from "lucide-react";
 
+type RegRow = {
+  id: number;
+  date: string;
+  status: "pending" | "approved" | "rejected";
+  reason: string;
+  rejection_reason?: string | null;
+  original_check_in?: string | null;
+  original_check_out?: string | null;
+  requested_check_in?: string | null;
+  requested_check_out?: string | null;
+  first_name?: string;
+  last_name?: string;
+  emp_code?: string;
+  email?: string;
+};
+
 export default function RegularizationsPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
@@ -14,6 +30,10 @@ export default function RegularizationsPage() {
   // #1559 — Inline validation error so users see why the form wasn't submitted
   // (e.g. check-out earlier than check-in) without a jarring native alert.
   const [formError, setFormError] = useState<string | null>(null);
+  // #1629 — Detail modal for the row that was clicked. The reason cell is
+  // truncated at 200px so admins couldn't read longer explanations; the
+  // modal shows the full record (employee, times, reason, rejection note).
+  const [selectedRow, setSelectedRow] = useState<RegRow | null>(null);
 
   const { data: pendingData, isLoading: pendingLoading } = useQuery({
     queryKey: ["regularizations", "pending", page],
@@ -180,8 +200,13 @@ export default function RegularizationsPage() {
             ) : records.length === 0 ? (
               <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">{t('attendance.regularizations.noRecords')}</td></tr>
             ) : (
-              records.map((r: any) => (
-                <tr key={r.id} className="hover:bg-gray-50">
+              records.map((r: RegRow) => (
+                <tr
+                  key={r.id}
+                  onClick={() => setSelectedRow(r)}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  title={t('attendance.regularizations.viewDetails')}
+                >
                   {tab !== "my" && (
                     <td className="px-6 py-4">
                       <div>
@@ -209,10 +234,10 @@ export default function RegularizationsPage() {
                       {r.status === "pending" ? <Clock className="h-3 w-3" /> : r.status === "approved" ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
                       {r.status === "pending" ? t('attendance.regularizations.statusPending') : r.status === "approved" ? t('attendance.regularizations.statusApproved') : t('attendance.regularizations.statusRejected')}
                     </span>
-                    {r.rejection_reason && <p className="text-xs text-red-500 mt-1">{r.rejection_reason}</p>}
+                    {r.rejection_reason && <p className="text-xs text-red-500 mt-1 max-w-[200px] truncate">{r.rejection_reason}</p>}
                   </td>
                   {tab === "pending" && (
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleApprove(r.id)}
@@ -247,6 +272,114 @@ export default function RegularizationsPage() {
           </div>
         )}
       </div>
+
+      {/* #1629 — Detail modal: opens on row click so the full reason and any
+          rejection note are readable in full instead of being truncated. */}
+      {selectedRow && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setSelectedRow(null)}
+        >
+          <div
+            className="w-full max-w-lg rounded-xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between border-b border-gray-100 px-6 py-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{t('attendance.regularizations.detailTitle')}</h3>
+                <p className="text-xs text-gray-500 mt-0.5">{new Date(selectedRow.date).toLocaleDateString()}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedRow(null)}
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                aria-label={t('common.close')}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <dl className="divide-y divide-gray-100 text-sm">
+              {tab !== "my" && (selectedRow.first_name || selectedRow.last_name) && (
+                <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                  <dt className="text-gray-500">{t('attendance.regularizations.table.employee')}</dt>
+                  <dd className="col-span-2 text-gray-900">
+                    {selectedRow.first_name} {selectedRow.last_name}
+                    {(selectedRow.emp_code || selectedRow.email) && (
+                      <span className="text-xs text-gray-400 ml-2">({selectedRow.emp_code || selectedRow.email})</span>
+                    )}
+                  </dd>
+                </div>
+              )}
+              <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                <dt className="text-gray-500">{t('attendance.regularizations.table.originalInOut')}</dt>
+                <dd className="col-span-2 text-gray-900">
+                  <div>{selectedRow.original_check_in ? new Date(selectedRow.original_check_in).toLocaleString() : "-"}</div>
+                  <div className="text-gray-500">{selectedRow.original_check_out ? new Date(selectedRow.original_check_out).toLocaleString() : "-"}</div>
+                </dd>
+              </div>
+              <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                <dt className="text-gray-500">{t('attendance.regularizations.table.requestedInOut')}</dt>
+                <dd className="col-span-2 text-gray-900">
+                  <div>{selectedRow.requested_check_in ? new Date(selectedRow.requested_check_in).toLocaleString() : "-"}</div>
+                  <div className="text-gray-500">{selectedRow.requested_check_out ? new Date(selectedRow.requested_check_out).toLocaleString() : "-"}</div>
+                </dd>
+              </div>
+              <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                <dt className="text-gray-500">{t('attendance.regularizations.table.reason')}</dt>
+                <dd className="col-span-2 text-gray-900 whitespace-pre-wrap break-words">{selectedRow.reason || "-"}</dd>
+              </div>
+              <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                <dt className="text-gray-500">{t('attendance.regularizations.table.status')}</dt>
+                <dd className="col-span-2">
+                  <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${
+                    selectedRow.status === "pending" ? "bg-yellow-50 text-yellow-700"
+                      : selectedRow.status === "approved" ? "bg-green-50 text-green-700"
+                      : "bg-red-50 text-red-700"
+                  }`}>
+                    {selectedRow.status === "pending" ? <Clock className="h-3 w-3" /> : selectedRow.status === "approved" ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                    {selectedRow.status === "pending" ? t('attendance.regularizations.statusPending') : selectedRow.status === "approved" ? t('attendance.regularizations.statusApproved') : t('attendance.regularizations.statusRejected')}
+                  </span>
+                </dd>
+              </div>
+              {selectedRow.rejection_reason && (
+                <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                  <dt className="text-gray-500">{t('attendance.regularizations.rejectionReason')}</dt>
+                  <dd className="col-span-2 text-red-700 whitespace-pre-wrap break-words">{selectedRow.rejection_reason}</dd>
+                </div>
+              )}
+            </dl>
+            <div className="flex justify-end gap-2 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-3">
+              {selectedRow.status === "pending" && tab === "pending" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => { handleReject(selectedRow.id); setSelectedRow(null); }}
+                    disabled={processReg.isPending}
+                    className="flex items-center gap-1 text-sm bg-red-50 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-100 disabled:opacity-50"
+                  >
+                    <X className="h-3.5 w-3.5" /> {t('attendance.regularizations.reject')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { handleApprove(selectedRow.id); setSelectedRow(null); }}
+                    disabled={processReg.isPending}
+                    className="flex items-center gap-1 text-sm bg-green-50 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-100 disabled:opacity-50"
+                  >
+                    <Check className="h-3.5 w-3.5" /> {t('attendance.regularizations.approve')}
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => setSelectedRow(null)}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"
+              >
+                {t('common.close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
