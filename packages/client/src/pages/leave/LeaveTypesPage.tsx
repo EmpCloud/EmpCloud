@@ -433,7 +433,23 @@ export default function LeaveTypesPage() {
                     <td className="px-6 py-4 text-sm text-gray-500 font-mono">{lt.code}</td>
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1">
-                        {lt.is_paid && <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">Paid</span>}
+                        {/* Same defensive logic as LeaveDashboardPage (#1649):
+                            ignore is_paid=true when the type's name says
+                            otherwise so admins who forgot to uncheck the
+                            paid-by-default checkbox don't get a misleading
+                            "Paid" tag on an Unpaid leave row. */}
+                        {(() => {
+                          const isUnpaidByName = /\b(unpaid|lwp|without\s*pay|loss\s*of\s*pay)\b/i.test(
+                            lt.name || "",
+                          );
+                          if (lt.is_paid && !isUnpaidByName) {
+                            return <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">Paid</span>;
+                          }
+                          if (isUnpaidByName) {
+                            return <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">Unpaid</span>;
+                          }
+                          return null;
+                        })()}
                         {lt.is_carry_forward && <span className="text-[10px] bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">Carry Fwd</span>}
                         {lt.is_encashable && <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded">Encashable</span>}
                         {lt.requires_approval && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">Approval</span>}

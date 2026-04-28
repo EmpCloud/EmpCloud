@@ -182,9 +182,30 @@ export default function LeaveDashboardPage() {
                       BALANCE" companion label is dropped — the big
                       number + "days" already conveys the same. */}
                   <div className="flex items-center gap-2 mb-3 ml-6">
-                    <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${type.is_paid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"}`}>
-                      {type.is_paid ? t('leave.dashboard.paid') : t('leave.dashboard.unpaid')}
-                    </span>
+                    {/* Defensive: the form's `is_paid` checkbox defaults to true,
+                        so leave types literally named "Unpaid" / "LWP" / "Loss
+                        of Pay" / "Without Pay" frequently get saved with
+                        is_paid=true and then render with the green "PAID
+                        LEAVE" badge — the opposite of what the admin meant.
+                        Detect those name patterns and prefer them over the
+                        flag at render time. (#1649) */}
+                    {(() => {
+                      const isUnpaidByName = /\b(unpaid|lwp|without\s*pay|loss\s*of\s*pay)\b/i.test(
+                        type.name || "",
+                      );
+                      const showAsPaid = type.is_paid && !isUnpaidByName;
+                      return (
+                        <span
+                          className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+                            showAsPaid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"
+                          }`}
+                        >
+                          {showAsPaid
+                            ? t('leave.dashboard.paid')
+                            : t('leave.dashboard.unpaid')}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-1">
                     {balance} <span className="text-sm font-normal text-gray-400">{t('leave.dashboard.days')}</span>
