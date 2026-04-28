@@ -148,6 +148,11 @@ export default function App() {
         >
           <Route path="/" element={<RootRedirect />} />
           <Route path="/my-profile" element={<MyProfileRedirect />} />
+          {/* Legacy / commonly-shared URLs that don't match a real route — keep deep links working
+              instead of falling through to the catch-all root redirect. */}
+          <Route path="/attendance/shift-settings" element={<Navigate to="/attendance/shifts" replace />} />
+          <Route path="/leave/holidays" element={<Navigate to="/holidays" replace />} />
+          <Route path="/probation" element={<Navigate to="/employees/probation" replace />} />
           {hrmsRoutes}
           {helpdeskRoutes}
           {surveyRoutes}
