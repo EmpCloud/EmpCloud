@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@empcloud/shared";
@@ -16,6 +16,13 @@ export default function LoginPage() {
   const setAuth = useAuthStore((s) => s.login);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  // Set by the API client's forceLogout() helper when the session is
+  // unrecoverable (refresh token expired/revoked, or 401 with no refresh
+  // token). Surface a friendly notice instead of leaving the user staring
+  // at a blank form wondering what just happened.
+  const [searchParams] = useSearchParams();
+  const sessionState = searchParams.get("session"); // "expired" or null
+  const justReset = searchParams.get("reset") === "success";
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -80,6 +87,16 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 space-y-5">
+          {sessionState === "expired" && !error && (
+            <div className="bg-amber-50 text-amber-800 text-sm px-4 py-3 rounded-lg border border-amber-200">
+              Your session has expired. Please sign in again.
+            </div>
+          )}
+          {justReset && !error && (
+            <div className="bg-green-50 text-green-800 text-sm px-4 py-3 rounded-lg border border-green-200">
+              Password updated. Sign in with your new password.
+            </div>
+          )}
           {error && (
             <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
           )}
