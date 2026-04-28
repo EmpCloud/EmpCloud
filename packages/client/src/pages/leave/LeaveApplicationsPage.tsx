@@ -166,7 +166,32 @@ export default function LeaveApplicationsPage() {
             {isLoading ? (
               <tr><td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
             ) : applications.length === 0 ? (
-              <tr><td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">No applications found</td></tr>
+              <tr>
+                <td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">
+                  {/*
+                    #1822 — Bug 26: previously a fresh page-load with the
+                    "Pending" filter active just said "No applications
+                    found" and looked broken. When a status filter is
+                    active and yields zero rows, offer a one-click escape
+                    back to the All view so the user can see their other
+                    leaves instead of staring at an empty table.
+                  */}
+                  {statusFilter ? (
+                    <span>
+                      No {statusFilter} leave applications.{" "}
+                      <button
+                        type="button"
+                        onClick={() => { setStatusFilter(""); setPage(1); }}
+                        className="text-brand-600 hover:underline font-medium"
+                      >
+                        Show all applications
+                      </button>
+                    </span>
+                  ) : (
+                    "No applications found"
+                  )}
+                </td>
+              </tr>
             ) : (
               applications.map((app) => {
                 const style = STATUS_STYLES[app.status] || STATUS_STYLES.pending;

@@ -80,10 +80,37 @@ export default function LeaveDashboardPage() {
     },
   });
 
+  // #1822 — Bug 25: previously this silently `return`-ed when fields were
+  // missing, which made a click on Submit feel like nothing happened. Now
+  // we surface a clear inline message and also enforce end_date >=
+  // start_date before sending anything to the server. The fields all carry
+  // `required` HTML attributes too, so the browser's native bubble fires
+  // first; this state is the fallback for cases where the user manages to
+  // bypass that (e.g. JS-driven submit, stale form).
+  const [formError, setFormError] = useState<string | null>(null);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.leave_type_id || form.leave_type_id === 0) return;
-    if (!form.start_date || !form.end_date || !form.reason) return;
+    setFormError(null);
+    if (!form.leave_type_id || form.leave_type_id === 0) {
+      setFormError("Please select a leave type.");
+      return;
+    }
+    if (!form.start_date) {
+      setFormError("Start date is required.");
+      return;
+    }
+    if (!form.end_date) {
+      setFormError("End date is required.");
+      return;
+    }
+    if (new Date(form.end_date) < new Date(form.start_date)) {
+      setFormError("End date cannot be before start date.");
+      return;
+    }
+    if (!form.reason || !form.reason.trim()) {
+      setFormError("Please describe the reason for your leave.");
+      return;
+    }
     applyLeave.mutate(form);
   };
 
@@ -339,6 +366,11 @@ export default function LeaveDashboardPage() {
               />
             </div>
           </div>
+          {formError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
+              {formError}
+            </div>
+          )}
           {applyLeave.isError && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
               {(applyLeave.error && typeof applyLeave.error === "object" && "response" in applyLeave.error ? (applyLeave.error as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message : null) || t('leave.dashboard.submitError')}
