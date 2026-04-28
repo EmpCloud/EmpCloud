@@ -783,9 +783,22 @@ export const rejectDocumentSchema = z.object({
 // HRMS — Announcement Validators
 // ---------------------------------------------------------------------------
 
+// #270 — Reject obvious SSTI/XSS probe payloads (arithmetic inside template
+// markers). Output sanitisation already neutralises these on render, but
+// admins were seeing them sit visibly in the Announcements feed because
+// nothing stopped them from being stored. The regex is deliberately tight:
+// it matches `{{7*7}}`, `${7*7}`, `<%=7*7%>`, `#{7*7}` and similar arithmetic
+// probes — not legitimate uses like `{{user_name}}` or `${BUDGET}`.
+const SSTI_PROBE_RE =
+  /(\{\{|\$\{|<%=|#\{)\s*\d+\s*[+\-*/]\s*\d+\s*(\}\}|\}|%>)/;
+const ssTiCheck = (val: string) => !SSTI_PROBE_RE.test(val);
+const ssTiMessage =
+  "Content looks like a template-injection probe (e.g. {{7*7}}). " +
+  "If this is intentional, escape the markers or paraphrase.";
+
 export const createAnnouncementSchema = z.object({
-  title: z.string().min(1).max(255),
-  content: z.string().min(1),
+  title: z.string().min(1).max(255).refine(ssTiCheck, ssTiMessage),
+  content: z.string().min(1).refine(ssTiCheck, ssTiMessage),
   priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
   target_type: z.enum(["all", "department", "role"]).default("all"),
   target_ids: z.string().optional().nullable(),
