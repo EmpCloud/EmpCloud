@@ -1,185 +1,206 @@
 // =============================================================================
 // EMP CLOUD — Attendance Service
+//
+// Multi-punch model (#1869): every tap (web button, biometric scan, mobile
+// app) appends a row to attendance_punches. The denormalised check_in /
+// check_out columns on attendance_records are derived: check_in = first
+// punch of the day (locked), check_out = latest punch of the day (rolls
+// forward on each new tap). All existing readers (reports, payroll,
+// dashboard, leave) keep working unchanged because the columns they read
+// still exist and stay correct.
+//
+// Old behavior removed:
+//   - "Already checked in today" / "Already checked out today" errors —
+//     the new model accepts any number of punches.
+//   - "Must check in before checking out" — irrelevant; first punch is
+//     always treated as the check-in regardless of which endpoint is hit.
+//   - 5-minute "Session too short" reject (#1822 Bug 18) — drop, since
+//     short turnarounds are normal in the punch-card flow.
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
+import { ValidationError } from "../../utils/errors.js";
 import { calculateOvertime } from "../../utils/payroll-rules.js";
 import { assertChannelAllowed } from "./attendance-settings.service.js";
 import type { CheckInInput, CheckOutInput } from "@empcloud/shared";
 
-export async function checkIn(orgId: number, userId: number, data: CheckInInput) {
-  const db = getDB();
-  // Guard before any DB writes — if the channel is disabled at org level
-  // (or by an active per-user override) this throws ChannelNotAllowedError
-  // which the route layer renders as a 403 with a stable error code.
-  await assertChannelAllowed(orgId, userId, data.source);
-  const today = new Date().toISOString().slice(0, 10);
-
-  // Check for existing record today
-  const existing = await db("attendance_records")
-    .where({ organization_id: orgId, user_id: userId, date: today })
-    .first();
-
-  if (existing && existing.check_in) {
-    throw new ConflictError("Already checked in today");
-  }
-
-  // Get current shift assignment (use DATE() to avoid timezone mismatch)
-  const assignment = await db("shift_assignments")
-    .where({ organization_id: orgId, user_id: userId })
-    .whereRaw("DATE(effective_from) <= ?", [today])
-    .where(function () {
-      this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [today]);
-    })
-    .orderBy("effective_from", "desc")
-    .first();
-
-  const now = new Date();
-
-  // Calculate late minutes if shift assigned
-  let lateMinutes = 0;
-  if (assignment) {
-    const shift = await db("shifts").where({ id: assignment.shift_id }).first();
-    if (shift) {
-      const [h, m] = shift.start_time.split(":").map(Number);
-      const shiftStart = new Date(now);
-      shiftStart.setHours(h, m, 0, 0);
-      const graceEnd = new Date(shiftStart.getTime() + (shift.grace_minutes_late || 0) * 60000);
-      if (now > graceEnd) {
-        lateMinutes = Math.round((now.getTime() - shiftStart.getTime()) / 60000);
-      }
-    }
-  }
-
-  if (existing) {
-    // Update existing record — status stays "checked_in" until check-out
-    await db("attendance_records").where({ id: existing.id }).update({
-      check_in: now,
-      check_in_source: data.source || "manual",
-      check_in_lat: data.latitude || null,
-      check_in_lng: data.longitude || null,
-      late_minutes: lateMinutes,
-      status: "checked_in",
-      updated_at: now,
-    });
-    return db("attendance_records").where({ id: existing.id }).first();
-  }
-
-  const [id] = await db("attendance_records").insert({
-    organization_id: orgId,
-    user_id: userId,
-    date: today,
-    shift_id: assignment?.shift_id || null,
-    check_in: now,
-    check_in_source: data.source || "manual",
-    check_in_lat: data.latitude || null,
-    check_in_lng: data.longitude || null,
-    status: "checked_in",
-    late_minutes: lateMinutes,
-    remarks: data.remarks || null,
-    created_at: now,
-    updated_at: now,
-  });
-
-  return db("attendance_records").where({ id }).first();
+interface PunchInput {
+  source?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  remarks?: string | null;
 }
 
-export async function checkOut(orgId: number, userId: number, data: CheckOutInput) {
+// Single shared path for every tap. checkIn / checkOut both call this so
+// the system never has to ask "is this an in or an out?" — first punch of
+// the day is always the in, latest is always the out, everything in
+// between is just a punch.
+async function recordPunch(orgId: number, userId: number, data: PunchInput) {
   const db = getDB();
   await assertChannelAllowed(orgId, userId, data.source);
   const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const source = data.source || "manual";
+  const lat = data.latitude ?? null;
+  const lng = data.longitude ?? null;
 
-  const record = await db("attendance_records")
+  let record = await db("attendance_records")
     .where({ organization_id: orgId, user_id: userId, date: today })
     .first();
 
-  if (!record) throw new NotFoundError("No check-in record for today");
-  if (!record.check_in) throw new ValidationError("Must check in before checking out");
-  if (record.check_out) throw new ConflictError("Already checked out today");
+  // First punch of the day → create the parent row + lock the late timer.
+  if (!record) {
+    const assignment = await db("shift_assignments")
+      .where({ organization_id: orgId, user_id: userId })
+      .whereRaw("DATE(effective_from) <= ?", [today])
+      .where(function () {
+        this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [today]);
+      })
+      .orderBy("effective_from", "desc")
+      .first();
 
-  const now = new Date();
-  const checkInTime = new Date(record.check_in);
-  const workedMinutes = Math.round((now.getTime() - checkInTime.getTime()) / 60000);
+    let lateMinutes = 0;
+    if (assignment) {
+      const shift = await db("shifts").where({ id: assignment.shift_id }).first();
+      if (shift) {
+        const [h, m] = shift.start_time.split(":").map(Number);
+        const shiftStart = new Date(now);
+        shiftStart.setHours(h, m, 0, 0);
+        const graceEnd = new Date(shiftStart.getTime() + (shift.grace_minutes_late || 0) * 60000);
+        if (now > graceEnd) {
+          lateMinutes = Math.round((now.getTime() - shiftStart.getTime()) / 60000);
+        }
+      }
+    }
 
-  // Calculate early departure and overtime if shift assigned
+    const [id] = await db("attendance_records").insert({
+      organization_id: orgId,
+      user_id: userId,
+      date: today,
+      shift_id: assignment?.shift_id || null,
+      check_in: now,
+      check_in_source: source,
+      check_in_lat: lat,
+      check_in_lng: lng,
+      // No check_out yet — single-punch days stay "checked_in" until a
+      // second punch lands. That matches user intuition that one tap by
+      // itself isn't a completed day.
+      status: "checked_in",
+      late_minutes: lateMinutes,
+      worked_minutes: 0,
+      remarks: data.remarks || null,
+      created_at: now,
+      updated_at: now,
+    });
+
+    record = await db("attendance_records").where({ id }).first();
+  }
+
+  await db("attendance_punches").insert({
+    attendance_record_id: record.id,
+    organization_id: orgId,
+    user_id: userId,
+    punch_time: now,
+    source,
+    latitude: lat,
+    longitude: lng,
+  });
+
+  // Recompute denormalised fields from the punch list. Cheap because the
+  // index is (attendance_record_id, punch_time) and a day has O(10)
+  // punches even for the most active users.
+  const punches: Array<{
+    punch_time: Date | string;
+    source: string;
+    latitude: string | number | null;
+    longitude: string | number | null;
+  }> = await db("attendance_punches")
+    .where({ attendance_record_id: record.id })
+    .orderBy("punch_time", "asc")
+    .select("punch_time", "source", "latitude", "longitude");
+
+  const first = punches[0];
+  const last = punches[punches.length - 1];
+  const firstTime = new Date(first.punch_time);
+  const lastTime = new Date(last.punch_time);
+  const workedMinutes =
+    punches.length > 1
+      ? Math.max(0, Math.round((lastTime.getTime() - firstTime.getTime()) / 60000))
+      : 0;
+
+  let shiftDurationMinutes = 480;
   let earlyDepartureMinutes = 0;
   let overtimeMinutes = 0;
   if (record.shift_id) {
     const shift = await db("shifts").where({ id: record.shift_id }).first();
     if (shift) {
-      const [eh, em] = shift.end_time.split(":").map(Number);
-      const shiftEnd = new Date(now);
-      shiftEnd.setHours(eh, em, 0, 0);
+      const [sh, sm] = shift.start_time.split(":").map(Number);
+      const [eeh, eem] = shift.end_time.split(":").map(Number);
+      let diff = eeh * 60 + eem - (sh * 60 + sm);
+      if (diff <= 0) diff += 1440;
+      shiftDurationMinutes = diff - (shift.break_minutes || 0);
 
-      // For night shifts, shift end is the next day
-      if (shift.is_night_shift || shiftEnd.getTime() <= checkInTime.getTime()) {
-        shiftEnd.setDate(shiftEnd.getDate() + 1);
-      }
-
-      const graceStart = new Date(shiftEnd.getTime() - (shift.grace_minutes_early || 0) * 60000);
-
-      if (now < graceStart) {
-        earlyDepartureMinutes = Math.round((shiftEnd.getTime() - now.getTime()) / 60000);
-      } else if (now > shiftEnd) {
-        // Rule 5 (#1057): OT only counts after full shift hours are completed
-        // Rule 6 (#1058): Auto-calculate OT from check-out vs shift end time
-        const otResult = calculateOvertime(
-          checkInTime,
-          now,
-          shift.start_time,
-          shift.end_time,
-          !!shift.is_night_shift,
-          shift.break_minutes || 0,
+      // Early-departure / OT only meaningful once we have a check-out
+      // candidate (i.e. at least 2 punches). The latest punch is the one
+      // we score against the shift end.
+      if (punches.length > 1) {
+        const shiftEnd = new Date(lastTime);
+        shiftEnd.setHours(eeh, eem, 0, 0);
+        if (shift.is_night_shift || shiftEnd.getTime() <= firstTime.getTime()) {
+          shiftEnd.setDate(shiftEnd.getDate() + 1);
+        }
+        const graceStart = new Date(
+          shiftEnd.getTime() - (shift.grace_minutes_early || 0) * 60000,
         );
-        overtimeMinutes = otResult.overtime_minutes;
+        if (lastTime < graceStart) {
+          earlyDepartureMinutes = Math.round(
+            (shiftEnd.getTime() - lastTime.getTime()) / 60000,
+          );
+        } else if (lastTime > shiftEnd) {
+          // Rule 5 (#1057): OT only counts after full shift hours are completed
+          // Rule 6 (#1058): Auto-calculate OT from check-out vs shift end time
+          const otResult = calculateOvertime(
+            firstTime,
+            lastTime,
+            shift.start_time,
+            shift.end_time,
+            !!shift.is_night_shift,
+            shift.break_minutes || 0,
+          );
+          overtimeMinutes = otResult.overtime_minutes;
+        }
       }
     }
   }
 
-  // Determine status based on worked hours vs shift duration
-  // Calculate expected shift minutes (default 480 = 8h if no shift)
-  let shiftDurationMinutes = 480;
-  if (record.shift_id) {
-    const shiftForStatus = await db("shifts").where({ id: record.shift_id }).first();
-    if (shiftForStatus) {
-      const [sh, sm] = shiftForStatus.start_time.split(":").map(Number);
-      const [eeh, eem] = shiftForStatus.end_time.split(":").map(Number);
-      let diff = (eeh * 60 + eem) - (sh * 60 + sm);
-      if (diff <= 0) diff += 1440; // night shift crosses midnight
-      shiftDurationMinutes = diff - (shiftForStatus.break_minutes || 0);
-    }
-  }
   const halfShift = Math.floor(shiftDurationMinutes / 2);
-  // #1822 — Bug 17: introduce a quarter-shift floor so a 1h 5m session is no
-  // longer rewarded with "Half Day". Below the quarter floor → absent;
-  // between quarter and half → half_day; above → present.
+  // #1822 — Bug 17: quarter-shift floor — < 25% of shift → absent,
+  // 25–50% → half_day, ≥ 50% → present.
   const quarterShift = Math.floor(shiftDurationMinutes / 4);
 
-  // #1822 — Bug 18: a 30-second check-in/out (workedMinutes < 5) was
-  // silently saved as "Absent" with the late timer still ticking. That's
-  // confusing and dirties the record set. Reject the check-out outright so
-  // the open check-in remains intact and HR can either let the user
-  // continue the session or file a regularization. We deliberately do NOT
-  // delete the check-in row — that would erase audit history.
-  if (workedMinutes < 5) {
-    throw new ValidationError(
-      "Session too short to record (worked under 5 minutes). Stay checked in, or ask HR to regularize this entry.",
-    );
-  }
-
-  let status: "present" | "absent" | "half_day" = "present";
-  if (workedMinutes < quarterShift) {
-    status = "absent";
-  } else if (workedMinutes < halfShift) {
-    status = "half_day";
+  // Single-punch day stays "checked_in" — the worker is in but hasn't
+  // completed the day yet. Once a second punch lands, the day rolls into
+  // a present/half_day/absent bucket based on worked minutes.
+  let status: "present" | "absent" | "half_day" | "checked_in" = "checked_in";
+  if (punches.length > 1) {
+    if (workedMinutes < quarterShift) {
+      status = "absent";
+    } else if (workedMinutes < halfShift) {
+      status = "half_day";
+    } else {
+      status = "present";
+    }
   }
 
   await db("attendance_records").where({ id: record.id }).update({
-    check_out: now,
-    check_out_source: data.source || "manual",
-    check_out_lat: data.latitude || null,
-    check_out_lng: data.longitude || null,
+    check_in: firstTime,
+    check_in_source: first.source,
+    check_in_lat: first.latitude,
+    check_in_lng: first.longitude,
+    check_out: punches.length > 1 ? lastTime : null,
+    check_out_source: punches.length > 1 ? last.source : null,
+    check_out_lat: punches.length > 1 ? last.latitude : null,
+    check_out_lng: punches.length > 1 ? last.longitude : null,
     worked_minutes: workedMinutes,
     overtime_minutes: overtimeMinutes,
     early_departure_minutes: earlyDepartureMinutes,
@@ -188,6 +209,42 @@ export async function checkOut(orgId: number, userId: number, data: CheckOutInpu
   });
 
   return db("attendance_records").where({ id: record.id }).first();
+}
+
+export async function checkIn(orgId: number, userId: number, data: CheckInInput) {
+  return recordPunch(orgId, userId, {
+    source: data.source,
+    latitude: data.latitude,
+    longitude: data.longitude,
+    remarks: data.remarks,
+  });
+}
+
+export async function checkOut(orgId: number, userId: number, data: CheckOutInput) {
+  return recordPunch(orgId, userId, {
+    source: data.source,
+    latitude: data.latitude,
+    longitude: data.longitude,
+  });
+}
+
+// Used by the admin Attendance page timeline. Authorisation lives at the
+// route layer (HR sees any record in their org; non-HR only their own).
+export async function listPunches(orgId: number, attendanceRecordId: number) {
+  const db = getDB();
+  // Confirm the record exists in this org so a tenant can't enumerate
+  // someone else's punches by guessing IDs.
+  const record = await db("attendance_records")
+    .where({ id: attendanceRecordId, organization_id: orgId })
+    .first();
+  if (!record) {
+    throw new ValidationError("Attendance record not found");
+  }
+  const punches = await db("attendance_punches")
+    .where({ attendance_record_id: attendanceRecordId })
+    .orderBy("punch_time", "asc")
+    .select("id", "punch_time", "source", "latitude", "longitude", "created_at");
+  return { record, punches };
 }
 
 export async function getMyToday(orgId: number, userId: number) {

@@ -147,11 +147,6 @@ function formatInTimezone(date: Date, timezone: string | null): string {
   }
 }
 
-function minutesSince(from: Date | string): number {
-  const ms = Date.now() - new Date(from).getTime();
-  return Math.floor(ms / 60000);
-}
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -736,13 +731,13 @@ export async function matchAndPunch(
 
   const timeStr = formatInTimezone(new Date(), timezone);
 
+  // Multi-punch model (#1869): every kiosk tap is a punch. The first tap
+  // of the day is presented as a check-in; every subsequent tap is
+  // presented as a check-out (the latest punch is always the de-facto
+  // check-out). The legacy 1-hour minimum and "already checked out"
+  // gates are gone — both blocked legitimate workflows like a quick
+  // step-out for a meeting.
   if (existing && existing.check_in) {
-    // checkout path — emp-monitor enforces 1h minimum between check-in and check-out
-    const mins = minutesSince(existing.check_in);
-    if (mins < 60) return { error: { code: 400, message: "Can not checkout before 1 hr" } };
-    if (existing.check_out) {
-      return { error: { code: 400, message: "Already checked out today" } };
-    }
     await attendanceService.checkOut(orgId, user.id, { source: "biometric" } as any);
     return {
       data: { auth, status: 1, time: timeStr, userData: employeeDetails },

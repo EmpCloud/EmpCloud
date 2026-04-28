@@ -353,10 +353,36 @@ export async function resolveAttendancePolicy(
 // Thrown by the check-in guard when the resolved policy disallows the
 // channel the request is using. Surfaces as HTTP 403 with a stable error
 // code so the mobile app can render an actionable message.
+//
+// The message is intentionally human-readable — kiosk screens, the web
+// app, and the mobile app all surface it directly to the end user.
+const CHANNEL_LABEL: Record<AttendanceChannel, string> = {
+  biometric: "Biometric",
+  dashboard: "Web",
+  app: "Mobile app",
+};
+
+function buildChannelMessage(
+  channel: AttendanceChannel,
+  allowed: AttendanceChannel[],
+): string {
+  const label = CHANNEL_LABEL[channel];
+  // Special-case biometric per product copy spec — most common kiosk error.
+  if (channel === "biometric") {
+    return "Biometric check-in/check-out is disabled. Please contact HR or use another method.";
+  }
+  const otherEnabled = allowed.filter((c) => c !== channel);
+  if (otherEnabled.length === 0) {
+    return `${label} check-in/check-out is disabled. Please contact HR.`;
+  }
+  const altList = otherEnabled.map((c) => CHANNEL_LABEL[c]).join(" or ");
+  return `${label} check-in/check-out is disabled — please use ${altList} instead.`;
+}
+
 export class ChannelNotAllowedError extends AppError {
   constructor(channel: AttendanceChannel, allowed: AttendanceChannel[]) {
     super(
-      `Check-in via '${channel}' is not allowed for this user. Allowed channels: ${allowed.join(", ") || "none"}`,
+      buildChannelMessage(channel, allowed),
       403,
       "ATTENDANCE_CHANNEL_NOT_ALLOWED",
       { channel, allowed_channels: allowed },
