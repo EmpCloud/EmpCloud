@@ -66,12 +66,18 @@ export default function ShiftsPage() {
     setForm(emptyForm);
   };
 
+  // #1818 — MySQL TIME columns return "HH:MM:SS"; <input type="time"> only
+  // accepts "HH:MM" and renders blank for any longer value (so 00:00:00
+  // appeared unsettable). Slice every loaded value to HH:MM defensively.
+  const toInputTime = (v: unknown): string =>
+    typeof v === "string" ? v.slice(0, 5) : "";
+
   const handleEdit = (shift: any) => {
     setEditId(shift.id);
     setForm({
       name: shift.name,
-      start_time: shift.start_time,
-      end_time: shift.end_time,
+      start_time: toInputTime(shift.start_time),
+      end_time: toInputTime(shift.end_time),
       break_minutes: shift.break_minutes,
       grace_minutes_late: shift.grace_minutes_late,
       grace_minutes_early: shift.grace_minutes_early,
@@ -109,10 +115,18 @@ export default function ShiftsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // #1817 — Browser `required` accepts whitespace-only strings; explicitly
+    // reject so the server-side Zod check isn't the only line of defense.
+    const trimmedName = form.name.trim();
+    if (!trimmedName) {
+      set("name", "");
+      return;
+    }
+    const payload = { ...form, name: trimmedName };
     if (editId) {
-      updateShift.mutate({ id: editId, data: form });
+      updateShift.mutate({ id: editId, data: payload });
     } else {
-      createShift.mutate(form);
+      createShift.mutate(payload);
     }
   };
 
@@ -162,7 +176,9 @@ export default function ShiftsPage() {
             <div className="px-6 py-5 space-y-5">
               {/* Shift Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shifts.shiftName')}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('attendance.shifts.shiftName')} <span className="text-red-500" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="text"
                   value={form.name}
@@ -170,6 +186,7 @@ export default function ShiftsPage() {
                   placeholder={t('attendance.shifts.shiftNamePlaceholder')}
                   className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   required
+                  aria-required="true"
                 />
               </div>
 
@@ -332,7 +349,7 @@ export default function ShiftsPage() {
                     <span className="text-sm font-medium text-gray-900">{s.name}</span>
                     {s.is_default ? <span className="ml-2 text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">{t('attendance.shifts.defaultBadge')}</span> : null}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{s.start_time} - {s.end_time}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{toInputTime(s.start_time)} - {toInputTime(s.end_time)}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{s.break_minutes}m</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-1">

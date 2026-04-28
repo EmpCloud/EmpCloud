@@ -14,8 +14,15 @@ import {
   Building2,
   Search,
   X,
+  FileImage,
+  FileText,
+  Loader2,
 } from "lucide-react";
+import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
+import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 
 type StatModalMode = "people" | "managers" | "departments" | null;
 
@@ -48,16 +55,6 @@ const DEPT_GRADIENTS = [
   "from-purple-200 to-fuchsia-200",
 ];
 
-// Slightly more saturated for the avatar bg (so white initials still read clearly).
-const DEPT_AVATAR_GRADIENTS = [
-  "from-indigo-300 to-violet-400",
-  "from-sky-300 to-cyan-400",
-  "from-emerald-300 to-teal-400",
-  "from-amber-300 to-orange-400",
-  "from-rose-300 to-pink-400",
-  "from-purple-300 to-fuchsia-400",
-];
-
 function deptIndex(dept: string | null): number {
   if (!dept) return -1;
   let hash = 0;
@@ -68,11 +65,6 @@ function deptIndex(dept: string | null): number {
 function deptGradient(dept: string | null): string {
   const idx = deptIndex(dept);
   return idx === -1 ? "from-gray-200 to-gray-300" : DEPT_GRADIENTS[idx];
-}
-
-function deptAvatarGradient(dept: string | null): string {
-  const idx = deptIndex(dept);
-  return idx === -1 ? "from-gray-300 to-gray-400" : DEPT_AVATAR_GRADIENTS[idx];
 }
 
 /* ------------------------------------------------------------------ */
@@ -90,12 +82,14 @@ function NodeCard({
   hasChildren?: boolean;
 }) {
   const stripGradient = deptGradient(node.department);
-  const avatarGradient = deptAvatarGradient(node.department);
-  // Track image-load failures so we fall back to initials instead of showing
-  // a broken <img>. Some users have photo set to an invalid path or to a
-  // URL that 404s — previous behaviour was a broken-image icon.
-  const [imageFailed, setImageFailed] = useState(false);
-  const showPhoto = Boolean(node.photo) && !imageFailed;
+  // #1650 — Photo loading is delegated to EmployeeAvatar, which fetches
+  // the photo as a blob via the authenticated API endpoint and falls back
+  // to colored initials if there's no photo or the request 404s. Previously
+  // we tried <img src={node.photo}> with a raw filesystem path, which 404'd
+  // for everyone and silently fell back to initials — that was the actual
+  // bug behind the "all employees show initials" complaint in #1650.
+  const [first, ...rest] = node.name.split(" ");
+  const last = rest.join(" ");
   return (
     <button
       onClick={(e) => {
@@ -115,24 +109,14 @@ function NodeCard({
         <div className="flex items-start gap-3">
           {/* Avatar with colored ring for managers */}
           <div className="relative shrink-0">
-            {showPhoto ? (
-              <img
-                src={node.photo!}
-                alt={node.name}
-                onError={() => setImageFailed(true)}
-                className={`h-11 w-11 rounded-full object-cover ring-2 ${
-                  hasChildren ? "ring-brand-100" : "ring-gray-100"
-                }`}
-              />
-            ) : (
-              <div
-                className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${avatarGradient} text-xs font-semibold text-white ring-2 ${
-                  hasChildren ? "ring-brand-100" : "ring-white"
-                }`}
-              >
-                {getInitials(node.name)}
-              </div>
-            )}
+            <EmployeeAvatar
+              userId={node.id}
+              hasPhoto={!!node.photo}
+              firstName={first}
+              lastName={last}
+              size="lg"
+              ring={hasChildren ? "ring-brand-100" : "ring-gray-100"}
+            />
             {hasChildren && (
               <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[9px] font-bold text-white ring-2 ring-white">
                 {node.children.length}
@@ -550,6 +534,78 @@ export default function OrgChartPage() {
     [navigate],
   );
 
+  // #1651 — Export the chart as PNG or PDF (A3 landscape).
+  // We capture `contentRef` (the transformable layer holding all ChartNodes)
+  // rather than the viewport `containerRef` so the export contains the FULL
+  // chart at natural size, not just whatever's currently in view. Transform
+  // is reset to identity during capture and restored afterwards. Zoom
+  // preservation, share-link, and per-department filter from the original
+  // issue are deferred — natural-size at 2x pixelRatio gives users a
+  // high-quality image they can crop or insert into a deck.
+  const [exporting, setExporting] = useState<null | "png" | "pdf">(null);
+
+  const exportChart = useCallback(
+    async (format: "png" | "pdf") => {
+      if (!contentRef.current || exporting) return;
+      const node = contentRef.current;
+      const prevTransform = node.style.transform;
+      const prevTransformOrigin = node.style.transformOrigin;
+      setExporting(format);
+      try {
+        // Reset transform so html-to-image captures the natural-size layout.
+        node.style.transform = "none";
+        node.style.transformOrigin = "0 0";
+        await new Promise<void>((r) => requestAnimationFrame(() => r()));
+
+        const dataUrl = await toPng(node, {
+          cacheBust: true,
+          backgroundColor: "#f8fafc", // matches the slate-50 viewport bg
+          pixelRatio: 2,
+        });
+
+        const stamp = new Date().toISOString().split("T")[0];
+
+        if (format === "png") {
+          const link = document.createElement("a");
+          link.download = `org-chart-${stamp}.png`;
+          link.href = dataUrl;
+          link.click();
+        } else {
+          // Fit the captured image into A3 landscape with a 10mm margin.
+          const img = new Image();
+          img.src = dataUrl;
+          await new Promise<void>((res, rej) => {
+            img.onload = () => res();
+            img.onerror = () => rej(new Error("Image decode failed"));
+          });
+          const pageW = 420; // A3 landscape, mm
+          const pageH = 297;
+          const margin = 10;
+          const aspect = img.width / img.height;
+          let w = pageW - margin * 2;
+          let h = w / aspect;
+          if (h > pageH - margin * 2) {
+            h = pageH - margin * 2;
+            w = h * aspect;
+          }
+          const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a3" });
+          pdf.addImage(dataUrl, "PNG", (pageW - w) / 2, (pageH - h) / 2, w, h);
+          pdf.save(`org-chart-${stamp}.pdf`);
+        }
+
+        showToast("success", format === "png" ? "Chart exported as PNG." : "Chart exported as PDF.");
+      } catch (err) {
+        console.error("Org chart export failed:", err);
+        showToast("error", "Export failed. Please try again.");
+      } finally {
+        node.style.transform = prevTransform;
+        node.style.transformOrigin = prevTransformOrigin;
+        setExporting(null);
+      }
+    },
+    [exporting],
+  );
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -610,9 +666,12 @@ export default function OrgChartPage() {
           )}
         </div>
 
-        {/* Search bar */}
+        {/* Search bar + export actions. Export is desktop-only because the
+            mobile vertical-list view uses a separate DOM tree we don't capture.
+            Users on tablet/mobile can still pinch+screenshot if needed. */}
         {!isLoading && nodes.length > 0 && (
-          <div className="relative max-w-md">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="relative max-w-md flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               value={search}
@@ -657,6 +716,39 @@ export default function OrgChartPage() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Export — desktop-only because we capture the lg+ chart DOM. */}
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => exportChart("png")}
+              disabled={exporting !== null}
+              title="Download as PNG"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {exporting === "png" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <FileImage className="h-4 w-4" />
+              )}
+              PNG
+            </button>
+            <button
+              type="button"
+              onClick={() => exportChart("pdf")}
+              disabled={exporting !== null}
+              title="Download as PDF (A3 landscape)"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {exporting === "pdf" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <FileText className="h-4 w-4" />
+              )}
+              PDF
+            </button>
+          </div>
           </div>
         )}
       </div>

@@ -37,9 +37,9 @@ export function PostComposer({ placeholder, autofocus, onPosted }: Props) {
     <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex items-start gap-3">
         <AuthorChip
+          userId={user?.id}
           firstName={user?.first_name ?? ""}
           lastName={user?.last_name ?? ""}
-          photoUrl={null}
           compact
         />
       </div>

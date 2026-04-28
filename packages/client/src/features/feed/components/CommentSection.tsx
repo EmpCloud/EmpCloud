@@ -8,6 +8,7 @@ import {
 } from "../api";
 import type { FeedReply } from "../types";
 import { formatTimestamp } from "./AuthorChip";
+import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import { Loader2, MoreHorizontal, Pencil, Trash2, Send, MessageSquare } from "lucide-react";
 
 type Props = {
@@ -104,7 +105,7 @@ export function CommentSection({
       {/* Composer */}
       {!commentsDisabled && (
         <form onSubmit={submit} className="mt-3 flex items-center gap-2">
-          <Avatar firstName={user?.first_name} lastName={user?.last_name} />
+          <Avatar userId={user?.id} firstName={user?.first_name} lastName={user?.last_name} />
           <div className="flex-1 relative">
             <input
               type="text"
@@ -165,9 +166,10 @@ function CommentRow({
   return (
     <div className="flex items-start gap-2.5 group">
       <Avatar
+        userId={reply.author_id}
+        hasPhoto={!!reply.author_photo}
         firstName={reply.author_first_name}
         lastName={reply.author_last_name}
-        photoUrl={reply.author_photo}
       />
       <div className="flex-1 min-w-0">
         {editing ? (
@@ -265,23 +267,26 @@ function CommentRow({
 // to coloured initials when no photo is available.
 // ---------------------------------------------------------------------------
 
+// #1650 — Local Avatar wraps EmployeeAvatar so all comment avatars share the
+// same blob-based photo loader used elsewhere.
 function Avatar({
+  userId,
+  hasPhoto,
   firstName,
   lastName,
-  photoUrl,
 }: {
+  userId?: number | null;
+  hasPhoto?: boolean;
   firstName?: string;
   lastName?: string;
-  photoUrl?: string | null;
 }) {
-  const initials = `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
   return (
-    <div className="h-8 w-8 flex-shrink-0 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center overflow-hidden">
-      {photoUrl ? (
-        <img src={photoUrl} alt="" className="h-full w-full object-cover" />
-      ) : (
-        <span className="text-xs font-semibold">{initials || "?"}</span>
-      )}
-    </div>
+    <EmployeeAvatar
+      userId={userId}
+      hasPhoto={hasPhoto}
+      firstName={firstName}
+      lastName={lastName}
+      size="sm"
+    />
   );
 }

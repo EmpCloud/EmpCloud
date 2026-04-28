@@ -49,10 +49,34 @@
   /* #1415 — Collapsed sidebar: hide text labels, section headers, badges, and
      chevrons so only nav icons remain visible. We rely on a class toggle on
      the sidebar root (.sidebar-collapsed) so every NavLink/NestedNavItem
-     inside it participates without prop-drilling. */
+     inside it participates without prop-drilling.
+
+     #1816 — Zero out horizontal padding on each row when collapsed. The
+     sidebar narrows to w-16 (64px); the nav's p-4 already eats 32px, and
+     each row's px-3 (Tailwind) ate the remaining 32px right down to 8px,
+     which is smaller than the 20px icon. The icons were getting visually
+     clipped / overflowing past the right edge so users saw "nothing" in
+     the collapsed sidebar. With horizontal padding removed they have the
+     full 32px content box to center in.
+
+     IMPORTANT — DO NOT remove `justify-content: center` and DO NOT drop the
+     `!important` markers on padding. Both are load-bearing in production:
+
+       - `justify-content: center` was once commented out for debugging and
+         the icons regressed (#1816). The default `flex-start` shoves them
+         behind the parent's padding so users see a blank column.
+
+       - `!important` is required because this rule sits in `@layer base`
+         while Tailwind's `px-3 / pl-9 / pr-3` utilities sit in
+         `@layer utilities`, which wins the cascade regardless of selector
+         specificity. Vite dev builds happen to emit CSS in source order so
+         the unimportant version "works locally" and silently regressed in
+         the prod build. */
   .sidebar-collapsed nav a,
   .sidebar-collapsed nav button {
-    justify-content: center;
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
   .sidebar-collapsed nav a > span,
   .sidebar-collapsed nav button > span,

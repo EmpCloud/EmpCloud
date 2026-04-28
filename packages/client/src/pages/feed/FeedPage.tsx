@@ -19,6 +19,7 @@ import { FEED_QUERY_KEY, useFeed } from "@/features/feed/api";
 import { PostComposer } from "@/features/feed/components/PostComposer";
 import { PostCard } from "@/features/feed/components/PostCard";
 import { CategoriesPanel } from "@/features/feed/components/CategoriesPanel";
+import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -47,6 +48,24 @@ export default function FeedPage() {
     author_id,
   });
 
+  // #1560 — Scroll the main content area to the top on filter change so the
+  // user sees the refreshed post list. Without this, a click on "My posts"
+  // when scrolled mid-feed silently swaps content above the viewport and
+  // looks like the tab did nothing. We can't use window.scrollTo because
+  // DashboardLayout's main column owns the scrollbar (the page itself
+  // never scrolls); scrolling a top-of-page anchor into view is the
+  // simplest way to defer to whichever ancestor is scrollable.
+  const topAnchorRef = useRef<HTMLDivElement | null>(null);
+  // Skip the very first run so we don't scroll-jack on mount.
+  const filterMounted = useRef(false);
+  useEffect(() => {
+    if (!filterMounted.current) {
+      filterMounted.current = true;
+      return;
+    }
+    topAnchorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [filter]);
+
   const { data: stats } = useQuery({
     queryKey: ["forum-dashboard"],
     queryFn: () => api.get("/forum/dashboard").then((r) => r.data.data),
@@ -74,6 +93,7 @@ export default function FeedPage() {
 
   return (
     <div className={isHR ? "" : "mx-auto max-w-2xl"}>
+      <div ref={topAnchorRef} aria-hidden="true" />
       {/* ───────────────────── Hero header ───────────────────── */}
       <header className="relative mb-6 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-brand-50 via-white to-purple-50 p-6">
         <div className="flex items-start justify-between gap-4">
@@ -160,7 +180,15 @@ export default function FeedPage() {
               <FilterChip active={filter === "mine"} onClick={() => setFilter("mine")}>
                 My posts
               </FilterChip>
-              {(search || filter !== "all") && (
+              {/* #1560 — Inline spinner during a tab-triggered refetch so the
+                  user sees an immediate signal that their click did
+                  something. Previously the only visible feedback was the
+                  posts re-rendering, which was easy to miss when scrolled
+                  down or when both tabs returned similar content. */}
+              {isFetching && !isFetchingNextPage && (
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />
+              )}
+              {(search || filter !== "all") && !isFetching && (
                 <span className="ml-auto text-xs text-gray-400">
                   {posts.length} result{posts.length === 1 ? "" : "s"}
                 </span>
@@ -255,15 +283,13 @@ export default function FeedPage() {
                       <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-[10px] font-bold text-gray-500">
                         {i + 1}
                       </span>
-                      <div className="h-8 w-8 flex-shrink-0 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center overflow-hidden">
-                        {u.photo_path ? (
-                          <img src={u.photo_path} alt="" className="h-full w-full object-cover" />
-                        ) : (
-                          <span className="text-xs font-semibold">
-                            {(u.first_name?.[0] ?? "") + (u.last_name?.[0] ?? "")}
-                          </span>
-                        )}
-                      </div>
+                      <EmployeeAvatar
+                        userId={u.id}
+                        hasPhoto={!!u.photo_path}
+                        firstName={u.first_name}
+                        lastName={u.last_name}
+                        size="sm"
+                      />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {u.first_name} {u.last_name}

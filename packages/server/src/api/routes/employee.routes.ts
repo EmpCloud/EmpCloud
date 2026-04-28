@@ -431,6 +431,35 @@ router.get("/:id/photo", authenticate, async (req: Request, res: Response, next:
   } catch (err) { next(err); }
 });
 
+// DELETE /api/v1/employees/:id/photo
+// #1650 — "Option to revert to initials avatar" from the issue. Removes the
+// stored file from disk and clears `photo_path` so display fallbacks kick in
+// everywhere. Self or HR only — same auth as upload.
+router.delete("/:id/photo", authenticate, requireSelfOrHR("id"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = paramInt(req.params.id);
+    const orgId = req.user!.org_id;
+    const db = getDB();
+    const user = await db("users").where({ id: userId, organization_id: orgId }).select("photo_path").first();
+    if (!user) throw new ValidationError("User not found");
+    if (user.photo_path) {
+      const filePath = path.join(process.cwd(), user.photo_path);
+      // Best-effort delete; missing file shouldn't block the column reset.
+      try { fs.unlinkSync(filePath); } catch { /* ignore */ }
+    }
+    await db("users").where({ id: userId, organization_id: orgId }).update({ photo_path: null, updated_at: new Date() });
+    await logAudit({
+      organizationId: orgId,
+      userId: req.user!.sub,
+      action: AuditAction.USER_UPDATED,
+      resourceType: "user",
+      resourceId: String(userId),
+      details: { field: "photo_path", removed: true },
+    });
+    sendSuccess(res, { removed: true });
+  } catch (err) { next(err); }
+});
+
 // =========================================================================
 // Salary Structure (self or HR)
 // =========================================================================
