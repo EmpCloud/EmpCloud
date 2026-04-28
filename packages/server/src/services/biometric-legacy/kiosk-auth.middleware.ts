@@ -15,13 +15,42 @@ import { sendLegacyResponse } from "../../utils/legacy-response.js";
 
 export interface KioskUserData {
   id: number;
+  // Primary org the kiosk credential belongs to. Always present so existing
+  // tokens (and clients that only read this field) keep working.
   organization_id: number;
+  // Multi-org kiosk linking (#1936): when the credential has linked
+  // organisations, organization_ids is [primary, ...linked]. Older tokens
+  // omit it; readers should treat absent as [organization_id].
+  organization_ids?: number[];
+  // Map of org id (stringified) → admin email used to identify that org.
+  // Used by /get-locations and /get-department to render "Bhilai - admin@x"
+  // when multiple orgs share a kiosk.
+  organization_emails?: Record<string, string>;
   email: string;
   username?: string | null;
   first_name?: string | null;
   last_name?: string | null;
   timezone?: string | null;
   is_bio_enabled?: boolean;
+}
+
+// Single source of truth for "which orgs does this kiosk see right now".
+// Routes call this instead of reading req.kioskUser.userData.organization_id
+// directly so the multi-org behaviour stays consistent with the JWT shape.
+export function getKioskOrgIds(req: Request): number[] {
+  const ud = req.kioskUser?.userData;
+  if (!ud) return [];
+  const list = ud.organization_ids;
+  if (Array.isArray(list) && list.length > 0) return list.map((n) => Number(n));
+  return [Number(ud.organization_id)];
+}
+
+export function getKioskPrimaryOrgId(req: Request): number {
+  return Number(req.kioskUser!.userData.organization_id);
+}
+
+export function getKioskOrgEmails(req: Request): Record<string, string> {
+  return req.kioskUser?.userData.organization_emails ?? {};
 }
 
 export interface KioskTokenPayload {
