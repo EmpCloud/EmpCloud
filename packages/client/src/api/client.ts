@@ -22,13 +22,28 @@ api.interceptors.request.use((config) => {
 // Mutex for token refresh — prevents concurrent 401s from triggering multiple refreshes
 let refreshPromise: Promise<string> | null = null;
 
+// Endpoints that mint or revoke tokens directly. They reject with 401 to
+// signal "wrong credentials" or "expired/invalid token" — both of which are
+// terminal for the request and must NOT trigger a refresh-then-retry. Without
+// this guard the LoginPage 401 would attempt a refresh against any stale
+// refresh_token in localStorage; if that refresh failed we fell through to
+// `window.location.href = "/login"`, which reloaded the page and silently
+// wiped the user's just-typed credentials and the inline error message
+// (#1638). The user saw a button click that "did nothing".
+const AUTH_ENDPOINTS = ["/auth/login", "/auth/register", "/auth/forgot-password", "/auth/reset-password", "/auth/sso"];
+const isAuthEndpoint = (url?: string) => !!url && AUTH_ENDPOINTS.some((p) => url.includes(p));
+
 // Handle 401 — attempt token refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint(originalRequest?.url)
+    ) {
       originalRequest._retry = true;
       const refreshToken = useAuthStore.getState().refreshToken;
 

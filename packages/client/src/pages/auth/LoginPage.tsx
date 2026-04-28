@@ -43,7 +43,27 @@ export default function LoginPage() {
       );
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || "Login failed");
+      // #1648 — surface rate-limit 429s explicitly. express-rate-limit sets
+      // Retry-After (in seconds) and our middleware also returns a structured
+      // message. Always show *something* even if the response is empty so the
+      // button click never appears to do nothing.
+      if (err.response?.status === 429) {
+        const retryAfterSec = Number(err.response.headers?.["retry-after"]);
+        const baseMsg = err.response?.data?.error?.message
+          || "Too many login attempts. Please wait and try again.";
+        if (retryAfterSec > 0) {
+          const mins = Math.ceil(retryAfterSec / 60);
+          setError(`${baseMsg} (Retry in ~${mins} min)`);
+        } else {
+          setError(baseMsg);
+        }
+        return;
+      }
+      // Network errors (no response) and unstructured errors fall through
+      // to a clear default. Never leave the form blank.
+      const apiMsg = err.response?.data?.error?.message;
+      const networkMsg = !err.response ? "Can't reach the server. Check your connection and try again." : null;
+      setError(apiMsg || networkMsg || "Login failed. Please try again.");
     }
   };
 
