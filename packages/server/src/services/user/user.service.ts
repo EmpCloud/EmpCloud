@@ -253,6 +253,19 @@ export async function updateUser(orgId: number, userId: number, data: UpdateUser
       }
     }
   }
+  // Normalise blank emp_code / contact_number / address / gender to NULL.
+  // Critical for emp_code because migration 054's
+  // UNIQUE(organization_id, emp_code) treats '' as a value and fires
+  // "Duplicate entry '1-'" the moment two users in an org both clear
+  // their code. Same hygiene for the other plain-text columns so the
+  // DB doesn't end up mixing NULLs and empty strings for the same
+  // "user didn't enter anything" state.
+  for (const key of ["emp_code", "contact_number", "address", "gender"]) {
+    if (typeof allowed[key] === "string") {
+      const trimmed = (allowed[key] as string).trim();
+      allowed[key] = trimmed === "" ? null : trimmed;
+    }
+  }
   // Map phone -> contact_number (DB column)
   if (allowed.phone !== undefined && allowed.contact_number === undefined) {
     allowed.contact_number = allowed.phone;
