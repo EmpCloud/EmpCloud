@@ -110,6 +110,7 @@ export default function ShiftSchedulePage() {
   const [bulkUserIds, setBulkUserIds] = useState<number[]>([]);
   const [bulkFrom, setBulkFrom] = useState("");
   const [bulkTo, setBulkTo] = useState("");
+  const [bulkEmployeeSearch, setBulkEmployeeSearch] = useState("");
 
   // Quick assign form state
   const [assignShiftId, setAssignShiftId] = useState("");
@@ -144,8 +145,29 @@ export default function ShiftSchedulePage() {
       setBulkUserIds([]);
       setBulkFrom("");
       setBulkTo("");
+      setBulkEmployeeSearch("");
     },
   });
+
+  // Filter the employee list shown in the bulk-assign modal. Match across
+  // first / last name, full name, emp_code, and email so HR can find a
+  // person by whatever identifier is in front of them. Selected users
+  // that fall outside the filter stay selected — the count chip uses
+  // bulkUserIds, not the visible rows.
+  const filteredBulkEmployees = useMemo(() => {
+    const q = bulkEmployeeSearch.trim().toLowerCase();
+    if (!q) return employees;
+    return (employees as any[]).filter((emp) => {
+      const full = `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.toLowerCase();
+      return (
+        full.includes(q) ||
+        (emp.first_name ?? "").toLowerCase().includes(q) ||
+        (emp.last_name ?? "").toLowerCase().includes(q) ||
+        (emp.emp_code ?? "").toString().toLowerCase().includes(q) ||
+        (emp.email ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [employees, bulkEmployeeSearch]);
 
   const quickAssign = useMutation({
     mutationFn: (data: any) => api.post("/attendance/shifts/assign", data).then((r) => r.data.data),
@@ -312,7 +334,7 @@ export default function ShiftSchedulePage() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">{t('attendance.shiftSchedule.bulk.title')}</h3>
-              <button type="button" onClick={() => setShowBulkAssign(false)} className="text-gray-400 hover:text-gray-600">
+              <button type="button" onClick={() => { setShowBulkAssign(false); setBulkEmployeeSearch(""); }} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -337,19 +359,45 @@ export default function ShiftSchedulePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
                 </label>
+                <div className="relative mb-2">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={bulkEmployeeSearch}
+                    onChange={(e) => setBulkEmployeeSearch(e.target.value)}
+                    placeholder="Search by name, employee code, or email"
+                    className="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                  {bulkEmployeeSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setBulkEmployeeSearch("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
                 <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
-                  {employees.map((emp: any) => (
-                    <label key={emp.id} className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-gray-50 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={bulkUserIds.includes(emp.id)}
-                        onChange={() => toggleBulkUser(emp.id)}
-                        className="rounded border-gray-300"
-                      />
-                      {emp.first_name} {emp.last_name}
-                      {emp.emp_code && <span className="text-gray-400">({emp.emp_code})</span>}
-                    </label>
-                  ))}
+                  {filteredBulkEmployees.length === 0 ? (
+                    <p className="text-xs text-gray-400 px-2 py-3 text-center">
+                      No employees match &ldquo;{bulkEmployeeSearch}&rdquo;
+                    </p>
+                  ) : (
+                    filteredBulkEmployees.map((emp: any) => (
+                      <label key={emp.id} className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-gray-50 rounded cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={bulkUserIds.includes(emp.id)}
+                          onChange={() => toggleBulkUser(emp.id)}
+                          className="rounded border-gray-300"
+                        />
+                        {emp.first_name} {emp.last_name}
+                        {emp.emp_code && <span className="text-gray-400">({emp.emp_code})</span>}
+                      </label>
+                    ))
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -375,7 +423,7 @@ export default function ShiftSchedulePage() {
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-2">
-              <button type="button" onClick={() => setShowBulkAssign(false)} className="px-4 py-2 text-sm border border-gray-300 rounded-lg">
+              <button type="button" onClick={() => { setShowBulkAssign(false); setBulkEmployeeSearch(""); }} className="px-4 py-2 text-sm border border-gray-300 rounded-lg">
                 {t('common.cancel')}
               </button>
               <button
