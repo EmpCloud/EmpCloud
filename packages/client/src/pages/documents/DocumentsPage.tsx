@@ -267,6 +267,29 @@ export default function DocumentsPage() {
         </button>
       </div>
 
+      {/* Missing-mandatory banner — surface compliance gap without making admins hunt for it.
+          Shown only when there are outstanding mandatory-doc requirements and the user is not
+          already looking at the mandatory tab (so it acts as a CTA, not a redundant header). */}
+      {missingCount > 0 && activeTab !== "mandatory" && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-red-800">
+              {missingCount} mandatory document{missingCount === 1 ? "" : "s"} outstanding
+            </p>
+            <p className="text-xs text-red-700 mt-0.5">
+              One or more employees are missing required documents. Review the list and follow up with them or upload on their behalf.
+            </p>
+          </div>
+          <button
+            onClick={() => setActiveTab("mandatory")}
+            className="text-xs font-medium text-red-700 hover:text-red-900 underline shrink-0"
+          >
+            Review now
+          </button>
+        </div>
+      )}
+
       {/* Alert Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <button onClick={() => setActiveTab("all")} className={`bg-white rounded-xl border p-5 text-left transition ${activeTab === "all" ? "border-brand-300 ring-1 ring-brand-200" : "border-gray-200"}`}>
