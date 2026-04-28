@@ -121,15 +121,43 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         const user = await db("users").where({ id: row.id, organization_id: orgId }).first();
         if (!user) { results.push({ id: row.id, status: "skipped", error: "Not found" }); continue; }
 
+        // Normalise blank text inputs to NULL. Critical for `emp_code`
+        // because migration 054's UNIQUE(organization_id, emp_code) treats
+        // empty strings as a value and fires "Duplicate entry '1-'" the
+        // moment two users in an org both end up with `''`. Same hygiene
+        // applied to the other plain-text columns so the DB doesn't end up
+        // mixing NULLs and empty strings for what's logically the same
+        // "user didn't enter anything" state.
+        const blankToNull = (v: unknown): string | null => {
+          if (typeof v !== "string") return v as string | null;
+          const trimmed = v.trim();
+          return trimmed === "" ? null : trimmed;
+        };
+
         const updates: Record<string, any> = {};
         if (row.first_name !== undefined && row.first_name !== user.first_name) updates.first_name = row.first_name;
         if (row.last_name !== undefined && row.last_name !== user.last_name) updates.last_name = row.last_name;
-        if (row.emp_code !== undefined && row.emp_code !== user.emp_code) updates.emp_code = row.emp_code;
-        if (row.contact_number !== undefined && row.contact_number !== user.contact_number) updates.contact_number = row.contact_number;
-        if (row.designation !== undefined && row.designation !== user.designation) updates.designation = row.designation;
+        if (row.emp_code !== undefined) {
+          const next = blankToNull(row.emp_code);
+          if (next !== user.emp_code) updates.emp_code = next;
+        }
+        if (row.contact_number !== undefined) {
+          const next = blankToNull(row.contact_number);
+          if (next !== user.contact_number) updates.contact_number = next;
+        }
+        if (row.designation !== undefined) {
+          const next = blankToNull(row.designation);
+          if (next !== user.designation) updates.designation = next;
+        }
         if (row.employment_type !== undefined && row.employment_type !== user.employment_type) updates.employment_type = row.employment_type;
-        if (row.gender !== undefined && row.gender !== user.gender) updates.gender = row.gender;
-        if (row.address !== undefined && row.address !== user.address) updates.address = row.address;
+        if (row.gender !== undefined) {
+          const next = blankToNull(row.gender);
+          if (next !== user.gender) updates.gender = next;
+        }
+        if (row.address !== undefined) {
+          const next = blankToNull(row.address);
+          if (next !== user.address) updates.address = next;
+        }
         if (row.date_of_birth !== undefined) updates.date_of_birth = row.date_of_birth || null;
         if (row.date_of_joining !== undefined) updates.date_of_joining = row.date_of_joining || null;
         if (row.role && row.role !== user.role && ["employee", "manager", "hr_admin", "org_admin"].includes(row.role)) {

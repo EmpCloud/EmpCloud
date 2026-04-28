@@ -156,9 +156,14 @@ export async function upsertProfile(
   // but cannot edit (matches the #1423/#1424 ticket's "be conservative"
   // guidance — employees shouldn't arbitrarily rename their role).
   if (designation !== undefined && isHR) userUpdate.designation = designation || null;
-  // emp-payroll#246 — emp_code: HR-only edit. Employees can see it but
-  // cannot rewrite their own employee code.
-  if (emp_code !== undefined && isHR) userUpdate.emp_code = emp_code || null;
+  // emp_code: HR-only edit (emp-payroll#246). Trim + fold whitespace-only
+  // strings to NULL so migration 054's UNIQUE(organization_id, emp_code)
+  // index doesn't fire "Duplicate entry '1-'" the moment two users clear
+  // their code (emp_code || null only catches '', not '   ').
+  if (emp_code !== undefined && isHR) {
+    const trimmed = typeof emp_code === "string" ? emp_code.trim() : emp_code;
+    userUpdate.emp_code = trimmed ? trimmed : null;
+  }
 
   if (Object.keys(userUpdate).length > 0) {
     userUpdate.updated_at = new Date();
