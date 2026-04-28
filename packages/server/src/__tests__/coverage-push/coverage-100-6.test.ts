@@ -269,31 +269,37 @@ describe("Attendance service — edge cases", () => {
     }
   });
 
+  // #1822 — Bug 17: half_day now requires >= quarterShift (= 120 min for an
+  // 8h default shift). Use a 3-hour window so we land safely between the
+  // quarter-shift floor (120) and the half-shift cutoff (240).
   it("checkOut — half_day status for short worked time", async () => {
     const { checkOut } = await import("../../services/attendance/attendance.service.js");
     const db = getDB();
     const testUser = 528;
     await db("attendance_records").where({ organization_id: ORG, user_id: testUser, date: today }).delete();
-    // Create a check-in 2 hours ago (120 min) -> should be half_day (< 240 min)
-    const twoHoursAgo = new Date(Date.now() - 120 * 60000);
+    const threeHoursAgo = new Date(Date.now() - 180 * 60000);
     const [id] = await db("attendance_records").insert({
       organization_id: ORG,
       user_id: testUser,
       date: today,
-      check_in: twoHoursAgo,
+      check_in: threeHoursAgo,
       check_in_source: "web",
-      status: "present",
+      status: "checked_in",
       created_at: new Date(),
       updated_at: new Date(),
     });
     cleanupAttendanceIds.push(id);
     const result = await checkOut(ORG, testUser, { source: "web" });
     expect(result.status).toBe("half_day");
-    expect(result.worked_minutes).toBeGreaterThan(100);
+    expect(result.worked_minutes).toBeGreaterThanOrEqual(120);
     expect(result.worked_minutes).toBeLessThan(240);
   });
 
-  it("checkOut — absent status for very short work (< 5 min)", async () => {
+  // #1822 — Bug 18: a < 5 min session is now refused at check-out time so
+  // the open check-in remains available for HR to resolve via
+  // regularization. Previously this used to write an "absent" record
+  // silently; the new behaviour throws ValidationError instead.
+  it("checkOut — refuses very short work (< 5 min) and keeps check-in row open", async () => {
     const { checkOut } = await import("../../services/attendance/attendance.service.js");
     const db = getDB();
     const testUser = 530;
@@ -306,14 +312,24 @@ describe("Attendance service — edge cases", () => {
       date: today,
       check_in: twoMinsAgo,
       check_in_source: "web",
-      status: "present",
+      status: "checked_in",
       created_at: new Date(),
       updated_at: new Date(),
     });
     cleanupAttendanceIds.push(id);
-    const result = await checkOut(ORG, testUser, { source: "web" });
-    expect(result.status).toBe("absent");
-    expect(result.worked_minutes).toBeLessThan(5);
+
+    let threw = false;
+    try {
+      await checkOut(ORG, testUser, { source: "web" });
+    } catch (e: any) {
+      threw = true;
+      expect(String(e.message)).toMatch(/too short/i);
+    }
+    expect(threw).toBe(true);
+
+    // The check-in row must remain — no silent rewrite to "absent"
+    const stillOpen = await db("attendance_records").where({ id }).first();
+    expect(stillOpen.check_out).toBeFalsy();
   });
 
   it("checkOut — already checked out throws ConflictError", async () => {

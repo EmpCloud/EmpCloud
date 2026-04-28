@@ -151,9 +151,25 @@ export async function checkOut(orgId: number, userId: number, data: CheckOutInpu
     }
   }
   const halfShift = Math.floor(shiftDurationMinutes / 2);
+  // #1822 — Bug 17: introduce a quarter-shift floor so a 1h 5m session is no
+  // longer rewarded with "Half Day". Below the quarter floor → absent;
+  // between quarter and half → half_day; above → present.
+  const quarterShift = Math.floor(shiftDurationMinutes / 4);
 
-  let status = "present";
+  // #1822 — Bug 18: a 30-second check-in/out (workedMinutes < 5) was
+  // silently saved as "Absent" with the late timer still ticking. That's
+  // confusing and dirties the record set. Reject the check-out outright so
+  // the open check-in remains intact and HR can either let the user
+  // continue the session or file a regularization. We deliberately do NOT
+  // delete the check-in row — that would erase audit history.
   if (workedMinutes < 5) {
+    throw new ValidationError(
+      "Session too short to record (worked under 5 minutes). Stay checked in, or ask HR to regularize this entry.",
+    );
+  }
+
+  let status: "present" | "absent" | "half_day" = "present";
+  if (workedMinutes < quarterShift) {
     status = "absent";
   } else if (workedMinutes < halfShift) {
     status = "half_day";
