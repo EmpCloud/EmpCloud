@@ -3,7 +3,7 @@ import api from "@/api/client";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2 } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, ChevronDown, ChevronRight, Fingerprint, Smartphone, Monitor } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import { useAuthStore } from "@/lib/auth-store";
 import * as XLSX from "xlsx";
@@ -617,6 +617,7 @@ export default function AttendanceDashboardPage() {
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="w-10 px-2 py-3"></th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
@@ -644,57 +645,10 @@ export default function AttendanceDashboardPage() {
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
+              <tr><td colSpan={9} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
             ) : (
               records.map((r: any) => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
-                        {r.first_name?.[0]}{r.last_name?.[0]}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
-                        <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.department_name || "-"}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.date ? new Date(r.date).toLocaleDateString() : "-"}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      r.status === "present" ? "bg-green-50 text-green-700"
-                        : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-                        : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-                        : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-                        : "bg-red-50 text-red-700"
-                    }`}>
-                      {(() => {
-                        if (r.status === "checked_in") return t('attendance.statusCheckedIn');
-                        if (r.status === "half_day") return t('attendance.statusHalfDay');
-                        const k = `attendance.${r.status}`;
-                        const tr = t(k);
-                        return tr !== k ? tr : r.status.replace(/_/g, " ");
-                      })()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
-                  </td>
-                </tr>
+                <RecordRow key={r.id} record={r} t={t} />
               ))
             )}
           </tbody>
@@ -711,5 +665,156 @@ export default function AttendanceDashboardPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// =============================================================================
+// Multi-punch timeline (#1869) — expandable row showing every punch for a
+// given attendance record. The first punch of the day is displayed as
+// "Check in", the latest is "Check out" (even if it's the same one for a
+// single-punch day in progress), everything in between is "Punch".
+// =============================================================================
+
+interface PunchRow {
+  id: number;
+  punch_time: string;
+  source: string;
+  latitude: number | string | null;
+  longitude: number | string | null;
+}
+
+function sourceMeta(source: string): { label: string; Icon: typeof Fingerprint; cls: string } {
+  if (source === "biometric") return { label: "Biometric", Icon: Fingerprint, cls: "bg-purple-50 text-purple-700" };
+  if (source === "app") return { label: "Mobile app", Icon: Smartphone, cls: "bg-blue-50 text-blue-700" };
+  if (source === "dashboard") return { label: "Web", Icon: Monitor, cls: "bg-emerald-50 text-emerald-700" };
+  return { label: source || "Manual", Icon: Monitor, cls: "bg-gray-100 text-gray-700" };
+}
+
+function fmtPunchTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return iso;
+  }
+}
+
+function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) => string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <>
+      <tr className="hover:bg-gray-50">
+        <td className="px-2 py-4 text-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((x) => !x)}
+            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700"
+            aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
+          >
+            {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          </button>
+        </td>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+              {r.first_name?.[0]}{r.last_name?.[0]}
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
+              <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
+            </div>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-sm text-gray-600">{r.department_name || "-"}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+        <td className="px-6 py-4 text-sm text-gray-600">
+          {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
+        </td>
+        <td className="px-6 py-4">
+          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+            r.status === "present" ? "bg-green-50 text-green-700"
+              : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
+              : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
+              : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
+              : "bg-red-50 text-red-700"
+          }`}>
+            {(() => {
+              if (r.status === "checked_in") return t('attendance.statusCheckedIn');
+              if (r.status === "half_day") return t('attendance.statusHalfDay');
+              const k = `attendance.${r.status}`;
+              const tr = t(k);
+              return tr !== k ? tr : r.status.replace(/_/g, " ");
+            })()}
+          </span>
+        </td>
+        <td className="px-6 py-4 text-sm text-gray-600">
+          {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
+        </td>
+      </tr>
+      {expanded && <PunchTimelineRow recordId={r.id} />}
+    </>
+  );
+}
+
+function PunchTimelineRow({ recordId }: { recordId: number }) {
+  // enabled = true on first expand and the result is cached, so collapsing
+  // and re-expanding doesn't re-fetch.
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["attendance-punches", recordId],
+    queryFn: () =>
+      api.get(`/attendance/records/${recordId}/punches`).then((r) => r.data.data),
+    staleTime: 60_000,
+  });
+
+  return (
+    <tr className="bg-gray-50">
+      <td colSpan={9} className="px-12 py-4">
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
+          </div>
+        ) : isError ? (
+          <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+        ) : !data?.punches?.length ? (
+          <p className="text-sm text-gray-500">No punch history for this day.</p>
+        ) : (
+          <div>
+            <p className="text-xs font-medium text-gray-500 uppercase mb-3">Punch timeline</p>
+            <ol className="space-y-2">
+              {(data.punches as PunchRow[]).map((p, idx, arr) => {
+                const isFirst = idx === 0;
+                const isLast = idx === arr.length - 1 && arr.length > 1;
+                // Single-punch day: the only entry is "Check in" (no checkout yet).
+                const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
+                const labelCls = isFirst
+                  ? "bg-green-100 text-green-800"
+                  : isLast
+                  ? "bg-rose-100 text-rose-800"
+                  : "bg-gray-200 text-gray-700";
+                const meta = sourceMeta(p.source);
+                const Icon = meta.Icon;
+                return (
+                  <li key={p.id} className="flex items-center gap-3 text-sm">
+                    <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                      {label}
+                    </span>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                      <Icon className="w-3 h-3" /> {meta.label}
+                    </span>
+                    {p.latitude != null && p.longitude != null && (
+                      <span className="text-xs text-gray-400">
+                        {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        )}
+      </td>
+    </tr>
   );
 }
