@@ -200,13 +200,27 @@ export const updateOrgSchema = z.object({
 
 const nameField = z.string().min(1).max(64).regex(/[a-zA-Z]/, "Name must contain at least one letter");
 
+// #1658 — emp_code is permissive on format because orgs use widely
+// different conventions (letters, numbers, dots, dashes, underscores).
+// We reject only whitespace and other punctuation to keep "garbage" data
+// like "rkgr2r1114512 " out. Uniqueness within an org is enforced by
+// migration 054's UNIQUE(organization_id, emp_code) index.
+const empCodeField = z
+  .string()
+  .trim()
+  .max(50)
+  .regex(
+    /^[A-Za-z0-9._-]+$/,
+    "Employee code may only contain letters, digits, dots, dashes or underscores",
+  );
+
 export const createUserSchema = z.object({
   first_name: nameField,
   last_name: nameField,
   email: z.string().email().max(128),
   password: z.string().min(8).max(128).optional(),
   role: z.nativeEnum(UserRole).default(UserRole.EMPLOYEE),
-  emp_code: z.string().max(50).optional(),
+  emp_code: empCodeField.optional(),
   contact_number: z.string().max(20).optional(),
   date_of_birth: z.string().optional(),
   gender: z.string().max(10).optional(),
@@ -236,7 +250,7 @@ export const bulkImportUserRowSchema = z.object({
   // Password is optional — if blank, user must use forgot-password flow.
   password: z.string().min(8).max(128).optional().or(z.literal("")),
   role: z.nativeEnum(UserRole).optional(),
-  emp_code: z.string().max(50).optional(),
+  emp_code: empCodeField.optional(),
   designation: z.string().max(100).optional(),
   department_name: z.string().max(100).optional(),
   location_name: z.string().max(100).optional(),
@@ -385,7 +399,9 @@ export const upsertEmployeeProfileSchema = z.object({
   // emp-payroll#246 — emp_code lives on users too. Without an editable field
   // on the EmpCloud profile form, HR couldn't set it post-creation, and
   // payroll showed an empty Employee Code as a result.
-  emp_code: z.string().max(50).optional().nullable(),
+  // #1658 — same permissive regex as createUserSchema; uniqueness is
+  // enforced at the DB layer by migration 054.
+  emp_code: empCodeField.optional().nullable(),
   // #1423 — shift_id is not a users-table column; the service creates a
   // user_shift_assignments row instead when this field is supplied.
   shift_id: z.coerce.number().int().positive().optional().nullable(),
