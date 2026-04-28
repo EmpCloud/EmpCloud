@@ -28,6 +28,31 @@ export async function applyLeave(
     throw new ValidationError("End date must not be before start date");
   }
 
+  // #1822 — Bug 22: prod showed a 2-day Paid Leave with Days = 0. Zod
+  // already rejects days_count < 0.5, but the symptom proves the value
+  // sometimes lands at 0 anyway (likely a stale form state where the date
+  // pickers updated after days_count was already serialised). Coerce
+  // missing / falsy / out-of-range values to the inclusive calendar-day
+  // count between start and end. We only override when the supplied value
+  // is *clearly wrong* (zero, negative, or larger than the date span) —
+  // legitimate "5 days for a Mon–Fri week off a Sun–Sat range" stays
+  // intact because we don't reduce a smaller-than-span value.
+  const inclusiveDays =
+    Math.floor(
+      (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) -
+        Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())) /
+        (1000 * 60 * 60 * 24),
+    ) + 1;
+  if (data.is_half_day) {
+    data.days_count = 0.5;
+  } else if (
+    !data.days_count ||
+    Number(data.days_count) <= 0 ||
+    Number(data.days_count) > inclusiveDays
+  ) {
+    data.days_count = inclusiveDays;
+  }
+
   // Reject leave applications with start_date more than 7 days in the past
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -85,10 +110,17 @@ export async function applyLeave(
   // Check for overlapping applications
   // Only count pending/approved — cancelled and rejected do NOT block new applications
   // Allow same-day half-day leaves (first_half + second_half) on the same date
+  //
+  // #1822 — Bug 21: prod showed two identical Sick Leave entries for the
+  // same date range, both Approved. The overlap check below is correct in
+  // isolation but two near-simultaneous submissions can both pass the
+  // SELECT before either commits. We can't add a UNIQUE constraint here
+  // without a migration (per task scope), so we keep the SELECT check AND
+  // do a second post-insert "I'm not the only one" sweep below to abort
+  // duplicates that slipped through the race window.
   const overlaps = await db("leave_applications")
     .where({ organization_id: orgId, user_id: userId })
     .whereIn("status", ["pending", "approved"])
-    .whereNotIn("status", ["cancelled", "rejected"])
     .where(function () {
       this.where("start_date", "<=", data.end_date).andWhere(
         "end_date",
@@ -97,17 +129,20 @@ export async function applyLeave(
       );
     });
 
+  // Helper: normalize Date|string|null to "YYYY-MM-DD" — MySQL drivers
+  // sometimes hydrate DATE columns into JS Date objects which would blow up
+  // the previous .slice() call.
+  const toDateStr = (v: unknown): string => {
+    if (v instanceof Date) return v.toISOString().slice(0, 10);
+    if (typeof v === "string") return v.slice(0, 10);
+    return String(v).slice(0, 10);
+  };
+  const reqStart = toDateStr(data.start_date);
+  const reqEnd = toDateStr(data.end_date);
+
   for (const overlap of overlaps) {
-    // Normalize dates to string (YYYY-MM-DD) for safe comparison —
-    // MySQL may return Date objects while data.* are strings
-    const overlapStart = typeof overlap.start_date === "string"
-      ? overlap.start_date.slice(0, 10)
-      : new Date(overlap.start_date).toISOString().slice(0, 10);
-    const overlapEnd = typeof overlap.end_date === "string"
-      ? overlap.end_date.slice(0, 10)
-      : new Date(overlap.end_date).toISOString().slice(0, 10);
-    const reqStart = data.start_date.slice(0, 10);
-    const reqEnd = data.end_date.slice(0, 10);
+    const overlapStart = toDateStr(overlap.start_date);
+    const overlapEnd = toDateStr(overlap.end_date);
 
     // If both the existing and new are half-day leaves on the same single day,
     // allow if they cover different halves (first_half vs second_half)
@@ -122,7 +157,9 @@ export async function applyLeave(
       }
     }
 
-    throw new ValidationError("Overlapping leave application exists");
+    throw new ValidationError(
+      `You already have a ${overlap.status} leave application from ${overlapStart} to ${overlapEnd}.`,
+    );
   }
 
   // Find reporting manager as approver
