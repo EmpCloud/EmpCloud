@@ -728,6 +728,80 @@ export async function resendInvitation(
 }
 
 /**
+ * Cancel a pending invitation. Marks the invitation row as `cancelled`
+ * (soft delete — keeps the audit trail) and, when the associated user
+ * has never activated (no password set), hard-deletes the user row too
+ * so HR doesn't end up with a phantom account they can't see anywhere.
+ *
+ * If the user HAS activated since the invitation went out (rare but
+ * possible — admin re-invited, user accepted on their own a different
+ * way), only the invitation is cancelled; the active account is left
+ * alone.
+ *
+ * Returns a summary so the UI can render a useful toast.
+ */
+export async function cancelInvitation(
+  orgId: number,
+  invitationId: number,
+): Promise<{ cancelled: true; email: string; user_deleted: boolean }> {
+  const db = getDB();
+
+  const inv = await db("invitations")
+    .where({ id: invitationId, organization_id: orgId })
+    .first();
+  if (!inv) throw new NotFoundError("Invitation");
+  if (inv.status !== "pending") {
+    throw new ConflictError(`Cannot cancel an invitation in '${inv.status}' state`);
+  }
+
+  let userDeleted = false;
+  await db.transaction(async (trx) => {
+    await trx("invitations").where({ id: invitationId }).update({
+      status: "cancelled",
+      updated_at: new Date(),
+    });
+
+    // Look up the matching user. We only delete when they've never
+    // activated — checking password_changed_at IS NULL guards against
+    // accidentally nuking a real, working account that happens to also
+    // have a stale invitation row attached.
+    const user = await trx("users")
+      .where({ email: inv.email, organization_id: orgId })
+      .first();
+    if (user && user.password_changed_at == null) {
+      // FK cleanup before the hard delete. The users table self-FK on
+      // reporting_manager_id has no ON DELETE clause, so MySQL defaults
+      // to RESTRICT — if anyone in the org has this user set as their
+      // manager (e.g. HR set the manager link before the invite was
+      // accepted), a raw DELETE would fail with FK violation. NULL
+      // those out first so the delete proceeds cleanly.
+      //
+      // Bucket-C `created_by` columns (announcements, policies, etc.)
+      // cannot reference a never-activated user — they require a logged-
+      // in actor — so no cleanup is needed for them. The other
+      // Bucket-A FKs to users (employee_profiles, attendance_records,
+      // leave_balances, etc.) all have ON DELETE CASCADE on this row's
+      // user_id and will clean themselves up.
+      //
+      // Not reusing deactivateUser() here because it runs its own
+      // transaction (no trx parameter), which would break the atomicity
+      // of cancel-invitation + user-removal that this flow guarantees.
+      await trx("users").where({ reporting_manager_id: user.id }).update({
+        reporting_manager_id: null,
+        updated_at: new Date(),
+      });
+      await trx("users").where({ id: user.id }).delete();
+      await trx("organizations")
+        .where({ id: orgId })
+        .decrement("current_user_count", 1);
+      userDeleted = true;
+    }
+  });
+
+  return { cancelled: true, email: inv.email, user_deleted: userDeleted };
+}
+
+/**
  * Bulk invite every active user in this org who doesn't already have a
  * pending invitation. By default, restricts to users who haven't set a
  * password yet (the typical onboarding case). Pass
@@ -736,7 +810,7 @@ export async function resendInvitation(
  * The token-based link lands on AcceptInvitationPage either way and
  * overwrites whatever password the user had.
  *
- * Returns counts so the UI can show a useful summary toast and a per-row
+ * Returns counts so the UI can render a useful summary toast and a per-row
  * detail list for any failures.
  */
 export async function bulkInviteFromDirectory(
