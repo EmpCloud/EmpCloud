@@ -198,7 +198,39 @@ export const updateOrgSchema = z.object({
 // User Management
 // ---------------------------------------------------------------------------
 
-const nameField = z.string().min(1).max(64).regex(/[a-zA-Z]/, "Name must contain at least one letter");
+// #1822 — Bug 14: tighten name validation to reject obvious garbage like
+// "5876895 singh" (starts with digits) while staying permissive enough for
+// legitimate global names with apostrophes (D'Souza), dots (Dr.), hyphens
+// (Smith-Jones) and spaces. Keyboard-mash detection is intentionally NOT
+// attempted — it's unreliable and would block real names. We only enforce:
+//   - must START with a letter (Unicode letter, so non-Latin names work)
+//   - allowed body chars: letters, spaces, hyphens, apostrophes, dots
+//   - 1..64 chars
+const nameField = z
+  .string()
+  .trim()
+  .min(1)
+  .max(64)
+  .regex(
+    /^\p{L}[\p{L}\s'.\-]*$/u,
+    "Name must start with a letter and may only contain letters, spaces, hyphens, apostrophes or dots",
+  );
+
+// #1822 — Bug 14: same rationale for designation. Job titles legitimately
+// include digits ("Engineer II", "Level 3 Support") and ampersands /
+// parentheses ("Head of R&D", "Manager (Sales)"), so the body charset is
+// wider than nameField — but the FIRST character must still be a letter so
+// "hkjsvhbkj" stays out only via the letter-required check, while pure
+// punctuation / digit-led junk is rejected.
+const designationField = z
+  .string()
+  .trim()
+  .min(1)
+  .max(100)
+  .regex(
+    /^\p{L}[\p{L}\p{N}\s'.\-&()/,]*$/u,
+    "Designation must start with a letter and may only contain letters, digits, spaces or basic punctuation",
+  );
 
 // #1658 — emp_code is permissive on format because orgs use widely
 // different conventions (letters, numbers, dots, dashes, underscores).
@@ -225,7 +257,7 @@ export const createUserSchema = z.object({
   date_of_birth: z.string().optional(),
   gender: z.string().max(10).optional(),
   date_of_joining: z.string().optional(),
-  designation: z.string().max(100).optional(),
+  designation: designationField.optional(),
   department_id: z.number().int().positive().optional(),
   location_id: z.number().int().positive().optional(),
   reporting_manager_id: z.number().int().positive().optional(),
@@ -251,6 +283,10 @@ export const bulkImportUserRowSchema = z.object({
   password: z.string().min(8).max(128).optional().or(z.literal("")),
   role: z.nativeEnum(UserRole).optional(),
   emp_code: empCodeField.optional(),
+  // #1822 — bulk import accepts blank designation; the per-row service-layer
+  // re-validation through createUserSchema enforces designationField rules
+  // when a value is present. We leave this row-level field permissive so a
+  // missing CSV cell doesn't blow up the whole import.
   designation: z.string().max(100).optional(),
   department_name: z.string().max(100).optional(),
   location_name: z.string().max(100).optional(),
@@ -394,7 +430,10 @@ export const upsertEmployeeProfileSchema = z.object({
   // #1423 / #1424 — designation and department_id also live on the users table.
   // Accepting them here lets HR set them from the profile form without having
   // to call a separate endpoint. Both are nullable so HR can "clear" them.
-  designation: z.string().max(100).optional().nullable(),
+  // #1822 — Bug 14: tighten designation format (must start with a letter,
+  // no random punctuation-only or digit-led junk). The empty string is still
+  // accepted because HR uses "" to clear a previously-set value.
+  designation: z.union([designationField, z.literal("")]).optional().nullable(),
   department_id: z.coerce.number().int().positive().optional().nullable(),
   // emp-payroll#246 — emp_code lives on users too. Without an editable field
   // on the EmpCloud profile form, HR couldn't set it post-creation, and
