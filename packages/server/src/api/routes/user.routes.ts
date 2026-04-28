@@ -250,6 +250,44 @@ router.post(
   },
 );
 
+// DELETE /api/v1/users/invitations/:id — cancel a pending invite. When the
+// matching user row exists but has never activated (no password set), it
+// gets hard-deleted in the same transaction so HR doesn't end up with a
+// phantom account. Active users are left alone — only the invitation is
+// cancelled.
+router.delete(
+  "/invitations/:id",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(String(req.params.id), 10);
+      if (!Number.isFinite(id)) {
+        return res.status(400).json({
+          success: false,
+          error: { code: "INVALID_ID", message: "Invitation id must be a number" },
+        });
+      }
+      const result = await userService.cancelInvitation(req.user!.org_id, id);
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.INVITATION_CANCELLED,
+        details: {
+          invitation_id: id,
+          email: result.email,
+          user_deleted: result.user_deleted,
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, result);
+    } catch (err) { next(err); }
+  },
+);
+
 // POST /api/v1/users/bulk-invite-employees — invite every directory user
 // who doesn't already have a pending invite. By default restricts to
 // users who haven't set a password yet (onboarding). Body

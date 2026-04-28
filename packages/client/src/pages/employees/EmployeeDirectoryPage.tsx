@@ -175,6 +175,33 @@ export default function EmployeeDirectoryPage() {
     },
   });
 
+  // Cancel a pending invitation. When the matching user has never
+  // activated, the server hard-deletes them in the same transaction
+  // (returns user_deleted: true) so HR doesn't have a phantom account
+  // sitting in the directory. Activated users are left alone — admin
+  // must use the per-row delete on the directory itself if they want
+  // to remove an active account.
+  const cancelInvitation = useMutation({
+    mutationFn: (invitationId: number) =>
+      api.delete(`/users/invitations/${invitationId}`).then((r) => r.data.data as { email: string; user_deleted: boolean }),
+    onSuccess: (data) => {
+      showToast(
+        "success",
+        data.user_deleted
+          ? `Invitation cancelled and ${data.email} removed from the directory.`
+          : `Invitation to ${data.email} cancelled.`,
+      );
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+      qc.invalidateQueries({ queryKey: ["employee-directory"] });
+    },
+    onError: (err: any) => {
+      showToast(
+        "error",
+        err?.response?.data?.error?.message || "Could not cancel the invitation.",
+      );
+    },
+  });
+
   // Bulk-invite every directory user who hasn't set a password yet and
   // doesn't already have a pending invitation. Backend respects the org's
   // seat limit and refuses the whole batch if it would overflow.
@@ -648,6 +675,28 @@ export default function EmployeeDirectoryPage() {
                             <Send className="h-3 w-3" />
                           )}
                           Resend
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const ok = window.confirm(
+                              `Cancel the invitation to ${inv.email}?\n\n` +
+                                "If they haven't set a password yet, their account will also be removed from the directory. Active accounts are left alone.",
+                            );
+                            if (ok) cancelInvitation.mutate(inv.id);
+                          }}
+                          disabled={
+                            cancelInvitation.isPending && cancelInvitation.variables === inv.id
+                          }
+                          title="Cancel this invitation and remove the unactivated user"
+                          className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+                        >
+                          {cancelInvitation.isPending && cancelInvitation.variables === inv.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-3 w-3" />
+                          )}
+                          Delete
                         </button>
                       </div>
                     </div>
