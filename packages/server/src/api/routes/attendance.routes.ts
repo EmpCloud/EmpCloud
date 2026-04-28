@@ -620,7 +620,20 @@ router.get("/export/consolidated", authenticate, requireHR, async (req: Request,
 
     const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
     const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
-    const totalWorkingDays = new Date(year, month, 0).getDate();
+    // #1822 — Bug 19: Working Days previously used calendar days
+    // (`new Date(year, month, 0).getDate()` = last day of month). That made
+    // every employee show "Working Days = 22" even when a 30-day month was
+    // selected, and totally ignored weekends. Switch to "weekdays in month"
+    // (Mon–Fri) which matches what users mean by "working days" in the
+    // absence of a per-shift calendar. (We don't yet exclude org holidays
+    // here — see #1804 follow-up.)
+    const lastDay = new Date(year, month, 0).getDate();
+    let workingDays = 0;
+    for (let d = 1; d <= lastDay; d += 1) {
+      const dow = new Date(year, month - 1, d).getDay(); // 0=Sun, 6=Sat
+      if (dow !== 0 && dow !== 6) workingDays += 1;
+    }
+    const totalWorkingDays = workingDays;
 
     let query = db("attendance_records as ar")
       .join("users as u", "ar.user_id", "u.id")
@@ -653,7 +666,29 @@ router.get("/export/consolidated", authenticate, requireHR, async (req: Request,
       db.raw("AVG(CASE WHEN ar.worked_minutes > 0 THEN ar.worked_minutes END) as avg_worked_minutes"),
     ).groupBy("ar.user_id", "u.first_name", "u.last_name", "u.email", "u.emp_code", "u.designation", "dept.name");
 
-    sendSuccess(res, { month, year, total_working_days: totalWorkingDays, report: records });
+    // #1822 — Bug 19: Per-employee Present + Absent did not add up to the
+    // org's total Working Days because days with NO attendance row at all
+    // were silently dropped. Compute "no_record_days" = working days for
+    // which the user has no row (and is not on leave / present / absent /
+    // half_day). The previous behaviour (silent drop) would show e.g.
+    // "4 Present + 4 Absent = 8 of 22 working days" with 14 days
+    // unaccounted for — the user reasonably called that a mismatch.
+    //
+    // We expose no_record_days as a separate column so the dashboard can
+    // show "Present X • Absent Y • No Record Z" rather than rolling
+    // missing days into Absent (which would inflate absences for new
+    // hires whose joining date is mid-month).
+    const enriched = records.map((r: any) => {
+      const accounted =
+        Number(r.present_days || 0) +
+        Number(r.half_days || 0) +
+        Number(r.absent_days || 0) +
+        Number(r.leave_days || 0);
+      const noRecord = Math.max(0, totalWorkingDays - accounted);
+      return { ...r, no_record_days: noRecord };
+    });
+
+    sendSuccess(res, { month, year, total_working_days: totalWorkingDays, report: enriched });
   } catch (err) { next(err); }
 });
 
