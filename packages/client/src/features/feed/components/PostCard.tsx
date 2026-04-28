@@ -50,9 +50,10 @@ export function PostCard({ post, compactComments }: Props) {
     <article className="rounded-xl border border-gray-200 bg-white p-5">
       <header className="flex items-start justify-between gap-2">
         <AuthorChip
+          userId={post.author_id}
+          hasPhoto={!!post.author_photo}
           firstName={post.author_first_name}
           lastName={post.author_last_name}
-          photoUrl={post.author_photo}
           title={post.author_title}
           timestamp={formatTimestamp(post.created_at)}
           edited={!!post.edited_at}

@@ -548,8 +548,12 @@ export const employeeDirectoryQuerySchema = paginationSchema.extend({
 // `'; DROP TABLE shifts; --` or `<script>alert(1)</script>` is refused
 // at the API boundary instead of landing in the DB.
 const SHIFT_NAME_REGEX = /^[\p{L}\p{N} _\-./()&]+$/u;
+// #1817 — `.trim()` runs first so a whitespace-only name ("   ") fails the
+// subsequent .min(1). Without trim, the regex's literal-space class would
+// happily accept "   " and a blank shift could be saved.
 const shiftNameField = z
   .string()
+  .trim()
   .min(1)
   .max(100)
   .regex(SHIFT_NAME_REGEX, "Shift name contains disallowed characters");

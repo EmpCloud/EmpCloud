@@ -7,6 +7,7 @@ import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
 import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import { showToast } from "@/components/ui/Toast";
+import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import * as XLSX from "xlsx";
 
 // ---------------------------------------------------------------------------
@@ -885,7 +886,15 @@ export default function EmployeeDirectoryPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      {/* #1822 — `overscroll-x-contain` stops the horizontal rubber-band from
+          chaining to the page when the user scroll-bounces left of position 0
+          (where the negative `-mx-4` mobile bleed reveals the page edge under
+          the rounded corner). On lg+ the card is inset and `rounded-xl` is
+          fine, but on mobile the bleed + rounded corner combo leaks the
+          gray-50 page bg through during overscroll, which is the visual
+          glitch the reporter screenshotted. Flatten left/right corners
+          on mobile so there's nothing to leak through. */}
+      <div className="bg-white rounded-none lg:rounded-xl border-y border-gray-200 lg:border lg:border-gray-200 overflow-x-auto overscroll-x-contain -mx-4 lg:mx-0">
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -934,10 +943,13 @@ export default function EmployeeDirectoryPage() {
                       to={`/employees/${emp.id}`}
                       className="flex items-center gap-3 group"
                     >
-                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
-                        {emp.first_name?.[0]}
-                        {emp.last_name?.[0]}
-                      </div>
+                      <EmployeeAvatar
+                        userId={emp.id}
+                        hasPhoto={!!emp.photo_path}
+                        firstName={emp.first_name}
+                        lastName={emp.last_name}
+                        size="sm"
+                      />
                       <span className="text-sm font-medium text-gray-900 group-hover:text-brand-600">
                         {emp.first_name} {emp.last_name}
                       </span>

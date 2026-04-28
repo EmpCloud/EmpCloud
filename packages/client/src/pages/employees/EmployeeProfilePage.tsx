@@ -15,6 +15,7 @@ import {
   Camera,
   Plus,
   Trash2,
+  Loader2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -148,10 +149,36 @@ export default function EmployeeProfilePage() {
       const res = await api.get(`/employees/${userId}/photo`, { responseType: "blob" });
       if (photoUrl) URL.revokeObjectURL(photoUrl);
       setPhotoUrl(URL.createObjectURL(res.data));
+      // #1650 — Other components (org chart, directory, feed) load the same
+      // photo via useEmployeePhoto, keyed on user_id. Bust that cache so
+      // they re-fetch the new image instead of showing the stale one.
+      queryClient.invalidateQueries({ queryKey: ["employee-photo", Number(userId)] });
+      queryClient.invalidateQueries({ queryKey: ["employee-profile", userId] });
     } catch {
       // silently fail — photo not critical
     } finally {
       setUploadingPhoto(false);
+    }
+  };
+
+  // #1650 — "Option to revert to initials avatar" from the issue. Calls the
+  // server DELETE endpoint, drops the local objectURL, and busts the shared
+  // photo query so every avatar across the app reverts to initials.
+  const [removingPhoto, setRemovingPhoto] = useState(false);
+  const handlePhotoRemove = async () => {
+    if (!photoUrl || removingPhoto) return;
+    if (!confirm("Remove your profile photo? You'll show initials again.")) return;
+    setRemovingPhoto(true);
+    try {
+      await api.delete(`/employees/${userId}/photo`);
+      URL.revokeObjectURL(photoUrl);
+      setPhotoUrl(null);
+      queryClient.invalidateQueries({ queryKey: ["employee-photo", Number(userId)] });
+      queryClient.invalidateQueries({ queryKey: ["employee-profile", userId] });
+    } catch {
+      // ignore — non-critical
+    } finally {
+      setRemovingPhoto(false);
     }
   };
 
@@ -238,6 +265,26 @@ export default function EmployeeProfilePage() {
             </h1>
             <p className="text-sm text-gray-500">{profile.designation || "No designation"}</p>
             <p className="text-sm text-gray-400">{profile.email}</p>
+            {/* #1650 — "Remove photo" action sits right under the identity
+                line so it's discoverable without intruding on the photo
+                hover-to-upload affordance. Only shown when there's an
+                actual photo to remove and the viewer can edit. */}
+            {canEdit && photoUrl && (
+              <button
+                type="button"
+                onClick={handlePhotoRemove}
+                disabled={removingPhoto}
+                className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
+              >
+                {removingPhoto ? (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" /> Removing...
+                  </>
+                ) : (
+                  "Remove photo"
+                )}
+              </button>
+            )}
           </div>
           <div className="ml-auto flex items-start gap-4">
             <div className="text-right text-sm text-gray-500">
