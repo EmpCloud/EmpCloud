@@ -10,6 +10,7 @@ import {
   ArrowRight,
   BarChart3,
   Clock,
+  Archive,
 } from "lucide-react";
 
 const ACTION_COLORS: Record<string, string> = {
@@ -50,13 +51,30 @@ export default function AssetDashboardPage() {
   // "Lost / Damaged" is a combined card but the list currently only filters on
   // a single status — link to lost as the default; user can swap to damaged
   // from the dropdown. A "multi-status" filter is a follow-up.
+  //
+  // #1640 — Surface Retired so the headline cards reconcile with Total. The
+  // status enum is fixed to {available, assigned, in_repair, retired, lost,
+  // damaged}; without a Retired card a tenant whose inventory has been mostly
+  // retired (e.g. 30 of 33) saw "33 total / 0 / 1 / 0 / 2" and could not
+  // explain the missing 30. A small "Unaccounted" badge below catches any
+  // future status drift (e.g. a new enum value the UI doesn't know about yet).
   const statCards = [
     { label: "Total Assets", value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50", to: "/assets" },
     { label: "Available", value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets?status=available" },
     { label: "Assigned", value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets?status=assigned" },
     { label: "In Repair", value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets?status=in_repair" },
     { label: "Lost / Damaged", value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets?status=lost" },
+    { label: "Retired", value: stats.retired || 0, icon: Archive, color: "text-gray-600 bg-gray-100", to: "/assets?status=retired" },
   ];
+
+  const accounted =
+    (stats.available || 0) +
+    (stats.assigned || 0) +
+    (stats.in_repair || 0) +
+    (stats.lost || 0) +
+    (stats.damaged || 0) +
+    (stats.retired || 0);
+  const unaccounted = Math.max(0, (stats.total || 0) - accounted);
 
   return (
     <div className="space-y-6">
@@ -75,7 +93,7 @@ export default function AssetDashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
@@ -97,6 +115,21 @@ export default function AssetDashboardPage() {
           );
         })}
       </div>
+
+      {/* #1640 — Reconciliation note. Only shown when the cards don't add up
+          to total, which signals either bad data (a status outside the enum
+          slipped in) or that the dashboard hasn't been refreshed since a new
+          status was added. Linking to the unfiltered list lets the admin
+          inspect the offending rows directly. */}
+      {unaccounted > 0 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800 flex items-center justify-between">
+          <span>
+            {unaccounted} asset{unaccounted === 1 ? "" : "s"} with an unrecognised status —
+            totals don&apos;t reconcile. Open the asset list to see the rows.
+          </span>
+          <Link to="/assets" className="font-medium underline hover:text-amber-900">View all</Link>
+        </div>
+      )}
 
       {/* Expiring Warranties Alert */}
       {stats.expiring_warranties && stats.expiring_warranties.length > 0 && (
