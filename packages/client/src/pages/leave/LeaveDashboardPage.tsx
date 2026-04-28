@@ -173,11 +173,18 @@ export default function LeaveDashboardPage() {
                       {leaveTypeLabel(t, type)}
                     </h3>
                   </div>
+                  {/* Disambiguate the badge label: when the leave type's
+                      name itself is "Paid" / "Unpaid" (rendered above),
+                      a bare "PAID" badge underneath read like the same
+                      word repeated. Render "Paid leave" / "Unpaid leave"
+                      so the badge is clearly classifying the type rather
+                      than echoing it (#1649). The redundant "LEAVE
+                      BALANCE" companion label is dropped — the big
+                      number + "days" already conveys the same. */}
                   <div className="flex items-center gap-2 mb-3 ml-6">
                     <span className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${type.is_paid ? "bg-green-50 text-green-600" : "bg-gray-50 text-gray-500"}`}>
                       {type.is_paid ? t('leave.dashboard.paid') : t('leave.dashboard.unpaid')}
                     </span>
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-gray-400">{t('leave.leaveBalance')}</span>
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-1">
                     {balance} <span className="text-sm font-normal text-gray-400">{t('leave.dashboard.days')}</span>

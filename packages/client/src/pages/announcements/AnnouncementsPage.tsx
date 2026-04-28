@@ -330,11 +330,17 @@ export default function AnnouncementsPage() {
                         {a.title}
                       </h3>
 
-                      <p className={`mt-1 text-sm leading-relaxed ${isExpanded ? "" : "line-clamp-2"} ${
-                        isRead ? "text-gray-500" : "text-gray-600"
-                      }`}>
-                        {a.content}
-                      </p>
+                      {/* Content is sanitized server-side via sanitizeHtml()
+                          before insert/update, so it's safe to render as
+                          HTML here. Was previously rendered as plain text,
+                          which caused authored markup to leak as literal
+                          <p>...</p> tags to readers (#1634). */}
+                      <div
+                        className={`mt-1 text-sm leading-relaxed prose prose-sm max-w-none ${
+                          isExpanded ? "" : "line-clamp-2"
+                        } ${isRead ? "text-gray-500" : "text-gray-600"}`}
+                        dangerouslySetInnerHTML={{ __html: a.content || "" }}
+                      />
 
                       {(a.content.length > 120 || (a.content.match(/\n/g) || []).length > 2) && (
                         <button

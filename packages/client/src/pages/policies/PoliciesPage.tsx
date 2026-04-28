@@ -4,6 +4,15 @@ import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
 import { FileText, Plus, Check, ChevronDown, ChevronUp, Users } from "lucide-react";
 
+// Defensive fallback for legacy rows that slipped past validation with a
+// blank/whitespace-only title (#1636). Returns the original title when
+// non-empty and a clearly-marked placeholder otherwise so admins can
+// spot the broken row in the list.
+function policyTitle(p: { title?: string | null }): string {
+  const t = (p.title || "").trim();
+  return t || "Untitled policy";
+}
+
 // ---------------------------------------------------------------------------
 // Hooks
 // ---------------------------------------------------------------------------
@@ -116,7 +125,7 @@ function EmployeePoliciesView() {
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-brand-600" />
                     <div>
-                      <span className="text-sm font-semibold text-gray-900">{p.title}</span>
+                      <span className="text-sm font-semibold text-gray-900">{policyTitle(p)}</span>
                       {p.category && (
                         <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{p.category}</span>
                       )}
@@ -318,7 +327,7 @@ function HRPoliciesView() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-brand-600" />
-                        <span className="text-sm font-medium text-gray-900">{p.title}</span>
+                        <span className="text-sm font-medium text-gray-900">{policyTitle(p)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -369,7 +378,7 @@ function HRPoliciesView() {
                           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
                             <div className="flex items-center gap-2">
                               <FileText className="h-4 w-4 text-brand-600" />
-                              <h3 className="text-sm font-semibold text-gray-900">{p.title}</h3>
+                              <h3 className="text-sm font-semibold text-gray-900">{policyTitle(p)}</h3>
                               {p.category && (
                                 <span className="text-xs bg-white text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">{p.category}</span>
                               )}
@@ -401,7 +410,7 @@ function HRPoliciesView() {
                           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-gray-600" />
-                              <h3 className="text-sm font-semibold text-gray-900">Acknowledgments — {p.title}</h3>
+                              <h3 className="text-sm font-semibold text-gray-900">Acknowledgments — {policyTitle(p)}</h3>
                             </div>
                             <button
                               onClick={() => setViewAckFor(null)}
