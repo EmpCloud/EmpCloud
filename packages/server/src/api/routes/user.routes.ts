@@ -60,6 +60,26 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/users/lookup?email=... — does a user with this email already
+// exist in the org? Used by the Invite modal to prefill first/last name
+// (and disable those inputs) when HR types an email that matches an
+// existing employee. Returns { exists: false } when no match — never 404
+// so the frontend can branch on a single field. Must come BEFORE /:id so
+// "lookup" isn't matched as a numeric id.
+router.get("/lookup", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const email = String(req.query.email || "").trim().toLowerCase();
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: { code: "INVALID_EMAIL", message: "email query parameter is required" },
+      });
+    }
+    const result = await userService.lookupUserByEmail(req.user!.org_id, email);
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/users/invitations — List pending invitations
 router.get("/invitations", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
   try {
