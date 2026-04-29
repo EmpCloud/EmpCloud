@@ -4,7 +4,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError } from "../../utils/errors.js";
+import { ConflictError, NotFoundError } from "../../utils/errors.js";
 import type { UpsertEmployeeProfileInput } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -160,9 +160,28 @@ export async function upsertProfile(
   // strings to NULL so migration 054's UNIQUE(organization_id, emp_code)
   // index doesn't fire "Duplicate entry '1-'" the moment two users clear
   // their code (emp_code || null only catches '', not '   ').
+  //
+  // Pre-check the index BEFORE the UPDATE: if the requested code is
+  // already used by a different user in the same org, throw a clean
+  // ConflictError so HR sees a real message instead of a generic 500
+  // from a leaked SQL duplicate-key error. The route layer also has a
+  // ER_DUP_ENTRY catch as a race-window safety net.
   if (emp_code !== undefined && isHR) {
     const trimmed = typeof emp_code === "string" ? emp_code.trim() : emp_code;
-    userUpdate.emp_code = trimmed ? trimmed : null;
+    const next = trimmed ? trimmed : null;
+    if (next) {
+      const clash = await db("users")
+        .where({ organization_id: orgId, emp_code: next })
+        .whereNot("id", userId)
+        .first();
+      if (clash) {
+        const owner = `${clash.first_name ?? ""} ${clash.last_name ?? ""}`.trim() || clash.email || `user #${clash.id}`;
+        throw new ConflictError(
+          `Employee code "${next}" is already used by ${owner}. Pick a different code.`,
+        );
+      }
+    }
+    userUpdate.emp_code = next;
   }
 
   if (Object.keys(userUpdate).length > 0) {
