@@ -14,7 +14,12 @@ import path from "node:path";
 import fs from "node:fs";
 import QRCode from "qrcode";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { kioskAuthenticate } from "../../services/biometric-legacy/kiosk-auth.middleware.js";
+import {
+  kioskAuthenticate,
+  getKioskOrgIds,
+  getKioskPrimaryOrgId,
+  getKioskOrgEmails,
+} from "../../services/biometric-legacy/kiosk-auth.middleware.js";
 import { sendLegacyResponse } from "../../utils/legacy-response.js";
 import * as svc from "../../services/biometric-legacy/biometric-legacy.service.js";
 import * as nasService from "../../services/nas/nas.service.js";
@@ -197,8 +202,8 @@ function baseUrlFor(req: Request): string {
 // GET /get-users
 router.get("/get-users", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
-    const result = await svc.fetchUsersForKiosk(orgId, baseUrlFor(req), {
+    const orgIds = getKioskOrgIds(req);
+    const result = await svc.fetchUsersForKiosk(orgIds, baseUrlFor(req), {
       skip: req.query.skip as string,
       limit: req.query.limit as string,
       search: req.query.search as string,
@@ -221,12 +226,12 @@ router.post(
   kioskAuthenticate,
   async (req, res, next) => {
     try {
-      const orgId = req.kioskUser!.userData.organization_id;
+      const orgIds = getKioskOrgIds(req);
       const files = (req.files as Express.Multer.File[] | undefined) ?? [];
       const file = files[0]
         ? { buffer: files[0].buffer, originalname: files[0].originalname }
         : null;
-      const result = await svc.updateBiometricUser(orgId, req.body || {}, file);
+      const result = await svc.updateBiometricUser(orgIds, req.body || {}, file);
       if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
       return resp(res, (result as any).code ?? 200, result.data ?? null, result.message);
     } catch (err) { next(err); }
@@ -236,14 +241,14 @@ router.post(
 // POST /get-user-info — the actual kiosk punch-in/out
 router.post("/get-user-info", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
+    const orgIds = getKioskOrgIds(req);
     const timezone = req.kioskUser!.userData.timezone ?? null;
     const loggedInId = req.kioskUser!.userData.id;
     const { finger, face, bio_code } = req.body || {};
     if (finger == null && face == null && bio_code == null) {
       return resp(res, 400, null, "finger, face or bio_code required", "Validation Failed");
     }
-    const result = await svc.matchAndPunch(orgId, loggedInId, timezone, { finger, face, bio_code });
+    const result = await svc.matchAndPunch(orgIds, loggedInId, timezone, { finger, face, bio_code });
     if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
     return resp(res, 200, result.data, result.message);
   } catch (err) { next(err); }
@@ -252,8 +257,9 @@ router.post("/get-user-info", kioskAuthenticate, async (req, res, next) => {
 // GET /get-locations
 router.get("/get-locations", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
-    const locations = await svc.getLocations(orgId);
+    const orgIds = getKioskOrgIds(req);
+    const orgEmails = getKioskOrgEmails(req);
+    const locations = await svc.getLocations(orgIds, orgEmails);
     if (!locations.length) return resp(res, 400, null, "No locations found.");
     return resp(res, 200, locations, "Locations fetched successfully");
   } catch (err) { next(err); }
@@ -262,12 +268,12 @@ router.get("/get-locations", kioskAuthenticate, async (req, res, next) => {
 // POST /attendance-summary
 router.post("/attendance-summary", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
+    const orgIds = getKioskOrgIds(req);
     const { date, location_id } = req.body || {};
     if (!date || !location_id) {
       return resp(res, 400, null, "date and location_id required", "Validation Failed");
     }
-    const result = await svc.attendanceSummary(orgId, { date, location_id: Number(location_id) });
+    const result = await svc.attendanceSummary(orgIds, { date, location_id: Number(location_id) });
     if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
     return resp(res, 200, result.data, result.message);
   } catch (err) { next(err); }
@@ -276,14 +282,14 @@ router.post("/attendance-summary", kioskAuthenticate, async (req, res, next) => 
 // POST /attendance-details
 router.post("/attendance-details", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
+    const orgIds = getKioskOrgIds(req);
     const timezone = req.kioskUser!.userData.timezone ?? null;
     const { date, location_id, status } = req.body || {};
     if (!date || !location_id) {
       return resp(res, 400, null, "date and location_id required", "Validation Failed");
     }
     const result = await svc.attendanceDetails(
-      orgId,
+      orgIds,
       timezone,
       { date, location_id: Number(location_id), status },
       {
@@ -299,29 +305,33 @@ router.post("/attendance-details", kioskAuthenticate, async (req, res, next) => 
   } catch (err) { next(err); }
 });
 
-// GET /holidays
+// GET /holidays — primary org only by design (#1936). Holiday calendars
+// are inherently per-company; surfacing both orgs' lists on a shared
+// kiosk would clutter and double-count days.
 router.get("/holidays", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
+    const orgId = getKioskPrimaryOrgId(req);
     const list = await svc.getHolidays(orgId);
     if (!list.length) return resp(res, 400, null, "No holidays found");
     return resp(res, 200, list, "Holidays fetched successfully");
   } catch (err) { next(err); }
 });
 
-// GET /fetch-employee-password-enable-status
+// GET /fetch-employee-password-enable-status — primary org's setting
 router.get("/fetch-employee-password-enable-status", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
+    const orgId = getKioskPrimaryOrgId(req);
     const result = await svc.employeePasswordStatus(orgId);
     return resp(res, 200, result, "Success");
   } catch (err) { next(err); }
 });
 
-// POST /verify-secretKey (org-level) — not the public OTP one
+// POST /verify-secretKey (org-level) — not the public OTP one. Uses the
+// primary org's secret since the kiosk identity is anchored to the
+// primary credential row.
 router.post("/verify-secretKey", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
+    const orgId = getKioskPrimaryOrgId(req);
     const { secretKey } = req.body || {};
     const result = await svc.verifyOrgSecret(orgId, secretKey);
     if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
@@ -332,8 +342,9 @@ router.post("/verify-secretKey", kioskAuthenticate, async (req, res, next) => {
 // GET /get-department
 router.get("/get-department", kioskAuthenticate, async (req, res, next) => {
   try {
-    const orgId = req.kioskUser!.userData.organization_id;
-    const departments = await svc.getDepartments(orgId);
+    const orgIds = getKioskOrgIds(req);
+    const orgEmails = getKioskOrgEmails(req);
+    const departments = await svc.getDepartments(orgIds, orgEmails);
     return resp(res, 200, departments, "Success");
   } catch (err) { next(err); }
 });
@@ -341,11 +352,48 @@ router.get("/get-department", kioskAuthenticate, async (req, res, next) => {
 // DELETE /delete-user-profile-image
 router.delete("/delete-user-profile-image", kioskAuthenticate, async (req, res, next) => {
   try {
+    const orgIds = getKioskOrgIds(req);
     const { userId } = req.body || {};
     if (!userId) return resp(res, 400, null, "userId required");
-    const result = await svc.deleteFaceImage(Number(userId));
+    const result = await svc.deleteFaceImage(orgIds, Number(userId));
     if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
     return resp(res, 200, null, result.message);
+  } catch (err) { next(err); }
+});
+
+// ---------------------------------------------------------------------------
+// Linked organisation management (#1936) — admin JWT, used by the
+// KioskBiometricPage UI to add/remove sister-org emails. The kiosk JWT
+// itself is unaware of these routes; only the admin who owns the kiosk
+// credential touches them.
+// ---------------------------------------------------------------------------
+
+// GET /linked-organizations
+router.get("/linked-organizations", authenticate, async (req, res, next) => {
+  try {
+    const list = await svc.listLinkedEmails(req.user!.sub);
+    return resp(res, 200, list, "Linked organizations fetched");
+  } catch (err) { next(err); }
+});
+
+// POST /linked-organizations { email }
+router.post("/linked-organizations", authenticate, async (req, res, next) => {
+  try {
+    const { email } = req.body || {};
+    const result = await svc.addLinkedEmail(req.user!.sub, req.user!.org_id, req.user!.email, email);
+    if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
+    return resp(res, 200, result.data, result.message);
+  } catch (err) { next(err); }
+});
+
+// DELETE /linked-organizations/:email
+router.delete("/linked-organizations/:email", authenticate, async (req, res, next) => {
+  try {
+    const raw = req.params.email;
+    const email = Array.isArray(raw) ? String(raw[0] ?? "") : String(raw ?? "");
+    const result = await svc.removeLinkedEmail(req.user!.sub, decodeURIComponent(email));
+    if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
+    return resp(res, 200, result.data, result.message);
   } catch (err) { next(err); }
 });
 

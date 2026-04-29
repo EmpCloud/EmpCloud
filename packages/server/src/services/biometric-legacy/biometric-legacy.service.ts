@@ -275,6 +275,64 @@ export async function setPassword(userId: number, email: string, secretKey: stri
 // Kiosk /auth — issues the kiosk JWT
 // ---------------------------------------------------------------------------
 
+// Read the linked_emails JSON column safely. MySQL JSON cells come back as
+// a parsed object on most adapters but as a string on some old drivers, so
+// we handle both. Anything not a string array is treated as empty.
+function parseLinkedEmails(raw: unknown): string[] {
+  if (raw == null) return [];
+  let val: unknown = raw;
+  if (typeof val === "string") {
+    try {
+      val = JSON.parse(val);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(val)) return [];
+  return val
+    .filter((e): e is string => typeof e === "string" && e.trim().length > 0)
+    .map((e) => e.trim().toLowerCase());
+}
+
+// Resolve the primary user's linked-emails column into the full set of org
+// IDs the kiosk should see. Always includes the primary org. Linked emails
+// that no longer point at a real user, or that point at a user in the
+// primary org itself, are silently dropped.
+//
+// orgEmails is the {orgId → admin email} map the kiosk JWT carries; it's
+// used by /get-locations and /get-department to label rows with the
+// owning org's email when a kiosk serves more than one org.
+export async function resolveLinkedOrgs(
+  primaryUserId: number,
+  primaryOrgId: number,
+): Promise<{ orgIds: number[]; orgEmails: Record<string, string> }> {
+  const db = getDB();
+  const orgIds = new Set<number>([primaryOrgId]);
+  const orgEmails: Record<string, string> = {};
+
+  const primaryUser = await db("users").where({ id: primaryUserId }).first();
+  if (primaryUser?.email) orgEmails[String(primaryOrgId)] = primaryUser.email;
+
+  const creds = await db("biometric_legacy_credentials").where({ user_id: primaryUserId }).first();
+  const linked = parseLinkedEmails(creds?.linked_emails);
+  if (linked.length === 0) return { orgIds: Array.from(orgIds), orgEmails };
+
+  const placeholders = linked.map(() => "?").join(",");
+  const linkedUsers = await db("users")
+    .whereRaw(`LOWER(email) IN (${placeholders})`, linked)
+    .select("id", "email", "organization_id");
+  for (const lu of linkedUsers) {
+    const oid = Number(lu.organization_id);
+    if (oid === primaryOrgId) continue;
+    orgIds.add(oid);
+    // Keep the email casing as stored on the user record; UI shows what
+    // HR actually sees in the directory.
+    if (!orgEmails[String(oid)]) orgEmails[String(oid)] = lu.email;
+  }
+
+  return { orgIds: Array.from(orgIds), orgEmails };
+}
+
 export async function kioskAuth(body: { userName?: string; email?: string; secretKey: string }) {
   const db = getDB();
   const { userName, email, secretKey } = body;
@@ -303,9 +361,16 @@ export async function kioskAuth(body: { userName?: string; email?: string; secre
 
   const org = await db("organizations").where({ id: user.organization_id }).first();
 
+  // Resolve linked orgs (#1936). Always includes primary; degrades to a
+  // single-element list when nothing is linked, so the JWT shape is the
+  // same backward-compatible superset for every caller.
+  const { orgIds, orgEmails } = await resolveLinkedOrgs(user.id, user.organization_id);
+
   const userData: KioskUserData = {
     id: user.id,
     organization_id: user.organization_id,
+    organization_ids: orgIds,
+    organization_emails: orgEmails,
     email: user.email,
     username: creds.username ?? null,
     first_name: user.first_name,
@@ -319,7 +384,7 @@ export async function kioskAuth(body: { userName?: string; email?: string; secre
   // kiosk UI branches correctly on camera overlay / dept routing.
   const cameraOverlay = Number(org?.camera_overlay_status ?? 0);
   const [deptCountRow] = await db("biometric_departments")
-    .where({ organization_id: user.organization_id })
+    .whereIn("organization_id", orgIds)
     .count<{ count: number | string }[]>({ count: "*" });
   const deptStatus = Number(deptCountRow?.count ?? 0) > 0 ? 1 : 0;
 
@@ -336,6 +401,7 @@ export async function kioskAuth(body: { userName?: string; email?: string; secre
           secret_key: null,
           timezone: org?.timezone ?? null,
           organization_id: user.organization_id,
+          organization_ids: orgIds,
         },
       ],
       accessToken,
@@ -347,11 +413,109 @@ export async function kioskAuth(body: { userName?: string; email?: string; secre
 }
 
 // ---------------------------------------------------------------------------
+// Linked-organisation management (admin JWT — used by KioskBiometricPage UI)
+// ---------------------------------------------------------------------------
+
+export async function listLinkedEmails(userId: number): Promise<
+  Array<{ email: string; organization_id: number | null; organization_name: string | null }>
+> {
+  const db = getDB();
+  const creds = await db("biometric_legacy_credentials").where({ user_id: userId }).first();
+  const emails = parseLinkedEmails(creds?.linked_emails);
+  if (emails.length === 0) return [];
+  const placeholders = emails.map(() => "?").join(",");
+  const linkedUsers: Array<{ email: string; organization_id: number }> = await db("users")
+    .whereRaw(`LOWER(email) IN (${placeholders})`, emails)
+    .select("email", "organization_id");
+  const byEmail = new Map<string, number>();
+  for (const lu of linkedUsers) byEmail.set(lu.email.toLowerCase(), Number(lu.organization_id));
+  const orgIds = Array.from(new Set(byEmail.values()));
+  const orgs: Array<{ id: number; name: string }> = orgIds.length
+    ? await db("organizations").whereIn("id", orgIds).select("id", "name")
+    : [];
+  const orgName = new Map<number, string>();
+  for (const o of orgs) orgName.set(Number(o.id), o.name);
+  // Preserve user-supplied order; missing entries (deleted user, etc.)
+  // still come back so HR can see and remove them from the UI.
+  return emails.map((e) => {
+    const oid = byEmail.get(e) ?? null;
+    return {
+      email: e,
+      organization_id: oid,
+      organization_name: oid != null ? (orgName.get(oid) ?? null) : null,
+    };
+  });
+}
+
+export async function addLinkedEmail(
+  userId: number,
+  primaryOrgId: number,
+  primaryEmail: string,
+  newEmail: string,
+) {
+  const db = getDB();
+  const cleaned = String(newEmail || "").trim().toLowerCase();
+  if (!cleaned) return { error: { code: 400, message: "Email is required" } };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned)) {
+    return { error: { code: 400, message: "Enter a valid email address" } };
+  }
+  if (cleaned === String(primaryEmail || "").toLowerCase()) {
+    return { error: { code: 400, message: "You cannot link your own email" } };
+  }
+
+  const target = await db("users").whereRaw("LOWER(email) = ?", [cleaned]).first();
+  if (!target) return { error: { code: 400, message: "No EmpCloud user found with that email" } };
+  if (Number(target.organization_id) === Number(primaryOrgId)) {
+    return { error: { code: 400, message: "That user belongs to the same organisation — nothing to link" } };
+  }
+
+  // Make sure the credentials row exists before we read/update it. The
+  // biometric admin must have already enabled biometric to reach this UI,
+  // but defensive in case of partial state.
+  await getOrCreateCredentials(userId, primaryOrgId);
+  const creds = await db("biometric_legacy_credentials").where({ user_id: userId }).first();
+  const current = parseLinkedEmails(creds?.linked_emails);
+  if (current.includes(cleaned)) {
+    return { error: { code: 400, message: "That email is already linked" } };
+  }
+  const next = [...current, cleaned];
+  await db("biometric_legacy_credentials")
+    .where({ user_id: userId })
+    .update({ linked_emails: JSON.stringify(next), updated_at: new Date() });
+
+  const org = await db("organizations").where({ id: target.organization_id }).first();
+  return {
+    data: { email: cleaned, organization_id: Number(target.organization_id), organization_name: org?.name ?? null },
+    message: "Linked organisation added",
+  };
+}
+
+export async function removeLinkedEmail(userId: number, email: string) {
+  const db = getDB();
+  const cleaned = String(email || "").trim().toLowerCase();
+  if (!cleaned) return { error: { code: 400, message: "Email is required" } };
+
+  const creds = await db("biometric_legacy_credentials").where({ user_id: userId }).first();
+  const current = parseLinkedEmails(creds?.linked_emails);
+  const next = current.filter((e) => e !== cleaned);
+  if (next.length === current.length) {
+    return { error: { code: 400, message: "That email is not in the linked list" } };
+  }
+  await db("biometric_legacy_credentials")
+    .where({ user_id: userId })
+    .update({
+      linked_emails: next.length ? JSON.stringify(next) : null,
+      updated_at: new Date(),
+    });
+  return { data: { email: cleaned }, message: "Linked organisation removed" };
+}
+
+// ---------------------------------------------------------------------------
 // /get-users
 // ---------------------------------------------------------------------------
 
 export async function fetchUsersForKiosk(
-  orgId: number,
+  orgIds: number[],
   baseUrl: string,
   params: {
     skip?: string;
@@ -369,7 +533,11 @@ export async function fetchUsersForKiosk(
   const skip = Number(params.skip || 0);
   const limit = Number(params.limit || 10);
 
-  const org = await db("organizations").where({ id: orgId }).first();
+  // Primary org's confirmation flag drives the kiosk's confirm-modal UX.
+  // Linked orgs inherit the primary's setting — keeping a single switch
+  // for the kiosk is intentional, since the device is one physical unit.
+  const primaryOrgId = orgIds[0];
+  const org = await db("organizations").where({ id: primaryOrgId }).first();
   if (!org) return { error: { code: 400, message: "Organization not found" } };
 
   const confirmationStatus = Number(org.biometrics_confirmation_status ?? 0);
@@ -392,7 +560,7 @@ export async function fetchUsersForKiosk(
       .leftJoin("organization_locations as ol", "ol.id", "u.location_id")
       .leftJoin("organization_departments as od", "od.id", "u.department_id")
       .leftJoin("biometric_legacy_credentials as bd", "bd.user_id", "u.id")
-      .where("u.organization_id", orgId)
+      .whereIn("u.organization_id", orgIds)
       .where("u.id", params.user_id)
       .modify((q) => {
         if (params.location_id) q.where("u.location_id", params.location_id);
@@ -402,6 +570,7 @@ export async function fetchUsersForKiosk(
         "u.email",
         "u.first_name",
         "u.last_name",
+        "u.organization_id",
         "u.photo_path",
         "u.status",
         "bd.face_url as face",
@@ -422,11 +591,14 @@ export async function fetchUsersForKiosk(
     //      incrementing by ?count (default 1).
     //   2. When department_id is given, append/update an access log row —
     //      re-use the open one (no end_time) or start a new one.
+    // Counters/logs are scoped to the matched user's actual org so each
+    // company's metrics stay isolated even when the kiosk serves both.
     try {
       const today = todayYMD();
       const increment = params.count ? Number(params.count) : 1;
+      const matchedOrgId = Number((row[0] as any)?.organization_id ?? primaryOrgId);
       await upsertAccessCounter({
-        orgId,
+        orgId: matchedOrgId,
         departmentId: params.department_id ? Number(params.department_id) : null,
         date: today,
         increment: Number.isFinite(increment) && increment > 0 ? increment : 1,
@@ -434,7 +606,7 @@ export async function fetchUsersForKiosk(
       if (params.department_id) {
         await upsertAccessLog({
           userId: Number(params.user_id),
-          orgId,
+          orgId: matchedOrgId,
           departmentId: Number(params.department_id),
           date: today,
         });
@@ -455,7 +627,7 @@ export async function fetchUsersForKiosk(
     .leftJoin("organization_locations as ol", "ol.id", "u.location_id")
     .leftJoin("organization_departments as od", "od.id", "u.department_id")
     .leftJoin("biometric_legacy_credentials as bd", "bd.user_id", "u.id")
-    .where("u.organization_id", orgId);
+    .whereIn("u.organization_id", orgIds);
 
   if (params.location_id) listQuery = listQuery.where("u.location_id", params.location_id);
   if (params.search) {
@@ -469,7 +641,7 @@ export async function fetchUsersForKiosk(
     });
   }
 
-  const countQuery = db("users as u").where("u.organization_id", orgId);
+  const countQuery = db("users as u").whereIn("u.organization_id", orgIds);
   if (params.location_id) countQuery.where("u.location_id", params.location_id);
   const [countRow] = await countQuery.count<{ total: number | string }[]>({ total: "*" });
   const total = Number(countRow?.total ?? 0);
@@ -579,18 +751,25 @@ async function upsertAccessLog(opts: {
 // ---------------------------------------------------------------------------
 
 export async function updateBiometricUser(
-  orgId: number,
+  orgIds: number[],
   body: { user_id: string | number; finger1?: string; finger2?: string; bio_code?: string },
   file?: { buffer: Buffer; originalname: string } | null,
 ) {
   const db = getDB();
   const userId = Number(body.user_id);
 
-  const user = await db("users").where({ id: userId }).first();
+  // Multi-org kiosk: the user being updated must live in one of the orgs
+  // the kiosk is allowed to see. Use the user's own org as the credential
+  // owner, NOT the kiosk owner's, so credentials stay tied to the right org.
+  const user = await db("users")
+    .where({ id: userId })
+    .whereIn("organization_id", orgIds)
+    .first();
   if (!user) return { error: { code: 400, message: "User not found" } };
   if (user.status === 2) {
     return { data: null, message: "Can not register face for suspended user", code: 200 };
   }
+  const orgId = Number(user.organization_id);
 
   const creds = await getOrCreateCredentials(userId, orgId);
 
@@ -659,7 +838,7 @@ export async function updateBiometricUser(
 // ---------------------------------------------------------------------------
 
 export async function matchAndPunch(
-  orgId: number,
+  orgIds: number[],
   loggedInUserId: number,
   timezone: string | null,
   body: { finger?: string; face?: string; bio_code?: string },
@@ -669,9 +848,12 @@ export async function matchAndPunch(
   let creds: any = null;
   let auth: "finger1" | "finger2" | "face" | "bio_code" | null = null;
 
+  // Match across every org the kiosk is allowed to see. The matched
+  // user's actual organization_id is what we use for the punch — each
+  // company's payroll stays isolated even when the device is shared.
   if (body.finger != null && body.finger !== undefined) {
     creds = await db("biometric_legacy_credentials")
-      .where({ organization_id: orgId })
+      .whereIn("organization_id", orgIds)
       .andWhere(function () {
         this.where("finger1", body.finger).orWhere("finger2", body.finger);
       })
@@ -683,12 +865,14 @@ export async function matchAndPunch(
     // that contract: the kiosk sends the matched user id as `face`.
     const userIdFromFace = Number(body.face);
     creds = await db("biometric_legacy_credentials")
-      .where({ organization_id: orgId, user_id: userIdFromFace })
+      .whereIn("organization_id", orgIds)
+      .andWhere({ user_id: userIdFromFace })
       .first();
     if (creds) auth = "face";
   } else if (body.bio_code != null && body.bio_code !== undefined) {
     creds = await db("biometric_legacy_credentials")
-      .where({ organization_id: orgId, bio_code: body.bio_code })
+      .whereIn("organization_id", orgIds)
+      .andWhere({ bio_code: body.bio_code })
       .first();
     if (creds) auth = "bio_code";
   }
@@ -703,9 +887,11 @@ export async function matchAndPunch(
     return { error: { code: 400, message: "BioMetric not enabled" } };
   }
 
+  // Always punch into the matched user's own org — never the kiosk owner's.
+  const punchOrgId = Number(user.organization_id);
   const todayStr = todayYMD();
   const existing = await db("attendance_records")
-    .where({ organization_id: orgId, user_id: user.id, date: todayStr })
+    .where({ organization_id: punchOrgId, user_id: user.id, date: todayStr })
     .first();
 
   const department = await db("organization_departments").where({ id: user.department_id }).first();
@@ -738,14 +924,14 @@ export async function matchAndPunch(
   // gates are gone — both blocked legitimate workflows like a quick
   // step-out for a meeting.
   if (existing && existing.check_in) {
-    await attendanceService.checkOut(orgId, user.id, { source: "biometric" } as any);
+    await attendanceService.checkOut(punchOrgId, user.id, { source: "biometric" } as any);
     return {
       data: { auth, status: 1, time: timeStr, userData: employeeDetails },
       message: "Successfully Checked Out",
     };
   }
 
-  await attendanceService.checkIn(orgId, user.id, { source: "biometric" } as any);
+  await attendanceService.checkIn(punchOrgId, user.id, { source: "biometric" } as any);
   return {
     data: { auth, status: 0, time: timeStr, userData: employeeDetails },
     message: "Successfully Checked In",
@@ -794,30 +980,58 @@ export async function setSecretKeyByEmail(email: string, secretKey: string) {
 // /get-locations
 // ---------------------------------------------------------------------------
 
-export async function getLocations(orgId: number) {
+// When a kiosk is multi-org (orgIds.length > 1), every location row is
+// suffixed with the owning org's admin email — "Bhilai - admin@x.com" —
+// so a HR user can pick the right one when both orgs share location
+// names. Single-org kiosks see no suffix (preserves existing kiosk UX).
+function withOrgEmailSuffix(
+  rows: Array<{ id: number; name: string; organization_id: number }>,
+  orgIds: number[],
+  orgEmails: Record<string, string>,
+): Array<{ id: number; name: string; organization_id: number }> {
+  if (orgIds.length <= 1) return rows;
+  return rows.map((r) => {
+    const email = orgEmails[String(r.organization_id)];
+    return email ? { ...r, name: `${r.name} - ${email}` } : r;
+  });
+}
+
+export async function getLocations(orgIds: number[], orgEmails: Record<string, string>) {
   const db = getDB();
-  return db("organization_locations")
-    .where({ organization_id: orgId, is_active: true })
-    .select("id", "name");
+  const rows = await db("organization_locations")
+    .whereIn("organization_id", orgIds)
+    .andWhere("is_active", true)
+    .select("id", "name", "organization_id");
+  return withOrgEmailSuffix(rows, orgIds, orgEmails);
 }
 
 // ---------------------------------------------------------------------------
 // /get-department
 // ---------------------------------------------------------------------------
 
-export async function getDepartments(orgId: number) {
+export async function getDepartments(orgIds: number[], orgEmails: Record<string, string>) {
   const db = getDB();
   // emp-monitor returned rows from the `biometric_department` table —
   // the subset of departments enabled for kiosk device attendance.
-  return db("biometric_departments as bd")
+  const rows: Array<{
+    id: number;
+    organization_id: number;
+    department_id: number | null;
+    name: string;
+  }> = await db("biometric_departments as bd")
     .leftJoin("organization_departments as od", "od.id", "bd.department_id")
-    .where("bd.organization_id", orgId)
+    .whereIn("bd.organization_id", orgIds)
     .select(
       "bd.id",
       "bd.organization_id",
       "bd.department_id",
       db.raw("COALESCE(bd.name, od.name) as name"),
     );
+  return withOrgEmailSuffix(
+    rows.map((r) => ({ id: r.id, name: r.name, organization_id: r.organization_id, department_id: r.department_id })) as any,
+    orgIds,
+    orgEmails,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -907,32 +1121,38 @@ async function countTotalUsers(orgId: number, locationId: number) {
 }
 
 export async function attendanceSummary(
-  orgId: number,
+  orgIds: number[],
   body: { date: string; location_id: number },
 ) {
   const db = getDB();
+  // Resolve which org owns the picked location, then count against THAT org.
+  // Locations are unique per org, but the kiosk may pick one from any of
+  // the linked orgs — we still scope counts so each company's stats stay
+  // accurate against its own user/attendance set.
   const loc = await db("organization_locations")
-    .where({ organization_id: orgId, id: body.location_id })
+    .whereIn("organization_id", orgIds)
+    .andWhere({ id: body.location_id })
     .first();
   if (!loc) return { error: { code: 400, message: "No locations found with provided id." } };
+  const ownerOrgId = Number(loc.organization_id);
 
-  const total = await countTotalUsers(orgId, body.location_id);
+  const total = await countTotalUsers(ownerOrgId, body.location_id);
   if (!total) return { error: { code: 400, message: "No users found" } };
 
   const today = todayYMD();
   const customDate = body.date < today;
 
   const [checkedIn, checkedOut, suspend, absent] = await Promise.all([
-    countCheckedIn(orgId, body.location_id, body.date),
-    countCheckedOut(orgId, body.location_id, body.date),
-    countSuspend(orgId, body.location_id),
-    countAbsent(orgId, body.location_id, body.date, customDate),
+    countCheckedIn(ownerOrgId, body.location_id, body.date),
+    countCheckedOut(ownerOrgId, body.location_id, body.date),
+    countSuspend(ownerOrgId, body.location_id),
+    countAbsent(ownerOrgId, body.location_id, body.date, customDate),
   ]);
 
   const yesterday = addDaysYMD(body.date, -1);
   const [yesterDayPresent, yesterDayAbsent] = await Promise.all([
-    countPresent(orgId, body.location_id, yesterday),
-    countAbsent(orgId, body.location_id, yesterday, true),
+    countPresent(ownerOrgId, body.location_id, yesterday),
+    countAbsent(ownerOrgId, body.location_id, yesterday, true),
   ]);
 
   return {
@@ -955,16 +1175,18 @@ export async function attendanceSummary(
 // ---------------------------------------------------------------------------
 
 export async function attendanceDetails(
-  orgId: number,
+  orgIds: number[],
   timezone: string | null,
   body: { date: string; location_id: number; status?: string },
   query: { skip?: string; limit?: string; search?: string; sortColumn?: string; sortOrder?: string },
 ) {
   const db = getDB();
   const loc = await db("organization_locations")
-    .where({ organization_id: orgId, id: body.location_id })
+    .whereIn("organization_id", orgIds)
+    .andWhere({ id: body.location_id })
     .first();
   if (!loc) return { error: { code: 400, message: "No locations found with provided id." } };
+  const ownerOrgId = Number(loc.organization_id);
 
   const skip = Number(query.skip || 0);
   const limit = Number(query.limit || 10);
@@ -978,14 +1200,14 @@ export async function attendanceDetails(
 
   const today = todayYMD();
   const isPast = body.date < today;
-  const attendanceHours = await getAttendanceHoursSeconds(orgId);
+  const attendanceHours = await getAttendanceHoursSeconds(ownerOrgId);
 
   const [total, checkedIn, checkedOut, suspend, absent] = await Promise.all([
-    countTotalUsers(orgId, body.location_id),
-    countCheckedIn(orgId, body.location_id, body.date),
-    countCheckedOut(orgId, body.location_id, body.date),
-    countSuspend(orgId, body.location_id),
-    countAbsent(orgId, body.location_id, body.date, isPast),
+    countTotalUsers(ownerOrgId, body.location_id),
+    countCheckedIn(ownerOrgId, body.location_id, body.date),
+    countCheckedOut(ownerOrgId, body.location_id, body.date),
+    countSuspend(ownerOrgId, body.location_id),
+    countAbsent(ownerOrgId, body.location_id, body.date, isPast),
   ]);
 
   let listQ = db("users as u")
@@ -994,7 +1216,7 @@ export async function attendanceDetails(
     .leftJoin("attendance_records as ar", function () {
       this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", body.date);
     })
-    .where("u.organization_id", orgId)
+    .where("u.organization_id", ownerOrgId)
     .where("u.location_id", body.location_id);
 
   const status = body.status;
@@ -1094,9 +1316,14 @@ export async function verifyOrgSecret(orgId: number, secretKey: string | undefin
 // /delete-user-profile-image
 // ---------------------------------------------------------------------------
 
-export async function deleteFaceImage(userId: number) {
+export async function deleteFaceImage(orgIds: number[], userId: number) {
   const db = getDB();
-  const user = await db("users").where({ id: userId }).first();
+  // Constrain to the kiosk's allowed orgs so a compromised kiosk JWT
+  // can't wipe face images for orgs it shouldn't see.
+  const user = await db("users")
+    .where({ id: userId })
+    .whereIn("organization_id", orgIds)
+    .first();
   if (!user) return { error: { code: 400, message: "User not found" } };
 
   const creds = await db("biometric_legacy_credentials")
