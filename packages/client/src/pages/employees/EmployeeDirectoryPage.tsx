@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy, Send, Users } from "lucide-react";
@@ -116,8 +116,62 @@ export default function EmployeeDirectoryPage() {
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("employee");
+  const [inviteFirstName, setInviteFirstName] = useState("");
+  const [inviteLastName, setInviteLastName] = useState("");
   const [inviteError, setInviteError] = useState("");
+  // When the typed email matches an existing user in this org, we
+  // prefill First/Last Name from that record and lock those inputs.
+  // The submit handler then routes to /users/:id/invite (re-invite path)
+  // instead of /users/invite (which rejects existing emails).
+  const [existingUserMatch, setExistingUserMatch] = useState<
+    { id: number; first_name: string | null; last_name: string | null; role: string } | null
+  >(null);
   const inviteUser = useInviteUser();
+
+  // Debounced lookup: when the typed email parses, ask the backend
+  // whether a user with that email already exists in the org. 350ms
+  // matches the directory search debounce so the feel is consistent.
+  useEffect(() => {
+    if (!showInvite) {
+      setExistingUserMatch(null);
+      return;
+    }
+    const trimmed = inviteEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setExistingUserMatch(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      api
+        .get("/users/lookup", { params: { email: trimmed }, signal: ctrl.signal })
+        .then((r) => r.data.data)
+        .then((res: any) => {
+          if (res?.exists) {
+            setExistingUserMatch({
+              id: res.id,
+              first_name: res.first_name,
+              last_name: res.last_name,
+              role: res.role,
+            });
+            setInviteFirstName(res.first_name ?? "");
+            setInviteLastName(res.last_name ?? "");
+            setInviteRole(res.role || "employee");
+          } else {
+            setExistingUserMatch(null);
+          }
+        })
+        .catch(() => {
+          // Silent — if lookup fails, fall back to the new-user path
+          // and let the submit-time validation surface any real error.
+          setExistingUserMatch(null);
+        });
+    }, 350);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [inviteEmail, showInvite]);
 
   // Bulk CSV import (create new employees) — also absorbed from Users page.
   const [showCsvImport, setShowCsvImport] = useState(false);
@@ -390,9 +444,30 @@ export default function EmployeeDirectoryPage() {
     e.preventDefault();
     setInviteError("");
     try {
-      await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
+      // Existing-user path: fire the directory-aware re-invite endpoint.
+      // First/last name aren't sent because the server reads them from
+      // the existing user row — keeping the modal inputs disabled +
+      // inviting via :id/invite avoids any chance of accidental rename.
+      if (existingUserMatch) {
+        await api.post(`/users/${existingUserMatch.id}/invite`);
+        showToast("success", "Invitation resent.");
+      } else {
+        // Fresh-email path: existing /users/invite endpoint, now also
+        // carrying first/last name so the welcome email greets the
+        // recipient by name on first activation.
+        await inviteUser.mutateAsync({
+          email: inviteEmail,
+          role: inviteRole as any,
+          first_name: inviteFirstName || undefined,
+          last_name: inviteLastName || undefined,
+        });
+        showToast("success", "Invitation sent.");
+      }
       setInviteEmail("");
       setInviteRole("employee");
+      setInviteFirstName("");
+      setInviteLastName("");
+      setExistingUserMatch(null);
       setShowInvite(false);
       qc.invalidateQueries({ queryKey: ["pending-invitations"] });
     } catch (err: any) {
@@ -571,8 +646,8 @@ export default function EmployeeDirectoryPage() {
           onSubmit={handleInvite}
           className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-3"
         >
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+            <div className="md:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
               <input
                 type="email"
@@ -583,12 +658,35 @@ export default function EmployeeDirectoryPage() {
                 required
               />
             </div>
-            <div>
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <input
+                type="text"
+                value={inviteFirstName}
+                onChange={(e) => setInviteFirstName(e.target.value)}
+                disabled={!!existingUserMatch}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                placeholder="Jane"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <input
+                type="text"
+                value={inviteLastName}
+                onChange={(e) => setInviteLastName(e.target.value)}
+                disabled={!!existingUserMatch}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                placeholder="Doe"
+              />
+            </div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                disabled={!!existingUserMatch}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
@@ -596,19 +694,36 @@ export default function EmployeeDirectoryPage() {
                 <option value="org_admin">Org Admin</option>
               </select>
             </div>
+          </div>
+          {/* Hint when an existing user is detected — explains why the
+              fields just locked. Without this the disabled inputs feel
+              like a glitch to anyone seeing it for the first time. */}
+          {existingUserMatch && (
+            <p className="text-xs text-gray-500">
+              Existing employee detected — name and role are locked. Submitting will resend their invitation.
+            </p>
+          )}
+          <div className="flex items-center gap-2">
             <button
               type="submit"
               disabled={inviteUser.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               <Mail className="h-4 w-4" />
-              {inviteUser.isPending ? "Sending..." : "Send Invite"}
+              {inviteUser.isPending
+                ? "Sending..."
+                : existingUserMatch
+                  ? "Resend Invite"
+                  : "Send Invite"}
             </button>
             <button
               type="button"
               onClick={() => {
                 setShowInvite(false);
                 setInviteError("");
+                setInviteFirstName("");
+                setInviteLastName("");
+                setExistingUserMatch(null);
               }}
               className="text-sm text-gray-500 hover:text-gray-700"
             >

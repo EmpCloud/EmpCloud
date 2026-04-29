@@ -741,6 +741,44 @@ export async function resendInvitation(
 }
 
 /**
+ * Look up a user by email scoped to the requester's org. Powers the Invite
+ * modal's "prefill First/Last Name when an existing email is typed" flow.
+ *
+ * Always returns a typed result (never throws on missing) so the frontend
+ * can branch on a single boolean field. Returns minimal fields only —
+ * enough to prefill the Invite form, nothing sensitive.
+ */
+export async function lookupUserByEmail(
+  orgId: number,
+  email: string,
+): Promise<{
+  exists: boolean;
+  id?: number;
+  first_name?: string | null;
+  last_name?: string | null;
+  role?: string;
+  status?: number;
+}> {
+  const db = getDB();
+  const cleaned = String(email || "").trim().toLowerCase();
+  if (!cleaned) return { exists: false };
+  const row = await db("users")
+    .whereRaw("LOWER(email) = ?", [cleaned])
+    .andWhere({ organization_id: orgId })
+    .select("id", "first_name", "last_name", "role", "status")
+    .first();
+  if (!row) return { exists: false };
+  return {
+    exists: true,
+    id: Number(row.id),
+    first_name: row.first_name ?? null,
+    last_name: row.last_name ?? null,
+    role: row.role,
+    status: Number(row.status),
+  };
+}
+
+/**
  * Single-user variant of bulkInviteFromDirectory. Sends (or resends) an
  * invitation to one existing employee from the directory page.
  *
