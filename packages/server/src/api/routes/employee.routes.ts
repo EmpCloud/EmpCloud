@@ -12,7 +12,7 @@ import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { AuditAction } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
-import { ValidationError } from "../../utils/errors.js";
+import { ConflictError, ValidationError } from "../../utils/errors.js";
 import { getDB } from "../../db/connection.js";
 import {
   upsertEmployeeProfileSchema,
@@ -374,13 +374,29 @@ router.put("/:id/profile", authenticate, requireSelfOrHR("id"), async (req: Requ
     // fields (department, shift, designation, reporting_manager). Self-service
     // employees can still edit their own personal data.
     const isHR = ["hr_admin", "org_admin", "super_admin"].includes(req.user!.role as string);
-    const profile = await profileService.upsertProfile(
-      req.user!.org_id,
-      paramInt(req.params.id),
-      fullData,
-      req.user!.sub,
-      isHR,
-    );
+    let profile;
+    try {
+      profile = await profileService.upsertProfile(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        fullData,
+        req.user!.sub,
+        isHR,
+      );
+    } catch (err: any) {
+      // Race-window safety net for the emp_code unique index. The service
+      // pre-checks, but two concurrent saves can still collide; translate
+      // the raw mysql2 ER_DUP_ENTRY into the same actionable 409 instead
+      // of leaking a 500 "An unexpected error occurred" to HR.
+      const code = err?.code || err?.errno;
+      const sqlMessage: string = err?.sqlMessage || err?.message || "";
+      if ((code === "ER_DUP_ENTRY" || code === 1062) && sqlMessage.includes("idx_users_org_emp_code_uniq")) {
+        throw new ConflictError(
+          "Employee code is already used by another employee. Pick a different code.",
+        );
+      }
+      throw err;
+    }
 
     await logAudit({
       organizationId: req.user!.org_id,
