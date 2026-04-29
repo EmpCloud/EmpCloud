@@ -60,6 +60,29 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/users/invitation-info?token=... — public, no auth
+// Read-only peek at an invitation so the Accept Invitation page can
+// prefill First/Last Name (and lock them when re-inviting an existing
+// user). Same NotFoundError surface as accept-invitation so the
+// frontend uses one error message for invalid / expired / used.
+//
+// MUST come before /:id — Express matches in order and "invitation-info"
+// would otherwise be caught by /:id (which requires authenticate),
+// surfacing as a misleading 401 instead of running this handler.
+router.get("/invitation-info", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = String(req.query.token || "");
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: { code: "INVALID_TOKEN", message: "token query parameter is required" },
+      });
+    }
+    const info = await userService.getInvitationInfo(token);
+    sendSuccess(res, info);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/users/lookup?email=... — does a user with this email already
 // exist in the org? Used by the Invite modal to prefill first/last name
 // (and disable those inputs) when HR types an email that matches an
@@ -384,24 +407,6 @@ router.post(
   },
 );
 
-// GET /api/v1/users/invitation-info?token=... — public, no auth
-// Read-only peek at an invitation so the Accept Invitation page can
-// prefill First/Last Name (and lock them when re-inviting an existing
-// user). Same NotFoundError surface as accept-invitation so the
-// frontend uses one error message for invalid / expired / used.
-router.get("/invitation-info", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const token = String(req.query.token || "");
-    if (!token) {
-      return res.status(400).json({
-        success: false,
-        error: { code: "INVALID_TOKEN", message: "token query parameter is required" },
-      });
-    }
-    const info = await userService.getInvitationInfo(token);
-    sendSuccess(res, info);
-  } catch (err) { next(err); }
-});
 
 // POST /api/v1/users/accept-invitation
 router.post("/accept-invitation", async (req: Request, res: Response, next: NextFunction) => {
