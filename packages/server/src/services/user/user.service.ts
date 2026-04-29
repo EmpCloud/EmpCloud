@@ -741,6 +741,98 @@ export async function resendInvitation(
 }
 
 /**
+ * Single-user variant of bulkInviteFromDirectory. Sends (or resends) an
+ * invitation to one existing employee from the directory page.
+ *
+ * The plain `inviteUser()` flow above blocks anyone whose email is already
+ * in the `users` table — fine for greenfield invites but useless for the
+ * Employee Directory case, where every row is by definition already in
+ * `users`. This function is the targeted equivalent of bulk-re-invite:
+ *   - if the user has a pending invitation → rotate the token + resend
+ *   - if not → create a fresh invitation row and send the email
+ *
+ * Idempotent: HR can click the row's Invite button repeatedly without
+ * tripping the unique-email constraint or the "already pending" check.
+ *
+ * Seat-limit: the user already exists, so no new seat is consumed and we
+ * deliberately skip the org seat check (matches bulkInviteFromDirectory's
+ * accounting where `password_changed_at IS NOT NULL` rows don't count).
+ */
+export async function inviteFromDirectory(
+  orgId: number,
+  invitedBy: number,
+  userId: number,
+): Promise<{ status: "invited" | "resent"; email: string; expires_at: Date }> {
+  const db = getDB();
+
+  const user = await db("users")
+    .where({ id: userId, organization_id: orgId })
+    .first();
+  if (!user) throw new NotFoundError("User");
+  if (!user.email) throw new ValidationError("This user has no email address to invite");
+
+  const token = randomHex(32);
+  const expiresAt = new Date(Date.now() + TOKEN_DEFAULTS.INVITATION_EXPIRY * 1000);
+
+  // Look for an existing pending invitation for this email (regardless of
+  // org — emails are globally unique on the invitations table by design,
+  // mirroring the users table).
+  const pending = await db("invitations")
+    .where({ email: user.email, status: "pending" })
+    .first();
+
+  let status: "invited" | "resent";
+  if (pending) {
+    await db("invitations").where({ id: pending.id }).update({
+      token_hash: hashToken(token),
+      expires_at: expiresAt,
+      updated_at: new Date(),
+      // Refresh role + invited_by in case HR changed them since the
+      // original invitation went out.
+      role: user.role || pending.role,
+      invited_by: invitedBy,
+    });
+    status = "resent";
+  } else {
+    await db("invitations").insert({
+      organization_id: orgId,
+      email: user.email,
+      role: user.role || "employee",
+      first_name: user.first_name || null,
+      last_name: user.last_name || null,
+      invited_by: invitedBy,
+      token_hash: hashToken(token),
+      status: "pending",
+      expires_at: expiresAt,
+      created_at: new Date(),
+    });
+    status = "invited";
+  }
+
+  // Fire-and-forget email — same pattern as inviteUser/resendInvitation.
+  // Failure here doesn't roll back the token rotation; HR can click again.
+  try {
+    const inviter = await db("users").where({ id: invitedBy }).first();
+    const org = await db("organizations").where({ id: orgId }).first();
+    const inviterName = inviter
+      ? `${inviter.first_name || ""} ${inviter.last_name || ""}`.trim() || inviter.email
+      : "An administrator";
+    void sendInvitationEmail({
+      to: user.email,
+      firstName: user.first_name || null,
+      orgName: org?.name || "your organization",
+      invitedByName: inviterName,
+      role: user.role || "employee",
+      token,
+    });
+  } catch {
+    // never block on email metadata lookup
+  }
+
+  return { status, email: user.email, expires_at: expiresAt };
+}
+
+/**
  * Cancel a pending invitation. Marks the invitation row as `cancelled`
  * (soft delete — keeps the audit trail) and, when the associated user
  * has never activated (no password set), hard-deletes the user row too

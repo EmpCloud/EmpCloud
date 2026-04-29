@@ -146,17 +146,20 @@ export default function EmployeeDirectoryPage() {
     },
   });
 
-  // Per-row Invite button (#1953-followup) — independent of the existing
-  // bulk Invite Employee modal. Hits the same POST /users/invite endpoint
-  // with the row's own email + role so HR doesn't have to retype them.
-  // Tracks which row is currently in-flight so we can disable just that
-  // row's button (not the whole table) and show a spinner on it.
+  // Per-row Invite button — independent of the existing bulk Invite
+  // Employee modal. Hits POST /users/:id/invite (the directory-aware
+  // endpoint that handles existing users via re-invitation), NOT the
+  // /users/invite endpoint, which rejects every row because the email
+  // already exists in the users table.
   const [invitingId, setInvitingId] = useState<number | null>(null);
   const sendDirectInvite = useMutation({
-    mutationFn: (data: { email: string; role: string }) =>
-      api.post("/users/invite", data).then((r) => r.data.data),
-    onSuccess: () => {
-      showToast("success", "Invitation sent.");
+    mutationFn: (userId: number) =>
+      api.post(`/users/${userId}/invite`).then((r) => r.data.data),
+    onSuccess: (result: { status?: "invited" | "resent" }) => {
+      showToast(
+        "success",
+        result?.status === "resent" ? "Invitation resent." : "Invitation sent.",
+      );
       qc.invalidateQueries({ queryKey: ["pending-invitations"] });
     },
     onError: (err: any) => {
@@ -1033,10 +1036,7 @@ export default function EmployeeDirectoryPage() {
                           onClick={() => {
                             if (invitingId !== null) return;
                             setInvitingId(emp.id);
-                            sendDirectInvite.mutate({
-                              email: emp.email,
-                              role: emp.role || "employee",
-                            });
+                            sendDirectInvite.mutate(emp.id);
                           }}
                           disabled={invitingId !== null}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
