@@ -335,7 +335,7 @@ export default function AttendanceDashboardPage() {
                       <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
                         <th className="py-2 font-medium">{t('common.name')}</th>
                         <th className="py-2 font-medium">{t('attendance.department')}</th>
-                        <th className="py-2 font-medium">{t('attendance.checkIn')}</th>
+                        <th className="py-2 font-medium whitespace-nowrap">{t('attendance.checkIn')}</th>
                         {breakdownOpen === "total" && <th className="py-2 font-medium">{t('common.status')}</th>}
                         {breakdownOpen === "late" && <th className="py-2 font-medium">{t('attendance.breakdown.lateBy')}</th>}
                       </tr>
@@ -621,8 +621,8 @@ export default function AttendanceDashboardPage() {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.checkIn')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.checkOut')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkIn')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkOut')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.status')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.late')}</th>
@@ -729,7 +729,27 @@ function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) =
         <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
         <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
         <td className="px-6 py-4 text-sm text-gray-600">
-          {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
+          {(() => {
+            // #1949 — `worked_minutes` is only filled in at check-out, so the
+            // column read 0 for everyone still on the clock. For checked-in
+            // rows, derive a running total from check_in to now and tag it
+            // with "(so far)" so it's clear the value isn't final.
+            if (r.status === "checked_in" && r.check_in) {
+              const live = Math.max(
+                0,
+                Math.floor((Date.now() - new Date(r.check_in).getTime()) / 60000),
+              );
+              return (
+                <span className="inline-flex items-center gap-1">
+                  {`${Math.floor(live / 60)}h ${live % 60}m`}
+                  <span className="text-[10px] text-gray-400">(so far)</span>
+                </span>
+              );
+            }
+            return r.worked_minutes != null
+              ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m`
+              : "-";
+          })()}
         </td>
         <td className="px-6 py-4">
           <span className={`text-xs px-2 py-1 rounded-full font-medium ${

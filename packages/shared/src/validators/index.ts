@@ -325,7 +325,7 @@ export const updateDepartmentSchema = z.object({
 export const createLocationSchema = z.object({
   name: z.string().min(1).max(100),
   address: z.string().max(1000).optional(),
-  timezone: z.string().max(50).optional(),
+  timezone: z.string().min(1, "Timezone is required").max(50),
 });
 
 export const updateLocationSchema = z.object({
@@ -824,8 +824,16 @@ export const approveLeaveSchema = z.object({
   remarks: z.string().optional(),
 });
 
+// #1921 — worked_date represents a day already worked; must not be future.
+// Compare in YYYY-MM-DD form so timezone offsets don't accept "tomorrow in
+// UTC, today locally" or vice versa.
+const todayYmd = () => new Date().toISOString().slice(0, 10);
 export const createCompOffSchema = z.object({
-  worked_date: z.string(),
+  worked_date: z
+    .string()
+    .refine((v) => v.slice(0, 10) <= todayYmd(), {
+      message: "Worked date cannot be in the future",
+    }),
   expires_on: z.string(),
   reason: z.string().min(1),
   days: z.number().min(0.5).max(2).default(1),

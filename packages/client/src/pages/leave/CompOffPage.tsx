@@ -16,6 +16,9 @@ interface CompOffRequest {
   approved_by: number | null;
   rejection_reason: string | null;
   created_at: string;
+  user_first_name?: string | null;
+  user_last_name?: string | null;
+  user_email?: string | null;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
@@ -193,6 +196,7 @@ export default function CompOffPage() {
                 type="date"
                 value={form.worked_date}
                 onChange={(e) => handleWorkedDateChange(e.target.value)}
+                max={new Date().toISOString().slice(0, 10)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -368,10 +372,19 @@ export default function CompOffPage() {
                   </td>
                 </tr>
               ) : (
-                pendingRequests.map((req) => (
+                pendingRequests.map((req) => {
+                  const fullName = [req.user_first_name, req.user_last_name]
+                    .filter(Boolean)
+                    .join(" ")
+                    .trim();
+                  const displayName =
+                    fullName ||
+                    req.user_email ||
+                    t('leave.compOff.userHash', { id: req.user_id });
+                  return (
                   <tr key={req.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {t('leave.compOff.userHash', { id: req.user_id })}
+                      {displayName}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">{req.worked_date}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">{Number(req.days)}</td>
@@ -414,7 +427,8 @@ export default function CompOffPage() {
                       </div>
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
