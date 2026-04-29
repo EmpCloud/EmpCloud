@@ -1003,33 +1003,20 @@ export async function bulkInviteFromDirectory(
   const toInvite = candidates.filter((u) => !pendingEmails.has(u.email.toLowerCase()));
   const skippedAlreadyPending = candidates.length - toInvite.length;
 
-  // Pre-flight seat-limit check — refuse the batch outright if it would
-  // bust the cap. Better to fail loudly than to invite N/M and leak the
-  // remainder.
+  // No seat-limit check here — every candidate row already exists in the
+  // `users` table (the candidates query reads from it), so each one
+  // already consumed its seat at creation time. Sending an invitation
+  // (or rotating the token on an existing one) doesn't consume a fresh
+  // seat, regardless of whether the user has activated yet.
   //
-  // Only NEW seats count against the limit. An already-activated user
-  // (password_changed_at IS NOT NULL) is already in
-  // organizations.current_user_count, so re-inviting them with
-  // includeActivated does not consume a fresh seat. Without this,
-  // re-invite-all on a fully-seated org always 403'd ("7 new invites
-  // vs 0 seats remaining") even though no actual new seats were being
-  // requested.
-  const newSeatInvites = toInvite.filter((u) => !u.password_changed_at);
+  // The earlier "newSeatInvites = filter(!password_changed_at)" check
+  // was wrong: pre-activation users are still in current_user_count, so
+  // counting them as new seats made bulk re-invite 403 the moment an
+  // org filled its plan, even though zero new seats were being requested.
+  // The single-user inviteUser() flow above (greenfield invites by
+  // email only) still carries its own seat check — that's the only path
+  // that genuinely creates a new user row.
   const org = await db("organizations").where({ id: orgId }).first();
-  if (org && org.total_allowed_user_count > 0 && newSeatInvites.length > 0) {
-    const [{ count: pendingInvitations }] = await db("invitations")
-      .where({ organization_id: orgId, status: "pending" })
-      .count("* as count");
-    const totalCommitted = org.current_user_count + Number(pendingInvitations);
-    const remainingSeats = org.total_allowed_user_count - totalCommitted;
-    if (newSeatInvites.length > remainingSeats) {
-      throw new ForbiddenError(
-        `Bulk invite would exceed the user limit (${newSeatInvites.length} new seat${
-          newSeatInvites.length === 1 ? "" : "s"
-        } needed vs ${remainingSeats} remaining). Upgrade your subscription or invite users one by one.`,
-      );
-    }
-  }
 
   // Look up inviter + org name once for every email body.
   const inviter = await db("users").where({ id: invitedBy }).first();
