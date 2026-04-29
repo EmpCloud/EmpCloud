@@ -146,6 +146,28 @@ export default function EmployeeDirectoryPage() {
     },
   });
 
+  // Per-row Invite button (#1953-followup) — independent of the existing
+  // bulk Invite Employee modal. Hits the same POST /users/invite endpoint
+  // with the row's own email + role so HR doesn't have to retype them.
+  // Tracks which row is currently in-flight so we can disable just that
+  // row's button (not the whole table) and show a spinner on it.
+  const [invitingId, setInvitingId] = useState<number | null>(null);
+  const sendDirectInvite = useMutation({
+    mutationFn: (data: { email: string; role: string }) =>
+      api.post("/users/invite", data).then((r) => r.data.data),
+    onSuccess: () => {
+      showToast("success", "Invitation sent.");
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+    },
+    onError: (err: any) => {
+      showToast(
+        "error",
+        err?.response?.data?.error?.message || "Could not send invitation.",
+      );
+    },
+    onSettled: () => setInvitingId(null),
+  });
+
   // Pending invitations panel — only fetched for org_admin.
   const { data: pendingInvitations } = useQuery({
     queryKey: ["pending-invitations"],
@@ -999,6 +1021,35 @@ export default function EmployeeDirectoryPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
+                      {/* Per-row Invite — sends an invitation to this employee's
+                          email/role without opening the bulk invite modal.
+                          Hidden for the current user (no self-invites) and
+                          inactive accounts (status != 1) so HR doesn't bounce
+                          mail to disabled mailboxes; disabled while an invite
+                          for this row is in flight. */}
+                      {emp.id !== currentUser?.id && emp.status === 1 && emp.email && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (invitingId !== null) return;
+                            setInvitingId(emp.id);
+                            sendDirectInvite.mutate({
+                              email: emp.email,
+                              role: emp.role || "employee",
+                            });
+                          }}
+                          disabled={invitingId !== null}
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                          title={`Send invitation to ${emp.email}`}
+                          aria-label={`Send invitation to ${emp.first_name} ${emp.last_name}`}
+                        >
+                          {invitingId === emp.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Send className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
