@@ -384,6 +384,25 @@ router.post(
   },
 );
 
+// GET /api/v1/users/invitation-info?token=... — public, no auth
+// Read-only peek at an invitation so the Accept Invitation page can
+// prefill First/Last Name (and lock them when re-inviting an existing
+// user). Same NotFoundError surface as accept-invitation so the
+// frontend uses one error message for invalid / expired / used.
+router.get("/invitation-info", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = String(req.query.token || "");
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: { code: "INVALID_TOKEN", message: "token query parameter is required" },
+      });
+    }
+    const info = await userService.getInvitationInfo(token);
+    sendSuccess(res, info);
+  } catch (err) { next(err); }
+});
+
 // POST /api/v1/users/accept-invitation
 router.post("/accept-invitation", async (req: Request, res: Response, next: NextFunction) => {
   try {

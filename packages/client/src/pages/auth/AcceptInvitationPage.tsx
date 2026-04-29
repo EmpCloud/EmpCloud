@@ -11,7 +11,7 @@
 // message instead of the generic axios fallback.
 // =============================================================================
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import axios from "axios";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Building2, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -19,6 +19,14 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { showToast } from "@/components/ui/Toast";
 
 const PASSWORD_MIN = 8;
+
+interface InvitationInfo {
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  org_name: string | null;
+  is_existing_user: boolean;
+}
 
 export default function AcceptInvitationPage() {
   const [params] = useSearchParams();
@@ -33,10 +41,49 @@ export default function AcceptInvitationPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Prefill state — fetched once on mount from the read-only invitation
+  // info endpoint. info.is_existing_user differentiates the re-invite
+  // path (lock the name inputs, name lives on the user record) from
+  // greenfield invites (let the user type their name themselves).
+  const [info, setInfo] = useState<InvitationInfo | null>(null);
+  const [infoLoading, setInfoLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token) return;
+    const ctrl = new AbortController();
+    axios
+      .get("/api/v1/users/invitation-info", { params: { token }, signal: ctrl.signal })
+      .then((r) => r.data?.data as InvitationInfo)
+      .then((data) => {
+        if (!data) return;
+        setInfo(data);
+        // Prefill if we have anything; user can still edit unless this
+        // is the re-invite case where we lock the inputs below.
+        if (data.first_name) setFirstName(data.first_name);
+        if (data.last_name) setLastName(data.last_name);
+      })
+      .catch((err) => {
+        // Surface the same "invalid / expired / used" message the submit
+        // path uses. Network errors during prefill stay silent — the
+        // submit will retry server-side validation.
+        const status = err?.response?.status;
+        const msg = err?.response?.data?.error?.message || "";
+        if (status === 404 || /invitation/i.test(msg)) {
+          setError(
+            "This invitation link is invalid, has already been used, or has expired. Please ask your administrator to resend the invitation.",
+          );
+        }
+      })
+      .finally(() => setInfoLoading(false));
+    return () => ctrl.abort();
+  }, [token]);
+
   // Token must be present in the URL — without it there's nothing to accept.
   if (!token) {
     return <Navigate to="/login" replace />;
   }
+
+  const namesLocked = !!info?.is_existing_user;
 
   function validate(): string | null {
     if (!firstName.trim()) return "First name is required.";
@@ -113,6 +160,12 @@ export default function AcceptInvitationPage() {
             <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
           )}
 
+          {infoLoading && (
+            <p className="text-xs text-gray-400 flex items-center gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" /> Loading invitation…
+            </p>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
@@ -121,8 +174,9 @@ export default function AcceptInvitationPage() {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 autoComplete="given-name"
-                autoFocus
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                autoFocus={!namesLocked}
+                disabled={namesLocked}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                 placeholder="Ada"
               />
             </div>
@@ -133,11 +187,17 @@ export default function AcceptInvitationPage() {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 autoComplete="family-name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                disabled={namesLocked}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                 placeholder="Lovelace"
               />
             </div>
           </div>
+          {namesLocked && (
+            <p className="text-xs text-gray-500">
+              Your name is on file with {info?.org_name || "your organization"}. Contact your HR admin if it needs to change.
+            </p>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
