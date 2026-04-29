@@ -91,9 +91,12 @@ export default function EmployeeProfilePage() {
   // instead of an empty list (emp-payroll#250 — was confusing because the
   // user couldn't tell whether they had no department or the dropdown was
   // broken).
+  // /departments doesn't exist on the server — departments live under
+  // /organizations/me/departments (same path every other page uses).
+  // The wrong path silently returned 404 and the dropdown was empty.
   const { data: departments } = useQuery({
-    queryKey: ["departments"],
-    queryFn: () => api.get("/departments").then((r) => r.data.data),
+    queryKey: ["org-departments"],
+    queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
     enabled: editing,
   });
   const { data: shifts } = useQuery({
