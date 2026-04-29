@@ -291,6 +291,7 @@ router.post("/attendance-details", kioskAuthenticate, async (req, res, next) => 
     const result = await svc.attendanceDetails(
       orgIds,
       timezone,
+      baseUrlFor(req),
       { date, location_id: Number(location_id), status },
       {
         skip: req.query.skip as string,

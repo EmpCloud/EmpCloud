@@ -1177,6 +1177,7 @@ export async function attendanceSummary(
 export async function attendanceDetails(
   orgIds: number[],
   timezone: string | null,
+  baseUrl: string,
   body: { date: string; location_id: number; status?: string },
   query: { skip?: string; limit?: string; search?: string; sortColumn?: string; sortOrder?: string },
 ) {
@@ -1253,6 +1254,10 @@ export async function attendanceDetails(
   for (const r of rows) {
     r.checkIn = r.checkIn ? formatInTimezone(new Date(r.checkIn), timezone) : null;
     r.checkOut = r.checkOut ? formatInTimezone(new Date(r.checkOut), timezone) : null;
+    // Rewrite the raw NAS / local sentinel into the served HTTP URL so
+    // kiosk clients can <img src=...> it directly. /get-users already
+    // does this — /attendance-details was missing the same rewrite.
+    r.face = faceUrlFor(baseUrl, r.id, r.face ?? null);
   }
 
   return {
