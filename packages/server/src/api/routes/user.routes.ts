@@ -220,6 +220,43 @@ router.post("/invite", authenticate, requireOrgAdmin, async (req: Request, res: 
   } catch (err) { next(err); }
 });
 
+// POST /api/v1/users/:id/invite — send (or resend) an invitation to an
+// existing employee. Used by the per-row Invite button on the Employee
+// Directory; the bulk /invite endpoint above blocks because every
+// directory row is by definition already in the users table.
+router.post(
+  "/:id/invite",
+  authenticate,
+  requireOrgAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(String(req.params.id), 10);
+      if (!Number.isFinite(id)) {
+        return res.status(400).json({
+          success: false,
+          error: { code: "INVALID_ID", message: "User id must be a number" },
+        });
+      }
+      const result = await userService.inviteFromDirectory(
+        req.user!.org_id,
+        req.user!.sub,
+        id,
+      );
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.USER_INVITED,
+        details: { user_id: id, email: result.email, status: result.status },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, result, 200);
+    } catch (err) { next(err); }
+  },
+);
+
 // POST /api/v1/users/invitations/:id/resend — rotate token + re-email a pending invite
 router.post(
   "/invitations/:id/resend",
