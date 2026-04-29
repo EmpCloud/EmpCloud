@@ -1274,20 +1274,52 @@ export async function attendanceDetails(
 }
 
 // ---------------------------------------------------------------------------
-// /holidays — lists upcoming holidays from organization_holidays, sorted
-// by date ascending (emp-monitor's fetchholidaysByYear filtered on
-// holiday_date >= current_date).
+// /holidays — lists upcoming holidays. Originally a port of emp-monitor's
+// fetchholidaysByYear that read from organization_holidays, but EmpCloud's
+// HR-side Holidays page (HolidaysPage.tsx) writes to the company_events
+// table with event_type='holiday'. organization_holidays is empty in
+// every live tenant, so the kiosk would always return "No holidays found"
+// even after HR added them. Read from company_events instead and map to
+// the {holiday_name, holiday_date, description} shape the kiosk firmware
+// expects so the response stays drop-in compatible with emp-monitor.
+//
+// Date filter uses end_date when present so a multi-day holiday stays
+// visible on the kiosk for every day it covers, falling back to
+// start_date for single-day rows.
 // ---------------------------------------------------------------------------
 
 export async function getHolidays(orgId: number): Promise<unknown[]> {
   const db = getDB();
   const today = todayYMD();
-  const rows = await db("organization_holidays")
-    .where({ organization_id: orgId })
-    .andWhere("holiday_date", ">=", today)
-    .orderBy("holiday_date", "asc")
-    .select("id", "organization_id", "holiday_name", "holiday_date", "description");
-  return rows;
+  const rows: Array<{
+    id: number;
+    organization_id: number;
+    title: string;
+    description: string | null;
+    start_date: Date | string;
+  }> = await db("company_events")
+    .where({ organization_id: orgId, event_type: "holiday" })
+    .andWhere(function () {
+      this.where("end_date", ">=", today).orWhere(function () {
+        this.whereNull("end_date").andWhere("start_date", ">=", today);
+      });
+    })
+    .orderBy("start_date", "asc")
+    .select("id", "organization_id", "title", "description", "start_date");
+
+  return rows.map((r) => ({
+    id: r.id,
+    organization_id: r.organization_id,
+    holiday_name: r.title,
+    // Keep just the calendar date — kiosks render YYYY-MM-DD; sending the
+    // raw DATETIME would surface the time portion the legacy clients
+    // never expected.
+    holiday_date:
+      r.start_date instanceof Date
+        ? r.start_date.toISOString().slice(0, 10)
+        : String(r.start_date).slice(0, 10),
+    description: r.description,
+  }));
 }
 
 // ---------------------------------------------------------------------------
