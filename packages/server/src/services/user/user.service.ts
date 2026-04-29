@@ -1299,6 +1299,65 @@ export async function bulkCreateUsers(
   return { count: insertRows.length };
 }
 
+/**
+ * Read-only "peek" at an invitation token. Powers the Accept Invitation
+ * page's prefill flow — the page calls this on mount and fills the
+ * First / Last Name inputs from the invitation row, and locks them
+ * when the invitation was issued for an already-existing user (the
+ * re-invite case from #1956 / #1958, where the user shouldn't be able
+ * to rename themselves on activation).
+ *
+ * Public — no auth — same access model as POST /accept-invitation.
+ * Returns the same NotFoundError shape so the frontend can use one
+ * "invalid / expired / used" message for all bad-token cases.
+ */
+export async function getInvitationInfo(token: string): Promise<{
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  org_name: string | null;
+  is_existing_user: boolean;
+}> {
+  const db = getDB();
+
+  const invitation = await db("invitations")
+    .where({ token_hash: hashToken(token), status: "pending" })
+    .first();
+
+  if (!invitation) throw new NotFoundError("Invitation");
+  if (new Date(invitation.expires_at) < new Date()) {
+    throw new NotFoundError("Invitation has expired");
+  }
+
+  // Existing-user check matches what acceptInvitation does at activate
+  // time so the prefill UX and the eventual write path agree on which
+  // case we're in.
+  const existingUser = await db("users")
+    .where({ email: invitation.email, organization_id: invitation.organization_id })
+    .first();
+
+  // If the invitation row's name columns are empty (admin invited by
+  // email only) but a user record exists, fall back to the user's
+  // stored name so the form is still prefilled.
+  const first =
+    invitation.first_name || (existingUser ? existingUser.first_name : null) || null;
+  const last =
+    invitation.last_name || (existingUser ? existingUser.last_name : null) || null;
+
+  const org = await db("organizations")
+    .where({ id: invitation.organization_id })
+    .select("name")
+    .first();
+
+  return {
+    email: invitation.email,
+    first_name: first,
+    last_name: last,
+    org_name: org?.name ?? null,
+    is_existing_user: !!existingUser,
+  };
+}
+
 export async function acceptInvitation(params: {
   token: string;
   firstName: string;
