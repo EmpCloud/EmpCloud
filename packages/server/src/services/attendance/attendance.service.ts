@@ -362,8 +362,14 @@ export async function getDashboard(orgId: number) {
     .whereIn("status", ["present", "half_day", "checked_in"])
     .count("* as count");
 
+  // #1928 — The dashboard "Late today" count must match the breakdown drilldown.
+  // Breakdown only flags users whose record is present/half_day/checked_in AND
+  // has positive late_minutes; counting ALL records with late_minutes>0 here
+  // also pulled in stale rows whose status had since flipped to on_leave or
+  // absent, which made the card count bigger than the drilldown list.
   const [lateCount] = await db("attendance_records")
     .where({ organization_id: orgId, date: today })
+    .whereIn("status", ["present", "half_day", "checked_in"])
     .where("late_minutes", ">", 0)
     .count("* as count");
 

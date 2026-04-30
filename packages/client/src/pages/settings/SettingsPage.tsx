@@ -467,7 +467,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
   const [deleteError, setDeleteError] = useState("");
 
   const addLoc = useMutation({
-    mutationFn: (data: { name: string; timezone?: string }) =>
+    mutationFn: (data: { name: string; timezone: string }) =>
       api.post("/organizations/me/locations", data).then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["locations"] });
@@ -548,12 +548,14 @@ function LocationsCard({ locations }: { locations: any[] }) {
           onSubmit={(e) => {
             e.preventDefault();
             setAddError("");
-            if (locForm.name.trim()) {
-              addLoc.mutate({
-                name: locForm.name.trim(),
-                timezone: locForm.timezone.trim() || undefined,
-              });
+            const name = locForm.name.trim();
+            const timezone = locForm.timezone.trim();
+            if (!name) return;
+            if (!timezone) {
+              setAddError("Timezone is required.");
+              return;
             }
+            addLoc.mutate({ name, timezone });
           }}
           className="flex gap-2"
         >
@@ -567,10 +569,12 @@ function LocationsCard({ locations }: { locations: any[] }) {
           />
           <select
             value={locForm.timezone}
-            onChange={(e) => setLocForm({ ...locForm, timezone: e.target.value })}
+            onChange={(e) => { setLocForm({ ...locForm, timezone: e.target.value }); setAddError(""); }}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+            required
+            aria-required="true"
           >
-            <option value="">Select timezone</option>
+            <option value="">Select timezone *</option>
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
             ))}

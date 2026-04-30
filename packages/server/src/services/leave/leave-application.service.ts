@@ -74,8 +74,16 @@ export async function applyLeave(
     .select("probation_status")
     .first();
   if (applicant && applicant.probation_status === "on_probation") {
-    const allowedCodes = ["sl", "sick", "eml", "emergency"];
-    if (!allowedCodes.includes(leaveType.code.toLowerCase())) {
+    // #1920 — Hard-matching on `leaveType.code` against ["sl","sick","eml","emergency"]
+    // missed the legitimate sick-leave rows whose codes admins had typed as
+    // "SICK_LEAVE", "SL_440514", "SICKLV", etc. Probationers were then told
+    // their sick-leave application was a non-sick leave. Match by name OR
+    // code substring so any leave whose label/code contains "sick" or
+    // "emergency" passes the probation gate.
+    const haystack = `${leaveType.name ?? ""} ${leaveType.code ?? ""}`.toLowerCase();
+    const allowedKeywords = ["sick", "emergency", "sl", "eml"];
+    const isAllowed = allowedKeywords.some((kw) => haystack.includes(kw));
+    if (!isAllowed) {
       throw new ValidationError(
         "Employees on probation can only apply for Sick Leave or Emergency Leave",
       );

@@ -69,14 +69,28 @@ export async function listCompOffs(
   const page = params.page || 1;
   const perPage = params.perPage || 20;
 
-  let query = db("comp_off_requests").where({ organization_id: orgId });
-  if (params.userId) query = query.where({ user_id: params.userId });
-  if (params.status) query = query.where({ status: params.status });
+  let countQuery = db("comp_off_requests").where({ organization_id: orgId });
+  if (params.userId) countQuery = countQuery.where({ user_id: params.userId });
+  if (params.status) countQuery = countQuery.where({ status: params.status });
 
-  const [{ count }] = await query.clone().count("* as count");
+  // #1932 — admin/HR view rendered "User #<id>" because the request rows
+  // weren't joined with users; surface first_name / last_name / email so the
+  // pending-approvals table can show real names.
+  let query = db("comp_off_requests as r")
+    .leftJoin("users as u", "r.user_id", "u.id")
+    .where("r.organization_id", orgId);
+  if (params.userId) query = query.where("r.user_id", params.userId);
+  if (params.status) query = query.where("r.status", params.status);
+
+  const [{ count }] = await countQuery.count("* as count");
   const requests = await query
-    .select()
-    .orderBy("created_at", "desc")
+    .select(
+      "r.*",
+      "u.first_name as user_first_name",
+      "u.last_name as user_last_name",
+      "u.email as user_email",
+    )
+    .orderBy("r.created_at", "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 

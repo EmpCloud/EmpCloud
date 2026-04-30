@@ -43,9 +43,20 @@ function formatDate(dateStr: string, locale: string): string {
   return d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
 }
 
+// #1954 — `effective_from` / `effective_to` may arrive from the API as full
+// ISO strings ("2026-04-26T00:00:00.000Z"), but `date` is YYYY-MM-DD. Naive
+// `date < from` then treats the start day itself as out-of-range (the 'T'
+// suffix sorts after ''), so an assignment created for Sunday only rendered
+// from Monday onwards. Normalize both sides to the day part before comparing.
+function ymd(value: string | null | undefined): string {
+  return typeof value === "string" ? value.slice(0, 10) : "";
+}
+
 function isDateInRange(date: string, from: string, to: string | null): boolean {
-  if (date < from) return false;
-  if (to && date > to) return false;
+  const f = ymd(from);
+  const t = ymd(to);
+  if (date < f) return false;
+  if (t && date > t) return false;
   return true;
 }
 
@@ -452,7 +463,7 @@ export default function ShiftSchedulePage() {
             <select
               value={assignShiftId}
               onChange={(e) => setAssignShiftId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2"
               required
             >
               <option value="">{t('attendance.shiftSchedule.bulk.selectShift')}</option>
@@ -462,6 +473,28 @@ export default function ShiftSchedulePage() {
                 </option>
               ))}
             </select>
+            {/* #1952 — warn when the picked shift doesn't include the chosen
+                day-of-week so admins don't silently create "Off" assignments. */}
+            {(() => {
+              const picked = shifts.find((s: any) => String(s.id) === assignShiftId);
+              if (!picked) return null;
+              const dow = new Date(showAssign.date + "T00:00:00").getDay();
+              const wd = String(picked.working_days ?? "1,2,3,4,5")
+                .split(",")
+                .filter(Boolean)
+                .map((d: string) => Number(d));
+              if (wd.length > 0 && !wd.includes(dow)) {
+                return (
+                  <p className="mb-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+                    {t('attendance.shiftSchedule.quick.offDayWarning', {
+                      defaultValue:
+                        'This shift is off on the selected day. The schedule cell will show "Off" until you change the shift\'s working days.',
+                    })}
+                  </p>
+                );
+              }
+              return null;
+            })()}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowAssign(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
                 {t('common.cancel')}
@@ -651,15 +684,39 @@ export default function ShiftSchedulePage() {
                         const assignment = emp.assignments.find((a: any) =>
                           isDateInRange(date, a.effective_from, a.effective_to),
                         );
+                        // #1952 — A shift with working_days="1,2,3,4,5" is OFF on
+                        // weekends. Render "Off" on those cells so the schedule
+                        // reflects what the shift definition actually says.
+                        // dayOfWeek: 0=Sun..6=Sat (matches shift.working_days CSV).
+                        const dayOfWeek = new Date(date + "T00:00:00").getDay();
+                        const workingDays = (assignment?.working_days ?? "")
+                          .toString()
+                          .split(",")
+                          .filter(Boolean)
+                          .map((d: string) => Number(d));
+                        const isOffDay =
+                          assignment && workingDays.length > 0 && !workingDays.includes(dayOfWeek);
                         return (
                           <td key={date} className="px-2 py-3 text-center">
                             {assignment ? (
                               <div className="group relative inline-flex items-center gap-1">
-                                <span
-                                  className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
-                                >
-                                  {assignment.shift_name}
-                                </span>
+                                {isOffDay ? (
+                                  <span
+                                    className="text-xs px-2 py-1 rounded-full font-medium bg-gray-100 text-gray-500"
+                                    title={t('attendance.shiftSchedule.team.offTooltip', {
+                                      defaultValue: '{{shift}} is off on this day',
+                                      shift: assignment.shift_name,
+                                    })}
+                                  >
+                                    {t('attendance.shiftSchedule.team.off', { defaultValue: 'Off' })}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
+                                  >
+                                    {assignment.shift_name}
+                                  </span>
+                                )}
                                 <span className="hidden group-hover:inline-flex items-center gap-0.5">
                                   <button
                                     onClick={() =>

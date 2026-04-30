@@ -276,7 +276,24 @@ export default function LeaveDashboardPage() {
                 <option value={0} disabled>{t('leave.dashboard.selectType')}</option>
                 {leaveTypes
                   .filter((lt) => Boolean(lt.is_active))
-                  .filter((lt, i, arr) => arr.findIndex((x) => x.name === lt.name) === i)
+                  // #1917 / #1924 — When the org has duplicate leave_types rows
+                  // with the same display name (e.g. an old "SL" with 0 quota
+                  // and a re-added "Sick Leave" with the actual policy), this
+                  // dropdown previously kept the FIRST occurrence by name. The
+                  // dashboard balance card prefers the row that has an
+                  // allocated balance, so users saw "6 days available" but the
+                  // form silently submitted the empty type id, getting back
+                  // "No leave balance allocated". Use the same prefer-allocated
+                  // dedup logic as the card to keep the two views aligned.
+                  .filter((lt, _i, arr) => {
+                    const sameName = arr.filter((x) => x.name === lt.name);
+                    if (sameName.length === 1) return true;
+                    const withAllocation = sameName.find((x) => {
+                      const b = balances.find((bb) => bb.leave_type_id === x.id);
+                      return b && Number(b.total_allocated) > 0;
+                    });
+                    return withAllocation ? withAllocation.id === lt.id : sameName[0].id === lt.id;
+                  })
                   .map((lt) => (
                     <option key={lt.id} value={lt.id}>{leaveTypeLabel(t, lt)}</option>
                   ))}

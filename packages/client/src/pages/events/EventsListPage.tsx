@@ -234,11 +234,16 @@ export default function EventsListPage() {
                           Join Online
                         </a>
                       )}
-                      <span className="flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5" />
-                        {event.attending_count || 0} attending
-                        {event.max_attendees ? ` / ${event.max_attendees} max` : ""}
-                      </span>
+                      {/* #1948 — Hide the "0 attending" line when there are
+                          no RSVPs and no capacity cap; an unconditional "0"
+                          read as visual noise on cards for new events. */}
+                      {(event.attending_count > 0 || event.max_attendees) && (
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3.5 w-3.5" />
+                          {event.attending_count || 0} attending
+                          {event.max_attendees ? ` / ${event.max_attendees} max` : ""}
+                        </span>
+                      )}
                     </div>
                   </div>
 
