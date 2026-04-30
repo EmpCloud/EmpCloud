@@ -14,7 +14,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import axios from "axios";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { Building2, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { showToast } from "@/components/ui/Toast";
 
@@ -150,7 +150,7 @@ export default function AcceptInvitationPage() {
       </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Building2 className="h-12 w-12 text-brand-600 mx-auto mb-4" />
+          <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900">Accept your invitation</h1>
           <p className="text-sm text-gray-500 mt-1">
             Set your name and password to activate your EMP Cloud account.

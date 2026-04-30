@@ -111,12 +111,9 @@ export default function DashboardLayout() {
             <span className="text-[10px] font-bold text-brand-600 leading-none tracking-wide">EMP</span>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-brand-600 flex-shrink-0" />
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">EMP Cloud</h1>
-              <p className="text-xs text-gray-500 truncate">{user?.org_name}</p>
-            </div>
+          <div className="flex flex-col items-start gap-1">
+            <img src="/empcloud-logo.png" alt="EmpCloud" className="h-8" />
+            <p className="text-xs text-gray-500 truncate w-full">{user?.org_name}</p>
           </div>
         )}
       </Link>
