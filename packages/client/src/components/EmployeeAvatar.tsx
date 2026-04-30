@@ -65,6 +65,13 @@ export function useEmployeePhoto(
 type Props = {
   userId: number | null | undefined;
   hasPhoto?: boolean;
+  /** True when /api/v3/biometric/face/:id.jpg has an enrolled image for
+   *  this user. When set, the avatar uses that image directly (it's a
+   *  public route — no auth header needed) and skips the authenticated
+   *  v1 photo fetch entirely. Biometric face takes precedence over the
+   *  manually-uploaded photo so the kiosk-verified image is the canonical
+   *  display. */
+  hasBiometricFace?: boolean;
   firstName?: string | null;
   lastName?: string | null;
   size?: Size;
@@ -76,6 +83,7 @@ type Props = {
 export function EmployeeAvatar({
   userId,
   hasPhoto,
+  hasBiometricFace,
   firstName,
   lastName,
   size = "md",
@@ -83,11 +91,29 @@ export function EmployeeAvatar({
   ring,
 }: Props) {
   const sz = SIZE_CLASSES[size];
-  const { data: photoUrl, isError } = useEmployeePhoto(userId, hasPhoto);
+  // Skip the v1 photo fetch entirely when we'll use the biometric URL —
+  // saves the round-trip and keeps the avatar from briefly flashing the
+  // manual photo before the biometric image loads.
+  const { data: photoUrl, isError } = useEmployeePhoto(
+    userId,
+    hasBiometricFace ? false : hasPhoto,
+  );
   const initials = getInitials(firstName, lastName);
 
   const baseClasses = `${sz.box} rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`;
   const ringClasses = ring ? `ring-2 ${ring}` : "";
+
+  if (hasBiometricFace && userId) {
+    return (
+      <div className={`${baseClasses} ${ringClasses} ${className}`}>
+        <img
+          src={`/api/v3/biometric/face/${userId}.jpg`}
+          alt=""
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
 
   if (photoUrl && !isError) {
     return (

@@ -1086,6 +1086,7 @@ export default function EmployeeDirectoryPage() {
                       <EmployeeAvatar
                         userId={emp.id}
                         hasPhoto={!!emp.photo_path}
+                        hasBiometricFace={!!emp.has_biometric_face}
                         firstName={emp.first_name}
                         lastName={emp.last_name}
                         size="sm"

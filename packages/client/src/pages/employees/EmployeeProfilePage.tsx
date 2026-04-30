@@ -228,67 +228,100 @@ export default function EmployeeProfilePage() {
       {/* Header */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <div className="flex items-center gap-4">
-          <div
-            className="relative h-16 w-16 rounded-full bg-brand-100 flex items-center justify-center text-xl font-bold text-brand-700 overflow-hidden group cursor-pointer"
-            onClick={() => canEdit && photoInputRef.current?.click()}
-          >
-            {photoUrl ? (
-              <img
-                src={photoUrl}
-                alt="Profile"
-                className="h-full w-full object-cover"
-                onError={() => setPhotoUrl(null)}
-              />
-            ) : (
+          {/* Biometric face takes precedence — when the user has a kiosk-
+              enrolled face, show that image and lock manual photo edits.
+              The biometric image is the system of record (it gates kiosk
+              attendance recognition) and HR shouldn't be able to swap it
+              from a generic profile upload. */}
+          {(() => {
+            const hasBiometric = !!(profile as any).has_biometric_face;
+            const photoEditable = canEdit && !hasBiometric;
+            return (
               <>
-                {profile.first_name?.[0]}
-                {profile.last_name?.[0]}
+                <div
+                  className={`relative h-16 w-16 rounded-full bg-brand-100 flex items-center justify-center text-xl font-bold text-brand-700 overflow-hidden group ${
+                    photoEditable ? "cursor-pointer" : "cursor-default"
+                  }`}
+                  onClick={() => photoEditable && photoInputRef.current?.click()}
+                  title={
+                    hasBiometric
+                      ? "Photo is managed via biometric kiosk enrollment"
+                      : undefined
+                  }
+                >
+                  {hasBiometric ? (
+                    <img
+                      src={`/api/v3/biometric/face/${userId}.jpg`}
+                      alt="Biometric face"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : photoUrl ? (
+                    <img
+                      src={photoUrl}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                      onError={() => setPhotoUrl(null)}
+                    />
+                  ) : (
+                    <>
+                      {profile.first_name?.[0]}
+                      {profile.last_name?.[0]}
+                    </>
+                  )}
+                  {photoEditable && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      {uploadingPhoto ? (
+                        <span className="text-white text-xs">...</span>
+                      ) : (
+                        <Camera className="h-5 w-5 text-white" />
+                      )}
+                    </div>
+                  )}
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
+                    disabled={!photoEditable}
+                  />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">
+                    {profile.first_name} {profile.last_name}
+                  </h1>
+                  <p className="text-sm text-gray-500">{profile.designation || "No designation"}</p>
+                  <p className="text-sm text-gray-400">{profile.email}</p>
+                  {/* Hint when the photo comes from biometric enrollment —
+                      explains why the upload affordance isn't there. */}
+                  {hasBiometric && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Photo from biometric enrollment — managed via the kiosk.
+                    </p>
+                  )}
+                  {/* #1650 — Remove photo only meaningful for the manual
+                      upload path. Hidden when biometric is in use (HR can't
+                      remove an enrolled face from this UI). */}
+                  {photoEditable && photoUrl && (
+                    <button
+                      type="button"
+                      onClick={handlePhotoRemove}
+                      disabled={removingPhoto}
+                      className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
+                    >
+                      {removingPhoto ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" /> Removing...
+                        </>
+                      ) : (
+                        "Remove photo"
+                      )}
+                    </button>
+                  )}
+                </div>
               </>
-            )}
-            {canEdit && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                {uploadingPhoto ? (
-                  <span className="text-white text-xs">...</span>
-                ) : (
-                  <Camera className="h-5 w-5 text-white" />
-                )}
-              </div>
-            )}
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={handlePhotoUpload}
-            />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              {profile.first_name} {profile.last_name}
-            </h1>
-            <p className="text-sm text-gray-500">{profile.designation || "No designation"}</p>
-            <p className="text-sm text-gray-400">{profile.email}</p>
-            {/* #1650 — "Remove photo" action sits right under the identity
-                line so it's discoverable without intruding on the photo
-                hover-to-upload affordance. Only shown when there's an
-                actual photo to remove and the viewer can edit. */}
-            {canEdit && photoUrl && (
-              <button
-                type="button"
-                onClick={handlePhotoRemove}
-                disabled={removingPhoto}
-                className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
-              >
-                {removingPhoto ? (
-                  <>
-                    <Loader2 className="h-3 w-3 animate-spin" /> Removing...
-                  </>
-                ) : (
-                  "Remove photo"
-                )}
-              </button>
-            )}
-          </div>
+            );
+          })()}
           <div className="ml-auto flex items-start gap-4">
             <div className="text-right text-sm text-gray-500">
               {profile.emp_code && <p>Emp Code: {profile.emp_code}</p>}
