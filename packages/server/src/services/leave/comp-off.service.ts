@@ -188,6 +188,94 @@ export async function approveCompOff(
   return getCompOff(orgId, id);
 }
 
+// #1933 — admin credit/debit of an employee's comp-off balance without
+// going through the request-approve flow (e.g. carry-forward at year start,
+// one-off goodwill grant, correcting a stale balance). Days can be negative
+// to debit. Creates the COMP_OFF leave_type row on demand if the org is
+// missing one, mirroring the behaviour of approveCompOff.
+export async function adjustCompOffBalance(
+  orgId: number,
+  targetUserId: number,
+  days: number,
+  // `reason` is captured by the route audit log; the leave_balances table
+  // has no remarks column, so we don't persist it on the row itself.
+  _reason?: string,
+): Promise<{ balance: number; total_allocated: number; year: number }> {
+  if (!Number.isFinite(days) || days === 0) {
+    throw new ValidationError("Days must be a non-zero number");
+  }
+  const db = getDB();
+  const targetUser = await db("users")
+    .where({ id: targetUserId, organization_id: orgId })
+    .first();
+  if (!targetUser) throw new NotFoundError("Employee");
+
+  let compOffType = await db("leave_types")
+    .where({ organization_id: orgId, code: "COMP_OFF" })
+    .first();
+  if (!compOffType) {
+    const [id] = await db("leave_types").insert({
+      organization_id: orgId,
+      name: "Compensatory Off",
+      code: "COMP_OFF",
+      is_paid: true,
+      is_carry_forward: true,
+      max_carry_forward_days: 30,
+      is_active: true,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+    compOffType = await db("leave_types").where({ id }).first();
+  }
+
+  const year = new Date().getFullYear();
+  const balance = await db("leave_balances")
+    .where({
+      organization_id: orgId,
+      user_id: targetUserId,
+      leave_type_id: compOffType.id,
+      year,
+    })
+    .first();
+
+  if (balance) {
+    const nextAllocated = Number(balance.total_allocated) + days;
+    const nextBalance = Number(balance.balance) + days;
+    if (nextBalance < 0) {
+      throw new ValidationError(
+        `Adjustment would make balance negative (current: ${balance.balance} day(s), requested: ${days})`,
+      );
+    }
+    await db("leave_balances").where({ id: balance.id }).update({
+      total_allocated: nextAllocated,
+      balance: nextBalance,
+      updated_at: new Date(),
+    });
+    return {
+      balance: nextBalance,
+      total_allocated: nextAllocated,
+      year,
+    };
+  } else {
+    if (days < 0) {
+      throw new ValidationError("Cannot debit comp-off balance — no balance allocated yet");
+    }
+    await db("leave_balances").insert({
+      organization_id: orgId,
+      user_id: targetUserId,
+      leave_type_id: compOffType.id,
+      year,
+      total_allocated: days,
+      total_used: 0,
+      total_carry_forward: 0,
+      balance: days,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+    return { balance: days, total_allocated: days, year };
+  }
+}
+
 export async function rejectCompOff(
   orgId: number,
   approverId: number,

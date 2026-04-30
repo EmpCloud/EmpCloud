@@ -248,13 +248,21 @@ export default function ShiftsPage() {
                 </div>
               </div>
 
-              {/* Shift Options */}
+              {/* Shift Options — #1957: night and default are mutually
+                  exclusive. The "default" shift is the org's standard day
+                  shift; tagging a night shift as default would override
+                  it on every new employee. Ticking one auto-clears the
+                  other. */}
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2.5 px-4 py-2.5 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
                   <input
                     type="checkbox"
                     checked={form.is_night_shift}
-                    onChange={(e) => set("is_night_shift", e.target.checked)}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      set("is_night_shift", next);
+                      if (next) set("is_default", false);
+                    }}
                     className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                   />
                   <Moon className="h-4 w-4 text-indigo-500" />
@@ -264,7 +272,11 @@ export default function ShiftsPage() {
                   <input
                     type="checkbox"
                     checked={form.is_default}
-                    onChange={(e) => set("is_default", e.target.checked)}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      set("is_default", next);
+                      if (next) set("is_night_shift", false);
+                    }}
                     className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                   />
                   <Sun className="h-4 w-4 text-amber-500" />

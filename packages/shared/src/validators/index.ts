@@ -581,10 +581,18 @@ const shiftBaseSchema = z.object({
   half_days: halfDaysField.default(""),
 });
 
-export const createShiftSchema = shiftBaseSchema.refine(
-  (data) => data.start_time !== data.end_time,
-  { message: "Start time and end time cannot be the same", path: ["end_time"] }
-);
+export const createShiftSchema = shiftBaseSchema
+  .refine(
+    (data) => data.start_time !== data.end_time,
+    { message: "Start time and end time cannot be the same", path: ["end_time"] }
+  )
+  // #1957 — A shift cannot be both `is_default` (the org's standard day shift
+  // assigned to new employees) AND `is_night_shift`. Tagging a night shift
+  // as default would silently override the day shift on every new hire.
+  .refine(
+    (data) => !(data.is_default && data.is_night_shift),
+    { message: "A shift cannot be both the default shift and a night shift", path: ["is_night_shift"] }
+  );
 
 // #1356 — updateShiftSchema must NOT inherit defaults from shiftBaseSchema
 // (partial() keeps defaults, which overwrite unchanged fields on PATCH)
@@ -609,6 +617,18 @@ export const updateShiftSchema = z
       return true;
     },
     { message: "Start time and end time cannot be the same", path: ["end_time"] }
+  )
+  // #1957 — same mutex as createShiftSchema for the PATCH path. Only
+  // applies when both flags are present in the request body; partial
+  // updates that touch one flag at a time still work.
+  .refine(
+    (data) => {
+      if (data.is_default !== undefined && data.is_night_shift !== undefined) {
+        return !(data.is_default && data.is_night_shift);
+      }
+      return true;
+    },
+    { message: "A shift cannot be both the default shift and a night shift", path: ["is_night_shift"] }
   );
 
 export const assignShiftSchema = z.object({

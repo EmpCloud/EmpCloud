@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { PlusCircle, Clock, CheckCircle2, XCircle, CalendarDays } from "lucide-react";
+import { PlusCircle, Clock, CheckCircle2, XCircle, CalendarDays, Plus } from "lucide-react";
 
 interface CompOffRequest {
   id: number;
@@ -103,6 +103,59 @@ export default function CompOffPage() {
     },
   });
 
+  // #1933 — HR-only manual credit/debit of an employee's comp-off balance.
+  // Loads the org's employee directory once when the form is opened, then
+  // posts to /leave/comp-off/balance/adjust. Negative days debit; the
+  // server rejects debits that would take a balance negative.
+  const [showCredit, setShowCredit] = useState(false);
+  const [creditForm, setCreditForm] = useState({ user_id: 0, days: 1, reason: "" });
+  const [creditError, setCreditError] = useState<string | null>(null);
+  const { data: employeesData } = useQuery({
+    queryKey: ["comp-off-employees"],
+    queryFn: () =>
+      api.get("/employees", { params: { per_page: 500 } }).then((r) => r.data.data || []),
+    enabled: !!isHR && showCredit,
+  });
+  const employeeOptions: Array<{ id: number; first_name: string; last_name: string; email?: string }> =
+    Array.isArray(employeesData) ? employeesData : [];
+  const creditMut = useMutation({
+    mutationFn: (data: typeof creditForm) =>
+      api
+        .post("/leave/comp-off/balance/adjust", {
+          user_id: data.user_id,
+          days: data.days,
+          reason: data.reason || undefined,
+        })
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["comp-off-balance"] });
+      qc.invalidateQueries({ queryKey: ["comp-off-pending"] });
+      qc.invalidateQueries({ queryKey: ["comp-off-my"] });
+      setShowCredit(false);
+      setCreditForm({ user_id: 0, days: 1, reason: "" });
+      setCreditError(null);
+    },
+    onError: (err: any) => {
+      setCreditError(
+        err?.response?.data?.error?.message ||
+          "Failed to adjust balance. Check the days and try again.",
+      );
+    },
+  });
+  const handleCreditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreditError(null);
+    if (!creditForm.user_id) {
+      setCreditError("Please pick an employee.");
+      return;
+    }
+    if (!Number.isFinite(creditForm.days) || creditForm.days === 0) {
+      setCreditError("Enter a non-zero number of days.");
+      return;
+    }
+    creditMut.mutate(creditForm);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submitMut.mutate(form);
@@ -128,13 +181,106 @@ export default function CompOffPage() {
             {t('leave.compOff.subtitle')}
           </p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
-        >
-          <PlusCircle className="h-4 w-4" /> {t('leave.compOff.request')}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* #1933 — HR-only Credit Balance entry point. Lets admins grant
+              comp-off days without going through the request/approve flow. */}
+          {isHR && (
+            <button
+              onClick={() => setShowCredit((v) => !v)}
+              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700"
+            >
+              <Plus className="h-4 w-4" /> Credit Balance
+            </button>
+          )}
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          >
+            <PlusCircle className="h-4 w-4" /> {t('leave.compOff.request')}
+          </button>
+        </div>
       </div>
+
+      {/* Credit Balance Form (HR-only, #1933) */}
+      {isHR && showCredit && (
+        <form
+          onSubmit={handleCreditSubmit}
+          className="bg-white rounded-xl border border-emerald-200 p-6 mb-8"
+        >
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">Credit / Debit Comp-Off Balance</h2>
+          <p className="text-xs text-gray-500 mb-4">
+            Manually grant days to an employee's comp-off balance. Use a negative number to debit.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Employee <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={creditForm.user_id || ""}
+                onChange={(e) => setCreditForm({ ...creditForm, user_id: Number(e.target.value) })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                required
+              >
+                <option value="">— Select employee —</option>
+                {employeeOptions.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.first_name} {emp.last_name}
+                    {emp.email ? ` · ${emp.email}` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Days <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                value={creditForm.days}
+                onChange={(e) => setCreditForm({ ...creditForm, days: Number(e.target.value) })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
+              />
+              <p className="text-xs text-gray-400 mt-1">Positive to credit, negative to debit.</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <input
+                type="text"
+                value={creditForm.reason}
+                onChange={(e) => setCreditForm({ ...creditForm, reason: e.target.value })}
+                placeholder="e.g. Year-end carry forward"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+          {creditError && (
+            <p className="mt-3 text-sm text-red-600">{creditError}</p>
+          )}
+          <div className="flex justify-end gap-3 mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setShowCredit(false);
+                setCreditError(null);
+                setCreditForm({ user_id: 0, days: 1, reason: "" });
+              }}
+              className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={creditMut.isPending}
+              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {creditMut.isPending ? "Saving..." : "Apply Adjustment"}
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Balance Card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
