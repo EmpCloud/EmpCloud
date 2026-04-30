@@ -189,7 +189,6 @@ export default function AcceptInvitationPage() {
                 autoComplete="family-name"
                 disabled={namesLocked}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                placeholder="Lovelace"
               />
             </div>
           </div>
