@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@empcloud/shared";
 import { useLogin } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
-import { Building2, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage() {
@@ -81,8 +81,12 @@ export default function LoginPage() {
       </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Building2 className="h-12 w-12 text-brand-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">{t('auth.signInTo')}</h1>
+          <img
+            src="/empcloud-logo.png"
+            alt="EmpCloud"
+            className="h-20 w-auto mx-auto mb-6 object-contain"
+          />
+          <h1 className="text-2xl font-bold text-gray-900">{t('auth.signIn')}</h1>
           <p className="text-sm text-gray-500 mt-1">{t('auth.enterprisePlatform')}</p>
         </div>
 

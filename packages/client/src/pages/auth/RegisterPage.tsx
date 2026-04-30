@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@empcloud/shared";
 import { useRegister } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
-import { Building2, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <Building2 className="h-12 w-12 text-brand-600 mx-auto mb-4" />
+          <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900">Create your EMP Cloud account</h1>
           <p className="text-sm text-gray-500 mt-1">Set up your organization in minutes</p>
         </div>
