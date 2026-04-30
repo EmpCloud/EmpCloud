@@ -3,6 +3,21 @@ import api from "@/api/client";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Pencil, Trash2, X, Clock, Moon, Sun } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
+
+// #1930 — Pull a human-readable message off any axios error so the form
+// surfaces it instead of silently spinning. The validator returns Zod
+// issues at .error.details, the service layer returns a string at
+// .error.message; fall back to a generic line if neither is present.
+function shiftErrorMessage(err: any, fallback: string): string {
+  const data = err?.response?.data?.error;
+  if (data?.message) return data.message;
+  const details = data?.details;
+  if (Array.isArray(details) && details.length > 0) {
+    return details.map((d: any) => d?.message || String(d)).join(" · ");
+  }
+  return fallback;
+}
 
 interface ShiftForm {
   name: string;
@@ -47,17 +62,29 @@ export default function ShiftsPage() {
   const createShift = useMutation({
     mutationFn: (data: ShiftForm) => api.post("/attendance/shifts", data).then((r) => r.data.data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["shifts"] }); resetForm(); },
+    // #1930 — Without an onError, a failed POST silently spins forever
+    // and only logs to the browser console. Surface the API's error so
+    // HR sees what went wrong (validator rejection, name regex, etc.).
+    onError: (err: any) => {
+      showToast("error", shiftErrorMessage(err, "Could not create shift."));
+    },
   });
 
   const updateShift = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<ShiftForm> }) =>
       api.put(`/attendance/shifts/${id}`, data).then((r) => r.data.data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["shifts"] }); resetForm(); },
+    onError: (err: any) => {
+      showToast("error", shiftErrorMessage(err, "Could not update shift."));
+    },
   });
 
   const deleteShift = useMutation({
     mutationFn: (id: number) => api.delete(`/attendance/shifts/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["shifts"] }),
+    onError: (err: any) => {
+      showToast("error", shiftErrorMessage(err, "Could not delete shift."));
+    },
   });
 
   const resetForm = () => {

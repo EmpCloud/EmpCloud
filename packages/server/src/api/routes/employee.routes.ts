@@ -183,7 +183,20 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         await db("users").where({ id: row.id }).update(updates);
         results.push({ id: row.id, status: "updated" });
       } catch (err: any) {
-        results.push({ id: row.id, status: "error", error: err.message });
+        // #1857 — translate raw mysql2 ER_DUP_ENTRY on the emp_code unique
+        // index into the same friendly message the per-row PUT path uses
+        // (#1950). Without this the modal showed
+        //   "Duplicate entry '1-EMP001' for key 'users.idx_users_org_emp_code_uniq'"
+        // verbatim — HR has no way to act on that.
+        const code = err?.code || err?.errno;
+        const sqlMessage: string = err?.sqlMessage || err?.message || "";
+        const isEmpCodeDup =
+          (code === "ER_DUP_ENTRY" || code === 1062) &&
+          sqlMessage.includes("idx_users_org_emp_code_uniq");
+        const friendly = isEmpCodeDup
+          ? "Employee code is already used by another employee. Pick a different code."
+          : err?.message || "Update failed";
+        results.push({ id: row.id, status: "error", error: friendly });
       }
     }
 
