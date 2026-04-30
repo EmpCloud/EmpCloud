@@ -1317,11 +1317,21 @@ export async function getInvitationInfo(token: string): Promise<{
   }
 
   // Existing-user check matches what acceptInvitation does at activate
-  // time so the prefill UX and the eventual write path agree on which
-  // case we're in.
+  // time. Look up GLOBALLY (users.email is globally unique per migration
+  // 001) and reject early when the email belongs to another org so the
+  // accept-invitation page surfaces the conflict before the user types
+  // their password — instead of letting the activate POST bubble up a
+  // generic 500 from the unique-key collision.
   const existingUser = await db("users")
-    .where({ email: invitation.email, organization_id: invitation.organization_id })
+    .where({ email: invitation.email })
     .first();
+
+  if (existingUser && existingUser.organization_id !== invitation.organization_id) {
+    throw new ConflictError(
+      "This email is already registered with another organization. " +
+        "Please contact support to transfer your account.",
+    );
+  }
 
   // If the invitation row's name columns are empty (admin invited by
   // email only) but a user record exists, fall back to the user's
@@ -1380,17 +1390,32 @@ export async function acceptInvitation(params: {
   const user = await db.transaction(async (trx) => {
     const inviteNow = new Date();
 
-    // Re-invite case: a user with this email already exists in the org
-    // (created via "Also re-invite already-activated employees" or by an
-    // earlier admin-side create). Don't INSERT — that hits the unique
-    // email constraint. UPDATE password + names instead, and don't touch
-    // current_user_count (the seat is already counted).
+    // The original existing-user check filtered by `organization_id` only,
+    // but `users.email` is GLOBALLY unique (see migration 001). When the
+    // invitee already had an account in *another* org, that scoped lookup
+    // missed them, the code fell through to INSERT, and MySQL rejected with
+    // ER_DUP_ENTRY 'users.users_email_unique' — the user got a generic 500
+    // and the invitation stayed pending forever. Look up globally and split
+    // the three cases explicitly:
+    //   - same org → re-invite, UPDATE in place (no seat double-count)
+    //   - different org → reject with a clear 409 the frontend can render
+    //   - no row anywhere → fresh INSERT (current behaviour)
     const existingUser = await trx("users")
-      .where({ email: invitation.email, organization_id: invitation.organization_id })
+      .where({ email: invitation.email })
       .first();
+
+    if (existingUser && existingUser.organization_id !== invitation.organization_id) {
+      throw new ConflictError(
+        "This email is already registered with another organization. " +
+          "Please contact support to transfer your account.",
+      );
+    }
 
     let userId: number;
     if (existingUser) {
+      // Same-org re-invite: don't INSERT (hits the unique email constraint).
+      // UPDATE password + names + status instead, and don't touch
+      // current_user_count (seat already counted).
       await trx("users").where({ id: existingUser.id }).update({
         first_name: resolvedFirstName,
         last_name: resolvedLastName,
