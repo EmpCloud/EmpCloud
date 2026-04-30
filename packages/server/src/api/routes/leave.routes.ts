@@ -399,6 +399,33 @@ router.get("/comp-off/pending", authenticate, async (req: Request, res: Response
   } catch (err) { next(err); }
 });
 
+// POST /api/v1/leave/comp-off/balance/adjust — HR-only manual credit/debit
+// of an employee's comp-off balance (bypasses the request/approve flow).
+// #1933 — admins had no way to grant comp-off without an employee request.
+router.post("/comp-off/balance/adjust", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = Number(req.body.user_id);
+    const days = Number(req.body.days);
+    const reason = typeof req.body.reason === "string" ? req.body.reason.trim() || undefined : undefined;
+    if (!Number.isFinite(userId) || userId <= 0) {
+      throw new ValidationError("user_id is required");
+    }
+    const result = await compOffService.adjustCompOffBalance(req.user!.org_id, userId, days, reason);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.LEAVE_BALANCE_ADJUSTED,
+      resourceType: "leave_balance",
+      resourceId: `comp_off:user:${userId}`,
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+      details: { days, reason: reason ?? null, ...result },
+    });
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/leave/comp-off/balance — My comp-off leave balance
 router.get("/comp-off/balance", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {

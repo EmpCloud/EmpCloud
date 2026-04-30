@@ -640,7 +640,11 @@ export default function ShiftSchedulePage() {
             <table className="min-w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 bg-gray-50 min-w-[180px]">
+                  {/* #1963 — sticky employee column needs an explicit z-index
+                      and a non-translucent border-right; without those, the
+                      scrolling shift badges painted over the employee name
+                      when the user scrolled the table horizontally. */}
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 z-20 bg-gray-50 border-r border-gray-200 min-w-[180px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">
                     {t('attendance.shiftSchedule.team.employee')}
                   </th>
                   {week.dates.map((date) => (
@@ -672,7 +676,7 @@ export default function ShiftSchedulePage() {
                 ) : (
                   pagedSchedule.map((emp: any) => (
                     <tr key={emp.user_id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 sticky left-0 bg-white">
+                      <td className="px-4 py-3 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
                         <div className="text-sm font-medium text-gray-900">
                           {emp.first_name} {emp.last_name}
                         </div>
