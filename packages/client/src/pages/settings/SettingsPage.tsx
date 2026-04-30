@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
 import { Building2, MapPin, Briefcase, Pencil, X, Plus, Trash2, Save } from "lucide-react";
+import ChangePasswordCard from "@/components/ChangePasswordCard";
 
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
@@ -111,6 +112,13 @@ export default function SettingsPage() {
 
         {/* Locations */}
         <LocationsCard locations={locations || []} />
+      </div>
+
+      {/* Account security — same self-service password change card the
+          /change-password route uses, embedded here so HR can change
+          their password without leaving the settings flow. */}
+      <div className="mt-6">
+        <ChangePasswordCard />
       </div>
     </div>
   );

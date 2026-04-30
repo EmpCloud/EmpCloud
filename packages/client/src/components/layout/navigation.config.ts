@@ -103,6 +103,8 @@ export const employeeNavItems: NavItem[] = [
     { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "nav.submitReport", icon: ShieldAlert },
     { path: "/whistleblowing/track", label: "Track Report", i18nKey: "nav.trackReport", icon: Search },
   ]},
+  // Self-service password change — visible to every signed-in user.
+  { path: "/change-password", label: "Change Password", i18nKey: "nav.changePassword", icon: KeyRound },
 ];
 
 // Items visible only to HR Admin, Org Admin, Super Admin

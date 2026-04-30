@@ -19,6 +19,7 @@ const AuditPage = lazy(() => import("@/pages/audit/AuditPage"));
 // so existing bookmarks keep working. The original UsersPage file is left
 // on disk but no longer referenced from the router.
 const SettingsPage = lazy(() => import("@/pages/settings/SettingsPage"));
+const ChangePasswordPage = lazy(() => import("@/pages/account/ChangePasswordPage"));
 
 const HR_ROLES = ["org_admin", "hr_admin"];
 
@@ -32,6 +33,10 @@ export const adminRoutes = (
   <>
     <Route path="/users" element={<Navigate to="/employees" replace />} />
     <Route path="/settings" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><SettingsPage /></RequireRole>} />
+    {/* No role gate — every authenticated user (employee, HR, admin) can
+        change their own password. The endpoint behind it requires the
+        current password so this is safe to expose. */}
+    <Route path="/change-password" element={<ChangePasswordPage />} />
     <Route path="/audit" element={<RequireRole roles={[...HR_ROLES, "super_admin"]}><AuditPage /></RequireRole>} />
     <Route path="/admin" element={<RequireRole roles={["super_admin"]}><SuperAdminDashboard /></RequireRole>} />
     <Route path="/admin/organizations" element={<RequireRole roles={["super_admin"]}><OrgListPage /></RequireRole>} />
