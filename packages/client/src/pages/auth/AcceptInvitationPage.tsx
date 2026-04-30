@@ -84,6 +84,11 @@ export default function AcceptInvitationPage() {
   }
 
   const namesLocked = !!info?.is_existing_user;
+  // Only lock the last-name input when the system actually has a value
+  // to lock. Otherwise (re-invite of a user with no last name on file)
+  // the input would stay disabled AND validation would still demand a
+  // value, making submit impossible.
+  const lastNameLocked = !!info?.is_existing_user && !!info.last_name;
 
   function validate(): string | null {
     if (!firstName.trim()) return "First name is required.";
@@ -187,7 +192,7 @@ export default function AcceptInvitationPage() {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 autoComplete="family-name"
-                disabled={namesLocked}
+                disabled={lastNameLocked}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
               />
             </div>
