@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
   LogOut,
-  Building2,
   Menu,
   X,
   ChevronLeft,
@@ -98,22 +97,33 @@ export default function DashboardLayout() {
         to="/"
         title={isCollapsed ? "EMP Cloud" : undefined}
         className={`block border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-          isCollapsed ? "p-2" : "p-6"
+          isCollapsed ? "p-2" : "px-4 py-4"
         }`}
       >
         {isCollapsed ? (
-          // #1529 — Compact brand mark when collapsed: icon + "EMP" wordmark
-          // so the brand is identifiable at a glance. Previously only the
-          // generic Building2 icon showed, which the reporter flagged as
-          // "logo not visible".
-          <div className="flex flex-col items-center gap-0.5">
-            <Building2 className="h-6 w-6 text-brand-600 flex-shrink-0" />
-            <span className="text-[10px] font-bold text-brand-600 leading-none tracking-wide">EMP</span>
+          // Compact brand mark when collapsed — square cloud icon (no
+          // wordmark) since the wide horizontal logo doesn't fit a 64px
+          // sidebar. Square asset is shared with the favicon.
+          <div className="flex justify-center">
+            <img
+              src="/empcloud-icon.png"
+              alt="EmpCloud"
+              className="h-9 w-9 object-contain"
+            />
           </div>
         ) : (
-          <div className="flex flex-col items-start gap-1">
-            <img src="/empcloud-logo.png" alt="EmpCloud" className="h-8" />
-            <p className="text-xs text-gray-500 truncate w-full">{user?.org_name}</p>
+          // Centered logo block — visually balanced inside the 256px sidebar
+          // and the org name reads as a caption beneath, instead of a
+          // misaligned left-hugging stack.
+          <div className="flex flex-col items-center gap-2">
+            <img
+              src="/empcloud-logo.png"
+              alt="EmpCloud"
+              className="h-10 w-auto max-w-full object-contain"
+            />
+            <p className="text-xs text-gray-500 truncate w-full text-center">
+              {user?.org_name}
+            </p>
           </div>
         )}
       </Link>
