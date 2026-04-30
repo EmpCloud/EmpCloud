@@ -22,6 +22,7 @@ export async function getProfile(orgId: number, userId: number) {
     })
     .leftJoin("users as manager", "users.reporting_manager_id", "manager.id")
     .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
+    .leftJoin("biometric_legacy_credentials as blc", "blc.user_id", "users.id")
     .where({ "users.id": userId, "users.organization_id": orgId })
     .select(
       "users.id",
@@ -62,7 +63,10 @@ export async function getProfile(orgId: number, userId: number) {
       "employee_profiles.probation_start_date",
       "employee_profiles.probation_end_date",
       "employee_profiles.confirmation_date",
-      "employee_profiles.notice_period_days"
+      "employee_profiles.notice_period_days",
+      // 1 when the user has a biometric face on file; the profile UI uses
+      // this to show the kiosk-enrolled photo and lock the upload control.
+      db.raw("CASE WHEN blc.face_url IS NOT NULL THEN 1 ELSE 0 END as has_biometric_face")
     )
     .first();
 
@@ -91,6 +95,7 @@ export async function getProfile(orgId: number, userId: number) {
 
   return {
     ...row,
+    has_biometric_face: !!Number((row as any).has_biometric_face),
     shift_id: currentShift?.shift_id ?? null,
     shift_name: currentShift?.shift_name ?? null,
   };
@@ -257,8 +262,14 @@ export async function getDirectory(
   const page = params.page || 1;
   const perPage = params.per_page || 20;
 
+  // Left-join biometric_legacy_credentials so the directory can show the
+  // kiosk-enrolled face image when one exists (and disable manual photo
+  // upload for those rows). face_url is the NAS / local sentinel that
+  // /api/v3/biometric/face/:id.jpg serves; we only need to know whether
+  // it's set, not the actual value.
   let query = db("users")
     .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
+    .leftJoin("biometric_legacy_credentials as blc", "blc.user_id", "users.id")
     .where({ "users.organization_id": orgId });
 
   // Default to active employees only (status=1) to match dashboard count
@@ -292,8 +303,8 @@ export async function getDirectory(
     query = query.where("users.role", params.role);
   }
 
-  const [{ count }] = await query.clone().count("* as count");
-  const users = await query
+  const [{ count }] = await query.clone().count("users.id as count");
+  const rows = await query
     .select(
       "users.id",
       "users.first_name",
@@ -307,11 +318,20 @@ export async function getDirectory(
       "users.status",
       "users.role",
       "users.date_of_joining",
-      "organization_departments.name as department_name"
+      "organization_departments.name as department_name",
+      // 1 when the user has a non-null biometric face_url, 0 otherwise.
+      // Cast to boolean below — MySQL returns 0/1, the frontend wants
+      // true/false so the avatar can branch cleanly.
+      db.raw("CASE WHEN blc.face_url IS NOT NULL THEN 1 ELSE 0 END as has_biometric_face")
     )
     .orderBy("users.first_name", "asc")
     .limit(perPage)
     .offset((page - 1) * perPage);
+
+  const users = rows.map((u: any) => ({
+    ...u,
+    has_biometric_face: !!Number(u.has_biometric_face),
+  }));
 
   return { users, total: Number(count) };
 }
