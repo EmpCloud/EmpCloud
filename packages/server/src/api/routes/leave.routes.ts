@@ -12,6 +12,7 @@ import * as leaveTypeService from "../../services/leave/leave-type.service.js";
 import * as leavePolicyService from "../../services/leave/leave-policy.service.js";
 import * as leaveBalanceService from "../../services/leave/leave-balance.service.js";
 import * as leaveApplicationService from "../../services/leave/leave-application.service.js";
+import * as leaveConfigService from "../../services/leave/leave-config.service.js";
 import * as compOffService from "../../services/leave/comp-off.service.js";
 import {
   createLeaveTypeSchema,
@@ -22,6 +23,11 @@ import {
   createCompOffSchema,
   leaveQuerySchema,
   initializeBalancesSchema,
+  updateLeaveOrgConfigSchema,
+  overrideLeaveBalanceSchema,
+  bulkOverrideLeaveBalanceSchema,
+  resetPeriodUsageSchema,
+  employeeLeavesQuerySchema,
   AuditAction,
   ROLE_HIERARCHY,
 } from "@empcloud/shared";
@@ -369,6 +375,157 @@ router.get("/calendar", authenticate, async (req: Request, res: Response, next: 
     sendSuccess(res, calendar);
   } catch (err) { next(err); }
 });
+
+// ===========================================================================
+// Leave Configuration (org-level, HR-only)
+// ===========================================================================
+
+// GET /api/v1/leave/config — fiscal year start month + current FY label
+router.get("/config", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const config = await leaveConfigService.getLeaveOrgConfig(req.user!.org_id);
+    sendSuccess(res, config);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/leave/config — update fiscal year start month
+router.put("/config", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateLeaveOrgConfigSchema.parse(req.body);
+    const config = await leaveConfigService.updateLeaveOrgConfig(req.user!.org_id, data);
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.LEAVE_CONFIG_UPDATED,
+      resourceType: "leave_config",
+      resourceId: String(req.user!.org_id),
+      details: { fiscal_year_start_month: data.fiscal_year_start_month },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, config);
+  } catch (err) { next(err); }
+});
+
+// ===========================================================================
+// Admin — Employee Leaves (HR view + override)
+// ===========================================================================
+
+// GET /api/v1/leave/admin/employees — paginated employee balance summary
+router.get("/admin/employees", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, per_page, search, department_id, year } = employeeLeavesQuerySchema.parse(req.query);
+    const result = await leaveBalanceService.listEmployeeBalances(req.user!.org_id, {
+      page,
+      perPage: per_page,
+      search,
+      departmentId: department_id,
+      year,
+    });
+    sendPaginated(res, result.employees, result.total, page, per_page);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/leave/admin/balances/:balanceId — adjust extra_allocated and/or total_used
+router.put("/admin/balances/:balanceId", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = overrideLeaveBalanceSchema.parse(req.body);
+    const { before, after } = await leaveBalanceService.overrideBalance(
+      req.user!.org_id,
+      paramInt(req.params.balanceId),
+      req.user!.sub,
+      data,
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.LEAVE_BALANCE_OVERRIDDEN,
+      resourceType: "leave_balance",
+      resourceId: String(after.id),
+      details: {
+        target_user_id: after.user_id,
+        leave_type_id: after.leave_type_id,
+        before: {
+          extra_allocated: before.extra_allocated,
+          total_used: before.total_used,
+        },
+        after: {
+          extra_allocated: after.extra_allocated,
+          total_used: after.total_used,
+        },
+        reason: data.reason,
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, after);
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/leave/admin/balances/bulk — bulk grant/remove extra_allocated
+router.post("/admin/balances/bulk", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = bulkOverrideLeaveBalanceSchema.parse(req.body);
+    const affected = await leaveBalanceService.bulkOverrideBalance(
+      req.user!.org_id,
+      req.user!.sub,
+      data,
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.LEAVE_BALANCE_BULK_OVERRIDDEN,
+      resourceType: "leave_balance",
+      resourceId: `bulk:${affected.length}`,
+      details: {
+        leave_type_id: data.leave_type_id,
+        extra_allocated_delta: data.extra_allocated_delta,
+        affected_user_ids: affected,
+        reason: data.reason,
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, { affected });
+  } catch (err) { next(err); }
+});
+
+// POST /api/v1/leave/admin/balances/:balanceId/reset-period — reset period_used
+router.post(
+  "/admin/balances/:balanceId/reset-period",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = resetPeriodUsageSchema.parse(req.body);
+      const result = await leaveBalanceService.resetPeriodUsage(
+        req.user!.org_id,
+        paramInt(req.params.balanceId),
+        req.user!.sub,
+        data.reason,
+      );
+
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.LEAVE_PERIOD_RESET,
+        resourceType: "leave_balance",
+        resourceId: String(result.id),
+        details: { reason: data.reason },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+
+      sendSuccess(res, result);
+    } catch (err) { next(err); }
+  },
+);
 
 // ===========================================================================
 // Comp-Off

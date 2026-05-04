@@ -90,17 +90,27 @@ export async function applyLeave(
     }
   }
 
-  // Validate balance
-  // #1610/#1611 — reject when no balance row exists OR balance < requested.
-  // Previously the check was `if (balance && balance.balance < days_count)` which
-  // silently passed when a leave_balances row was missing for the (user,
-  // leave_type, year) tuple. Approval would then succeed without deducting
-  // anything (approveLeave's `if (balance) { update }` is a no-op when the row
-  // is absent), so users could apply for — and have approved — leave types
-  // they had zero allocation for, with the dashboard still showing the full
-  // (wrong) balance.
-  const year = new Date(data.start_date).getFullYear();
-  const balances = await balanceService.getBalances(orgId, userId, year);
+  // Validate balance — period-aware (#059 migration).
+  //
+  // The fiscal year is derived from the application's start_date so a
+  // retroactive leave debits the period it actually belongs to, not the
+  // current period. getBalances() returns `available_now` which already
+  // accounts for accrual_type (annual/quarterly/monthly) and
+  // period_carry_forward.
+  //
+  // #1610/#1611 — reject when no balance row exists OR available < requested.
+  const org = await db("organizations")
+    .where({ id: orgId })
+    .select("fiscal_year_start_month")
+    .first();
+  const fyStartMonth = Number(org?.fiscal_year_start_month) || 4;
+  const startDateObj = new Date(data.start_date);
+  const fiscalYear =
+    startDateObj.getMonth() + 1 >= fyStartMonth
+      ? startDateObj.getFullYear()
+      : startDateObj.getFullYear() - 1;
+
+  const balances = await balanceService.getBalances(orgId, userId, fiscalYear);
   const balance = balances.find((b) => b.leave_type_id === data.leave_type_id);
   const typeName = (balance as any)?.leave_type_name || leaveType.name || "this leave type";
 
@@ -109,9 +119,12 @@ export async function applyLeave(
       `No leave balance allocated for ${typeName}. Please contact HR to initialize your balance.`,
     );
   }
-  if (Number(balance.balance) < data.days_count) {
+
+  const availableNow = Number((balance as any).available_now ?? balance.balance);
+  const fyLabel = (balance as any).fiscal_year_label ?? String(fiscalYear);
+  if (availableNow < data.days_count) {
     throw new ValidationError(
-      `Insufficient balance for ${typeName}. Available: ${balance.balance} day(s), Requested: ${data.days_count} day(s).`,
+      `Insufficient balance for ${typeName} in ${fyLabel}. Available: ${availableNow} day(s), Requested: ${data.days_count} day(s).`,
     );
   }
 
@@ -192,9 +205,17 @@ export async function applyLeave(
     updated_at: new Date(),
   });
 
-  // If no approval required, deduct balance immediately
+  // If no approval required, deduct balance immediately. Pass start_date
+  // so retroactive applications debit the correct period.
   if (!leaveType.requires_approval) {
-    await balanceService.deductBalance(orgId, userId, data.leave_type_id, data.days_count, year);
+    await balanceService.deductBalance(
+      orgId,
+      userId,
+      data.leave_type_id,
+      data.days_count,
+      fiscalYear,
+      startDateObj,
+    );
   }
 
   // Create approval record if approver exists
@@ -252,15 +273,17 @@ export async function cancelLeave(
     .where({ id: applicationId })
     .update({ status: "cancelled", updated_at: new Date() });
 
-  // Credit back balance if it was already approved
+  // Credit back balance if it was already approved. Pass start_date so
+  // refund hits the correct period bucket (matches approve-time deduction).
   if (wasApproved) {
-    const year = new Date(application.start_date).getFullYear();
+    const startDateObj = new Date(application.start_date);
     await balanceService.creditBalance(
       orgId,
       application.user_id,
       application.leave_type_id,
       Number(application.days_count),
-      year,
+      undefined, // service will derive fiscal year from start_date + org config
+      startDateObj,
     );
   }
 
@@ -325,8 +348,20 @@ export async function approveLeave(
       });
     }
 
-    // Deduct balance
-    const year = new Date(application.start_date).getFullYear();
+    // Deduct balance — period-aware. The application's start_date determines
+    // both the fiscal year row and (when same as current period) which
+    // period_used bucket gets incremented.
+    const org = await trx("organizations")
+      .where({ id: orgId })
+      .select("fiscal_year_start_month")
+      .first();
+    const fyStartMonth = Number(org?.fiscal_year_start_month) || 4;
+    const startDateObj = new Date(application.start_date);
+    const year =
+      startDateObj.getMonth() + 1 >= fyStartMonth
+        ? startDateObj.getFullYear()
+        : startDateObj.getFullYear() - 1;
+
     const balance = await trx("leave_balances")
       .where({
         organization_id: orgId,
@@ -337,11 +372,35 @@ export async function approveLeave(
       .first();
 
     if (balance) {
+      // Determine whether the leave belongs to the *current* period — only
+      // then do we touch period_used. We resolve the policy here to know the
+      // accrual type for period bucketing.
+      const policy = await trx("leave_policies")
+        .where({
+          organization_id: orgId,
+          leave_type_id: application.leave_type_id,
+          is_active: true,
+        })
+        .orderBy("id", "desc")
+        .first();
+      const accrual = (policy?.accrual_type as "annual" | "monthly" | "quarterly") ?? "annual";
+      const monthsPer = { annual: 12, monthly: 1, quarterly: 3 }[accrual];
+      const monthsFromStart = (startDateObj.getFullYear() - year) * 12 + (startDateObj.getMonth() + 1 - fyStartMonth);
+      const applicationPeriodIndex = Math.max(0, Math.floor(monthsFromStart / monthsPer));
+      const now = new Date();
+      const currentMonthsFromStart = (now.getFullYear() - year) * 12 + (now.getMonth() + 1 - fyStartMonth);
+      const currentPeriodIndex = Math.max(0, Math.floor(currentMonthsFromStart / monthsPer));
+      const sameCurrentPeriod = applicationPeriodIndex === currentPeriodIndex;
+
+      const days = Number(application.days_count);
       await trx("leave_balances")
         .where({ id: balance.id })
         .update({
-          total_used: Number(balance.total_used) + Number(application.days_count),
-          balance: Number(balance.balance) - Number(application.days_count),
+          total_used: Number(balance.total_used) + days,
+          balance: Math.max(0, Number(balance.balance) - days),
+          period_used: sameCurrentPeriod
+            ? Number(balance.period_used ?? 0) + days
+            : Number(balance.period_used ?? 0),
           updated_at: new Date(),
         });
     } else {

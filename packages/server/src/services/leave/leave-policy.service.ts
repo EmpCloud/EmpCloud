@@ -17,6 +17,13 @@ interface CreateLeavePolicyInput {
   applicable_employment_types?: string | null;
   max_consecutive_days?: number | null;
   min_days_before_application?: number;
+  /**
+   * Within-fiscal-year period roll-over (e.g. unused Q1 days carry into Q2).
+   * Independent from leave_types.is_carry_forward which used to gate
+   * year-end carry — that path is being deprecated in favor of fiscal-year
+   * boundaries (see migration 059).
+   */
+  period_carry_forward?: boolean;
 }
 
 // #1413 — deleteLeavePolicy soft-deletes (is_active = false). The default
@@ -53,6 +60,7 @@ export async function createLeavePolicy(orgId: number, data: CreateLeavePolicyIn
     applicable_employment_types: data.applicable_employment_types ?? null,
     max_consecutive_days: data.max_consecutive_days ?? null,
     min_days_before_application: data.min_days_before_application ?? 0,
+    period_carry_forward: data.period_carry_forward ?? false,
     is_active: true,
     created_at: new Date(),
     updated_at: new Date(),

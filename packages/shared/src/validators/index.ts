@@ -816,6 +816,10 @@ export const createLeavePolicySchema = z.object({
   applicable_employment_types: z.string().optional().nullable(),
   max_consecutive_days: z.coerce.number().int().positive().optional().nullable(),
   min_days_before_application: z.coerce.number().int().min(0).default(0),
+  period_carry_forward: z.preprocess(
+    (v) => v === "true" || v === true,
+    z.boolean(),
+  ).default(false),
 });
 
 export const applyLeaveSchema = z.object({
@@ -867,6 +871,38 @@ export const leaveQuerySchema = paginationSchema.extend({
 
 export const initializeBalancesSchema = z.object({
   year: z.number().int().min(2020).max(2100),
+});
+
+// ---------------------------------------------------------------------------
+// HRMS — Leave Configuration & Admin Overrides
+// ---------------------------------------------------------------------------
+
+export const updateLeaveOrgConfigSchema = z.object({
+  fiscal_year_start_month: z.coerce.number().int().min(1).max(12),
+});
+
+export const overrideLeaveBalanceSchema = z.object({
+  extra_allocated: z.coerce.number().min(-365).max(365).optional(),
+  total_used: z.coerce.number().min(0).max(365).optional(),
+  reason: z.string().min(1).max(500),
+});
+
+export const bulkOverrideLeaveBalanceSchema = z.object({
+  user_ids: z.array(z.coerce.number().int().positive()).min(1).max(500),
+  leave_type_id: z.coerce.number().int().positive(),
+  extra_allocated_delta: z.coerce.number().min(-365).max(365),
+  reason: z.string().min(1).max(500),
+  year: z.coerce.number().int().min(2020).max(2100).optional(),
+});
+
+export const resetPeriodUsageSchema = z.object({
+  reason: z.string().min(1).max(500),
+});
+
+export const employeeLeavesQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+  department_id: z.coerce.number().int().positive().optional(),
+  year: z.coerce.number().int().min(2020).max(2100).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -953,6 +989,12 @@ export type CheckInInput = z.infer<typeof checkInSchema>;
 export type CheckOutInput = z.infer<typeof checkOutSchema>;
 export type ApplyLeaveInput = z.infer<typeof applyLeaveSchema>;
 export type CreateLeaveTypeInput = z.infer<typeof createLeaveTypeSchema>;
+export type CreateLeavePolicyInput = z.infer<typeof createLeavePolicySchema>;
+export type UpdateLeaveOrgConfigInput = z.infer<typeof updateLeaveOrgConfigSchema>;
+export type OverrideLeaveBalanceInput = z.infer<typeof overrideLeaveBalanceSchema>;
+export type BulkOverrideLeaveBalanceInput = z.infer<typeof bulkOverrideLeaveBalanceSchema>;
+export type ResetPeriodUsageInput = z.infer<typeof resetPeriodUsageSchema>;
+export type EmployeeLeavesQueryInput = z.infer<typeof employeeLeavesQuerySchema>;
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;
 export type CreatePolicyInput = z.infer<typeof createPolicySchema>;
 export type BulkAssignShiftInput = z.infer<typeof bulkAssignShiftSchema>;
