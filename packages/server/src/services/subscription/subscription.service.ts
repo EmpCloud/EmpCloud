@@ -322,6 +322,13 @@ export async function listSeats(orgId: number, moduleId: number) {
 // Sync Seat Count (#1191) — Recalculate used_seats from actual org_module_seats rows
 // ---------------------------------------------------------------------------
 
+// Modules that don't track per-user seat assignments in EmpCloud's
+// org_module_seats table. For these, the user-count fallback in
+// syncUsedSeats is the authoritative source. Every other module
+// trusts org_module_seats — including when it's legitimately empty
+// because an admin used "Disable All".
+const SEATLESS_MODULE_SLUGS = new Set<string>(["emp-monitor"]);
+
 export async function syncUsedSeats(orgId: number, moduleId: number): Promise<void> {
   const db = getDB();
 
@@ -332,22 +339,29 @@ export async function syncUsedSeats(orgId: number, moduleId: number): Promise<vo
 
   if (!sub) return;
 
-  // Check if this module has explicit seat assignments
+  // Count explicit seat assignments — this is the source of truth for
+  // every module that issues seats via the Module Access page.
   const [{ seatCount }] = await db("org_module_seats")
     .where({ subscription_id: sub.id })
     .count("* as seatCount");
 
   let actualCount = Number(seatCount);
 
-  // If no explicit seat assignments exist, count active org users instead
-  // This handles modules like Monitor where users log in via SSO without
-  // explicit seat assignment in EmpCloud
+  // Fallback to total active users only for SSO-style modules that
+  // don't write seat rows in EmpCloud. Without this, "Disable All"
+  // would silently re-inflate to total user count on the next read
+  // (#1191 originally added the fallback unconditionally; that masked
+  // legitimate disable-all events for modules like Projects and Recruit
+  // — they'd display N/15 instead of 0/15).
   if (actualCount === 0) {
-    const [{ userCount }] = await db("users")
-      .where({ organization_id: orgId, status: 1 })
-      .whereNot("role", "super_admin")
-      .count("* as userCount");
-    actualCount = Number(userCount);
+    const moduleRow = await db("modules").where({ id: moduleId }).select("slug").first();
+    if (moduleRow && SEATLESS_MODULE_SLUGS.has(moduleRow.slug)) {
+      const [{ userCount }] = await db("users")
+        .where({ organization_id: orgId, status: 1 })
+        .whereNot("role", "super_admin")
+        .count("* as userCount");
+      actualCount = Number(userCount);
+    }
   }
 
   if (sub.used_seats !== actualCount) {
