@@ -6,7 +6,11 @@ import { getDB } from "../../db/connection.js";
 import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
 import { ConflictError, NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
-import { checkFreeTierUserLimit, hasAnyPaidSubscription } from "../subscription/subscription.service.js";
+import {
+  autoAssignPayrollSeat,
+  checkFreeTierUserLimit,
+  hasAnyPaidSubscription,
+} from "../subscription/subscription.service.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
@@ -227,6 +231,11 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
   await db("organizations")
     .where({ id: orgId })
     .increment("current_user_count", 1);
+
+  // Default-enable emp-payroll module access. Best-effort — failures
+  // log a warning but never block user creation. Mirrors migration 060
+  // for the steady state.
+  await autoAssignPayrollSeat(orgId, id, id);
 
   return getUser(orgId, id);
 }
@@ -1476,6 +1485,17 @@ export async function acceptInvitation(params: {
 
     return trx("users").where({ id: userId }).first();
   });
+
+  // Default-enable emp-payroll module access on activation. Idempotent
+  // for re-invites (helper checks for an existing seat). Best-effort —
+  // failures log a warning but never roll back the activation.
+  // Runs OUTSIDE the transaction so a slow seat insert doesn't extend
+  // the activation lock window.
+  await autoAssignPayrollSeat(
+    invitation.organization_id,
+    user.id,
+    invitation.invited_by ?? user.id,
+  );
 
   return sanitizeUser(user);
 }
