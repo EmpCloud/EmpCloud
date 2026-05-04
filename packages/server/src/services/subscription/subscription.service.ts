@@ -799,6 +799,33 @@ export async function processDunning(): Promise<{
 }
 
 // ---------------------------------------------------------------------------
+// Paid-subscription guard — used by user.service to decide whether the
+// org-row's `total_allowed_user_count` cap (default 10 at creation, never
+// re-synced) should still be enforced.
+//
+// Background: orgs are created with total_allowed_user_count = 10 and
+// nothing in the codebase updates that column when a subscription is
+// added, removed, or upgraded. Paid orgs that grew past 10 users were
+// then 403'd on every new invite ("Organization has reached its user
+// limit (230 active + 29 pending invites / 10 allowed)") even though
+// they have a billed subscription that allows more.
+//
+// True when the org has at least one ACTIVE / TRIAL subscription whose
+// plan_tier is not "free" — same shape the free-tier check uses below
+// to decide if it should bail out, kept consistent here.
+// ---------------------------------------------------------------------------
+
+export async function hasAnyPaidSubscription(orgId: number): Promise<boolean> {
+  const db = getDB();
+  const paidSub = await db("org_subscriptions")
+    .where({ organization_id: orgId })
+    .whereIn("status", ["active", "trial"])
+    .whereNot({ plan_tier: "free" })
+    .first();
+  return !!paidSub;
+}
+
+// ---------------------------------------------------------------------------
 // Free-Tier Limit Check — called by user.service before creating users
 // ---------------------------------------------------------------------------
 

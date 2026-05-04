@@ -6,7 +6,7 @@ import { getDB } from "../../db/connection.js";
 import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
 import { ConflictError, NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
-import { checkFreeTierUserLimit } from "../subscription/subscription.service.js";
+import { checkFreeTierUserLimit, hasAnyPaidSubscription } from "../subscription/subscription.service.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
@@ -86,12 +86,18 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
   // --- Free-tier user limit check (#1015) ---
   await checkFreeTierUserLimit(orgId);
 
-  // #1013 — Check org seat limit before adding user
+  // #1013 — Check org seat limit before adding user. Skip when the org has
+  // any active paid subscription — total_allowed_user_count is set to 10 at
+  // org creation and never re-synced from billing, so paid orgs that grew
+  // past 10 users were 403'd on every new user add.
   const org = await db("organizations").where({ id: orgId }).first();
   if (org && org.total_allowed_user_count > 0 && org.current_user_count >= org.total_allowed_user_count) {
-    throw new ForbiddenError(
-      `Organization has reached its user limit (${org.current_user_count}/${org.total_allowed_user_count}). Upgrade your subscription to add more users.`,
-    );
+    const isPaid = await hasAnyPaidSubscription(orgId);
+    if (!isPaid) {
+      throw new ForbiddenError(
+        `Organization has reached its user limit (${org.current_user_count}/${org.total_allowed_user_count}). Upgrade your subscription to add more users.`,
+      );
+    }
   }
 
   const existing = await db("users").where({ email: data.email }).first();
@@ -620,18 +626,26 @@ export async function listInvitations(orgId: number, status: string = "pending")
 export async function inviteUser(orgId: number, invitedBy: number, data: InviteUserInput): Promise<{ token: string; invitation: object }> {
   const db = getDB();
 
-  // #1013 — Check org seat limit before inviting user
+  // #1013 — Check org seat limit before inviting user. Skip when the org
+  // has any active paid subscription — total_allowed_user_count is set to
+  // 10 at org creation and never re-synced from billing, so paid orgs
+  // that grew past 10 users were 403'd on every new invite ("230 active
+  // + 29 pending invites / 10 allowed") even though their billed plan
+  // covers the seats. The free-tier guard above already short-circuits
+  // genuine free orgs.
   const org = await db("organizations").where({ id: orgId }).first();
   if (org && org.total_allowed_user_count > 0) {
-    // Count active users + pending invitations against the limit
     const [{ count: pendingInvitations }] = await db("invitations")
       .where({ organization_id: orgId, status: "pending" })
       .count("* as count");
     const totalCommitted = org.current_user_count + Number(pendingInvitations);
     if (totalCommitted >= org.total_allowed_user_count) {
-      throw new ForbiddenError(
-        `Organization has reached its user limit (${org.current_user_count} active + ${pendingInvitations} pending invites / ${org.total_allowed_user_count} allowed). Upgrade your subscription to add more users.`,
-      );
+      const isPaid = await hasAnyPaidSubscription(orgId);
+      if (!isPaid) {
+        throw new ForbiddenError(
+          `Organization has reached its user limit (${org.current_user_count} active + ${pendingInvitations} pending invites / ${org.total_allowed_user_count} allowed). Upgrade your subscription to add more users.`,
+        );
+      }
     }
   }
 
