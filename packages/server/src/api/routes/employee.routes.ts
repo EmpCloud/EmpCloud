@@ -29,6 +29,12 @@ import * as detailService from "../../services/employee/employee-detail.service.
 import * as probationService from "../../services/employee/probation.service.js";
 import * as salaryService from "../../services/employee/salary.service.js";
 import * as userService from "../../services/user/user.service.js";
+import { sendEmail } from "../../services/email/email.service.js";
+import { logger } from "../../utils/logger.js";
+
+// Loose email format check — relies on the input type=\"email\" client side
+// to catch the obvious typos. The server still rejects empty / no-@.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Photo upload multer config
 const photoStorage = multer.diskStorage({
@@ -137,6 +143,37 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         const updates: Record<string, any> = {};
         if (row.first_name !== undefined && row.first_name !== user.first_name) updates.first_name = row.first_name;
         if (row.last_name !== undefined && row.last_name !== user.last_name) updates.last_name = row.last_name;
+        // Email change (HR-only by route — login identifier). Validate
+        // format, normalize to lowercase, and pre-check uniqueness so HR
+        // sees a clear "already in use" message instead of a raw mysql
+        // ER_DUP_ENTRY. Notification to old + new addresses fires after
+        // the UPDATE succeeds, below.
+        let emailChanged = false;
+        let oldEmail: string | null = null;
+        if (row.email !== undefined) {
+          const trimmed = String(row.email).trim().toLowerCase();
+          if (trimmed && trimmed !== String(user.email || "").toLowerCase()) {
+            if (!EMAIL_RE.test(trimmed)) {
+              results.push({ id: row.id, status: "error", error: "Invalid email format." });
+              continue;
+            }
+            const clash = await db("users")
+              .whereRaw("LOWER(email) = ?", [trimmed])
+              .whereNot({ id: row.id })
+              .first();
+            if (clash) {
+              results.push({
+                id: row.id,
+                status: "error",
+                error: "Email is already used by another user. Pick a different email.",
+              });
+              continue;
+            }
+            updates.email = trimmed;
+            emailChanged = true;
+            oldEmail = user.email;
+          }
+        }
         if (row.emp_code !== undefined) {
           const next = blankToNull(row.emp_code);
           if (next !== user.emp_code) updates.emp_code = next;
@@ -182,20 +219,51 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         updates.updated_at = new Date();
         await db("users").where({ id: row.id }).update(updates);
         results.push({ id: row.id, status: "updated" });
+
+        // After a successful email change: notify both addresses so the
+        // user sees the change at the OLD address (catches account-takeover
+        // by a hijacked HR session) and the NEW address (confirms the new
+        // login email). Best-effort — failure here doesn't roll back the
+        // UPDATE; a missed notification is better than blocking HR.
+        if (emailChanged && oldEmail && updates.email) {
+          const newEmail = String(updates.email);
+          const subject = "Your EmpCloud login email was changed";
+          const body = (recipientLabel: string) => `Hi ${user.first_name || ""},\n\nThis is a notification that your EmpCloud login email was changed by your administrator.\n\n  Old email: ${oldEmail}\n  New email: ${newEmail}\n\nFrom now on, sign in with the new email. ${recipientLabel}\n\nIf you did NOT request this change, please contact your HR administrator immediately — your account may have been compromised.`;
+          // Fire-and-forget; await so we can log a single line per send,
+          // but swallow errors so a flaky SMTP doesn't break the response.
+          try {
+            await sendEmail({ to: oldEmail, subject, html: `<pre>${body("(This message was sent to your previous address.)")}</pre>` });
+          } catch (mailErr: any) {
+            logger.warn(`Email-change notification to old address failed: ${mailErr?.message || mailErr}`);
+          }
+          try {
+            await sendEmail({ to: newEmail, subject, html: `<pre>${body("(This message was sent to your new address as confirmation.)")}</pre>` });
+          } catch (mailErr: any) {
+            logger.warn(`Email-change notification to new address failed: ${mailErr?.message || mailErr}`);
+          }
+        }
       } catch (err: any) {
         // #1857 — translate raw mysql2 ER_DUP_ENTRY on the emp_code unique
         // index into the same friendly message the per-row PUT path uses
         // (#1950). Without this the modal showed
         //   "Duplicate entry '1-EMP001' for key 'users.idx_users_org_emp_code_uniq'"
         // verbatim — HR has no way to act on that.
+        // Same race-window safety net for the email unique index — the
+        // per-row pre-check above catches the common case, but two HR
+        // sessions racing on the same email can still collide.
         const code = err?.code || err?.errno;
         const sqlMessage: string = err?.sqlMessage || err?.message || "";
         const isEmpCodeDup =
           (code === "ER_DUP_ENTRY" || code === 1062) &&
           sqlMessage.includes("idx_users_org_emp_code_uniq");
+        const isEmailDup =
+          (code === "ER_DUP_ENTRY" || code === 1062) &&
+          (sqlMessage.includes("users_email_unique") || sqlMessage.includes("users.email"));
         const friendly = isEmpCodeDup
           ? "Employee code is already used by another employee. Pick a different code."
-          : err?.message || "Update failed";
+          : isEmailDup
+            ? "Email is already used by another user. Pick a different email."
+            : err?.message || "Update failed";
         results.push({ id: row.id, status: "error", error: friendly });
       }
     }
