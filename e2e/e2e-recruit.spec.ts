@@ -1,5 +1,13 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 
+// All tests in this file exercise EMP Recruit's own API
+// (test-recruit-api.empcloud.com). EmpCloud only owns SSO + seat assignment +
+// webhook callbacks for sub-modules; recruit business logic belongs in the
+// emp-recruit repo's own e2e suite. Skipping pending migration.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-recruit's own e2e suite");
+});
+
 // =============================================================================
 // Configuration
 // =============================================================================
