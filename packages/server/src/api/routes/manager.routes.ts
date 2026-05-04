@@ -4,15 +4,17 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireRole } from "../middleware/rbac.middleware.js";
+import { requireManagerOrHasReports } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import * as managerService from "../../services/manager/manager.service.js";
-import type { UserRole } from "@empcloud/shared";
 
 const router = Router();
 
-// Middleware: ensure user is authenticated AND has at least manager role
-router.use(authenticate, requireRole("manager" as UserRole));
+// Middleware: authenticated user who is either a manager-or-higher by role
+// OR a functional manager (has at least one direct report). The plain
+// requireRole("manager") gate previously 403'd employees who had reports
+// assigned via reporting_manager_id but never had their role bumped.
+router.use(authenticate, requireManagerOrHasReports());
 
 // GET /api/v1/manager/team — My direct reports
 router.get("/team", async (req: Request, res: Response, next: NextFunction) => {
