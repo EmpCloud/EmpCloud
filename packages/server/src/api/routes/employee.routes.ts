@@ -29,7 +29,7 @@ import * as detailService from "../../services/employee/employee-detail.service.
 import * as probationService from "../../services/employee/probation.service.js";
 import * as salaryService from "../../services/employee/salary.service.js";
 import * as userService from "../../services/user/user.service.js";
-import { sendEmail } from "../../services/email/email.service.js";
+import { sendEmailChangedNotification } from "../../services/email/email.service.js";
 import { logger } from "../../utils/logger.js";
 
 // Loose email format check — relies on the input type=\"email\" client side
@@ -224,20 +224,30 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         // user sees the change at the OLD address (catches account-takeover
         // by a hijacked HR session) and the NEW address (confirms the new
         // login email). Best-effort — failure here doesn't roll back the
-        // UPDATE; a missed notification is better than blocking HR.
+        // UPDATE; a missed notification is better than blocking HR. Uses
+        // the same branded layout as the password-reset / invitation
+        // emails so it doesn't read as a phishing attempt next to those.
         if (emailChanged && oldEmail && updates.email) {
           const newEmail = String(updates.email);
-          const subject = "Your EmpCloud login email was changed";
-          const body = (recipientLabel: string) => `Hi ${user.first_name || ""},\n\nThis is a notification that your EmpCloud login email was changed by your administrator.\n\n  Old email: ${oldEmail}\n  New email: ${newEmail}\n\nFrom now on, sign in with the new email. ${recipientLabel}\n\nIf you did NOT request this change, please contact your HR administrator immediately — your account may have been compromised.`;
-          // Fire-and-forget; await so we can log a single line per send,
-          // but swallow errors so a flaky SMTP doesn't break the response.
           try {
-            await sendEmail({ to: oldEmail, subject, html: `<pre>${body("(This message was sent to your previous address.)")}</pre>` });
+            await sendEmailChangedNotification({
+              to: oldEmail,
+              firstName: user.first_name,
+              oldEmail,
+              newEmail,
+              recipientType: "old",
+            });
           } catch (mailErr: any) {
             logger.warn(`Email-change notification to old address failed: ${mailErr?.message || mailErr}`);
           }
           try {
-            await sendEmail({ to: newEmail, subject, html: `<pre>${body("(This message was sent to your new address as confirmation.)")}</pre>` });
+            await sendEmailChangedNotification({
+              to: newEmail,
+              firstName: user.first_name,
+              oldEmail,
+              newEmail,
+              recipientType: "new",
+            });
           } catch (mailErr: any) {
             logger.warn(`Email-change notification to new address failed: ${mailErr?.message || mailErr}`);
           }
