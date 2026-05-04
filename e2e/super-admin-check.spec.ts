@@ -23,9 +23,9 @@ test("Super Admin Overview Dashboard loading check", async ({ page }) => {
   await page.waitForTimeout(2000);
   console.log("Logged in, URL:", page.url());
 
-  // Navigate to /admin/super
-  await page.goto("https://test-empcloud.empcloud.com/admin/super");
-  console.log("Navigated to /admin/super");
+  // Navigate to /admin
+  await page.goto("https://test-empcloud.empcloud.com/admin");
+  console.log("Navigated to /admin");
 
   // Wait 10s for content to load
   await page.waitForTimeout(10000);

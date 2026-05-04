@@ -43,8 +43,12 @@ function auth(token: string) {
 
 test.describe("Email Configuration", () => {
   test("SMTP is configured in server config (localhost:1025)", async ({ request }) => {
-    // Verify the server is running and healthy — SMTP config is loaded at startup
-    const res = await request.get(`${API}/admin/health`);
+    // /admin/health is super-admin gated — use it to verify the server is up
+    // and reachable; SMTP config is loaded at startup.
+    const superToken = await getToken(request, SUPER_ADMIN.email, SUPER_ADMIN.password);
+    const res = await request.get(`${API}/admin/health`, {
+      headers: auth(superToken),
+    });
     expect(res.status()).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
@@ -55,7 +59,10 @@ test.describe("Email Configuration", () => {
     // This documents the current state: SMTP points to Mailpit but Mailpit is down
     // Emails queued via BullMQ will fail on send but are retried 3x with backoff
     // In production, switch to SendGrid or SES
-    const res = await request.get(`${API}/admin/health`);
+    const superToken = await getToken(request, SUPER_ADMIN.email, SUPER_ADMIN.password);
+    const res = await request.get(`${API}/admin/health`, {
+      headers: auth(superToken),
+    });
     expect(res.status()).toBe(200);
     console.log("NOTE: Mailpit (localhost:1025) is not running on test server");
     console.log("Billing email jobs complete instantly (likely swallowed error or no-op)");
