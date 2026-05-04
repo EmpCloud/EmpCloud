@@ -799,6 +799,65 @@ export async function processDunning(): Promise<{
 }
 
 // ---------------------------------------------------------------------------
+// Auto-assign emp-payroll seat to a newly-created user.
+//
+// Called by user.service after createUser() / acceptInvitation() inserts
+// the row, so every employee has payroll access by default in any org
+// that subscribes to emp-payroll. Mirrors migration 060's backfill for
+// the steady state.
+//
+// Bypasses the seat-limit on org_subscriptions.total_seats — same
+// philosophy as #1976 for the org user cap: paid orgs shouldn't be
+// capped on existing users / new joiners. If you need to revoke later,
+// do it from Module Access per-user.
+//
+// Best-effort: any failure here logs a warning but never blocks the
+// caller (a missing payroll seat is fixable from the UI; a thrown
+// exception would block user creation entirely).
+// ---------------------------------------------------------------------------
+
+export async function autoAssignPayrollSeat(
+  orgId: number,
+  userId: number,
+  assignedBy: number,
+): Promise<void> {
+  const db = getDB();
+  try {
+    const payrollModule = await db("modules").where({ slug: "emp-payroll" }).first();
+    if (!payrollModule) return;
+
+    const sub = await db("org_subscriptions")
+      .where({ organization_id: orgId, module_id: payrollModule.id })
+      .whereIn("status", ["active", "trial"])
+      .first();
+    if (!sub) return;
+
+    // Already has a seat — idempotent no-op.
+    const existing = await db("org_module_seats")
+      .where({ module_id: payrollModule.id, user_id: userId })
+      .first();
+    if (existing) return;
+
+    await db("org_module_seats").insert({
+      subscription_id: sub.id,
+      organization_id: orgId,
+      module_id: payrollModule.id,
+      user_id: userId,
+      assigned_by: assignedBy,
+      assigned_at: new Date(),
+    });
+
+    await db("org_subscriptions").where({ id: sub.id }).increment("used_seats", 1);
+  } catch (err) {
+    logger.warn(
+      `Auto-assign payroll seat failed for org=${orgId} user=${userId}: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Paid-subscription guard — used by user.service to decide whether the
 // org-row's `total_allowed_user_count` cap (default 10 at creation, never
 // re-synced) should still be enforced.
