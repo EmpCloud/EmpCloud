@@ -54,7 +54,8 @@ test.describe("In-App Notifications", () => {
   });
 
   test("Mark all as read", async ({ request }) => {
-    const res = await request.post(`${API}/notifications/mark-all-read`, { headers: auth(adminToken) });
+    // Endpoint is PUT /notifications/read-all (server route, not POST /mark-all-read)
+    const res = await request.put(`${API}/notifications/read-all`, { headers: auth(adminToken) });
     expect(res.status()).toBeLessThan(500);
     console.log("Mark all read: success");
   });
