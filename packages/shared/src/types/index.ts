@@ -107,6 +107,11 @@ export enum AuditAction {
   LEAVE_REJECTED = "leave_rejected",
   LEAVE_CANCELLED = "leave_cancelled",
   LEAVE_BALANCE_ADJUSTED = "leave_balance_adjusted",
+  LEAVE_BALANCE_OVERRIDDEN = "leave_balance_overridden",
+  LEAVE_BALANCE_BULK_OVERRIDDEN = "leave_balance_bulk_overridden",
+  LEAVE_PERIOD_RESET = "leave_period_reset",
+  LEAVE_FISCAL_YEAR_ARCHIVED = "leave_fiscal_year_archived",
+  LEAVE_CONFIG_UPDATED = "leave_config_updated",
   DOCUMENT_UPLOADED = "document_uploaded",
   DOCUMENT_VERIFIED = "document_verified",
   ANNOUNCEMENT_CREATED = "announcement_created",
@@ -794,6 +799,14 @@ export interface LeavePolicy {
   applicable_employment_types: string | null;
   max_consecutive_days: number | null;
   min_days_before_application: number;
+  /**
+   * Within-fiscal-year roll-over toggle. When true, unused days from one
+   * accrual period (e.g. Q1) carry into the next (Q2). When false, each
+   * period resets and unused days are forfeited at the period boundary.
+   * Independent from `LeaveType.is_carry_forward` which used to gate
+   * year-end carry — this is per-period within the same fiscal year.
+   */
+  period_carry_forward: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -804,13 +817,27 @@ export interface LeaveBalance {
   organization_id: number;
   user_id: number;
   leave_type_id: number;
+  /** Fiscal-year start year. With fiscal_year_start_month=4, year=2025 means Apr 2025–Mar 2026. */
   year: number;
   total_allocated: number;
+  /** HR-granted bonus days, separate from the policy's annual_quota. */
+  extra_allocated: number;
   total_used: number;
   total_carry_forward: number;
   balance: number;
+  /** Used in current period only (resets at period boundary for non-carry-forward policies). */
+  period_used: number;
+  /** Identifier of the most-recently-seen period (e.g. "2025-Q2"). Used for lazy rollover. */
+  period_key: string | null;
+  override_reason: string | null;
+  overridden_by: number | null;
+  overridden_at: string | null;
   created_at: string;
   updated_at: string;
+  // Payroll-compat additive fields populated at read time (not stored):
+  available_now?: number;
+  period_quota?: number;
+  fiscal_year_label?: string;
 }
 
 export interface LeaveApplication {
