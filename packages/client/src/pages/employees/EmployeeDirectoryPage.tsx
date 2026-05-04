@@ -1282,9 +1282,19 @@ export default function EmployeeDirectoryPage() {
                         <input name="last_name" defaultValue={editEmployee.last_name || ""} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" defaultValue={editEmployee.email || ""} disabled className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500" />
-                        <p className="text-xs text-gray-400 mt-1">Email cannot be changed from this screen.</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          defaultValue={editEmployee.email || ""}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                        />
+                        <p className="text-xs text-amber-600 mt-1">
+                          Email is the user's login. Changing it ends their current session and notifies both the old and new addresses.
+                        </p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
