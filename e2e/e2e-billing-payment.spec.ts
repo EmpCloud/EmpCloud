@@ -60,10 +60,13 @@ test.describe("Billing Payment API", () => {
     const body = await res.json();
     expect(body.success).toBe(true);
     expect(body.data).toBeInstanceOf(Array);
-    expect(body.data.length).toBeGreaterThanOrEqual(2);
+    // listPaymentGateways now filters by org currency: INR orgs see
+    // razorpay+paypal; USD/GBP/EUR orgs see stripe+paypal. TechNova is
+    // INR so stripe is filtered out — assert at least one gateway is
+    // returned and the right one for INR is present.
+    expect(body.data.length).toBeGreaterThanOrEqual(1);
 
-    const names = body.data.map((g: any) => g.name);
-    expect(names).toContain("stripe");
+    const names = body.data.map((g: any) => g.name.toLowerCase());
     expect(names).toContain("razorpay");
   });
 
@@ -140,6 +143,7 @@ test.describe("Billing Payment API", () => {
   });
 
   test("Create payment order directly on billing API", async ({ request }) => {
+    test.skip(!BILLING_API_KEY, "BILLING_API_KEY not set — billing-service API not reachable from this runner");
     // Direct call to EMP Billing with API key
     const invRes = await request.get(`${BILLING_API}/invoices`, {
       headers: { Authorization: `Bearer ${BILLING_API_KEY}` },
@@ -221,8 +225,8 @@ test.describe("Billing Payment UI", () => {
         // Click Pay Now to see gateway dropdown
         await payNow.click();
         await page.waitForTimeout(300);
-        // Should see gateway options
-        await expect(page.locator("text=Stripe (Card)")).toBeVisible();
+        // listPaymentGateways now filters by currency. TechNova is an INR
+        // org, so Stripe is filtered out and only Razorpay + PayPal appear.
         await expect(page.locator("text=Razorpay (UPI/Card)")).toBeVisible();
         await expect(page.locator("text=PayPal")).toBeVisible();
       }
@@ -231,6 +235,7 @@ test.describe("Billing Payment UI", () => {
   });
 
   test("Pay via Stripe - redirects to Stripe checkout", async ({ page, context }) => {
+    test.skip(true, "TechNova is an INR org; listPaymentGateways now filters Stripe out for INR — Stripe button no longer rendered. Re-enable for a USD/GBP/EUR fixture org.");
     test.setTimeout(60000);
     await loginViaSSO(page);
     await page.goto(`${FRONTEND}/billing`);
@@ -282,6 +287,7 @@ test.describe("Billing Payment UI", () => {
   });
 
   test("Complete Stripe test payment with test card", async ({ page, context }) => {
+    test.skip(true, "TechNova is an INR org; listPaymentGateways now filters Stripe out for INR — Stripe checkout cannot be reached from this org. Re-enable for a USD/GBP/EUR fixture org.");
     test.setTimeout(120000); // 2 min for full payment flow
 
     await loginViaSSO(page);
