@@ -23,10 +23,11 @@ import {
   orgAdminOnlyNavItems,
   platformAdminNavItems,
   HR_ROLES,
-  buildEffectiveNav,
   filterNavItem,
 } from "./navigation.config";
 import { usePermissions } from "@/lib/use-permissions";
+import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
+import { ViewModeToggle } from "./ViewModeToggle";
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
@@ -65,16 +66,25 @@ export default function DashboardLayout() {
   const isHR = !!(user && HR_ROLES.includes(user.role));
   const isOrgAdmin = user?.role === "org_admin";
 
-  // RBAC v1 — surface admin items in the employee sidebar when a custom role
-  // grants the relevant permission (e.g. attendance:approve_regularization).
-  // HR users keep the full admin sidebar; non-HR users get employeeNavItems
-  // plus any admin items their permission set unlocks.
-  const { has: hasPerm } = usePermissions();
-  const sidebarItems = isHR
+  // RBAC v1 — view-mode toggle. HR users always see the admin sidebar.
+  // Non-HR users with at least one admin-level permission (via custom roles)
+  // can flip into "Admin view" — they get the admin sidebar filtered to the
+  // items their permission set actually unlocks. Everyone else stays on the
+  // employee sidebar.
+  const { has: hasPerm, permissions } = usePermissions();
+  const viewMode = useViewModeStore((s) => s.viewMode);
+  const hasAdminPerms = hasAnyAdminPermission(permissions);
+  const showViewToggle = !isHR && hasAdminPerms;
+  // If the user lost their admin perms (custom role removed) but the toggle
+  // is still set to "admin", fall back to "self" so they aren't stranded
+  // on an empty sidebar.
+  const effectiveViewMode = !showViewToggle && !isHR ? "self" : viewMode;
+  const showAdminSidebar = isHR || (showViewToggle && effectiveViewMode === "admin");
+  const sidebarItems = showAdminSidebar
     ? adminNavItems
         .map((i) => filterNavItem(i, hasPerm))
         .filter((i): i is typeof adminNavItems[number] => i !== null)
-    : buildEffectiveNav(employeeNavItems, adminNavItems, hasPerm);
+    : employeeNavItems;
 
   // Auto-close sidebar on navigation
   useEffect(() => {
@@ -258,7 +268,8 @@ export default function DashboardLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {showViewToggle && <ViewModeToggle />}
             <LanguageSwitcher />
             <NotificationDropdown />
           </div>
