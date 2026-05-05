@@ -50,6 +50,7 @@ import {
   Bell,
   UserCheck,
   KeyRound,
+  History,
 } from "lucide-react";
 
 export type NavItem = {
@@ -186,7 +187,7 @@ export const adminNavItems: NavItem[] = [
   { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings, requiredPermissions: ["org_settings:view", "org_settings:manage"] },
   { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal, requiredPermissions: ["custom_fields:view", "custom_fields:manage"] },
   { path: "/roles", label: "Roles & Permissions", i18nKey: "nav.rolesPermissions", icon: Shield, requiredPermissions: ["roles:view", "roles:manage"] },
-  { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield, requiredPermissions: ["audit:view", "audit:export"] },
+  { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: History, requiredPermissions: ["audit:view", "audit:export"] },
 ];
 
 export const positionNavItems: NavItem[] = [
