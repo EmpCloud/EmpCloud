@@ -5,18 +5,25 @@ import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, ChevronDown, ChevronRight, Fingerprint, Smartphone, Monitor } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
-import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import * as XLSX from "xlsx";
-
-const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function AttendanceDashboardPage() {
   const { t, i18n } = useTranslation();
-  const user = useAuthStore((s) => s.user);
-  const isHR = user && HR_ROLES.includes(user.role);
+  // RBAC v1 — gate by permissions, not by role. A user with a custom role
+  // granting attendance:view_team / view_all / approve_regularization / manage
+  // is allowed onto this dashboard even if their primary role is "employee".
+  const { has: hasPerm } = usePermissions();
+  const canSeeDashboard = hasPerm(
+    "attendance:view_team",
+    "attendance:view_all",
+    "attendance:approve_regularization",
+    "attendance:manage",
+  );
 
-  // Redirect non-HR users to their personal attendance page
-  if (!isHR) {
+  // Pure self-service users (no team / admin attendance perm) bounce to their
+  // personal page.
+  if (!canSeeDashboard) {
     return <Navigate to="/attendance/my" replace />;
   }
   const [page, setPage] = useState(1);
