@@ -741,22 +741,20 @@ function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) =
             // rows still on the clock we'd otherwise show 0. Derive a live
             // total from check_in to now.
             //
-            // BUT cap that derivation: if a user forgot to check out, the
-            // raw `now - check_in` grows forever (we've seen 500h+ on rows
-            // where someone clocked in weeks ago). Two guards:
-            //   1. If check_in is on a prior day → almost certainly a
-            //      missed check-out. Show "Missed check-out" instead of
-            //      a silently inflated number.
-            //   2. Otherwise cap "live" at midnight of the check-in day so
-            //      the largest possible value is ~24h.
+            // Two guards on the live count:
+            //   1. Stale rows where check_in is more than ACTIVE_HOURS old
+            //      → almost certainly a missed check-out. Render an amber
+            //      "Missed check-out" badge instead of an inflated count.
+            //      ACTIVE_HOURS is generous (30h) so a night shift crossing
+            //      midnight (e.g. 7 PM to 10 AM = 15h + 12h OT buffer) is
+            //      still considered "on the clock" and shows live minutes.
+            //   2. Otherwise cap "live" at the same window so the displayed
+            //      count never exceeds ACTIVE_HOURS.
+            const ACTIVE_HOURS = 30;
             if (r.status === "checked_in" && r.check_in) {
               const checkInTime = new Date(r.check_in).getTime();
-              const checkInDay = new Date(r.check_in);
-              checkInDay.setHours(0, 0, 0, 0);
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              const isPriorDay = checkInDay.getTime() < today.getTime();
-              if (isPriorDay) {
+              const ageMinutes = (Date.now() - checkInTime) / 60000;
+              if (ageMinutes > ACTIVE_HOURS * 60) {
                 return (
                   <span className="inline-flex items-center gap-1 text-amber-700">
                     <AlertTriangle className="h-3.5 w-3.5" />
@@ -764,13 +762,7 @@ function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) =
                   </span>
                 );
               }
-              const endOfCheckInDay = new Date(checkInDay);
-              endOfCheckInDay.setDate(endOfCheckInDay.getDate() + 1);
-              const cappedNow = Math.min(Date.now(), endOfCheckInDay.getTime());
-              const live = Math.max(
-                0,
-                Math.floor((cappedNow - checkInTime) / 60000),
-              );
+              const live = Math.max(0, Math.floor(ageMinutes));
               return (
                 <span className="inline-flex items-center gap-1">
                   {`${Math.floor(live / 60)}h ${live % 60}m`}
