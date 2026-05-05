@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireOrgAdmin, requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as subService from "../../services/subscription/subscription.service.js";
@@ -21,16 +21,16 @@ import { paramInt, param } from "../../utils/params.js";
 
 const router = Router();
 
-// GET /api/v1/subscriptions — List org subscriptions (HR+ only)
-router.get("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions — List org subscriptions
+router.get("/", authenticate, requirePermission("subscriptions:view"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const subs = await subService.listSubscriptions(req.user!.org_id);
     sendSuccess(res, subs);
   } catch (err) { next(err); }
 });
 
-// GET /api/v1/subscriptions/billing-summary (HR+ only)
-router.get("/billing-summary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions/billing-summary
+router.get("/billing-summary", authenticate, requirePermission("subscriptions:view", "billing:view"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const summary = await billingIntegration.getLocalBillingSummary(req.user!.org_id);
     sendSuccess(res, summary);
@@ -38,7 +38,7 @@ router.get("/billing-summary", authenticate, requireHR, async (req: Request, res
 });
 
 // GET /api/v1/subscriptions/billing-status — #983 overdue/payment warning for org admins
-router.get("/billing-status", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/billing-status", authenticate, requirePermission("subscriptions:view", "billing:view"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const status = await subService.getBillingStatus(req.user!.org_id);
     sendSuccess(res, status);
@@ -46,7 +46,7 @@ router.get("/billing-status", authenticate, requireHR, async (req: Request, res:
 });
 
 // GET /api/v1/subscriptions/users-module-map — All users with their module access
-router.get("/users-module-map", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/users-module-map", authenticate, requirePermission("modules_access:view", "modules_access:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await moduleSyncService.getAllUsersModuleMap(req.user!.org_id);
     sendSuccess(res, data);
@@ -54,15 +54,15 @@ router.get("/users-module-map", authenticate, requireHR, async (req: Request, re
 });
 
 // GET /api/v1/subscriptions/user-modules/:userId — Get which modules a user has access to
-router.get("/user-modules/:userId", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/user-modules/:userId", authenticate, requirePermission("modules_access:view", "modules_access:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const modules = await moduleSyncService.getUserModuleMap(req.user!.org_id, paramInt(req.params.userId));
     sendSuccess(res, modules);
   } catch (err) { next(err); }
 });
 
-// GET /api/v1/subscriptions/:id (HR+ only)
-router.get("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions/:id
+router.get("/:id", authenticate, requirePermission("subscriptions:view"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sub = await subService.getSubscription(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, sub);
@@ -70,7 +70,7 @@ router.get("/:id", authenticate, requireHR, async (req: Request, res: Response, 
 });
 
 // POST /api/v1/subscriptions — Subscribe to a module
-router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("subscriptions:add_module"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createSubscriptionSchema.parse(req.body);
     const sub = await subService.createSubscription(req.user!.org_id, data);
@@ -94,7 +94,7 @@ router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/subscriptions/:id
-router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", authenticate, requirePermission("subscriptions:manage_seats", "subscriptions:add_module"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateSubscriptionSchema.parse(req.body);
     const sub = await subService.updateSubscription(req.user!.org_id, paramInt(req.params.id), data);
@@ -116,7 +116,7 @@ router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Resp
 });
 
 // DELETE /api/v1/subscriptions/:id — Cancel subscription
-router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("subscriptions:cancel"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sub = await subService.cancelSubscription(req.user!.org_id, paramInt(req.params.id));
 
@@ -138,8 +138,8 @@ router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: R
 
 // --- Seats ---
 
-// GET /api/v1/subscriptions/:id/seats (HR+ only)
-router.get("/:id/seats", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions/:id/seats
+router.get("/:id/seats", authenticate, requirePermission("subscriptions:view", "modules_access:view", "modules_access:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sub = await subService.getSubscription(req.user!.org_id, paramInt(req.params.id));
     const seats = await subService.listSeats(req.user!.org_id, sub.module_id);
@@ -148,7 +148,7 @@ router.get("/:id/seats", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // POST /api/v1/subscriptions/assign-seat
-router.post("/assign-seat", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/assign-seat", authenticate, requirePermission("subscriptions:manage_seats", "modules_access:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = assignSeatSchema.parse(req.body);
     const seat = await subService.assignSeat({
@@ -172,7 +172,7 @@ router.post("/assign-seat", authenticate, requireOrgAdmin, async (req: Request, 
 });
 
 // DELETE /api/v1/subscriptions/revoke-seat
-router.post("/revoke-seat", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/revoke-seat", authenticate, requirePermission("subscriptions:manage_seats", "modules_access:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = assignSeatSchema.parse(req.body);
     await subService.revokeSeat(req.user!.org_id, data.module_id, data.user_id);
@@ -210,7 +210,7 @@ router.post("/check-access", async (req: Request, res: Response, next: NextFunct
 // =============================================================================
 
 // POST /api/v1/subscriptions/enable-module — Enable a user for a module
-router.post("/enable-module", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/enable-module", authenticate, requirePermission("modules_access:manage", "subscriptions:manage_seats"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { module_id, user_id } = req.body;
     if (!module_id || !user_id) throw new Error("module_id and user_id required");
@@ -233,7 +233,7 @@ router.post("/enable-module", authenticate, requireOrgAdmin, async (req: Request
 });
 
 // POST /api/v1/subscriptions/disable-module — Disable a user for a module
-router.post("/disable-module", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/disable-module", authenticate, requirePermission("modules_access:manage", "subscriptions:manage_seats"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { module_id, user_id } = req.body;
     if (!module_id || !user_id) throw new Error("module_id and user_id required");
@@ -256,7 +256,7 @@ router.post("/disable-module", authenticate, requireOrgAdmin, async (req: Reques
 });
 
 // POST /api/v1/subscriptions/bulk-enable-module — Enable multiple users for a module
-router.post("/bulk-enable-module", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/bulk-enable-module", authenticate, requirePermission("modules_access:manage", "subscriptions:manage_seats"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { module_id, user_ids } = req.body;
     if (!module_id || !Array.isArray(user_ids)) throw new Error("module_id and user_ids[] required");
@@ -270,7 +270,7 @@ router.post("/bulk-enable-module", authenticate, requireOrgAdmin, async (req: Re
 });
 
 // POST /api/v1/subscriptions/enable-module-all — Enable a module for ALL employees
-router.post("/enable-module-all", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/enable-module-all", authenticate, requirePermission("modules_access:manage", "subscriptions:manage_seats"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { module_id } = req.body;
     if (!module_id) throw new Error("module_id required");
@@ -284,7 +284,7 @@ router.post("/enable-module-all", authenticate, requireOrgAdmin, async (req: Req
 });
 
 // POST /api/v1/subscriptions/disable-module-all — Disable a module for ALL employees
-router.post("/disable-module-all", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/disable-module-all", authenticate, requirePermission("modules_access:manage", "subscriptions:manage_seats"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { module_id } = req.body;
     if (!module_id) throw new Error("module_id required");
