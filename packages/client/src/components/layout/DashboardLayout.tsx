@@ -23,7 +23,10 @@ import {
   orgAdminOnlyNavItems,
   platformAdminNavItems,
   HR_ROLES,
+  buildEffectiveNav,
+  filterNavItem,
 } from "./navigation.config";
+import { usePermissions } from "@/lib/use-permissions";
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
@@ -61,6 +64,17 @@ export default function DashboardLayout() {
 
   const isHR = !!(user && HR_ROLES.includes(user.role));
   const isOrgAdmin = user?.role === "org_admin";
+
+  // RBAC v1 — surface admin items in the employee sidebar when a custom role
+  // grants the relevant permission (e.g. attendance:approve_regularization).
+  // HR users keep the full admin sidebar; non-HR users get employeeNavItems
+  // plus any admin items their permission set unlocks.
+  const { has: hasPerm } = usePermissions();
+  const sidebarItems = isHR
+    ? adminNavItems
+        .map((i) => filterNavItem(i, hasPerm))
+        .filter((i): i is typeof adminNavItems[number] => i !== null)
+    : buildEffectiveNav(employeeNavItems, adminNavItems, hasPerm);
 
   // Auto-close sidebar on navigation
   useEffect(() => {
@@ -138,7 +152,7 @@ export default function DashboardLayout() {
 
       <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
         {user?.role !== "super_admin" && <>
-          <NavSection label="" items={isHR ? adminNavItems : employeeNavItems} location={location} t={t} />
+          <NavSection label="" items={sidebarItems} location={location} t={t} />
           {isHR && (
             <NavSection label={t('nav.positions')} items={positionNavItems} location={location} t={t} />
           )}
