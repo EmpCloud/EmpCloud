@@ -131,7 +131,13 @@ router.post(
   },
 );
 
-// PUT /api/v1/roles/:id — update custom role
+// PUT /api/v1/roles/:id — update a role
+//
+// System roles (org_admin, hr_admin, manager, employee) can be edited too.
+// When the request targets the global template (organization_id IS NULL),
+// the service forks it into an org-scoped copy first and returns the new id;
+// subsequent edits hit the same fork directly. Custom roles are edited
+// in place.
 router.put(
   "/:id",
   requirePermission("roles:manage"),
@@ -139,7 +145,7 @@ router.put(
     try {
       const id = Number(req.params.id);
       const { name, description, permissions, is_active } = req.body || {};
-      await updateCustomRole({
+      const result = await updateCustomRole({
         orgId: req.user!.org_id,
         id,
         name: typeof name === "string" ? name.trim() : undefined,
@@ -153,10 +159,12 @@ router.put(
         action: "ROLE_UPDATED" as any,
         details: {
           role_id: id,
+          effective_role_id: result.id,
+          forked: result.id !== id,
           fields: Object.keys(req.body || {}),
         },
       });
-      const updated = await getRoleById(req.user!.org_id, id);
+      const updated = await getRoleById(req.user!.org_id, result.id);
       sendSuccess(res, updated);
     } catch (err) {
       next(err);

@@ -58,11 +58,26 @@ export async function resolveUserPermissions(
 ): Promise<string[]> {
   const db = getDB();
 
-  // System role — global, organization_id IS NULL.
-  const systemRoleRow = await db("roles")
-    .whereNull("organization_id")
-    .andWhere({ name: systemRole, type: SYSTEM, is_active: true })
-    .first<RoleRow | undefined>();
+  // System role — prefer the org's customization if one exists, fall back to
+  // the NULL-scoped global default, fall back to the in-code defaults.
+  // This is the "per-org override" pattern: editing a system role transparently
+  // forks a global template into an org-scoped row so org A's edits don't
+  // bleed into org B.
+  const userOrg = await db("users").where({ id: userId }).select("organization_id").first<{ organization_id: number } | undefined>();
+  const orgId = userOrg?.organization_id;
+
+  let systemRoleRow: RoleRow | undefined;
+  if (orgId != null) {
+    systemRoleRow = await db("roles")
+      .where({ organization_id: orgId, name: systemRole, type: SYSTEM, is_active: true })
+      .first<RoleRow | undefined>();
+  }
+  if (!systemRoleRow) {
+    systemRoleRow = await db("roles")
+      .whereNull("organization_id")
+      .andWhere({ name: systemRole, type: SYSTEM, is_active: true })
+      .first<RoleRow | undefined>();
+  }
 
   const systemPermissions = systemRoleRow
     ? parsePermissions(systemRoleRow.permissions)
@@ -100,22 +115,71 @@ export function listAllPermissionKeys(): string[] {
 }
 
 /**
- * List all roles visible to a user — system roles (always visible) plus
- * any custom roles in the user's org.
+ * List all roles visible to a user — system roles (with the org's
+ * customization preferred over the global template) plus any org-custom roles.
+ *
+ * If an org has customized a system role, the org-scoped row replaces the
+ * global one in the response so the UI doesn't show two rows with the same
+ * name.
  */
 export async function listRolesForOrg(orgId: number): Promise<RoleRow[]> {
   const db = getDB();
-  return db("roles")
+  const rows = await db("roles")
     .where(function () {
       this.whereNull("organization_id").orWhere({ organization_id: orgId });
     })
     .andWhere({ is_active: true })
-    .orderByRaw("organization_id IS NULL DESC") // system roles first
+    .orderByRaw("organization_id IS NULL DESC") // global templates first, override picks below
     .orderBy("name")
-    .select<RoleRow[]>("*")
-    .then((rows) =>
-      rows.map((r) => ({ ...r, permissions: parsePermissions(r.permissions) })),
-    );
+    .select<RoleRow[]>("*");
+
+  // Collapse system-role duplicates: if both NULL-scoped (global template) and
+  // org-scoped (override) exist for the same name, keep the org-scoped row.
+  const seen = new Map<string, RoleRow>();
+  for (const r of rows) {
+    if (r.type === SYSTEM) {
+      const existing = seen.get(r.name);
+      if (!existing || r.organization_id != null) seen.set(r.name, r);
+    } else {
+      // Custom roles use a unique key since name + org_id is unique already.
+      seen.set(`__custom__${r.id}`, r);
+    }
+  }
+  return [...seen.values()].map((r) => ({ ...r, permissions: parsePermissions(r.permissions) }));
+}
+
+/**
+ * Internal: ensure the org has its own copy of a given system role. Returns
+ * the org-scoped role's id. Used as the fork-on-edit step when an org admin
+ * edits a system role for the first time.
+ */
+async function ensureOrgSystemRoleCopy(orgId: number, name: string): Promise<number> {
+  const db = getDB();
+  const existing = await db("roles")
+    .where({ organization_id: orgId, name, type: SYSTEM })
+    .first<RoleRow | undefined>();
+  if (existing) return existing.id;
+
+  const template = await db("roles")
+    .whereNull("organization_id")
+    .andWhere({ name, type: SYSTEM })
+    .first<RoleRow | undefined>();
+  const permissions = template
+    ? parsePermissions(template.permissions)
+    : (SYSTEM_ROLE_DEFAULTS[name] ?? []);
+  const description = template?.description ?? null;
+
+  const [id] = await db("roles").insert({
+    name,
+    organization_id: orgId,
+    type: SYSTEM,
+    is_active: true,
+    permissions: JSON.stringify(permissions),
+    description,
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+  return Number(id);
 }
 
 export async function getRoleById(orgId: number, id: number): Promise<RoleRow | null> {
@@ -128,6 +192,29 @@ export async function getRoleById(orgId: number, id: number): Promise<RoleRow | 
     .first<RoleRow | undefined>();
   if (!row) return null;
   return { ...row, permissions: parsePermissions(row.permissions) };
+}
+
+/**
+ * Resolve "what role should an org admin actually be editing" when they click
+ * a system role. If they're touching the global template (organization_id IS
+ * NULL), fork it into an org-scoped row first; return that row's id. If
+ * they're already pointed at the org's own copy, return as-is. For custom
+ * roles this is a no-op pass-through.
+ *
+ * The fork is transparent to the caller — the API just hands back an id and
+ * the consumer does the actual update on it.
+ */
+export async function ensureEditableRoleId(orgId: number, id: number): Promise<number> {
+  const db = getDB();
+  const row = await db("roles").where({ id }).first<RoleRow | undefined>();
+  if (!row) throw new ValidationError("Role not found");
+  if (row.type === SYSTEM && row.organization_id === null) {
+    return ensureOrgSystemRoleCopy(orgId, row.name);
+  }
+  if (row.organization_id !== orgId) {
+    throw new ValidationError("Role belongs to a different organization");
+  }
+  return id;
 }
 
 export async function createCustomRole(params: {
@@ -175,40 +262,68 @@ export async function updateCustomRole(params: {
   description?: string | null;
   permissions?: string[];
   is_active?: boolean;
-}): Promise<void> {
+}): Promise<{ id: number }> {
   const db = getDB();
-  const role = await db("roles").where({ id: params.id }).first<RoleRow | undefined>();
-  if (!role) throw new ValidationError("Role not found");
-  if (role.type === SYSTEM || role.organization_id === null) {
-    throw new ValidationError("System roles cannot be edited");
-  }
-  if (role.organization_id !== params.orgId) {
+  const original = await db("roles").where({ id: params.id }).first<RoleRow | undefined>();
+  if (!original) throw new ValidationError("Role not found");
+
+  const isSystem = original.type === SYSTEM;
+
+  // System role on the global template → fork into an org-scoped copy. The
+  // edit then targets the fork. Subsequent edits hit the same fork directly.
+  // Custom roles: must already be in the caller's org (no cross-org edits).
+  let editableId = params.id;
+  if (isSystem && original.organization_id === null) {
+    editableId = await ensureOrgSystemRoleCopy(params.orgId, original.name);
+  } else if (original.organization_id !== params.orgId) {
     throw new ValidationError("Role belongs to a different organization");
   }
 
   const update: Record<string, unknown> = { updated_at: new Date() };
+
   if (params.name !== undefined) {
-    if (Object.keys(SYSTEM_ROLE_DEFAULTS).includes(params.name)) {
+    if (isSystem) {
+      // System role names are load-bearing (users.role enum) — reject rename.
+      if (params.name !== original.name) {
+        throw new ValidationError("System role names cannot be changed");
+      }
+    } else if (Object.keys(SYSTEM_ROLE_DEFAULTS).includes(params.name)) {
       throw new ValidationError(`Role name '${params.name}' is reserved`);
+    } else {
+      update.name = params.name;
     }
-    update.name = params.name;
   }
+
   if (params.description !== undefined) update.description = params.description;
   if (params.permissions !== undefined) {
     assertPermissionKeysValid(params.permissions);
     update.permissions = JSON.stringify([...new Set(params.permissions)]);
   }
-  if (params.is_active !== undefined) update.is_active = params.is_active;
+  // System roles can't be deactivated — every user with this role would lose
+  // all permissions. Only custom roles support `is_active`.
+  if (params.is_active !== undefined && !isSystem) {
+    update.is_active = params.is_active;
+  }
 
-  await db("roles").where({ id: params.id }).update(update);
+  await db("roles").where({ id: editableId }).update(update);
+  return { id: editableId };
 }
 
 export async function deleteCustomRole(orgId: number, id: number): Promise<void> {
   const db = getDB();
   const role = await db("roles").where({ id }).first<RoleRow | undefined>();
   if (!role) throw new ValidationError("Role not found");
-  if (role.type === SYSTEM || role.organization_id === null) {
-    throw new ValidationError("System roles cannot be deleted");
+
+  // For an org-scoped system role override: "delete" means revert to the
+  // global default. Drop the org-scoped row; the resolver then falls back
+  // to the NULL-scoped template / SYSTEM_ROLE_DEFAULTS.
+  if (role.type === SYSTEM && role.organization_id === orgId) {
+    await db("roles").where({ id }).delete();
+    return;
+  }
+
+  if (role.type === SYSTEM) {
+    throw new ValidationError("Global system role templates cannot be deleted");
   }
   if (role.organization_id !== orgId) {
     throw new ValidationError("Role belongs to a different organization");

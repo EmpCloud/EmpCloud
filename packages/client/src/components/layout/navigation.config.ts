@@ -174,6 +174,7 @@ export const adminNavItems: NavItem[] = [
   ]},
   { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings },
   { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal },
+  { path: "/roles", label: "Roles & Permissions", i18nKey: "nav.rolesPermissions", icon: Shield },
   { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield },
 ];
 
