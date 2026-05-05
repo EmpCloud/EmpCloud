@@ -1,0 +1,143 @@
+name: Demo health monitor (read-only)
+
+# Read-only assertions against the deployed test env. Catches drift
+# the per-push CI gate can't see because that gate runs against an
+# ephemeral DB. Pattern adapted from globussoft-crm DEMO_MONITOR_PATTERN.
+
+on:
+  workflow_dispatch:
+    inputs:
+      open_issue_on_failure:
+        description: "Open / comment on a GitHub issue if the monitor fails"
+        type: boolean
+        default: true
+      base_url:
+        description: "BASE_URL to monitor"
+        type: string
+        default: "https://test-empcloud.empcloud.com"
+
+  # Hourly cadence — bump to */30 if drift becomes frequent.
+  schedule:
+    - cron: "0 * * * *"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  monitor:
+    name: Probe deployed env
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install root deps + Playwright
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm exec playwright install chromium --with-deps
+
+      - name: Run demo-health spec
+        id: probe
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ inputs.base_url || 'https://test-empcloud.empcloud.com' }}
+          DEMO_MONITOR: "1"
+          MONITOR_EMAIL: ${{ secrets.MONITOR_EMAIL }}
+          MONITOR_PASSWORD: ${{ secrets.MONITOR_PASSWORD }}
+        # Don't fail the step yet — upload artifacts + post the issue first.
+        continue-on-error: true
+        run: |
+          set +e
+          pnpm exec playwright test \
+            --project=chromium \
+            --reporter=list \
+            e2e/demo-health.spec.ts \
+            > /tmp/probe.stdout.txt 2>&1
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          cat /tmp/probe.stdout.txt
+
+      - name: Upload probe artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-monitor-${{ github.run_id }}
+          path: |
+            /tmp/probe.stdout.txt
+            e2e/screenshots/
+            test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Build issue body from failures
+        id: report
+        # Open issue on schedule. workflow_dispatch can suppress with the input.
+        # `inputs.x` is '' on scheduled runs, so branch on event_name explicitly
+        # — '' != false evaluates FALSE in GHA expressions and would skip filing.
+        if: ${{ steps.probe.outputs.exit_code != '0' && (github.event_name == 'schedule' || inputs.open_issue_on_failure == true) }}
+        env:
+          BASE_URL: ${{ inputs.base_url || 'https://test-empcloud.empcloud.com' }}
+        run: |
+          set -euo pipefail
+          {
+            echo "body<<EOF_BODY"
+            echo "## Demo monitor failed"
+            echo ""
+            echo "- **Target**: \`$BASE_URL\`"
+            echo "- **Run**: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- **Triggered by**: @$GITHUB_ACTOR"
+            echo "- **Time (UTC)**: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo ""
+            echo "### Failed assertions"
+            echo ""
+            echo "\`\`\`"
+            grep -E "(✘|✗|Error:|expected|received|>)" /tmp/probe.stdout.txt | head -60 || echo "(see artifact)"
+            echo "\`\`\`"
+            echo ""
+            echo "### What this means"
+            echo ""
+            echo "Each failing assertion in \`e2e/demo-health.spec.ts\` maps to a"
+            echo "regression class — the test name carries the issue number."
+            echo "A failure here means deployed state has drifted from the"
+            echo "contract the spec encodes; the per-push CI gate can't see"
+            echo "this because it runs against a fresh ephemeral DB."
+            echo ""
+            echo "_Auto-managed by_ \`.github/workflows/demo-monitor.yml\`."
+            echo "EOF_BODY"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the demo-monitor tracker issue
+        if: ${{ steps.probe.outputs.exit_code != '0' && (github.event_name == 'schedule' || inputs.open_issue_on_failure == true) }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BODY: ${{ steps.report.outputs.body }}
+        run: |
+          set -euo pipefail
+          # Stable title — re-runs comment on the existing issue rather
+          # than spawning a new one each time.
+          TITLE="[demo-monitor] test-empcloud health-check failing"
+          existing=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Updating existing issue #$existing"
+            gh issue comment "$existing" --body "$BODY"
+          else
+            echo "Opening new issue"
+            gh issue create --title "$TITLE" --body "$BODY" --label "demo-monitor" || \
+              gh issue create --title "$TITLE" --body "$BODY"
+          fi
+
+      - name: Fail the job if the probe failed
+        if: ${{ steps.probe.outputs.exit_code != '0' }}
+        run: |
+          echo "::error::Demo health monitor reported failures (exit ${{ steps.probe.outputs.exit_code }})"
+          exit 1
