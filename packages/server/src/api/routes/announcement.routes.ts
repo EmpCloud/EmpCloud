@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as announcementService from "../../services/announcement/announcement.service.js";
@@ -67,7 +67,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/announcements
-router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("announcements:create", "announcements:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createAnnouncementSchema.parse(req.body);
     const announcement = await announcementService.createAnnouncement(
@@ -91,7 +91,7 @@ router.post("/", authenticate, requireHR, async (req: Request, res: Response, ne
 });
 
 // PUT /api/v1/announcements/:id
-router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", authenticate, requirePermission("announcements:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateAnnouncementSchema.parse(req.body);
     const announcement = await announcementService.updateAnnouncement(
@@ -104,7 +104,7 @@ router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, 
 });
 
 // DELETE /api/v1/announcements/:id
-router.delete("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("announcements:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await announcementService.deleteAnnouncement(
       req.user!.org_id,

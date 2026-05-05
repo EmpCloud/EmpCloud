@@ -5,7 +5,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import path from "node:path";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { upload } from "../middleware/upload.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
@@ -35,7 +35,7 @@ router.get("/categories", authenticate, async (req: Request, res: Response, next
 });
 
 // POST /api/v1/documents/categories
-router.post("/categories", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/categories", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createDocCategorySchema.parse(req.body);
     const category = await documentService.createCategory(req.user!.org_id, data);
@@ -44,7 +44,7 @@ router.post("/categories", authenticate, requireHR, async (req: Request, res: Re
 });
 
 // PUT /api/v1/documents/categories/:id
-router.put("/categories/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/categories/:id", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateDocCategorySchema.parse(req.body);
     const category = await documentService.updateCategory(req.user!.org_id, paramInt(req.params.id), data);
@@ -53,7 +53,7 @@ router.put("/categories/:id", authenticate, requireHR, async (req: Request, res:
 });
 
 // DELETE /api/v1/documents/categories/:id
-router.delete("/categories/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/categories/:id", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await documentService.deleteCategory(req.user!.org_id, paramInt(req.params.id));
 
@@ -165,7 +165,7 @@ router.get("/my", authenticate, async (req: Request, res: Response, next: NextFu
 // ---------------------------------------------------------------------------
 
 // GET /api/v1/documents/expiring
-router.get("/expiring", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/expiring", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const daysAhead = req.query.days ? Number(req.query.days) : 30;
     const documents = await documentService.getExpiryAlerts(req.user!.org_id, daysAhead);
@@ -174,7 +174,7 @@ router.get("/expiring", authenticate, requireHR, async (req: Request, res: Respo
 });
 
 // GET /api/v1/documents/mandatory-status
-router.get("/mandatory-status", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/mandatory-status", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await documentService.getMandatoryTracking(req.user!.org_id);
     sendSuccess(res, result);
@@ -186,7 +186,7 @@ router.get("/mandatory-status", authenticate, requireHR, async (req: Request, re
 // ---------------------------------------------------------------------------
 
 // GET /api/v1/documents/tracking/mandatory
-router.get("/tracking/mandatory", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/tracking/mandatory", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await documentService.getMandatoryTracking(req.user!.org_id);
     sendSuccess(res, result);
@@ -194,7 +194,7 @@ router.get("/tracking/mandatory", authenticate, requireHR, async (req: Request, 
 });
 
 // GET /api/v1/documents/tracking/expiry
-router.get("/tracking/expiry", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/tracking/expiry", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const daysAhead = req.query.days ? Number(req.query.days) : 30;
     const documents = await documentService.getExpiryAlerts(req.user!.org_id, daysAhead);
@@ -250,7 +250,7 @@ router.get("/:id/download", authenticate, async (req: Request, res: Response, ne
 });
 
 // DELETE /api/v1/documents/:id
-router.delete("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await documentService.deleteDocument(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Document deleted" });
@@ -258,7 +258,7 @@ router.delete("/:id", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // PUT /api/v1/documents/:id/verify
-router.put("/:id/verify", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/verify", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = verifyDocumentSchema.parse(req.body);
     const doc = await documentService.verifyDocument(
@@ -283,7 +283,7 @@ router.put("/:id/verify", authenticate, requireHR, async (req: Request, res: Res
 });
 
 // POST /api/v1/documents/:id/reject
-router.post("/:id/reject", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id/reject", authenticate, requirePermission("documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = rejectDocumentSchema.parse(req.body);
     const doc = await documentService.rejectDocument(
