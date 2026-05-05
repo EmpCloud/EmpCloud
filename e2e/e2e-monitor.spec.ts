@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test';
 
+// All tests in this file exercise EMP Monitor's own API
+// (test-empmonitor-api.empcloud.com). EmpCloud only owns SSO + seat
+// assignment + webhook callbacks for sub-modules; monitor/screenshot/timesheet
+// business logic belongs in the emp-monitor repo's own e2e suite. Note: the
+// EmpCloud<->Monitor tenant bridge is `emp_monitor.organizations.amember_id`
+// pointing at the EmpCloud org id.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-monitor's own e2e suite");
+});
+
 // =============================================================================
 // EMP Monitor — E2E Tests (45 tests)
 // Auth: SSO from EmpCloud → POST /auth/sso to Monitor

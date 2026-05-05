@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+// All tests in this file exercise EMP Field's own API
+// (test-field-api.empcloud.com). EmpCloud only owns SSO + seat assignment +
+// webhook callbacks for sub-modules; field-force GPS check-in / route
+// optimization business logic belongs in the emp-field repo's own e2e suite.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-field's own e2e suite");
+});
+
 const EMPCLOUD_API = 'https://test-empcloud-api.empcloud.com/api/v1';
 const FIELD_API = 'https://test-field-api.empcloud.com/api/v1';
 const FIELD_BASE = 'https://test-field-api.empcloud.com';

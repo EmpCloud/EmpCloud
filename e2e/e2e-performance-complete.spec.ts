@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+// All tests in this file exercise EMP Performance's own API
+// (test-performance-api.empcloud.com). EmpCloud only owns SSO + seat
+// assignment + webhook callbacks for sub-modules; performance review/OKR
+// business logic belongs in the emp-performance repo's own e2e suite.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-performance's own e2e suite");
+});
+
 // =============================================================================
 // EMP Performance Module — Complete Coverage E2E Tests (54 tests)
 // Covers: AI Summary, Letters (template + generate + send), Manager Effectiveness,

@@ -1,5 +1,13 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 
+// All tests in this file exercise EMP Exit's own API
+// (test-exit-api.empcloud.com). EmpCloud only owns SSO + seat assignment +
+// webhook callbacks for sub-modules; exit/clearance/F&F business logic
+// belongs in the emp-exit repo's own e2e suite.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-exit's own e2e suite");
+});
+
 // =============================================================================
 // EMP Exit Module — Complete Coverage E2E Tests (44 tests)
 // Covers: Buyout approve/reject, Prediction/flight risk, Email templates,
