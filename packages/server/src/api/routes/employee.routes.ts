@@ -778,18 +778,20 @@ router.delete("/:id/dependents/:dependentId", authenticate, requireSelfOrHR("id"
 // `*:view_team` / `*:approve` permission honours both relationships.
 // ===========================================================================
 
-// GET /api/v1/employees/:id/additional-managers — list manager rows for user
+// GET /api/v1/employees/:id/additional-managers — list manager rows for user.
+// Returns both `manager_ids` (compat) and `managers` (enriched with name /
+// email / role so the UI doesn't need a separate /users fetch to label them).
 router.get(
   "/:id/additional-managers",
   authenticate,
   requireSelfOrHR("id"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { getAdditionalManagerIds } = await import(
+      const { getAdditionalManagers } = await import(
         "../../services/team/team-resolver.service.js"
       );
-      const ids = await getAdditionalManagerIds(paramInt(req.params.id));
-      sendSuccess(res, { manager_ids: ids });
+      const managers = await getAdditionalManagers(paramInt(req.params.id));
+      sendSuccess(res, { manager_ids: managers.map((m) => m.id), managers });
     } catch (err) {
       next(err);
     }

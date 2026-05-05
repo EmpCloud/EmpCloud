@@ -138,3 +138,19 @@ export async function getAdditionalManagerIds(userId: number): Promise<number[]>
     .pluck("manager_id");
   return rows;
 }
+
+/**
+ * Read the additional managers for a user, enriched with name + email + role
+ * from the users table. The frontend renders chips from this directly so it
+ * doesn't depend on a separate paginated /users fetch.
+ */
+export async function getAdditionalManagers(
+  userId: number,
+): Promise<Array<{ id: number; first_name: string; last_name: string; email: string; role: string }>> {
+  const db = getDB();
+  return db("user_additional_managers as uam")
+    .join("users", "users.id", "uam.manager_id")
+    .where("uam.user_id", userId)
+    .select("users.id", "users.first_name", "users.last_name", "users.email", "users.role")
+    .orderBy(["users.first_name", "users.last_name"]);
+}

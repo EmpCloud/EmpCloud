@@ -774,7 +774,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
       />
       <FieldRow label="Notice Period (days)" value={profile.notice_period_days} />
       <FieldRow label="Reporting Manager" value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
-      <AdditionalManagersReadRow userId={profile.id} allUsers={allUsers} />
+      <AdditionalManagersReadRow userId={profile.id} />
       {/* #1423 / #1424 — surface designation, department and current shift in
           the read-only view so self-service employees can see them even if
           they can't edit them. */}
@@ -787,35 +787,34 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
 }
 
 // Read-only chip list for the profile summary view. Renders nothing when the
-// user has no additional managers so the summary stays compact.
-function AdditionalManagersReadRow({ userId, allUsers }: { userId?: number; allUsers?: any[] }) {
+// user has no additional managers so the summary stays compact. Uses the
+// `managers` array enriched server-side so we don't depend on a paginated
+// /users list to look up names.
+function AdditionalManagersReadRow({ userId }: { userId?: number }) {
   const { data } = useQuery({
     queryKey: ["employee-additional-managers", userId],
     queryFn: () =>
       api.get(`/employees/${userId}/additional-managers`).then((r) => r.data?.data),
     enabled: !!userId,
   });
-  const ids: number[] = Array.isArray(data?.manager_ids) ? data.manager_ids : [];
-  if (ids.length === 0) return null;
-  const usersById = new Map<number, any>((allUsers || []).map((u: any) => [u.id, u]));
+  const managers: Array<{ id: number; first_name: string; last_name: string; role: string }> =
+    Array.isArray(data?.managers) ? data.managers : [];
+  if (managers.length === 0) return null;
   return (
     <div className="grid grid-cols-3 gap-x-4 py-2 border-b border-gray-100">
       <dt className="text-sm font-medium text-gray-500 col-span-1">Additional Managers</dt>
       <dd className="text-sm text-gray-900 col-span-2 flex flex-wrap gap-1.5">
-        {ids.map((id) => {
-          const u = usersById.get(id);
-          return (
-            <span
-              key={id}
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-100 text-xs text-gray-700"
-            >
-              <span className="h-5 w-5 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-[10px] font-semibold">
-                {(u?.first_name?.[0] || "?")}{(u?.last_name?.[0] || "")}
-              </span>
-              {u ? `${u.first_name} ${u.last_name}` : `User #${id}`}
+        {managers.map((u) => (
+          <span
+            key={u.id}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-100 text-xs text-gray-700"
+          >
+            <span className="h-5 w-5 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-[10px] font-semibold">
+              {u.first_name?.[0] || "?"}{u.last_name?.[0] || ""}
             </span>
-          );
-        })}
+            {u.first_name} {u.last_name}
+          </span>
+        ))}
       </dd>
     </div>
   );
@@ -875,7 +874,13 @@ function AdditionalManagersField({
     },
   });
 
-  const usersById = new Map<number, any>((allUsers || []).map((u: any) => [u.id, u]));
+  // Lookup map for chip labels: prefer the enriched managers from the
+  // /additional-managers response (server-side join) so we're not limited to
+  // the paginated /users list. Fallback to allUsers for newly-added rows
+  // (which won't be in the response until save).
+  const usersById = new Map<number, any>();
+  for (const u of allUsers || []) usersById.set(u.id, u);
+  for (const m of (data?.managers || []) as any[]) usersById.set(m.id, m);
 
   // Candidate pool: anyone in the org except self, primary manager, or
   // already-selected. Used by the search dropdown.
