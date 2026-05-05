@@ -201,44 +201,88 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
   let shiftDurationMinutes = 480;
   let earlyDepartureMinutes = 0;
   let overtimeMinutes = 0;
-  if (record.shift_id) {
-    const shift = await db("shifts").where({ id: record.shift_id }).first();
-    if (shift) {
-      const [sh, sm] = shift.start_time.split(":").map(Number);
-      const [eeh, eem] = shift.end_time.split(":").map(Number);
-      let diff = eeh * 60 + eem - (sh * 60 + sm);
-      if (diff <= 0) diff += 1440;
-      shiftDurationMinutes = diff - (shift.break_minutes || 0);
+  let lateMinutes = 0;
 
-      // Early-departure / OT only meaningful once we have a check-out
-      // candidate (i.e. at least 2 punches). The latest punch is the one
-      // we score against the shift end.
-      if (punches.length > 1) {
-        const shiftEnd = new Date(lastTime);
-        shiftEnd.setHours(eeh, eem, 0, 0);
-        if (shift.is_night_shift || shiftEnd.getTime() <= firstTime.getTime()) {
-          shiftEnd.setDate(shiftEnd.getDate() + 1);
-        }
-        const graceStart = new Date(
-          shiftEnd.getTime() - (shift.grace_minutes_early || 0) * 60000,
+  // Resolve the applicable shift for late/OT/early-departure calc:
+  //   - prefer the shift_id stored on the attendance row (if any)
+  //   - fall back to the user's current shift_assignment for `today` so a
+  //     row created without a shift (e.g. a leave row, or an admin-created
+  //     row from before the assignment landed) still picks up the right
+  //     shift on the first real punch
+  let shift: any = null;
+  if (record.shift_id) {
+    shift = await db("shifts").where({ id: record.shift_id }).first();
+  }
+  if (!shift) {
+    const assignment = await db("shift_assignments")
+      .where({ organization_id: orgId, user_id: userId })
+      .whereRaw("DATE(effective_from) <= ?", [today])
+      .where(function () {
+        this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [today]);
+      })
+      .orderBy("effective_from", "desc")
+      .first();
+    if (assignment) {
+      shift = await db("shifts").where({ id: assignment.shift_id }).first();
+    }
+  }
+
+  if (shift) {
+    const [sh, sm] = shift.start_time.split(":").map(Number);
+    const [eeh, eem] = shift.end_time.split(":").map(Number);
+    let diff = eeh * 60 + eem - (sh * 60 + sm);
+    if (diff <= 0) diff += 1440;
+    shiftDurationMinutes = diff - (shift.break_minutes || 0);
+
+    // Late on first punch — recomputed every time the row is touched so
+    // that a row created before the shift was assigned (shift_id was null)
+    // gets its late_minutes filled in once we can resolve a shift.
+    const shiftStart = new Date(firstTime);
+    shiftStart.setHours(sh, sm, 0, 0);
+    // If the first punch is BEFORE today's shift-start hour (e.g. night
+    // shift starting yesterday at 22:00 with first punch at 22:30 today
+    // because the row carries a same-date shift), shift the start back a
+    // day to keep the math sane.
+    if (shift.is_night_shift && shiftStart.getTime() > firstTime.getTime()) {
+      shiftStart.setDate(shiftStart.getDate() - 1);
+    }
+    const graceEnd = new Date(
+      shiftStart.getTime() + (shift.grace_minutes_late || 0) * 60000,
+    );
+    if (firstTime > graceEnd) {
+      lateMinutes = Math.round(
+        (firstTime.getTime() - shiftStart.getTime()) / 60000,
+      );
+    }
+
+    // Early-departure / OT only meaningful once we have a check-out
+    // candidate (i.e. at least 2 punches). The latest punch is the one
+    // we score against the shift end.
+    if (punches.length > 1) {
+      const shiftEnd = new Date(lastTime);
+      shiftEnd.setHours(eeh, eem, 0, 0);
+      if (shift.is_night_shift || shiftEnd.getTime() <= firstTime.getTime()) {
+        shiftEnd.setDate(shiftEnd.getDate() + 1);
+      }
+      const graceStart = new Date(
+        shiftEnd.getTime() - (shift.grace_minutes_early || 0) * 60000,
+      );
+      if (lastTime < graceStart) {
+        earlyDepartureMinutes = Math.round(
+          (shiftEnd.getTime() - lastTime.getTime()) / 60000,
         );
-        if (lastTime < graceStart) {
-          earlyDepartureMinutes = Math.round(
-            (shiftEnd.getTime() - lastTime.getTime()) / 60000,
-          );
-        } else if (lastTime > shiftEnd) {
-          // Rule 5 (#1057): OT only counts after full shift hours are completed
-          // Rule 6 (#1058): Auto-calculate OT from check-out vs shift end time
-          const otResult = calculateOvertime(
-            firstTime,
-            lastTime,
-            shift.start_time,
-            shift.end_time,
-            !!shift.is_night_shift,
-            shift.break_minutes || 0,
-          );
-          overtimeMinutes = otResult.overtime_minutes;
-        }
+      } else if (lastTime > shiftEnd) {
+        // Rule 5 (#1057): OT only counts after full shift hours are completed
+        // Rule 6 (#1058): Auto-calculate OT from check-out vs shift end time
+        const otResult = calculateOvertime(
+          firstTime,
+          lastTime,
+          shift.start_time,
+          shift.end_time,
+          !!shift.is_night_shift,
+          shift.break_minutes || 0,
+        );
+        overtimeMinutes = otResult.overtime_minutes;
       }
     }
   }
@@ -274,6 +318,12 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
     worked_minutes: workedMinutes,
     overtime_minutes: overtimeMinutes,
     early_departure_minutes: earlyDepartureMinutes,
+    late_minutes: lateMinutes,
+    // Persist the resolved shift_id back to the row so the next read /
+    // recompute doesn't have to re-resolve via shift_assignments. Only
+    // updates when the resolver actually found one — never wipes an
+    // existing shift_id.
+    ...(shift && !record.shift_id ? { shift_id: shift.id } : {}),
     status,
     updated_at: now,
   });
