@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ValidationError } from "../../utils/errors.js";
+import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 
 interface SubmitRegularizationInput {
   date: string;
@@ -105,6 +105,13 @@ export async function approveRegularization(orgId: number, regularizationId: num
   if (!reg) throw new NotFoundError("Regularization request");
   if (reg.status !== "pending") throw new ValidationError("Request is already processed");
 
+  // Block self-approval — even a manager / org_admin cannot approve their own
+  // regularization request. Mirrors the leave-application policy. Force a
+  // second-set-of-eyes signoff.
+  if (Number(reg.user_id) === Number(approvedBy)) {
+    throw new ForbiddenError("Cannot approve your own regularization request");
+  }
+
   await db.transaction(async (trx) => {
     // Update regularization status
     await trx("attendance_regularizations").where({ id: regularizationId }).update({
@@ -174,6 +181,11 @@ export async function rejectRegularization(
     .first();
   if (!reg) throw new NotFoundError("Regularization request");
   if (reg.status !== "pending") throw new ValidationError("Request is already processed");
+
+  // Block self-rejection — symmetric with the approve path.
+  if (Number(reg.user_id) === Number(approvedBy)) {
+    throw new ForbiddenError("Cannot reject your own regularization request");
+  }
 
   await db("attendance_regularizations").where({ id: regularizationId }).update({
     status: "rejected",
