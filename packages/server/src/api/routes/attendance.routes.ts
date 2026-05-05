@@ -508,8 +508,13 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
     const perms = (req.user as any).permissions as string[] | undefined;
     const has = (k: string) => Array.isArray(perms) && perms.includes(k);
 
-    const canSeeAll = isHR || has("attendance:view_all") || has("attendance:manage");
-    const canSeeTeam = has("attendance:view_team") || has("attendance:approve_regularization");
+    // Scope is driven ONLY by the view_* permissions. `manage` and
+    // `approve_regularization` are action permissions — they say what the
+    // user can do, not how broadly they can see. So a custom role with
+    // (view_team + manage) sees only their team's records but can act on
+    // them. (HR roles still have implicit org-wide visibility.)
+    const canSeeAll = isHR || has("attendance:view_all");
+    const canSeeTeam = has("attendance:view_team");
 
     let user_id: number | undefined;
     let department_id: number | undefined;
@@ -570,24 +575,70 @@ router.get("/records/:id/punches", authenticate, async (req: Request, res: Respo
   } catch (err) { next(err); }
 });
 
+// Helper: resolve the user_ids the caller is allowed to see for attendance.
+// Returns null when the caller can see everyone (org-wide). Returns an array
+// (possibly empty) when the caller is team-scoped. Used by /dashboard and
+// /dashboard/breakdown so the metric cards reflect the same scope as the
+// records grid.
+async function resolveAttendanceScope(req: Request): Promise<number[] | null> {
+  const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+  const isHR = HR_ROLES.includes(req.user!.role);
+  const perms = (req.user as any).permissions as string[] | undefined;
+  const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+  if (isHR || has("attendance:view_all")) return null; // org-wide
+  if (has("attendance:view_team")) {
+    const { resolveTeamMemberIds } = await import(
+      "../../services/team/team-resolver.service.js"
+    );
+    return resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
+  }
+  return [req.user!.sub];
+}
+
 // GET /api/v1/attendance/dashboard
-router.get("/dashboard", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const stats = await attendanceService.getDashboard(req.user!.org_id);
-    sendSuccess(res, stats);
-  } catch (err) { next(err); }
-});
+router.get(
+  "/dashboard",
+  authenticate,
+  requirePermission(
+    "attendance:view_all",
+    "attendance:view_team",
+    "attendance:approve_regularization",
+    "attendance:manage",
+  ),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userIds = await resolveAttendanceScope(req);
+      const stats = await attendanceService.getDashboard(req.user!.org_id, userIds ?? undefined);
+      sendSuccess(res, stats);
+    } catch (err) { next(err); }
+  },
+);
 
 // GET /api/v1/attendance/dashboard/breakdown?date=YYYY-MM-DD
 // Returns the list of employees grouped by attendance status for the given date
 // (defaults to today). Used by the "click stat card to view details" flow.
-router.get("/dashboard/breakdown", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const date = typeof req.query.date === "string" ? req.query.date : undefined;
-    const breakdown = await attendanceService.getDashboardBreakdown(req.user!.org_id, date);
-    sendSuccess(res, breakdown);
-  } catch (err) { next(err); }
-});
+router.get(
+  "/dashboard/breakdown",
+  authenticate,
+  requirePermission(
+    "attendance:view_all",
+    "attendance:view_team",
+    "attendance:approve_regularization",
+    "attendance:manage",
+  ),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const date = typeof req.query.date === "string" ? req.query.date : undefined;
+      const userIds = await resolveAttendanceScope(req);
+      const breakdown = await attendanceService.getDashboardBreakdown(
+        req.user!.org_id,
+        date,
+        userIds ?? undefined,
+      );
+      sendSuccess(res, breakdown);
+    } catch (err) { next(err); }
+  },
+);
 
 // GET /api/v1/attendance/monthly-report
 router.get("/monthly-report", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {

@@ -354,16 +354,33 @@ export async function listRecords(
   return { records, total: Number(count) };
 }
 
-export async function getDashboard(orgId: number) {
+export async function getDashboard(orgId: number, userIds?: number[]) {
   const db = getDB();
   const today = new Date().toISOString().slice(0, 10);
 
-  const [totalUsers] = await db("users")
-    .where({ organization_id: orgId, status: 1 })
-    .count("* as count");
+  // RBAC v1 — when caller is team-scoped, restrict every count to their
+  // resolved team. An empty array short-circuits to all-zero counts (no
+  // direct reports => nothing to show).
+  const teamScoped = Array.isArray(userIds);
+  const emptyTeam = teamScoped && userIds!.length === 0;
+
+  const totalQuery = db("users").where({ organization_id: orgId, status: 1 });
+  if (teamScoped) {
+    if (emptyTeam) totalQuery.where(db.raw("1 = 0"));
+    else totalQuery.whereIn("id", userIds!);
+  }
+  const [totalUsers] = await totalQuery.count("* as count");
+
+  const scopedRecords = (qb: any) => {
+    qb.where({ organization_id: orgId, date: today });
+    if (teamScoped) {
+      if (emptyTeam) qb.where(db.raw("1 = 0"));
+      else qb.whereIn("user_id", userIds!);
+    }
+  };
 
   const [presentCount] = await db("attendance_records")
-    .where({ organization_id: orgId, date: today })
+    .where(scopedRecords)
     .whereIn("status", ["present", "half_day", "checked_in"])
     .count("* as count");
 
@@ -373,13 +390,14 @@ export async function getDashboard(orgId: number) {
   // also pulled in stale rows whose status had since flipped to on_leave or
   // absent, which made the card count bigger than the drilldown list.
   const [lateCount] = await db("attendance_records")
-    .where({ organization_id: orgId, date: today })
+    .where(scopedRecords)
     .whereIn("status", ["present", "half_day", "checked_in"])
     .where("late_minutes", ">", 0)
     .count("* as count");
 
   const [onLeaveCount] = await db("attendance_records")
-    .where({ organization_id: orgId, date: today, status: "on_leave" })
+    .where(scopedRecords)
+    .where("status", "on_leave")
     .count("* as count");
 
   const total = Number(totalUsers.count);
@@ -403,18 +421,27 @@ export async function getDashboard(orgId: number) {
 // Used by the "click stat card to view details" flow on the attendance dashboard.
 // ---------------------------------------------------------------------------
 
-export async function getDashboardBreakdown(orgId: number, date?: string) {
+export async function getDashboardBreakdown(orgId: number, date?: string, userIds?: number[]) {
   const db = getDB();
   const forDate = date || new Date().toISOString().slice(0, 10);
 
-  const employees = await db("users as u")
+  const teamScoped = Array.isArray(userIds);
+  const emptyTeam = teamScoped && userIds!.length === 0;
+
+  const baseQuery = db("users as u")
     .leftJoin("organization_departments as d", "u.department_id", "d.id")
     .leftJoin("attendance_records as ar", function () {
       this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", forDate);
     })
     .where("u.organization_id", orgId)
-    .where("u.status", 1)
-    .select(
+    .where("u.status", 1);
+
+  if (teamScoped) {
+    if (emptyTeam) baseQuery.where(db.raw("1 = 0"));
+    else baseQuery.whereIn("u.id", userIds!);
+  }
+
+  const employees = await baseQuery.select(
       "u.id",
       "u.first_name",
       "u.last_name",
