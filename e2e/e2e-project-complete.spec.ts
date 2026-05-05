@@ -1,5 +1,13 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 
+// All tests in this file exercise EMP Project's own APIs
+// (test-project-api.empcloud.com + test-project-task-api.empcloud.com).
+// EmpCloud only owns SSO + seat assignment + webhook callbacks for sub-modules;
+// project/task business logic belongs in the emp-projects repo's own e2e suite.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-projects's own e2e suite");
+});
+
 // =============================================================================
 // EMP Project — Complete E2E Tests (237 routes across Project API + Task API)
 // Auth: SSO from EmpCloud (ananya@technova.in)

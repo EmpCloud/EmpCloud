@@ -11,13 +11,15 @@ import {
 } from "../../services/onboarding/onboarding.service.js";
 import { sendSuccess } from "../../utils/response.js";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 
 const router = Router();
 
 // All onboarding routes require authentication
 router.use(authenticate);
 
-// GET /api/v1/onboarding/status
+// GET /api/v1/onboarding/status — readable by anyone in the org so the
+// dashboard can show the onboarding banner / next step prompts.
 router.get("/status", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await getOnboardingStatus(req.user!.org_id);
@@ -27,8 +29,8 @@ router.get("/status", async (req: Request, res: Response, next: NextFunction) =>
   }
 });
 
-// POST /api/v1/onboarding/step/:step
-router.post("/step/:step", async (req: Request, res: Response, next: NextFunction) => {
+// POST /api/v1/onboarding/step/:step — org-level setup, restricted to admins
+router.post("/step/:step", requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const step = parseInt(String(req.params.step), 10);
     const result = await completeStep(req.user!.org_id, req.user!.sub, step, req.body);
@@ -39,7 +41,7 @@ router.post("/step/:step", async (req: Request, res: Response, next: NextFunctio
 });
 
 // POST /api/v1/onboarding/complete
-router.post("/complete", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/complete", requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await completeOnboarding(req.user!.org_id);
     sendSuccess(res, result);
@@ -49,7 +51,7 @@ router.post("/complete", async (req: Request, res: Response, next: NextFunction)
 });
 
 // POST /api/v1/onboarding/skip
-router.post("/skip", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/skip", requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await skipOnboarding(req.user!.org_id);
     sendSuccess(res, result);

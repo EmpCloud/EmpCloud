@@ -36,6 +36,16 @@ export default function AttendancePage() {
     queryFn: () => api.get("/attendance/me/history", { params: { month, year, page } }).then((r) => r.data),
   });
 
+  // #1919 — Employees had no way to see what they'd already submitted
+  // (pending / approved / rejected) without bouncing to the admin
+  // Regularizations page, which most employees can't reach. Surface their
+  // own request history right under the Request Regularization form.
+  const { data: regHistoryData, isLoading: regHistLoading } = useQuery({
+    queryKey: ["my-regularizations"],
+    queryFn: () => api.get("/attendance/regularizations/me", { params: { per_page: 10 } }).then((r) => r.data),
+  });
+  const myRegRequests: any[] = regHistoryData?.data || [];
+
   const onAttendanceError = (err: any) =>
     alert(err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.");
   const checkIn = useMutation({
@@ -81,6 +91,7 @@ export default function AttendancePage() {
         .then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      qc.invalidateQueries({ queryKey: ["my-regularizations"] });
       setShowRegForm(false);
       setRegForm({ date: "", requested_check_in: "", requested_check_out: "", reason: "" });
       setRegFormError(null);
@@ -232,6 +243,7 @@ export default function AttendancePage() {
                 type="date"
                 value={regForm.date}
                 onChange={(e) => setRegField("date", e.target.value)}
+                max={new Date().toISOString().slice(0, 10)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -299,6 +311,68 @@ export default function AttendancePage() {
           </div>
         </form>
       )}
+
+      {/* My Regularization Requests — #1919 */}
+      <div className="bg-white rounded-xl border border-gray-200 mb-6">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">My Regularization Requests</h2>
+          {myRegRequests.length > 0 && (
+            <span className="text-xs text-gray-400">Showing latest {myRegRequests.length}</span>
+          )}
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Date</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Reason</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">Requested Check In</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">Requested Check Out</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {regHistLoading ? (
+                <tr><td colSpan={5} className="px-6 py-6 text-center text-gray-400">Loading…</td></tr>
+              ) : myRegRequests.length === 0 ? (
+                <tr><td colSpan={5} className="px-6 py-6 text-center text-gray-400">No regularization requests yet.</td></tr>
+              ) : (
+                myRegRequests.map((r) => {
+                  const fmtTime = (v?: string | null) => {
+                    if (!v) return "-";
+                    const m = String(v).match(/(\d{2}):(\d{2})/);
+                    return m ? `${m[1]}:${m[2]}` : String(v);
+                  };
+                  return (
+                    <tr key={r.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">
+                        {r.date ? new Date(r.date).toLocaleDateString() : "-"}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-600 max-w-xs truncate" title={r.reason}>
+                        {r.reason || "-"}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-600 whitespace-nowrap">{fmtTime(r.requested_check_in)}</td>
+                      <td className="px-6 py-3 text-sm text-gray-600 whitespace-nowrap">{fmtTime(r.requested_check_out)}</td>
+                      <td className="px-6 py-3">
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                          r.status === "approved" ? "bg-green-50 text-green-700"
+                            : r.status === "rejected" ? "bg-red-50 text-red-700"
+                            : "bg-amber-50 text-amber-700"
+                        }`}>{r.status}</span>
+                        {r.rejection_reason && (
+                          <p className="text-xs text-red-500 mt-1" title={r.rejection_reason}>
+                            {r.rejection_reason}
+                          </p>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Month/Year Filters */}
       <div className="flex items-center gap-3 mb-4">

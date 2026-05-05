@@ -43,9 +43,20 @@ function formatDate(dateStr: string, locale: string): string {
   return d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
 }
 
+// #1954 — `effective_from` / `effective_to` may arrive from the API as full
+// ISO strings ("2026-04-26T00:00:00.000Z"), but `date` is YYYY-MM-DD. Naive
+// `date < from` then treats the start day itself as out-of-range (the 'T'
+// suffix sorts after ''), so an assignment created for Sunday only rendered
+// from Monday onwards. Normalize both sides to the day part before comparing.
+function ymd(value: string | null | undefined): string {
+  return typeof value === "string" ? value.slice(0, 10) : "";
+}
+
 function isDateInRange(date: string, from: string, to: string | null): boolean {
-  if (date < from) return false;
-  if (to && date > to) return false;
+  const f = ymd(from);
+  const t = ymd(to);
+  if (date < f) return false;
+  if (t && date > t) return false;
   return true;
 }
 
@@ -356,9 +367,20 @@ export default function ShiftSchedulePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
+                  </label>
+                  {bulkUserIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setBulkUserIds([])}
+                      className="text-xs text-brand-600 hover:text-brand-700 hover:underline"
+                    >
+                      Clear selection
+                    </button>
+                  )}
+                </div>
                 <div className="relative mb-2">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   <input
@@ -380,6 +402,49 @@ export default function ShiftSchedulePage() {
                   )}
                 </div>
                 <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
+                  {(() => {
+                    const visibleIds: number[] = filteredBulkEmployees.map((emp: any) => emp.id as number);
+                    const visibleSelectedCount = visibleIds.filter((id: number) => bulkUserIds.includes(id)).length;
+                    const allVisibleSelected =
+                      visibleIds.length > 0 && visibleSelectedCount === visibleIds.length;
+                    const someVisibleSelected =
+                      visibleSelectedCount > 0 && visibleSelectedCount < visibleIds.length;
+                    const handleSelectAllVisible = () => {
+                      if (visibleIds.length === 0) return;
+                      if (allVisibleSelected) {
+                        // Unselect only visible employees, preserve out-of-view selections.
+                        setBulkUserIds((prev) => prev.filter((id: number) => !visibleIds.includes(id)));
+                      } else {
+                        // Additive: add any visible employees not already selected.
+                        setBulkUserIds((prev) => {
+                          const merged = new Set<number>(prev);
+                          visibleIds.forEach((id: number) => merged.add(id));
+                          return Array.from(merged);
+                        });
+                      }
+                    };
+                    return (
+                      <label
+                        className={`sticky top-0 -mx-2 -mt-2 mb-1 px-2 py-1 flex items-center gap-2 text-sm font-medium bg-gray-50 border-b border-gray-200 rounded-t-lg ${
+                          filteredBulkEmployees.length === 0 ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-gray-100"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          ref={(el) => {
+                            if (el) el.indeterminate = someVisibleSelected;
+                          }}
+                          checked={allVisibleSelected}
+                          disabled={filteredBulkEmployees.length === 0}
+                          onChange={handleSelectAllVisible}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-gray-700">
+                          Select all ({filteredBulkEmployees.length} visible)
+                        </span>
+                      </label>
+                    );
+                  })()}
                   {filteredBulkEmployees.length === 0 ? (
                     <p className="text-xs text-gray-400 px-2 py-3 text-center">
                       No employees match &ldquo;{bulkEmployeeSearch}&rdquo;
@@ -452,7 +517,7 @@ export default function ShiftSchedulePage() {
             <select
               value={assignShiftId}
               onChange={(e) => setAssignShiftId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2"
               required
             >
               <option value="">{t('attendance.shiftSchedule.bulk.selectShift')}</option>
@@ -462,6 +527,28 @@ export default function ShiftSchedulePage() {
                 </option>
               ))}
             </select>
+            {/* #1952 — warn when the picked shift doesn't include the chosen
+                day-of-week so admins don't silently create "Off" assignments. */}
+            {(() => {
+              const picked = shifts.find((s: any) => String(s.id) === assignShiftId);
+              if (!picked) return null;
+              const dow = new Date(showAssign.date + "T00:00:00").getDay();
+              const wd = String(picked.working_days ?? "1,2,3,4,5")
+                .split(",")
+                .filter(Boolean)
+                .map((d: string) => Number(d));
+              if (wd.length > 0 && !wd.includes(dow)) {
+                return (
+                  <p className="mb-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+                    {t('attendance.shiftSchedule.quick.offDayWarning', {
+                      defaultValue:
+                        'This shift is off on the selected day. The schedule cell will show "Off" until you change the shift\'s working days.',
+                    })}
+                  </p>
+                );
+              }
+              return null;
+            })()}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowAssign(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
                 {t('common.cancel')}
@@ -607,7 +694,11 @@ export default function ShiftSchedulePage() {
             <table className="min-w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 bg-gray-50 min-w-[180px]">
+                  {/* #1963 — sticky employee column needs an explicit z-index
+                      and a non-translucent border-right; without those, the
+                      scrolling shift badges painted over the employee name
+                      when the user scrolled the table horizontally. */}
+                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 z-20 bg-gray-50 border-r border-gray-200 min-w-[180px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">
                     {t('attendance.shiftSchedule.team.employee')}
                   </th>
                   {week.dates.map((date) => (
@@ -639,7 +730,7 @@ export default function ShiftSchedulePage() {
                 ) : (
                   pagedSchedule.map((emp: any) => (
                     <tr key={emp.user_id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 sticky left-0 bg-white">
+                      <td className="px-4 py-3 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
                         <div className="text-sm font-medium text-gray-900">
                           {emp.first_name} {emp.last_name}
                         </div>
@@ -651,15 +742,39 @@ export default function ShiftSchedulePage() {
                         const assignment = emp.assignments.find((a: any) =>
                           isDateInRange(date, a.effective_from, a.effective_to),
                         );
+                        // #1952 — A shift with working_days="1,2,3,4,5" is OFF on
+                        // weekends. Render "Off" on those cells so the schedule
+                        // reflects what the shift definition actually says.
+                        // dayOfWeek: 0=Sun..6=Sat (matches shift.working_days CSV).
+                        const dayOfWeek = new Date(date + "T00:00:00").getDay();
+                        const workingDays = (assignment?.working_days ?? "")
+                          .toString()
+                          .split(",")
+                          .filter(Boolean)
+                          .map((d: string) => Number(d));
+                        const isOffDay =
+                          assignment && workingDays.length > 0 && !workingDays.includes(dayOfWeek);
                         return (
                           <td key={date} className="px-2 py-3 text-center">
                             {assignment ? (
                               <div className="group relative inline-flex items-center gap-1">
-                                <span
-                                  className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
-                                >
-                                  {assignment.shift_name}
-                                </span>
+                                {isOffDay ? (
+                                  <span
+                                    className="text-xs px-2 py-1 rounded-full font-medium bg-gray-100 text-gray-500"
+                                    title={t('attendance.shiftSchedule.team.offTooltip', {
+                                      defaultValue: '{{shift}} is off on this day',
+                                      shift: assignment.shift_name,
+                                    })}
+                                  >
+                                    {t('attendance.shiftSchedule.team.off', { defaultValue: 'Off' })}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
+                                  >
+                                    {assignment.shift_name}
+                                  </span>
+                                )}
                                 <span className="hidden group-hover:inline-flex items-center gap-0.5">
                                   <button
                                     onClick={() =>

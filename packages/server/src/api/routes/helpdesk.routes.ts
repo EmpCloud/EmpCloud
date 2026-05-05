@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as helpdeskService from "../../services/helpdesk/helpdesk.service.js";
@@ -160,7 +160,7 @@ router.get(
 router.put(
   "/tickets/:id",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:view_all", "helpdesk:manage_settings"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateTicketSchema.parse(req.body);
@@ -180,7 +180,7 @@ router.put(
 router.post(
   "/tickets/:id/assign",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:assign"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { assigned_to } = req.body;
@@ -238,7 +238,7 @@ router.post(
 router.post(
   "/tickets/:id/resolve",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:close"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const ticket = await helpdeskService.resolveTicket(
@@ -382,7 +382,7 @@ router.get(
 router.post(
   "/kb",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:manage_settings"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createArticleSchema.parse(req.body);
@@ -413,7 +413,7 @@ router.post(
 router.put(
   "/kb/:id",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:manage_settings"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateArticleSchema.parse(req.body);
@@ -433,7 +433,7 @@ router.put(
 router.delete(
   "/kb/:id",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:manage_settings"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await helpdeskService.deleteArticle(
@@ -497,7 +497,7 @@ router.post(
 router.get(
   "/dashboard",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:view_all"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const stats = await helpdeskService.getHelpdeskDashboard(req.user!.org_id);
@@ -549,7 +549,7 @@ router.get(
 router.post(
   "/knowledge-base",
   authenticate,
-  requireHR,
+  requirePermission("helpdesk:manage_settings"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createArticleSchema.parse(req.body);

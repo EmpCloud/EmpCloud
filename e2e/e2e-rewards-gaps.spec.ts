@@ -1,5 +1,13 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 
+// All tests in this file exercise EMP Rewards's own API
+// (test-rewards-api.empcloud.com). EmpCloud only owns SSO + seat assignment +
+// webhook callbacks for sub-modules; recognition/kudos/badges business logic
+// belongs in the emp-rewards repo's own e2e suite.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-rewards's own e2e suite");
+});
+
 // =============================================================================
 // EMP Rewards Module — Gap Coverage E2E Tests (33 tests)
 // Tests untested routes: analytics (recommendations, managers, team-comparison),

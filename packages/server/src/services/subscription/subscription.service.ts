@@ -322,6 +322,13 @@ export async function listSeats(orgId: number, moduleId: number) {
 // Sync Seat Count (#1191) — Recalculate used_seats from actual org_module_seats rows
 // ---------------------------------------------------------------------------
 
+// Modules that don't track per-user seat assignments in EmpCloud's
+// org_module_seats table. For these, the user-count fallback in
+// syncUsedSeats is the authoritative source. Every other module
+// trusts org_module_seats — including when it's legitimately empty
+// because an admin used "Disable All".
+const SEATLESS_MODULE_SLUGS = new Set<string>(["emp-monitor"]);
+
 export async function syncUsedSeats(orgId: number, moduleId: number): Promise<void> {
   const db = getDB();
 
@@ -332,22 +339,29 @@ export async function syncUsedSeats(orgId: number, moduleId: number): Promise<vo
 
   if (!sub) return;
 
-  // Check if this module has explicit seat assignments
+  // Count explicit seat assignments — this is the source of truth for
+  // every module that issues seats via the Module Access page.
   const [{ seatCount }] = await db("org_module_seats")
     .where({ subscription_id: sub.id })
     .count("* as seatCount");
 
   let actualCount = Number(seatCount);
 
-  // If no explicit seat assignments exist, count active org users instead
-  // This handles modules like Monitor where users log in via SSO without
-  // explicit seat assignment in EmpCloud
+  // Fallback to total active users only for SSO-style modules that
+  // don't write seat rows in EmpCloud. Without this, "Disable All"
+  // would silently re-inflate to total user count on the next read
+  // (#1191 originally added the fallback unconditionally; that masked
+  // legitimate disable-all events for modules like Projects and Recruit
+  // — they'd display N/15 instead of 0/15).
   if (actualCount === 0) {
-    const [{ userCount }] = await db("users")
-      .where({ organization_id: orgId, status: 1 })
-      .whereNot("role", "super_admin")
-      .count("* as userCount");
-    actualCount = Number(userCount);
+    const moduleRow = await db("modules").where({ id: moduleId }).select("slug").first();
+    if (moduleRow && SEATLESS_MODULE_SLUGS.has(moduleRow.slug)) {
+      const [{ userCount }] = await db("users")
+        .where({ organization_id: orgId, status: 1 })
+        .whereNot("role", "super_admin")
+        .count("* as userCount");
+      actualCount = Number(userCount);
+    }
   }
 
   if (sub.used_seats !== actualCount) {
@@ -796,6 +810,92 @@ export async function processDunning(): Promise<{
   }
 
   return { actions, totalProcessed: subscriptions.length };
+}
+
+// ---------------------------------------------------------------------------
+// Auto-assign emp-payroll seat to a newly-created user.
+//
+// Called by user.service after createUser() / acceptInvitation() inserts
+// the row, so every employee has payroll access by default in any org
+// that subscribes to emp-payroll. Mirrors migration 060's backfill for
+// the steady state.
+//
+// Bypasses the seat-limit on org_subscriptions.total_seats — same
+// philosophy as #1976 for the org user cap: paid orgs shouldn't be
+// capped on existing users / new joiners. If you need to revoke later,
+// do it from Module Access per-user.
+//
+// Best-effort: any failure here logs a warning but never blocks the
+// caller (a missing payroll seat is fixable from the UI; a thrown
+// exception would block user creation entirely).
+// ---------------------------------------------------------------------------
+
+export async function autoAssignPayrollSeat(
+  orgId: number,
+  userId: number,
+  assignedBy: number,
+): Promise<void> {
+  const db = getDB();
+  try {
+    const payrollModule = await db("modules").where({ slug: "emp-payroll" }).first();
+    if (!payrollModule) return;
+
+    const sub = await db("org_subscriptions")
+      .where({ organization_id: orgId, module_id: payrollModule.id })
+      .whereIn("status", ["active", "trial"])
+      .first();
+    if (!sub) return;
+
+    // Already has a seat — idempotent no-op.
+    const existing = await db("org_module_seats")
+      .where({ module_id: payrollModule.id, user_id: userId })
+      .first();
+    if (existing) return;
+
+    await db("org_module_seats").insert({
+      subscription_id: sub.id,
+      organization_id: orgId,
+      module_id: payrollModule.id,
+      user_id: userId,
+      assigned_by: assignedBy,
+      assigned_at: new Date(),
+    });
+
+    await db("org_subscriptions").where({ id: sub.id }).increment("used_seats", 1);
+  } catch (err) {
+    logger.warn(
+      `Auto-assign payroll seat failed for org=${orgId} user=${userId}: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Paid-subscription guard — used by user.service to decide whether the
+// org-row's `total_allowed_user_count` cap (default 10 at creation, never
+// re-synced) should still be enforced.
+//
+// Background: orgs are created with total_allowed_user_count = 10 and
+// nothing in the codebase updates that column when a subscription is
+// added, removed, or upgraded. Paid orgs that grew past 10 users were
+// then 403'd on every new invite ("Organization has reached its user
+// limit (230 active + 29 pending invites / 10 allowed)") even though
+// they have a billed subscription that allows more.
+//
+// True when the org has at least one ACTIVE / TRIAL subscription whose
+// plan_tier is not "free" — same shape the free-tier check uses below
+// to decide if it should bail out, kept consistent here.
+// ---------------------------------------------------------------------------
+
+export async function hasAnyPaidSubscription(orgId: number): Promise<boolean> {
+  const db = getDB();
+  const paidSub = await db("org_subscriptions")
+    .where({ organization_id: orgId })
+    .whereIn("status", ["active", "trial"])
+    .whereNot({ plan_tier: "free" })
+    .first();
+  return !!paidSub;
 }
 
 // ---------------------------------------------------------------------------

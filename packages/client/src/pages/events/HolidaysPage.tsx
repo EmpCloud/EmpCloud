@@ -79,8 +79,16 @@ export default function HolidaysPage() {
           title: data.title,
           description: data.description || null,
           event_type: "holiday",
+          // Store both ends at T00:00:00 so the calendar day is preserved
+          // regardless of how the server normalises to UTC. Sending
+          // T23:59:59 caused single-day holidays to display as a 2-day
+          // range in IST (23:59 UTC = 05:29 IST next day).
           start_date: data.start_date ? `${data.start_date}T00:00:00` : undefined,
-          end_date: data.end_date ? `${data.end_date}T23:59:59` : data.start_date ? `${data.start_date}T23:59:59` : undefined,
+          end_date: data.end_date
+            ? `${data.end_date}T00:00:00`
+            : data.start_date
+              ? `${data.start_date}T00:00:00`
+              : undefined,
           is_all_day: true,
           target_type: "all",
           is_mandatory: false,
@@ -117,6 +125,19 @@ export default function HolidaysPage() {
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+  };
+
+  // True if start and end land on different CALENDAR days in the user's
+  // local timezone. The previous string-equality check was wrong for two
+  // reasons: (1) the form was sending T23:59:59 for end_date, so even a
+  // single-day holiday had different start/end strings, and (2) any
+  // server-side timezone normalisation makes raw ISO strings unsafe to
+  // compare. Compare displayed days instead — that's what the user sees.
+  const isDateRange = (start: string, end: string | null | undefined) => {
+    if (!end) return false;
+    const s = new Date(start);
+    const e = new Date(end);
+    return s.toDateString() !== e.toDateString();
   };
 
   const isPast = (dateStr: string) => {
@@ -251,8 +272,8 @@ export default function HolidaysPage() {
                     </div>
                     <p className="text-xs text-gray-500">
                       {formatDate(h.start_date)}
-                      {h.end_date && h.end_date !== h.start_date && (
-                        <> &mdash; {formatDate(h.end_date)}</>
+                      {isDateRange(h.start_date, h.end_date) && (
+                        <> &mdash; {formatDate(h.end_date!)}</>
                       )}
                     </p>
                     {(() => {

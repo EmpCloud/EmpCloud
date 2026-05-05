@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy, Send, Users } from "lucide-react";
@@ -8,6 +8,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import { showToast } from "@/components/ui/Toast";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
+import CustomRolesField from "@/components/employees/CustomRolesField";
 import * as XLSX from "xlsx";
 
 // ---------------------------------------------------------------------------
@@ -116,8 +117,62 @@ export default function EmployeeDirectoryPage() {
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("employee");
+  const [inviteFirstName, setInviteFirstName] = useState("");
+  const [inviteLastName, setInviteLastName] = useState("");
   const [inviteError, setInviteError] = useState("");
+  // When the typed email matches an existing user in this org, we
+  // prefill First/Last Name from that record and lock those inputs.
+  // The submit handler then routes to /users/:id/invite (re-invite path)
+  // instead of /users/invite (which rejects existing emails).
+  const [existingUserMatch, setExistingUserMatch] = useState<
+    { id: number; first_name: string | null; last_name: string | null; role: string } | null
+  >(null);
   const inviteUser = useInviteUser();
+
+  // Debounced lookup: when the typed email parses, ask the backend
+  // whether a user with that email already exists in the org. 350ms
+  // matches the directory search debounce so the feel is consistent.
+  useEffect(() => {
+    if (!showInvite) {
+      setExistingUserMatch(null);
+      return;
+    }
+    const trimmed = inviteEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setExistingUserMatch(null);
+      return;
+    }
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      api
+        .get("/users/lookup", { params: { email: trimmed }, signal: ctrl.signal })
+        .then((r) => r.data.data)
+        .then((res: any) => {
+          if (res?.exists) {
+            setExistingUserMatch({
+              id: res.id,
+              first_name: res.first_name,
+              last_name: res.last_name,
+              role: res.role,
+            });
+            setInviteFirstName(res.first_name ?? "");
+            setInviteLastName(res.last_name ?? "");
+            setInviteRole(res.role || "employee");
+          } else {
+            setExistingUserMatch(null);
+          }
+        })
+        .catch(() => {
+          // Silent — if lookup fails, fall back to the new-user path
+          // and let the submit-time validation surface any real error.
+          setExistingUserMatch(null);
+        });
+    }, 350);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [inviteEmail, showInvite]);
 
   // Bulk CSV import (create new employees) — also absorbed from Users page.
   const [showCsvImport, setShowCsvImport] = useState(false);
@@ -144,6 +199,31 @@ export default function EmployeeDirectoryPage() {
       const msg = err?.response?.data?.error?.message || "Failed to reset password";
       setPasswordError(msg);
     },
+  });
+
+  // Per-row Invite button — independent of the existing bulk Invite
+  // Employee modal. Hits POST /users/:id/invite (the directory-aware
+  // endpoint that handles existing users via re-invitation), NOT the
+  // /users/invite endpoint, which rejects every row because the email
+  // already exists in the users table.
+  const [invitingId, setInvitingId] = useState<number | null>(null);
+  const sendDirectInvite = useMutation({
+    mutationFn: (userId: number) =>
+      api.post(`/users/${userId}/invite`).then((r) => r.data.data),
+    onSuccess: (result: { status?: "invited" | "resent" }) => {
+      showToast(
+        "success",
+        result?.status === "resent" ? "Invitation resent." : "Invitation sent.",
+      );
+      qc.invalidateQueries({ queryKey: ["pending-invitations"] });
+    },
+    onError: (err: any) => {
+      showToast(
+        "error",
+        err?.response?.data?.error?.message || "Could not send invitation.",
+      );
+    },
+    onSettled: () => setInvitingId(null),
   });
 
   // Pending invitations panel — only fetched for org_admin.
@@ -365,9 +445,30 @@ export default function EmployeeDirectoryPage() {
     e.preventDefault();
     setInviteError("");
     try {
-      await inviteUser.mutateAsync({ email: inviteEmail, role: inviteRole as any });
+      // Existing-user path: fire the directory-aware re-invite endpoint.
+      // First/last name aren't sent because the server reads them from
+      // the existing user row — keeping the modal inputs disabled +
+      // inviting via :id/invite avoids any chance of accidental rename.
+      if (existingUserMatch) {
+        await api.post(`/users/${existingUserMatch.id}/invite`);
+        showToast("success", "Invitation resent.");
+      } else {
+        // Fresh-email path: existing /users/invite endpoint, now also
+        // carrying first/last name so the welcome email greets the
+        // recipient by name on first activation.
+        await inviteUser.mutateAsync({
+          email: inviteEmail,
+          role: inviteRole as any,
+          first_name: inviteFirstName || undefined,
+          last_name: inviteLastName || undefined,
+        });
+        showToast("success", "Invitation sent.");
+      }
       setInviteEmail("");
       setInviteRole("employee");
+      setInviteFirstName("");
+      setInviteLastName("");
+      setExistingUserMatch(null);
       setShowInvite(false);
       qc.invalidateQueries({ queryKey: ["pending-invitations"] });
     } catch (err: any) {
@@ -546,8 +647,8 @@ export default function EmployeeDirectoryPage() {
           onSubmit={handleInvite}
           className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-3"
         >
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+            <div className="md:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
               <input
                 type="email"
@@ -558,12 +659,35 @@ export default function EmployeeDirectoryPage() {
                 required
               />
             </div>
-            <div>
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <input
+                type="text"
+                value={inviteFirstName}
+                onChange={(e) => setInviteFirstName(e.target.value)}
+                disabled={!!existingUserMatch}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                placeholder="Jane"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <input
+                type="text"
+                value={inviteLastName}
+                onChange={(e) => setInviteLastName(e.target.value)}
+                disabled={!!existingUserMatch}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                placeholder="Doe"
+              />
+            </div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                disabled={!!existingUserMatch}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
@@ -571,19 +695,36 @@ export default function EmployeeDirectoryPage() {
                 <option value="org_admin">Org Admin</option>
               </select>
             </div>
+          </div>
+          {/* Hint when an existing user is detected — explains why the
+              fields just locked. Without this the disabled inputs feel
+              like a glitch to anyone seeing it for the first time. */}
+          {existingUserMatch && (
+            <p className="text-xs text-gray-500">
+              Existing employee detected — name and role are locked. Submitting will resend their invitation.
+            </p>
+          )}
+          <div className="flex items-center gap-2">
             <button
               type="submit"
               disabled={inviteUser.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               <Mail className="h-4 w-4" />
-              {inviteUser.isPending ? "Sending..." : "Send Invite"}
+              {inviteUser.isPending
+                ? "Sending..."
+                : existingUserMatch
+                  ? "Resend Invite"
+                  : "Send Invite"}
             </button>
             <button
               type="button"
               onClick={() => {
                 setShowInvite(false);
                 setInviteError("");
+                setInviteFirstName("");
+                setInviteLastName("");
+                setExistingUserMatch(null);
               }}
               className="text-sm text-gray-500 hover:text-gray-700"
             >
@@ -946,6 +1087,7 @@ export default function EmployeeDirectoryPage() {
                       <EmployeeAvatar
                         userId={emp.id}
                         hasPhoto={!!emp.photo_path}
+                        hasBiometricFace={!!emp.has_biometric_face}
                         firstName={emp.first_name}
                         lastName={emp.last_name}
                         size="sm"
@@ -999,6 +1141,32 @@ export default function EmployeeDirectoryPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
+                      {/* Per-row Invite — sends an invitation to this employee's
+                          email/role without opening the bulk invite modal.
+                          Hidden for the current user (no self-invites) and
+                          inactive accounts (status != 1) so HR doesn't bounce
+                          mail to disabled mailboxes; disabled while an invite
+                          for this row is in flight. */}
+                      {emp.id !== currentUser?.id && emp.status === 1 && emp.email && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (invitingId !== null) return;
+                            setInvitingId(emp.id);
+                            sendDirectInvite.mutate(emp.id);
+                          }}
+                          disabled={invitingId !== null}
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                          title={`Send invitation to ${emp.email}`}
+                          aria-label={`Send invitation to ${emp.first_name} ${emp.last_name}`}
+                        >
+                          {invitingId === emp.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Send className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
@@ -1115,9 +1283,19 @@ export default function EmployeeDirectoryPage() {
                         <input name="last_name" defaultValue={editEmployee.last_name || ""} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" defaultValue={editEmployee.email || ""} disabled className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500" />
-                        <p className="text-xs text-gray-400 mt-1">Email cannot be changed from this screen.</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          defaultValue={editEmployee.email || ""}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                        />
+                        <p className="text-xs text-amber-600 mt-1">
+                          Email is the user's login. Changing it ends their current session and notifies both the old and new addresses.
+                        </p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
@@ -1187,6 +1365,16 @@ export default function EmployeeDirectoryPage() {
                       <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                         <textarea name="address" defaultValue={editEmployee.address || ""} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none" />
+                      </div>
+                      {/* Custom Roles — additive on top of the primary system role above.
+                          Saves immediately on add/remove (independent of the form's
+                          Save Changes button) since it hits a different endpoint. */}
+                      <div className="sm:col-span-2">
+                        <CustomRolesField
+                          userId={editEmployee.id}
+                          canEdit={isOrgAdmin}
+                          compact
+                        />
                       </div>
                     </div>
                     {editError && (

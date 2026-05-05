@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireOrgAdmin } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { getDB } from "../../db/connection.js";
 import { ValidationError } from "../../utils/errors.js";
@@ -55,7 +55,7 @@ router.get("/me", authenticate, async (req: Request, res: Response, next: NextFu
 });
 
 // PUT /api/v1/organizations/me
-router.put("/me", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/me", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateOrgSchema.parse(req.body);
     const org = await orgService.updateOrg(req.user!.org_id, data);
@@ -78,7 +78,7 @@ router.get("/me/stats", authenticate, async (req: Request, res: Response, next: 
 router.post(
   "/me/logo",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("org_settings:manage"),
   logoUpload.single("logo"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -127,7 +127,7 @@ router.get("/me/departments", authenticate, async (req: Request, res: Response, 
 });
 
 // POST /api/v1/organizations/me/departments
-router.post("/me/departments", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/me/departments", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createDepartmentSchema.parse(req.body);
     const dept = await orgService.createDepartment(req.user!.org_id, data.name);
@@ -144,7 +144,7 @@ router.get("/me/departments/:id", authenticate, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/organizations/me/departments/:id
-router.put("/me/departments/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/me/departments/:id", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateDepartmentSchema.parse(req.body);
     const dept = await orgService.updateDepartment(req.user!.org_id, paramInt(req.params.id), data);
@@ -153,7 +153,7 @@ router.put("/me/departments/:id", authenticate, requireOrgAdmin, async (req: Req
 });
 
 // DELETE /api/v1/organizations/me/departments/:id
-router.delete("/me/departments/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/me/departments/:id", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await orgService.deleteDepartment(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Department deleted" });
@@ -171,7 +171,7 @@ router.get("/me/locations", authenticate, async (req: Request, res: Response, ne
 });
 
 // POST /api/v1/organizations/me/locations
-router.post("/me/locations", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/me/locations", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createLocationSchema.parse(req.body);
     const loc = await orgService.createLocation(req.user!.org_id, data);
@@ -188,7 +188,7 @@ router.get("/me/locations/:id", authenticate, async (req: Request, res: Response
 });
 
 // PUT /api/v1/organizations/me/locations/:id
-router.put("/me/locations/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/me/locations/:id", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateLocationSchema.parse(req.body);
     const loc = await orgService.updateLocation(req.user!.org_id, paramInt(req.params.id), data);
@@ -197,7 +197,7 @@ router.put("/me/locations/:id", authenticate, requireOrgAdmin, async (req: Reque
 });
 
 // DELETE /api/v1/organizations/me/locations/:id
-router.delete("/me/locations/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/me/locations/:id", authenticate, requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await orgService.deleteLocation(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Location deleted" });

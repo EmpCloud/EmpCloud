@@ -3,6 +3,21 @@ import api from "@/api/client";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Pencil, Trash2, X, Clock, Moon, Sun } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
+
+// #1930 — Pull a human-readable message off any axios error so the form
+// surfaces it instead of silently spinning. The validator returns Zod
+// issues at .error.details, the service layer returns a string at
+// .error.message; fall back to a generic line if neither is present.
+function shiftErrorMessage(err: any, fallback: string): string {
+  const data = err?.response?.data?.error;
+  if (data?.message) return data.message;
+  const details = data?.details;
+  if (Array.isArray(details) && details.length > 0) {
+    return details.map((d: any) => d?.message || String(d)).join(" · ");
+  }
+  return fallback;
+}
 
 interface ShiftForm {
   name: string;
@@ -11,6 +26,7 @@ interface ShiftForm {
   break_minutes: number;
   grace_minutes_late: number;
   grace_minutes_early: number;
+  max_overtime_minutes: number;
   is_night_shift: boolean;
   is_default: boolean;
   working_days: string;
@@ -26,6 +42,7 @@ const emptyForm: ShiftForm = {
   break_minutes: 60,
   grace_minutes_late: 15,
   grace_minutes_early: 15,
+  max_overtime_minutes: 0,
   is_night_shift: false,
   is_default: false,
   working_days: "1,2,3,4,5",
@@ -47,17 +64,29 @@ export default function ShiftsPage() {
   const createShift = useMutation({
     mutationFn: (data: ShiftForm) => api.post("/attendance/shifts", data).then((r) => r.data.data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["shifts"] }); resetForm(); },
+    // #1930 — Without an onError, a failed POST silently spins forever
+    // and only logs to the browser console. Surface the API's error so
+    // HR sees what went wrong (validator rejection, name regex, etc.).
+    onError: (err: any) => {
+      showToast("error", shiftErrorMessage(err, "Could not create shift."));
+    },
   });
 
   const updateShift = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<ShiftForm> }) =>
       api.put(`/attendance/shifts/${id}`, data).then((r) => r.data.data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["shifts"] }); resetForm(); },
+    onError: (err: any) => {
+      showToast("error", shiftErrorMessage(err, "Could not update shift."));
+    },
   });
 
   const deleteShift = useMutation({
     mutationFn: (id: number) => api.delete(`/attendance/shifts/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["shifts"] }),
+    onError: (err: any) => {
+      showToast("error", shiftErrorMessage(err, "Could not delete shift."));
+    },
   });
 
   const resetForm = () => {
@@ -81,6 +110,7 @@ export default function ShiftsPage() {
       break_minutes: shift.break_minutes,
       grace_minutes_late: shift.grace_minutes_late,
       grace_minutes_early: shift.grace_minutes_early,
+      max_overtime_minutes: shift.max_overtime_minutes ?? 0,
       is_night_shift: !!shift.is_night_shift,
       is_default: !!shift.is_default,
       working_days: shift.working_days || "1,2,3,4,5",
@@ -248,13 +278,46 @@ export default function ShiftsPage() {
                 </div>
               </div>
 
-              {/* Shift Options */}
+              {/* Overtime cap — minutes past shift end after which an open
+                  attendance row is no longer considered "active". Higher
+                  values let users with legitimate OT still close the right
+                  record on check-out the next day. 0 = use the system
+                  default (12h fallback). */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max overtime (minutes)
+                </label>
+                <input
+                  type="number"
+                  value={form.max_overtime_minutes}
+                  onChange={(e) => set("max_overtime_minutes", Number(e.target.value))}
+                  className="w-full md:w-1/3 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  min={0}
+                  max={1440}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  How long past the shift end an open check-in is still
+                  treated as active (so a forgotten checkout or genuine OT
+                  the next morning rolls over correctly). Set 0 for the
+                  system default (12 hours).
+                </p>
+              </div>
+
+              {/* Shift Options — #1957: night and default are mutually
+                  exclusive. The "default" shift is the org's standard day
+                  shift; tagging a night shift as default would override
+                  it on every new employee. Ticking one auto-clears the
+                  other. */}
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2.5 px-4 py-2.5 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
                   <input
                     type="checkbox"
                     checked={form.is_night_shift}
-                    onChange={(e) => set("is_night_shift", e.target.checked)}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      set("is_night_shift", next);
+                      if (next) set("is_default", false);
+                    }}
                     className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                   />
                   <Moon className="h-4 w-4 text-indigo-500" />
@@ -264,7 +327,11 @@ export default function ShiftsPage() {
                   <input
                     type="checkbox"
                     checked={form.is_default}
-                    onChange={(e) => set("is_default", e.target.checked)}
+                    onChange={(e) => {
+                      const next = e.target.checked;
+                      set("is_default", next);
+                      if (next) set("is_night_shift", false);
+                    }}
                     className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                   />
                   <Sun className="h-4 w-4 text-amber-500" />

@@ -14,10 +14,6 @@ import {
   BookOpen,
   Network,
   Crown,
-  ScanFace,
-  Fingerprint,
-  QrCode,
-  Smartphone,
   ScrollText,
   CreditCard,
   TrendingUp,
@@ -63,6 +59,14 @@ export type NavItem = {
   icon: any;
   badge?: string;
   children?: NavItem[];
+  /**
+   * RBAC v1 — if set, the item is only visible to users whose effective
+   * permissions intersect with this list (OR semantics). Items without
+   * this field are visible to everyone. Used to surface admin-side nav
+   * items to non-HR users with custom roles that grant the relevant
+   * permissions.
+   */
+  requiredPermissions?: string[];
 };
 
 // Items visible to ALL users (including employees)
@@ -103,34 +107,43 @@ export const employeeNavItems: NavItem[] = [
     { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "nav.submitReport", icon: ShieldAlert },
     { path: "/whistleblowing/track", label: "Track Report", i18nKey: "nav.trackReport", icon: Search },
   ]},
+  // Self-service password change — visible to every signed-in user.
+  { path: "/change-password", label: "Change Password", i18nKey: "nav.changePassword", icon: KeyRound },
 ];
 
-// Items visible only to HR Admin, Org Admin, Super Admin
+// Items visible only to HR Admin, Org Admin, Super Admin — by default. With
+// RBAC v1 these items also surface for non-HR users who have the required
+// permissions (via custom roles). Items without `requiredPermissions` stay
+// HR-only when injected into the employee sidebar.
 export const adminNavItems: NavItem[] = [
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
   { path: "/self-service", label: "Self Service", i18nKey: "nav.selfService", icon: UserCircle },
-  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package, children: [
-    { path: "/modules", label: "Marketplace", i18nKey: "nav.modules", icon: Package },
-    { path: "/modules/access", label: "Module Access", i18nKey: "nav.moduleAccess", icon: Shield },
+  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package, requiredPermissions: ["modules_access:view", "modules_access:manage", "subscriptions:view"], children: [
+    { path: "/modules", label: "Marketplace", i18nKey: "nav.modules", icon: Package, requiredPermissions: ["subscriptions:view", "subscriptions:add_module"] },
+    { path: "/modules/access", label: "Module Access", i18nKey: "nav.moduleAccess", icon: Shield, requiredPermissions: ["modules_access:view", "modules_access:manage"] },
   ]},
-  { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt },
-  { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, children: [
-    { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact },
-    { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck },
+  { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt, requiredPermissions: ["billing:view", "billing:manage"] },
+  { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, requiredPermissions: ["employees:view_all", "employees:edit_all", "employees:invite"], children: [
+    { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact, requiredPermissions: ["employees:view_all"] },
+    { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck, requiredPermissions: ["employees:view_all", "employees:edit_all"] },
     { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
   ]},
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI" },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
-  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, children: [
-    { path: "/attendance", label: "Dashboard", i18nKey: "nav.attendanceDashboard", icon: Clock },
-    { path: "/attendance/shifts", label: "Shift Settings", i18nKey: "nav.shiftSettings", icon: AlarmClock },
-    { path: "/attendance/shift-schedule", label: "Shift Schedule", i18nKey: "nav.shiftSchedule", icon: CalendarRange },
-    { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList },
-    { path: "/attendance/settings", label: "Attendance Settings", i18nKey: "nav.attendanceSettings", icon: SlidersHorizontal },
+  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"], children: [
+    // The "View Attendance" page (AttendanceDashboardPage) renders the
+    // employee records grid. Visible to anyone with team-or-broader
+    // attendance read access — the page itself scopes the data to the
+    // user's permission level (team vs all-org).
+    { path: "/attendance", label: "View Attendance", i18nKey: "nav.viewAttendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"] },
+    { path: "/attendance/shifts", label: "Shift Settings", i18nKey: "nav.shiftSettings", icon: AlarmClock, requiredPermissions: ["attendance:manage"] },
+    { path: "/attendance/shift-schedule", label: "Shift Schedule", i18nKey: "nav.shiftSchedule", icon: CalendarRange, requiredPermissions: ["attendance:manage"] },
+    { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList, requiredPermissions: ["attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"] },
+    { path: "/attendance/settings", label: "Attendance Settings", i18nKey: "nav.attendanceSettings", icon: SlidersHorizontal, requiredPermissions: ["attendance:manage"] },
   ]},
-  { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, children: [
-    { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays },
-    { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
+  { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, requiredPermissions: ["leave:view_all", "leave:approve", "leave:manage_policies", "leave:override_balance"], children: [
+    { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays, requiredPermissions: ["leave:view_all", "leave:approve"] },
+    { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift, requiredPermissions: ["leave:view_all", "leave:approve"] },
     { path: "/holidays", label: "Holidays", i18nKey: "nav.holidays", icon: PartyPopper },
   ]},
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, children: [
@@ -170,9 +183,10 @@ export const adminNavItems: NavItem[] = [
     { path: "/whistleblowing/dashboard", label: "Whistleblowing Dashboard", i18nKey: "nav.whistleblowingDashboard", icon: BarChart3 },
     { path: "/whistleblowing/reports", label: "All Reports", i18nKey: "nav.allReports", icon: ClipboardList },
   ]},
-  { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings },
-  { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal },
-  { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield },
+  { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings, requiredPermissions: ["org_settings:view", "org_settings:manage"] },
+  { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal, requiredPermissions: ["custom_fields:view", "custom_fields:manage"] },
+  { path: "/roles", label: "Roles & Permissions", i18nKey: "nav.rolesPermissions", icon: Shield, requiredPermissions: ["roles:view", "roles:manage"] },
+  { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: Shield, requiredPermissions: ["audit:view", "audit:export"] },
 ];
 
 export const positionNavItems: NavItem[] = [
@@ -273,19 +287,11 @@ export const feedbackHRNavItems: NavItem[] = [
   { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "nav.feedbackDashboard", icon: BarChart3 },
 ];
 
-export const biometricsNavItems: NavItem[] = [
-  { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
-  // The self-service 'Biometric PIN' item used to live here, but this
-  // section is HR-only (only rendered when the org has an active
-  // emp-biometrics subscription AND the user is HR). Moved to the
-  // main employee/admin nav groups so every logged-in user can manage
-  // their own PIN regardless of module subscription.
-  { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "nav.faceEnrollment", icon: Fingerprint },
-  { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "nav.qrAttendance", icon: QrCode },
-  { path: "/biometrics/devices", label: "Devices", i18nKey: "nav.devices", icon: Smartphone },
-  { path: "/biometrics/logs", label: "Biometric Logs", i18nKey: "nav.biometricLogs", icon: ScrollText },
-  { path: "/biometrics/settings", label: "Biometric Settings", i18nKey: "nav.biometricSettings", icon: Settings },
-];
+// Biometrics section deprecated — only the self-service Kiosk PIN page
+// (under orgAdminOnlyNavItems) remains. Dashboard / Face Enrollment / QR /
+// Devices / Logs / Settings pages are no longer surfaced; the v3 kiosk
+// stack drives biometric attendance directly via /api/v3/biometric/*.
+export const biometricsNavItems: NavItem[] = [];
 
 // Items visible ONLY to org_admin (not hr_admin, not employees).
 // Biometric PIN lives here because the org owner is the one expected to
@@ -311,3 +317,60 @@ export const platformAdminNavItems: NavItem[] = [
 ];
 
 export const HR_ROLES = ["hr_admin", "org_admin"];
+
+// ---------------------------------------------------------------------------
+// Permission-driven filtering helpers (RBAC v1)
+// ---------------------------------------------------------------------------
+
+/**
+ * Recursively filter a nav item against the user's effective permissions.
+ * Returns null when the item itself is gated by perms the user doesn't have
+ * AND none of its children pass either. Items without `requiredPermissions`
+ * always pass (visible to everyone).
+ *
+ * Used to render an admin nav item to a non-HR user with a custom role that
+ * grants the relevant permission(s).
+ */
+export function filterNavItem(item: NavItem, has: (...keys: string[]) => boolean): NavItem | null {
+  const ownPasses = !item.requiredPermissions || has(...item.requiredPermissions);
+  const filteredChildren = item.children
+    ?.map((c) => filterNavItem(c, has))
+    .filter((c): c is NavItem => c !== null);
+  // Item passes if it self-passes OR any child passes (a parent with a
+  // permission gate that the user fails should still render if a child does
+  // — e.g. an unrestricted child link inside a restricted group).
+  if (!ownPasses && (!filteredChildren || filteredChildren.length === 0)) return null;
+  // If self-passes but children all got filtered, drop the children but keep
+  // the parent.
+  if (ownPasses && filteredChildren && filteredChildren.length === 0 && item.children?.length) {
+    return { ...item, children: undefined };
+  }
+  return filteredChildren ? { ...item, children: filteredChildren } : item;
+}
+
+/**
+ * For non-HR users: return the union of employeeNavItems + adminNavItems
+ * filtered by the user's permissions. Admin items the user doesn't have
+ * permission for are dropped. Items already present in the employee nav
+ * (deduped by path) aren't re-added.
+ */
+export function buildEffectiveNav(
+  base: NavItem[],
+  extras: NavItem[],
+  has: (...keys: string[]) => boolean,
+): NavItem[] {
+  const baselinePaths = new Set<string>();
+  const collect = (items: NavItem[]) => {
+    for (const i of items) {
+      baselinePaths.add(i.path);
+      if (i.children) collect(i.children);
+    }
+  };
+  collect(base);
+
+  const filtered = extras
+    .map((i) => filterNavItem(i, has))
+    .filter((i): i is NavItem => i !== null && !baselinePaths.has(i.path));
+
+  return [...base, ...filtered];
+}

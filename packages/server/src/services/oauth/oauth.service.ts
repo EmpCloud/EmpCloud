@@ -19,6 +19,7 @@ import {
   parseExpiry,
 } from "./jwt.service.js";
 import { config } from "../../config/index.js";
+import { resolveUserPermissions } from "../permissions/permissions.service.js";
 import type {
   OAuthClient,
   UserRole,
@@ -201,6 +202,12 @@ export async function issueTokens(params: {
   const expiresIn = parseExpiry(config.oauth.accessTokenExpiry);
   const refreshExpiresIn = parseExpiry(config.oauth.refreshTokenExpiry);
 
+  // Resolve effective permissions for this user (system role defaults +
+  // any custom roles assigned). Embedded in the JWT so external modules
+  // (payroll, exit, performance, …) can authorize without DB calls back to
+  // EmpCloud. Refreshed every issue/refresh — 15-min token TTL bounds staleness.
+  const permissions = await resolveUserPermissions(params.userId, params.role);
+
   // Sign access token
   const accessToken = signAccessToken({
     sub: params.userId,
@@ -213,6 +220,7 @@ export async function issueTokens(params: {
     scope: params.scope,
     client_id: params.clientId,
     jti,
+    permissions,
   });
 
   // Store access token record (for revocation)
@@ -323,6 +331,10 @@ export async function refreshAccessToken(params: {
   const expiresIn = parseExpiry(config.oauth.accessTokenExpiry);
   const refreshExpiresIn = parseExpiry(config.oauth.refreshTokenExpiry);
 
+  // Refresh permissions on every refresh — picks up custom-role assignment
+  // changes within one access-token TTL.
+  const permissions = await resolveUserPermissions(user.id, user.role as UserRole);
+
   const accessToken = signAccessToken({
     sub: user.id,
     org_id: org.id,
@@ -334,6 +346,7 @@ export async function refreshAccessToken(params: {
     scope: storedToken.scope,
     client_id: params.clientId,
     jti,
+    permissions,
   });
 
   const [newAccessTokenId] = await db("oauth_access_tokens").insert({

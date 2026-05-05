@@ -11,6 +11,10 @@ import { test, expect } from '@playwright/test';
 const BILLING_API = 'https://test-billing-api.empcloud.com/api/v1';
 const API_KEY = process.env.BILLING_API_KEY || "";
 
+// Whole file targets the EMP Billing service directly (separate from EmpCloud).
+// Without BILLING_API_KEY every request 401s; each describe below uses
+// `test.skip(!API_KEY, ...)` in beforeAll to gate the suite.
+
 // Auth helper — Bearer token matching billing API middleware
 const auth = () => ({
   headers: {

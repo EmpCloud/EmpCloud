@@ -325,7 +325,7 @@ export const updateDepartmentSchema = z.object({
 export const createLocationSchema = z.object({
   name: z.string().min(1).max(100),
   address: z.string().max(1000).optional(),
-  timezone: z.string().max(50).optional(),
+  timezone: z.string().min(1, "Timezone is required").max(50),
 });
 
 export const updateLocationSchema = z.object({
@@ -575,16 +575,28 @@ const shiftBaseSchema = z.object({
   break_minutes: z.number().int().min(0).default(0),
   grace_minutes_late: z.number().int().min(0).default(0),
   grace_minutes_early: z.number().int().min(0).default(0),
+  // Maximum overtime allowed past shift end (minutes). 0 = no per-shift cap;
+  // the attendance service falls back to a generous 12h window so a
+  // forgotten checkout still rolls over correctly.
+  max_overtime_minutes: z.number().int().min(0).max(1440).default(0),
   is_night_shift: z.boolean().default(false),
   is_default: z.boolean().default(false),
   working_days: workingDaysField.default("1,2,3,4,5"), // 0=Sun,1=Mon,...6=Sat
   half_days: halfDaysField.default(""),
 });
 
-export const createShiftSchema = shiftBaseSchema.refine(
-  (data) => data.start_time !== data.end_time,
-  { message: "Start time and end time cannot be the same", path: ["end_time"] }
-);
+export const createShiftSchema = shiftBaseSchema
+  .refine(
+    (data) => data.start_time !== data.end_time,
+    { message: "Start time and end time cannot be the same", path: ["end_time"] }
+  )
+  // #1957 — A shift cannot be both `is_default` (the org's standard day shift
+  // assigned to new employees) AND `is_night_shift`. Tagging a night shift
+  // as default would silently override the day shift on every new hire.
+  .refine(
+    (data) => !(data.is_default && data.is_night_shift),
+    { message: "A shift cannot be both the default shift and a night shift", path: ["is_night_shift"] }
+  );
 
 // #1356 — updateShiftSchema must NOT inherit defaults from shiftBaseSchema
 // (partial() keeps defaults, which overwrite unchanged fields on PATCH)
@@ -596,6 +608,7 @@ export const updateShiftSchema = z
     break_minutes: z.number().int().min(0).optional(),
     grace_minutes_late: z.number().int().min(0).optional(),
     grace_minutes_early: z.number().int().min(0).optional(),
+    max_overtime_minutes: z.number().int().min(0).max(1440).optional(),
     is_night_shift: z.boolean().optional(),
     is_default: z.boolean().optional(),
     working_days: workingDaysField.optional(),
@@ -609,6 +622,18 @@ export const updateShiftSchema = z
       return true;
     },
     { message: "Start time and end time cannot be the same", path: ["end_time"] }
+  )
+  // #1957 — same mutex as createShiftSchema for the PATCH path. Only
+  // applies when both flags are present in the request body; partial
+  // updates that touch one flag at a time still work.
+  .refine(
+    (data) => {
+      if (data.is_default !== undefined && data.is_night_shift !== undefined) {
+        return !(data.is_default && data.is_night_shift);
+      }
+      return true;
+    },
+    { message: "A shift cannot be both the default shift and a night shift", path: ["is_night_shift"] }
   );
 
 export const assignShiftSchema = z.object({
@@ -796,6 +821,10 @@ export const createLeavePolicySchema = z.object({
   applicable_employment_types: z.string().optional().nullable(),
   max_consecutive_days: z.coerce.number().int().positive().optional().nullable(),
   min_days_before_application: z.coerce.number().int().min(0).default(0),
+  period_carry_forward: z.preprocess(
+    (v) => v === "true" || v === true,
+    z.boolean(),
+  ).default(false),
 });
 
 export const applyLeaveSchema = z.object({
@@ -824,8 +853,16 @@ export const approveLeaveSchema = z.object({
   remarks: z.string().optional(),
 });
 
+// #1921 — worked_date represents a day already worked; must not be future.
+// Compare in YYYY-MM-DD form so timezone offsets don't accept "tomorrow in
+// UTC, today locally" or vice versa.
+const todayYmd = () => new Date().toISOString().slice(0, 10);
 export const createCompOffSchema = z.object({
-  worked_date: z.string(),
+  worked_date: z
+    .string()
+    .refine((v) => v.slice(0, 10) <= todayYmd(), {
+      message: "Worked date cannot be in the future",
+    }),
   expires_on: z.string(),
   reason: z.string().min(1),
   days: z.number().min(0.5).max(2).default(1),
@@ -839,6 +876,38 @@ export const leaveQuerySchema = paginationSchema.extend({
 
 export const initializeBalancesSchema = z.object({
   year: z.number().int().min(2020).max(2100),
+});
+
+// ---------------------------------------------------------------------------
+// HRMS — Leave Configuration & Admin Overrides
+// ---------------------------------------------------------------------------
+
+export const updateLeaveOrgConfigSchema = z.object({
+  fiscal_year_start_month: z.coerce.number().int().min(1).max(12),
+});
+
+export const overrideLeaveBalanceSchema = z.object({
+  extra_allocated: z.coerce.number().min(-365).max(365).optional(),
+  total_used: z.coerce.number().min(0).max(365).optional(),
+  reason: z.string().min(1).max(500),
+});
+
+export const bulkOverrideLeaveBalanceSchema = z.object({
+  user_ids: z.array(z.coerce.number().int().positive()).min(1).max(500),
+  leave_type_id: z.coerce.number().int().positive(),
+  extra_allocated_delta: z.coerce.number().min(-365).max(365),
+  reason: z.string().min(1).max(500),
+  year: z.coerce.number().int().min(2020).max(2100).optional(),
+});
+
+export const resetPeriodUsageSchema = z.object({
+  reason: z.string().min(1).max(500),
+});
+
+export const employeeLeavesQuerySchema = paginationSchema.extend({
+  search: z.string().optional(),
+  department_id: z.coerce.number().int().positive().optional(),
+  year: z.coerce.number().int().min(2020).max(2100).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -925,6 +994,12 @@ export type CheckInInput = z.infer<typeof checkInSchema>;
 export type CheckOutInput = z.infer<typeof checkOutSchema>;
 export type ApplyLeaveInput = z.infer<typeof applyLeaveSchema>;
 export type CreateLeaveTypeInput = z.infer<typeof createLeaveTypeSchema>;
+export type CreateLeavePolicyInput = z.infer<typeof createLeavePolicySchema>;
+export type UpdateLeaveOrgConfigInput = z.infer<typeof updateLeaveOrgConfigSchema>;
+export type OverrideLeaveBalanceInput = z.infer<typeof overrideLeaveBalanceSchema>;
+export type BulkOverrideLeaveBalanceInput = z.infer<typeof bulkOverrideLeaveBalanceSchema>;
+export type ResetPeriodUsageInput = z.infer<typeof resetPeriodUsageSchema>;
+export type EmployeeLeavesQueryInput = z.infer<typeof employeeLeavesQuerySchema>;
 export type CreateAnnouncementInput = z.infer<typeof createAnnouncementSchema>;
 export type CreatePolicyInput = z.infer<typeof createPolicySchema>;
 export type BulkAssignShiftInput = z.infer<typeof bulkAssignShiftSchema>;

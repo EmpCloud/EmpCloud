@@ -52,6 +52,7 @@ test.describe("Leave Approval Notification Chain", () => {
         leave_type_id: 1,
         start_date: tomorrow.toISOString().split("T")[0],
         end_date: dayAfter.toISOString().split("T")[0],
+        days_count: 2,
         reason: `E2E notification chain test ${Date.now()}`,
       },
     });
@@ -93,9 +94,10 @@ test.describe("Leave Approval Notification Chain", () => {
     const beforeCount = (await beforeRes.json()).data?.count ?? (await beforeRes.json()).data ?? 0;
     console.log(`Employee unread before approve: ${beforeCount}`);
 
-    // Approve the leave
-    const approveRes = await request.post(`${API}/leave/applications/${pending.id}/approve`, {
+    // Approve the leave (PUT, not POST)
+    const approveRes = await request.put(`${API}/leave/applications/${pending.id}/approve`, {
       headers: auth(adminToken),
+      data: { remarks: 'E2E notification chain test approval' },
     });
     expect(approveRes.status()).toBeLessThan(500);
     console.log(`Leave #${pending.id} approve status: ${approveRes.status()}`);
@@ -222,11 +224,10 @@ test.describe("Document & Policy Notifications", () => {
     const policyId = (await createRes.json()).data.id;
     console.log(`Mandatory policy #${policyId} created`);
 
-    // Check pending acknowledgments from employee side
-    const pendingRes = await request.get(`${API}/policies/pending-acknowledgments`, {
+    // Check pending acknowledgments — current route is GET /policies/pending
+    const pendingRes = await request.get(`${API}/policies/pending`, {
       headers: auth(employeeToken),
     });
-    // Endpoint may or may not exist — just verify no 500
     expect(pendingRes.status()).toBeLessThan(500);
     console.log(`Pending acknowledgments endpoint: ${pendingRes.status()}`);
   });
@@ -340,7 +341,8 @@ test.describe("Notification Management", () => {
 
   test("Mark all as read sets unread count to zero", async ({ request }) => {
     test.setTimeout(30_000);
-    const markRes = await request.post(`${API}/notifications/mark-all-read`, {
+    // Endpoint is PUT /notifications/read-all
+    const markRes = await request.put(`${API}/notifications/read-all`, {
       headers: auth(adminToken),
     });
     expect(markRes.status()).toBeLessThan(500);
@@ -372,6 +374,7 @@ test.describe("Notification Management", () => {
   });
 
   test("Old notifications can be cleared", async ({ request }) => {
+    test.skip(true, 'feature removed: no DELETE /notifications/clear endpoint exists in current notification.routes.ts');
     test.setTimeout(30_000);
     const res = await request.delete(`${API}/notifications/clear`, {
       headers: auth(adminToken),

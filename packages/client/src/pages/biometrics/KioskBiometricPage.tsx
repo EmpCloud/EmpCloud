@@ -9,7 +9,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Fingerprint, ShieldCheck, ShieldOff, KeyRound, ArrowLeft, Loader2 } from "lucide-react";
+import { Fingerprint, ShieldCheck, ShieldOff, KeyRound, ArrowLeft, Loader2, Link2, Trash2, Plus, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
 
@@ -183,6 +183,11 @@ export default function KioskBiometricPage() {
         </div>
       </div>
 
+      {/* Linked organisations (#1936) — only meaningful once biometric is
+          enabled, since the resolver runs at kiosk login. We still show the
+          card when disabled so HR can see the section exists. */}
+      <LinkedOrganizationsCard />
+
       {/* Inline modal-ish panel — kept on-page (no Dialog) so the PIN entry
           stays close to the status card and the page remains keyboard-only
           friendly. */}
@@ -241,6 +246,151 @@ export default function KioskBiometricPage() {
             </div>
           </form>
         </div>
+      )}
+    </div>
+  );
+}
+
+// Linked organisations panel — lets the kiosk-credential owner attach
+// admin emails from sister orgs so the kiosk can serve employees from
+// every linked org under a single login. Hits /api/v3/biometric/linked-
+// organizations (admin JWT, NOT the kiosk JWT). Backend-side, this just
+// updates the linked_emails JSON column on biometric_legacy_credentials;
+// resolution happens at kiosk login (/auth) so the JWT then carries
+// organization_ids: [primary, ...linked].
+interface LinkedOrgRow {
+  email: string;
+  organization_id: number | null;
+  organization_name: string | null;
+}
+
+function LinkedOrganizationsCard() {
+  const v3 = useV3Biometric();
+  const qc = useQueryClient();
+  const [newEmail, setNewEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const { data: linked = [], isLoading } = useQuery({
+    queryKey: ["biometric-linked-orgs"],
+    queryFn: async () => {
+      const { data } = await v3.get<LegacyResponse<LinkedOrgRow[]>>("/linked-organizations");
+      return data.data ?? [];
+    },
+  });
+
+  const addMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const { data } = await v3.post<LegacyResponse>("/linked-organizations", { email });
+      if (data.code !== 200) throw new Error(data.message || "Failed to add linked organization");
+    },
+    onSuccess: () => {
+      setNewEmail("");
+      setError(null);
+      qc.invalidateQueries({ queryKey: ["biometric-linked-orgs"] });
+    },
+    onError: (err: any) => {
+      setError(err?.response?.data?.message || err?.message || "Failed to add linked organization");
+    },
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const { data } = await v3.delete<LegacyResponse>(`/linked-organizations/${encodeURIComponent(email)}`);
+      if (data.code !== 200) throw new Error(data.message || "Failed to remove linked organization");
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["biometric-linked-orgs"] }),
+  });
+
+  return (
+    <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700">
+          <Link2 className="h-6 w-6" />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-base font-semibold text-gray-900">Linked Organizations</h2>
+          <p className="mt-1 text-xs text-gray-500">
+            Share your biometric kiosk with employees from sister organizations.
+            Add an admin email from each linked org — after their next kiosk
+            login, employees from all linked orgs can punch in/out on the
+            same device. Each company&rsquo;s payroll stays separate.
+          </p>
+        </div>
+      </div>
+
+      {/* Existing links */}
+      <div className="mt-5 space-y-2">
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+          </div>
+        ) : linked.length === 0 ? (
+          <p className="text-sm text-gray-500">No organizations linked yet.</p>
+        ) : (
+          linked.map((row) => (
+            <div
+              key={row.email}
+              className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Building2 className="h-4 w-4 shrink-0 text-gray-400" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{row.email}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {row.organization_name
+                      ? row.organization_name
+                      : row.organization_id == null
+                        ? "User no longer exists — remove this entry"
+                        : `Organization #${row.organization_id}`}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeMutation.mutate(row.email)}
+                disabled={removeMutation.isPending}
+                className="text-gray-400 hover:text-red-600 p-1 rounded disabled:opacity-50"
+                aria-label={`Unlink ${row.email}`}
+                title="Unlink"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Add new */}
+      <form
+        className="mt-4 flex flex-col sm:flex-row gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setError(null);
+          if (!newEmail.trim()) {
+            setError("Enter an email to link");
+            return;
+          }
+          addMutation.mutate(newEmail.trim());
+        }}
+      >
+        <input
+          type="email"
+          value={newEmail}
+          onChange={(e) => setNewEmail(e.target.value)}
+          placeholder="admin@othercompany.com"
+          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+        />
+        <button
+          type="submit"
+          disabled={addMutation.isPending}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+        >
+          {addMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          Link organization
+        </button>
+      </form>
+      {error && (
+        <div className="mt-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
       )}
     </div>
   );

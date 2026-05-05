@@ -6,7 +6,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import multer from "multer";
 import * as XLSX from "xlsx";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as assetService from "../../services/asset/asset.service.js";
@@ -66,7 +66,7 @@ router.get(
 router.post(
   "/categories",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createAssetCategorySchema.parse(req.body);
@@ -82,7 +82,7 @@ router.post(
 router.put(
   "/categories/:id",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateAssetCategorySchema.parse(req.body);
@@ -102,7 +102,7 @@ router.put(
 router.delete(
   "/categories/:id",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await assetService.deleteCategory(req.user!.org_id, paramInt(req.params.id));
@@ -121,7 +121,7 @@ router.delete(
 router.post(
   "/",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createAssetSchema.parse(req.body);
@@ -166,7 +166,7 @@ router.get(
 router.get(
   "/dashboard",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const stats = await assetService.getAssetDashboard(req.user!.org_id);
@@ -181,7 +181,7 @@ router.get(
 router.get(
   "/expiring-warranties",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const days = req.query.days ? Number(req.query.days) : 30;
@@ -200,7 +200,7 @@ router.get(
 router.post(
   "/bulk",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   bulkUpload.single("file"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -296,7 +296,7 @@ router.post(
 router.get(
   "/export",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const format = String(req.query.format || "pdf").toLowerCase();
@@ -449,7 +449,7 @@ router.get(
 router.put(
   "/:id",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateAssetSchema.parse(req.body);
@@ -470,7 +470,7 @@ router.put(
 router.post(
   "/:id/assign",
   authenticate,
-  requireHR,
+  requirePermission("assets:assign", "assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = assignAssetSchema.parse(req.body);
@@ -537,7 +537,7 @@ router.post(
 router.post(
   "/:id/retire",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = assetActionSchema.parse(req.body);
@@ -571,7 +571,7 @@ router.post(
 router.delete(
   "/:assetId/history/:entryId",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await assetService.deleteHistoryEntry(
@@ -590,7 +590,7 @@ router.delete(
 router.delete(
   "/:id",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await assetService.deleteAsset(
@@ -629,7 +629,7 @@ router.post(
 router.post(
   "/:id/mark-found",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = assetActionSchema.parse(req.body);
@@ -650,7 +650,7 @@ router.post(
 router.post(
   "/:id/send-to-repair",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = assetActionSchema.parse(req.body);
@@ -671,7 +671,7 @@ router.post(
 router.post(
   "/:id/complete-repair",
   authenticate,
-  requireHR,
+  requirePermission("assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = assetActionSchema.parse(req.body);

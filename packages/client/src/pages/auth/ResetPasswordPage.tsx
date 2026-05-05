@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema, type ResetPasswordInput } from "@empcloud/shared";
 import { useResetPassword } from "@/api/hooks";
-import { Building2, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface FormValues {
@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
       </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Building2 className="h-12 w-12 text-brand-600 mx-auto mb-4" />
+          <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900">
             {t("auth.resetPasswordTitle")}
           </h1>

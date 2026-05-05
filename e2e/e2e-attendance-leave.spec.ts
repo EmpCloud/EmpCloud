@@ -273,12 +273,14 @@ test.describe('Attendance & Leave Module', () => {
       const leaveTypeId = typesData.data[0]?.id;
 
       if (leaveTypeId) {
+        // applyLeaveSchema rejects start_date older than 7-day grace window
         const resp = await request.post(`${API_BASE}/leave/applications`, {
           headers: { Authorization: `Bearer ${employeeToken}` },
           data: {
             leave_type_id: leaveTypeId,
             start_date: '2020-01-01',
             end_date: '2020-01-01',
+            days_count: 1,
             reason: 'E2E test - past date (should fail)',
           },
         });
@@ -306,6 +308,7 @@ test.describe('Attendance & Leave Module', () => {
             leave_type_id: leaveTypeId,
             start_date: dateStr,
             end_date: dateStr,
+            days_count: 1,
             reason: 'E2E test - valid leave application',
           },
         });
@@ -353,7 +356,7 @@ test.describe('Attendance & Leave Module', () => {
           `${API_BASE}/leave/applications/${pendingLeave.id}/approve`,
           {
             headers: { Authorization: `Bearer ${managerToken}` },
-            data: { comments: 'Approved via E2E test by manager' },
+            data: { remarks: 'Approved via E2E test by manager' },
           }
         );
         // 200 if approved, 400 if already processed
@@ -374,7 +377,7 @@ test.describe('Attendance & Leave Module', () => {
           `${API_BASE}/leave/applications/${anyLeave.id}/reject`,
           {
             headers: { Authorization: `Bearer ${employeeToken}` },
-            data: { comments: 'Rejected via E2E test (should fail)' },
+            data: { remarks: 'Rejected via E2E test (should fail)' },
           }
         );
         // Should be 403 (not authorized to reject) or 400 (already processed)

@@ -1,5 +1,13 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 
+// All tests in this file exercise EMP LMS's own API
+// (testlms-api.empcloud.com). EmpCloud only owns SSO + seat assignment +
+// webhook callbacks for sub-modules; course/learning-path business logic
+// belongs in the emp-lms repo's own e2e suite.
+test.beforeEach(async () => {
+  test.skip(true, "module business logic — belongs in emp-lms's own e2e suite");
+});
+
 // =============================================================================
 // EMP LMS Module — Gap Coverage E2E Tests (41 tests)
 // Tests untested routes: certifications (renew), compliance (assignments

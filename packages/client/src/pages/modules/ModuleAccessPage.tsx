@@ -238,8 +238,15 @@ export default function ModuleAccessPage() {
                   </button>
                   <button
                     onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "disable" })}
-                    disabled={enableModuleAll.isPending || disableModuleAll.isPending}
-                    className="flex-1 text-xs py-1.5 px-2 rounded bg-red-50 text-red-600 hover:bg-red-100 font-medium disabled:opacity-50 transition-colors"
+                    disabled={enableModuleAll.isPending || disableModuleAll.isPending || m.slug === "emp-payroll"}
+                    title={
+                      m.slug === "emp-payroll"
+                        ? "Payroll is enabled for every employee by default. To remove it, cancel the subscription in Settings → Subscriptions."
+                        : undefined
+                    }
+                    className={`flex-1 text-xs py-1.5 px-2 rounded bg-red-50 text-red-600 hover:bg-red-100 font-medium disabled:opacity-50 transition-colors ${
+                      m.slug === "emp-payroll" ? "cursor-not-allowed" : ""
+                    }`}
                   >
                     Disable All
                   </button>
@@ -437,6 +444,20 @@ export default function ModuleAccessPage() {
                       // Use Settings → Subscriptions to fully unsubscribe.
                       const isOrgAdminMonitorLock =
                         user.role === "org_admin" && m.slug === "emp-monitor" && isEnabled;
+                      // Payroll is default-on for every employee in an
+                      // org with an active emp-payroll subscription
+                      // (see migration 060_backfill_payroll_module_seats).
+                      // HR shouldn't be able to revoke a single employee's
+                      // payroll seat from this UI — to remove payroll
+                      // entirely, cancel the subscription in Settings →
+                      // Subscriptions instead.
+                      const isPayrollLock = m.slug === "emp-payroll" && isEnabled;
+                      const isLocked = isOrgAdminMonitorLock || isPayrollLock;
+                      const lockTitle = isOrgAdminMonitorLock
+                        ? "EmpMonitor stays enabled for Org Admins. Disable the module in Settings → Subscriptions if you need to remove it."
+                        : isPayrollLock
+                          ? "Payroll is enabled for every employee by default. To remove it, cancel the subscription in Settings → Subscriptions."
+                          : undefined;
                       return (
                         <td key={m.id} className="px-3 py-3 text-center">
                           <button
@@ -449,21 +470,17 @@ export default function ModuleAccessPage() {
                                 isEnabled,
                               )
                             }
-                            disabled={isPending || isOrgAdminMonitorLock}
-                            title={
-                              isOrgAdminMonitorLock
-                                ? "EmpMonitor stays enabled for Org Admins. Disable the module in Settings → Subscriptions if you need to remove it."
-                                : undefined
-                            }
+                            disabled={isPending || isLocked}
+                            title={lockTitle}
                             aria-label={
-                              isOrgAdminMonitorLock
-                                ? `${m.name} is locked on for Org Admin`
+                              isLocked
+                                ? `${m.name} is locked on`
                                 : undefined
                             }
                             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                               isEnabled ? "bg-brand-600" : "bg-gray-200 hover:bg-gray-300"
                             } ${
-                              isOrgAdminMonitorLock
+                              isLocked
                                 ? "cursor-not-allowed opacity-60"
                                 : "disabled:opacity-50"
                             }`}

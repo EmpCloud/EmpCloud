@@ -256,6 +256,58 @@ export async function sendInvitationEmail(params: {
 }
 
 /**
+ * Email-change notification — sent to BOTH the old and new addresses
+ * after an HR admin updates an employee's login email. Same branded
+ * layout the password-reset / invitation emails use, so it doesn't
+ * read as a phishing attempt next to those.
+ *
+ * recipientType differentiates the explanatory line:
+ *   "old" → "This message was sent to your previous address."
+ *   "new" → "This message was sent to your new address as confirmation."
+ */
+export async function sendEmailChangedNotification(params: {
+  to: string;
+  firstName?: string | null;
+  oldEmail: string;
+  newEmail: string;
+  recipientType: "old" | "new";
+}): Promise<void> {
+  const greeting = params.firstName ? `Hi ${escapeHtml(params.firstName)},` : "Hi,";
+  const recipientNote =
+    params.recipientType === "old"
+      ? "This message was sent to your previous address as a security notice."
+      : "This message was sent to your new address as confirmation. Use it to sign in from now on.";
+  const loginUrl = `${config.email.appUrl.replace(/\/+$/, "")}/login`;
+  const html = layout(
+    `
+    <h1 style="margin:0 0 16px;font-size:22px;color:#111827;">Your EMP Cloud login email was changed</h1>
+    <p style="margin:0 0 12px;line-height:1.6;">${greeting}</p>
+    <p style="margin:0 0 16px;line-height:1.6;">Your administrator updated the email you use to sign in to EMP Cloud.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;border-collapse:collapse;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;width:100%;">
+      <tr>
+        <td style="padding:12px 16px;font-size:13px;color:#6b7280;width:120px;">Previous email</td>
+        <td style="padding:12px 16px;font-size:13px;color:#111827;font-family:ui-monospace,Consolas,monospace;">${escapeHtml(params.oldEmail)}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;font-size:13px;color:#6b7280;border-top:1px solid #e5e7eb;">New email</td>
+        <td style="padding:12px 16px;font-size:13px;color:#111827;font-family:ui-monospace,Consolas,monospace;border-top:1px solid #e5e7eb;font-weight:600;">${escapeHtml(params.newEmail)}</td>
+      </tr>
+    </table>
+    <p style="margin:0 0 16px;line-height:1.6;color:#374151;">${recipientNote}</p>
+    ${button("Sign in to EMP Cloud", loginUrl)}
+    <p style="margin:24px 0 0;line-height:1.6;color:#dc2626;font-size:13px;"><strong>Didn't request this change?</strong> Contact your HR administrator immediately — your account may have been compromised.</p>
+    `,
+    "Your EMP Cloud login email was changed",
+  );
+
+  await sendEmail({
+    to: params.to,
+    subject: "Your EMP Cloud login email was changed",
+    html,
+  });
+}
+
+/**
  * Welcome email — sent after a brand-new org admin finishes registration.
  * Sign-in link takes them straight to the dashboard.
  */

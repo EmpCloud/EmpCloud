@@ -25,16 +25,12 @@ test.describe('Attendance Advanced', () => {
     const adminData = await adminResp.json();
     adminToken = adminData.data.tokens.access_token;
 
+    // /auth/me returns { user: {...}, org: {...} } — pull id from user
     const adminMe = await request.get(`${API_BASE}/auth/me`, {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
-    adminUserId = (await adminMe.json()).data.employee_id || (await adminMe.json()).data?.id;
-    // re-fetch cleanly
-    const adminMe2 = await request.get(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
-    });
-    const adminMeData = await adminMe2.json();
-    adminUserId = adminMeData.data.employee_id || adminMeData.data.id;
+    const adminMeData = await adminMe.json();
+    adminUserId = adminMeData.data?.user?.id || adminMeData.data?.id;
 
     const empResp = await request.post(`${API_BASE}/auth/login`, {
       data: { email: EMPLOYEE.email, password: EMPLOYEE.password },
@@ -47,7 +43,7 @@ test.describe('Attendance Advanced', () => {
       headers: { Authorization: `Bearer ${employeeToken}` },
     });
     const empMeData = await empMe.json();
-    employeeUserId = empMeData.data.employee_id || empMeData.data.id;
+    employeeUserId = empMeData.data?.user?.id || empMeData.data?.id;
   });
 
   // ─── Shifts CRUD ───────────────────────────────────────────────────────────

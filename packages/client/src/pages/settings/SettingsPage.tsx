@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
 import { Building2, MapPin, Briefcase, Pencil, X, Plus, Trash2, Save } from "lucide-react";
+import ChangePasswordCard from "@/components/ChangePasswordCard";
 
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
@@ -111,6 +112,13 @@ export default function SettingsPage() {
 
         {/* Locations */}
         <LocationsCard locations={locations || []} />
+      </div>
+
+      {/* Account security — same self-service password change card the
+          /change-password route uses, embedded here so HR can change
+          their password without leaving the settings flow. */}
+      <div className="mt-6">
+        <ChangePasswordCard />
       </div>
     </div>
   );
@@ -467,7 +475,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
   const [deleteError, setDeleteError] = useState("");
 
   const addLoc = useMutation({
-    mutationFn: (data: { name: string; timezone?: string }) =>
+    mutationFn: (data: { name: string; timezone: string }) =>
       api.post("/organizations/me/locations", data).then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["locations"] });
@@ -548,12 +556,14 @@ function LocationsCard({ locations }: { locations: any[] }) {
           onSubmit={(e) => {
             e.preventDefault();
             setAddError("");
-            if (locForm.name.trim()) {
-              addLoc.mutate({
-                name: locForm.name.trim(),
-                timezone: locForm.timezone.trim() || undefined,
-              });
+            const name = locForm.name.trim();
+            const timezone = locForm.timezone.trim();
+            if (!name) return;
+            if (!timezone) {
+              setAddError("Timezone is required.");
+              return;
             }
+            addLoc.mutate({ name, timezone });
           }}
           className="flex gap-2"
         >
@@ -567,10 +577,12 @@ function LocationsCard({ locations }: { locations: any[] }) {
           />
           <select
             value={locForm.timezone}
-            onChange={(e) => setLocForm({ ...locForm, timezone: e.target.value })}
+            onChange={(e) => { setLocForm({ ...locForm, timezone: e.target.value }); setAddError(""); }}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+            required
+            aria-required="true"
           >
-            <option value="">Select timezone</option>
+            <option value="">Select timezone *</option>
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
             ))}

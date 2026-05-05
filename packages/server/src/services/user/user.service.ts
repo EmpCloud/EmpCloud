@@ -6,7 +6,11 @@ import { getDB } from "../../db/connection.js";
 import { hashPassword, randomHex, hashToken } from "../../utils/crypto.js";
 import { ConflictError, NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
-import { checkFreeTierUserLimit } from "../subscription/subscription.service.js";
+import {
+  autoAssignPayrollSeat,
+  checkFreeTierUserLimit,
+  hasAnyPaidSubscription,
+} from "../subscription/subscription.service.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 
@@ -86,12 +90,18 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
   // --- Free-tier user limit check (#1015) ---
   await checkFreeTierUserLimit(orgId);
 
-  // #1013 — Check org seat limit before adding user
+  // #1013 — Check org seat limit before adding user. Skip when the org has
+  // any active paid subscription — total_allowed_user_count is set to 10 at
+  // org creation and never re-synced from billing, so paid orgs that grew
+  // past 10 users were 403'd on every new user add.
   const org = await db("organizations").where({ id: orgId }).first();
   if (org && org.total_allowed_user_count > 0 && org.current_user_count >= org.total_allowed_user_count) {
-    throw new ForbiddenError(
-      `Organization has reached its user limit (${org.current_user_count}/${org.total_allowed_user_count}). Upgrade your subscription to add more users.`,
-    );
+    const isPaid = await hasAnyPaidSubscription(orgId);
+    if (!isPaid) {
+      throw new ForbiddenError(
+        `Organization has reached its user limit (${org.current_user_count}/${org.total_allowed_user_count}). Upgrade your subscription to add more users.`,
+      );
+    }
   }
 
   const existing = await db("users").where({ email: data.email }).first();
@@ -221,6 +231,11 @@ export async function createUser(orgId: number, data: CreateUserInput): Promise<
   await db("organizations")
     .where({ id: orgId })
     .increment("current_user_count", 1);
+
+  // Default-enable emp-payroll module access. Best-effort — failures
+  // log a warning but never block user creation. Mirrors migration 060
+  // for the steady state.
+  await autoAssignPayrollSeat(orgId, id, id);
 
   return getUser(orgId, id);
 }
@@ -620,18 +635,26 @@ export async function listInvitations(orgId: number, status: string = "pending")
 export async function inviteUser(orgId: number, invitedBy: number, data: InviteUserInput): Promise<{ token: string; invitation: object }> {
   const db = getDB();
 
-  // #1013 — Check org seat limit before inviting user
+  // #1013 — Check org seat limit before inviting user. Skip when the org
+  // has any active paid subscription — total_allowed_user_count is set to
+  // 10 at org creation and never re-synced from billing, so paid orgs
+  // that grew past 10 users were 403'd on every new invite ("230 active
+  // + 29 pending invites / 10 allowed") even though their billed plan
+  // covers the seats. The free-tier guard above already short-circuits
+  // genuine free orgs.
   const org = await db("organizations").where({ id: orgId }).first();
   if (org && org.total_allowed_user_count > 0) {
-    // Count active users + pending invitations against the limit
     const [{ count: pendingInvitations }] = await db("invitations")
       .where({ organization_id: orgId, status: "pending" })
       .count("* as count");
     const totalCommitted = org.current_user_count + Number(pendingInvitations);
     if (totalCommitted >= org.total_allowed_user_count) {
-      throw new ForbiddenError(
-        `Organization has reached its user limit (${org.current_user_count} active + ${pendingInvitations} pending invites / ${org.total_allowed_user_count} allowed). Upgrade your subscription to add more users.`,
-      );
+      const isPaid = await hasAnyPaidSubscription(orgId);
+      if (!isPaid) {
+        throw new ForbiddenError(
+          `Organization has reached its user limit (${org.current_user_count} active + ${pendingInvitations} pending invites / ${org.total_allowed_user_count} allowed). Upgrade your subscription to add more users.`,
+        );
+      }
     }
   }
 
@@ -738,6 +761,136 @@ export async function resendInvitation(
   }
 
   return { resent: true, expires_at: newExpiresAt, email: inv.email };
+}
+
+/**
+ * Look up a user by email scoped to the requester's org. Powers the Invite
+ * modal's "prefill First/Last Name when an existing email is typed" flow.
+ *
+ * Always returns a typed result (never throws on missing) so the frontend
+ * can branch on a single boolean field. Returns minimal fields only —
+ * enough to prefill the Invite form, nothing sensitive.
+ */
+export async function lookupUserByEmail(
+  orgId: number,
+  email: string,
+): Promise<{
+  exists: boolean;
+  id?: number;
+  first_name?: string | null;
+  last_name?: string | null;
+  role?: string;
+  status?: number;
+}> {
+  const db = getDB();
+  const cleaned = String(email || "").trim().toLowerCase();
+  if (!cleaned) return { exists: false };
+  const row = await db("users")
+    .whereRaw("LOWER(email) = ?", [cleaned])
+    .andWhere({ organization_id: orgId })
+    .select("id", "first_name", "last_name", "role", "status")
+    .first();
+  if (!row) return { exists: false };
+  return {
+    exists: true,
+    id: Number(row.id),
+    first_name: row.first_name ?? null,
+    last_name: row.last_name ?? null,
+    role: row.role,
+    status: Number(row.status),
+  };
+}
+
+/**
+ * Single-user variant of bulkInviteFromDirectory. Sends (or resends) an
+ * invitation to one existing employee from the directory page.
+ *
+ * The plain `inviteUser()` flow above blocks anyone whose email is already
+ * in the `users` table — fine for greenfield invites but useless for the
+ * Employee Directory case, where every row is by definition already in
+ * `users`. This function is the targeted equivalent of bulk-re-invite:
+ *   - if the user has a pending invitation → rotate the token + resend
+ *   - if not → create a fresh invitation row and send the email
+ *
+ * Idempotent: HR can click the row's Invite button repeatedly without
+ * tripping the unique-email constraint or the "already pending" check.
+ *
+ * Seat-limit: the user already exists, so no new seat is consumed and we
+ * deliberately skip the org seat check (matches bulkInviteFromDirectory's
+ * accounting where `password_changed_at IS NOT NULL` rows don't count).
+ */
+export async function inviteFromDirectory(
+  orgId: number,
+  invitedBy: number,
+  userId: number,
+): Promise<{ status: "invited" | "resent"; email: string; expires_at: Date }> {
+  const db = getDB();
+
+  const user = await db("users")
+    .where({ id: userId, organization_id: orgId })
+    .first();
+  if (!user) throw new NotFoundError("User");
+  if (!user.email) throw new ValidationError("This user has no email address to invite");
+
+  const token = randomHex(32);
+  const expiresAt = new Date(Date.now() + TOKEN_DEFAULTS.INVITATION_EXPIRY * 1000);
+
+  // Look for an existing pending invitation for this email (regardless of
+  // org — emails are globally unique on the invitations table by design,
+  // mirroring the users table).
+  const pending = await db("invitations")
+    .where({ email: user.email, status: "pending" })
+    .first();
+
+  let status: "invited" | "resent";
+  if (pending) {
+    await db("invitations").where({ id: pending.id }).update({
+      token_hash: hashToken(token),
+      expires_at: expiresAt,
+      updated_at: new Date(),
+      // Refresh role + invited_by in case HR changed them since the
+      // original invitation went out.
+      role: user.role || pending.role,
+      invited_by: invitedBy,
+    });
+    status = "resent";
+  } else {
+    await db("invitations").insert({
+      organization_id: orgId,
+      email: user.email,
+      role: user.role || "employee",
+      first_name: user.first_name || null,
+      last_name: user.last_name || null,
+      invited_by: invitedBy,
+      token_hash: hashToken(token),
+      status: "pending",
+      expires_at: expiresAt,
+      created_at: new Date(),
+    });
+    status = "invited";
+  }
+
+  // Fire-and-forget email — same pattern as inviteUser/resendInvitation.
+  // Failure here doesn't roll back the token rotation; HR can click again.
+  try {
+    const inviter = await db("users").where({ id: invitedBy }).first();
+    const org = await db("organizations").where({ id: orgId }).first();
+    const inviterName = inviter
+      ? `${inviter.first_name || ""} ${inviter.last_name || ""}`.trim() || inviter.email
+      : "An administrator";
+    void sendInvitationEmail({
+      to: user.email,
+      firstName: user.first_name || null,
+      orgName: org?.name || "your organization",
+      invitedByName: inviterName,
+      role: user.role || "employee",
+      token,
+    });
+  } catch {
+    // never block on email metadata lookup
+  }
+
+  return { status, email: user.email, expires_at: expiresAt };
 }
 
 /**
@@ -873,33 +1026,20 @@ export async function bulkInviteFromDirectory(
   const toInvite = candidates.filter((u) => !pendingEmails.has(u.email.toLowerCase()));
   const skippedAlreadyPending = candidates.length - toInvite.length;
 
-  // Pre-flight seat-limit check — refuse the batch outright if it would
-  // bust the cap. Better to fail loudly than to invite N/M and leak the
-  // remainder.
+  // No seat-limit check here — every candidate row already exists in the
+  // `users` table (the candidates query reads from it), so each one
+  // already consumed its seat at creation time. Sending an invitation
+  // (or rotating the token on an existing one) doesn't consume a fresh
+  // seat, regardless of whether the user has activated yet.
   //
-  // Only NEW seats count against the limit. An already-activated user
-  // (password_changed_at IS NOT NULL) is already in
-  // organizations.current_user_count, so re-inviting them with
-  // includeActivated does not consume a fresh seat. Without this,
-  // re-invite-all on a fully-seated org always 403'd ("7 new invites
-  // vs 0 seats remaining") even though no actual new seats were being
-  // requested.
-  const newSeatInvites = toInvite.filter((u) => !u.password_changed_at);
+  // The earlier "newSeatInvites = filter(!password_changed_at)" check
+  // was wrong: pre-activation users are still in current_user_count, so
+  // counting them as new seats made bulk re-invite 403 the moment an
+  // org filled its plan, even though zero new seats were being requested.
+  // The single-user inviteUser() flow above (greenfield invites by
+  // email only) still carries its own seat check — that's the only path
+  // that genuinely creates a new user row.
   const org = await db("organizations").where({ id: orgId }).first();
-  if (org && org.total_allowed_user_count > 0 && newSeatInvites.length > 0) {
-    const [{ count: pendingInvitations }] = await db("invitations")
-      .where({ organization_id: orgId, status: "pending" })
-      .count("* as count");
-    const totalCommitted = org.current_user_count + Number(pendingInvitations);
-    const remainingSeats = org.total_allowed_user_count - totalCommitted;
-    if (newSeatInvites.length > remainingSeats) {
-      throw new ForbiddenError(
-        `Bulk invite would exceed the user limit (${newSeatInvites.length} new seat${
-          newSeatInvites.length === 1 ? "" : "s"
-        } needed vs ${remainingSeats} remaining). Upgrade your subscription or invite users one by one.`,
-      );
-    }
-  }
 
   // Look up inviter + org name once for every email body.
   const inviter = await db("users").where({ id: invitedBy }).first();
@@ -1169,6 +1309,75 @@ export async function bulkCreateUsers(
   return { count: insertRows.length };
 }
 
+/**
+ * Read-only "peek" at an invitation token. Powers the Accept Invitation
+ * page's prefill flow — the page calls this on mount and fills the
+ * First / Last Name inputs from the invitation row, and locks them
+ * when the invitation was issued for an already-existing user (the
+ * re-invite case from #1956 / #1958, where the user shouldn't be able
+ * to rename themselves on activation).
+ *
+ * Public — no auth — same access model as POST /accept-invitation.
+ * Returns the same NotFoundError shape so the frontend can use one
+ * "invalid / expired / used" message for all bad-token cases.
+ */
+export async function getInvitationInfo(token: string): Promise<{
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  org_name: string | null;
+  is_existing_user: boolean;
+}> {
+  const db = getDB();
+
+  const invitation = await db("invitations")
+    .where({ token_hash: hashToken(token), status: "pending" })
+    .first();
+
+  if (!invitation) throw new NotFoundError("Invitation");
+  if (new Date(invitation.expires_at) < new Date()) {
+    throw new NotFoundError("Invitation has expired");
+  }
+
+  // Existing-user check matches what acceptInvitation does at activate
+  // time. Look up GLOBALLY (users.email is globally unique per migration
+  // 001) and reject early when the email belongs to another org so the
+  // accept-invitation page surfaces the conflict before the user types
+  // their password — instead of letting the activate POST bubble up a
+  // generic 500 from the unique-key collision.
+  const existingUser = await db("users")
+    .where({ email: invitation.email })
+    .first();
+
+  if (existingUser && existingUser.organization_id !== invitation.organization_id) {
+    throw new ConflictError(
+      "This email is already registered with another organization. " +
+        "Please contact support to transfer your account.",
+    );
+  }
+
+  // If the invitation row's name columns are empty (admin invited by
+  // email only) but a user record exists, fall back to the user's
+  // stored name so the form is still prefilled.
+  const first =
+    invitation.first_name || (existingUser ? existingUser.first_name : null) || null;
+  const last =
+    invitation.last_name || (existingUser ? existingUser.last_name : null) || null;
+
+  const org = await db("organizations")
+    .where({ id: invitation.organization_id })
+    .select("name")
+    .first();
+
+  return {
+    email: invitation.email,
+    first_name: first,
+    last_name: last,
+    org_name: org?.name ?? null,
+    is_existing_user: !!existingUser,
+  };
+}
+
 export async function acceptInvitation(params: {
   token: string;
   firstName: string;
@@ -1204,17 +1413,32 @@ export async function acceptInvitation(params: {
   const user = await db.transaction(async (trx) => {
     const inviteNow = new Date();
 
-    // Re-invite case: a user with this email already exists in the org
-    // (created via "Also re-invite already-activated employees" or by an
-    // earlier admin-side create). Don't INSERT — that hits the unique
-    // email constraint. UPDATE password + names instead, and don't touch
-    // current_user_count (the seat is already counted).
+    // The original existing-user check filtered by `organization_id` only,
+    // but `users.email` is GLOBALLY unique (see migration 001). When the
+    // invitee already had an account in *another* org, that scoped lookup
+    // missed them, the code fell through to INSERT, and MySQL rejected with
+    // ER_DUP_ENTRY 'users.users_email_unique' — the user got a generic 500
+    // and the invitation stayed pending forever. Look up globally and split
+    // the three cases explicitly:
+    //   - same org → re-invite, UPDATE in place (no seat double-count)
+    //   - different org → reject with a clear 409 the frontend can render
+    //   - no row anywhere → fresh INSERT (current behaviour)
     const existingUser = await trx("users")
-      .where({ email: invitation.email, organization_id: invitation.organization_id })
+      .where({ email: invitation.email })
       .first();
+
+    if (existingUser && existingUser.organization_id !== invitation.organization_id) {
+      throw new ConflictError(
+        "This email is already registered with another organization. " +
+          "Please contact support to transfer your account.",
+      );
+    }
 
     let userId: number;
     if (existingUser) {
+      // Same-org re-invite: don't INSERT (hits the unique email constraint).
+      // UPDATE password + names + status instead, and don't touch
+      // current_user_count (seat already counted).
       await trx("users").where({ id: existingUser.id }).update({
         first_name: resolvedFirstName,
         last_name: resolvedLastName,
@@ -1261,6 +1485,17 @@ export async function acceptInvitation(params: {
 
     return trx("users").where({ id: userId }).first();
   });
+
+  // Default-enable emp-payroll module access on activation. Idempotent
+  // for re-invites (helper checks for an existing seat). Best-effort —
+  // failures log a warning but never roll back the activation.
+  // Runs OUTSIDE the transaction so a slow seat insert doesn't extend
+  // the activation lock window.
+  await autoAssignPayrollSeat(
+    invitation.organization_id,
+    user.id,
+    invitation.invited_by ?? user.id,
+  );
 
   return sanitizeUser(user);
 }

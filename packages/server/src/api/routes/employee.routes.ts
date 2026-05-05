@@ -7,12 +7,12 @@ import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireSelfOrHR, requireHR } from "../middleware/rbac.middleware.js";
+import { requireSelfOrHR, requireHR, requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { AuditAction } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
-import { ValidationError } from "../../utils/errors.js";
+import { ConflictError, ValidationError } from "../../utils/errors.js";
 import { getDB } from "../../db/connection.js";
 import {
   upsertEmployeeProfileSchema,
@@ -29,6 +29,12 @@ import * as detailService from "../../services/employee/employee-detail.service.
 import * as probationService from "../../services/employee/probation.service.js";
 import * as salaryService from "../../services/employee/salary.service.js";
 import * as userService from "../../services/user/user.service.js";
+import { sendEmailChangedNotification } from "../../services/email/email.service.js";
+import { logger } from "../../utils/logger.js";
+
+// Loose email format check — relies on the input type=\"email\" client side
+// to catch the obvious typos. The server still rejects empty / no-@.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Photo upload multer config
 const photoStorage = multer.diskStorage({
@@ -64,7 +70,7 @@ const router = Router();
 // =========================================================================
 
 // GET /api/v1/employees/export — Export all employee data for bulk update
-router.get("/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/export", authenticate, requirePermission("employees:view_all", "employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = getDB();
     const employees = await db("users")
@@ -97,7 +103,7 @@ router.get("/export", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // POST /api/v1/employees/bulk-update — Bulk update employees from uploaded data
-router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/bulk-update", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { rows } = req.body;
     if (!Array.isArray(rows) || rows.length === 0) {
@@ -137,6 +143,37 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         const updates: Record<string, any> = {};
         if (row.first_name !== undefined && row.first_name !== user.first_name) updates.first_name = row.first_name;
         if (row.last_name !== undefined && row.last_name !== user.last_name) updates.last_name = row.last_name;
+        // Email change (HR-only by route — login identifier). Validate
+        // format, normalize to lowercase, and pre-check uniqueness so HR
+        // sees a clear "already in use" message instead of a raw mysql
+        // ER_DUP_ENTRY. Notification to old + new addresses fires after
+        // the UPDATE succeeds, below.
+        let emailChanged = false;
+        let oldEmail: string | null = null;
+        if (row.email !== undefined) {
+          const trimmed = String(row.email).trim().toLowerCase();
+          if (trimmed && trimmed !== String(user.email || "").toLowerCase()) {
+            if (!EMAIL_RE.test(trimmed)) {
+              results.push({ id: row.id, status: "error", error: "Invalid email format." });
+              continue;
+            }
+            const clash = await db("users")
+              .whereRaw("LOWER(email) = ?", [trimmed])
+              .whereNot({ id: row.id })
+              .first();
+            if (clash) {
+              results.push({
+                id: row.id,
+                status: "error",
+                error: "Email is already used by another user. Pick a different email.",
+              });
+              continue;
+            }
+            updates.email = trimmed;
+            emailChanged = true;
+            oldEmail = user.email;
+          }
+        }
         if (row.emp_code !== undefined) {
           const next = blankToNull(row.emp_code);
           if (next !== user.emp_code) updates.emp_code = next;
@@ -182,8 +219,62 @@ router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: R
         updates.updated_at = new Date();
         await db("users").where({ id: row.id }).update(updates);
         results.push({ id: row.id, status: "updated" });
+
+        // After a successful email change: notify both addresses so the
+        // user sees the change at the OLD address (catches account-takeover
+        // by a hijacked HR session) and the NEW address (confirms the new
+        // login email). Best-effort — failure here doesn't roll back the
+        // UPDATE; a missed notification is better than blocking HR. Uses
+        // the same branded layout as the password-reset / invitation
+        // emails so it doesn't read as a phishing attempt next to those.
+        if (emailChanged && oldEmail && updates.email) {
+          const newEmail = String(updates.email);
+          try {
+            await sendEmailChangedNotification({
+              to: oldEmail,
+              firstName: user.first_name,
+              oldEmail,
+              newEmail,
+              recipientType: "old",
+            });
+          } catch (mailErr: any) {
+            logger.warn(`Email-change notification to old address failed: ${mailErr?.message || mailErr}`);
+          }
+          try {
+            await sendEmailChangedNotification({
+              to: newEmail,
+              firstName: user.first_name,
+              oldEmail,
+              newEmail,
+              recipientType: "new",
+            });
+          } catch (mailErr: any) {
+            logger.warn(`Email-change notification to new address failed: ${mailErr?.message || mailErr}`);
+          }
+        }
       } catch (err: any) {
-        results.push({ id: row.id, status: "error", error: err.message });
+        // #1857 — translate raw mysql2 ER_DUP_ENTRY on the emp_code unique
+        // index into the same friendly message the per-row PUT path uses
+        // (#1950). Without this the modal showed
+        //   "Duplicate entry '1-EMP001' for key 'users.idx_users_org_emp_code_uniq'"
+        // verbatim — HR has no way to act on that.
+        // Same race-window safety net for the email unique index — the
+        // per-row pre-check above catches the common case, but two HR
+        // sessions racing on the same email can still collide.
+        const code = err?.code || err?.errno;
+        const sqlMessage: string = err?.sqlMessage || err?.message || "";
+        const isEmpCodeDup =
+          (code === "ER_DUP_ENTRY" || code === 1062) &&
+          sqlMessage.includes("idx_users_org_emp_code_uniq");
+        const isEmailDup =
+          (code === "ER_DUP_ENTRY" || code === 1062) &&
+          (sqlMessage.includes("users_email_unique") || sqlMessage.includes("users.email"));
+        const friendly = isEmpCodeDup
+          ? "Employee code is already used by another employee. Pick a different code."
+          : isEmailDup
+            ? "Email is already used by another user. Pick a different email."
+            : err?.message || "Update failed";
+        results.push({ id: row.id, status: "error", error: friendly });
       }
     }
 
@@ -239,7 +330,7 @@ router.get("/anniversaries", authenticate, async (req: Request, res: Response, n
 });
 
 // GET /api/v1/employees/headcount
-router.get("/headcount", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/headcount", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await profileService.getHeadcount(req.user!.org_id);
     sendSuccess(res, data);
@@ -251,7 +342,7 @@ router.get("/headcount", authenticate, requireHR, async (req: Request, res: Resp
 // =========================================================================
 
 // GET /api/v1/employees/probation — list on probation
-router.get("/probation", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getEmployeesOnProbation(req.user!.org_id);
     sendSuccess(res, data);
@@ -259,7 +350,7 @@ router.get("/probation", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // GET /api/v1/employees/probation/dashboard — stats
-router.get("/probation/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/dashboard", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getProbationDashboard(req.user!.org_id);
     sendSuccess(res, data);
@@ -267,7 +358,7 @@ router.get("/probation/dashboard", authenticate, requireHR, async (req: Request,
 });
 
 // GET /api/v1/employees/probation/upcoming — upcoming confirmations
-router.get("/probation/upcoming", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/upcoming", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const days = parseInt(req.query.days as string, 10) || 30;
     const data = await probationService.getUpcomingConfirmations(req.user!.org_id, days);
@@ -276,7 +367,7 @@ router.get("/probation/upcoming", authenticate, requireHR, async (req: Request, 
 });
 
 // #1419 — GET /api/v1/employees/probation/confirmed-this-month
-router.get("/probation/confirmed-this-month", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/confirmed-this-month", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getConfirmedThisMonth(req.user!.org_id);
     sendSuccess(res, data);
@@ -284,7 +375,7 @@ router.get("/probation/confirmed-this-month", authenticate, requireHR, async (re
 });
 
 // PUT /api/v1/employees/:id/probation/confirm — confirm probation
-router.put("/:id/probation/confirm", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/confirm", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await probationService.confirmProbation(
       req.user!.org_id,
@@ -307,7 +398,7 @@ router.put("/:id/probation/confirm", authenticate, requireHR, async (req: Reques
 });
 
 // PUT /api/v1/employees/:id/probation/extend — extend probation
-router.put("/:id/probation/extend", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/extend", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { new_end_date, reason } = req.body;
     if (!new_end_date) throw new ValidationError("new_end_date is required");
@@ -347,7 +438,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/employees — Create employee (alias for POST /users) (#753)
-router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("employees:invite"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { createUserSchema } = await import("@empcloud/shared");
     const data = createUserSchema.parse(req.body);
@@ -374,13 +465,29 @@ router.put("/:id/profile", authenticate, requireSelfOrHR("id"), async (req: Requ
     // fields (department, shift, designation, reporting_manager). Self-service
     // employees can still edit their own personal data.
     const isHR = ["hr_admin", "org_admin", "super_admin"].includes(req.user!.role as string);
-    const profile = await profileService.upsertProfile(
-      req.user!.org_id,
-      paramInt(req.params.id),
-      fullData,
-      req.user!.sub,
-      isHR,
-    );
+    let profile;
+    try {
+      profile = await profileService.upsertProfile(
+        req.user!.org_id,
+        paramInt(req.params.id),
+        fullData,
+        req.user!.sub,
+        isHR,
+      );
+    } catch (err: any) {
+      // Race-window safety net for the emp_code unique index. The service
+      // pre-checks, but two concurrent saves can still collide; translate
+      // the raw mysql2 ER_DUP_ENTRY into the same actionable 409 instead
+      // of leaking a 500 "An unexpected error occurred" to HR.
+      const code = err?.code || err?.errno;
+      const sqlMessage: string = err?.sqlMessage || err?.message || "";
+      if ((code === "ER_DUP_ENTRY" || code === 1062) && sqlMessage.includes("idx_users_org_emp_code_uniq")) {
+        throw new ConflictError(
+          "Employee code is already used by another employee. Pick a different code.",
+        );
+      }
+      throw err;
+    }
 
     await logAudit({
       organizationId: req.user!.org_id,
@@ -473,7 +580,7 @@ router.get("/:id/salary", authenticate, requireSelfOrHR("id"), async (req: Reque
 });
 
 // PUT /api/v1/employees/:id/salary
-router.put("/:id/salary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/salary", authenticate, requirePermission("salary:edit"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { ctc, basic, hra, da, special_allowance, gross, employer_pf, employer_esi, gratuity } = req.body;
 
@@ -664,5 +771,66 @@ router.delete("/:id/dependents/:dependentId", authenticate, requireSelfOrHR("id"
     sendSuccess(res, { message: "Dependent deleted" });
   } catch (err) { next(err); }
 });
+
+// ===========================================================================
+// Additional managers (RBAC v1) — matrix / co-manager rows on top of the
+// primary users.reporting_manager_id. Read by the team resolver so any
+// `*:view_team` / `*:approve` permission honours both relationships.
+// ===========================================================================
+
+// GET /api/v1/employees/:id/additional-managers — list manager rows for user.
+// Returns both `manager_ids` (compat) and `managers` (enriched with name /
+// email / role so the UI doesn't need a separate /users fetch to label them).
+router.get(
+  "/:id/additional-managers",
+  authenticate,
+  requireSelfOrHR("id"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { getAdditionalManagers } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const managers = await getAdditionalManagers(paramInt(req.params.id));
+      sendSuccess(res, { manager_ids: managers.map((m) => m.id), managers });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// PUT /api/v1/employees/:id/additional-managers
+//   body: { manager_ids: number[] } — replaces the full set
+router.put(
+  "/:id/additional-managers",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ids = Array.isArray(req.body?.manager_ids)
+        ? req.body.manager_ids.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+        : null;
+      if (ids === null) {
+        return next(new Error("manager_ids must be an array of user IDs"));
+      }
+      const { setAdditionalManagers } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      await setAdditionalManagers(req.user!.org_id, paramInt(req.params.id), ids);
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.USER_UPDATED,
+        details: {
+          target_user_id: paramInt(req.params.id),
+          field: "additional_managers",
+          manager_ids: ids,
+        },
+      });
+      sendSuccess(res, { manager_ids: ids });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 export default router;

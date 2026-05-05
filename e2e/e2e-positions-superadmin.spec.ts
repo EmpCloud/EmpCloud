@@ -105,7 +105,8 @@ test.describe("Positions", () => {
     const res = await request.put(`${API}/positions/${positionId}`, {
       headers: auth(adminToken),
       data: {
-        description: "Updated description from E2E",
+        // Schema field is `job_description`, not `description` (createPositionSchema).
+        job_description: "Updated description from E2E",
         max_salary: 90000,
       },
     });
@@ -300,7 +301,10 @@ test.describe("Super Admin", () => {
 
   test("Audit logs with filters", async ({ request }) => {
     test.setTimeout(30_000);
-    const res = await request.get(`${API}/admin/audit?action=LOGIN_SUCCESS&per_page=5`, {
+    // AuditAction.LOGIN = "login" — the enum values are lowercase, not the
+    // "LOGIN_SUCCESS"-style strings the spec previously used (which silently
+    // returned an empty page).
+    const res = await request.get(`${API}/admin/audit?action=login&per_page=5`, {
       headers: auth(superToken),
     });
     expect(res.status()).toBe(200);

@@ -22,6 +22,7 @@ import { billingRoutes } from "./routes/billing.routes";
 import { chatbotRoutes } from "./routes/chatbot.routes";
 import { managerRoutes } from "./routes/manager.routes";
 import { customFieldRoutes } from "./routes/custom-fields.routes";
+import { rolesRoutes } from "./routes/roles.routes";
 
 // Lazy-loaded pages (kept in App for public/top-level routes)
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
@@ -169,6 +170,7 @@ export default function App() {
           {chatbotRoutes}
           {managerRoutes}
           {customFieldRoutes}
+          {rolesRoutes}
         </Route>
 
         {/* Fallback */}

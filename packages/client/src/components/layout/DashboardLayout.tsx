@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
   LogOut,
-  Building2,
   Menu,
   X,
   ChevronLeft,
@@ -24,7 +23,11 @@ import {
   orgAdminOnlyNavItems,
   platformAdminNavItems,
   HR_ROLES,
+  filterNavItem,
 } from "./navigation.config";
+import { usePermissions } from "@/lib/use-permissions";
+import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
+import { ViewModeToggle } from "./ViewModeToggle";
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
@@ -63,6 +66,26 @@ export default function DashboardLayout() {
   const isHR = !!(user && HR_ROLES.includes(user.role));
   const isOrgAdmin = user?.role === "org_admin";
 
+  // RBAC v1 — view-mode toggle. HR users always see the admin sidebar.
+  // Non-HR users with at least one admin-level permission (via custom roles)
+  // can flip into "Admin view" — they get the admin sidebar filtered to the
+  // items their permission set actually unlocks. Everyone else stays on the
+  // employee sidebar.
+  const { has: hasPerm, permissions } = usePermissions();
+  const viewMode = useViewModeStore((s) => s.viewMode);
+  const hasAdminPerms = hasAnyAdminPermission(permissions);
+  const showViewToggle = !isHR && hasAdminPerms;
+  // If the user lost their admin perms (custom role removed) but the toggle
+  // is still set to "admin", fall back to "self" so they aren't stranded
+  // on an empty sidebar.
+  const effectiveViewMode = !showViewToggle && !isHR ? "self" : viewMode;
+  const showAdminSidebar = isHR || (showViewToggle && effectiveViewMode === "admin");
+  const sidebarItems = showAdminSidebar
+    ? adminNavItems
+        .map((i) => filterNavItem(i, hasPerm))
+        .filter((i): i is typeof adminNavItems[number] => i !== null)
+    : employeeNavItems;
+
   // Auto-close sidebar on navigation
   useEffect(() => {
     setSidebarOpen(false);
@@ -98,25 +121,33 @@ export default function DashboardLayout() {
         to="/"
         title={isCollapsed ? "EMP Cloud" : undefined}
         className={`block border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-          isCollapsed ? "p-2" : "p-6"
+          isCollapsed ? "p-2" : "px-4 py-4"
         }`}
       >
         {isCollapsed ? (
-          // #1529 — Compact brand mark when collapsed: icon + "EMP" wordmark
-          // so the brand is identifiable at a glance. Previously only the
-          // generic Building2 icon showed, which the reporter flagged as
-          // "logo not visible".
-          <div className="flex flex-col items-center gap-0.5">
-            <Building2 className="h-6 w-6 text-brand-600 flex-shrink-0" />
-            <span className="text-[10px] font-bold text-brand-600 leading-none tracking-wide">EMP</span>
+          // Compact brand mark when collapsed — square cloud icon (no
+          // wordmark) since the wide horizontal logo doesn't fit a 64px
+          // sidebar. Square asset is shared with the favicon.
+          <div className="flex justify-center">
+            <img
+              src="/empcloud-icon.png"
+              alt="EmpCloud"
+              className="h-9 w-9 object-contain"
+            />
           </div>
         ) : (
-          <div className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-brand-600 flex-shrink-0" />
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">EMP Cloud</h1>
-              <p className="text-xs text-gray-500 truncate">{user?.org_name}</p>
-            </div>
+          // Centered logo block — visually balanced inside the 256px sidebar
+          // and the org name reads as a caption beneath, instead of a
+          // misaligned left-hugging stack.
+          <div className="flex flex-col items-center gap-2">
+            <img
+              src="/empcloud-logo.png"
+              alt="EmpCloud"
+              className="h-10 w-auto max-w-full object-contain"
+            />
+            <p className="text-xs text-gray-500 truncate w-full text-center">
+              {user?.org_name}
+            </p>
           </div>
         )}
       </Link>
@@ -131,7 +162,7 @@ export default function DashboardLayout() {
 
       <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
         {user?.role !== "super_admin" && <>
-          <NavSection label="" items={isHR ? adminNavItems : employeeNavItems} location={location} t={t} />
+          <NavSection label="" items={sidebarItems} location={location} t={t} />
           {isHR && (
             <NavSection label={t('nav.positions')} items={positionNavItems} location={location} t={t} />
           )}
@@ -237,7 +268,8 @@ export default function DashboardLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {showViewToggle && <ViewModeToggle />}
             <LanguageSwitcher />
             <NotificationDropdown />
           </div>

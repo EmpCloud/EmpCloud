@@ -41,6 +41,16 @@ export async function updateShift(orgId: number, shiftId: number, data: Partial<
   const shift = await db("shifts").where({ id: shiftId, organization_id: orgId }).first();
   if (!shift) throw new NotFoundError("Shift");
 
+  // #1957 — guard the partial-update case: a PATCH that only flips one of
+  // (is_default, is_night_shift) wouldn't be caught by the validator's
+  // both-fields-present refine, but combined with the existing row's value
+  // could still end up with a shift that's both default AND night.
+  const willBeDefault = data.is_default ?? !!shift.is_default;
+  const willBeNight = data.is_night_shift ?? !!shift.is_night_shift;
+  if (willBeDefault && willBeNight) {
+    throw new ValidationError("A shift cannot be both the default shift and a night shift");
+  }
+
   if (data.is_default) {
     await db("shifts")
       .where({ organization_id: orgId, is_default: true })

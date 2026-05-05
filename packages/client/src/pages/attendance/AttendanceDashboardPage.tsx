@@ -5,18 +5,25 @@ import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
-import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import * as XLSX from "xlsx";
-
-const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function AttendanceDashboardPage() {
   const { t, i18n } = useTranslation();
-  const user = useAuthStore((s) => s.user);
-  const isHR = user && HR_ROLES.includes(user.role);
+  // RBAC v1 — gate by permissions, not by role. A user with a custom role
+  // granting attendance:view_team / view_all / approve_regularization / manage
+  // is allowed onto this dashboard even if their primary role is "employee".
+  const { has: hasPerm } = usePermissions();
+  const canSeeDashboard = hasPerm(
+    "attendance:view_team",
+    "attendance:view_all",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
+    "attendance:manage",
+  );
 
-  // Redirect non-HR users to their personal attendance page
-  if (!isHR) {
+  // Pure self-service users (no team / admin attendance perm) bounce to their
+  // personal page.
+  if (!canSeeDashboard) {
     return <Navigate to="/attendance/my" replace />;
   }
   const [page, setPage] = useState(1);
@@ -340,7 +347,7 @@ export default function AttendanceDashboardPage() {
                       <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
                         <th className="py-2 font-medium">{t('common.name')}</th>
                         <th className="py-2 font-medium">{t('attendance.department')}</th>
-                        <th className="py-2 font-medium">{t('attendance.checkIn')}</th>
+                        <th className="py-2 font-medium whitespace-nowrap">{t('attendance.checkIn')}</th>
                         {breakdownOpen === "total" && <th className="py-2 font-medium">{t('common.status')}</th>}
                         {breakdownOpen === "late" && <th className="py-2 font-medium">{t('attendance.breakdown.lateBy')}</th>}
                       </tr>
@@ -625,8 +632,8 @@ export default function AttendanceDashboardPage() {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.checkIn')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.checkOut')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkIn')}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkOut')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.status')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.late')}</th>
@@ -739,7 +746,38 @@ function RecordRow({
       <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
       <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
       <td className="px-6 py-4 text-sm text-gray-600">
-        {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
+        {(() => {
+          // #1949 — `worked_minutes` is only filled at check-out, so for
+          // rows still on the clock we'd otherwise show 0. Derive a live
+          // total from check_in to now, capped at ACTIVE_HOURS so a
+          // forgotten check-out doesn't render as 500h+. Night shifts
+          // crossing midnight (≤ 15h shift + 12h OT buffer) stay under
+          // the 30h cap and show the live (so far) count; anything older
+          // surfaces as a "Missed check-out" badge instead.
+          const ACTIVE_HOURS = 30;
+          if (r.status === "checked_in" && r.check_in) {
+            const checkInTime = new Date(r.check_in).getTime();
+            const ageMinutes = (Date.now() - checkInTime) / 60000;
+            if (ageMinutes > ACTIVE_HOURS * 60) {
+              return (
+                <span className="inline-flex items-center gap-1 text-amber-700">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  Missed check-out
+                </span>
+              );
+            }
+            const live = Math.max(0, Math.floor(ageMinutes));
+            return (
+              <span className="inline-flex items-center gap-1">
+                {`${Math.floor(live / 60)}h ${live % 60}m`}
+                <span className="text-[10px] text-gray-400">(so far)</span>
+              </span>
+            );
+          }
+          return r.worked_minutes != null
+            ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m`
+            : "-";
+        })()}
       </td>
       <td className="px-6 py-4">
         <span className={`text-xs px-2 py-1 rounded-full font-medium ${
