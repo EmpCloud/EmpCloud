@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, ChevronDown, ChevronRight, Fingerprint, Smartphone, Monitor } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import { usePermissions } from "@/lib/use-permissions";
 import * as XLSX from "xlsx";
@@ -108,6 +108,11 @@ export default function AttendanceDashboardPage() {
   const [exportDateTo, setExportDateTo] = useState("");
   const [exportUseRange, setExportUseRange] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  // Punch-timeline detail modal — single source of truth at the page level
+  // so only one modal can be open at a time and ESC / backdrop dismissal
+  // is straightforward.
+  const [detailRecord, setDetailRecord] = useState<any | null>(null);
 
   const fmtMin = (m: number) => `${Math.floor(m / 60)}h ${m % 60}m`;
   const fmtDate = (v: any) => v ? new Date(v).toLocaleDateString() : "";
@@ -624,7 +629,6 @@ export default function AttendanceDashboardPage() {
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="w-10 px-2 py-3"></th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
@@ -633,6 +637,7 @@ export default function AttendanceDashboardPage() {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.status')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.late')}</th>
+              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Details</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -648,6 +653,7 @@ export default function AttendanceDashboardPage() {
                     <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-10 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-6 bg-gray-200 rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
@@ -655,7 +661,7 @@ export default function AttendanceDashboardPage() {
               <tr><td colSpan={9} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
             ) : (
               records.map((r: any) => (
-                <RecordRow key={r.id} record={r} t={t} />
+                <RecordRow key={r.id} record={r} t={t} onView={() => setDetailRecord(r)} />
               ))
             )}
           </tbody>
@@ -671,6 +677,14 @@ export default function AttendanceDashboardPage() {
           </div>
         )}
       </div>
+
+      {detailRecord && (
+        <AttendanceDetailModal
+          record={detailRecord}
+          onClose={() => setDetailRecord(null)}
+          t={t}
+        />
+      )}
     </div>
   );
 }
@@ -705,160 +719,259 @@ function fmtPunchTime(iso: string): string {
   }
 }
 
-function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) => string }) {
-  const [expanded, setExpanded] = useState(false);
+function RecordRow({
+  record: r,
+  t,
+  onView,
+}: {
+  record: any;
+  t: (k: string, opts?: any) => string;
+  onView: () => void;
+}) {
   return (
-    <>
-      <tr className="hover:bg-gray-50">
-        <td className="px-2 py-4 text-center">
-          <button
-            type="button"
-            onClick={() => setExpanded((x) => !x)}
-            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700"
-            aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
-          >
-            {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-          </button>
-        </td>
-        <td className="px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
-              {r.first_name?.[0]}{r.last_name?.[0]}
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
-              <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
-            </div>
+    <tr className="hover:bg-gray-50">
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+            {r.first_name?.[0]}{r.last_name?.[0]}
           </div>
-        </td>
-        <td className="px-6 py-4 text-sm text-gray-600">{r.department_name || "-"}</td>
-        <td className="px-6 py-4 text-sm text-gray-600">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
-        <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
-        <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
-        <td className="px-6 py-4 text-sm text-gray-600">
-          {(() => {
-            // #1949 — `worked_minutes` is only filled at check-out, so for
-            // rows still on the clock we'd otherwise show 0. Derive a live
-            // total from check_in to now.
-            //
-            // Two guards on the live count:
-            //   1. Stale rows where check_in is more than ACTIVE_HOURS old
-            //      → almost certainly a missed check-out. Render an amber
-            //      "Missed check-out" badge instead of an inflated count.
-            //      ACTIVE_HOURS is generous (30h) so a night shift crossing
-            //      midnight (e.g. 7 PM to 10 AM = 15h + 12h OT buffer) is
-            //      still considered "on the clock" and shows live minutes.
-            //   2. Otherwise cap "live" at the same window so the displayed
-            //      count never exceeds ACTIVE_HOURS.
-            const ACTIVE_HOURS = 30;
-            if (r.status === "checked_in" && r.check_in) {
-              const checkInTime = new Date(r.check_in).getTime();
-              const ageMinutes = (Date.now() - checkInTime) / 60000;
-              if (ageMinutes > ACTIVE_HOURS * 60) {
-                return (
-                  <span className="inline-flex items-center gap-1 text-amber-700">
-                    <AlertTriangle className="h-3.5 w-3.5" />
-                    Missed check-out
-                  </span>
-                );
-              }
-              const live = Math.max(0, Math.floor(ageMinutes));
+          <div>
+            <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
+            <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-600">{r.department_name || "-"}</td>
+      <td className="px-6 py-4 text-sm text-gray-600">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
+      <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+      <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+      <td className="px-6 py-4 text-sm text-gray-600">
+        {(() => {
+          // #1949 — `worked_minutes` is only filled at check-out, so for
+          // rows still on the clock we'd otherwise show 0. Derive a live
+          // total from check_in to now, capped at ACTIVE_HOURS so a
+          // forgotten check-out doesn't render as 500h+. Night shifts
+          // crossing midnight (≤ 15h shift + 12h OT buffer) stay under
+          // the 30h cap and show the live (so far) count; anything older
+          // surfaces as a "Missed check-out" badge instead.
+          const ACTIVE_HOURS = 30;
+          if (r.status === "checked_in" && r.check_in) {
+            const checkInTime = new Date(r.check_in).getTime();
+            const ageMinutes = (Date.now() - checkInTime) / 60000;
+            if (ageMinutes > ACTIVE_HOURS * 60) {
               return (
-                <span className="inline-flex items-center gap-1">
-                  {`${Math.floor(live / 60)}h ${live % 60}m`}
-                  <span className="text-[10px] text-gray-400">(so far)</span>
+                <span className="inline-flex items-center gap-1 text-amber-700">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  Missed check-out
                 </span>
               );
             }
-            return r.worked_minutes != null
-              ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m`
-              : "-";
+            const live = Math.max(0, Math.floor(ageMinutes));
+            return (
+              <span className="inline-flex items-center gap-1">
+                {`${Math.floor(live / 60)}h ${live % 60}m`}
+                <span className="text-[10px] text-gray-400">(so far)</span>
+              </span>
+            );
+          }
+          return r.worked_minutes != null
+            ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m`
+            : "-";
+        })()}
+      </td>
+      <td className="px-6 py-4">
+        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+          r.status === "present" ? "bg-green-50 text-green-700"
+            : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
+            : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
+            : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
+            : "bg-red-50 text-red-700"
+        }`}>
+          {(() => {
+            if (r.status === "checked_in") return t('attendance.statusCheckedIn');
+            if (r.status === "half_day") return t('attendance.statusHalfDay');
+            const k = `attendance.${r.status}`;
+            const tr = t(k);
+            return tr !== k ? tr : r.status.replace(/_/g, " ");
           })()}
-        </td>
-        <td className="px-6 py-4">
-          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-            r.status === "present" ? "bg-green-50 text-green-700"
-              : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-              : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-              : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-              : "bg-red-50 text-red-700"
-          }`}>
-            {(() => {
-              if (r.status === "checked_in") return t('attendance.statusCheckedIn');
-              if (r.status === "half_day") return t('attendance.statusHalfDay');
-              const k = `attendance.${r.status}`;
-              const tr = t(k);
-              return tr !== k ? tr : r.status.replace(/_/g, " ");
-            })()}
-          </span>
-        </td>
-        <td className="px-6 py-4 text-sm text-gray-600">
-          {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
-        </td>
-      </tr>
-      {expanded && <PunchTimelineRow recordId={r.id} />}
-    </>
+        </span>
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-600">
+        {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
+      </td>
+      <td className="px-6 py-4 text-right">
+        <button
+          type="button"
+          onClick={onView}
+          className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
+          aria-label="View attendance details"
+          title="View details"
+        >
+          <Eye className="w-4 h-4" />
+        </button>
+      </td>
+    </tr>
   );
 }
 
-function PunchTimelineRow({ recordId }: { recordId: number }) {
-  // enabled = true on first expand and the result is cached, so collapsing
-  // and re-expanding doesn't re-fetch.
+function AttendanceDetailModal({
+  record: r,
+  onClose,
+  t,
+}: {
+  record: any;
+  onClose: () => void;
+  t: (k: string, opts?: any) => string;
+}) {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["attendance-punches", recordId],
+    queryKey: ["attendance-punches", r.id],
     queryFn: () =>
-      api.get(`/attendance/records/${recordId}/punches`).then((r) => r.data.data),
+      api.get(`/attendance/records/${r.id}/punches`).then((res) => res.data.data),
     staleTime: 60_000,
   });
 
+  // ESC closes the modal — small affordance HR users expect on every dialog.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const statusLabel = (() => {
+    if (r.status === "checked_in") return t('attendance.statusCheckedIn');
+    if (r.status === "half_day") return t('attendance.statusHalfDay');
+    const k = `attendance.${r.status}`;
+    const tr = t(k);
+    return tr !== k ? tr : (r.status || "").replace(/_/g, " ");
+  })();
+  const statusCls =
+    r.status === "present" ? "bg-green-50 text-green-700"
+      : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
+      : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
+      : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
+      : "bg-red-50 text-red-700";
+
   return (
-    <tr className="bg-gray-50">
-      <td colSpan={9} className="px-12 py-4">
-        {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Attendance details</h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {r.first_name} {r.last_name}
+              {r.emp_code ? ` · ${r.emp_code}` : ""}
+              {r.date ? ` · ${new Date(r.date).toLocaleDateString()}` : ""}
+            </p>
           </div>
-        ) : isError ? (
-          <p className="text-sm text-red-600">Could not load timeline for this record.</p>
-        ) : !data?.punches?.length ? (
-          <p className="text-sm text-gray-500">No punch history for this day.</p>
-        ) : (
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1 rounded"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-6">
+          {/* Top summary grid — same data as the row but laid out for reading */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+            <div>
+              <p className="text-xs uppercase text-gray-400">{t('attendance.department')}</p>
+              <p className="text-gray-800 mt-0.5">{r.department_name || "-"}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">{t('attendance.checkIn')}</p>
+              <p className="text-gray-800 mt-0.5">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">{t('attendance.checkOut')}</p>
+              <p className="text-gray-800 mt-0.5">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">{t('attendance.tableWorked')}</p>
+              <p className="text-gray-800 mt-0.5">
+                {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">{t('attendance.late')}</p>
+              <p className="text-gray-800 mt-0.5">
+                {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">{t('common.status')}</p>
+              <p className="mt-0.5">
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCls}`}>{statusLabel}</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Timeline */}
           <div>
             <p className="text-xs font-medium text-gray-500 uppercase mb-3">Punch timeline</p>
-            <ol className="space-y-2">
-              {(data.punches as PunchRow[]).map((p, idx, arr) => {
-                const isFirst = idx === 0;
-                const isLast = idx === arr.length - 1 && arr.length > 1;
-                // Single-punch day: the only entry is "Check in" (no checkout yet).
-                const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
-                const labelCls = isFirst
-                  ? "bg-green-100 text-green-800"
-                  : isLast
-                  ? "bg-rose-100 text-rose-800"
-                  : "bg-gray-200 text-gray-700";
-                const meta = sourceMeta(p.source);
-                const Icon = meta.Icon;
-                return (
-                  <li key={p.id} className="flex items-center gap-3 text-sm">
-                    <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
-                      {label}
-                    </span>
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
-                      <Icon className="w-3 h-3" /> {meta.label}
-                    </span>
-                    {p.latitude != null && p.longitude != null && (
-                      <span className="text-xs text-gray-400">
-                        {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
+              </div>
+            ) : isError ? (
+              <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+            ) : !data?.punches?.length ? (
+              <p className="text-sm text-gray-500">No punch history for this day.</p>
+            ) : (
+              <ol className="space-y-2">
+                {(data.punches as PunchRow[]).map((p, idx, arr) => {
+                  const isFirst = idx === 0;
+                  const isLast = idx === arr.length - 1 && arr.length > 1;
+                  const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
+                  const labelCls = isFirst
+                    ? "bg-green-100 text-green-800"
+                    : isLast
+                    ? "bg-rose-100 text-rose-800"
+                    : "bg-gray-200 text-gray-700";
+                  const meta = sourceMeta(p.source);
+                  const Icon = meta.Icon;
+                  return (
+                    <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
+                      <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                        {label}
                       </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                        <Icon className="w-3 h-3" /> {meta.label}
+                      </span>
+                      {p.latitude != null && p.longitude != null && (
+                        <span className="text-xs text-gray-400">
+                          {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
           </div>
-        )}
-      </td>
-    </tr>
+        </div>
+
+        <div className="px-6 py-3 border-t border-gray-200 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
