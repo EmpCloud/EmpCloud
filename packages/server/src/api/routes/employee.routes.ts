@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireSelfOrHR, requireHR } from "../middleware/rbac.middleware.js";
+import { requireSelfOrHR, requireHR, requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { AuditAction } from "@empcloud/shared";
@@ -70,7 +70,7 @@ const router = Router();
 // =========================================================================
 
 // GET /api/v1/employees/export — Export all employee data for bulk update
-router.get("/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/export", authenticate, requirePermission("employees:view_all", "employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = getDB();
     const employees = await db("users")
@@ -103,7 +103,7 @@ router.get("/export", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // POST /api/v1/employees/bulk-update — Bulk update employees from uploaded data
-router.post("/bulk-update", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/bulk-update", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { rows } = req.body;
     if (!Array.isArray(rows) || rows.length === 0) {
@@ -330,7 +330,7 @@ router.get("/anniversaries", authenticate, async (req: Request, res: Response, n
 });
 
 // GET /api/v1/employees/headcount
-router.get("/headcount", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/headcount", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await profileService.getHeadcount(req.user!.org_id);
     sendSuccess(res, data);
@@ -342,7 +342,7 @@ router.get("/headcount", authenticate, requireHR, async (req: Request, res: Resp
 // =========================================================================
 
 // GET /api/v1/employees/probation — list on probation
-router.get("/probation", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getEmployeesOnProbation(req.user!.org_id);
     sendSuccess(res, data);
@@ -350,7 +350,7 @@ router.get("/probation", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // GET /api/v1/employees/probation/dashboard — stats
-router.get("/probation/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/dashboard", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getProbationDashboard(req.user!.org_id);
     sendSuccess(res, data);
@@ -358,7 +358,7 @@ router.get("/probation/dashboard", authenticate, requireHR, async (req: Request,
 });
 
 // GET /api/v1/employees/probation/upcoming — upcoming confirmations
-router.get("/probation/upcoming", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/upcoming", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const days = parseInt(req.query.days as string, 10) || 30;
     const data = await probationService.getUpcomingConfirmations(req.user!.org_id, days);
@@ -367,7 +367,7 @@ router.get("/probation/upcoming", authenticate, requireHR, async (req: Request, 
 });
 
 // #1419 — GET /api/v1/employees/probation/confirmed-this-month
-router.get("/probation/confirmed-this-month", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/confirmed-this-month", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getConfirmedThisMonth(req.user!.org_id);
     sendSuccess(res, data);
@@ -375,7 +375,7 @@ router.get("/probation/confirmed-this-month", authenticate, requireHR, async (re
 });
 
 // PUT /api/v1/employees/:id/probation/confirm — confirm probation
-router.put("/:id/probation/confirm", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/confirm", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await probationService.confirmProbation(
       req.user!.org_id,
@@ -398,7 +398,7 @@ router.put("/:id/probation/confirm", authenticate, requireHR, async (req: Reques
 });
 
 // PUT /api/v1/employees/:id/probation/extend — extend probation
-router.put("/:id/probation/extend", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/extend", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { new_end_date, reason } = req.body;
     if (!new_end_date) throw new ValidationError("new_end_date is required");
@@ -438,7 +438,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/employees — Create employee (alias for POST /users) (#753)
-router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("employees:invite"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { createUserSchema } = await import("@empcloud/shared");
     const data = createUserSchema.parse(req.body);
@@ -580,7 +580,7 @@ router.get("/:id/salary", authenticate, requireSelfOrHR("id"), async (req: Reque
 });
 
 // PUT /api/v1/employees/:id/salary
-router.put("/:id/salary", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/salary", authenticate, requirePermission("salary:edit"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { ctc, basic, hra, da, special_allowance, gross, employer_pf, employer_esi, gratuity } = req.body;
 
@@ -771,5 +771,66 @@ router.delete("/:id/dependents/:dependentId", authenticate, requireSelfOrHR("id"
     sendSuccess(res, { message: "Dependent deleted" });
   } catch (err) { next(err); }
 });
+
+// ===========================================================================
+// Additional managers (RBAC v1) — matrix / co-manager rows on top of the
+// primary users.reporting_manager_id. Read by the team resolver so any
+// `*:view_team` / `*:approve` permission honours both relationships.
+// ===========================================================================
+
+// GET /api/v1/employees/:id/additional-managers — list manager rows for user.
+// Returns both `manager_ids` (compat) and `managers` (enriched with name /
+// email / role so the UI doesn't need a separate /users fetch to label them).
+router.get(
+  "/:id/additional-managers",
+  authenticate,
+  requireSelfOrHR("id"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { getAdditionalManagers } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const managers = await getAdditionalManagers(paramInt(req.params.id));
+      sendSuccess(res, { manager_ids: managers.map((m) => m.id), managers });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// PUT /api/v1/employees/:id/additional-managers
+//   body: { manager_ids: number[] } — replaces the full set
+router.put(
+  "/:id/additional-managers",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ids = Array.isArray(req.body?.manager_ids)
+        ? req.body.manager_ids.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+        : null;
+      if (ids === null) {
+        return next(new Error("manager_ids must be an array of user IDs"));
+      }
+      const { setAdditionalManagers } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      await setAdditionalManagers(req.user!.org_id, paramInt(req.params.id), ids);
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.USER_UPDATED,
+        details: {
+          target_user_id: paramInt(req.params.id),
+          field: "additional_managers",
+          manager_ids: ids,
+        },
+      });
+      sendSuccess(res, { manager_ids: ids });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 export default router;

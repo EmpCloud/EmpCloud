@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
-import { NotFoundError, ValidationError } from "../../utils/errors.js";
+import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 
 interface SubmitRegularizationInput {
   date: string;
@@ -49,7 +49,7 @@ export async function submitRegularization(orgId: number, userId: number, data: 
 
 export async function listRegularizations(
   orgId: number,
-  params?: { page?: number; perPage?: number; status?: string }
+  params?: { page?: number; perPage?: number; status?: string; userIds?: number[] }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -61,6 +61,15 @@ export async function listRegularizations(
 
   if (params?.status) {
     query = query.where("ar.status", params.status);
+  }
+  // Team scoping: undefined => no scope (org-wide); empty array => 0 rows;
+  // populated array => whereIn.
+  if (Array.isArray(params?.userIds)) {
+    if (params.userIds.length === 0) {
+      query = query.where(db.raw("1 = 0"));
+    } else {
+      query = query.whereIn("ar.user_id", params.userIds);
+    }
   }
 
   const [{ count }] = await query.clone().count("* as count");
@@ -79,6 +88,15 @@ export async function listRegularizations(
   return { records, total: Number(count) };
 }
 
+/** Read a single regularization row scoped to the org. Used by the approve
+ *  route to enforce team-scope on _team-only callers. */
+export async function getRegularization(orgId: number, regularizationId: number) {
+  const db = getDB();
+  return db("attendance_regularizations")
+    .where({ id: regularizationId, organization_id: orgId })
+    .first();
+}
+
 export async function approveRegularization(orgId: number, regularizationId: number, approvedBy: number) {
   const db = getDB();
   const reg = await db("attendance_regularizations")
@@ -86,6 +104,13 @@ export async function approveRegularization(orgId: number, regularizationId: num
     .first();
   if (!reg) throw new NotFoundError("Regularization request");
   if (reg.status !== "pending") throw new ValidationError("Request is already processed");
+
+  // Block self-approval — even a manager / org_admin cannot approve their own
+  // regularization request. Mirrors the leave-application policy. Force a
+  // second-set-of-eyes signoff.
+  if (Number(reg.user_id) === Number(approvedBy)) {
+    throw new ForbiddenError("Cannot approve your own regularization request");
+  }
 
   await db.transaction(async (trx) => {
     // Update regularization status
@@ -156,6 +181,11 @@ export async function rejectRegularization(
     .first();
   if (!reg) throw new NotFoundError("Regularization request");
   if (reg.status !== "pending") throw new ValidationError("Request is already processed");
+
+  // Block self-rejection — symmetric with the approve path.
+  if (Number(reg.user_id) === Number(approvedBy)) {
+    throw new ForbiddenError("Cannot reject your own regularization request");
+  }
 
   await db("attendance_regularizations").where({ id: regularizationId }).update({
     status: "rejected",

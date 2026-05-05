@@ -367,9 +367,20 @@ export default function ShiftSchedulePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
+                  </label>
+                  {bulkUserIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setBulkUserIds([])}
+                      className="text-xs text-brand-600 hover:text-brand-700 hover:underline"
+                    >
+                      Clear selection
+                    </button>
+                  )}
+                </div>
                 <div className="relative mb-2">
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   <input
@@ -391,6 +402,49 @@ export default function ShiftSchedulePage() {
                   )}
                 </div>
                 <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
+                  {(() => {
+                    const visibleIds: number[] = filteredBulkEmployees.map((emp: any) => emp.id as number);
+                    const visibleSelectedCount = visibleIds.filter((id: number) => bulkUserIds.includes(id)).length;
+                    const allVisibleSelected =
+                      visibleIds.length > 0 && visibleSelectedCount === visibleIds.length;
+                    const someVisibleSelected =
+                      visibleSelectedCount > 0 && visibleSelectedCount < visibleIds.length;
+                    const handleSelectAllVisible = () => {
+                      if (visibleIds.length === 0) return;
+                      if (allVisibleSelected) {
+                        // Unselect only visible employees, preserve out-of-view selections.
+                        setBulkUserIds((prev) => prev.filter((id: number) => !visibleIds.includes(id)));
+                      } else {
+                        // Additive: add any visible employees not already selected.
+                        setBulkUserIds((prev) => {
+                          const merged = new Set<number>(prev);
+                          visibleIds.forEach((id: number) => merged.add(id));
+                          return Array.from(merged);
+                        });
+                      }
+                    };
+                    return (
+                      <label
+                        className={`sticky top-0 -mx-2 -mt-2 mb-1 px-2 py-1 flex items-center gap-2 text-sm font-medium bg-gray-50 border-b border-gray-200 rounded-t-lg ${
+                          filteredBulkEmployees.length === 0 ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-gray-100"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          ref={(el) => {
+                            if (el) el.indeterminate = someVisibleSelected;
+                          }}
+                          checked={allVisibleSelected}
+                          disabled={filteredBulkEmployees.length === 0}
+                          onChange={handleSelectAllVisible}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-gray-700">
+                          Select all ({filteredBulkEmployees.length} visible)
+                        </span>
+                      </label>
+                    );
+                  })()}
                   {filteredBulkEmployees.length === 0 ? (
                     <p className="text-xs text-gray-400 px-2 py-3 text-center">
                       No employees match &ldquo;{bulkEmployeeSearch}&rdquo;

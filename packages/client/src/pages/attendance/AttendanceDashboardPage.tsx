@@ -5,18 +5,25 @@ import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
 import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, ChevronDown, ChevronRight, Fingerprint, Smartphone, Monitor } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
-import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import * as XLSX from "xlsx";
-
-const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 export default function AttendanceDashboardPage() {
   const { t, i18n } = useTranslation();
-  const user = useAuthStore((s) => s.user);
-  const isHR = user && HR_ROLES.includes(user.role);
+  // RBAC v1 — gate by permissions, not by role. A user with a custom role
+  // granting attendance:view_team / view_all / approve_regularization / manage
+  // is allowed onto this dashboard even if their primary role is "employee".
+  const { has: hasPerm } = usePermissions();
+  const canSeeDashboard = hasPerm(
+    "attendance:view_team",
+    "attendance:view_all",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
+    "attendance:manage",
+  );
 
-  // Redirect non-HR users to their personal attendance page
-  if (!isHR) {
+  // Pure self-service users (no team / admin attendance perm) bounce to their
+  // personal page.
+  if (!canSeeDashboard) {
     return <Navigate to="/attendance/my" replace />;
   }
   const [page, setPage] = useState(1);
@@ -730,15 +737,32 @@ function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) =
         <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
         <td className="px-6 py-4 text-sm text-gray-600">
           {(() => {
-            // #1949 — `worked_minutes` is only filled in at check-out, so the
-            // column read 0 for everyone still on the clock. For checked-in
-            // rows, derive a running total from check_in to now and tag it
-            // with "(so far)" so it's clear the value isn't final.
+            // #1949 — `worked_minutes` is only filled at check-out, so for
+            // rows still on the clock we'd otherwise show 0. Derive a live
+            // total from check_in to now.
+            //
+            // Two guards on the live count:
+            //   1. Stale rows where check_in is more than ACTIVE_HOURS old
+            //      → almost certainly a missed check-out. Render an amber
+            //      "Missed check-out" badge instead of an inflated count.
+            //      ACTIVE_HOURS is generous (30h) so a night shift crossing
+            //      midnight (e.g. 7 PM to 10 AM = 15h + 12h OT buffer) is
+            //      still considered "on the clock" and shows live minutes.
+            //   2. Otherwise cap "live" at the same window so the displayed
+            //      count never exceeds ACTIVE_HOURS.
+            const ACTIVE_HOURS = 30;
             if (r.status === "checked_in" && r.check_in) {
-              const live = Math.max(
-                0,
-                Math.floor((Date.now() - new Date(r.check_in).getTime()) / 60000),
-              );
+              const checkInTime = new Date(r.check_in).getTime();
+              const ageMinutes = (Date.now() - checkInTime) / 60000;
+              if (ageMinutes > ACTIVE_HOURS * 60) {
+                return (
+                  <span className="inline-flex items-center gap-1 text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    Missed check-out
+                  </span>
+                );
+              }
+              const live = Math.max(0, Math.floor(ageMinutes));
               return (
                 <span className="inline-flex items-center gap-1">
                   {`${Math.floor(live / 60)}h ${live % 60}m`}

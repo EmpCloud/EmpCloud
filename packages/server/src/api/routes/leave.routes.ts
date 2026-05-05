@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR, requireRole } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated, sendError } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { ValidationError } from "../../utils/errors.js";
@@ -63,7 +63,7 @@ router.get("/types/:id", authenticate, async (req: Request, res: Response, next:
 });
 
 // POST /api/v1/leave/types
-router.post("/types", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/types", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createLeaveTypeSchema.parse(req.body);
     const type = await leaveTypeService.createLeaveType(req.user!.org_id, data);
@@ -83,7 +83,7 @@ router.post("/types", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // PUT /api/v1/leave/types/:id
-router.put("/types/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/types/:id", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateLeaveTypeSchema.parse(req.body);
     const type = await leaveTypeService.updateLeaveType(req.user!.org_id, paramInt(req.params.id), data);
@@ -92,7 +92,7 @@ router.put("/types/:id", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // DELETE /api/v1/leave/types/:id
-router.delete("/types/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/types/:id", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await leaveTypeService.deleteLeaveType(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Leave type deactivated" });
@@ -100,7 +100,7 @@ router.delete("/types/:id", authenticate, requireHR, async (req: Request, res: R
 });
 
 // #1362 — POST /api/v1/leave/types/:id/reactivate
-router.post("/types/:id/reactivate", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/types/:id/reactivate", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const type = await leaveTypeService.reactivateLeaveType(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, type);
@@ -128,7 +128,7 @@ router.get("/policies/:id", authenticate, async (req: Request, res: Response, ne
 });
 
 // POST /api/v1/leave/policies
-router.post("/policies", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/policies", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createLeavePolicySchema.parse(req.body);
     const policy = await leavePolicyService.createLeavePolicy(req.user!.org_id, data);
@@ -137,7 +137,7 @@ router.post("/policies", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // PUT /api/v1/leave/policies/:id
-router.put("/policies/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/policies/:id", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createLeavePolicySchema.partial().parse(req.body);
     const policy = await leavePolicyService.updateLeavePolicy(req.user!.org_id, paramInt(req.params.id), data);
@@ -146,7 +146,7 @@ router.put("/policies/:id", authenticate, requireHR, async (req: Request, res: R
 });
 
 // DELETE /api/v1/leave/policies/:id
-router.delete("/policies/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/policies/:id", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await leavePolicyService.deleteLeavePolicy(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Leave policy deactivated" });
@@ -176,7 +176,7 @@ router.get("/balances", authenticate, async (req: Request, res: Response, next: 
 });
 
 // POST /api/v1/leave/balances/initialize
-router.post("/balances/initialize", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/balances/initialize", authenticate, requirePermission("leave:override_balance"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { year } = initializeBalancesSchema.parse(req.body);
     const created = await leaveBalanceService.initializeBalances(req.user!.org_id, year);
@@ -221,8 +221,23 @@ router.get("/applications", authenticate, async (req: Request, res: Response, ne
   try {
     const { page, per_page, status, leave_type_id, user_id } = leaveQuerySchema.parse(req.query);
 
-    // RBAC: employees can only view their own leave applications
-    const effectiveUserId = isEmployeeRole(req.user!.role) ? req.user!.sub : user_id;
+    // RBAC v1: a user with leave:view_all / view_team / approve / manage_policies
+    // / override_balance can see everyone's applications (or filter by user_id);
+    // anyone else is silently scoped to their own. Falls back to the legacy
+    // role check for tokens issued before the permissions claim landed.
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const adminLeaveKeys = [
+      "leave:view_all",
+      "leave:view_team",
+      "leave:approve",
+      "leave:manage_policies",
+      "leave:override_balance",
+    ];
+    const hasAdminLeavePerm = Array.isArray(perms)
+      ? adminLeaveKeys.some((k) => perms.includes(k))
+      : false;
+    const isEmployee = !hasAdminLeavePerm && isEmployeeRole(req.user!.role);
+    const effectiveUserId = isEmployee ? req.user!.sub : user_id;
 
     const result = await leaveApplicationService.listApplications(req.user!.org_id, {
       page,
@@ -294,7 +309,7 @@ router.put("/applications/:id", authenticate, async (req: Request, res: Response
 });
 
 // PUT /api/v1/leave/applications/:id/approve
-router.put("/applications/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/applications/:id/approve", authenticate, requirePermission("leave:approve"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { remarks } = approveLeaveSchema.parse({ ...req.body, status: "approved" });
     const application = await leaveApplicationService.approveLeave(
@@ -319,7 +334,7 @@ router.put("/applications/:id/approve", authenticate, requireRole("manager" as U
 });
 
 // PUT /api/v1/leave/applications/:id/reject
-router.put("/applications/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/applications/:id/reject", authenticate, requirePermission("leave:approve"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { remarks } = approveLeaveSchema.parse({ ...req.body, status: "rejected" });
     const application = await leaveApplicationService.rejectLeave(
@@ -389,7 +404,7 @@ router.get("/config", authenticate, async (req: Request, res: Response, next: Ne
 });
 
 // PUT /api/v1/leave/config — update fiscal year start month
-router.put("/config", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/config", authenticate, requirePermission("leave:manage_policies"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateLeaveOrgConfigSchema.parse(req.body);
     const config = await leaveConfigService.updateLeaveOrgConfig(req.user!.org_id, data);
@@ -414,7 +429,7 @@ router.put("/config", authenticate, requireHR, async (req: Request, res: Respons
 // ===========================================================================
 
 // GET /api/v1/leave/admin/employees — paginated employee balance summary
-router.get("/admin/employees", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/admin/employees", authenticate, requirePermission("leave:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page, search, department_id, year } = employeeLeavesQuerySchema.parse(req.query);
     const result = await leaveBalanceService.listEmployeeBalances(req.user!.org_id, {
@@ -429,7 +444,7 @@ router.get("/admin/employees", authenticate, requireHR, async (req: Request, res
 });
 
 // PUT /api/v1/leave/admin/balances/:balanceId — adjust extra_allocated and/or total_used
-router.put("/admin/balances/:balanceId", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/admin/balances/:balanceId", authenticate, requirePermission("leave:override_balance"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = overrideLeaveBalanceSchema.parse(req.body);
     const { before, after } = await leaveBalanceService.overrideBalance(
@@ -467,7 +482,7 @@ router.put("/admin/balances/:balanceId", authenticate, requireHR, async (req: Re
 });
 
 // POST /api/v1/leave/admin/balances/bulk — bulk grant/remove extra_allocated
-router.post("/admin/balances/bulk", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/admin/balances/bulk", authenticate, requirePermission("leave:override_balance"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = bulkOverrideLeaveBalanceSchema.parse(req.body);
     const affected = await leaveBalanceService.bulkOverrideBalance(
@@ -500,7 +515,7 @@ router.post("/admin/balances/bulk", authenticate, requireHR, async (req: Request
 router.post(
   "/admin/balances/:balanceId/reset-period",
   authenticate,
-  requireHR,
+  requirePermission("leave:override_balance"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = resetPeriodUsageSchema.parse(req.body);
@@ -559,7 +574,7 @@ router.get("/comp-off/pending", authenticate, async (req: Request, res: Response
 // POST /api/v1/leave/comp-off/balance/adjust — HR-only manual credit/debit
 // of an employee's comp-off balance (bypasses the request/approve flow).
 // #1933 — admins had no way to grant comp-off without an employee request.
-router.post("/comp-off/balance/adjust", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/comp-off/balance/adjust", authenticate, requirePermission("leave:override_balance"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = Number(req.body.user_id);
     const days = Number(req.body.days);
@@ -642,7 +657,7 @@ router.post("/comp-off/request", authenticate, async (req: Request, res: Respons
 });
 
 // PUT /api/v1/leave/comp-off/:id/approve
-router.put("/comp-off/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/comp-off/:id/approve", authenticate, requirePermission("leave:approve"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const request = await compOffService.approveCompOff(req.user!.org_id, req.user!.sub, paramInt(req.params.id));
     sendSuccess(res, request);
@@ -650,7 +665,7 @@ router.put("/comp-off/:id/approve", authenticate, requireRole("manager" as UserR
 });
 
 // PUT /api/v1/leave/comp-off/:id/reject
-router.put("/comp-off/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/comp-off/:id/reject", authenticate, requirePermission("leave:approve"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const reason = req.body.reason as string | undefined;
     const request = await compOffService.rejectCompOff(req.user!.org_id, req.user!.sub, paramInt(req.params.id), reason);

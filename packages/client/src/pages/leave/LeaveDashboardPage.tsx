@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import { Link } from "react-router-dom";
 import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2 } from "lucide-react";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
 
+// Kept for any legacy callers — page now uses permission-based gates below.
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
 
 interface LeaveBalance {
@@ -38,7 +40,18 @@ export default function LeaveDashboardPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
-  const isAdmin = user ? HR_ROLES.includes(user.role) : false;
+  // RBAC v1 — admin-side leave UI (settings link, pending approvals queue)
+  // shows for users with the corresponding leave permissions, regardless of
+  // primary role. A custom role granting leave:approve / view_all /
+  // manage_policies / override_balance unlocks the admin sections.
+  const { has: hasPerm } = usePermissions();
+  const isAdmin = hasPerm(
+    "leave:view_all",
+    "leave:view_team",
+    "leave:approve",
+    "leave:manage_policies",
+    "leave:override_balance",
+  ) || (user ? HR_ROLES.includes(user.role) : false);
   const [showApply, setShowApply] = useState(false);
   // #1578 — form renders below the fold on smaller viewports, so clicks on
   // Apply Leave looked like nothing happened. Scroll the form into view once

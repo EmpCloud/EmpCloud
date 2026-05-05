@@ -70,14 +70,26 @@ export function requireManagerOrHasReports() {
       next();
       return;
     }
-    // Fallback: any direct report makes the requester a functional manager.
+    // Fallback: any direct report (primary OR additional manager assignment)
+    // makes the requester a functional manager.
     try {
       const db = getDB();
-      const row = await db("users")
+      const primary = await db("users")
         .where({ reporting_manager_id: req.user.sub, organization_id: req.user.org_id })
         .select("id")
         .first();
-      if (row) {
+      if (primary) {
+        next();
+        return;
+      }
+      // Check the additional-managers junction (matrix / co-manager rows).
+      const additional = await db("user_additional_managers as uam")
+        .join("users", "users.id", "uam.user_id")
+        .where("uam.manager_id", req.user.sub)
+        .andWhere("users.organization_id", req.user.org_id)
+        .select("uam.id")
+        .first();
+      if (additional) {
         next();
         return;
       }
@@ -85,6 +97,78 @@ export function requireManagerOrHasReports() {
       // Fall through to 403 — never leak DB errors as auth bypasses.
     }
     sendError(res, 403, "FORBIDDEN", "Insufficient permissions");
+  };
+}
+
+/**
+ * Permission-based access control (RBAC v1).
+ * Checks the `permissions` claim on the verified JWT (set during issueTokens).
+ *
+ * Use these in preference to requireRole / requireOrgAdmin for new routes —
+ * they support custom roles created by org admins, not just the 4 system roles.
+ *
+ * Example:
+ *   router.get("/", authenticate, requirePermission("attendance:view_all"), handler);
+ *   router.post("/", authenticate, requireAllPermissions("salary:edit", "salary:approve_changes"), handler);
+ */
+export function requirePermission(...required: string[]) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      sendError(res, 401, "UNAUTHORIZED", "Authentication required");
+      return;
+    }
+    const granted = (req.user as any).permissions as string[] | undefined;
+    // super_admin bypasses permission checks — they're a platform-level role
+    // that operates across orgs and isn't part of the per-org RBAC system.
+    if (req.user.role === "super_admin") {
+      next();
+      return;
+    }
+    if (!granted || granted.length === 0) {
+      sendError(
+        res,
+        403,
+        "FORBIDDEN",
+        `This action requires one of: ${required.join(", ")}`,
+      );
+      return;
+    }
+    if (required.some((p) => granted.includes(p))) {
+      next();
+      return;
+    }
+    sendError(
+      res,
+      403,
+      "FORBIDDEN",
+      `This action requires one of: ${required.join(", ")}`,
+    );
+  };
+}
+
+/** Same as requirePermission but the user must have ALL listed permissions. */
+export function requireAllPermissions(...required: string[]) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      sendError(res, 401, "UNAUTHORIZED", "Authentication required");
+      return;
+    }
+    if (req.user.role === "super_admin") {
+      next();
+      return;
+    }
+    const granted = (req.user as any).permissions as string[] | undefined;
+    if (!granted || !required.every((p) => granted.includes(p))) {
+      const missing = required.filter((p) => !granted?.includes(p));
+      sendError(
+        res,
+        403,
+        "FORBIDDEN",
+        `This action requires all of: ${required.join(", ")} (missing: ${missing.join(", ")})`,
+      );
+      return;
+    }
+    next();
   };
 }
 

@@ -4,6 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import * as chatbotService from "../../services/chatbot/chatbot.service.js";
 import { paramInt } from "../../utils/params.js";
@@ -14,6 +15,7 @@ const router = Router();
 router.post(
   "/conversations",
   authenticate,
+  requirePermission("chatbot:use"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const convo = await chatbotService.createConversation(req.user!.org_id, req.user!.sub);
@@ -28,6 +30,7 @@ router.post(
 router.get(
   "/conversations",
   authenticate,
+  requirePermission("chatbot:use"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const conversations = await chatbotService.getConversations(req.user!.org_id, req.user!.sub);
@@ -42,6 +45,7 @@ router.get(
 router.get(
   "/conversations/:id",
   authenticate,
+  requirePermission("chatbot:use"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const messages = await chatbotService.getMessages(
@@ -60,6 +64,7 @@ router.get(
 router.post(
   "/conversations/:id/send",
   authenticate,
+  requirePermission("chatbot:use"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { message, language } = req.body;
@@ -86,6 +91,7 @@ router.post(
 router.delete(
   "/conversations/:id",
   authenticate,
+  requirePermission("chatbot:use"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await chatbotService.deleteConversation(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
@@ -100,6 +106,7 @@ router.delete(
 router.get(
   "/suggestions",
   authenticate,
+  requirePermission("chatbot:use"),
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const suggestions = chatbotService.getSuggestions();
@@ -114,6 +121,7 @@ router.get(
 router.get(
   "/ai-status",
   authenticate,
+  requirePermission("chatbot:use"),
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const status = chatbotService.getAIStatus();

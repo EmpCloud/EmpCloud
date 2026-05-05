@@ -20,6 +20,7 @@ import {
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import CustomRolesField from "@/components/employees/CustomRolesField";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -643,6 +644,25 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
                 ))}
             </select>
           </div>
+          {/* Additional Managers — RBAC v1. Stored in user_additional_managers
+              and honoured by every `*:view_team` permission resolver. HR-only;
+              employees see the list read-only. Excludes the current user and
+              the primary manager from the picker. */}
+          {userId !== undefined && (
+            <div>
+              <AdditionalManagersField
+                userId={userId}
+                allUsers={allUsers || []}
+                primaryManagerId={form.reporting_manager_id ? Number(form.reporting_manager_id) : null}
+                canEdit={!selfService}
+              />
+            </div>
+          )}
+          {userId !== undefined && (
+            <div>
+              <CustomRolesField userId={userId} canEdit={!selfService} />
+            </div>
+          )}
           {/* #1423 — Department (HR-only). Self-service users see a disabled
               dropdown so they're aware it exists but can't change it. */}
           <div>
@@ -760,6 +780,8 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
       />
       <FieldRow label="Notice Period (days)" value={profile.notice_period_days} />
       <FieldRow label="Reporting Manager" value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
+      <AdditionalManagersReadRow userId={profile.id} />
+      <CustomRolesReadRow userId={profile.id} />
       {/* #1423 / #1424 — surface designation, department and current shift in
           the read-only view so self-service employees can see them even if
           they can't edit them. */}
@@ -768,6 +790,68 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
       <FieldRow label="Department" value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
       <FieldRow label="Shift" value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
     </dl>
+  );
+}
+
+// Read-only chip list of the user's assigned custom roles. Renders nothing
+// when there are no custom roles so the summary stays compact.
+function CustomRolesReadRow({ userId }: { userId?: number }) {
+  const { data = [] } = useQuery<any[]>({
+    queryKey: ["user-custom-roles", userId],
+    queryFn: () =>
+      api.get(`/roles/users/${userId}`).then((r) => r.data?.data ?? []),
+    enabled: !!userId,
+  });
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return (
+    <div className="grid grid-cols-3 gap-x-4 py-2 border-b border-gray-100">
+      <dt className="text-sm font-medium text-gray-500 col-span-1">Custom Roles</dt>
+      <dd className="text-sm text-gray-900 col-span-2 flex flex-wrap gap-1.5">
+        {data.map((r: any) => (
+          <span
+            key={r.id}
+            title={r.description || undefined}
+            className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-xs text-brand-700"
+          >
+            {r.name}
+          </span>
+        ))}
+      </dd>
+    </div>
+  );
+}
+
+// Read-only chip list for the profile summary view. Renders nothing when the
+// user has no additional managers so the summary stays compact. Uses the
+// `managers` array enriched server-side so we don't depend on a paginated
+// /users list to look up names.
+function AdditionalManagersReadRow({ userId }: { userId?: number }) {
+  const { data } = useQuery({
+    queryKey: ["employee-additional-managers", userId],
+    queryFn: () =>
+      api.get(`/employees/${userId}/additional-managers`).then((r) => r.data?.data),
+    enabled: !!userId,
+  });
+  const managers: Array<{ id: number; first_name: string; last_name: string; role: string }> =
+    Array.isArray(data?.managers) ? data.managers : [];
+  if (managers.length === 0) return null;
+  return (
+    <div className="grid grid-cols-3 gap-x-4 py-2 border-b border-gray-100">
+      <dt className="text-sm font-medium text-gray-500 col-span-1">Additional Managers</dt>
+      <dd className="text-sm text-gray-900 col-span-2 flex flex-wrap gap-1.5">
+        {managers.map((u) => (
+          <span
+            key={u.id}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-100 text-xs text-gray-700"
+          >
+            <span className="h-5 w-5 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-[10px] font-semibold">
+              {u.first_name?.[0] || "?"}{u.last_name?.[0] || ""}
+            </span>
+            {u.first_name} {u.last_name}
+          </span>
+        ))}
+      </dd>
+    </div>
   );
 }
 
@@ -786,6 +870,249 @@ function SubResourceError({ error }: { error?: string | null }) {
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Additional Managers field — RBAC v1
+// Searchable multi-select with chips. Read-only mode renders the chips alone.
+// ---------------------------------------------------------------------------
+
+function AdditionalManagersField({
+  userId,
+  allUsers,
+  primaryManagerId,
+  canEdit,
+}: {
+  userId: number;
+  allUsers: any[];
+  primaryManagerId: number | null;
+  canEdit: boolean;
+}) {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["employee-additional-managers", userId],
+    queryFn: () =>
+      api.get(`/employees/${userId}/additional-managers`).then((r) => r.data?.data),
+    enabled: !!userId,
+  });
+
+  const [selected, setSelected] = useState<number[]>([]);
+  useEffect(() => {
+    setSelected(Array.isArray(data?.manager_ids) ? data.manager_ids : []);
+  }, [data]);
+
+  const mutation = useMutation({
+    mutationFn: (ids: number[]) =>
+      api.put(`/employees/${userId}/additional-managers`, { manager_ids: ids }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employee-additional-managers", userId] });
+    },
+  });
+
+  // Lookup map for chip labels: prefer the enriched managers from the
+  // /additional-managers response (server-side join) so we're not limited to
+  // the paginated /users list. Fallback to allUsers for newly-added rows
+  // (which won't be in the response until save).
+  const usersById = new Map<number, any>();
+  for (const u of allUsers || []) usersById.set(u.id, u);
+  for (const m of (data?.managers || []) as any[]) usersById.set(m.id, m);
+
+  // Candidate pool: anyone in the org except self, primary manager, or
+  // already-selected. Used by the search dropdown.
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const candidates = (allUsers || []).filter(
+    (u: any) =>
+      u.id !== userId &&
+      (primaryManagerId == null || u.id !== primaryManagerId) &&
+      !selected.includes(u.id),
+  );
+
+  const filtered = (() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return candidates.slice(0, 30);
+    return candidates
+      .filter((u: any) => {
+        const name = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase();
+        return name.includes(q) || (u.email || "").toLowerCase().includes(q);
+      })
+      .slice(0, 30);
+  })();
+
+  const add = (id: number) => {
+    setSelected((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setQuery("");
+  };
+  const remove = (id: number) => {
+    if (!canEdit) return;
+    setSelected((prev) => prev.filter((x) => x !== id));
+  };
+
+  const dirty =
+    selected.length !== (data?.manager_ids || []).length ||
+    selected.some((id) => !(data?.manager_ids || []).includes(id));
+
+  // Read-only mode: just chips, no search UI.
+  if (!canEdit) {
+    return (
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Additional Managers
+        </label>
+        <div className="min-h-[40px] flex flex-wrap items-center gap-1.5 border border-gray-200 rounded-md bg-gray-50 px-2 py-2">
+          {isLoading ? (
+            <span className="text-sm text-gray-400">Loading…</span>
+          ) : selected.length === 0 ? (
+            <span className="text-sm text-gray-400">No additional managers</span>
+          ) : (
+            selected.map((id) => {
+              const u = usersById.get(id);
+              return (
+                <span
+                  key={id}
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border border-gray-200 text-xs text-gray-700"
+                >
+                  <span className="h-5 w-5 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-[10px] font-semibold">
+                    {(u?.first_name?.[0] || "?")}{(u?.last_name?.[0] || "")}
+                  </span>
+                  <span className="truncate max-w-[160px]">
+                    {u ? `${u.first_name} ${u.last_name}` : `User #${id}`}
+                  </span>
+                </span>
+              );
+            })
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Editable mode: chips + search + save.
+  return (
+    <div ref={containerRef}>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Additional Managers
+        {selected.length > 0 && (
+          <span className="ml-2 text-xs font-normal text-gray-400">
+            ({selected.length} selected)
+          </span>
+        )}
+      </label>
+      <p className="text-xs text-gray-500 mb-2">
+        Co-managers with the same team-scope access as the primary Reporting
+        Manager. Honoured by every team-scoped permission.
+      </p>
+
+      {/* Selected-chips + search input wrapper */}
+      <div
+        className="relative min-h-[42px] border border-gray-300 rounded-md bg-white px-2 py-1.5 focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500"
+        onClick={() => setOpen(true)}
+      >
+        <div className="flex flex-wrap items-center gap-1.5">
+          {selected.map((id) => {
+            const u = usersById.get(id);
+            return (
+              <span
+                key={id}
+                className="inline-flex items-center gap-1 pl-1.5 pr-1 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-xs text-brand-700"
+              >
+                <span className="h-5 w-5 rounded-full bg-brand-200 text-brand-800 flex items-center justify-center text-[10px] font-semibold">
+                  {(u?.first_name?.[0] || "?")}{(u?.last_name?.[0] || "")}
+                </span>
+                <span className="truncate max-w-[160px]">
+                  {u ? `${u.first_name} ${u.last_name}` : `User #${id}`}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); remove(id); }}
+                  className="ml-0.5 h-4 w-4 flex items-center justify-center rounded-full hover:bg-brand-200"
+                  aria-label={`Remove ${u ? `${u.first_name} ${u.last_name}` : "manager"}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            );
+          })}
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+            onFocus={() => setOpen(true)}
+            placeholder={selected.length === 0 ? "Search by name or email…" : "Add another…"}
+            className="flex-1 min-w-[140px] outline-none text-sm py-0.5 bg-transparent"
+          />
+        </div>
+
+        {/* Dropdown */}
+        {open && (
+          <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-gray-400">
+                {query ? "No matching users" : "All eligible users already selected"}
+              </div>
+            ) : (
+              filtered.map((u: any) => (
+                <button
+                  key={u.id}
+                  type="button"
+                  onClick={() => add(u.id)}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-brand-50 text-left"
+                >
+                  <span className="h-7 w-7 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                    {(u.first_name?.[0] || "?")}{(u.last_name?.[0] || "")}
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-gray-900 truncate">
+                      {u.first_name} {u.last_name}
+                      {u.role && (
+                        <span className="ml-1.5 text-xs text-gray-400">
+                          · {u.role.replace("_", " ")}
+                        </span>
+                      )}
+                    </span>
+                    <span className="block text-xs text-gray-400 truncate">{u.email}</span>
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Save row */}
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => mutation.mutate(selected)}
+          disabled={!dirty || mutation.isPending}
+          className="px-3 py-1.5 text-sm font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50"
+        >
+          {mutation.isPending ? "Saving…" : "Save additional managers"}
+        </button>
+        {dirty && !mutation.isPending && (
+          <span className="text-xs text-amber-600">unsaved changes</span>
+        )}
+        {mutation.isSuccess && !dirty && (
+          <span className="text-xs text-green-600">Saved</span>
+        )}
+        {mutation.isError && (
+          <span className="text-xs text-red-600">{extractApiError(mutation.error)}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 function extractApiError(err: any): string {
   const resp = err?.response?.data?.error;

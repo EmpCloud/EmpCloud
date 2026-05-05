@@ -23,7 +23,11 @@ import {
   orgAdminOnlyNavItems,
   platformAdminNavItems,
   HR_ROLES,
+  filterNavItem,
 } from "./navigation.config";
+import { usePermissions } from "@/lib/use-permissions";
+import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
+import { ViewModeToggle } from "./ViewModeToggle";
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
@@ -61,6 +65,26 @@ export default function DashboardLayout() {
 
   const isHR = !!(user && HR_ROLES.includes(user.role));
   const isOrgAdmin = user?.role === "org_admin";
+
+  // RBAC v1 — view-mode toggle. HR users always see the admin sidebar.
+  // Non-HR users with at least one admin-level permission (via custom roles)
+  // can flip into "Admin view" — they get the admin sidebar filtered to the
+  // items their permission set actually unlocks. Everyone else stays on the
+  // employee sidebar.
+  const { has: hasPerm, permissions } = usePermissions();
+  const viewMode = useViewModeStore((s) => s.viewMode);
+  const hasAdminPerms = hasAnyAdminPermission(permissions);
+  const showViewToggle = !isHR && hasAdminPerms;
+  // If the user lost their admin perms (custom role removed) but the toggle
+  // is still set to "admin", fall back to "self" so they aren't stranded
+  // on an empty sidebar.
+  const effectiveViewMode = !showViewToggle && !isHR ? "self" : viewMode;
+  const showAdminSidebar = isHR || (showViewToggle && effectiveViewMode === "admin");
+  const sidebarItems = showAdminSidebar
+    ? adminNavItems
+        .map((i) => filterNavItem(i, hasPerm))
+        .filter((i): i is typeof adminNavItems[number] => i !== null)
+    : employeeNavItems;
 
   // Auto-close sidebar on navigation
   useEffect(() => {
@@ -138,7 +162,7 @@ export default function DashboardLayout() {
 
       <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
         {user?.role !== "super_admin" && <>
-          <NavSection label="" items={isHR ? adminNavItems : employeeNavItems} location={location} t={t} />
+          <NavSection label="" items={sidebarItems} location={location} t={t} />
           {isHR && (
             <NavSection label={t('nav.positions')} items={positionNavItems} location={location} t={t} />
           )}
@@ -244,7 +268,8 @@ export default function DashboardLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {showViewToggle && <ViewModeToggle />}
             <LanguageSwitcher />
             <NotificationDropdown />
           </div>

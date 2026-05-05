@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR, requireOrgAdmin, requireRole } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
@@ -32,7 +32,6 @@ import {
   updateUserAttendanceOverrideSchema,
   AuditAction,
 } from "@empcloud/shared";
-import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
 
 const router = Router();
@@ -50,7 +49,7 @@ router.get("/shifts", authenticate, async (req: Request, res: Response, next: Ne
 });
 
 // POST /api/v1/attendance/shifts
-router.post("/shifts", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createShiftSchema.parse(req.body);
     const shift = await shiftService.createShift(req.user!.org_id, data);
@@ -59,7 +58,7 @@ router.post("/shifts", authenticate, requireHR, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/attendance/shifts/:id
-router.put("/shifts/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/shifts/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateShiftSchema.parse(req.body);
     const shift = await shiftService.updateShift(req.user!.org_id, paramInt(req.params.id), data);
@@ -68,7 +67,7 @@ router.put("/shifts/:id", authenticate, requireHR, async (req: Request, res: Res
 });
 
 // DELETE /api/v1/attendance/shifts/:id
-router.delete("/shifts/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/shifts/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await shiftService.deleteShift(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Shift deactivated" });
@@ -76,7 +75,7 @@ router.delete("/shifts/:id", authenticate, requireHR, async (req: Request, res: 
 });
 
 // POST /api/v1/attendance/shifts/assign
-router.post("/shifts/assign", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/assign", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = assignShiftSchema.parse(req.body);
     const assignment = await shiftService.assignShift(req.user!.org_id, data, req.user!.sub);
@@ -85,7 +84,7 @@ router.post("/shifts/assign", authenticate, requireHR, async (req: Request, res:
 });
 
 // GET /api/v1/attendance/shifts/assignments
-router.get("/shifts/assignments", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/shifts/assignments", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.query.user_id ? Number(req.query.user_id) : undefined;
     const shiftId = req.query.shift_id ? Number(req.query.shift_id) : undefined;
@@ -95,7 +94,7 @@ router.get("/shifts/assignments", authenticate, requireHR, async (req: Request, 
 });
 
 // PUT /api/v1/attendance/shifts/assignments/:id
-router.put("/shifts/assignments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/shifts/assignments/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateShiftAssignmentSchema.parse(req.body);
     const assignment = await shiftService.updateShiftAssignment(req.user!.org_id, paramInt(req.params.id), data);
@@ -115,7 +114,7 @@ router.put("/shifts/assignments/:id", authenticate, requireHR, async (req: Reque
 });
 
 // DELETE /api/v1/attendance/shifts/assignments/:id
-router.delete("/shifts/assignments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/shifts/assignments/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await shiftService.deleteShiftAssignment(req.user!.org_id, paramInt(req.params.id));
 
@@ -134,7 +133,7 @@ router.delete("/shifts/assignments/:id", authenticate, requireHR, async (req: Re
 });
 
 // POST /api/v1/attendance/shifts/bulk-assign
-router.post("/shifts/bulk-assign", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/bulk-assign", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = bulkAssignShiftSchema.parse(req.body);
     const result = await shiftService.bulkAssignShifts(req.user!.org_id, data, req.user!.sub);
@@ -154,7 +153,7 @@ router.post("/shifts/bulk-assign", authenticate, requireHR, async (req: Request,
 });
 
 // GET /api/v1/attendance/shifts/schedule
-router.get("/shifts/schedule", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/shifts/schedule", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = shiftScheduleQuerySchema.parse(req.query);
     const schedule = await shiftService.getSchedule(req.user!.org_id, params);
@@ -191,7 +190,7 @@ router.post("/shifts/swap-request", authenticate, async (req: Request, res: Resp
 });
 
 // GET /api/v1/attendance/shifts/swap-requests
-router.get("/shifts/swap-requests", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/shifts/swap-requests", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const status = req.query.status as string | undefined;
     const requests = await shiftService.listSwapRequests(req.user!.org_id, { status });
@@ -200,7 +199,7 @@ router.get("/shifts/swap-requests", authenticate, requireHR, async (req: Request
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/approve
-router.post("/shifts/swap-requests/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/approve", authenticate, requirePermission("attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.approveSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -219,7 +218,7 @@ router.post("/shifts/swap-requests/:id/approve", authenticate, requireRole("mana
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/reject
-router.post("/shifts/swap-requests/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/reject", authenticate, requirePermission("attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.rejectSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -258,7 +257,7 @@ router.get("/geo-fences", authenticate, async (req: Request, res: Response, next
 });
 
 // POST /api/v1/attendance/geo-fences
-router.post("/geo-fences", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/geo-fences", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createGeoFenceSchema.parse(req.body);
     const fence = await geoFenceService.createGeoFence(req.user!.org_id, data);
@@ -267,7 +266,7 @@ router.post("/geo-fences", authenticate, requireHR, async (req: Request, res: Re
 });
 
 // PUT /api/v1/attendance/geo-fences/:id
-router.put("/geo-fences/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/geo-fences/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createGeoFenceSchema.partial().parse(req.body);
     const fence = await geoFenceService.updateGeoFence(req.user!.org_id, paramInt(req.params.id), data);
@@ -276,7 +275,7 @@ router.put("/geo-fences/:id", authenticate, requireHR, async (req: Request, res:
 });
 
 // DELETE /api/v1/attendance/geo-fences/:id
-router.delete("/geo-fences/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/geo-fences/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await geoFenceService.deleteGeoFence(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Geo-fence deactivated" });
@@ -302,7 +301,7 @@ router.get("/me/policy", authenticate, async (req: Request, res: Response, next:
 });
 
 // GET /api/v1/attendance/settings — org settings (HR / org_admin)
-router.get("/settings", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/settings", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const settings = await settingsService.getSettings(req.user!.org_id);
     sendSuccess(res, settings);
@@ -310,7 +309,7 @@ router.get("/settings", authenticate, requireOrgAdmin, async (req: Request, res:
 });
 
 // PUT /api/v1/attendance/settings — update org settings
-router.put("/settings", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/settings", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateAttendanceSettingsSchema.parse(req.body);
     const settings = await settingsService.updateSettings(req.user!.org_id, data);
@@ -333,7 +332,7 @@ router.put("/settings", authenticate, requireOrgAdmin, async (req: Request, res:
 router.get(
   "/overrides/users/:userId",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const overrides = await settingsService.listUserOverrides(
@@ -349,7 +348,7 @@ router.get(
 router.post(
   "/overrides/users/:userId",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createUserAttendanceOverrideSchema.parse(req.body);
@@ -381,7 +380,7 @@ router.post(
 router.put(
   "/overrides/:id",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateUserAttendanceOverrideSchema.parse(req.body);
@@ -408,7 +407,7 @@ router.put(
 router.delete(
   "/overrides/:id",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = paramInt(req.params.id);
@@ -496,14 +495,54 @@ router.get("/me/history", authenticate, async (req: Request, res: Response, next
 });
 
 // GET /api/v1/attendance/records
-// HR+ sees all records; employees/managers only see their own
+//
+// RBAC v1 — three scope tiers, evaluated against the JWT permissions claim:
+//   - attendance:view_all (or HR role)              -> any record in the org
+//   - attendance:view_team / approve_regularization -> caller's direct + additional reports
+//   - everyone else                                 -> own records only
 router.get("/records", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = attendanceQuerySchema.parse(req.query);
     const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
     const isHR = HR_ROLES.includes(req.user!.role);
-    const user_id = isHR ? (params.user_id || params.employee_id) : req.user!.sub;
-    const department_id = isHR ? params.department_id : undefined;
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+
+    // Scope is driven ONLY by the view_* permissions. `manage` and
+    // `approve_regularization` are action permissions — they say what the
+    // user can do, not how broadly they can see. So a custom role with
+    // (view_team + manage) sees only their team's records but can act on
+    // them. (HR roles still have implicit org-wide visibility.)
+    const canSeeAll = isHR || has("attendance:view_all");
+    const canSeeTeam = has("attendance:view_team");
+
+    let user_id: number | undefined;
+    let department_id: number | undefined;
+    let user_ids: number[] | undefined;
+
+    if (canSeeAll) {
+      user_id = params.user_id || params.employee_id;
+      department_id = params.department_id;
+    } else if (canSeeTeam) {
+      // Resolve the caller's team (primary reports + additional managers)
+      // and scope the query to that set. If the caller passed a user_id,
+      // require it to be in their team.
+      const { resolveTeamMemberIds } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const teamIds = await resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
+      const requested = params.user_id || params.employee_id;
+      if (requested != null) {
+        user_id = teamIds.includes(Number(requested)) ? Number(requested) : -1;
+      } else if (teamIds.length === 0) {
+        user_id = -1; // no reports → no records
+      } else {
+        user_ids = teamIds;
+      }
+    } else {
+      user_id = req.user!.sub;
+    }
+
     const result = await attendanceService.listRecords(req.user!.org_id, {
       page: params.page,
       perPage: params.per_page,
@@ -513,6 +552,7 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
       date_from: params.date_from,
       date_to: params.date_to,
       user_id,
+      user_ids,
       department_id,
     });
     sendPaginated(res, result.records, result.total, params.page, params.per_page);
@@ -521,41 +561,108 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
 
 // GET /api/v1/attendance/records/:id/punches
 // Returns the multi-punch timeline for a single attendance record.
-// HR sees any record in their org; non-HR can only fetch their own.
+// Access tiers (RBAC v1):
+//   - HR / view_all / manage      -> any record in the org
+//   - view_team                   -> records belonging to caller's team
+//                                    (direct + additional reports)
+//   - everyone else               -> own records only
 router.get("/records/:id/punches", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const recordId = paramInt(req.params.id);
     const result = await attendanceService.listPunches(req.user!.org_id, recordId);
+    const targetUserId = Number(result.record.user_id);
+
     const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
     const isHR = HR_ROLES.includes(req.user!.role);
-    if (!isHR && Number(result.record.user_id) !== Number(req.user!.sub)) {
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+
+    let allowed = isHR
+      || has("attendance:view_all")
+      || has("attendance:manage")
+      || targetUserId === Number(req.user!.sub);
+
+    if (!allowed && has("attendance:view_team")) {
+      const { isManagerOf } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      allowed = await isManagerOf(req.user!.org_id, req.user!.sub, targetUserId);
+    }
+
+    if (!allowed) {
       return res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Cannot view another user's punches" } });
     }
     sendSuccess(res, result);
   } catch (err) { next(err); }
 });
 
+// Helper: resolve the user_ids the caller is allowed to see for attendance.
+// Returns null when the caller can see everyone (org-wide). Returns an array
+// (possibly empty) when the caller is team-scoped. Used by /dashboard and
+// /dashboard/breakdown so the metric cards reflect the same scope as the
+// records grid.
+async function resolveAttendanceScope(req: Request): Promise<number[] | null> {
+  const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+  const isHR = HR_ROLES.includes(req.user!.role);
+  const perms = (req.user as any).permissions as string[] | undefined;
+  const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+  if (isHR || has("attendance:view_all")) return null; // org-wide
+  if (has("attendance:view_team")) {
+    const { resolveTeamMemberIds } = await import(
+      "../../services/team/team-resolver.service.js"
+    );
+    return resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
+  }
+  return [req.user!.sub];
+}
+
 // GET /api/v1/attendance/dashboard
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const stats = await attendanceService.getDashboard(req.user!.org_id);
-    sendSuccess(res, stats);
-  } catch (err) { next(err); }
-});
+router.get(
+  "/dashboard",
+  authenticate,
+  requirePermission(
+    "attendance:view_all",
+    "attendance:view_team",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
+    "attendance:manage",
+  ),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userIds = await resolveAttendanceScope(req);
+      const stats = await attendanceService.getDashboard(req.user!.org_id, userIds ?? undefined);
+      sendSuccess(res, stats);
+    } catch (err) { next(err); }
+  },
+);
 
 // GET /api/v1/attendance/dashboard/breakdown?date=YYYY-MM-DD
 // Returns the list of employees grouped by attendance status for the given date
 // (defaults to today). Used by the "click stat card to view details" flow.
-router.get("/dashboard/breakdown", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const date = typeof req.query.date === "string" ? req.query.date : undefined;
-    const breakdown = await attendanceService.getDashboardBreakdown(req.user!.org_id, date);
-    sendSuccess(res, breakdown);
-  } catch (err) { next(err); }
-});
+router.get(
+  "/dashboard/breakdown",
+  authenticate,
+  requirePermission(
+    "attendance:view_all",
+    "attendance:view_team",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
+    "attendance:manage",
+  ),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const date = typeof req.query.date === "string" ? req.query.date : undefined;
+      const userIds = await resolveAttendanceScope(req);
+      const breakdown = await attendanceService.getDashboardBreakdown(
+        req.user!.org_id,
+        date,
+        userIds ?? undefined,
+      );
+      sendSuccess(res, breakdown);
+    } catch (err) { next(err); }
+  },
+);
 
 // GET /api/v1/attendance/monthly-report
-router.get("/monthly-report", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/monthly-report", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const now = new Date();
     const month = req.query.month ? Number(req.query.month) : now.getMonth() + 1;
@@ -567,7 +674,7 @@ router.get("/monthly-report", authenticate, requireHR, async (req: Request, res:
 });
 
 // GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX
-router.get("/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/export", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = (await import("../../db/connection.js")).getDB();
     const orgId = req.user!.org_id;
@@ -626,7 +733,7 @@ router.get("/export", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // GET /api/v1/attendance/export/consolidated — Consolidated employee-wise summary
-router.get("/export/consolidated", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/export/consolidated", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = (await import("../../db/connection.js")).getDB();
     const orgId = req.user!.org_id;
@@ -722,11 +829,30 @@ router.post("/regularizations", authenticate, async (req: Request, res: Response
 });
 
 // GET /api/v1/attendance/regularizations
-router.get("/regularizations", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/regularizations", authenticate, requirePermission("attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const status = req.query.status as string | undefined;
-    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status });
+    // Scope: callers with _all (or view_all / manage / HR) see every
+    // regularization in the org. Callers with only _team see requests from
+    // their direct + additional reports. Empty team -> 0 rows.
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+    let userIds: number[] | undefined;
+    if (
+      !isHR &&
+      !has("attendance:view_all") &&
+      !has("attendance:manage") &&
+      !has("attendance:approve_regularization_all")
+    ) {
+      const { resolveTeamMemberIds } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      userIds = await resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
+    }
+    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status, userIds });
     sendPaginated(res, result.records, result.total, page, per_page);
   } catch (err) { next(err); }
 });
@@ -741,10 +867,39 @@ router.get("/regularizations/me", authenticate, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/attendance/regularizations/:id/approve
-router.put("/regularizations/:id/approve", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/regularizations/:id/approve", authenticate, requirePermission("attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { status, rejection_reason } = approveRegularizationSchema.parse(req.body);
     const regId = paramInt(req.params.id);
+
+    // Scope enforcement: a caller with only _team (no _all / view_all /
+    // manage / HR) can approve only their own team's regularizations.
+    // Reject 403 if the regularization belongs to someone outside their team.
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+    const teamOnly =
+      !isHR &&
+      !has("attendance:view_all") &&
+      !has("attendance:manage") &&
+      !has("attendance:approve_regularization_all") &&
+      has("attendance:approve_regularization_team");
+    if (teamOnly) {
+      const reg = await regularizationService.getRegularization(req.user!.org_id, regId);
+      if (!reg) {
+        return next(new Error("Regularization not found"));
+      }
+      const { isManagerOf } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const inTeam = await isManagerOf(req.user!.org_id, req.user!.sub, Number(reg.user_id));
+      if (!inTeam) {
+        const { sendError } = await import("../../utils/response.js");
+        sendError(res, 403, "FORBIDDEN", "You can only approve regularizations from your own team");
+        return;
+      }
+    }
 
     let result;
     if (status === "approved") {

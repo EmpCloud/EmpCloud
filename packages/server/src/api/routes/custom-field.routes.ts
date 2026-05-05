@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as customFieldService from "../../services/custom-field/custom-field.service.js";
@@ -29,7 +29,7 @@ const router = Router();
 router.put(
   "/definitions/reorder",
   authenticate,
-  requireHR,
+  requirePermission("custom_fields:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = reorderCustomFieldsSchema.parse(req.body);
@@ -69,7 +69,7 @@ router.get(
 router.post(
   "/definitions",
   authenticate,
-  requireHR,
+  requirePermission("custom_fields:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createCustomFieldDefinitionSchema.parse(req.body);
@@ -118,7 +118,7 @@ router.get(
 router.put(
   "/definitions/:id",
   authenticate,
-  requireHR,
+  requirePermission("custom_fields:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = paramInt(req.params.id);
@@ -150,7 +150,7 @@ router.put(
 router.delete(
   "/definitions/:id",
   authenticate,
-  requireHR,
+  requirePermission("custom_fields:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = paramInt(req.params.id);

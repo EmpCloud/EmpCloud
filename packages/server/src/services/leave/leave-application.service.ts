@@ -68,12 +68,28 @@ export async function applyLeave(
     .first();
   if (!leaveType) throw new NotFoundError("Leave type");
 
-  // Rule: Probation period leave restrictions — only sick and emergency leave allowed
+  // Rule: Probation period leave restrictions — only sick and emergency leave allowed.
+  //
+  // "On probation" must match the criteria used by the Probation Tracking
+  // page (probation.service.ts) so that a user who isn't shown there isn't
+  // gated here. Three conditions, ALL must hold:
+  //   1. probation_status IN ('on_probation', 'extended')
+  //   2. probation_end_date IS NOT NULL  (no end date == not actually
+  //      enrolled in probation tracking, just a stale enum default)
+  //   3. probation_end_date >= today      (probation hasn't already ended)
+  //
+  // Without (2) and (3), users whose probation_status was left as the
+  // default "on_probation" but were never actually enrolled (or whose
+  // probation has expired) get falsely blocked from non-sick leaves while
+  // simultaneously not appearing on the Probation Tracking dashboard.
   const applicant = await db("users")
     .where({ id: userId, organization_id: orgId })
+    .whereIn("probation_status", ["on_probation", "extended"])
+    .whereNotNull("probation_end_date")
+    .whereRaw("probation_end_date >= CURDATE()")
     .select("probation_status")
     .first();
-  if (applicant && applicant.probation_status === "on_probation") {
+  if (applicant) {
     // #1920 — Hard-matching on `leaveType.code` against ["sl","sick","eml","emergency"]
     // missed the legitimate sick-leave rows whose codes admins had typed as
     // "SICK_LEAVE", "SL_440514", "SICKLV", etc. Probationers were then told

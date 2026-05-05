@@ -47,11 +47,14 @@ export function useEmployeePhoto(
       const res = await api.get(`/employees/${userId}/photo`, { responseType: "blob" });
       return URL.createObjectURL(res.data);
     },
-    // Skip the request when the caller knows there's no photo. Pass `undefined`
-    // (or omit) to make the call anyway and rely on 404 fallback — that's
-    // useful for the auth user where we may not know whether they have a
-    // photo cached on the AuthUser object yet.
-    enabled: !!userId && hasPhoto !== false,
+    // Only fetch when the caller positively confirms a photo exists.
+    // Previously we'd fire the request whenever hasPhoto wasn't `false`,
+    // which meant every avatar for a user without a photo_path triggered
+    // an authenticated 404 round-trip — visible spam in the network tab
+    // even though the component handled it gracefully. Callers that don't
+    // know whether the user has a photo should pass `hasPhoto={!!emp.photo_path}`
+    // from the directory list (which already includes that field).
+    enabled: !!userId && hasPhoto === true,
     retry: false,
     staleTime: 30 * 60 * 1000, // 30 min
     gcTime: 60 * 60 * 1000,    // 1 h

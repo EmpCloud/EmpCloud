@@ -31,6 +31,71 @@ interface PunchInput {
   remarks?: string | null;
 }
 
+// Generous overtime buffer added on top of the shift's expected duration so
+// a forgotten check-out OR legitimate OT doesn't roll over into a stray
+// "new day" attendance row. Floor of 24h covers free-form attendance without
+// a shift assignment; ceiling lets a 16h shift + 12h OT still close the
+// original record (28h window) instead of opening a phantom second one.
+const OVERTIME_BUFFER_HOURS = 12;
+const MIN_ACTIVE_WINDOW_HOURS = 24;
+
+/**
+ * Find the user's currently-active attendance record — the one a "Check Out"
+ * tap should land on. Prefers an OPEN record (check_in set, check_out null)
+ * whose check_in is recent enough that the shift could still be ongoing.
+ *
+ * Returns null if no open record qualifies; caller then falls back to the
+ * calendar-date lookup (which is correct for fresh-day check-ins).
+ *
+ * Why this exists: night shifts crossing midnight (e.g. 7 PM → 10 AM) used
+ * to confuse the punch logic — at 00:01 the next day, today's date had no
+ * row, so the system showed "Check In" again and created a phantom row at
+ * the user's actual check-out time. Looking up by check-in freshness fixes
+ * that.
+ */
+export async function findActiveAttendanceRecord(orgId: number, userId: number) {
+  const db = getDB();
+  const candidate = await db("attendance_records")
+    .where({ organization_id: orgId, user_id: userId })
+    .whereNotNull("check_in")
+    .whereNull("check_out")
+    .orderBy("check_in", "desc")
+    .first();
+  if (!candidate) return null;
+
+  // Determine the staleness threshold:
+  //   - If shift assigned: shift_duration_minutes + OVERTIME_BUFFER (with floor)
+  //   - Else: MIN_ACTIVE_WINDOW_HOURS
+  let allowedMinutes = MIN_ACTIVE_WINDOW_HOURS * 60;
+  if (candidate.shift_id) {
+    const shift = await db("shifts").where({ id: candidate.shift_id }).first();
+    if (shift) {
+      const [sh, sm] = String(shift.start_time).split(":").map(Number);
+      const [eh, em] = String(shift.end_time).split(":").map(Number);
+      let durationMinutes = (eh * 60 + em) - (sh * 60 + sm);
+      if (durationMinutes <= 0) durationMinutes += 1440; // crosses midnight
+
+      // Overtime buffer — prefer the per-shift `max_overtime_minutes` config
+      // when the org has set one (>0). Falls back to a generous 12h default
+      // when unset so existing data keeps working.
+      const otMinutes =
+        Number(shift.max_overtime_minutes) > 0
+          ? Number(shift.max_overtime_minutes)
+          : OVERTIME_BUFFER_HOURS * 60;
+
+      allowedMinutes = Math.max(
+        durationMinutes + otMinutes,
+        MIN_ACTIVE_WINDOW_HOURS * 60,
+      );
+    }
+  }
+
+  const checkInTime = new Date(candidate.check_in).getTime();
+  const ageMinutes = (Date.now() - checkInTime) / 60000;
+  if (ageMinutes > allowedMinutes) return null; // stale missed-checkout
+  return candidate;
+}
+
 // Single shared path for every tap. checkIn / checkOut both call this so
 // the system never has to ask "is this an in or an out?" — first punch of
 // the day is always the in, latest is always the out, everything in
@@ -44,9 +109,14 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
   const lat = data.latitude ?? null;
   const lng = data.longitude ?? null;
 
-  let record = await db("attendance_records")
-    .where({ organization_id: orgId, user_id: userId, date: today })
-    .first();
+  // Prefer an active open record (handles cross-midnight night shifts where
+  // the calendar date has rolled over but the shift is still ongoing). Falls
+  // back to today's row for normal day-shift check-ins.
+  let record =
+    (await findActiveAttendanceRecord(orgId, userId)) ||
+    (await db("attendance_records")
+      .where({ organization_id: orgId, user_id: userId, date: today })
+      .first());
 
   // First punch of the day → create the parent row + lock the late timer.
   if (!record) {
@@ -249,10 +319,17 @@ export async function listPunches(orgId: number, attendanceRecordId: number) {
 
 export async function getMyToday(orgId: number, userId: number) {
   const db = getDB();
+  // Mirror the punch logic: if a previous-day shift is still active (e.g.
+  // night shift crossing midnight), surface that record so the UI shows
+  // "Check Out" instead of an erroneous "Check In" button.
+  const active = await findActiveAttendanceRecord(orgId, userId);
+  if (active) return active;
   const today = new Date().toISOString().slice(0, 10);
-  return db("attendance_records")
-    .where({ organization_id: orgId, user_id: userId, date: today })
-    .first() || null;
+  return (
+    (await db("attendance_records")
+      .where({ organization_id: orgId, user_id: userId, date: today })
+      .first()) || null
+  );
 }
 
 export async function getMyHistory(
@@ -286,7 +363,7 @@ export async function getMyHistory(
 
 export async function listRecords(
   orgId: number,
-  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; department_id?: number }
+  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; user_ids?: number[]; department_id?: number }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -327,6 +404,11 @@ export async function listRecords(
 
   if (params?.user_id) {
     query = query.where("ar.user_id", params.user_id);
+  } else if (params?.user_ids && params.user_ids.length > 0) {
+    query = query.whereIn("ar.user_id", params.user_ids);
+  } else if (params?.user_ids && params.user_ids.length === 0) {
+    // Explicit empty team — no records.
+    query = query.where(db.raw("1 = 0"));
   }
   if (params?.department_id) {
     query = query.where("u.department_id", params.department_id);
@@ -349,16 +431,33 @@ export async function listRecords(
   return { records, total: Number(count) };
 }
 
-export async function getDashboard(orgId: number) {
+export async function getDashboard(orgId: number, userIds?: number[]) {
   const db = getDB();
   const today = new Date().toISOString().slice(0, 10);
 
-  const [totalUsers] = await db("users")
-    .where({ organization_id: orgId, status: 1 })
-    .count("* as count");
+  // RBAC v1 — when caller is team-scoped, restrict every count to their
+  // resolved team. An empty array short-circuits to all-zero counts (no
+  // direct reports => nothing to show).
+  const teamScoped = Array.isArray(userIds);
+  const emptyTeam = teamScoped && userIds!.length === 0;
+
+  const totalQuery = db("users").where({ organization_id: orgId, status: 1 });
+  if (teamScoped) {
+    if (emptyTeam) totalQuery.where(db.raw("1 = 0"));
+    else totalQuery.whereIn("id", userIds!);
+  }
+  const [totalUsers] = await totalQuery.count("* as count");
+
+  const scopedRecords = (qb: any) => {
+    qb.where({ organization_id: orgId, date: today });
+    if (teamScoped) {
+      if (emptyTeam) qb.where(db.raw("1 = 0"));
+      else qb.whereIn("user_id", userIds!);
+    }
+  };
 
   const [presentCount] = await db("attendance_records")
-    .where({ organization_id: orgId, date: today })
+    .where(scopedRecords)
     .whereIn("status", ["present", "half_day", "checked_in"])
     .count("* as count");
 
@@ -368,13 +467,14 @@ export async function getDashboard(orgId: number) {
   // also pulled in stale rows whose status had since flipped to on_leave or
   // absent, which made the card count bigger than the drilldown list.
   const [lateCount] = await db("attendance_records")
-    .where({ organization_id: orgId, date: today })
+    .where(scopedRecords)
     .whereIn("status", ["present", "half_day", "checked_in"])
     .where("late_minutes", ">", 0)
     .count("* as count");
 
   const [onLeaveCount] = await db("attendance_records")
-    .where({ organization_id: orgId, date: today, status: "on_leave" })
+    .where(scopedRecords)
+    .where("status", "on_leave")
     .count("* as count");
 
   const total = Number(totalUsers.count);
@@ -398,18 +498,27 @@ export async function getDashboard(orgId: number) {
 // Used by the "click stat card to view details" flow on the attendance dashboard.
 // ---------------------------------------------------------------------------
 
-export async function getDashboardBreakdown(orgId: number, date?: string) {
+export async function getDashboardBreakdown(orgId: number, date?: string, userIds?: number[]) {
   const db = getDB();
   const forDate = date || new Date().toISOString().slice(0, 10);
 
-  const employees = await db("users as u")
+  const teamScoped = Array.isArray(userIds);
+  const emptyTeam = teamScoped && userIds!.length === 0;
+
+  const baseQuery = db("users as u")
     .leftJoin("organization_departments as d", "u.department_id", "d.id")
     .leftJoin("attendance_records as ar", function () {
       this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", forDate);
     })
     .where("u.organization_id", orgId)
-    .where("u.status", 1)
-    .select(
+    .where("u.status", 1);
+
+  if (teamScoped) {
+    if (emptyTeam) baseQuery.where(db.raw("1 = 0"));
+    else baseQuery.whereIn("u.id", userIds!);
+  }
+
+  const employees = await baseQuery.select(
       "u.id",
       "u.first_name",
       "u.last_name",
