@@ -14,10 +14,6 @@ import {
   BookOpen,
   Network,
   Crown,
-  ScanFace,
-  Fingerprint,
-  QrCode,
-  Smartphone,
   ScrollText,
   CreditCard,
   TrendingUp,
@@ -291,19 +287,11 @@ export const feedbackHRNavItems: NavItem[] = [
   { path: "/feedback/dashboard", label: "Feedback Dashboard", i18nKey: "nav.feedbackDashboard", icon: BarChart3 },
 ];
 
-export const biometricsNavItems: NavItem[] = [
-  { path: "/biometrics", label: "Biometric Dashboard", i18nKey: "nav.biometrics", icon: ScanFace },
-  // The self-service 'Biometric PIN' item used to live here, but this
-  // section is HR-only (only rendered when the org has an active
-  // emp-biometrics subscription AND the user is HR). Moved to the
-  // main employee/admin nav groups so every logged-in user can manage
-  // their own PIN regardless of module subscription.
-  { path: "/biometrics/enrollment", label: "Face Enrollment", i18nKey: "nav.faceEnrollment", icon: Fingerprint },
-  { path: "/biometrics/qr", label: "QR Attendance", i18nKey: "nav.qrAttendance", icon: QrCode },
-  { path: "/biometrics/devices", label: "Devices", i18nKey: "nav.devices", icon: Smartphone },
-  { path: "/biometrics/logs", label: "Biometric Logs", i18nKey: "nav.biometricLogs", icon: ScrollText },
-  { path: "/biometrics/settings", label: "Biometric Settings", i18nKey: "nav.biometricSettings", icon: Settings },
-];
+// Biometrics section deprecated — only the self-service Kiosk PIN page
+// (under orgAdminOnlyNavItems) remains. Dashboard / Face Enrollment / QR /
+// Devices / Logs / Settings pages are no longer surfaced; the v3 kiosk
+// stack drives biometric attendance directly via /api/v3/biometric/*.
+export const biometricsNavItems: NavItem[] = [];
 
 // Items visible ONLY to org_admin (not hr_admin, not employees).
 // Biometric PIN lives here because the org owner is the one expected to
