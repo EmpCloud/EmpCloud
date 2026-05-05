@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireOrgAdmin } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as userService from "../../services/user/user.service.js";
@@ -89,7 +89,7 @@ router.get("/invitation-info", async (req: Request, res: Response, next: NextFun
 // existing employee. Returns { exists: false } when no match — never 404
 // so the frontend can branch on a single field. Must come BEFORE /:id so
 // "lookup" isn't matched as a numeric id.
-router.get("/lookup", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/lookup", authenticate, requirePermission("employees:invite", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const email = String(req.query.email || "").trim().toLowerCase();
     if (!email) {
@@ -104,7 +104,7 @@ router.get("/lookup", authenticate, requireOrgAdmin, async (req: Request, res: R
 });
 
 // GET /api/v1/users/invitations — List pending invitations
-router.get("/invitations", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/invitations", authenticate, requirePermission("employees:invite"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const status = (req.query.status as string) || "pending";
     const invitations = await userService.listInvitations(req.user!.org_id, status);
@@ -136,7 +136,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/users
-router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("employees:invite"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createUserSchema.parse(req.body);
 
@@ -162,7 +162,7 @@ router.post("/", authenticate, requireOrgAdmin, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/users/:id
-router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateUserSchema.parse(req.body);
 
@@ -191,7 +191,7 @@ router.put("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Resp
 // Org admins (and super_admins for other super_admins) can set a new password
 // for another user in the same org. Self-password must go through
 // /auth/change-password which requires the current password.
-router.post("/:id/reset-password", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id/reset-password", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { password } = adminResetUserPasswordSchema.parse(req.body);
     const targetUserId = paramInt(req.params.id);
@@ -222,7 +222,7 @@ router.post("/:id/reset-password", authenticate, requireOrgAdmin, async (req: Re
 // owned data (leave / attendance / forum / biometric records). Authored
 // records (announcements, policies, etc.) are reassigned to the deleting
 // admin so history survives. Frees the email for re-use.
-router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("employees:deactivate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await userService.deactivateUser(
       req.user!.org_id,
@@ -245,7 +245,7 @@ router.delete("/:id", authenticate, requireOrgAdmin, async (req: Request, res: R
 });
 
 // POST /api/v1/users/invite
-router.post("/invite", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/invite", authenticate, requirePermission("employees:invite"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = inviteUserSchema.parse(req.body);
     const result = await userService.inviteUser(req.user!.org_id, req.user!.sub, data);
@@ -270,7 +270,7 @@ router.post("/invite", authenticate, requireOrgAdmin, async (req: Request, res: 
 router.post(
   "/:id/invite",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("employees:invite"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(String(req.params.id), 10);
@@ -304,7 +304,7 @@ router.post(
 router.post(
   "/invitations/:id/resend",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("employees:invite"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(String(req.params.id), 10);
@@ -338,7 +338,7 @@ router.post(
 router.delete(
   "/invitations/:id",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("employees:invite"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(String(req.params.id), 10);
@@ -377,7 +377,7 @@ router.delete(
 router.post(
   "/bulk-invite-employees",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("employees:invite"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const includeActivated = req.body?.include_activated === true;
@@ -423,7 +423,7 @@ router.post("/accept-invitation", async (req: Request, res: Response, next: Next
 });
 
 // POST /api/v1/users/import — parse CSV and return preview
-router.post("/import", authenticate, requireOrgAdmin, upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/import", authenticate, requirePermission("employees:invite"), upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       sendSuccess(res, { error: "No file uploaded" }, 400);
@@ -436,7 +436,7 @@ router.post("/import", authenticate, requireOrgAdmin, upload.single("file"), asy
 });
 
 // POST /api/v1/users/import/execute — execute the import
-router.post("/import/execute", authenticate, requireOrgAdmin, upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/import/execute", authenticate, requirePermission("employees:invite"), upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       sendSuccess(res, { error: "No file uploaded" }, 400);
