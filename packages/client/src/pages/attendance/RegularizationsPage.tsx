@@ -29,6 +29,8 @@ type RegRow = {
   organization_timezone?: string | null;
 };
 
+// `original_check_in/out` are real punch timestamps captured server-side in
+// UTC, so we shift them into the location's timezone for display.
 function fmtTimeAtTZ(iso: string | null | undefined, tz?: string | null): string {
   if (!iso) return "-";
   try {
@@ -61,6 +63,46 @@ function fmtDateTimeAtTZ(iso: string | null | undefined, tz?: string | null): st
   } catch {
     return new Date(iso).toLocaleString();
   }
+}
+
+// `requested_check_in/out` come from a `<input type="datetime-local">` form
+// — the value is the user's wall-clock time in *their* local zone (which is
+// the location's zone in practice), stored naive into a MySQL DATETIME.
+// mysql2 then serialises the column as an ISO string with a trailing `Z`,
+// so the browser would otherwise treat it as UTC and shift by the location
+// offset, producing values 5h30m ahead of what the employee actually typed
+// (the data confirms this: stored 10:21:00 was rendering as 15:51:00). We
+// strip the `Z`/offset and reformat the wall-clock components verbatim.
+function parseWallClock(value: string | null | undefined): { y: number; m: number; d: number; hh: number; mm: number; ss: number } | null {
+  if (!value || typeof value !== "string") return null;
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return null;
+  return {
+    y: Number(match[1]),
+    m: Number(match[2]),
+    d: Number(match[3]),
+    hh: Number(match[4]),
+    mm: Number(match[5]),
+    ss: Number(match[6] || 0),
+  };
+}
+
+function fmtWallClockTime(value: string | null | undefined): string {
+  const wc = parseWallClock(value);
+  if (!wc) return "-";
+  const period = wc.hh >= 12 ? "pm" : "am";
+  const hour12 = wc.hh % 12 === 0 ? 12 : wc.hh % 12;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(hour12)}:${pad(wc.mm)}:${pad(wc.ss)} ${period}`;
+}
+
+function fmtWallClockDateTime(value: string | null | undefined): string {
+  const wc = parseWallClock(value);
+  if (!wc) return "-";
+  const period = wc.hh >= 12 ? "pm" : "am";
+  const hour12 = wc.hh % 12 === 0 ? 12 : wc.hh % 12;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(wc.d)}/${pad(wc.m)}/${wc.y}, ${pad(hour12)}:${pad(wc.mm)}:${pad(wc.ss)} ${period}`;
 }
 
 function rowTZ(r: { location_timezone?: string | null; organization_timezone?: string | null }) {
@@ -350,8 +392,8 @@ export default function RegularizationsPage() {
                     <div>{fmtTimeAtTZ(r.original_check_out, rowTZ(r))}</div>
                   </td>
                   <td className="px-6 py-4 text-xs text-gray-600">
-                    <div>{fmtTimeAtTZ(r.requested_check_in, rowTZ(r))}</div>
-                    <div>{fmtTimeAtTZ(r.requested_check_out, rowTZ(r))}</div>
+                    <div>{fmtWallClockTime(r.requested_check_in)}</div>
+                    <div>{fmtWallClockTime(r.requested_check_out)}</div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] truncate">{r.reason}</td>
                   <td className="px-6 py-4">
@@ -460,8 +502,8 @@ export default function RegularizationsPage() {
               <div className="grid grid-cols-3 gap-4 px-6 py-3">
                 <dt className="text-gray-500">{t('attendance.regularizations.table.requestedInOut')}</dt>
                 <dd className="col-span-2 text-gray-900">
-                  <div>{fmtDateTimeAtTZ(selectedRow.requested_check_in, rowTZ(selectedRow))}</div>
-                  <div className="text-gray-500">{fmtDateTimeAtTZ(selectedRow.requested_check_out, rowTZ(selectedRow))}</div>
+                  <div>{fmtWallClockDateTime(selectedRow.requested_check_in)}</div>
+                  <div className="text-gray-500">{fmtWallClockDateTime(selectedRow.requested_check_out)}</div>
                 </dd>
               </div>
               <div className="grid grid-cols-3 gap-4 px-6 py-3">
