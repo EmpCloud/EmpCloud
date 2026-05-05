@@ -447,7 +447,9 @@ test.describe("No Sensitive Data Leakage", () => {
     expect(res.status()).toBe(200);
     const bodyStr = JSON.stringify(await res.json());
     expect(bodyStr).not.toContain("password_hash");
-    expect(bodyStr).not.toContain("password");
+    // Match a bare "password" property key (`"password":`) — exclude legitimate
+    // metadata fields like password_changed_at / password_expiry_days.
+    expect(bodyStr).not.toMatch(/"password"\s*:/);
     expect(bodyStr).not.toContain("$2b$");
   });
 
