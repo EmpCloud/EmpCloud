@@ -31,6 +31,63 @@ interface PunchInput {
   remarks?: string | null;
 }
 
+// ---------------------------------------------------------------------------
+// Timezone helpers
+// ---------------------------------------------------------------------------
+//
+// Shifts are configured with wall-clock times in the org's local timezone
+// (e.g. "10:00" in Asia/Kolkata). The server runs in UTC. Comparing a
+// punch's UTC timestamp directly against `setHours(10, 0)` (server-local =
+// UTC) silently mis-interprets the shift, so a 13:41 IST punch against a
+// 10:00 IST shift looked "early" instead of 3h 41m late.
+//
+// Both helpers convert via Intl.DateTimeFormat — no extra dependency.
+
+/** Return the wall-clock day (YYYY-MM-DD) and minute-of-day for a Date in `tz`. */
+function wallClockInTZ(date: Date, tz: string): { day: string; minutes: number } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value || "0";
+  // Intl can render hour as "24" for midnight in some locales; normalise to 0.
+  const hourRaw = parseInt(get("hour"), 10);
+  const hour = hourRaw === 24 ? 0 : hourRaw;
+  return {
+    day: `${get("year")}-${get("month")}-${get("day")}`,
+    minutes: hour * 60 + parseInt(get("minute"), 10),
+  };
+}
+
+/**
+ * Compute late minutes for a check-in against a shift, both expressed in
+ * the org's wall-clock time. Day shifts (start < end) use punch-day-anchored
+ * comparison; night shifts (start >= end) anchor to the previous day when
+ * the punch lands in the small hours of the morning.
+ */
+function computeLateMinutes(
+  firstPunch: Date,
+  shiftStartMinutes: number,
+  graceMinutesLate: number,
+  isNightShift: boolean,
+  tz: string,
+): number {
+  const punch = wallClockInTZ(firstPunch, tz);
+  let diff = punch.minutes - shiftStartMinutes;
+  if (isNightShift && diff < -12 * 60) {
+    // e.g. shift starts 22:00, punch is 02:30 next day — wall-clock minutes
+    // go from 1320 to 150, which would compute as -1170. Roll over.
+    diff += 24 * 60;
+  }
+  if (diff <= graceMinutesLate) return 0;
+  return diff;
+}
+
 // Generous overtime buffer added on top of the shift's expected duration so
 // a forgotten check-out OR legitimate OT doesn't roll over into a stray
 // "new day" attendance row. Floor of 24h covers free-form attendance without
@@ -230,48 +287,60 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
   if (shift) {
     const [sh, sm] = shift.start_time.split(":").map(Number);
     const [eeh, eem] = shift.end_time.split(":").map(Number);
-    let diff = eeh * 60 + eem - (sh * 60 + sm);
+    const shiftStartMinutes = sh * 60 + sm;
+    const shiftEndMinutes = eeh * 60 + eem;
+    let diff = shiftEndMinutes - shiftStartMinutes;
     if (diff <= 0) diff += 1440;
     shiftDurationMinutes = diff - (shift.break_minutes || 0);
+
+    // Resolve the timezone the shift's wall-clock times should be interpreted
+    // in. Source of truth is the user's assigned location (which has its own
+    // timezone — e.g. a Mumbai branch and a Bangalore branch could share an
+    // org but observe different shift starts on a DST boundary). Fall back
+    // up the chain so a user without a location still gets a sensible answer.
+    const userRow = await db("users").where({ id: userId }).select("location_id").first();
+    let shiftTz: string | null = null;
+    if (userRow?.location_id) {
+      const loc = await db("organization_locations")
+        .where({ id: userRow.location_id })
+        .select("timezone")
+        .first();
+      if (loc?.timezone) shiftTz = loc.timezone;
+    }
+    if (!shiftTz) {
+      const orgRow = await db("organizations")
+        .where({ id: orgId })
+        .select("timezone")
+        .first();
+      if (orgRow?.timezone) shiftTz = orgRow.timezone;
+    }
+    if (!shiftTz) shiftTz = "UTC";
 
     // Late on first punch — recomputed every time the row is touched so
     // that a row created before the shift was assigned (shift_id was null)
     // gets its late_minutes filled in once we can resolve a shift.
-    const shiftStart = new Date(firstTime);
-    shiftStart.setHours(sh, sm, 0, 0);
-    // If the first punch is BEFORE today's shift-start hour (e.g. night
-    // shift starting yesterday at 22:00 with first punch at 22:30 today
-    // because the row carries a same-date shift), shift the start back a
-    // day to keep the math sane.
-    if (shift.is_night_shift && shiftStart.getTime() > firstTime.getTime()) {
-      shiftStart.setDate(shiftStart.getDate() - 1);
-    }
-    const graceEnd = new Date(
-      shiftStart.getTime() + (shift.grace_minutes_late || 0) * 60000,
+    // Wall-clock comparison in the shift's timezone, NOT server-local.
+    lateMinutes = computeLateMinutes(
+      firstTime,
+      shiftStartMinutes,
+      shift.grace_minutes_late || 0,
+      !!shift.is_night_shift,
+      shiftTz,
     );
-    if (firstTime > graceEnd) {
-      lateMinutes = Math.round(
-        (firstTime.getTime() - shiftStart.getTime()) / 60000,
-      );
-    }
 
     // Early-departure / OT only meaningful once we have a check-out
     // candidate (i.e. at least 2 punches). The latest punch is the one
     // we score against the shift end.
     if (punches.length > 1) {
-      const shiftEnd = new Date(lastTime);
-      shiftEnd.setHours(eeh, eem, 0, 0);
-      if (shift.is_night_shift || shiftEnd.getTime() <= firstTime.getTime()) {
-        shiftEnd.setDate(shiftEnd.getDate() + 1);
-      }
-      const graceStart = new Date(
-        shiftEnd.getTime() - (shift.grace_minutes_early || 0) * 60000,
-      );
-      if (lastTime < graceStart) {
-        earlyDepartureMinutes = Math.round(
-          (shiftEnd.getTime() - lastTime.getTime()) / 60000,
-        );
-      } else if (lastTime > shiftEnd) {
+      const lastWall = wallClockInTZ(lastTime, shiftTz);
+      let endDiff = lastWall.minutes - shiftEndMinutes;
+      // Night shifts: punch at 06:30 against shift_end 06:00 — same wall-clock
+      // day. Punch at 07:30 against shift_end 22:00 — wraps. Use the same
+      // 12h-window heuristic as late-calc.
+      if (shift.is_night_shift && endDiff > 12 * 60) endDiff -= 24 * 60;
+      if (endDiff < -(shift.grace_minutes_early || 0)) {
+        earlyDepartureMinutes = -endDiff; // positive minutes left early
+      } else if (endDiff > 0) {
         // Rule 5 (#1057): OT only counts after full shift hours are completed
         // Rule 6 (#1058): Auto-calculate OT from check-out vs shift end time
         const otResult = calculateOvertime(
