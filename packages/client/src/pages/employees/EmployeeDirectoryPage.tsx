@@ -8,6 +8,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import { showToast } from "@/components/ui/Toast";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
+import CustomRolesField from "@/components/employees/CustomRolesField";
 import * as XLSX from "xlsx";
 
 // ---------------------------------------------------------------------------
@@ -1364,6 +1365,16 @@ export default function EmployeeDirectoryPage() {
                       <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                         <textarea name="address" defaultValue={editEmployee.address || ""} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none" />
+                      </div>
+                      {/* Custom Roles — additive on top of the primary system role above.
+                          Saves immediately on add/remove (independent of the form's
+                          Save Changes button) since it hits a different endpoint. */}
+                      <div className="sm:col-span-2">
+                        <CustomRolesField
+                          userId={editEmployee.id}
+                          canEdit={isOrgAdmin}
+                          compact
+                        />
                       </div>
                     </div>
                     {editError && (
