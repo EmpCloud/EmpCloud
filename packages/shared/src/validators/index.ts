@@ -575,6 +575,10 @@ const shiftBaseSchema = z.object({
   break_minutes: z.number().int().min(0).default(0),
   grace_minutes_late: z.number().int().min(0).default(0),
   grace_minutes_early: z.number().int().min(0).default(0),
+  // Maximum overtime allowed past shift end (minutes). 0 = no per-shift cap;
+  // the attendance service falls back to a generous 12h window so a
+  // forgotten checkout still rolls over correctly.
+  max_overtime_minutes: z.number().int().min(0).max(1440).default(0),
   is_night_shift: z.boolean().default(false),
   is_default: z.boolean().default(false),
   working_days: workingDaysField.default("1,2,3,4,5"), // 0=Sun,1=Mon,...6=Sat
@@ -604,6 +608,7 @@ export const updateShiftSchema = z
     break_minutes: z.number().int().min(0).optional(),
     grace_minutes_late: z.number().int().min(0).optional(),
     grace_minutes_early: z.number().int().min(0).optional(),
+    max_overtime_minutes: z.number().int().min(0).max(1440).optional(),
     is_night_shift: z.boolean().optional(),
     is_default: z.boolean().optional(),
     working_days: workingDaysField.optional(),

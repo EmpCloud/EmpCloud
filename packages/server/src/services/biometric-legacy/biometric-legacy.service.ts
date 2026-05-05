@@ -890,9 +890,15 @@ export async function matchAndPunch(
   // Always punch into the matched user's own org — never the kiosk owner's.
   const punchOrgId = Number(user.organization_id);
   const todayStr = todayYMD();
-  const existing = await db("attendance_records")
-    .where({ organization_id: punchOrgId, user_id: user.id, date: todayStr })
-    .first();
+  // Active-record lookup mirrors the punch logic — handles night shifts that
+  // cross midnight so a kiosk tap at e.g. 02:00 AM during a 7 PM → 10 AM
+  // shift is presented as a check-out, not a phantom "Checked In".
+  const activeOpen = await attendanceService.findActiveAttendanceRecord(punchOrgId, user.id);
+  const existing =
+    activeOpen ||
+    (await db("attendance_records")
+      .where({ organization_id: punchOrgId, user_id: user.id, date: todayStr })
+      .first());
 
   const department = await db("organization_departments").where({ id: user.department_id }).first();
   const location = await db("organization_locations").where({ id: user.location_id }).first();

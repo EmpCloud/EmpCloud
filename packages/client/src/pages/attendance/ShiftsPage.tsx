@@ -26,6 +26,7 @@ interface ShiftForm {
   break_minutes: number;
   grace_minutes_late: number;
   grace_minutes_early: number;
+  max_overtime_minutes: number;
   is_night_shift: boolean;
   is_default: boolean;
   working_days: string;
@@ -41,6 +42,7 @@ const emptyForm: ShiftForm = {
   break_minutes: 60,
   grace_minutes_late: 15,
   grace_minutes_early: 15,
+  max_overtime_minutes: 0,
   is_night_shift: false,
   is_default: false,
   working_days: "1,2,3,4,5",
@@ -108,6 +110,7 @@ export default function ShiftsPage() {
       break_minutes: shift.break_minutes,
       grace_minutes_late: shift.grace_minutes_late,
       grace_minutes_early: shift.grace_minutes_early,
+      max_overtime_minutes: shift.max_overtime_minutes ?? 0,
       is_night_shift: !!shift.is_night_shift,
       is_default: !!shift.is_default,
       working_days: shift.working_days || "1,2,3,4,5",
@@ -273,6 +276,31 @@ export default function ShiftsPage() {
                     min={0}
                   />
                 </div>
+              </div>
+
+              {/* Overtime cap — minutes past shift end after which an open
+                  attendance row is no longer considered "active". Higher
+                  values let users with legitimate OT still close the right
+                  record on check-out the next day. 0 = use the system
+                  default (12h fallback). */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max overtime (minutes)
+                </label>
+                <input
+                  type="number"
+                  value={form.max_overtime_minutes}
+                  onChange={(e) => set("max_overtime_minutes", Number(e.target.value))}
+                  className="w-full md:w-1/3 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  min={0}
+                  max={1440}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  How long past the shift end an open check-in is still
+                  treated as active (so a forgotten checkout or genuine OT
+                  the next morning rolls over correctly). Set 0 for the
+                  system default (12 hours).
+                </p>
               </div>
 
               {/* Shift Options — #1957: night and default are mutually

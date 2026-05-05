@@ -53,7 +53,7 @@ const MIN_ACTIVE_WINDOW_HOURS = 24;
  * the user's actual check-out time. Looking up by check-in freshness fixes
  * that.
  */
-async function findActiveAttendanceRecord(orgId: number, userId: number) {
+export async function findActiveAttendanceRecord(orgId: number, userId: number) {
   const db = getDB();
   const candidate = await db("attendance_records")
     .where({ organization_id: orgId, user_id: userId })
@@ -74,8 +74,17 @@ async function findActiveAttendanceRecord(orgId: number, userId: number) {
       const [eh, em] = String(shift.end_time).split(":").map(Number);
       let durationMinutes = (eh * 60 + em) - (sh * 60 + sm);
       if (durationMinutes <= 0) durationMinutes += 1440; // crosses midnight
+
+      // Overtime buffer — prefer the per-shift `max_overtime_minutes` config
+      // when the org has set one (>0). Falls back to a generous 12h default
+      // when unset so existing data keeps working.
+      const otMinutes =
+        Number(shift.max_overtime_minutes) > 0
+          ? Number(shift.max_overtime_minutes)
+          : OVERTIME_BUFFER_HOURS * 60;
+
       allowedMinutes = Math.max(
-        durationMinutes + OVERTIME_BUFFER_HOURS * 60,
+        durationMinutes + otMinutes,
         MIN_ACTIVE_WINDOW_HOURS * 60,
       );
     }
