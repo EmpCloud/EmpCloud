@@ -25,12 +25,17 @@ test.describe('Employee Details — Profile CRUD', () => {
     expect(adminResp.status()).toBe(200);
     const adminData = await adminResp.json();
     adminToken = adminData.data.tokens.access_token;
-
-    const adminMe = await request.get(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
-    });
-    const adminMeData = await adminMe.json();
-    adminUserId = adminMeData.data?.user?.id || adminMeData.data?.employee_id || adminMeData.data?.id;
+    // Login response carries the user inline — saves an /auth/me round-trip
+    // and avoids the { user, org } unwrap that the previous version had to
+    // do. Keep /auth/me as a fallback in case the login payload changes.
+    adminUserId = adminData.data.user?.id;
+    if (!adminUserId) {
+      const adminMe = await request.get(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      const adminMeData = await adminMe.json();
+      adminUserId = adminMeData.data?.user?.id;
+    }
 
     // Login as employee
     const empResp = await request.post(`${API_BASE}/auth/login`, {
@@ -39,12 +44,14 @@ test.describe('Employee Details — Profile CRUD', () => {
     expect(empResp.status()).toBe(200);
     const empData = await empResp.json();
     employeeToken = empData.data.tokens.access_token;
-
-    const empMe = await request.get(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${employeeToken}` },
-    });
-    const empMeData = await empMe.json();
-    employeeUserId = empMeData.data?.user?.id || empMeData.data?.employee_id || empMeData.data?.id;
+    employeeUserId = empData.data.user?.id;
+    if (!employeeUserId) {
+      const empMe = await request.get(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${employeeToken}` },
+      });
+      const empMeData = await empMe.json();
+      employeeUserId = empMeData.data?.user?.id;
+    }
   });
 
   // ─── Address CRUD ──────────────────────────────────────────────────────────

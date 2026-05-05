@@ -24,13 +24,17 @@ test.describe('Employees Module', () => {
     expect(adminResp.status()).toBe(200);
     const adminData = await adminResp.json();
     adminToken = adminData.data.tokens.access_token;
+    // Login response also exposes the user — prefer it so we don't depend on
+    // /auth/me shape (which returns { user, org }, not a flat user object).
+    adminEmployeeId = adminData.data.user?.id;
 
-    // Get admin's employee ID from /auth/me
-    const adminMe = await request.get(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${adminToken}` },
-    });
-    const adminMeData = await adminMe.json();
-    adminEmployeeId = adminMeData.data.employee_id || adminMeData.data.id;
+    if (!adminEmployeeId) {
+      const adminMe = await request.get(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      const adminMeData = await adminMe.json();
+      adminEmployeeId = adminMeData.data?.user?.id;
+    }
 
     // Login as employee
     const empResp = await request.post(`${API_BASE}/auth/login`, {
@@ -39,13 +43,15 @@ test.describe('Employees Module', () => {
     expect(empResp.status()).toBe(200);
     const empData = await empResp.json();
     employeeToken = empData.data.tokens.access_token;
+    employeeEmployeeId = empData.data.user?.id;
 
-    // Get employee's employee ID
-    const empMe = await request.get(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${employeeToken}` },
-    });
-    const empMeData = await empMe.json();
-    employeeEmployeeId = empMeData.data.employee_id || empMeData.data.id;
+    if (!employeeEmployeeId) {
+      const empMe = await request.get(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${employeeToken}` },
+      });
+      const empMeData = await empMe.json();
+      employeeEmployeeId = empMeData.data?.user?.id;
+    }
   });
 
   // ─── List & Search ─────────────────────────────────────────────────────────
