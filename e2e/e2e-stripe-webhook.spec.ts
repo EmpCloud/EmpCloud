@@ -23,6 +23,8 @@ async function login(page: Page): Promise<void> {
 
 test.describe("Stripe Webhook Auto-Payment", () => {
   test("Full payment loop: checkout → webhook → invoice paid", async ({ page, context, request }) => {
+    test.skip(!BILLING_KEY, "BILLING_API_KEY not set — billing-service API not reachable from this runner");
+    test.skip(true, "TechNova fixture is an INR org; listPaymentGateways now filters Stripe out for INR (#stripe-only-international) so the 'Stripe (Card)' button is no longer rendered. Re-enable for a USD/GBP/EUR org.");
     test.setTimeout(120000);
 
     // Step 1: Get an unpaid invoice ID from billing API

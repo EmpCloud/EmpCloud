@@ -39,11 +39,14 @@ let assessmentToken = '';
 test.describe.serial('0 — Auth Setup', () => {
   test('0.1 Login to EmpCloud', async ({ request }) => {
     const res = await request.post(`${EC_API}/auth/login`, {
-      data: { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || process.env.TEST_USER_PASSWORD || 'Welcome@123' },
+      data: { email: 'ananya@technova.in', password: process.env.TEST_USER_PASSWORD || 'Welcome@123' },
     });
     expect([200, 201, 400, 401, 409, 500]).toContain(res.status());
     const body = await res.json();
-    ecToken = body.data?.tokens?.accessToken || body.data?.accessToken || '';
+    // EmpCloud auth.service returns { user, org, tokens: { access_token, refresh_token, ... } }
+    // Earlier iteration only looked at camelCase `accessToken`, leaving ecToken empty
+    // and cascading every downstream SSO test to fail.
+    ecToken = body.data?.tokens?.access_token || body.data?.tokens?.accessToken || '';
     expect(ecToken).toBeTruthy();
   });
 
