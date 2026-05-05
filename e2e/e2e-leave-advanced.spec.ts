@@ -78,7 +78,8 @@ test.describe('Leave Advanced', () => {
       headers: { Authorization: `Bearer ${employeeToken}` },
     });
     const empMeData = await empMe.json();
-    employeeUserId = empMeData.data.employee_id || empMeData.data.id;
+    // /auth/me returns { user: {...}, org: {...} } — pull id from user
+    employeeUserId = empMeData.data.user?.id || empMeData.data.id;
 
     // Ensure an active leave type exists for application tests
     activeLeaveTypeId = await ensureActiveLeaveType(request, adminToken);

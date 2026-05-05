@@ -31,7 +31,9 @@ async function getMe(request: any, token: string) {
     headers: { Authorization: `Bearer ${token}` },
   });
   const body = await resp.json();
-  return { id: body.data.id, employee_id: body.data.employee_id || body.data.id };
+  // /auth/me returns { user: {...}, org: {...} }
+  const user = body.data?.user || body.data || {};
+  return { id: user.id, employee_id: user.employee_id || user.id };
 }
 
 function headers(token: string) {
