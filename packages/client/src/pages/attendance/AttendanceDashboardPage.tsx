@@ -17,7 +17,7 @@ export default function AttendanceDashboardPage() {
   const canSeeDashboard = hasPerm(
     "attendance:view_team",
     "attendance:view_all",
-    "attendance:approve_regularization",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
     "attendance:manage",
   );
 

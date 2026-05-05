@@ -199,7 +199,7 @@ router.get("/shifts/swap-requests", authenticate, requirePermission("attendance:
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/approve
-router.post("/shifts/swap-requests/:id/approve", authenticate, requirePermission("attendance:approve_regularization", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/approve", authenticate, requirePermission("attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.approveSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -218,7 +218,7 @@ router.post("/shifts/swap-requests/:id/approve", authenticate, requirePermission
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/reject
-router.post("/shifts/swap-requests/:id/reject", authenticate, requirePermission("attendance:approve_regularization", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/reject", authenticate, requirePermission("attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.rejectSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -602,7 +602,7 @@ router.get(
   requirePermission(
     "attendance:view_all",
     "attendance:view_team",
-    "attendance:approve_regularization",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
     "attendance:manage",
   ),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -623,7 +623,7 @@ router.get(
   requirePermission(
     "attendance:view_all",
     "attendance:view_team",
-    "attendance:approve_regularization",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
     "attendance:manage",
   ),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -808,11 +808,30 @@ router.post("/regularizations", authenticate, async (req: Request, res: Response
 });
 
 // GET /api/v1/attendance/regularizations
-router.get("/regularizations", authenticate, requirePermission("attendance:view_all", "attendance:approve_regularization"), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/regularizations", authenticate, requirePermission("attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const status = req.query.status as string | undefined;
-    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status });
+    // Scope: callers with _all (or view_all / manage / HR) see every
+    // regularization in the org. Callers with only _team see requests from
+    // their direct + additional reports. Empty team -> 0 rows.
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+    let userIds: number[] | undefined;
+    if (
+      !isHR &&
+      !has("attendance:view_all") &&
+      !has("attendance:manage") &&
+      !has("attendance:approve_regularization_all")
+    ) {
+      const { resolveTeamMemberIds } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      userIds = await resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
+    }
+    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status, userIds });
     sendPaginated(res, result.records, result.total, page, per_page);
   } catch (err) { next(err); }
 });
@@ -827,10 +846,39 @@ router.get("/regularizations/me", authenticate, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/attendance/regularizations/:id/approve
-router.put("/regularizations/:id/approve", authenticate, requirePermission("attendance:approve_regularization"), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/regularizations/:id/approve", authenticate, requirePermission("attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { status, rejection_reason } = approveRegularizationSchema.parse(req.body);
     const regId = paramInt(req.params.id);
+
+    // Scope enforcement: a caller with only _team (no _all / view_all /
+    // manage / HR) can approve only their own team's regularizations.
+    // Reject 403 if the regularization belongs to someone outside their team.
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+    const isHR = HR_ROLES.includes(req.user!.role);
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+    const teamOnly =
+      !isHR &&
+      !has("attendance:view_all") &&
+      !has("attendance:manage") &&
+      !has("attendance:approve_regularization_all") &&
+      has("attendance:approve_regularization_team");
+    if (teamOnly) {
+      const reg = await regularizationService.getRegularization(req.user!.org_id, regId);
+      if (!reg) {
+        return next(new Error("Regularization not found"));
+      }
+      const { isManagerOf } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const inTeam = await isManagerOf(req.user!.org_id, req.user!.sub, Number(reg.user_id));
+      if (!inTeam) {
+        const { sendError } = await import("../../utils/response.js");
+        sendError(res, 403, "FORBIDDEN", "You can only approve regularizations from your own team");
+        return;
+      }
+    }
 
     let result;
     if (status === "approved") {

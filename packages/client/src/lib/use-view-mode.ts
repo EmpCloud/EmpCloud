@@ -42,7 +42,7 @@ export const useViewModeStore = create<ViewModeState>()(
 export const ADMIN_PERMISSION_HINTS: string[] = [
   // Cross-cutting
   "employees:view_all", "employees:edit_all", "employees:invite", "employees:deactivate", "employees:change_role",
-  "attendance:view_all", "attendance:approve_regularization", "attendance:manage",
+  "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage",
   "leave:view_all", "leave:approve", "leave:manage_policies", "leave:override_balance",
   "billing:view", "billing:manage",
   "subscriptions:view", "subscriptions:manage_seats", "subscriptions:cancel", "subscriptions:add_module",

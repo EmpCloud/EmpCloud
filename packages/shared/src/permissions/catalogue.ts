@@ -44,7 +44,8 @@ export const PERMISSIONS: PermissionDef[] = [
   p("attendance:view_team", "View team attendance", "Attendance", "See your direct reports' attendance", "team"),
   p("attendance:view_all", "View all attendance", "Attendance", "See every employee's attendance", "all"),
   p("attendance:regularize", "Request regularization", "Attendance", "Submit attendance regularization requests"),
-  p("attendance:approve_regularization", "Approve regularization", "Attendance", "Approve / reject regularization requests for your team"),
+  p("attendance:approve_regularization_team", "Approve regularization (team)", "Attendance", "Approve / reject regularization requests from your direct reports", "team"),
+  p("attendance:approve_regularization_all", "Approve regularization (all)", "Attendance", "Approve / reject regularization requests from anyone in the org", "all"),
   p("attendance:manage", "Manage attendance", "Attendance", "Edit any user's attendance, manage shifts and policies"),
 
   // ── Leave ──
@@ -293,7 +294,7 @@ const HR_EXCLUDED = new Set<string>([
 ]);
 
 const MANAGER_KEYS: string[] = [
-  "attendance:view", "attendance:view_team", "attendance:regularize", "attendance:approve_regularization",
+  "attendance:view", "attendance:view_team", "attendance:regularize", "attendance:approve_regularization_team",
   "leave:view", "leave:view_team", "leave:apply", "leave:approve",
   "documents:view", "documents:upload",
   "announcements:view", "policies:view", "policies:acknowledge",

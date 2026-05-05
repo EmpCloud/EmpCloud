@@ -134,15 +134,15 @@ export const adminNavItems: NavItem[] = [
   ]},
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI" },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
-  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization", "attendance:manage"], children: [
+  { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"], children: [
     // The "View Attendance" page (AttendanceDashboardPage) renders the
     // employee records grid. Visible to anyone with team-or-broader
     // attendance read access — the page itself scopes the data to the
     // user's permission level (team vs all-org).
-    { path: "/attendance", label: "View Attendance", i18nKey: "nav.viewAttendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization", "attendance:manage"] },
+    { path: "/attendance", label: "View Attendance", i18nKey: "nav.viewAttendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"] },
     { path: "/attendance/shifts", label: "Shift Settings", i18nKey: "nav.shiftSettings", icon: AlarmClock, requiredPermissions: ["attendance:manage"] },
     { path: "/attendance/shift-schedule", label: "Shift Schedule", i18nKey: "nav.shiftSchedule", icon: CalendarRange, requiredPermissions: ["attendance:manage"] },
-    { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList, requiredPermissions: ["attendance:approve_regularization", "attendance:manage"] },
+    { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList, requiredPermissions: ["attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"] },
     { path: "/attendance/settings", label: "Attendance Settings", i18nKey: "nav.attendanceSettings", icon: SlidersHorizontal, requiredPermissions: ["attendance:manage"] },
   ]},
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, requiredPermissions: ["leave:view_all", "leave:approve", "leave:manage_policies", "leave:override_balance"], children: [

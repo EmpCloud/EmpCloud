@@ -49,7 +49,7 @@ export async function submitRegularization(orgId: number, userId: number, data: 
 
 export async function listRegularizations(
   orgId: number,
-  params?: { page?: number; perPage?: number; status?: string }
+  params?: { page?: number; perPage?: number; status?: string; userIds?: number[] }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -61,6 +61,15 @@ export async function listRegularizations(
 
   if (params?.status) {
     query = query.where("ar.status", params.status);
+  }
+  // Team scoping: undefined => no scope (org-wide); empty array => 0 rows;
+  // populated array => whereIn.
+  if (Array.isArray(params?.userIds)) {
+    if (params.userIds.length === 0) {
+      query = query.where(db.raw("1 = 0"));
+    } else {
+      query = query.whereIn("ar.user_id", params.userIds);
+    }
   }
 
   const [{ count }] = await query.clone().count("* as count");
@@ -77,6 +86,15 @@ export async function listRegularizations(
     .offset((page - 1) * perPage);
 
   return { records, total: Number(count) };
+}
+
+/** Read a single regularization row scoped to the org. Used by the approve
+ *  route to enforce team-scope on _team-only callers. */
+export async function getRegularization(orgId: number, regularizationId: number) {
+  const db = getDB();
+  return db("attendance_regularizations")
+    .where({ id: regularizationId, organization_id: orgId })
+    .first();
 }
 
 export async function approveRegularization(orgId: number, regularizationId: number, approvedBy: number) {
