@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as wellnessService from "../../services/wellness/wellness.service.js";
@@ -49,7 +49,7 @@ router.get("/summary", authenticate, async (req: Request, res: Response, next: N
 });
 
 // GET /api/v1/wellness/dashboard — Org dashboard (HR)
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("wellness:view_all", "wellness:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dashboard = await wellnessService.getWellnessDashboard(req.user!.org_id);
     sendSuccess(res, dashboard);
@@ -191,7 +191,7 @@ router.get("/programs/:id", authenticate, async (req: Request, res: Response, ne
 });
 
 // POST /api/v1/wellness/programs — Create program (HR)
-router.post("/programs", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/programs", authenticate, requirePermission("wellness:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createWellnessProgramSchema.parse(req.body);
     const program = await wellnessService.createProgram(
@@ -215,7 +215,7 @@ router.post("/programs", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // PUT /api/v1/wellness/programs/:id — Update program (HR)
-router.put("/programs/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/programs/:id", authenticate, requirePermission("wellness:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateWellnessProgramSchema.parse(req.body);
     const program = await wellnessService.updateProgram(

@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as feedbackService from "../../services/feedback/anonymous-feedback.service.js";
@@ -77,7 +77,7 @@ router.get(
 router.get(
   "/dashboard",
   authenticate,
-  requireHR,
+  requirePermission("feedback:view", "feedback:respond"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const stats = await feedbackService.getFeedbackDashboard(
@@ -94,7 +94,7 @@ router.get(
 router.get(
   "/",
   authenticate,
-  requireHR,
+  requirePermission("feedback:view", "feedback:respond"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const filters = feedbackQuerySchema.parse(req.query);
@@ -158,7 +158,7 @@ router.get(
 router.post(
   "/:id/respond",
   authenticate,
-  requireHR,
+  requirePermission("feedback:respond"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = respondFeedbackSchema.parse(req.body);
@@ -221,7 +221,7 @@ router.put(
 router.delete(
   "/:id",
   authenticate,
-  requireHR,
+  requirePermission("feedback:respond"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = paramInt(req.params.id);
@@ -248,7 +248,7 @@ router.delete(
 router.put(
   "/:id/status",
   authenticate,
-  requireHR,
+  requirePermission("feedback:respond"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateFeedbackStatusSchema.parse(req.body);
