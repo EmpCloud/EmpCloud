@@ -782,6 +782,9 @@ export const attendanceQuerySchema = paginationSchema.extend({
   user_id: z.coerce.number().int().positive().optional(),
   employee_id: z.coerce.number().int().positive().optional(),
   department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
+  role: z.string().trim().min(1).max(64).optional(),
+  search: z.string().trim().min(1).max(120).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -872,6 +875,11 @@ export const leaveQuerySchema = paginationSchema.extend({
   status: z.string().optional(),
   leave_type_id: z.coerce.number().int().positive().optional(),
   user_id: z.coerce.number().int().positive().optional(),
+  department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
+  search: z.string().trim().min(1).max(120).optional(),
+  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 export const initializeBalancesSchema = z.object({
@@ -907,6 +915,7 @@ export const resetPeriodUsageSchema = z.object({
 export const employeeLeavesQuerySchema = paginationSchema.extend({
   search: z.string().optional(),
   department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
   year: z.coerce.number().int().min(2020).max(2100).optional(),
 });
 

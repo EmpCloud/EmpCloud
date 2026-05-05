@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
+import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 import {
   Plus,
   Pencil,
@@ -1022,8 +1023,15 @@ function PoliciesSection(props: {
 function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
+  const [locationId, setLocationId] = useStickyLocationFilter();
   const [page, setPage] = useState(1);
   const perPage = 25;
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ["org-locations"],
+    queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
+    staleTime: 60000,
+  });
   const [editing, setEditing] = useState<{
     user_id: number;
     user_name: string;
@@ -1035,7 +1043,7 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
     data: EmployeeBalanceRow[];
     pagination: { total: number; page: number; per_page: number };
   }>({
-    queryKey: ["admin-employee-leaves", search, page],
+    queryKey: ["admin-employee-leaves", search, locationId, page],
     queryFn: () =>
       api
         .get("/leave/admin/employees", {
@@ -1043,6 +1051,7 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             page,
             per_page: perPage,
             search: search || undefined,
+            location_id: locationId || undefined,
           },
         })
         .then((r) => r.data),
@@ -1102,7 +1111,7 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Employee Leaves</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             type="text"
             placeholder="Search by name, email, code..."
@@ -1113,6 +1122,19 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-64"
           />
+          <select
+            value={locationId ?? ""}
+            onChange={(e) => {
+              setLocationId(e.target.value ? Number(e.target.value) : undefined);
+              setPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          >
+            <option value="">All locations</option>
+            {locations.map((l: any) => (
+              <option key={l.id} value={l.id}>{l.name}</option>
+            ))}
+          </select>
           <button
             onClick={() => setBulkOpen(true)}
             className="flex items-center gap-1 text-sm bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700"

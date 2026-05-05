@@ -3,9 +3,10 @@ import api from "@/api/client";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor, ChevronDown, ChevronUp } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import { usePermissions } from "@/lib/use-permissions";
+import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 import * as XLSX from "xlsx";
 
 export default function AttendanceDashboardPage() {
@@ -31,11 +32,23 @@ export default function AttendanceDashboardPage() {
   const [month, setMonth] = useState(() => now.getMonth() + 1);
   const [year, setYear] = useState(() => now.getFullYear());
   const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+  const [locationId, setLocationId] = useStickyLocationFilter();
+  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   // Applied date range — only used in the query after clicking Apply
   const [appliedDateFrom, setAppliedDateFrom] = useState("");
   const [appliedDateTo, setAppliedDateTo] = useState("");
+  // Debounced search term so we don't fire a request on every keystroke.
+  const [appliedSearch, setAppliedSearch] = useState("");
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setAppliedSearch(searchTerm.trim());
+      setPage(1);
+    }, 300);
+    return () => window.clearTimeout(id);
+  }, [searchTerm]);
 
   // Month names use the active i18n locale so the dropdown follows the UI language.
   const months = Array.from({ length: 12 }, (_, i) => ({
@@ -50,17 +63,37 @@ export default function AttendanceDashboardPage() {
     staleTime: 60000,
   });
 
+  const { data: locations = [] } = useQuery({
+    queryKey: ["org-locations"],
+    queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+
+  // Standard system roles — `users.role` is the primary role slug. Custom
+  // role assignments live on `user_roles` and aren't part of the primary
+  // role string, so this filter scopes by the user's main role only.
+  const ROLE_OPTIONS: { value: string; label: string }[] = [
+    { value: "employee", label: "Employee" },
+    { value: "manager", label: "Manager" },
+    { value: "hr_admin", label: "HR Admin" },
+    { value: "org_admin", label: "Org Admin" },
+    { value: "super_admin", label: "Super Admin" },
+  ];
+
   const { data: dashboard, isLoading: dashLoading } = useQuery({
     queryKey: ["attendance-dashboard"],
     queryFn: () => api.get("/attendance/dashboard").then((r) => r.data.data),
   });
 
   const { data: recordsData, isLoading: recLoading } = useQuery({
-    queryKey: ["attendance-records", page, month, year, departmentId, appliedDateFrom, appliedDateTo],
+    queryKey: ["attendance-records", page, month, year, departmentId, locationId, roleFilter, appliedSearch, appliedDateFrom, appliedDateTo],
     queryFn: () => {
       const params: Record<string, any> = {
         page,
         department_id: departmentId || undefined,
+        location_id: locationId || undefined,
+        role: roleFilter || undefined,
+        search: appliedSearch || undefined,
       };
       if (appliedDateFrom) {
         params.date_from = appliedDateFrom;
@@ -86,6 +119,10 @@ export default function AttendanceDashboardPage() {
     setMonth(n.getMonth() + 1);
     setYear(n.getFullYear());
     setDepartmentId(undefined);
+    setLocationId(undefined);
+    setRoleFilter("");
+    setSearchTerm("");
+    setAppliedSearch("");
     setDateFrom("");
     setDateTo("");
     setAppliedDateFrom("");
@@ -445,6 +482,42 @@ export default function AttendanceDashboardPage() {
               ))}
             </select>
           </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
+            <select
+              value={locationId ?? ""}
+              onChange={(e) => { setLocationId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">All locations</option>
+              {locations.map((l: any) => (
+                <option key={l.id} value={l.id}>{l.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Role</label>
+            <select
+              value={roleFilter}
+              onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">All roles</option>
+              {ROLE_OPTIONS.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Search employee</label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Name, email, code"
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-52"
+            />
+          </div>
           <div className="border-l border-gray-200 pl-3 flex items-end gap-2">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateFrom')}</label>
@@ -629,6 +702,7 @@ export default function AttendanceDashboardPage() {
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="px-3 py-3 w-10"></th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
@@ -645,6 +719,7 @@ export default function AttendanceDashboardPage() {
               <>
                 {[1, 2, 3, 4].map((i) => (
                   <tr key={i} className="animate-pulse">
+                    <td className="px-3 py-4"><div className="h-4 w-4 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-28 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
@@ -658,7 +733,7 @@ export default function AttendanceDashboardPage() {
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={9} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
+              <tr><td colSpan={10} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
             ) : (
               records.map((r: any) => (
                 <RecordRow key={r.id} record={r} t={t} onView={() => setDetailRecord(r)} />
@@ -728,8 +803,22 @@ function RecordRow({
   t: (k: string, opts?: any) => string;
   onView: () => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   return (
+    <>
     <tr className="hover:bg-gray-50">
+      <td className="px-3 py-4 w-10">
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="inline-flex items-center justify-center p-1.5 rounded text-gray-500 hover:bg-gray-100"
+          aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
+          title={expanded ? "Hide timeline" : "Show timeline"}
+          aria-expanded={expanded}
+        >
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+      </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
@@ -809,6 +898,63 @@ function RecordRow({
         >
           <Eye className="w-4 h-4" />
         </button>
+      </td>
+    </tr>
+    {expanded && <InlinePunchTimelineRow recordId={r.id} colSpan={10} />}
+    </>
+  );
+}
+
+function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSpan: number }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["attendance-punches", recordId],
+    queryFn: () =>
+      api.get(`/attendance/records/${recordId}/punches`).then((res) => res.data.data),
+    staleTime: 60_000,
+  });
+  return (
+    <tr className="bg-gray-50">
+      <td colSpan={colSpan} className="px-6 py-4">
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
+          </div>
+        ) : isError ? (
+          <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+        ) : !data?.punches?.length ? (
+          <p className="text-sm text-gray-500">No punch history for this day.</p>
+        ) : (
+          <ol className="space-y-2">
+            {(data.punches as PunchRow[]).map((p, idx, arr) => {
+              const isFirst = idx === 0;
+              const isLast = idx === arr.length - 1 && arr.length > 1;
+              const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
+              const labelCls = isFirst
+                ? "bg-green-100 text-green-800"
+                : isLast
+                ? "bg-rose-100 text-rose-800"
+                : "bg-gray-200 text-gray-700";
+              const meta = sourceMeta(p.source);
+              const Icon = meta.Icon;
+              return (
+                <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
+                  <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                    {label}
+                  </span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                    <Icon className="w-3 h-3" /> {meta.label}
+                  </span>
+                  {p.latitude != null && p.longitude != null && (
+                    <span className="text-xs text-gray-400">
+                      {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        )}
       </td>
     </tr>
   );

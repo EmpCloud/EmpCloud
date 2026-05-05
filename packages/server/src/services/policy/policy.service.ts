@@ -7,6 +7,20 @@ import { NotFoundError } from "../../utils/errors.js";
 import { sanitizeHtml } from "../../utils/sanitize-html.js";
 import type { CreatePolicyInput } from "@empcloud/shared";
 
+// `company_policies.effective_date` is a DATE column. Browsers' native
+// `<input type="date">` always submits YYYY-MM-DD, but the GET response
+// returns the stored value as an ISO timestamp (e.g. `2025-12-31T18:30:00.000Z`).
+// When the edit form pre-fills from that GET and submits unchanged, MySQL
+// rejects the ISO string with "Incorrect date value". Normalise here so any
+// caller that passes either form gets the same well-formed DATE.
+function normalizeDate(value: unknown): string | null {
+  if (value == null || value === "") return null;
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+  return trimmed.slice(0, 10);
+}
+
 // ---------------------------------------------------------------------------
 // Create Policy
 // ---------------------------------------------------------------------------
@@ -24,7 +38,7 @@ export async function createPolicy(
     content: sanitizeHtml(data.content),
     version: 1,
     category: data.category || null,
-    effective_date: data.effective_date || null,
+    effective_date: normalizeDate(data.effective_date),
     is_active: true,
     created_by: createdBy,
     created_at: new Date(),
@@ -105,9 +119,12 @@ export async function updatePolicy(
 
   if (!existing) throw new NotFoundError("Policy");
 
-  const sanitizedData = { ...data };
-  if (sanitizedData.title) sanitizedData.title = sanitizeHtml(sanitizedData.title);
-  if (sanitizedData.content) sanitizedData.content = sanitizeHtml(sanitizedData.content);
+  const sanitizedData: Record<string, unknown> = { ...data };
+  if (sanitizedData.title) sanitizedData.title = sanitizeHtml(sanitizedData.title as string);
+  if (sanitizedData.content) sanitizedData.content = sanitizeHtml(sanitizedData.content as string);
+  if (Object.prototype.hasOwnProperty.call(sanitizedData, "effective_date")) {
+    sanitizedData.effective_date = normalizeDate(sanitizedData.effective_date);
+  }
 
   await db("company_policies")
     .where({ id: policyId })

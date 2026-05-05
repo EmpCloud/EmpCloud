@@ -482,7 +482,7 @@ export async function getMyHistory(
 
 export async function listRecords(
   orgId: number,
-  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; user_ids?: number[]; department_id?: number }
+  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; user_ids?: number[]; department_id?: number; location_id?: number; role?: string; search?: string }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -531,6 +531,20 @@ export async function listRecords(
   }
   if (params?.department_id) {
     query = query.where("u.department_id", params.department_id);
+  }
+  if (params?.location_id) {
+    query = query.where("u.location_id", params.location_id);
+  }
+  if (params?.role) {
+    query = query.where("u.role", params.role);
+  }
+  if (params?.search) {
+    const term = `%${params.search}%`;
+    query = query.where(function () {
+      this.where(db.raw("CONCAT(COALESCE(u.first_name,''),' ',COALESCE(u.last_name,''))"), "like", term)
+        .orWhere("u.email", "like", term)
+        .orWhere("u.emp_code", "like", term);
+    });
   }
 
   const [{ count }] = await query.clone().count("* as count");
