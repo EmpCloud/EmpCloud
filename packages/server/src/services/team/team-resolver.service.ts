@@ -17,52 +17,25 @@ import { getDB } from "../../db/connection.js";
  * Resolve direct + additional reports for a given manager. Result excludes
  * the manager themselves and only includes active employees in the same
  * organization.
+ *
+ * Two integer-only queries + JS dedup. Cheap even for orgs with thousands
+ * of users; avoids the cross-dialect headaches of `.union()` in Knex.
  */
 export async function resolveTeamMemberIds(
   orgId: number,
   managerId: number,
 ): Promise<number[]> {
   const db = getDB();
-
-  // Single-pass UNION at the SQL level — cheaper than two separate queries +
-  // dedup in JS for orgs with thousands of users.
-  const rows = await db
-    .union([
-      db("users")
-        .where({ reporting_manager_id: managerId, organization_id: orgId, status: 1 })
-        .select("id"),
-      db("user_additional_managers as uam")
-        .join("users", "users.id", "uam.user_id")
-        .where("uam.manager_id", managerId)
-        .andWhere("users.organization_id", orgId)
-        .andWhere("users.status", 1)
-        .select("users.id"),
-    ])
-    .from(
-      // Knex's `.union(builders)` requires either a wrapping `.from(...)`
-      // OR direct chaining. The cleanest cross-dialect form is to wrap the
-      // result in a derived table — but since the inner queries already
-      // include the SELECT, the outer .from is just a no-op alias.
-      // Falling back to the simpler two-query path for compatibility:
-      db.raw("(SELECT 1) as _ignored"),
-    )
-    .catch(async () => {
-      // Fallback for dialects where the union shape above misbehaves —
-      // run the two queries and dedup in memory. Two integer-only queries
-      // are cheap.
-      const primary = await db("users")
-        .where({ reporting_manager_id: managerId, organization_id: orgId, status: 1 })
-        .pluck("id");
-      const additional = await db("user_additional_managers as uam")
-        .join("users", "users.id", "uam.user_id")
-        .where("uam.manager_id", managerId)
-        .andWhere("users.organization_id", orgId)
-        .andWhere("users.status", 1)
-        .pluck("users.id");
-      return [...new Set([...primary, ...additional])].map((id) => ({ id }));
-    });
-
-  return (rows as Array<{ id: number }>).map((r) => r.id);
+  const primary = await db("users")
+    .where({ reporting_manager_id: managerId, organization_id: orgId, status: 1 })
+    .pluck("id");
+  const additional = await db("user_additional_managers as uam")
+    .join("users", "users.id", "uam.user_id")
+    .where("uam.manager_id", managerId)
+    .andWhere("users.organization_id", orgId)
+    .andWhere("users.status", 1)
+    .pluck("users.id");
+  return [...new Set([...primary, ...additional])];
 }
 
 /**

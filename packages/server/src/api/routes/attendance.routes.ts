@@ -561,14 +561,35 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
 
 // GET /api/v1/attendance/records/:id/punches
 // Returns the multi-punch timeline for a single attendance record.
-// HR sees any record in their org; non-HR can only fetch their own.
+// Access tiers (RBAC v1):
+//   - HR / view_all / manage      -> any record in the org
+//   - view_team                   -> records belonging to caller's team
+//                                    (direct + additional reports)
+//   - everyone else               -> own records only
 router.get("/records/:id/punches", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const recordId = paramInt(req.params.id);
     const result = await attendanceService.listPunches(req.user!.org_id, recordId);
+    const targetUserId = Number(result.record.user_id);
+
     const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
     const isHR = HR_ROLES.includes(req.user!.role);
-    if (!isHR && Number(result.record.user_id) !== Number(req.user!.sub)) {
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+
+    let allowed = isHR
+      || has("attendance:view_all")
+      || has("attendance:manage")
+      || targetUserId === Number(req.user!.sub);
+
+    if (!allowed && has("attendance:view_team")) {
+      const { isManagerOf } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      allowed = await isManagerOf(req.user!.org_id, req.user!.sub, targetUserId);
+    }
+
+    if (!allowed) {
       return res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Cannot view another user's punches" } });
     }
     sendSuccess(res, result);
