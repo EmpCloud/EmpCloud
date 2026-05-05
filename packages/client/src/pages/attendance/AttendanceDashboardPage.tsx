@@ -737,14 +737,39 @@ function RecordRow({ record: r, t }: { record: any; t: (k: string, opts?: any) =
         <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
         <td className="px-6 py-4 text-sm text-gray-600">
           {(() => {
-            // #1949 — `worked_minutes` is only filled in at check-out, so the
-            // column read 0 for everyone still on the clock. For checked-in
-            // rows, derive a running total from check_in to now and tag it
-            // with "(so far)" so it's clear the value isn't final.
+            // #1949 — `worked_minutes` is only filled at check-out, so for
+            // rows still on the clock we'd otherwise show 0. Derive a live
+            // total from check_in to now.
+            //
+            // BUT cap that derivation: if a user forgot to check out, the
+            // raw `now - check_in` grows forever (we've seen 500h+ on rows
+            // where someone clocked in weeks ago). Two guards:
+            //   1. If check_in is on a prior day → almost certainly a
+            //      missed check-out. Show "Missed check-out" instead of
+            //      a silently inflated number.
+            //   2. Otherwise cap "live" at midnight of the check-in day so
+            //      the largest possible value is ~24h.
             if (r.status === "checked_in" && r.check_in) {
+              const checkInTime = new Date(r.check_in).getTime();
+              const checkInDay = new Date(r.check_in);
+              checkInDay.setHours(0, 0, 0, 0);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const isPriorDay = checkInDay.getTime() < today.getTime();
+              if (isPriorDay) {
+                return (
+                  <span className="inline-flex items-center gap-1 text-amber-700">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    Missed check-out
+                  </span>
+                );
+              }
+              const endOfCheckInDay = new Date(checkInDay);
+              endOfCheckInDay.setDate(endOfCheckInDay.getDate() + 1);
+              const cappedNow = Math.min(Date.now(), endOfCheckInDay.getTime());
               const live = Math.max(
                 0,
-                Math.floor((Date.now() - new Date(r.check_in).getTime()) / 60000),
+                Math.floor((cappedNow - checkInTime) / 60000),
               );
               return (
                 <span className="inline-flex items-center gap-1">

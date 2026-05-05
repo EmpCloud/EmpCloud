@@ -221,8 +221,23 @@ router.get("/applications", authenticate, async (req: Request, res: Response, ne
   try {
     const { page, per_page, status, leave_type_id, user_id } = leaveQuerySchema.parse(req.query);
 
-    // RBAC: employees can only view their own leave applications
-    const effectiveUserId = isEmployeeRole(req.user!.role) ? req.user!.sub : user_id;
+    // RBAC v1: a user with leave:view_all / view_team / approve / manage_policies
+    // / override_balance can see everyone's applications (or filter by user_id);
+    // anyone else is silently scoped to their own. Falls back to the legacy
+    // role check for tokens issued before the permissions claim landed.
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const adminLeaveKeys = [
+      "leave:view_all",
+      "leave:view_team",
+      "leave:approve",
+      "leave:manage_policies",
+      "leave:override_balance",
+    ];
+    const hasAdminLeavePerm = Array.isArray(perms)
+      ? adminLeaveKeys.some((k) => perms.includes(k))
+      : false;
+    const isEmployee = !hasAdminLeavePerm && isEmployeeRole(req.user!.role);
+    const effectiveUserId = isEmployee ? req.user!.sub : user_id;
 
     const result = await leaveApplicationService.listApplications(req.user!.org_id, {
       page,
