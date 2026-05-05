@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR, requireOrgAdmin, requireRole } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
@@ -32,7 +32,6 @@ import {
   updateUserAttendanceOverrideSchema,
   AuditAction,
 } from "@empcloud/shared";
-import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
 
 const router = Router();
@@ -50,7 +49,7 @@ router.get("/shifts", authenticate, async (req: Request, res: Response, next: Ne
 });
 
 // POST /api/v1/attendance/shifts
-router.post("/shifts", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createShiftSchema.parse(req.body);
     const shift = await shiftService.createShift(req.user!.org_id, data);
@@ -59,7 +58,7 @@ router.post("/shifts", authenticate, requireHR, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/attendance/shifts/:id
-router.put("/shifts/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/shifts/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateShiftSchema.parse(req.body);
     const shift = await shiftService.updateShift(req.user!.org_id, paramInt(req.params.id), data);
@@ -68,7 +67,7 @@ router.put("/shifts/:id", authenticate, requireHR, async (req: Request, res: Res
 });
 
 // DELETE /api/v1/attendance/shifts/:id
-router.delete("/shifts/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/shifts/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await shiftService.deleteShift(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Shift deactivated" });
@@ -76,7 +75,7 @@ router.delete("/shifts/:id", authenticate, requireHR, async (req: Request, res: 
 });
 
 // POST /api/v1/attendance/shifts/assign
-router.post("/shifts/assign", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/assign", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = assignShiftSchema.parse(req.body);
     const assignment = await shiftService.assignShift(req.user!.org_id, data, req.user!.sub);
@@ -85,7 +84,7 @@ router.post("/shifts/assign", authenticate, requireHR, async (req: Request, res:
 });
 
 // GET /api/v1/attendance/shifts/assignments
-router.get("/shifts/assignments", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/shifts/assignments", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.query.user_id ? Number(req.query.user_id) : undefined;
     const shiftId = req.query.shift_id ? Number(req.query.shift_id) : undefined;
@@ -95,7 +94,7 @@ router.get("/shifts/assignments", authenticate, requireHR, async (req: Request, 
 });
 
 // PUT /api/v1/attendance/shifts/assignments/:id
-router.put("/shifts/assignments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/shifts/assignments/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateShiftAssignmentSchema.parse(req.body);
     const assignment = await shiftService.updateShiftAssignment(req.user!.org_id, paramInt(req.params.id), data);
@@ -115,7 +114,7 @@ router.put("/shifts/assignments/:id", authenticate, requireHR, async (req: Reque
 });
 
 // DELETE /api/v1/attendance/shifts/assignments/:id
-router.delete("/shifts/assignments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/shifts/assignments/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await shiftService.deleteShiftAssignment(req.user!.org_id, paramInt(req.params.id));
 
@@ -134,7 +133,7 @@ router.delete("/shifts/assignments/:id", authenticate, requireHR, async (req: Re
 });
 
 // POST /api/v1/attendance/shifts/bulk-assign
-router.post("/shifts/bulk-assign", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/bulk-assign", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = bulkAssignShiftSchema.parse(req.body);
     const result = await shiftService.bulkAssignShifts(req.user!.org_id, data, req.user!.sub);
@@ -154,7 +153,7 @@ router.post("/shifts/bulk-assign", authenticate, requireHR, async (req: Request,
 });
 
 // GET /api/v1/attendance/shifts/schedule
-router.get("/shifts/schedule", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/shifts/schedule", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = shiftScheduleQuerySchema.parse(req.query);
     const schedule = await shiftService.getSchedule(req.user!.org_id, params);
@@ -191,7 +190,7 @@ router.post("/shifts/swap-request", authenticate, async (req: Request, res: Resp
 });
 
 // GET /api/v1/attendance/shifts/swap-requests
-router.get("/shifts/swap-requests", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/shifts/swap-requests", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const status = req.query.status as string | undefined;
     const requests = await shiftService.listSwapRequests(req.user!.org_id, { status });
@@ -200,7 +199,7 @@ router.get("/shifts/swap-requests", authenticate, requireHR, async (req: Request
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/approve
-router.post("/shifts/swap-requests/:id/approve", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/approve", authenticate, requirePermission("attendance:approve_regularization", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.approveSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -219,7 +218,7 @@ router.post("/shifts/swap-requests/:id/approve", authenticate, requireRole("mana
 });
 
 // POST /api/v1/attendance/shifts/swap-requests/:id/reject
-router.post("/shifts/swap-requests/:id/reject", authenticate, requireRole("manager" as UserRole), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/shifts/swap-requests/:id/reject", authenticate, requirePermission("attendance:approve_regularization", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await shiftService.rejectSwapRequest(req.user!.org_id, paramInt(req.params.id), req.user!.sub);
 
@@ -258,7 +257,7 @@ router.get("/geo-fences", authenticate, async (req: Request, res: Response, next
 });
 
 // POST /api/v1/attendance/geo-fences
-router.post("/geo-fences", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/geo-fences", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createGeoFenceSchema.parse(req.body);
     const fence = await geoFenceService.createGeoFence(req.user!.org_id, data);
@@ -267,7 +266,7 @@ router.post("/geo-fences", authenticate, requireHR, async (req: Request, res: Re
 });
 
 // PUT /api/v1/attendance/geo-fences/:id
-router.put("/geo-fences/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/geo-fences/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createGeoFenceSchema.partial().parse(req.body);
     const fence = await geoFenceService.updateGeoFence(req.user!.org_id, paramInt(req.params.id), data);
@@ -276,7 +275,7 @@ router.put("/geo-fences/:id", authenticate, requireHR, async (req: Request, res:
 });
 
 // DELETE /api/v1/attendance/geo-fences/:id
-router.delete("/geo-fences/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/geo-fences/:id", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await geoFenceService.deleteGeoFence(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Geo-fence deactivated" });
@@ -302,7 +301,7 @@ router.get("/me/policy", authenticate, async (req: Request, res: Response, next:
 });
 
 // GET /api/v1/attendance/settings — org settings (HR / org_admin)
-router.get("/settings", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/settings", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const settings = await settingsService.getSettings(req.user!.org_id);
     sendSuccess(res, settings);
@@ -310,7 +309,7 @@ router.get("/settings", authenticate, requireOrgAdmin, async (req: Request, res:
 });
 
 // PUT /api/v1/attendance/settings — update org settings
-router.put("/settings", authenticate, requireOrgAdmin, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/settings", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateAttendanceSettingsSchema.parse(req.body);
     const settings = await settingsService.updateSettings(req.user!.org_id, data);
@@ -333,7 +332,7 @@ router.put("/settings", authenticate, requireOrgAdmin, async (req: Request, res:
 router.get(
   "/overrides/users/:userId",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const overrides = await settingsService.listUserOverrides(
@@ -349,7 +348,7 @@ router.get(
 router.post(
   "/overrides/users/:userId",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createUserAttendanceOverrideSchema.parse(req.body);
@@ -381,7 +380,7 @@ router.post(
 router.put(
   "/overrides/:id",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateUserAttendanceOverrideSchema.parse(req.body);
@@ -408,7 +407,7 @@ router.put(
 router.delete(
   "/overrides/:id",
   authenticate,
-  requireOrgAdmin,
+  requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = paramInt(req.params.id);
@@ -536,7 +535,7 @@ router.get("/records/:id/punches", authenticate, async (req: Request, res: Respo
 });
 
 // GET /api/v1/attendance/dashboard
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const stats = await attendanceService.getDashboard(req.user!.org_id);
     sendSuccess(res, stats);
@@ -546,7 +545,7 @@ router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Resp
 // GET /api/v1/attendance/dashboard/breakdown?date=YYYY-MM-DD
 // Returns the list of employees grouped by attendance status for the given date
 // (defaults to today). Used by the "click stat card to view details" flow.
-router.get("/dashboard/breakdown", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard/breakdown", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const date = typeof req.query.date === "string" ? req.query.date : undefined;
     const breakdown = await attendanceService.getDashboardBreakdown(req.user!.org_id, date);
@@ -555,7 +554,7 @@ router.get("/dashboard/breakdown", authenticate, requireHR, async (req: Request,
 });
 
 // GET /api/v1/attendance/monthly-report
-router.get("/monthly-report", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/monthly-report", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const now = new Date();
     const month = req.query.month ? Number(req.query.month) : now.getMonth() + 1;
@@ -567,7 +566,7 @@ router.get("/monthly-report", authenticate, requireHR, async (req: Request, res:
 });
 
 // GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX
-router.get("/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/export", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = (await import("../../db/connection.js")).getDB();
     const orgId = req.user!.org_id;
@@ -626,7 +625,7 @@ router.get("/export", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // GET /api/v1/attendance/export/consolidated — Consolidated employee-wise summary
-router.get("/export/consolidated", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/export/consolidated", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = (await import("../../db/connection.js")).getDB();
     const orgId = req.user!.org_id;
@@ -722,7 +721,7 @@ router.post("/regularizations", authenticate, async (req: Request, res: Response
 });
 
 // GET /api/v1/attendance/regularizations
-router.get("/regularizations", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/regularizations", authenticate, requirePermission("attendance:view_all", "attendance:approve_regularization"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const status = req.query.status as string | undefined;
@@ -741,7 +740,7 @@ router.get("/regularizations/me", authenticate, async (req: Request, res: Respon
 });
 
 // PUT /api/v1/attendance/regularizations/:id/approve
-router.put("/regularizations/:id/approve", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/regularizations/:id/approve", authenticate, requirePermission("attendance:approve_regularization"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { status, rejection_reason } = approveRegularizationSchema.parse(req.body);
     const regId = paramInt(req.params.id);
