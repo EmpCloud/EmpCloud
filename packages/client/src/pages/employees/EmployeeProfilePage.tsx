@@ -657,6 +657,11 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               />
             </div>
           )}
+          {userId !== undefined && (
+            <div>
+              <CustomRolesField userId={userId} canEdit={!selfService} />
+            </div>
+          )}
           {/* #1423 — Department (HR-only). Self-service users see a disabled
               dropdown so they're aware it exists but can't change it. */}
           <div>
@@ -775,6 +780,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
       <FieldRow label="Notice Period (days)" value={profile.notice_period_days} />
       <FieldRow label="Reporting Manager" value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
       <AdditionalManagersReadRow userId={profile.id} />
+      <CustomRolesReadRow userId={profile.id} />
       {/* #1423 / #1424 — surface designation, department and current shift in
           the read-only view so self-service employees can see them even if
           they can't edit them. */}
@@ -783,6 +789,34 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
       <FieldRow label="Department" value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
       <FieldRow label="Shift" value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
     </dl>
+  );
+}
+
+// Read-only chip list of the user's assigned custom roles. Renders nothing
+// when there are no custom roles so the summary stays compact.
+function CustomRolesReadRow({ userId }: { userId?: number }) {
+  const { data = [] } = useQuery<any[]>({
+    queryKey: ["user-custom-roles", userId],
+    queryFn: () =>
+      api.get(`/roles/users/${userId}`).then((r) => r.data?.data ?? []),
+    enabled: !!userId,
+  });
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return (
+    <div className="grid grid-cols-3 gap-x-4 py-2 border-b border-gray-100">
+      <dt className="text-sm font-medium text-gray-500 col-span-1">Custom Roles</dt>
+      <dd className="text-sm text-gray-900 col-span-2 flex flex-wrap gap-1.5">
+        {data.map((r: any) => (
+          <span
+            key={r.id}
+            title={r.description || undefined}
+            className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-xs text-brand-700"
+          >
+            {r.name}
+          </span>
+        ))}
+      </dd>
+    </div>
   );
 }
 
@@ -1074,6 +1108,197 @@ function AdditionalManagersField({
           <span className="text-xs text-red-600">{extractApiError(mutation.error)}</span>
         )}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Custom Roles assignment — RBAC v1
+// Picker for org-defined custom roles. The user's *primary* role is the
+// users.role enum (Personal tab elsewhere); these are additive role rows
+// in user_roles whose permissions union with the system role's defaults.
+// ---------------------------------------------------------------------------
+
+function CustomRolesField({ userId, canEdit }: { userId: number; canEdit: boolean }) {
+  const queryClient = useQueryClient();
+
+  // Roles assigned to this user (custom roles only; system roles come from
+  // users.role and are managed separately).
+  const { data: assigned = [], isLoading } = useQuery<any[]>({
+    queryKey: ["user-custom-roles", userId],
+    queryFn: () =>
+      api.get(`/roles/users/${userId}`).then((r) => r.data?.data ?? []),
+  });
+
+  // All roles in the org (we'll filter to custom only). Shown in the picker.
+  const { data: allRoles = [] } = useQuery<any[]>({
+    queryKey: ["roles-list"],
+    queryFn: () => api.get("/roles").then((r) => r.data?.data ?? []),
+    enabled: canEdit,
+  });
+
+  const assign = useMutation({
+    mutationFn: (roleId: number) =>
+      api.post(`/roles/users/${userId}`, { role_id: roleId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-custom-roles", userId] });
+    },
+  });
+  const unassign = useMutation({
+    mutationFn: (roleId: number) =>
+      api.delete(`/roles/users/${userId}/${roleId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-custom-roles", userId] });
+    },
+  });
+
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const assignedIds = new Set<number>(assigned.map((r: any) => r.id));
+  const candidates = (allRoles as any[])
+    .filter((r) => r.type === 1 && !assignedIds.has(r.id) && r.is_active);
+
+  const filtered = (() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return candidates.slice(0, 30);
+    return candidates
+      .filter(
+        (r) =>
+          r.name.toLowerCase().includes(q) ||
+          (r.description || "").toLowerCase().includes(q),
+      )
+      .slice(0, 30);
+  })();
+
+  // Read-only: just chips.
+  if (!canEdit) {
+    return (
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Custom Roles</label>
+        <div className="min-h-[40px] flex flex-wrap items-center gap-1.5 border border-gray-200 rounded-md bg-gray-50 px-2 py-2">
+          {isLoading ? (
+            <span className="text-sm text-gray-400">Loading…</span>
+          ) : assigned.length === 0 ? (
+            <span className="text-sm text-gray-400">No custom roles assigned</span>
+          ) : (
+            assigned.map((r) => (
+              <span
+                key={r.id}
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border border-gray-200 text-xs text-gray-700"
+                title={r.description || undefined}
+              >
+                {r.name}
+              </span>
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef}>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Custom Roles
+        {assigned.length > 0 && (
+          <span className="ml-2 text-xs font-normal text-gray-400">
+            ({assigned.length} assigned)
+          </span>
+        )}
+      </label>
+      <p className="text-xs text-gray-500 mb-2">
+        Additional roles that grant fine-grained permissions on top of this user's
+        primary role. Manage roles in{" "}
+        <a href="/roles" className="text-brand-600 hover:underline">
+          Settings → Roles &amp; Permissions
+        </a>
+        .
+      </p>
+
+      <div
+        className="relative min-h-[42px] border border-gray-300 rounded-md bg-white px-2 py-1.5 focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500"
+        onClick={() => setOpen(true)}
+      >
+        <div className="flex flex-wrap items-center gap-1.5">
+          {assigned.map((r) => (
+            <span
+              key={r.id}
+              className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full bg-brand-50 border border-brand-200 text-xs text-brand-700"
+              title={r.description || undefined}
+            >
+              <span className="truncate max-w-[200px]">{r.name}</span>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); unassign.mutate(r.id); }}
+                disabled={unassign.isPending}
+                className="ml-0.5 h-4 w-4 flex items-center justify-center rounded-full hover:bg-brand-200 disabled:opacity-50"
+                aria-label={`Remove ${r.name}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+            onFocus={() => setOpen(true)}
+            placeholder={
+              assigned.length === 0
+                ? "Click to assign a custom role…"
+                : "Add another role…"
+            }
+            className="flex-1 min-w-[140px] outline-none text-sm py-0.5 bg-transparent"
+          />
+        </div>
+
+        {open && (
+          <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-gray-400">
+                {candidates.length === 0
+                  ? "All custom roles already assigned. Create more in Settings → Roles & Permissions."
+                  : "No matching roles"}
+              </div>
+            ) : (
+              filtered.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => { assign.mutate(r.id); setQuery(""); }}
+                  disabled={assign.isPending}
+                  className="w-full flex items-start gap-2 px-3 py-2 text-sm hover:bg-brand-50 text-left disabled:opacity-50"
+                >
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-gray-900 truncate font-medium">{r.name}</span>
+                    {r.description && (
+                      <span className="block text-xs text-gray-400 truncate">{r.description}</span>
+                    )}
+                    <span className="block text-[10px] text-gray-400 mt-0.5">
+                      {(r.permissions || []).length} permission{(r.permissions || []).length === 1 ? "" : "s"}
+                    </span>
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      {(assign.isError || unassign.isError) && (
+        <p className="text-xs text-red-600 mt-1">
+          {extractApiError(assign.error || unassign.error)}
+        </p>
+      )}
     </div>
   );
 }
