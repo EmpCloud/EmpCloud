@@ -52,8 +52,11 @@ test.describe("Demo health monitor (read-only)", () => {
       })
       .catch(() => null);
     if (!res || !res.ok()) return;
-    const body = (await res.json()) as { data?: { access_token?: string } };
-    authToken = body?.data?.access_token ?? null;
+    // Login response shape: { success, data: { user, org, tokens: { access_token, refresh_token, ... }, password_expired } }
+    const body = (await res.json()) as {
+      data?: { tokens?: { access_token?: string } };
+    };
+    authToken = body?.data?.tokens?.access_token ?? null;
   });
 
   // ── Universal: bare-minimum health probes ────────────────────────────────
