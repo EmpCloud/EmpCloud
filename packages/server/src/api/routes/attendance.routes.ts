@@ -495,14 +495,49 @@ router.get("/me/history", authenticate, async (req: Request, res: Response, next
 });
 
 // GET /api/v1/attendance/records
-// HR+ sees all records; employees/managers only see their own
+//
+// RBAC v1 — three scope tiers, evaluated against the JWT permissions claim:
+//   - attendance:view_all (or HR role)              -> any record in the org
+//   - attendance:view_team / approve_regularization -> caller's direct + additional reports
+//   - everyone else                                 -> own records only
 router.get("/records", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = attendanceQuerySchema.parse(req.query);
     const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
     const isHR = HR_ROLES.includes(req.user!.role);
-    const user_id = isHR ? (params.user_id || params.employee_id) : req.user!.sub;
-    const department_id = isHR ? params.department_id : undefined;
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const has = (k: string) => Array.isArray(perms) && perms.includes(k);
+
+    const canSeeAll = isHR || has("attendance:view_all") || has("attendance:manage");
+    const canSeeTeam = has("attendance:view_team") || has("attendance:approve_regularization");
+
+    let user_id: number | undefined;
+    let department_id: number | undefined;
+    let user_ids: number[] | undefined;
+
+    if (canSeeAll) {
+      user_id = params.user_id || params.employee_id;
+      department_id = params.department_id;
+    } else if (canSeeTeam) {
+      // Resolve the caller's team (primary reports + additional managers)
+      // and scope the query to that set. If the caller passed a user_id,
+      // require it to be in their team.
+      const { resolveTeamMemberIds } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const teamIds = await resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
+      const requested = params.user_id || params.employee_id;
+      if (requested != null) {
+        user_id = teamIds.includes(Number(requested)) ? Number(requested) : -1;
+      } else if (teamIds.length === 0) {
+        user_id = -1; // no reports → no records
+      } else {
+        user_ids = teamIds;
+      }
+    } else {
+      user_id = req.user!.sub;
+    }
+
     const result = await attendanceService.listRecords(req.user!.org_id, {
       page: params.page,
       perPage: params.per_page,
@@ -512,6 +547,7 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
       date_from: params.date_from,
       date_to: params.date_to,
       user_id,
+      user_ids,
       department_id,
     });
     sendPaginated(res, result.records, result.total, params.page, params.per_page);

@@ -286,7 +286,7 @@ export async function getMyHistory(
 
 export async function listRecords(
   orgId: number,
-  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; department_id?: number }
+  params?: { page?: number; perPage?: number; month?: number; year?: number; date?: string; date_from?: string; date_to?: string; user_id?: number; user_ids?: number[]; department_id?: number }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -327,6 +327,11 @@ export async function listRecords(
 
   if (params?.user_id) {
     query = query.where("ar.user_id", params.user_id);
+  } else if (params?.user_ids && params.user_ids.length > 0) {
+    query = query.whereIn("ar.user_id", params.user_ids);
+  } else if (params?.user_ids && params.user_ids.length === 0) {
+    // Explicit empty team — no records.
+    query = query.where(db.raw("1 = 0"));
   }
   if (params?.department_id) {
     query = query.where("u.department_id", params.department_id);
