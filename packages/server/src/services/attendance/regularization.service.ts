@@ -49,7 +49,7 @@ export async function submitRegularization(orgId: number, userId: number, data: 
 
 export async function listRegularizations(
   orgId: number,
-  params?: { page?: number; perPage?: number; status?: string; userIds?: number[] }
+  params?: { page?: number; perPage?: number; status?: string; userIds?: number[]; locationId?: number; search?: string }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -57,6 +57,8 @@ export async function listRegularizations(
 
   let query = db("attendance_regularizations as ar")
     .join("users as u", "ar.user_id", "u.id")
+    .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+    .leftJoin("organizations as org", "ar.organization_id", "org.id")
     .where("ar.organization_id", orgId);
 
   if (params?.status) {
@@ -71,6 +73,17 @@ export async function listRegularizations(
       query = query.whereIn("ar.user_id", params.userIds);
     }
   }
+  if (params?.locationId) {
+    query = query.where("u.location_id", params.locationId);
+  }
+  if (params?.search) {
+    const term = `%${params.search}%`;
+    query = query.where(function () {
+      this.where(db.raw("CONCAT(COALESCE(u.first_name,''),' ',COALESCE(u.last_name,''))"), "like", term)
+        .orWhere("u.email", "like", term)
+        .orWhere("u.emp_code", "like", term);
+    });
+  }
 
   const [{ count }] = await query.clone().count("* as count");
   const records = await query
@@ -79,7 +92,10 @@ export async function listRegularizations(
       "u.first_name",
       "u.last_name",
       "u.email",
-      "u.emp_code"
+      "u.emp_code",
+      "loc.name as location_name",
+      "loc.timezone as location_timezone",
+      "org.timezone as organization_timezone",
     )
     .orderBy("ar.created_at", "desc")
     .limit(perPage)
@@ -207,13 +223,21 @@ export async function getMyRegularizations(
   const page = params?.page || 1;
   const perPage = params?.perPage || 20;
 
-  const query = db("attendance_regularizations")
-    .where({ organization_id: orgId, user_id: userId });
+  const query = db("attendance_regularizations as ar")
+    .join("users as u", "ar.user_id", "u.id")
+    .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+    .leftJoin("organizations as org", "ar.organization_id", "org.id")
+    .where({ "ar.organization_id": orgId, "ar.user_id": userId });
 
   const [{ count }] = await query.clone().count("* as count");
   const records = await query
-    .select()
-    .orderBy("created_at", "desc")
+    .select(
+      "ar.*",
+      "loc.name as location_name",
+      "loc.timezone as location_timezone",
+      "org.timezone as organization_timezone",
+    )
+    .orderBy("ar.created_at", "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 

@@ -394,6 +394,7 @@ export async function listEmployeeBalances(
     perPage?: number;
     search?: string;
     departmentId?: number;
+    locationId?: number;
     year?: number;
   } = {},
 ): Promise<{ employees: EmployeeBalanceSummary[]; total: number }> {
@@ -424,6 +425,9 @@ export async function listEmployeeBalances(
   }
   if (params.departmentId) {
     query = query.where("users.department_id", params.departmentId);
+  }
+  if (params.locationId) {
+    query = query.where("users.location_id", params.locationId);
   }
 
   const [{ count }] = await query.clone().count("users.id as count");

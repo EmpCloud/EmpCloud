@@ -554,6 +554,9 @@ router.get("/records", authenticate, async (req: Request, res: Response, next: N
       user_id,
       user_ids,
       department_id,
+      location_id: params.location_id,
+      role: params.role,
+      search: params.search,
     });
     sendPaginated(res, result.records, result.total, params.page, params.per_page);
   } catch (err) { next(err); }
@@ -833,6 +836,10 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const status = req.query.status as string | undefined;
+    const rawLocation = req.query.location_id;
+    const locationId = rawLocation && Number(rawLocation) > 0 ? Number(rawLocation) : undefined;
+    const rawSearch = typeof req.query.search === "string" ? req.query.search.trim().slice(0, 120) : "";
+    const search = rawSearch.length > 0 ? rawSearch : undefined;
     // Scope: callers with _all (or view_all / manage / HR) see every
     // regularization in the org. Callers with only _team see requests from
     // their direct + additional reports. Empty team -> 0 rows.
@@ -852,7 +859,7 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
       );
       userIds = await resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
     }
-    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status, userIds });
+    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status, userIds, locationId, search });
     sendPaginated(res, result.records, result.total, page, per_page);
   } catch (err) { next(err); }
 });

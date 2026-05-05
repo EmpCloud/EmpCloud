@@ -574,6 +574,12 @@ export async function listApplications(
     status?: string;
     leaveTypeId?: number;
     userId?: number;
+    userIds?: number[];
+    departmentId?: number;
+    locationId?: number;
+    search?: string;
+    dateFrom?: string;
+    dateTo?: string;
   },
 ) {
   const db = getDB();
@@ -586,7 +592,30 @@ export async function listApplications(
 
   if (params.status) query = query.where("leave_applications.status", params.status);
   if (params.leaveTypeId) query = query.where("leave_applications.leave_type_id", params.leaveTypeId);
-  if (params.userId) query = query.where("leave_applications.user_id", params.userId);
+  if (params.userId) {
+    query = query.where("leave_applications.user_id", params.userId);
+  } else if (params.userIds) {
+    if (params.userIds.length === 0) {
+      query = query.where(db.raw("1 = 0"));
+    } else {
+      query = query.whereIn("leave_applications.user_id", params.userIds);
+    }
+  }
+  if (params.departmentId) query = query.where("users.department_id", params.departmentId);
+  if (params.locationId) query = query.where("users.location_id", params.locationId);
+  if (params.search) {
+    const term = `%${params.search}%`;
+    query = query.where(function () {
+      this.where(db.raw("CONCAT(COALESCE(users.first_name,''),' ',COALESCE(users.last_name,''))"), "like", term)
+        .orWhere("users.email", "like", term)
+        .orWhere("users.emp_code", "like", term);
+    });
+  }
+  // Range filter is inclusive and matches applications that overlap the
+  // window (any day of the leave intersects [dateFrom, dateTo]). This is the
+  // intuitive behavior for HR filtering ("show me leaves taken in March").
+  if (params.dateFrom) query = query.where("leave_applications.end_date", ">=", params.dateFrom);
+  if (params.dateTo) query = query.where("leave_applications.start_date", "<=", params.dateTo);
 
   const [{ count }] = await query.clone().count("* as count");
   const applications = await query

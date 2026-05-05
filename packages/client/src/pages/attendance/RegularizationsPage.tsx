@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, X, Clock, Plus } from "lucide-react";
+import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 
 type RegRow = {
   id: number;
@@ -18,7 +19,53 @@ type RegRow = {
   last_name?: string;
   emp_code?: string;
   email?: string;
+  // Joined from the user's assigned location → falls back to the org-level
+  // timezone, then to the viewer's browser zone. We display the requested
+  // and original punches in this zone so a manager in IST viewing a record
+  // raised against a Singapore shift sees the times the employee actually
+  // intended (08:09 SGT), not the UTC translation (00:09).
+  location_name?: string | null;
+  location_timezone?: string | null;
+  organization_timezone?: string | null;
 };
+
+function fmtTimeAtTZ(iso: string | null | undefined, tz?: string | null): string {
+  if (!iso) return "-";
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: tz || undefined,
+    }).format(new Date(iso));
+  } catch {
+    // Bad / unrecognised tz string — fall back to viewer-local rendering.
+    return new Date(iso).toLocaleTimeString();
+  }
+}
+
+function fmtDateTimeAtTZ(iso: string | null | undefined, tz?: string | null): string {
+  if (!iso) return "-";
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+      timeZone: tz || undefined,
+    }).format(new Date(iso));
+  } catch {
+    return new Date(iso).toLocaleString();
+  }
+}
+
+function rowTZ(r: { location_timezone?: string | null; organization_timezone?: string | null }) {
+  return r.location_timezone || r.organization_timezone || undefined;
+}
 
 export default function RegularizationsPage() {
   const { t } = useTranslation();
@@ -26,6 +73,27 @@ export default function RegularizationsPage() {
   const [page, setPage] = useState(1);
   const [tab, setTab] = useState<"pending" | "all" | "my">("pending");
   const [showForm, setShowForm] = useState(false);
+  const [locationId, setLocationId] = useStickyLocationFilter();
+  const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  useEffect(() => {
+    const h = window.setTimeout(() => {
+      setAppliedSearch(search.trim());
+      setPage(1);
+    }, 300);
+    return () => window.clearTimeout(h);
+  }, [search]);
+  // Filters apply only to the manager-side queues. The "my" tab is the
+  // current user's own list — filtering by location/employee there would
+  // either return zero rows or be meaningless.
+  const filtersActive = tab !== "my";
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ["org-locations"],
+    queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
+    staleTime: 60000,
+    enabled: filtersActive,
+  });
   const [form, setForm] = useState({ date: "", requested_check_in: "", requested_check_out: "", reason: "" });
   // #1559 — Inline validation error so users see why the form wasn't submitted
   // (e.g. check-out earlier than check-in) without a jarring native alert.
@@ -36,14 +104,33 @@ export default function RegularizationsPage() {
   const [selectedRow, setSelectedRow] = useState<RegRow | null>(null);
 
   const { data: pendingData, isLoading: pendingLoading } = useQuery({
-    queryKey: ["regularizations", "pending", page],
-    queryFn: () => api.get("/attendance/regularizations", { params: { page, status: "pending" } }).then((r) => r.data),
+    queryKey: ["regularizations", "pending", page, locationId, appliedSearch],
+    queryFn: () =>
+      api
+        .get("/attendance/regularizations", {
+          params: {
+            page,
+            status: "pending",
+            location_id: locationId || undefined,
+            search: appliedSearch || undefined,
+          },
+        })
+        .then((r) => r.data),
     enabled: tab === "pending",
   });
 
   const { data: allData, isLoading: allLoading } = useQuery({
-    queryKey: ["regularizations", "all", page],
-    queryFn: () => api.get("/attendance/regularizations", { params: { page } }).then((r) => r.data),
+    queryKey: ["regularizations", "all", page, locationId, appliedSearch],
+    queryFn: () =>
+      api
+        .get("/attendance/regularizations", {
+          params: {
+            page,
+            location_id: locationId || undefined,
+            search: appliedSearch || undefined,
+          },
+        })
+        .then((r) => r.data),
     enabled: tab === "all",
   });
 
@@ -180,6 +267,43 @@ export default function RegularizationsPage() {
         ))}
       </div>
 
+      {filtersActive && (
+        <div className="bg-white rounded-xl border border-gray-200 p-3 mb-4 flex flex-wrap items-end gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Search employee</label>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Name, email, code"
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-56"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
+            <select
+              value={locationId ?? ""}
+              onChange={(e) => { setLocationId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="">All locations</option>
+              {locations.map((l: any) => (
+                <option key={l.id} value={l.id}>{l.name}</option>
+              ))}
+            </select>
+          </div>
+          {(locationId || search) && (
+            <button
+              type="button"
+              onClick={() => { setLocationId(undefined); setSearch(""); setAppliedSearch(""); setPage(1); }}
+              className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
@@ -215,14 +339,19 @@ export default function RegularizationsPage() {
                       </div>
                     </td>
                   )}
-                  <td className="px-6 py-4 text-sm text-gray-900">{new Date(r.date).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {new Date(r.date).toLocaleDateString()}
+                    {r.location_name && (
+                      <div className="text-[10px] text-gray-400 mt-0.5">{r.location_name}{r.location_timezone ? ` · ${r.location_timezone}` : ""}</div>
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-xs text-gray-500">
-                    <div>{r.original_check_in ? new Date(r.original_check_in).toLocaleTimeString() : "-"}</div>
-                    <div>{r.original_check_out ? new Date(r.original_check_out).toLocaleTimeString() : "-"}</div>
+                    <div>{fmtTimeAtTZ(r.original_check_in, rowTZ(r))}</div>
+                    <div>{fmtTimeAtTZ(r.original_check_out, rowTZ(r))}</div>
                   </td>
                   <td className="px-6 py-4 text-xs text-gray-600">
-                    <div>{r.requested_check_in ? new Date(r.requested_check_in).toLocaleTimeString() : "-"}</div>
-                    <div>{r.requested_check_out ? new Date(r.requested_check_out).toLocaleTimeString() : "-"}</div>
+                    <div>{fmtTimeAtTZ(r.requested_check_in, rowTZ(r))}</div>
+                    <div>{fmtTimeAtTZ(r.requested_check_out, rowTZ(r))}</div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] truncate">{r.reason}</td>
                   <td className="px-6 py-4">
@@ -310,18 +439,29 @@ export default function RegularizationsPage() {
                   </dd>
                 </div>
               )}
+              {selectedRow.location_name && (
+                <div className="grid grid-cols-3 gap-4 px-6 py-3">
+                  <dt className="text-gray-500">Location</dt>
+                  <dd className="col-span-2 text-gray-900">
+                    {selectedRow.location_name}
+                    {selectedRow.location_timezone && (
+                      <span className="ml-2 text-xs text-gray-400">{selectedRow.location_timezone}</span>
+                    )}
+                  </dd>
+                </div>
+              )}
               <div className="grid grid-cols-3 gap-4 px-6 py-3">
                 <dt className="text-gray-500">{t('attendance.regularizations.table.originalInOut')}</dt>
                 <dd className="col-span-2 text-gray-900">
-                  <div>{selectedRow.original_check_in ? new Date(selectedRow.original_check_in).toLocaleString() : "-"}</div>
-                  <div className="text-gray-500">{selectedRow.original_check_out ? new Date(selectedRow.original_check_out).toLocaleString() : "-"}</div>
+                  <div>{fmtDateTimeAtTZ(selectedRow.original_check_in, rowTZ(selectedRow))}</div>
+                  <div className="text-gray-500">{fmtDateTimeAtTZ(selectedRow.original_check_out, rowTZ(selectedRow))}</div>
                 </dd>
               </div>
               <div className="grid grid-cols-3 gap-4 px-6 py-3">
                 <dt className="text-gray-500">{t('attendance.regularizations.table.requestedInOut')}</dt>
                 <dd className="col-span-2 text-gray-900">
-                  <div>{selectedRow.requested_check_in ? new Date(selectedRow.requested_check_in).toLocaleString() : "-"}</div>
-                  <div className="text-gray-500">{selectedRow.requested_check_out ? new Date(selectedRow.requested_check_out).toLocaleString() : "-"}</div>
+                  <div>{fmtDateTimeAtTZ(selectedRow.requested_check_in, rowTZ(selectedRow))}</div>
+                  <div className="text-gray-500">{fmtDateTimeAtTZ(selectedRow.requested_check_out, rowTZ(selectedRow))}</div>
                 </dd>
               </div>
               <div className="grid grid-cols-3 gap-4 px-6 py-3">

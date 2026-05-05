@@ -5,8 +5,9 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { Link } from "react-router-dom";
-import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2 } from "lucide-react";
+import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2, Filter, X as XIcon } from "lucide-react";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
+import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 
 // Kept for any legacy callers — page now uses permission-based gates below.
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
@@ -504,16 +505,32 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
 
 function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; locale: string }) {
   const { t } = useTranslation();
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [leaveTypeFilter, setLeaveTypeFilter] = useState<number | undefined>(undefined);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const hasActiveFilter =
+    !!statusFilter || leaveTypeFilter != null || !!dateFrom || !!dateTo;
   // #1613 — Recent Applications used to fetch only 5 rows, so each new
   // application pushed older ones off the table and there was no way to view
   // history without leaving the dashboard. Fetch a larger window (50) and
   // make the body scroll vertically; also surface a "View all" link to the
   // full Applications page for users who want pagination.
   const { data, isLoading } = useQuery({
-    queryKey: ["leave-applications-me"],
+    queryKey: ["leave-applications-me", statusFilter, leaveTypeFilter, dateFrom, dateTo],
     queryFn: () =>
       api
-        .get("/leave/applications/me", { params: { page: 1, per_page: 50 } })
+        .get("/leave/applications/me", {
+          params: {
+            page: 1,
+            per_page: 50,
+            status: statusFilter || undefined,
+            leave_type_id: leaveTypeFilter || undefined,
+            date_from: dateFrom || undefined,
+            date_to: dateTo || undefined,
+          },
+        })
         .then((r) => r.data),
   });
 
@@ -530,12 +547,81 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">{t('leave.dashboard.recentTitle')}</h2>
-        {total > applications.length && (
-          <Link to="/leave/applications" className="text-xs text-brand-600 hover:underline font-medium">
-            {t('common.viewAll')} ({total})
-          </Link>
+      <div className="px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-gray-900">{t('leave.dashboard.recentTitle')}</h2>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowFilters((v) => !v)}
+              className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border ${hasActiveFilter ? "border-brand-300 bg-brand-50 text-brand-700" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+            >
+              <Filter className="h-3.5 w-3.5" /> Filters{hasActiveFilter ? " ·" : ""}
+            </button>
+            {total > applications.length && (
+              <Link to="/leave/applications" className="text-xs text-brand-600 hover:underline font-medium">
+                {t('common.viewAll')} ({total})
+              </Link>
+            )}
+          </div>
+        </div>
+        {showFilters && (
+          <div className="flex flex-wrap items-end gap-2 mt-3">
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">Status</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              >
+                <option value="">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">Leave type</label>
+              <select
+                value={leaveTypeFilter ?? ""}
+                onChange={(e) => setLeaveTypeFilter(e.target.value ? Number(e.target.value) : undefined)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              >
+                <option value="">All</option>
+                {leaveTypes.map((lt) => (
+                  <option key={lt.id} value={lt.id}>{leaveTypeLabel(t, lt)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">From</label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">To</label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              />
+            </div>
+            {hasActiveFilter && (
+              <button
+                type="button"
+                onClick={() => { setStatusFilter(""); setLeaveTypeFilter(undefined); setDateFrom(""); setDateTo(""); }}
+                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 px-2 py-1.5"
+              >
+                <XIcon className="h-3 w-3" /> Clear
+              </button>
+            )}
+          </div>
         )}
       </div>
       <div className="max-h-96 overflow-y-auto">
@@ -616,6 +702,36 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   // see approved/rejected/cancelled or the full list without leaving the
   // dashboard. Defaults to pending to preserve the original primary action.
   const [statusFilter, setStatusFilter] = useState<"pending" | "approved" | "rejected" | "cancelled" | "all">("pending");
+  // Extra filters for the manager queue: department / location / leave type
+  // / employee name search / date range. Hidden behind a toggle so the
+  // panel doesn't dominate the dashboard until the user opts in.
+  const [showFilters, setShowFilters] = useState(false);
+  const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+  const [locationId, setLocationId] = useStickyLocationFilter();
+  const [leaveTypeFilter, setLeaveTypeFilter] = useState<number | undefined>(undefined);
+  const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  useEffect(() => {
+    const id = window.setTimeout(() => setAppliedSearch(search.trim()), 300);
+    return () => window.clearTimeout(id);
+  }, [search]);
+  const hasExtraFilters =
+    departmentId != null || locationId != null || leaveTypeFilter != null ||
+    !!appliedSearch || !!dateFrom || !!dateTo;
+
+  const { data: departments = [] } = useQuery({
+    queryKey: ["org-departments"],
+    queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+  const { data: locations = [] } = useQuery({
+    queryKey: ["org-locations"],
+    queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+
   // #1411 — show server errors instead of silently swallowing them
   const [actionError, setActionError] = useState<string | null>(null);
   const extractErr = (err: any) =>
@@ -625,7 +741,16 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
     t('leave.dashboard.actionFailed');
 
   const { data, isLoading } = useQuery({
-    queryKey: ["leave-applications-pending", statusFilter],
+    queryKey: [
+      "leave-applications-pending",
+      statusFilter,
+      departmentId,
+      locationId,
+      leaveTypeFilter,
+      appliedSearch,
+      dateFrom,
+      dateTo,
+    ],
     queryFn: () =>
       api
         .get("/leave/applications", {
@@ -633,6 +758,12 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             page: 1,
             per_page: 50,
             status: statusFilter === "all" ? undefined : statusFilter,
+            department_id: departmentId || undefined,
+            location_id: locationId || undefined,
+            leave_type_id: leaveTypeFilter || undefined,
+            search: appliedSearch || undefined,
+            date_from: dateFrom || undefined,
+            date_to: dateTo || undefined,
           },
         })
         .then((r) => r.data),
@@ -799,7 +930,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             </div>
           )}
         </div>
-        <div className="flex flex-wrap gap-1 mt-3 -mb-1">
+        <div className="flex flex-wrap items-center gap-1 mt-3 -mb-1">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -818,7 +949,106 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
               {tab.label}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => setShowFilters((v) => !v)}
+            className={`ml-2 inline-flex items-center gap-1 px-3 py-1 text-xs rounded-full font-medium border transition-colors ${
+              hasExtraFilters
+                ? "bg-brand-50 border-brand-300 text-brand-700"
+                : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Filter className="h-3 w-3" /> Filters{hasExtraFilters ? " ·" : ""}
+          </button>
         </div>
+        {showFilters && (
+          <div className="flex flex-wrap items-end gap-2 mt-3">
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">Search employee</label>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Name, email, code"
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-52"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">Department</label>
+              <select
+                value={departmentId ?? ""}
+                onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : undefined)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              >
+                <option value="">All</option>
+                {departments.map((d: any) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">Location</label>
+              <select
+                value={locationId ?? ""}
+                onChange={(e) => setLocationId(e.target.value ? Number(e.target.value) : undefined)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              >
+                <option value="">All</option>
+                {locations.map((l: any) => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">Leave type</label>
+              <select
+                value={leaveTypeFilter ?? ""}
+                onChange={(e) => setLeaveTypeFilter(e.target.value ? Number(e.target.value) : undefined)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              >
+                <option value="">All</option>
+                {leaveTypes.map((lt) => (
+                  <option key={lt.id} value={lt.id}>{leaveTypeLabel(t, lt)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">From</label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-medium text-gray-500 uppercase mb-1">To</label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs"
+              />
+            </div>
+            {hasExtraFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDepartmentId(undefined);
+                  setLocationId(undefined);
+                  setLeaveTypeFilter(undefined);
+                  setSearch("");
+                  setAppliedSearch("");
+                  setDateFrom("");
+                  setDateTo("");
+                }}
+                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 px-2 py-1.5"
+              >
+                <XIcon className="h-3 w-3" /> Clear
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {bulkResult && (

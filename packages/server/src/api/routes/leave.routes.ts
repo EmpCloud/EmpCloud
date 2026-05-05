@@ -204,12 +204,14 @@ router.get("/balances/me", authenticate, async (req: Request, res: Response, nex
 // GET /api/v1/leave/applications/me — current user's applications
 router.get("/applications/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, per_page, status, leave_type_id } = leaveQuerySchema.parse(req.query);
+    const { page, per_page, status, leave_type_id, date_from, date_to } = leaveQuerySchema.parse(req.query);
     const result = await leaveApplicationService.listApplications(req.user!.org_id, {
       page,
       perPage: per_page,
       status,
       leaveTypeId: leave_type_id,
+      dateFrom: date_from,
+      dateTo: date_to,
       userId: req.user!.sub,
     });
     sendPaginated(res, result.applications, result.total, page, per_page);
@@ -219,7 +221,10 @@ router.get("/applications/me", authenticate, async (req: Request, res: Response,
 // GET /api/v1/leave/applications
 router.get("/applications", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, per_page, status, leave_type_id, user_id } = leaveQuerySchema.parse(req.query);
+    const {
+      page, per_page, status, leave_type_id, user_id,
+      department_id, location_id, search, date_from, date_to,
+    } = leaveQuerySchema.parse(req.query);
 
     // RBAC v1: a user with leave:view_all / view_team / approve / manage_policies
     // / override_balance can see everyone's applications (or filter by user_id);
@@ -245,6 +250,11 @@ router.get("/applications", authenticate, async (req: Request, res: Response, ne
       status,
       leaveTypeId: leave_type_id,
       userId: effectiveUserId,
+      departmentId: isEmployee ? undefined : department_id,
+      locationId: isEmployee ? undefined : location_id,
+      search: isEmployee ? undefined : search,
+      dateFrom: date_from,
+      dateTo: date_to,
     });
     sendPaginated(res, result.applications, result.total, page, per_page);
   } catch (err) { next(err); }
@@ -431,12 +441,13 @@ router.put("/config", authenticate, requirePermission("leave:manage_policies"), 
 // GET /api/v1/leave/admin/employees — paginated employee balance summary
 router.get("/admin/employees", authenticate, requirePermission("leave:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, per_page, search, department_id, year } = employeeLeavesQuerySchema.parse(req.query);
+    const { page, per_page, search, department_id, location_id, year } = employeeLeavesQuerySchema.parse(req.query);
     const result = await leaveBalanceService.listEmployeeBalances(req.user!.org_id, {
       page,
       perPage: per_page,
       search,
       departmentId: department_id,
+      locationId: location_id,
       year,
     });
     sendPaginated(res, result.employees, result.total, page, per_page);

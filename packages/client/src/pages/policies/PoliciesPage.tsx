@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
-import { FileText, Plus, Check, ChevronDown, ChevronUp, Users } from "lucide-react";
+import { FileText, Plus, Check, ChevronDown, ChevronUp, Users, Trash2, Pencil } from "lucide-react";
 
 // Defensive fallback for legacy rows that slipped past validation with a
 // blank/whitespace-only title (#1636). Returns the original title when
@@ -44,6 +44,29 @@ function useCreatePolicy() {
   return useMutation({
     mutationFn: (data: object) => api.post("/policies", data).then((r) => r.data.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["policies"] }),
+  });
+}
+
+function useDeletePolicy() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (policyId: number) => api.delete(`/policies/${policyId}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policies-pending"] });
+    },
+  });
+}
+
+function useUpdatePolicy() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: object }) =>
+      api.put(`/policies/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["policies"] });
+      qc.invalidateQueries({ queryKey: ["policies-pending"] });
+    },
   });
 }
 
@@ -199,9 +222,13 @@ function HRPoliciesView() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = usePolicies({ page });
   const createPolicy = useCreatePolicy();
+  const updatePolicy = useUpdatePolicy();
+  const deletePolicy = useDeletePolicy();
   const [showCreate, setShowCreate] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [viewAckFor, setViewAckFor] = useState<number | null>(null);
   const [viewContentFor, setViewContentFor] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const ackQuery = useAcknowledgments(viewAckFor);
   // Panels are now inline within table rows — no external refs needed
 
@@ -214,20 +241,50 @@ function HRPoliciesView() {
   const policies = data?.data || [];
   const meta = data?.meta;
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await createPolicy.mutateAsync({
-      title,
-      content,
-      category: category || null,
-      effective_date: effectiveDate || null,
-    });
+  const resetForm = () => {
     setTitle("");
     setContent("");
     setCategory("");
     setEffectiveDate("");
+    setEditingId(null);
     setShowCreate(false);
   };
+
+  const startEdit = (p: any) => {
+    setEditingId(p.id);
+    setTitle(p.title || "");
+    setContent(p.content || "");
+    setCategory(p.category || "");
+    // The API returns DATE columns as ISO datetimes ("2025-12-31T18:30:00.000Z").
+    // `<input type="date">` only renders YYYY-MM-DD; if we hand it the full
+    // ISO string it shows blank but React state still holds the bad value,
+    // and submitting it makes MySQL throw "Incorrect date value" on the
+    // DATE column. Slice to the date portion before binding.
+    setEffectiveDate(typeof p.effective_date === "string" ? p.effective_date.slice(0, 10) : "");
+    setShowCreate(true);
+    setViewContentFor(null);
+    setViewAckFor(null);
+    // Scroll the form into view so the user sees what they're editing.
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      title,
+      content,
+      category: category || null,
+      effective_date: effectiveDate || null,
+    };
+    if (editingId != null) {
+      await updatePolicy.mutateAsync({ id: editingId, data: payload });
+    } else {
+      await createPolicy.mutateAsync(payload);
+    }
+    resetForm();
+  };
+
+  const isSavingPolicy = editingId != null ? updatePolicy.isPending : createPolicy.isPending;
 
   return (
     <div>
@@ -237,16 +294,37 @@ function HRPoliciesView() {
           <p className="text-gray-500 mt-1">Create and manage organization policies.</p>
         </div>
         <button
-          onClick={() => setShowCreate(!showCreate)}
+          onClick={() => {
+            if (showCreate) {
+              resetForm();
+            } else {
+              setEditingId(null);
+              setTitle("");
+              setContent("");
+              setCategory("");
+              setEffectiveDate("");
+              setShowCreate(true);
+            }
+          }}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> New Policy
         </button>
       </div>
 
-      {/* Create form */}
+      {/* Create / edit form */}
       {showCreate && (
-        <form onSubmit={handleCreate} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-gray-900">
+              {editingId != null ? "Edit policy" : "Create policy"}
+            </h2>
+            {editingId != null && (
+              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                Editing — version may bump on save
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
@@ -290,13 +368,24 @@ function HRPoliciesView() {
               />
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              disabled={createPolicy.isPending || !title.trim() || !content.trim()}
+              disabled={isSavingPolicy || !title.trim() || !content.trim()}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Plus className="h-4 w-4" /> Create Policy
+              {editingId != null ? (
+                <><Pencil className="h-4 w-4" /> {isSavingPolicy ? "Saving…" : "Save changes"}</>
+              ) : (
+                <><Plus className="h-4 w-4" /> {isSavingPolicy ? "Creating…" : "Create Policy"}</>
+              )}
             </button>
           </div>
         </form>
@@ -365,6 +454,21 @@ function HRPoliciesView() {
                           }`}
                         >
                           <Users className="h-3.5 w-3.5" /> Acks
+                        </button>
+                        <button
+                          onClick={() => startEdit(p)}
+                          className={`flex items-center gap-1 text-xs font-medium ${
+                            editingId === p.id ? "text-amber-700 underline" : "text-amber-600 hover:text-amber-700"
+                          }`}
+                        >
+                          <Pencil className="h-3.5 w-3.5" /> Edit
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(p.id)}
+                          disabled={deletePolicy.isPending}
+                          className="flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete
                         </button>
                       </div>
                     </td>
@@ -482,6 +586,62 @@ function HRPoliciesView() {
       </div>
 
       {/* Panels are now inline within the table rows above */}
+
+      {confirmDeleteId != null && (() => {
+        const target = policies.find((x: any) => x.id === confirmDeleteId);
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            onClick={() => setConfirmDeleteId(null)}
+          >
+            <div
+              className="w-full max-w-md rounded-xl bg-white shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-6 py-4 border-b border-gray-100">
+                <h3 className="text-lg font-semibold text-gray-900">Delete policy?</h3>
+              </div>
+              <div className="px-6 py-4 text-sm text-gray-600">
+                {target ? (
+                  <>
+                    Are you sure you want to delete <strong className="text-gray-900">{policyTitle(target)}</strong>?
+                    The policy will be hidden from employees; existing acknowledgments are retained for audit.
+                  </>
+                ) : (
+                  "Are you sure you want to delete this policy?"
+                )}
+              </div>
+              <div className="flex justify-end gap-2 px-6 py-3 bg-gray-50 rounded-b-xl border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteId(null)}
+                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const id = confirmDeleteId;
+                    deletePolicy.mutate(id, {
+                      onSuccess: () => {
+                        if (viewAckFor === id) setViewAckFor(null);
+                        if (viewContentFor === id) setViewContentFor(null);
+                        setConfirmDeleteId(null);
+                      },
+                    });
+                  }}
+                  disabled={deletePolicy.isPending}
+                  className="flex items-center gap-1 text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {deletePolicy.isPending ? "Deleting…" : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
