@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as policyService from "../../services/policy/policy.service.js";
@@ -45,7 +45,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/policies
-router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("policies:create", "policies:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createPolicySchema.parse(req.body);
     const policy = await policyService.createPolicy(req.user!.org_id, req.user!.sub, data);
@@ -65,7 +65,7 @@ router.post("/", authenticate, requireHR, async (req: Request, res: Response, ne
 });
 
 // PUT /api/v1/policies/:id
-router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", authenticate, requirePermission("policies:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updatePolicySchema.parse(req.body);
     const policy = await policyService.updatePolicy(req.user!.org_id, paramInt(req.params.id), data);
@@ -86,7 +86,7 @@ router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, 
 });
 
 // DELETE /api/v1/policies/:id
-router.delete("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("policies:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await policyService.deletePolicy(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Policy deactivated" });
@@ -117,7 +117,7 @@ router.post("/:id/acknowledge", authenticate, async (req: Request, res: Response
 });
 
 // GET /api/v1/policies/:id/acknowledgments
-router.get("/:id/acknowledgments", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id/acknowledgments", authenticate, requirePermission("policies:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const acknowledgments = await policyService.getAcknowledgments(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, acknowledgments);
