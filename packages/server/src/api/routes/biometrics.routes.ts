@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated, sendError } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as biometricsService from "../../services/biometrics/biometrics.service.js";
@@ -32,7 +32,7 @@ const router = Router();
 // =============================================================================
 
 // POST /api/v1/biometrics/face/enroll
-router.post("/face/enroll", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/face/enroll", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = faceEnrollSchema.parse(req.body);
     const enrollment = await biometricsService.enrollFace(
@@ -62,7 +62,7 @@ router.post("/face/enroll", authenticate, requireHR, async (req: Request, res: R
 });
 
 // GET /api/v1/biometrics/face/enrollments
-router.get("/face/enrollments", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/face/enrollments", authenticate, requirePermission("biometrics:view_all", "biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.query.user_id ? Number(req.query.user_id) : undefined;
     const enrollments = await biometricsService.listFaceEnrollments(req.user!.org_id, {
@@ -74,7 +74,7 @@ router.get("/face/enrollments", authenticate, requireHR, async (req: Request, re
 });
 
 // DELETE /api/v1/biometrics/face/enrollments/:id
-router.delete("/face/enrollments/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/face/enrollments/:id", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const enrollmentId = paramInt(req.params.id);
     const result = await biometricsService.removeFaceEnrollment(req.user!.org_id, enrollmentId);
@@ -107,7 +107,7 @@ router.post("/face/verify", authenticate, async (req: Request, res: Response, ne
 // =============================================================================
 
 // POST /api/v1/biometrics/qr/generate
-router.post("/qr/generate", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/qr/generate", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = qrGenerateSchema.parse(req.body);
     const qr = await biometricsService.generateQRCode(req.user!.org_id, data.user_id);
@@ -211,7 +211,7 @@ router.post("/check-out", authenticate, async (req: Request, res: Response, next
 // =============================================================================
 
 // GET /api/v1/biometrics/devices
-router.get("/devices", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/devices", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const status = req.query.status as string | undefined;
     const type = req.query.type as string | undefined;
@@ -221,7 +221,7 @@ router.get("/devices", authenticate, requireHR, async (req: Request, res: Respon
 });
 
 // POST /api/v1/biometrics/devices
-router.post("/devices", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/devices", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = registerDeviceSchema.parse(req.body);
     const device = await biometricsService.registerDevice(req.user!.org_id, data);
@@ -241,7 +241,7 @@ router.post("/devices", authenticate, requireHR, async (req: Request, res: Respo
 });
 
 // PUT /api/v1/biometrics/devices/:id
-router.put("/devices/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/devices/:id", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateDeviceSchema.parse(req.body);
     const device = await biometricsService.updateDevice(req.user!.org_id, paramInt(req.params.id), data);
@@ -250,7 +250,7 @@ router.put("/devices/:id", authenticate, requireHR, async (req: Request, res: Re
 });
 
 // DELETE /api/v1/biometrics/devices/:id
-router.delete("/devices/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/devices/:id", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const deviceId = paramInt(req.params.id);
     const result = await biometricsService.decommissionDevice(req.user!.org_id, deviceId);
@@ -291,7 +291,7 @@ router.post("/devices/:id/heartbeat", async (req: Request, res: Response, next: 
 // =============================================================================
 
 // GET /api/v1/biometrics/settings
-router.get("/settings", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/settings", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const settings = await biometricsService.getSettings(req.user!.org_id);
     sendSuccess(res, settings);
@@ -299,7 +299,7 @@ router.get("/settings", authenticate, requireHR, async (req: Request, res: Respo
 });
 
 // PUT /api/v1/biometrics/settings
-router.put("/settings", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/settings", authenticate, requirePermission("biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = biometricSettingsSchema.parse(req.body);
     const settings = await biometricsService.updateSettings(req.user!.org_id, data);
@@ -323,7 +323,7 @@ router.put("/settings", authenticate, requireHR, async (req: Request, res: Respo
 // =============================================================================
 
 // GET /api/v1/biometrics/logs
-router.get("/logs", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/logs", authenticate, requirePermission("biometrics:view_all", "biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = biometricLogsQuerySchema.parse(req.query);
     const result = await biometricsService.getBiometricLogs(req.user!.org_id, {
@@ -340,7 +340,7 @@ router.get("/logs", authenticate, requireHR, async (req: Request, res: Response,
 });
 
 // GET /api/v1/biometrics/dashboard
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("biometrics:view_all", "biometrics:manage_devices"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const stats = await biometricsService.getBiometricDashboard(req.user!.org_id);
     sendSuccess(res, stats);

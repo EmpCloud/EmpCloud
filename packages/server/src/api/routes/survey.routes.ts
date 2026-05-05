@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as surveyService from "../../services/survey/survey.service.js";
@@ -41,7 +41,7 @@ router.get("/active", authenticate, async (req: Request, res: Response, next: Ne
 });
 
 // GET /api/v1/surveys/dashboard — Survey analytics dashboard (HR)
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("surveys:view", "surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dashboard = await surveyService.getSurveyDashboard(req.user!.org_id);
     sendSuccess(res, dashboard);
@@ -105,7 +105,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
 });
 
 // GET /api/v1/surveys/:id/results/export — Export survey results as CSV (HR)
-router.get("/:id/results/export", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id/results/export", authenticate, requirePermission("surveys:view", "surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const results = await surveyService.getSurveyResults(
       req.user!.org_id,
@@ -160,7 +160,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/surveys — Create survey (HR only)
-router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("surveys:create", "surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createSurveySchema.parse(req.body);
     const survey = await surveyService.createSurvey(
@@ -184,7 +184,7 @@ router.post("/", authenticate, requireHR, async (req: Request, res: Response, ne
 });
 
 // PUT /api/v1/surveys/:id — Update survey (HR, draft only)
-router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", authenticate, requirePermission("surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Status changes are not allowed via PUT — use POST /:id/publish or /:id/close instead
     if (req.body && req.body.status !== undefined) {
@@ -204,7 +204,7 @@ router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, 
 });
 
 // POST /api/v1/surveys/:id/publish — Publish survey (HR)
-router.post("/:id/publish", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id/publish", authenticate, requirePermission("surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const survey = await surveyService.publishSurvey(
       req.user!.org_id,
@@ -226,7 +226,7 @@ router.post("/:id/publish", authenticate, requireHR, async (req: Request, res: R
 });
 
 // POST /api/v1/surveys/:id/close — Close survey (HR)
-router.post("/:id/close", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id/close", authenticate, requirePermission("surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const survey = await surveyService.closeSurvey(
       req.user!.org_id,
@@ -248,7 +248,7 @@ router.post("/:id/close", authenticate, requireHR, async (req: Request, res: Res
 });
 
 // DELETE /api/v1/surveys/:id — Delete draft survey (HR)
-router.delete("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await surveyService.deleteSurvey(
       req.user!.org_id,
@@ -284,7 +284,7 @@ router.post("/:id/respond", authenticate, async (req: Request, res: Response, ne
 });
 
 // GET /api/v1/surveys/:id/results — Get aggregated results (HR)
-router.get("/:id/results", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id/results", authenticate, requirePermission("surveys:view", "surveys:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const results = await surveyService.getSurveyResults(
       req.user!.org_id,

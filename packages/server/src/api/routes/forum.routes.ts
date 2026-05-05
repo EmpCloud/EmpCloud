@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as forumService from "../../services/forum/forum.service.js";
@@ -36,7 +36,7 @@ router.get("/categories", authenticate, async (req: Request, res: Response, next
 });
 
 // POST /api/v1/forum/categories
-router.post("/categories", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/categories", authenticate, requirePermission("forum:moderate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createForumCategorySchema.parse(req.body);
     const category = await forumService.createCategory(req.user!.org_id, data);
@@ -45,7 +45,7 @@ router.post("/categories", authenticate, requireHR, async (req: Request, res: Re
 });
 
 // PUT /api/v1/forum/categories/:id
-router.put("/categories/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/categories/:id", authenticate, requirePermission("forum:moderate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateForumCategorySchema.parse(req.body);
     const category = await forumService.updateCategory(
@@ -58,7 +58,7 @@ router.put("/categories/:id", authenticate, requireHR, async (req: Request, res:
 });
 
 // DELETE /api/v1/forum/categories/:id — soft-delete a forum category (HR)
-router.delete("/categories/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/categories/:id", authenticate, requirePermission("forum:moderate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await forumService.deleteCategory(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, { message: "Category deactivated" });
@@ -152,7 +152,7 @@ router.delete("/posts/:id", authenticate, async (req: Request, res: Response, ne
 });
 
 // POST /api/v1/forum/posts/:id/pin
-router.post("/posts/:id/pin", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/posts/:id/pin", authenticate, requirePermission("forum:moderate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await forumService.pinPost(
       req.user!.org_id,
@@ -163,7 +163,7 @@ router.post("/posts/:id/pin", authenticate, requireHR, async (req: Request, res:
 });
 
 // POST /api/v1/forum/posts/:id/lock
-router.post("/posts/:id/lock", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/posts/:id/lock", authenticate, requirePermission("forum:moderate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await forumService.lockPost(
       req.user!.org_id,
@@ -246,7 +246,7 @@ router.post("/like", authenticate, async (req: Request, res: Response, next: Nex
 // ---- Dashboard ----
 
 // GET /api/v1/forum/dashboard
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("forum:moderate"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const stats = await forumService.getForumDashboard(req.user!.org_id);
     sendSuccess(res, stats);

@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as eventService from "../../services/event/event.service.js";
@@ -36,7 +36,7 @@ router.get("/my", authenticate, async (req: Request, res: Response, next: NextFu
 });
 
 // GET /api/v1/events/dashboard — Event stats (HR only)
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("events:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const stats = await eventService.getEventDashboard(req.user!.org_id);
     sendSuccess(res, stats);
@@ -72,7 +72,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // POST /api/v1/events — Create event (HR only)
-router.post("/", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", authenticate, requirePermission("events:create", "events:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = createEventSchema.parse(req.body);
     const event = await eventService.createEvent(
@@ -96,7 +96,7 @@ router.post("/", authenticate, requireHR, async (req: Request, res: Response, ne
 });
 
 // PUT /api/v1/events/:id — Update event (HR only)
-router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", authenticate, requirePermission("events:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = updateEventSchema.parse(req.body);
     const event = await eventService.updateEvent(
@@ -109,7 +109,7 @@ router.put("/:id", authenticate, requireHR, async (req: Request, res: Response, 
 });
 
 // DELETE /api/v1/events/:id — Delete event (HR only)
-router.delete("/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", authenticate, requirePermission("events:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     await eventService.deleteEvent(
       req.user!.org_id,
@@ -120,7 +120,7 @@ router.delete("/:id", authenticate, requireHR, async (req: Request, res: Respons
 });
 
 // POST /api/v1/events/:id/cancel — Cancel event (HR only)
-router.post("/:id/cancel", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id/cancel", authenticate, requirePermission("events:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const event = await eventService.cancelEvent(
       req.user!.org_id,

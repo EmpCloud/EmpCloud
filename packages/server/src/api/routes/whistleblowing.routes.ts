@@ -4,7 +4,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireHR } from "../middleware/rbac.middleware.js";
+import { requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as wbService from "../../services/whistleblowing/whistleblowing.service.js";
@@ -76,7 +76,7 @@ router.get("/reports/lookup/:case", authenticate, async (req: Request, res: Resp
 });
 
 // GET /api/v1/whistleblowing/dashboard — Dashboard stats (HR only)
-router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/dashboard", authenticate, requirePermission("whistleblowing:view", "whistleblowing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const dashboard = await wbService.getWhistleblowingDashboard(req.user!.org_id);
     sendSuccess(res, dashboard);
@@ -84,7 +84,7 @@ router.get("/dashboard", authenticate, requireHR, async (req: Request, res: Resp
 });
 
 // GET /api/v1/whistleblowing/reports — All reports (HR/investigator only)
-router.get("/reports", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/reports", authenticate, requirePermission("whistleblowing:view", "whistleblowing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page, status, category, severity, search } = whistleblowerQuerySchema.parse(req.query);
     const result = await wbService.listReports(req.user!.org_id, {
@@ -100,7 +100,7 @@ router.get("/reports", authenticate, requireHR, async (req: Request, res: Respon
 });
 
 // GET /api/v1/whistleblowing/reports/:id — Report detail (HR only)
-router.get("/reports/:id", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/reports/:id", authenticate, requirePermission("whistleblowing:view", "whistleblowing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const report = await wbService.getReport(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, report);
@@ -108,7 +108,7 @@ router.get("/reports/:id", authenticate, requireHR, async (req: Request, res: Re
 });
 
 // POST /api/v1/whistleblowing/reports/:id/assign — Assign investigator (HR)
-router.post("/reports/:id/assign", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/reports/:id/assign", authenticate, requirePermission("whistleblowing:assign"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { investigator_id } = whistleblowerAssignSchema.parse(req.body);
     const report = await wbService.assignInvestigator(
@@ -132,7 +132,7 @@ router.post("/reports/:id/assign", authenticate, requireHR, async (req: Request,
 });
 
 // POST /api/v1/whistleblowing/reports/:id/update — Add update/note (HR)
-router.post("/reports/:id/update", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/reports/:id/update", authenticate, requirePermission("whistleblowing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = whistleblowerUpdateSchema.parse(req.body);
     const result = await wbService.addUpdate(
@@ -159,7 +159,7 @@ router.post("/reports/:id/update", authenticate, requireHR, async (req: Request,
 });
 
 // PUT /api/v1/whistleblowing/reports/:id/status — Change status (HR)
-router.put("/reports/:id/status", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/reports/:id/status", authenticate, requirePermission("whistleblowing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = whistleblowerStatusSchema.parse(req.body);
     const report = await wbService.updateStatus(
@@ -184,7 +184,7 @@ router.put("/reports/:id/status", authenticate, requireHR, async (req: Request, 
 });
 
 // POST /api/v1/whistleblowing/reports/:id/escalate — Escalate externally (HR)
-router.post("/reports/:id/escalate", authenticate, requireHR, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/reports/:id/escalate", authenticate, requirePermission("whistleblowing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = whistleblowerEscalateSchema.parse(req.body);
     const report = await wbService.escalateReport(
