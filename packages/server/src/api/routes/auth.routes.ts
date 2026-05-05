@@ -194,6 +194,9 @@ router.post("/sso/token", authenticate, async (req: Request, res: Response, next
   try {
     const { module_id } = req.body;
     const { signAccessToken } = await import("../../services/oauth/jwt.service.js");
+    // Carry the requesting user's effective permissions across to the SSO
+    // token so the downstream module can authorize with requirePermission().
+    // The current access-token JWT already has `permissions` — pass it through.
     const ssoToken = signAccessToken({
       sub: req.user!.sub,
       email: req.user!.email,
@@ -205,6 +208,7 @@ router.post("/sso/token", authenticate, async (req: Request, res: Response, next
       scope: req.user!.scope || "openid profile",
       client_id: req.user!.client_id || "empcloud",
       jti: req.user!.jti || crypto.randomUUID(),
+      permissions: (req.user as any).permissions || [],
     });
     sendSuccess(res, { token: ssoToken, module_id });
   } catch (err) {

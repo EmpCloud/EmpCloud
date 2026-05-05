@@ -772,4 +772,63 @@ router.delete("/:id/dependents/:dependentId", authenticate, requireSelfOrHR("id"
   } catch (err) { next(err); }
 });
 
+// ===========================================================================
+// Additional managers (RBAC v1) — matrix / co-manager rows on top of the
+// primary users.reporting_manager_id. Read by the team resolver so any
+// `*:view_team` / `*:approve` permission honours both relationships.
+// ===========================================================================
+
+// GET /api/v1/employees/:id/additional-managers — list manager rows for user
+router.get(
+  "/:id/additional-managers",
+  authenticate,
+  requireSelfOrHR("id"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { getAdditionalManagerIds } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      const ids = await getAdditionalManagerIds(paramInt(req.params.id));
+      sendSuccess(res, { manager_ids: ids });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// PUT /api/v1/employees/:id/additional-managers
+//   body: { manager_ids: number[] } — replaces the full set
+router.put(
+  "/:id/additional-managers",
+  authenticate,
+  requireHR,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ids = Array.isArray(req.body?.manager_ids)
+        ? req.body.manager_ids.map((n: any) => Number(n)).filter((n: number) => Number.isFinite(n))
+        : null;
+      if (ids === null) {
+        return next(new Error("manager_ids must be an array of user IDs"));
+      }
+      const { setAdditionalManagers } = await import(
+        "../../services/team/team-resolver.service.js"
+      );
+      await setAdditionalManagers(req.user!.org_id, paramInt(req.params.id), ids);
+      await logAudit({
+        organizationId: req.user!.org_id,
+        userId: req.user!.sub,
+        action: AuditAction.USER_UPDATED,
+        details: {
+          target_user_id: paramInt(req.params.id),
+          field: "additional_managers",
+          manager_ids: ids,
+        },
+      });
+      sendSuccess(res, { manager_ids: ids });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
 export default router;

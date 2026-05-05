@@ -59,6 +59,7 @@ import managerRoutes from "./api/routes/manager.routes.js";
 import customFieldRoutes from "./api/routes/custom-field.routes.js";
 import aiConfigRoutes from "./api/routes/ai-config.routes.js";
 import logRoutes from "./api/routes/logs.routes.js";
+import roleRoutes from "./api/routes/role.routes.js";
 
 async function main() {
   // Initialize database
@@ -239,6 +240,7 @@ async function main() {
   app.use("/api/v1/wellness", apiLimiter, wellnessRoutes);
   app.use("/api/v1/manager", apiLimiter, managerRoutes);
   app.use("/api/v1/custom-fields", apiLimiter, customFieldRoutes);
+  app.use("/api/v1/roles", apiLimiter, roleRoutes);
 
   // API Documentation
   app.get("/api/docs", swaggerUIHandler);

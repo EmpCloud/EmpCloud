@@ -501,6 +501,13 @@ export interface AccessTokenPayload {
   scope: string;
   client_id: string;
   jti: string;
+  /**
+   * Effective permissions for this user — union of system-role defaults +
+   * any custom role assignments. Embedded in the JWT so external modules
+   * (payroll, exit, performance, etc.) can authorize without calling back
+   * to EmpCloud. Refreshed on token issue / refresh.
+   */
+  permissions: string[];
   iat: number;
   exp: number;
   iss: string;

@@ -643,6 +643,18 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
                 ))}
             </select>
           </div>
+          {/* Additional Managers — RBAC v1. Stored in user_additional_managers
+              and honoured by every `*:view_team` permission resolver. HR-only;
+              employees see the list read-only. Excludes the current user and
+              the primary manager from the picker. */}
+          <div>
+            <AdditionalManagersField
+              userId={userId}
+              allUsers={allUsers || []}
+              primaryManagerId={form.reporting_manager_id ? Number(form.reporting_manager_id) : null}
+              canEdit={!selfService}
+            />
+          </div>
           {/* #1423 — Department (HR-only). Self-service users see a disabled
               dropdown so they're aware it exists but can't change it. */}
           <div>
@@ -783,6 +795,124 @@ function SubResourceError({ error }: { error?: string | null }) {
   return (
     <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-3 py-2 mb-3">
       {error}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Additional Managers field — RBAC v1
+// ---------------------------------------------------------------------------
+
+function AdditionalManagersField({
+  userId,
+  allUsers,
+  primaryManagerId,
+  canEdit,
+}: {
+  userId: number;
+  allUsers: any[];
+  primaryManagerId: number | null;
+  canEdit: boolean;
+}) {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["employee-additional-managers", userId],
+    queryFn: () =>
+      api.get(`/employees/${userId}/additional-managers`).then((r) => r.data?.data),
+    enabled: !!userId,
+  });
+
+  const [selected, setSelected] = useState<number[]>([]);
+  useEffect(() => {
+    setSelected(Array.isArray(data?.manager_ids) ? data.manager_ids : []);
+  }, [data]);
+
+  const mutation = useMutation({
+    mutationFn: (ids: number[]) =>
+      api.put(`/employees/${userId}/additional-managers`, { manager_ids: ids }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employee-additional-managers", userId] });
+    },
+  });
+
+  // Filter: anyone in the org except self and the primary manager. Open to
+  // any role — additional manager is a relationship, not a role gate.
+  const candidates = (allUsers || []).filter(
+    (u: any) =>
+      u.id !== userId &&
+      (primaryManagerId == null || u.id !== primaryManagerId),
+  );
+
+  const toggle = (id: number) => {
+    if (!canEdit) return;
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const dirty =
+    selected.length !== (data?.manager_ids || []).length ||
+    selected.some((id) => !(data?.manager_ids || []).includes(id));
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Additional Managers
+      </label>
+      <p className="text-xs text-gray-500 mb-2">
+        Co-managers who get the same team-scope access as the primary
+        Reporting Manager (e.g. matrix reporting). Honoured by every
+        team-scoped permission.
+      </p>
+      <div className="border border-gray-300 rounded-md max-h-48 overflow-y-auto bg-white">
+        {isLoading ? (
+          <div className="px-3 py-2 text-sm text-gray-400">Loading…</div>
+        ) : candidates.length === 0 ? (
+          <div className="px-3 py-2 text-sm text-gray-400">No eligible users.</div>
+        ) : (
+          candidates.map((u: any) => (
+            <label
+              key={u.id}
+              className={`flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-gray-50 ${
+                canEdit ? "cursor-pointer" : "cursor-default opacity-80"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={selected.includes(u.id)}
+                disabled={!canEdit}
+                onChange={() => toggle(u.id)}
+              />
+              <span className="flex-1 truncate">
+                {u.first_name} {u.last_name} ({u.role.replace("_", " ")})
+              </span>
+              <span className="text-xs text-gray-400 truncate max-w-[180px]">{u.email}</span>
+            </label>
+          ))
+        )}
+      </div>
+      {canEdit && (
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => mutation.mutate(selected)}
+            disabled={!dirty || mutation.isPending}
+            className="px-3 py-1.5 text-sm font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50"
+          >
+            {mutation.isPending ? "Saving…" : "Save additional managers"}
+          </button>
+          {dirty && !mutation.isPending && (
+            <span className="text-xs text-amber-600">unsaved changes</span>
+          )}
+          {mutation.isSuccess && !dirty && (
+            <span className="text-xs text-green-600">Saved</span>
+          )}
+          {mutation.isError && (
+            <span className="text-xs text-red-600">{extractApiError(mutation.error)}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
