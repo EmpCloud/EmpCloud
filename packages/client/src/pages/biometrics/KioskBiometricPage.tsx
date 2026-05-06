@@ -9,7 +9,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Fingerprint, ShieldCheck, ShieldOff, KeyRound, ArrowLeft, Loader2, Link2, Trash2, Plus, Building2 } from "lucide-react";
+import { Fingerprint, ShieldCheck, ShieldOff, KeyRound, ArrowLeft, Loader2, Link2, Trash2, Plus, Building2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
 
@@ -183,6 +183,14 @@ export default function KioskBiometricPage() {
         </div>
       </div>
 
+      {/* Liveness detection — anti-spoof check at kiosk auth. When enabled,
+          the device runs blink / micro-movement detection on each face
+          capture before issuing the kiosk JWT. "Moderate" tolerates
+          ambient variance; "High" rejects on subtler signals (better
+          security, more legitimate retries). Backwards-compat default:
+          OFF, so existing kiosks see no behaviour change. */}
+      <LivenessSettingsCard />
+
       {/* Linked organisations (#1936) — only meaningful once biometric is
           enabled, since the resolver runs at kiosk login. We still show the
           card when disabled so HR can see the section exists. */}
@@ -247,6 +255,213 @@ export default function KioskBiometricPage() {
           </form>
         </div>
       )}
+    </div>
+  );
+}
+
+// Liveness settings card — toggle on/off + level dropdown + save.
+// Backed by GET/PUT /api/v3/biometric/liveness-settings (migration 065
+// added the columns to biometric_legacy_credentials). Defaults pulled
+// from server: { enabled: false, level: "moderate" } when the row is
+// new. Save button is disabled until something actually changes from
+// the loaded baseline so accidental clicks don't fire empty PUTs.
+type LivenessLevel = "low" | "moderate" | "high";
+interface LivenessResp {
+  enabled: boolean;
+  level: LivenessLevel;
+}
+
+// Whitelist incoming server values so a stale or unexpected level
+// doesn't crash the dropdown's controlled <select>.
+function normaliseLevel(input: unknown): LivenessLevel {
+  const s = String(input ?? "").toLowerCase();
+  if (s === "low" || s === "moderate" || s === "high") return s;
+  return "moderate";
+}
+
+function LivenessSettingsCard() {
+  const v3 = useV3Biometric();
+  const qc = useQueryClient();
+  const [enabled, setEnabled] = useState(false);
+  const [level, setLevel] = useState<LivenessLevel>("moderate");
+  const [baseline, setBaseline] = useState<LivenessResp | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const { isLoading } = useQuery({
+    queryKey: ["biometric-liveness-settings"],
+    queryFn: async () => {
+      const { data } = await v3.get<LegacyResponse<LivenessResp>>("/liveness-settings");
+      const settings = data.data || { enabled: false, level: "moderate" as LivenessLevel };
+      const lvl = normaliseLevel(settings.level);
+      setEnabled(!!settings.enabled);
+      setLevel(lvl);
+      setBaseline({ enabled: !!settings.enabled, level: lvl });
+      return settings;
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await v3.put<LegacyResponse<LivenessResp>>("/liveness-settings", {
+        enabled,
+        // When disabling we still send the level the user had selected --
+        // server keeps the column populated so toggling back ON later
+        // restores the previous sensitivity choice.
+        level,
+      });
+      if (data.code !== 200) throw new Error(data.message || "Failed to save liveness settings");
+      return data.data;
+    },
+    onSuccess: (data) => {
+      setError(null);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+      if (data) {
+        setBaseline({ enabled: !!data.enabled, level: data.level === "high" ? "high" : "moderate" });
+      }
+      qc.invalidateQueries({ queryKey: ["biometric-liveness-settings"] });
+    },
+    onError: (err: any) => {
+      setError(err?.response?.data?.message || err?.message || "Failed to save liveness settings");
+    },
+  });
+
+  const dirty =
+    !!baseline && (baseline.enabled !== enabled || baseline.level !== level);
+
+  return (
+    <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+          <Eye className="h-6 w-6" />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-base font-semibold text-gray-900">Liveness Detection</h2>
+          <p className="mt-1 text-xs text-gray-500">
+            Run an anti-spoof check on each kiosk face capture (blink / micro-movement
+            detection) before issuing the sign-in token. Defaults to off; turn on once
+            your devices and lighting support reliable detection.
+          </p>
+        </div>
+      </div>
+
+      {/* Enable toggle */}
+      <div className="mt-5 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+        <div>
+          <p className="text-sm font-medium text-gray-900">Enable Liveness</p>
+          <p className="text-xs text-gray-500">
+            {isLoading ? "Loading…" : enabled ? "Liveness checks ARE running on kiosk auth." : "Liveness checks are off — face capture is accepted as-is."}
+          </p>
+        </div>
+        <label className="inline-flex cursor-pointer items-center">
+          <input
+            type="checkbox"
+            className="peer sr-only"
+            checked={enabled}
+            disabled={isLoading || saveMutation.isPending}
+            onChange={(e) => setEnabled(e.target.checked)}
+          />
+          <span className="relative h-6 w-11 rounded-full bg-gray-300 transition peer-checked:bg-brand-600 peer-disabled:opacity-50">
+            <span
+              className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${enabled ? "translate-x-5" : "translate-x-0"}`}
+            />
+          </span>
+        </label>
+      </div>
+
+      {/* Level slider — only shown when enabled. Three discrete stops
+          (Low / Moderate / High) on a native range input so it works
+          on touch devices without an extra component. */}
+      {enabled && <LivenessLevelSlider level={level} onChange={setLevel} disabled={isLoading || saveMutation.isPending} />}
+
+      {error && (
+        <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+      )}
+      {saved && (
+        <div className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
+          Liveness settings saved.
+        </div>
+      )}
+
+      <div className="mt-5 flex items-center justify-end">
+        <button
+          type="button"
+          onClick={() => saveMutation.mutate()}
+          disabled={!dirty || isLoading || saveMutation.isPending}
+          className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// 3-stop slider for Low / Moderate / High. Native <input type="range">
+// with discrete steps + clickable labels underneath so HR can also tap
+// the label name to jump straight to it. Values map: 0=low, 1=moderate,
+// 2=high. The track is colour-graded green→amber→red so the
+// "consequence" is visible without reading the label.
+const LIVENESS_LEVELS: Array<{ value: LivenessLevel; label: string; description: string; cls: string }> = [
+  { value: "low", label: "Low", description: "Lenient — more retries succeed; less anti-spoof protection.", cls: "text-green-700" },
+  { value: "moderate", label: "Moderate", description: "Balanced (recommended) — catches obvious spoofs.", cls: "text-amber-700" },
+  { value: "high", label: "High", description: "Strict — best for shared kiosks; rejects on subtler signals.", cls: "text-red-700" },
+];
+function LivenessLevelSlider({
+  level,
+  onChange,
+  disabled,
+}: {
+  level: LivenessLevel;
+  onChange: (v: LivenessLevel) => void;
+  disabled?: boolean;
+}) {
+  const idx = Math.max(0, LIVENESS_LEVELS.findIndex((l) => l.value === level));
+  const current = LIVENESS_LEVELS[idx] || LIVENESS_LEVELS[1];
+  return (
+    <div className="mt-3 rounded-lg border border-gray-200 bg-white px-4 py-4">
+      <div className="flex items-baseline justify-between">
+        <label className="block text-sm font-medium text-gray-900" htmlFor="liveness-level-slider">
+          Sensitivity Level
+        </label>
+        <span className={`text-sm font-semibold ${current.cls}`}>{current.label}</span>
+      </div>
+      <p className="mt-1 text-xs text-gray-500">{current.description}</p>
+
+      <div className="mt-4">
+        <input
+          id="liveness-level-slider"
+          type="range"
+          min={0}
+          max={LIVENESS_LEVELS.length - 1}
+          step={1}
+          value={idx}
+          disabled={disabled}
+          onChange={(e) => onChange(LIVENESS_LEVELS[Number(e.target.value)].value)}
+          // The accent-* token + a custom track gradient give the slider
+          // a green→amber→red ramp so the "intensity" is colour-coded.
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-green-300 via-amber-300 to-red-400 accent-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+        {/* Tick labels — clickable so the slider doubles as a discrete
+            picker. The active tick is bolded + coloured to match. */}
+        <div className="mt-2 flex items-start justify-between text-[11px]">
+          {LIVENESS_LEVELS.map((l, i) => (
+            <button
+              key={l.value}
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange(l.value)}
+              className={`flex flex-col items-${i === 0 ? "start" : i === LIVENESS_LEVELS.length - 1 ? "end" : "center"} disabled:cursor-not-allowed ${
+                i === idx ? `font-semibold ${l.cls}` : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

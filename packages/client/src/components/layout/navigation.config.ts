@@ -137,10 +137,17 @@ export const adminNavItems: NavItem[] = [
     // attendance read access — the page itself scopes the data to the
     // user's permission level (team vs all-org).
     { path: "/attendance", label: "View Attendance", i18nKey: "nav.viewAttendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"] },
+    // Detailed grid -- date columns 1..31 with single-letter codes
+    // (P / A / H / L / WO / HO). Double-click any cell to update.
+    { path: "/attendance/grid", label: "Attendance Grid", i18nKey: "nav.attendanceGrid", icon: CalendarRange, requiredPermissions: ["attendance:view_all", "attendance:manage"] },
     { path: "/attendance/shifts", label: "Shift Settings", i18nKey: "nav.shiftSettings", icon: AlarmClock, requiredPermissions: ["attendance:manage"] },
     { path: "/attendance/shift-schedule", label: "Shift Schedule", i18nKey: "nav.shiftSchedule", icon: CalendarRange, requiredPermissions: ["attendance:manage"] },
     { path: "/attendance/regularizations", label: "Regularizations", i18nKey: "nav.regularizations", icon: ClipboardList, requiredPermissions: ["attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"] },
     { path: "/attendance/settings", label: "Attendance Settings", i18nKey: "nav.attendanceSettings", icon: SlidersHorizontal, requiredPermissions: ["attendance:manage"] },
+    // Biometric PIN moved here from the org-admin-only top-level group --
+    // it's an attendance setup task (kiosk authentication) and HR
+    // expected to find it under Attendance.
+    { path: "/biometrics/kiosk-pin", label: "Biometric PIN", i18nKey: "nav.biometricPin", icon: KeyRound },
   ]},
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, requiredPermissions: ["leave:view_all", "leave:approve", "leave:manage_policies", "leave:override_balance"], children: [
     { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays, requiredPermissions: ["leave:view_all", "leave:approve"] },
@@ -190,11 +197,24 @@ export const adminNavItems: NavItem[] = [
   { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: History, requiredPermissions: ["audit:view", "audit:export"] },
 ];
 
+// Positions is now rendered as a single collapsible parent (mirroring
+// Attendance / Leave / Company), with its previous flat list moved
+// under `children`. The DashboardLayout still mounts this array via
+// NavSection, but NavSection treats a parent item with `children` as
+// an expandable submenu.
 export const positionNavItems: NavItem[] = [
-  { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
-  { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
-  { path: "/positions/vacancies", label: "Vacancies", i18nKey: "nav.vacancies", icon: Target },
-  { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "nav.headcountPlans", icon: ClipboardList },
+  {
+    path: "/positions",
+    label: "Positions",
+    i18nKey: "nav.positions",
+    icon: Briefcase,
+    children: [
+      { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
+      { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
+      { path: "/positions/vacancies", label: "Vacancies", i18nKey: "nav.vacancies", icon: Target },
+      { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "nav.headcountPlans", icon: ClipboardList },
+    ],
+  },
 ];
 
 export const forumNavItems: NavItem[] = [
@@ -295,12 +315,12 @@ export const feedbackHRNavItems: NavItem[] = [
 export const biometricsNavItems: NavItem[] = [];
 
 // Items visible ONLY to org_admin (not hr_admin, not employees).
-// Biometric PIN lives here because the org owner is the one expected to
-// configure / rotate kiosk PINs; HR admins and end users were getting it
-// in their sidebar by mistake.
-export const orgAdminOnlyNavItems: NavItem[] = [
-  { path: "/biometrics/kiosk-pin", label: "Biometric PIN", i18nKey: "nav.biometricPin", icon: KeyRound },
-];
+// Previously held "Biometric PIN" -- moved to the Attendance submenu
+// (above) since HR setup expects to find kiosk auth alongside the
+// other attendance configuration. This array is empty now but kept so
+// DashboardLayout's mount point doesn't have to be removed; future
+// org-admin-only nav entries can be appended here.
+export const orgAdminOnlyNavItems: NavItem[] = [];
 
 export const platformAdminNavItems: NavItem[] = [
   { path: "/admin", label: "Overview Dashboard", i18nKey: "nav.overviewDashboard", icon: Crown },

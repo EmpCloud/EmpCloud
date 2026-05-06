@@ -398,4 +398,43 @@ router.delete("/linked-organizations/:email", authenticate, async (req, res, nex
   } catch (err) { next(err); }
 });
 
+// ---------------------------------------------------------------------------
+// Liveness detection settings (#kiosk-liveness)
+// GET /liveness-settings -> { enabled, level }
+// PUT /liveness-settings { enabled, level } -> updated
+// ---------------------------------------------------------------------------
+
+router.get("/liveness-settings", authenticate, async (req, res, next) => {
+  try {
+    const settings = await svc.getLivenessSettings(req.user!.sub);
+    return resp(res, 200, settings, "Liveness settings fetched");
+  } catch (err) { next(err); }
+});
+
+// GET /liveness — kiosk-callable variant. The kiosk device needs to
+// know whether to run the on-device anti-spoof check BEFORE it sends
+// the face capture, so it queries this endpoint with its kiosk JWT
+// (no admin login required). Returns the same { enabled, level } shape
+// as /liveness-settings, scoped to the kiosk credential's owner.
+router.get("/liveness", kioskAuthenticate, async (req, res, next) => {
+  try {
+    const ownerUserId = Number(req.kioskUser!.userData.id);
+    const settings = await svc.getLivenessSettings(ownerUserId);
+    return resp(res, 200, settings, "Liveness details fetched");
+  } catch (err) { next(err); }
+});
+
+router.put("/liveness-settings", authenticate, async (req, res, next) => {
+  try {
+    const enabled = !!req.body?.enabled;
+    // Service coerces unknown values to "moderate", so the route just
+    // forwards whatever string came in (low / moderate / high).
+    const updated = await svc.updateLivenessSettings(req.user!.sub, {
+      enabled,
+      level: req.body?.level,
+    });
+    return resp(res, 200, updated, "Liveness settings saved");
+  } catch (err) { next(err); }
+});
+
 export default router;

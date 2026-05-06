@@ -164,7 +164,10 @@ export default function DashboardLayout() {
         {user?.role !== "super_admin" && <>
           <NavSection label="" items={sidebarItems} location={location} t={t} />
           {isHR && (
-            <NavSection label={t('nav.positions')} items={positionNavItems} location={location} t={t} />
+            // Positions is now a single collapsible parent (label rendered
+            // by the NavItem itself), so the section label here would be a
+            // duplicate "Positions / Positions" stack. Pass empty label.
+            <NavSection label="" items={positionNavItems} location={location} t={t} />
           )}
           {hasBiometrics && (
             <NavSection label={t('nav.biometrics')} items={biometricsNavItems} location={location} t={t} />

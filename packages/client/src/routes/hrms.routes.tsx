@@ -11,6 +11,7 @@ const ShiftsPage = lazy(() => import("@/pages/attendance/ShiftsPage"));
 const ShiftSchedulePage = lazy(() => import("@/pages/attendance/ShiftSchedulePage"));
 const RegularizationsPage = lazy(() => import("@/pages/attendance/RegularizationsPage"));
 const AttendanceSettingsPage = lazy(() => import("@/pages/attendance/AttendanceSettingsPage"));
+const AttendanceGridPage = lazy(() => import("@/pages/attendance/AttendanceGridPage"));
 const LeaveDashboardPage = lazy(() => import("@/pages/leave/LeaveDashboardPage"));
 const LeaveApplicationsPage = lazy(() => import("@/pages/leave/LeaveApplicationsPage"));
 const LeaveCalendarPage = lazy(() => import("@/pages/leave/LeaveCalendarPage"));
@@ -40,6 +41,7 @@ export const hrmsRoutes = (
     <Route path="/attendance/shift-schedule" element={<ShiftSchedulePage />} />
     <Route path="/attendance/regularizations" element={<RegularizationsPage />} />
     <Route path="/attendance/settings" element={<AttendanceSettingsPage />} />
+    <Route path="/attendance/grid" element={<AttendanceGridPage />} />
     <Route path="/leave" element={<LeaveDashboardPage />} />
     <Route path="/leave/applications" element={<LeaveApplicationsPage />} />
     <Route path="/leave/calendar" element={<LeaveCalendarPage />} />
