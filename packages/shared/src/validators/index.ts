@@ -233,7 +233,9 @@ const designationField = z
   );
 
 // #1658 — emp_code is permissive on format because orgs use widely
-// different conventions (letters, numbers, dots, dashes, underscores).
+// different conventions (letters, numbers, dots, dashes, underscores,
+// and slash-separated path-style codes like "GLB/BHI/2013/03/254" used
+// by orgs that encode location/year/serial into the code).
 // We reject only whitespace and other punctuation to keep "garbage" data
 // like "rkgr2r1114512 " out. Uniqueness within an org is enforced by
 // migration 054's UNIQUE(organization_id, emp_code) index.
@@ -242,8 +244,8 @@ const empCodeField = z
   .trim()
   .max(50)
   .regex(
-    /^[A-Za-z0-9._-]+$/,
-    "Employee code may only contain letters, digits, dots, dashes or underscores",
+    /^[A-Za-z0-9._\-/]+$/,
+    "Employee code may only contain letters, digits, dots, dashes, slashes or underscores",
   );
 
 export const createUserSchema = z.object({
