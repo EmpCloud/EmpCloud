@@ -230,6 +230,33 @@ export default function RegularizationsPage() {
 
   const setField = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
+  // When the user picks the regularization Date, auto-prefill the date part
+  // of the check-in / check-out datetime-local pickers so they only need to
+  // type the time -- the date is almost always the same as the regularization
+  // date itself. If the user has already typed a time, we preserve it and
+  // just swap the date prefix; if either field is empty, we seed it with a
+  // sensible default (09:00 in / 18:00 out) that the user can edit.
+  // `<input type="datetime-local">` value format is "YYYY-MM-DDTHH:MM"
+  // (with optional seconds) -- splitting on the "T" lets us replace the
+  // date portion without losing the time the user already entered.
+  const handleDateChange = (newDate: string) => {
+    setForm((f) => {
+      const swap = (existing: string, fallback: string) => {
+        if (!newDate) return existing;
+        if (!existing) return `${newDate}T${fallback}`;
+        const idx = existing.indexOf("T");
+        const time = idx >= 0 ? existing.slice(idx + 1) : fallback;
+        return `${newDate}T${time}`;
+      };
+      return {
+        ...f,
+        date: newDate,
+        requested_check_in: swap(f.requested_check_in, "09:00"),
+        requested_check_out: swap(f.requested_check_out, "18:00"),
+      };
+    });
+  };
+
   const tabs = [
     { key: "pending" as const, labelKey: "attendance.regularizations.tabs.pending" },
     { key: "all" as const, labelKey: "attendance.regularizations.tabs.all" },
@@ -258,7 +285,7 @@ export default function RegularizationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.regularizations.date')} <span className="text-red-500">*</span></label>
-              <input type="date" value={form.date} onChange={(e) => setField("date", e.target.value)} max={new Date().toISOString().slice(0, 10)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required />
+              <input type="date" value={form.date} onChange={(e) => handleDateChange(e.target.value)} max={new Date().toISOString().slice(0, 10)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" required />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.regularizations.reason')} <span className="text-red-500">*</span></label>
