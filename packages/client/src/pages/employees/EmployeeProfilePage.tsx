@@ -957,11 +957,15 @@ function AdditionalManagersField({
 
   const filtered = (() => {
     const q = query.trim().toLowerCase();
-    // Empty browse view stays capped at 50 so the dropdown doesn't dump
-    // hundreds of rows when first opened. With a search query in hand the
-    // user is asking for a specific person, so we show every match — the
-    // earlier 30-row slice was hiding people HR was actively looking for.
-    if (!q) return candidates.slice(0, 50);
+    // Drop the empty-browse cap entirely (was 50). The earlier cap hid
+    // people who happened to live past the 50th position in the API's
+    // status DESC, created_at DESC order -- e.g. an employee created
+    // weeks ago in an org with > 50 newer actives never appeared in the
+    // browse view, even though the API returned them. The dropdown is
+    // already scrollable (max-h-60 overflow-y-auto) so showing the full
+    // candidate set is fine; max(allUsers) is 500 (per_page cap on /users)
+    // so we render at most ~498 rows after self/primary/selected filtering.
+    if (!q) return candidates;
     return candidates.filter((u: any) => {
       const name = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase();
       return name.includes(q) || (u.email || "").toLowerCase().includes(q);
