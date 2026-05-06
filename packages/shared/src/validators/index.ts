@@ -25,7 +25,12 @@ const stripHtml = (val: string) => val.replace(/<[^>]*>/g, "").trim();
 
 export const paginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
-  per_page: z.coerce.number().int().min(1).max(100).default(20),
+  // Bumped from 100 to 500 so dropdown-style consumers (e.g. the Reporting
+  // Manager / Additional Managers picker on Edit Profile) can load every
+  // active user in a mid-size org in one shot, instead of silently capping
+  // the candidate pool. Server-side queries for these endpoints are cheap
+  // (single SELECT, not N+1), so 500 is fine.
+  per_page: z.coerce.number().int().min(1).max(500).default(20),
   sort_by: z.string().optional(),
   sort_order: z.enum(["asc", "desc"]).default("asc"),
 });
