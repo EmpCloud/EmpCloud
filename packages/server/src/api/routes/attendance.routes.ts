@@ -676,6 +676,34 @@ router.get("/monthly-report", authenticate, requirePermission("attendance:view_a
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/attendance/grid?month=&year= — per-employee per-day matrix.
+// Powers the new Attendance Grid page (date columns 1..31 with single-letter
+// status codes P / A / H / L / WO / HO).
+router.get("/grid", authenticate, requirePermission("attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const now = new Date();
+    const month = req.query.month ? Number(req.query.month) : now.getMonth() + 1;
+    const year = req.query.year ? Number(req.query.year) : now.getFullYear();
+    const grid = await attendanceService.getMonthlyGrid(req.user!.org_id, { month, year });
+    sendSuccess(res, grid);
+  } catch (err) { next(err); }
+});
+
+// PUT /api/v1/attendance/cell — upsert a single (user, date) attendance row.
+// Body: { user_id: number, date: "YYYY-MM-DD", code: "P"|"A"|"H"|"L"|"" }
+router.put("/cell", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { user_id, date, code } = req.body || {};
+    if (!user_id || !date) throw new Error("user_id and date are required");
+    const result = await attendanceService.updateAttendanceCell(req.user!.org_id, {
+      userId: Number(user_id),
+      date: String(date),
+      code: String(code ?? ""),
+    });
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX
 router.get("/export", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {

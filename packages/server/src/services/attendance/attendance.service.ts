@@ -725,3 +725,169 @@ export async function getMonthlyReport(
 
   return { month: params.month, year: params.year, report: records };
 }
+
+// =============================================================================
+// MONTHLY GRID — per-employee per-day attendance matrix
+// =============================================================================
+//
+// Drives the new Attendance Grid page (Excel-style date columns 1..31, one
+// row per employee, single-letter status codes). Bakes WO (week-off) and
+// HO (holiday) cells into the response so the page can render from a
+// single round-trip; cells without a stored row fall back to "" / WO / HO
+// based on calendar + organization_holidays.
+//
+// Half-day auto-classification: rows where status = 'present' but
+// `worked_minutes` < halfDayThresholdMinutes get reclassified as 'H'
+// (half day) in the grid. This way a 4-hour shift correctly shows as
+// half day even if the check-in/out path stored it as 'present'.
+
+export type AttendanceCode = "P" | "A" | "H" | "L" | "WO" | "HO" | "";
+
+export async function getMonthlyGrid(
+  orgId: number,
+  params: { month: number; year: number; halfDayThresholdMinutes?: number },
+) {
+  const db = getDB();
+  const { month, year } = params;
+  const halfDayThreshold = params.halfDayThresholdMinutes ?? 240; // 4hrs default
+  const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
+
+  // Holidays in the period (org_holidays may use a different table name
+  // than payroll's `organization_holidays`; check both possibilities).
+  let holidayRows: Array<{ holiday_date: any }> = [];
+  try {
+    holidayRows = await db("organization_holidays")
+      .where("organization_id", orgId)
+      .whereBetween("holiday_date", [monthStart, monthEnd])
+      .select("holiday_date");
+  } catch {
+    // Older schemas without the table -- treat as no holidays.
+    holidayRows = [];
+  }
+  const isoLocal = (v: any): string => {
+    if (typeof v === "string") return v.slice(0, 10);
+    if (!(v instanceof Date)) v = new Date(v);
+    return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}-${String(v.getDate()).padStart(2, "0")}`;
+  };
+  const holidaySet = new Set<string>();
+  for (const h of holidayRows) holidaySet.add(isoLocal(h.holiday_date));
+
+  const days: Array<{ day: number; date: string; defaultCode: "WO" | "HO" | "" }> = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const dow = new Date(year, month - 1, d).getDay();
+    let defaultCode: "WO" | "HO" | "" = "";
+    if (dow === 0 || dow === 6) defaultCode = "WO";
+    else if (holidaySet.has(dateStr)) defaultCode = "HO";
+    days.push({ day: d, date: dateStr, defaultCode });
+  }
+
+  const allUsers = await db("users")
+    .where({ organization_id: orgId, status: 1 })
+    .whereNot("role", "super_admin")
+    .select("id as user_id", "first_name", "last_name", "emp_code");
+
+  if (allUsers.length === 0) {
+    return { days, employees: [], totalEmployees: 0, daysInMonth };
+  }
+
+  const rows = await db("attendance_records")
+    .where("organization_id", orgId)
+    .whereIn(
+      "user_id",
+      allUsers.map((u: any) => u.user_id),
+    )
+    .whereBetween("date", [monthStart, monthEnd])
+    .select("user_id", "date", "status", "worked_minutes");
+
+  const codeFor = (status: string | null | undefined, workedMinutes: number | null): AttendanceCode => {
+    const s = (status || "").toLowerCase();
+    if (s === "half_day") return "H";
+    if (s === "absent") return "A";
+    if (s === "on_leave") return "L";
+    if (s === "present" || s === "checked_in") {
+      // Auto-reclassify short shifts as half-day so a 4hr workday isn't
+      // accidentally counted as a full present day.
+      if (workedMinutes != null && workedMinutes > 0 && workedMinutes < halfDayThreshold) {
+        return "H";
+      }
+      return "P";
+    }
+    return "";
+  };
+
+  const byUser: Record<number, Record<string, AttendanceCode>> = {};
+  for (const r of rows) {
+    const dStr = isoLocal(r.date);
+    const uid = Number(r.user_id);
+    if (!byUser[uid]) byUser[uid] = {};
+    byUser[uid][dStr] = codeFor(r.status, r.worked_minutes != null ? Number(r.worked_minutes) : null);
+  }
+
+  const employees = allUsers.map((u: any) => {
+    const userMap = byUser[u.user_id] || {};
+    const dayCodes: Record<string, AttendanceCode> = {};
+    for (const d of days) {
+      dayCodes[d.date] = (userMap[d.date] as AttendanceCode) || (d.defaultCode as AttendanceCode);
+    }
+    return {
+      user_id: u.user_id,
+      first_name: u.first_name,
+      last_name: u.last_name,
+      emp_code: u.emp_code,
+      days: dayCodes,
+    };
+  });
+
+  return { days, employees, totalEmployees: employees.length, daysInMonth };
+}
+
+// Update a single attendance cell from the grid's double-click edit.
+// Codes accepted: P / A / H / L / "" (revert -> deletes the row so the
+// day falls back to its default WO / HO / blank). WO and HO are NOT
+// directly settable -- they're calendar-derived defaults.
+export async function updateAttendanceCell(
+  orgId: number,
+  params: { userId: number; date: string; code: string },
+) {
+  const db = getDB();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(params.date)) {
+    throw new Error("date must be YYYY-MM-DD");
+  }
+  const map: Record<string, string> = {
+    P: "present",
+    A: "absent",
+    H: "half_day",
+    L: "on_leave",
+  };
+  const upper = (params.code || "").toUpperCase();
+  if (upper === "" || upper === "WO" || upper === "HO" || upper === "-") {
+    await db("attendance_records")
+      .where({ user_id: params.userId, organization_id: orgId, date: params.date })
+      .del();
+    return { ok: true, action: "deleted" };
+  }
+  const status = map[upper];
+  if (!status) {
+    throw new Error(`Unknown status code "${params.code}". Use P / A / H / L / WO / HO.`);
+  }
+  const existing = await db("attendance_records")
+    .where({ user_id: params.userId, organization_id: orgId, date: params.date })
+    .first();
+  const now = new Date();
+  if (existing) {
+    await db("attendance_records").where({ id: existing.id }).update({ status, updated_at: now });
+    return { ok: true, action: "updated", status };
+  }
+  await db("attendance_records").insert({
+    user_id: params.userId,
+    organization_id: orgId,
+    date: params.date,
+    status,
+    created_at: now,
+    updated_at: now,
+  });
+  return { ok: true, action: "created", status };
+}

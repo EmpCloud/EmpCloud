@@ -1400,3 +1400,61 @@ export async function deleteFaceImage(orgIds: number[], userId: number) {
 export function legacyFaceFile(organizationId: number, userId: number): string {
   return legacyFacePath(organizationId, userId);
 }
+
+// ---------------------------------------------------------------------------
+// Liveness detection settings (migration 065)
+// ---------------------------------------------------------------------------
+//
+// Per-credential anti-spoof config surfaced on the Biometric Kiosk Access
+// page. Defaults: liveness OFF, level "moderate". Backwards-compatible --
+// kiosks that haven't toggled the setting behave exactly as before.
+
+export type LivenessLevel = "low" | "moderate" | "high";
+
+export interface LivenessSettings {
+  enabled: boolean;
+  level: LivenessLevel;
+}
+
+// Whitelist + coerce: anything not in the set falls back to "moderate"
+// so a malformed body or stale client never poisons the column.
+function coerceLivenessLevel(input: unknown): LivenessLevel {
+  const s = String(input ?? "").toLowerCase();
+  if (s === "low" || s === "moderate" || s === "high") return s;
+  return "moderate";
+}
+
+export async function getLivenessSettings(userId: number): Promise<LivenessSettings> {
+  const db = getDB();
+  const row = await db("biometric_legacy_credentials")
+    .where({ user_id: userId })
+    .select("liveness_enabled", "liveness_level")
+    .first();
+  if (!row) return { enabled: false, level: "moderate" };
+  return {
+    enabled: !!Number(row.liveness_enabled),
+    level: coerceLivenessLevel(row.liveness_level),
+  };
+}
+
+export async function updateLivenessSettings(
+  userId: number,
+  settings: { enabled: boolean; level?: LivenessLevel | string },
+): Promise<LivenessSettings> {
+  const db = getDB();
+  const user = await db("users").where({ id: userId }).first();
+  if (!user) throw new Error("User not found");
+  // Make sure a credentials row exists -- HR may toggle liveness BEFORE
+  // they've set a kiosk PIN (the row is otherwise lazily created by
+  // /enable-biometric / /set-password).
+  await getOrCreateCredentials(userId, user.organization_id);
+  const level = coerceLivenessLevel(settings.level);
+  await db("biometric_legacy_credentials")
+    .where({ user_id: userId })
+    .update({
+      liveness_enabled: settings.enabled ? 1 : 0,
+      liveness_level: level,
+      updated_at: new Date(),
+    });
+  return { enabled: !!settings.enabled, level };
+}
