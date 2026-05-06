@@ -2,6 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import { useStickyLocationFilter } from "@/lib/use-sticky-location";
+
+const ROLE_OPTIONS: { value: string; label: string }[] = [
+  { value: "employee", label: "Employee" },
+  { value: "manager", label: "Manager" },
+  { value: "hr_admin", label: "HR Admin" },
+  { value: "org_admin", label: "Org Admin" },
+];
 import {
   Calendar,
   Users,
@@ -134,10 +142,16 @@ export default function ShiftSchedulePage() {
     effective_to: string | null;
   } | null>(null);
 
-  // Team Schedule grid: client-side search + pagination
+  // Team Schedule grid: client-side search + pagination + filters.
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
+  // Department / Role / Location filters mirror the other admin pages so HR
+  // can narrow the team-schedule view to one office, one team, or one role.
+  // Location is sticky across pages via the shared hook.
+  const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+  const [locationId, setLocationId] = useStickyLocationFilter();
+  const [roleFilter, setRoleFilter] = useState<string>("");
 
   const week = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
@@ -146,6 +160,33 @@ export default function ShiftSchedulePage() {
   const { data: mySchedule } = useMySchedule();
   const { data: swapRequests = [], isLoading: swapsLoading } = useSwapRequests();
   const { data: employees = [] } = useEmployees();
+  const { data: departments = [] } = useQuery({
+    queryKey: ["org-departments"],
+    queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+  const { data: locations = [] } = useQuery({
+    queryKey: ["org-locations"],
+    queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+
+  // The /attendance/shifts/schedule response only carries the columns the
+  // grid needs to render (name, emp_code, assignments). To filter by
+  // department / location / role we cross-reference with the directory
+  // pulled by useEmployees() — same data the bulk-assign modal uses.
+  const employeeMetaById = useMemo(() => {
+    const m = new Map<number, { department_id?: number | null; location_id?: number | null; role?: string; email?: string }>();
+    for (const e of employees as any[]) {
+      m.set(e.id, {
+        department_id: e.department_id ?? null,
+        location_id: e.location_id ?? null,
+        role: e.role,
+        email: e.email,
+      });
+    }
+    return m;
+  }, [employees]);
 
   const bulkAssign = useMutation({
     mutationFn: (data: any) => api.post("/attendance/shifts/bulk-assign", data).then((r) => r.data.data),
@@ -263,13 +304,30 @@ export default function ShiftSchedulePage() {
   // Filtered + paginated schedule for the Team Schedule grid.
   const filteredSchedule = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return schedule;
-    return schedule.filter((emp: any) => {
-      const name = `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.toLowerCase();
-      const code = String(emp.emp_code ?? "").toLowerCase();
-      return name.includes(q) || code.includes(q);
+    return (schedule as any[]).filter((emp: any) => {
+      // Cross-reference metadata for non-name filters. If the directory
+      // hasn't loaded yet (or the schedule row references an employee
+      // outside the org for some reason) the row is hidden when any
+      // metadata filter is active, so HR doesn't see "leaked" rows.
+      const meta = employeeMetaById.get(emp.user_id);
+      if (departmentId != null) {
+        if (!meta || meta.department_id !== departmentId) return false;
+      }
+      if (locationId != null) {
+        if (!meta || meta.location_id !== locationId) return false;
+      }
+      if (roleFilter) {
+        if (!meta || meta.role !== roleFilter) return false;
+      }
+      if (q) {
+        const name = `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.toLowerCase();
+        const code = String(emp.emp_code ?? "").toLowerCase();
+        const email = String(meta?.email ?? "").toLowerCase();
+        if (!name.includes(q) && !code.includes(q) && !email.includes(q)) return false;
+      }
+      return true;
     });
-  }, [schedule, search]);
+  }, [schedule, search, departmentId, locationId, roleFilter, employeeMetaById]);
 
   const totalEntries = filteredSchedule.length;
   const totalPages = Math.max(1, Math.ceil(totalEntries / pageSize));
@@ -280,7 +338,7 @@ export default function ShiftSchedulePage() {
 
   // Reset to first page when the search or page-size changes so the user
   // doesn't get stranded on an out-of-range page after filtering.
-  useEffect(() => { setPage(1); }, [search, pageSize]);
+  useEffect(() => { setPage(1); }, [search, pageSize, departmentId, locationId, roleFilter]);
 
   // Shift color map
   const shiftColors: Record<number, string> = {};
@@ -660,6 +718,58 @@ export default function ShiftSchedulePage() {
             </div>
           )}
 
+          {/* Filters (department / location / role) */}
+          <div className="bg-white rounded-xl border border-gray-200 p-3 mb-3 flex flex-wrap items-end gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
+              <select
+                value={departmentId ?? ""}
+                onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : undefined)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="">All departments</option>
+                {(departments as any[]).map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
+              <select
+                value={locationId ?? ""}
+                onChange={(e) => setLocationId(e.target.value ? Number(e.target.value) : undefined)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="">All locations</option>
+                {(locations as any[]).map((l) => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Role</label>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="">All roles</option>
+                {ROLE_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label}</option>
+                ))}
+              </select>
+            </div>
+            {(departmentId || locationId || roleFilter) && (
+              <button
+                type="button"
+                onClick={() => { setDepartmentId(undefined); setLocationId(undefined); setRoleFilter(""); }}
+                className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
           {/* Search + Page size controls */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -682,9 +792,9 @@ export default function ShiftSchedulePage() {
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('attendance.shiftSchedule.search.placeholder')}
+                placeholder="Search by name, employee code, or email"
                 className="pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm w-64 max-w-full focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                aria-label={t('attendance.shiftSchedule.search.placeholder')}
+                aria-label="Search employee"
               />
             </div>
           </div>

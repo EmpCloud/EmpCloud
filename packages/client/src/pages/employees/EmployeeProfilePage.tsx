@@ -80,9 +80,13 @@ export default function EmployeeProfilePage() {
   });
 
   // Fetch users for reporting manager dropdown
+  // per_page bumped to 500 so the Reporting Manager + Additional Managers
+  // pickers see every active user in mid-size orgs. Without this the source
+  // list silently capped at 100 (or worse, 20 if the param wasn't honoured),
+  // and HR couldn't pick managers that fell outside that window.
   const { data: allUsers } = useQuery({
     queryKey: ["users-for-manager"],
-    queryFn: () => api.get("/users", { params: { per_page: 100 } }).then((r) => r.data.data),
+    queryFn: () => api.get("/users", { params: { per_page: 500 } }).then((r) => r.data.data),
     enabled: editing,
   });
 
@@ -435,10 +439,24 @@ function validateIdDoc(
 function PersonalTab({ profile, editing, onSave, saving, error, allUsers, departments, shifts, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; departments?: any[]; shifts?: any[]; userId?: number; selfService?: boolean }) {
   const [form, setForm] = useState<Record<string, string>>({});
   const [idErrors, setIdErrors] = useState<{ pan_number?: string; aadhar_number?: string; uan_number?: string; passport_number?: string }>({});
-
-  // Populate form when entering edit mode (via useEffect to avoid setState during render)
+  // Bug fix: previously this effect depended on [editing, profile], so any
+  // React Query refetch (window focus, stale-time, manual invalidation) handed
+  // back a new `profile` object reference and the effect re-ran -- silently
+  // overwriting in-flight user edits with whatever the server last returned.
+  // The most visible symptom was selecting "No Manager" in the Reporting
+  // Manager dropdown: the form state was reset to the prior manager id
+  // before the user clicked Save, and the request sent the old value.
+  // Initialise the form *once* per edit session by tracking initialisation
+  // in a ref keyed off the editing flag, so refetches no longer clobber the
+  // user's selection.
+  const formInitialized = useRef(false);
   useEffect(() => {
-    if (editing && profile) {
+    if (!editing) {
+      setForm({});
+      formInitialized.current = false;
+      return;
+    }
+    if (profile && !formInitialized.current) {
       setForm({
         personal_email: profile.personal_email || "",
         contact_number: profile.contact_number || "",
@@ -466,8 +484,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
         // emp-payroll#246 — employee code, HR-editable.
         emp_code: profile.emp_code || "",
       });
-    } else if (!editing) {
-      setForm({});
+      formInitialized.current = true;
     }
   }, [editing, profile]);
 
@@ -940,13 +957,15 @@ function AdditionalManagersField({
 
   const filtered = (() => {
     const q = query.trim().toLowerCase();
-    if (!q) return candidates.slice(0, 30);
-    return candidates
-      .filter((u: any) => {
-        const name = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase();
-        return name.includes(q) || (u.email || "").toLowerCase().includes(q);
-      })
-      .slice(0, 30);
+    // Empty browse view stays capped at 50 so the dropdown doesn't dump
+    // hundreds of rows when first opened. With a search query in hand the
+    // user is asking for a specific person, so we show every match — the
+    // earlier 30-row slice was hiding people HR was actively looking for.
+    if (!q) return candidates.slice(0, 50);
+    return candidates.filter((u: any) => {
+      const name = `${u.first_name || ""} ${u.last_name || ""}`.toLowerCase();
+      return name.includes(q) || (u.email || "").toLowerCase().includes(q);
+    });
   })();
 
   const add = (id: number) => {
