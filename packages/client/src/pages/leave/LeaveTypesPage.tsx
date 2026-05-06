@@ -1041,9 +1041,13 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   } | null>(null);
   const [bulkOpen, setBulkOpen] = useState(false);
 
+  // Server wraps the response with sendPaginated -> { success, data, meta },
+  // not { pagination }. The previous typing read `data.pagination.total`,
+  // which never existed, so `total` was permanently 0 and the pagination
+  // footer (gated on `total > 0`) never rendered. Match the actual shape.
   const { data, isLoading } = useQuery<{
     data: EmployeeBalanceRow[];
-    pagination: { total: number; page: number; per_page: number };
+    meta: { total: number; page: number; per_page: number; total_pages: number };
   }>({
     queryKey: ["admin-employee-leaves", search, locationId, page, perPage],
     queryFn: () =>
@@ -1059,7 +1063,7 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         .then((r) => r.data),
   });
   const employees = data?.data ?? [];
-  const total = data?.pagination?.total ?? 0;
+  const total = data?.meta?.total ?? 0;
 
   const overrideMut = useMutation({
     mutationFn: ({
@@ -1085,8 +1089,14 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         .post(`/leave/admin/balances/${balanceId}/reset-period`, { reason })
         .then((r) => r.data.data),
     onSuccess: () => {
+      // Reset zeroes both period_used and total_used, so every cache that
+      // reads either needs to be invalidated -- otherwise the modal closes
+      // but the row in the table behind it still shows the old Used value
+      // until the user manually refreshes.
       qc.invalidateQueries({ queryKey: ["admin-employee-leaves"] });
       qc.invalidateQueries({ queryKey: ["leave-balances"] });
+      qc.invalidateQueries({ queryKey: ["my-leave-balance"] });
+      qc.invalidateQueries({ queryKey: ["leave-applications-me"] });
       setEditing(null);
     },
   });
@@ -1456,7 +1466,7 @@ function OverrideModal({
                 if (!reason.trim()) return;
                 if (
                   confirm(
-                    "Reset this period's usage to 0? Use this only when correcting a mistaken approval.",
+                    "Reset Used to 0 for this fiscal year? The Available days will jump back up. Use this only when correcting a mistaken approval.",
                   )
                 ) {
                   onResetPeriod(reason.trim());
@@ -1464,7 +1474,7 @@ function OverrideModal({
               }}
               className="flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900 disabled:opacity-50"
             >
-              <RotateCcw className="h-3.5 w-3.5" /> Reset Period Usage
+              <RotateCcw className="h-3.5 w-3.5" /> Reset Used to 0
             </button>
             <div className="flex gap-2">
               <button
