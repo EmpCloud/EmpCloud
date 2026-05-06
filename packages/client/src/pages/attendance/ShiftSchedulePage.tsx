@@ -718,8 +718,22 @@ export default function ShiftSchedulePage() {
             </div>
           )}
 
-          {/* Filters (department / location / role) */}
+          {/* Filters (search + department / location / role) */}
           <div className="bg-white rounded-xl border border-gray-200 p-3 mb-3 flex flex-wrap items-end gap-3">
+            <div className="flex-1 min-w-[220px]">
+              <label className="block text-xs font-medium text-gray-500 mb-1">Search employee</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Name, employee code, or email"
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  aria-label="Search employee"
+                />
+              </div>
+            </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
               <select
@@ -759,10 +773,10 @@ export default function ShiftSchedulePage() {
                 ))}
               </select>
             </div>
-            {(departmentId || locationId || roleFilter) && (
+            {(search || departmentId || locationId || roleFilter) && (
               <button
                 type="button"
-                onClick={() => { setDepartmentId(undefined); setLocationId(undefined); setRoleFilter(""); }}
+                onClick={() => { setSearch(""); setDepartmentId(undefined); setLocationId(undefined); setRoleFilter(""); }}
                 className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 Clear
@@ -770,33 +784,20 @@ export default function ShiftSchedulePage() {
             )}
           </div>
 
-          {/* Search + Page size controls */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span>{t('attendance.shiftSchedule.search.show')}</span>
-              <select
-                value={pageSize}
-                onChange={(e) => setPageSize(Number(e.target.value))}
-                className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm bg-white"
-                aria-label={t('attendance.shiftSchedule.search.show')}
-              >
-                {PAGE_SIZE_OPTIONS.map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
-              <span>{t('attendance.shiftSchedule.search.entries')}</span>
-            </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name, employee code, or email"
-                className="pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm w-64 max-w-full focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                aria-label="Search employee"
-              />
-            </div>
+          {/* Page size + visible-row stats */}
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <span>{t('attendance.shiftSchedule.search.show')}</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm bg-white"
+              aria-label={t('attendance.shiftSchedule.search.show')}
+            >
+              {PAGE_SIZE_OPTIONS.map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <span>{t('attendance.shiftSchedule.search.entries')}</span>
           </div>
 
           {/* Schedule Grid */}
