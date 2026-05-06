@@ -1020,12 +1020,14 @@ function PoliciesSection(props: {
 // ============================================================================
 // Employees Section — view + override per-employee balances
 // ============================================================================
+const EMPLOYEE_LEAVES_PAGE_SIZES = [10, 25, 50, 100];
+
 function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [locationId, setLocationId] = useStickyLocationFilter();
   const [page, setPage] = useState(1);
-  const perPage = 25;
+  const [perPage, setPerPage] = useState(10);
 
   const { data: locations = [] } = useQuery({
     queryKey: ["org-locations"],
@@ -1043,7 +1045,7 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
     data: EmployeeBalanceRow[];
     pagination: { total: number; page: number; per_page: number };
   }>({
-    queryKey: ["admin-employee-leaves", search, locationId, page],
+    queryKey: ["admin-employee-leaves", search, locationId, page, perPage],
     queryFn: () =>
       api
         .get("/leave/admin/employees", {
@@ -1193,6 +1195,11 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                         </td>
                       );
                     const avail = Number(bal.available_now ?? 0);
+                    const used = Number(bal.total_used ?? 0);
+                    // Match the modal: derive Allocated from avail+used so
+                    // the cell never shows a denominator that contradicts
+                    // the available number above it.
+                    const allocatedDisplay = avail + used;
                     const extra = Number(bal.extra_allocated ?? 0);
                     return (
                       <td key={lt.id} className="px-3 py-3">
@@ -1207,7 +1214,7 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                           className="text-left hover:bg-gray-100 rounded px-2 py-1 -mx-2 w-full"
                         >
                           <div className="text-sm font-medium text-gray-900">
-                            {avail} / {Number(bal.total_allocated)}
+                            {avail} / {allocatedDisplay}
                           </div>
                           {extra !== 0 && (
                             <div
@@ -1227,12 +1234,26 @@ function EmployeesSection({ leaveTypes }: { leaveTypes: LeaveType[] }) {
         </table>
       </div>
 
-      {total > perPage && (
-        <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
-          <div>
-            Page {page} of {Math.ceil(total / perPage)} · {total} employees
+      {total > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-4 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <span>Show</span>
+            <select
+              value={perPage}
+              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
+              className="px-2 py-1 border border-gray-300 rounded text-sm bg-white"
+              aria-label="Employees per page"
+            >
+              {EMPLOYEE_LEAVES_PAGE_SIZES.map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <span>per page · {total} employees</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <span>
+              Page {page} of {Math.max(1, Math.ceil(total / perPage))}
+            </span>
             <button
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
@@ -1332,26 +1353,54 @@ function OverrideModal({
           </p>
         </div>
         <form onSubmit={submit} className="p-6 space-y-4">
-          <div className="grid grid-cols-3 gap-3 bg-gray-50 rounded-lg p-3 text-center">
-            <div>
-              <div className="text-[10px] uppercase text-gray-500">Allocated</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {Number(balance.total_allocated)}
+          {(() => {
+            // Allocated previously showed the raw `total_allocated` column,
+            // which is the value persisted on the balance row at the time it
+            // was created. That can drift from the policy's current annual
+            // quota (e.g. policy bumped from 11 -> 12 days but the balance
+            // row was never re-synced), or fail to reflect bonus / extra
+            // grants -- both produce confusing "11 / 0 / 12" displays where
+            // Allocated and Available don't reconcile.
+            //
+            // Back-compute Allocated from Available + Used so the three
+            // cells always reconcile against the same authoritative number
+            // the rest of the system uses (`available_now`).
+            const used = Number(balance.total_used ?? 0);
+            const available = Number(balance.available_now ?? 0);
+            const allocatedDisplay = available + used;
+            const persistedAllocated = Number(balance.total_allocated ?? 0);
+            const showDriftHint = persistedAllocated !== allocatedDisplay;
+            return (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <div className="text-[10px] uppercase text-gray-500">Allocated</div>
+                    <div className="text-lg font-semibold text-gray-900">
+                      {allocatedDisplay}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase text-gray-500">Used</div>
+                    <div className="text-lg font-semibold text-gray-900">
+                      {used}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase text-gray-500">Available</div>
+                    <div className="text-lg font-semibold text-brand-700">
+                      {available}
+                    </div>
+                  </div>
+                </div>
+                {showDriftHint && (
+                  <p className="text-[11px] text-gray-500 text-center mt-2">
+                    Stored row says {persistedAllocated}; effective allocation
+                    derived from {available} available + {used} used.
+                  </p>
+                )}
               </div>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase text-gray-500">Used</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {Number(balance.total_used)}
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase text-gray-500">Available</div>
-              <div className="text-lg font-semibold text-brand-700">
-                {Number(balance.available_now ?? 0)}
-              </div>
-            </div>
-          </div>
+            );
+          })()}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
