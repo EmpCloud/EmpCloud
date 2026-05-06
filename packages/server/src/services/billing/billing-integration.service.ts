@@ -257,9 +257,18 @@ export async function getInvoices(
   orgId: number,
   params?: { page?: number; perPage?: number }
 ): Promise<any> {
-  // Don't filter by clientId — billing scopes by org_id via the API key auth.
-  // See getPayments() comment for rationale.
+  // Tenant scoping: emp-billing's auth middleware maps the EmpCloud platform
+  // API key to its "first active org" (a single-tenant assumption baked into
+  // the webhook handler -- all EmpCloud customers' clients live under one
+  // billing org). To return THIS empcloud org's invoices specifically, we
+  // resolve the per-org billing client id from `billing_client_mappings`
+  // (populated by the empcloud-webhook-emitter when a subscription is
+  // provisioned) and pass it as `clientId` so the billing query filters
+  // down to the right tenant. Without this, /invoices would return every
+  // EmpCloud org's invoices that share the billing org.
+  const clientId = await getMappedBillingClientId(orgId);
   const query = new URLSearchParams();
+  if (clientId) query.set("clientId", clientId);
   if (params?.page) query.set("page", String(params.page));
   if (params?.perPage) query.set("limit", String(params.perPage));
 
@@ -287,11 +296,15 @@ export async function getPayments(
   orgId: number,
   params?: { page?: number; perPage?: number }
 ): Promise<any> {
-  // Build query without clientId — billing scopes by org_id via the API key auth.
-  // The clientId filter caused empty results because the empcloud auto-provisioned
-  // client (via /clients/auto-provision) is a different record from the client
-  // created by the empcloud webhook (findOrCreateClient) that owns the payments.
+  // Tenant scoping: same rationale as getInvoices(). The historical comment
+  // here ("clientId filter caused empty results") referred to the dead
+  // /clients/auto-provision path which created duplicate client records;
+  // the new empcloud-webhook-emitter writes the SAME client id that owns
+  // the payments into billing_client_mappings, so passing clientId now
+  // narrows correctly to this org instead of leaking another tenant's data.
+  const clientId = await getMappedBillingClientId(orgId);
   const query = new URLSearchParams();
+  if (clientId) query.set("clientId", clientId);
   if (params?.page) query.set("page", String(params.page));
   if (params?.perPage) query.set("limit", String(params.perPage));
 
@@ -426,6 +439,23 @@ export async function getBillingSubscriptionId(
     .where({ cloud_subscription_id: cloudSubscriptionId })
     .first();
   return mapping?.billing_subscription_id ?? null;
+}
+
+/**
+ * Resolve the billing-side `clients.id` UUID for an EmpCloud organization.
+ * Used by the proxy reads (getInvoices / getPayments) to scope queries to
+ * just the calling tenant. Returns null if the org has never been
+ * provisioned in emp-billing -- callers in that case fall back to
+ * unfiltered queries (which will be the historic single-tenant behaviour).
+ */
+export async function getMappedBillingClientId(
+  orgId: number
+): Promise<string | null> {
+  const db = getDB();
+  const mapping = await db("billing_client_mappings")
+    .where({ organization_id: orgId })
+    .first();
+  return mapping?.billing_client_id ?? null;
 }
 
 // ---------------------------------------------------------------------------
