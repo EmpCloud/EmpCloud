@@ -587,7 +587,21 @@ export async function bulkOverrideBalance(
   return affected;
 }
 
-/** Reset period_used to 0 for a non-carry-forward balance — corrections only. */
+/**
+ * Reset usage to 0 for the current fiscal-year balance row — for use when
+ * HR is correcting a mistaken approval.
+ *
+ * Originally this only zeroed `period_used`, which is the column read by
+ * the available-now formula for non-carry-forward (period-resetting)
+ * policies. For cumulative (carry-forward) policies, however, available
+ * is computed against `total_used`, so the button silently did nothing
+ * visible -- HR clicked Reset, the UI's Used cell still showed the old
+ * value, and Available didn't budge. Reset both so the action behaves
+ * the same way regardless of accrual type.
+ *
+ * `total_allocated` and `extra_allocated` are intentionally untouched
+ * so the entitlement isn't disturbed.
+ */
 export async function resetPeriodUsage(
   orgId: number,
   balanceId: number,
@@ -604,6 +618,7 @@ export async function resetPeriodUsage(
     .where({ id: balanceId })
     .update({
       period_used: 0,
+      total_used: 0,
       override_reason: reason,
       overridden_by: actingUserId,
       overridden_at: new Date(),
