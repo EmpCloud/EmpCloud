@@ -23,8 +23,11 @@ import { config } from "../../config/index.js";
 import { logger } from "../../utils/logger.js";
 import { getDB } from "../../db/connection.js";
 
+// emp-billing mounts its receiver at `v1.use("/webhooks/empcloud", ...)`
+// (see emp-billing/packages/server/src/index.ts), so the absolute path is
+// /api/v1/webhooks/empcloud. Hitting /api/v1/empcloud-webhook returns 404.
 const BILLING_WEBHOOK_URL =
-  (config.billing.moduleUrl ?? "") + "/api/v1/empcloud-webhook";
+  (config.billing.moduleUrl ?? "") + "/api/v1/webhooks/empcloud";
 
 interface SubscriptionRow {
   id: number;
