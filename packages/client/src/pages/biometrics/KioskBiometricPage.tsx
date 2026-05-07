@@ -360,7 +360,16 @@ function LivenessSettingsCard() {
             className="peer sr-only"
             checked={enabled}
             disabled={isLoading || saveMutation.isPending}
-            onChange={(e) => setEnabled(e.target.checked)}
+            onChange={(e) => {
+              const next = e.target.checked;
+              setEnabled(next);
+              // Mirror the server rule (see updateLivenessSettings):
+              // turning OFF resets level to "low" so the next enable
+              // starts from the most permissive setting. The slider
+              // immediately reflects this so what HR sees == what
+              // they're about to save.
+              if (!next) setLevel("low");
+            }}
           />
           <span className="relative h-6 w-11 rounded-full bg-gray-300 transition peer-checked:bg-brand-600 peer-disabled:opacity-50">
             <span
