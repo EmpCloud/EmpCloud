@@ -1448,7 +1448,13 @@ export async function updateLivenessSettings(
   // they've set a kiosk PIN (the row is otherwise lazily created by
   // /enable-biometric / /set-password).
   await getOrCreateCredentials(userId, user.organization_id);
-  const level = coerceLivenessLevel(settings.level);
+  // When liveness is turned OFF, reset the stored level to "low" so the
+  // next enable starts from the most permissive setting rather than
+  // silently re-arming whatever sensitivity was last in effect. HR
+  // explicitly asked for this: "if someone turn it off then make it
+  // like low by default". When enabled, honour whatever level the
+  // caller sent (coerced through the whitelist).
+  const level: LivenessLevel = settings.enabled ? coerceLivenessLevel(settings.level) : "low";
   await db("biometric_legacy_credentials")
     .where({ user_id: userId })
     .update({
