@@ -311,6 +311,7 @@ export async function approveLeave(
   approverId: number,
   applicationId: number,
   remarks?: string,
+  approverPermissions?: string[],
 ): Promise<LeaveApplication> {
   const db = getDB();
 
@@ -328,17 +329,29 @@ export async function approveLeave(
     throw new ForbiddenError("Cannot approve your own leave application");
   }
 
-  // Verify the approver is authorized
+  // Verify the approver is authorized. Three accept paths:
+  //   1. They are listed as the pending approver on this specific
+  //      application (the standard manager-of-record flow).
+  //   2. They hold one of the system roles that have implicit approval
+  //      authority across the org.
+  //   3. They have the `leave:approve` permission via RBAC v1 (custom
+  //      role assigned by org admin). This was previously missing -- the
+  //      route gate accepted the permission but the service rejected
+  //      anyone whose `users.role` wasn't in the hardcoded list, so HR
+  //      could provision the permission and still see "Not authorized
+  //      to approve this application" 403s.
   const approval = await db("leave_approvals")
     .where({ leave_application_id: applicationId, approver_id: approverId, status: "pending" })
     .first();
 
-  // Allow managers/HR/org_admin/super_admin even if not listed as specific approver
   if (!approval) {
     const approverUser = await db("users").where({ id: approverId }).first();
     const allowedRoles = ["manager", "hr_admin", "org_admin", "super_admin"];
-    const isAuthorized = approverUser && allowedRoles.includes(approverUser.role);
-    if (!isAuthorized) throw new ForbiddenError("Not authorized to approve this application");
+    const hasSystemRole = !!approverUser && allowedRoles.includes(approverUser.role);
+    const hasRbacPermission = !!approverPermissions?.includes("leave:approve");
+    if (!hasSystemRole && !hasRbacPermission) {
+      throw new ForbiddenError("Not authorized to approve this application");
+    }
   }
 
   await db.transaction(async (trx) => {
@@ -494,6 +507,7 @@ export async function rejectLeave(
   approverId: number,
   applicationId: number,
   remarks?: string,
+  approverPermissions?: string[],
 ): Promise<LeaveApplication> {
   const db = getDB();
 
@@ -511,17 +525,20 @@ export async function rejectLeave(
     throw new ForbiddenError("Cannot reject your own leave application");
   }
 
-  // Verify the approver is authorized
+  // Verify the approver is authorized. Mirrors approveLeave: pending
+  // approver of record OR system role OR custom-role permission.
   const approval = await db("leave_approvals")
     .where({ leave_application_id: applicationId, approver_id: approverId, status: "pending" })
     .first();
 
-  // Allow managers/HR/org_admin/super_admin even if not listed as specific approver
   if (!approval) {
     const approverUser = await db("users").where({ id: approverId }).first();
     const allowedRoles = ["manager", "hr_admin", "org_admin", "super_admin"];
-    const isAuthorized = approverUser && allowedRoles.includes(approverUser.role);
-    if (!isAuthorized) throw new ForbiddenError("Not authorized to reject this application");
+    const hasSystemRole = !!approverUser && allowedRoles.includes(approverUser.role);
+    const hasRbacPermission = !!approverPermissions?.includes("leave:approve");
+    if (!hasSystemRole && !hasRbacPermission) {
+      throw new ForbiddenError("Not authorized to reject this application");
+    }
   }
 
   await db.transaction(async (trx) => {

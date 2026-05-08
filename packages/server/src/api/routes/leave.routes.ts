@@ -327,6 +327,7 @@ router.put("/applications/:id/approve", authenticate, requirePermission("leave:a
       req.user!.sub,
       paramInt(req.params.id),
       remarks,
+      (req.user as any).permissions,
     );
 
     await logAudit({
@@ -352,6 +353,7 @@ router.put("/applications/:id/reject", authenticate, requirePermission("leave:ap
       req.user!.sub,
       paramInt(req.params.id),
       remarks,
+      (req.user as any).permissions,
     );
 
     await logAudit({
