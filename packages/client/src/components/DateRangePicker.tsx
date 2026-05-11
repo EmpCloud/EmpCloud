@@ -1,35 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarDays, ChevronDown, X } from "lucide-react";
-
-// =============================================================================
-// DateRangePicker — single-control replacement for the legacy "from + to"
-// pair on the attendance pages. Visually presents as one chip/button; opening
-// it reveals two side-by-side date inputs plus quick presets ("Last 7 days",
-// "Last 30 days", "This month", "Last month"). The component is fully
-// controlled; the parent owns `from` / `to` state and the component just
-// exposes onApply / onClear so the parent can keep its existing API contract
-// (the server still receives `date_from` and `date_to` strings).
-// =============================================================================
+import { DayPicker, type DateRange } from "react-day-picker";
+import "react-day-picker/style.css";
 
 type Props = {
   from: string;
   to: string;
   onApply: (from: string, to: string) => void;
   onClear?: () => void;
-  // When true, an empty from/to is allowed (the parent decides whether the
-  // empty state means "ignore range" or "show all"). Defaults to false so
-  // Apply requires at least a `from` date.
   allowEmpty?: boolean;
   className?: string;
-  // Optional label shown above the trigger button.
   label?: string;
-  // Render compact (no label) when used inline.
   compact?: boolean;
 };
 
 const fmt = (iso: string): string => {
   if (!iso) return "";
-  // Display in the user's locale but keep the ISO value for the form post.
   const d = new Date(iso + "T00:00:00");
   if (isNaN(d.getTime())) return iso;
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
@@ -42,22 +28,35 @@ const isoOf = (d: Date): string => {
   return `${y}-${m}-${day}`;
 };
 
-export function DateRangePicker({ from, to, onApply, onClear, allowEmpty, className, label, compact }: Props) {
+const parseIso = (iso: string): Date | undefined => {
+  if (!iso) return undefined;
+  const d = new Date(iso + "T00:00:00");
+  return isNaN(d.getTime()) ? undefined : d;
+};
+
+export function DateRangePicker({
+  from,
+  to,
+  onApply,
+  onClear,
+  allowEmpty,
+  className,
+  label,
+  compact,
+}: Props) {
   const [open, setOpen] = useState(false);
-  // Local edit buffer so users can change one input without firing a query
-  // until they click Apply. Sync from props each time the popover opens.
-  const [draftFrom, setDraftFrom] = useState(from);
-  const [draftTo, setDraftTo] = useState(to);
+  const [draft, setDraft] = useState<DateRange | undefined>(() => ({
+    from: parseIso(from),
+    to: parseIso(to),
+  }));
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (open) {
-      setDraftFrom(from);
-      setDraftTo(to);
+      setDraft({ from: parseIso(from), to: parseIso(to) });
     }
   }, [open, from, to]);
 
-  // Close on outside click / Escape so the popover behaves like a menu.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
@@ -101,37 +100,28 @@ export function DateRangePicker({ from, to, onApply, onClear, allowEmpty, classN
         end = new Date(now.getFullYear(), now.getMonth(), 0);
         break;
     }
-    setDraftFrom(isoOf(start));
-    setDraftTo(isoOf(end));
+    setDraft({ from: start, to: end });
   };
 
   const handleApply = () => {
-    if (!allowEmpty && !draftFrom) return;
-    // Normalise: if `to` is before `from`, swap (helps when users key the
-    // wrong order — same behaviour as native HTML date inputs would expect).
-    let f = draftFrom;
-    let t = draftTo;
-    if (f && t && new Date(t) < new Date(f)) {
-      [f, t] = [t, f];
-    }
+    const f = draft?.from ? isoOf(draft.from) : "";
+    const t = draft?.to ? isoOf(draft.to) : "";
+    if (!allowEmpty && !f) return;
     onApply(f, t);
     setOpen(false);
   };
 
   const handleClear = () => {
-    setDraftFrom("");
-    setDraftTo("");
+    setDraft(undefined);
     if (onClear) onClear();
     onApply("", "");
     setOpen(false);
   };
 
   const triggerLabel =
-    from && to
-      ? `${fmt(from)} → ${fmt(to)}`
-      : from
-      ? `From ${fmt(from)}`
-      : "Select date range";
+    from && to ? `${fmt(from)} → ${fmt(to)}` : from ? `From ${fmt(from)}` : "Select date range";
+
+  const defaultMonth = useMemo(() => draft?.from ?? new Date(), [draft?.from]);
 
   return (
     <div ref={wrapRef} className={`relative inline-block ${className || ""}`}>
@@ -147,16 +137,17 @@ export function DateRangePicker({ from, to, onApply, onClear, allowEmpty, classN
       >
         <CalendarDays className="h-4 w-4 text-gray-500" />
         <span className={from ? "text-gray-900" : "text-gray-400"}>{triggerLabel}</span>
-        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`h-4 w-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (
         <div
           role="dialog"
           aria-label="Pick a date range"
-          className="absolute right-0 z-30 mt-2 w-[320px] rounded-xl border border-gray-200 bg-white p-4 shadow-lg"
+          className="absolute right-0 z-30 mt-2 w-[340px] rounded-xl border border-gray-200 bg-white p-4 shadow-lg"
         >
-          {/* Presets */}
           <div className="mb-3 flex flex-wrap gap-1.5">
             {[
               { key: "today", label: "Today" },
@@ -176,25 +167,26 @@ export function DateRangePicker({ from, to, onApply, onClear, allowEmpty, classN
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="rdp-wrap text-sm">
+            <DayPicker
+              mode="range"
+              numberOfMonths={1}
+              defaultMonth={defaultMonth}
+              selected={draft}
+              onSelect={setDraft}
+              showOutsideDays
+              weekStartsOn={1}
+            />
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-gray-500">
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase text-gray-500">From</label>
-              <input
-                type="date"
-                value={draftFrom}
-                onChange={(e) => setDraftFrom(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-              />
+              <span className="font-medium uppercase">From</span>{" "}
+              <span className="text-gray-800">{draft?.from ? fmt(isoOf(draft.from)) : "—"}</span>
             </div>
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase text-gray-500">To</label>
-              <input
-                type="date"
-                value={draftTo}
-                min={draftFrom || undefined}
-                onChange={(e) => setDraftTo(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
-              />
+              <span className="font-medium uppercase">To</span>{" "}
+              <span className="text-gray-800">{draft?.to ? fmt(isoOf(draft.to)) : "—"}</span>
             </div>
           </div>
 
@@ -218,7 +210,7 @@ export function DateRangePicker({ from, to, onApply, onClear, allowEmpty, classN
               <button
                 type="button"
                 onClick={handleApply}
-                disabled={!allowEmpty && !draftFrom}
+                disabled={!allowEmpty && !draft?.from}
                 className="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >
                 Apply
