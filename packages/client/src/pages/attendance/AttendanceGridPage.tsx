@@ -4,6 +4,28 @@ import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
 
+const STORAGE_KEY_LOCATION = "empcloud:filter:grid:location_name";
+const STORAGE_KEY_DEPARTMENT = "empcloud:filter:grid:department_name";
+
+const readStored = (key: string): string => {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(key) || "";
+  } catch {
+    return "";
+  }
+};
+
+const writeStored = (key: string, value: string) => {
+  if (typeof window === "undefined") return;
+  try {
+    if (value) window.localStorage.setItem(key, value);
+    else window.localStorage.removeItem(key);
+  } catch {
+    /* private mode / quota — keep in-memory state */
+  }
+};
+
 const MONTHS = [
   "",
   "January",
@@ -76,8 +98,27 @@ export default function AttendanceGridPage() {
   // in the org) so filtering with useMemo is plenty fast and avoids round-
   // tripping the whole grid on every keystroke.
   const [search, setSearch] = useState("");
-  const [department, setDepartment] = useState("");
-  const [location, setLocation] = useState("");
+  // Department + location persist across reloads so HR doesn't have to reselect
+  // their team / branch every time. Cross-tab sync via the `storage` event.
+  const [department, setDepartment] = useState<string>(() => readStored(STORAGE_KEY_DEPARTMENT));
+  const [location, setLocation] = useState<string>(() => readStored(STORAGE_KEY_LOCATION));
+
+  useEffect(() => {
+    writeStored(STORAGE_KEY_DEPARTMENT, department);
+  }, [department]);
+  useEffect(() => {
+    writeStored(STORAGE_KEY_LOCATION, location);
+  }, [location]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY_DEPARTMENT) setDepartment(e.newValue || "");
+      else if (e.key === STORAGE_KEY_LOCATION) setLocation(e.newValue || "");
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
   // Minimal status banner -- EmpCloud doesn't have a toast system wired
   // up (Radix Toast is in package.json but no Toaster mounted), so we
   // surface save status as a top-bar pill that auto-dismisses.
@@ -122,6 +163,15 @@ export default function AttendanceGridPage() {
     for (const e of data.employees) if (e.location) set.add(e.location);
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [data.employees]);
+
+  // Self-heal: if a sticky filter no longer matches any row this month
+  // (location renamed, dept dissolved, employee moved out), clear it so the
+  // user doesn't see an empty grid with no obvious reason.
+  useEffect(() => {
+    if (data.employees.length === 0) return;
+    if (department && !departmentOptions.includes(department)) setDepartment("");
+    if (location && !locationOptions.includes(location)) setLocation("");
+  }, [data.employees, department, location, departmentOptions, locationOptions]);
 
   const filteredEmployees = useMemo(() => {
     const q = search.trim().toLowerCase();
