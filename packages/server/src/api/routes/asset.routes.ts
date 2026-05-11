@@ -152,6 +152,7 @@ router.post(
 router.get(
   "/my",
   authenticate,
+  requirePermission("assets:view", "assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const assets = await assetService.getMyAssets(req.user!.org_id, req.user!.sub);
@@ -401,6 +402,7 @@ router.get(
 router.get(
   "/",
   authenticate,
+  requirePermission("assets:view", "assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const hr = isHRUser(req);
@@ -432,6 +434,7 @@ router.get(
 router.get(
   "/:id",
   authenticate,
+  requirePermission("assets:view", "assets:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const asset = await assetService.getAsset(
