@@ -784,10 +784,21 @@ export async function getMonthlyGrid(
     days.push({ day: d, date: dateStr, defaultCode });
   }
 
-  const allUsers = await db("users")
-    .where({ organization_id: orgId, status: 1 })
-    .whereNot("role", "super_admin")
-    .select("id as user_id", "first_name", "last_name", "emp_code");
+  // Department + location names are joined in so the grid page can filter
+  // client-side without an extra round-trip per dropdown.
+  const allUsers = await db("users as u")
+    .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
+    .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+    .where({ "u.organization_id": orgId, "u.status": 1 })
+    .whereNot("u.role", "super_admin")
+    .select(
+      "u.id as user_id",
+      "u.first_name",
+      "u.last_name",
+      "u.emp_code",
+      "dept.name as department",
+      "loc.name as location",
+    );
 
   if (allUsers.length === 0) {
     return { days, employees: [], totalEmployees: 0, daysInMonth };
@@ -837,6 +848,8 @@ export async function getMonthlyGrid(
       first_name: u.first_name,
       last_name: u.last_name,
       emp_code: u.emp_code,
+      department: u.department || null,
+      location: u.location || null,
       days: dayCodes,
     };
   });

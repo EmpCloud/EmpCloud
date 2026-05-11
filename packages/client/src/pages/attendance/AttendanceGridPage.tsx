@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
 
 const MONTHS = [
   "",
@@ -31,6 +31,8 @@ interface EmployeeRow {
   first_name: string;
   last_name: string;
   emp_code: string | null;
+  department: string | null;
+  location: string | null;
   days: Record<string, string>;
 }
 
@@ -70,6 +72,12 @@ export default function AttendanceGridPage() {
   // without waiting for the refetch (the refetch still fires).
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<{ uid: number; date: string } | null>(null);
+  // Client-side filters — the row set is small (one row per active employee
+  // in the org) so filtering with useMemo is plenty fast and avoids round-
+  // tripping the whole grid on every keystroke.
+  const [search, setSearch] = useState("");
+  const [department, setDepartment] = useState("");
+  const [location, setLocation] = useState("");
   // Minimal status banner -- EmpCloud doesn't have a toast system wired
   // up (Radix Toast is in package.json but no Toaster mounted), so we
   // surface save status as a top-bar pill that auto-dismisses.
@@ -100,6 +108,40 @@ export default function AttendanceGridPage() {
   }, [month, year]);
 
   const data = res || ({ days: [], employees: [], totalEmployees: 0, daysInMonth: 0 } as GridResponse);
+
+  // Distinct dept / location dropdown options derived from the current row
+  // set — keeps the UI honest (only shows what's actually on the grid).
+  const departmentOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const e of data.employees) if (e.department) set.add(e.department);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [data.employees]);
+
+  const locationOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const e of data.employees) if (e.location) set.add(e.location);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [data.employees]);
+
+  const filteredEmployees = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return data.employees.filter((e) => {
+      if (department && e.department !== department) return false;
+      if (location && e.location !== location) return false;
+      if (q) {
+        const hay = `${e.first_name || ""} ${e.last_name || ""} ${e.emp_code || ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [data.employees, search, department, location]);
+
+  const filtersActive = !!(search || department || location);
+  const clearFilters = () => {
+    setSearch("");
+    setDepartment("");
+    setLocation("");
+  };
 
   const cellKey = (uid: number, date: string) => `${uid}|${date}`;
   const cellCode = (uid: number, date: string, fallback: string): string => {
@@ -160,19 +202,20 @@ export default function AttendanceGridPage() {
 
   // Per-DAY column totals -- on date column N, how many employees were
   // P / A / H / L / WO / HO. Rendered as a tfoot block so HR can scan
-  // "how many people were absent on May 15?" at a glance.
+  // "how many people were absent on May 15?" at a glance. Totals follow
+  // the active filters so a department head sees only their team's totals.
   const dayTotals = useMemo(() => {
     const out: Record<string, { P: number; A: number; H: number; L: number; WO: number; HO: number }> = {};
     for (const d of data.days) {
       const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0 };
-      for (const emp of data.employees) {
+      for (const emp of filteredEmployees) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
         if (c in counts) counts[c as keyof typeof counts]++;
       }
       out[d.date] = counts;
     }
     return out;
-  }, [data.days, data.employees, overrides]);
+  }, [data.days, filteredEmployees, overrides]);
 
   // Org-wide totals across the whole month (sum of dayTotals) -- shown
   // in the right-hand summary column of the footer rows.
@@ -251,6 +294,72 @@ export default function AttendanceGridPage() {
         </div>
       </div>
 
+      {/* Filter bar — search by name / emp_code, narrow by department or
+          location. Filters operate client-side over the already-fetched
+          rows so changes feel instant. */}
+      <div className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
+        <div className="flex-1 min-w-[220px]">
+          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Search employee
+          </label>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Name or employee code"
+              className="w-full rounded-md border border-gray-300 bg-white pl-8 pr-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Department
+          </label>
+          <select
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">All departments</option>
+            {departmentOptions.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Location
+          </label>
+          <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <option value="">All locations</option>
+            {locationOptions.map((l) => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+        </div>
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            {filteredEmployees.length} of {data.employees.length} employees
+          </span>
+          {filtersActive && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              <X className="h-3 w-3" />
+              Clear filters
+            </button>
+          )}
+        </div>
+      </div>
+
       <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
@@ -287,17 +396,19 @@ export default function AttendanceGridPage() {
               </tr>
             </thead>
             <tbody>
-              {data.employees.length === 0 ? (
+              {filteredEmployees.length === 0 ? (
                 <tr>
                   <td
                     colSpan={data.days.length + 5}
                     className="px-4 py-8 text-center text-gray-400 dark:text-gray-500"
                   >
-                    No employees in this org.
+                    {data.employees.length === 0
+                      ? "No employees in this org."
+                      : "No employees match the current filters."}
                   </td>
                 </tr>
               ) : (
-                data.employees.map((emp) => {
+                filteredEmployees.map((emp) => {
                   const summary = summaryFor(emp);
                   return (
                     <tr key={emp.user_id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
@@ -363,7 +474,7 @@ export default function AttendanceGridPage() {
                 })
               )}
             </tbody>
-            {data.employees.length > 0 && (
+            {filteredEmployees.length > 0 && (
               <tfoot className="bg-gray-50 dark:bg-gray-800/60">
                 {FOOTER_ROWS.map((row) => (
                   <tr key={row.code} className="border-t border-gray-200 dark:border-gray-700">
