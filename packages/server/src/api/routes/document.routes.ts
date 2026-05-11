@@ -76,7 +76,7 @@ router.delete("/categories/:id", authenticate, requirePermission("documents:mana
 // ---------------------------------------------------------------------------
 
 // GET /api/v1/documents
-router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", authenticate, requirePermission("documents:view", "documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const category_id = req.query.category_id ? Number(req.query.category_id) : undefined;
@@ -101,7 +101,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
 });
 
 // POST /api/v1/documents/upload
-router.post("/upload", authenticate, upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/upload", authenticate, requirePermission("documents:upload", "documents:manage"), upload.single("file"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const file = req.file;
     if (!file) {
@@ -149,7 +149,7 @@ router.post("/upload", authenticate, upload.single("file"), async (req: Request,
 // ---------------------------------------------------------------------------
 
 // GET /api/v1/documents/my
-router.get("/my", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/my", authenticate, requirePermission("documents:view", "documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const result = await documentService.getMyDocuments(req.user!.org_id, req.user!.sub, {
@@ -207,7 +207,7 @@ router.get("/tracking/expiry", authenticate, requirePermission("documents:manage
 // ---------------------------------------------------------------------------
 
 // GET /api/v1/documents/:id
-router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", authenticate, requirePermission("documents:view", "documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const doc = await documentService.getDocument(req.user!.org_id, paramInt(req.params.id), req.user!.sub, req.user!.role);
     sendSuccess(res, doc);
@@ -215,7 +215,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response, next: NextF
 });
 
 // GET /api/v1/documents/:id/download
-router.get("/:id/download", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id/download", authenticate, requirePermission("documents:view", "documents:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const doc = await documentService.getDocumentForDownload(req.user!.org_id, paramInt(req.params.id), req.user!.sub, req.user!.role);
     const absolutePath = path.resolve(doc.file_path);
