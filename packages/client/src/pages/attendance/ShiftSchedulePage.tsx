@@ -108,7 +108,11 @@ function useSwapRequests(status?: string) {
 function useEmployees() {
   return useQuery({
     queryKey: ["employees-list"],
-    queryFn: () => api.get("/employees", { params: { per_page: 100 } }).then((r) => r.data.data),
+    // Fetch up to the validator ceiling (paginationSchema max=500). The team
+    // schedule grid cross-references this list to filter by department /
+    // location / role; capping at 100 silently dropped any org bigger than
+    // that and made the filters miss rows whose user_id wasn't in page 1.
+    queryFn: () => api.get("/employees", { params: { per_page: 500 } }).then((r) => r.data.data),
   });
 }
 
