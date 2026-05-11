@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 import { showToast } from "@/components/ui/Toast";
@@ -43,6 +44,12 @@ export default function SelfServiceDashboardPage() {
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
   const { dashboardAllowed } = useAttendancePolicy();
+  const { has } = usePermissions();
+  const canViewAnnouncements = has(
+    "announcements:view",
+    "announcements:create",
+    "announcements:manage",
+  );
 
   // Attendance today
   const { data: attendanceData } = useQuery({
@@ -122,6 +129,7 @@ export default function SelfServiceDashboardPage() {
         .get("/announcements", { params: { page: 1, per_page: 5 } })
         .then((r) => r.data.data)
         .catch(() => []),
+    enabled: canViewAnnouncements,
   });
 
   // Policies to acknowledge
@@ -363,7 +371,7 @@ export default function SelfServiceDashboardPage() {
         </div>
 
         {/* Recent Announcements — only render when there are items */}
-        {announcementList.length > 0 && (
+        {canViewAnnouncements && announcementList.length > 0 && (
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
