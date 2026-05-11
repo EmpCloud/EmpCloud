@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import { usePermissions } from "@/lib/use-permissions";
 import {
   MessageCircle,
   Send,
@@ -110,6 +111,8 @@ export default function ChatWidget() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
+  const { has } = usePermissions();
+  const canUseChatbot = has("chatbot:use");
   const [isOpen, setIsOpen] = useState(false);
   const [convoId, setConvoId] = useState<number | null>(null);
   const [input, setInput] = useState("");
@@ -121,7 +124,7 @@ export default function ChatWidget() {
   const { data: aiStatus } = useQuery<{ engine: string; provider: string }>({
     queryKey: ["chatbot-ai-status"],
     queryFn: () => api.get("/chatbot/ai-status").then((r) => r.data.data),
-    enabled: isOpen,
+    enabled: isOpen && canUseChatbot,
     staleTime: 60_000,
   });
 
@@ -129,14 +132,14 @@ export default function ChatWidget() {
   const { data: suggestions = [] } = useQuery<string[]>({
     queryKey: ["chatbot-suggestions"],
     queryFn: () => api.get("/chatbot/suggestions").then((r) => r.data.data),
-    enabled: isOpen,
+    enabled: isOpen && canUseChatbot,
   });
 
   // Fetch messages
   const { data: messages = [] } = useQuery<Message[]>({
     queryKey: ["chatbot-widget-messages", convoId],
     queryFn: () => api.get(`/chatbot/conversations/${convoId}`).then((r) => r.data.data),
-    enabled: !!convoId,
+    enabled: !!convoId && canUseChatbot,
   });
 
   // Create conversation
@@ -191,6 +194,8 @@ export default function ChatWidget() {
     setIsOpen(false);
     navigate("/chatbot");
   }, [navigate]);
+
+  if (!canUseChatbot) return null;
 
   if (!isOpen) {
     return (
