@@ -1,8 +1,48 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { useState, useEffect } from "react";
-import { LogIn, LogOut, Clock, AlertCircle, PlusCircle, Lock } from "lucide-react";
+import { useState, useEffect, Fragment } from "react";
+import {
+  LogIn,
+  LogOut,
+  Clock,
+  AlertCircle,
+  PlusCircle,
+  Lock,
+  Eye,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  X,
+  Fingerprint,
+  Smartphone,
+  Monitor,
+} from "lucide-react";
 import { useAttendancePolicy } from "@/lib/use-attendance-policy";
+
+// Mirrors the admin dashboard's punch-timeline shape so the drill-down here
+// renders identically. The records/:id/punches endpoint is shared.
+interface PunchRow {
+  id: number;
+  punch_time: string;
+  source: string;
+  latitude: number | string | null;
+  longitude: number | string | null;
+}
+
+function sourceMeta(source: string): { label: string; Icon: typeof Fingerprint; cls: string } {
+  if (source === "biometric") return { label: "Biometric", Icon: Fingerprint, cls: "bg-purple-50 text-purple-700" };
+  if (source === "app") return { label: "Mobile app", Icon: Smartphone, cls: "bg-blue-50 text-blue-700" };
+  if (source === "dashboard") return { label: "Web", Icon: Monitor, cls: "bg-emerald-50 text-emerald-700" };
+  return { label: source || "Manual", Icon: Monitor, cls: "bg-gray-100 text-gray-700" };
+}
+
+function fmtPunchTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return iso;
+  }
+}
 
 function useToday() {
   const [today, setToday] = useState(() => new Date());
@@ -119,6 +159,11 @@ export default function AttendancePage() {
 
   const records = historyData?.data || [];
   const meta = historyData?.meta;
+
+  // Drill-down state — one expanded row at a time, plus a single modal target.
+  // Mirrors the admin dashboard's behaviour so My Attendance feels consistent.
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+  const [detailRecord, setDetailRecord] = useState<any | null>(null);
 
   const hasCheckedIn = !!todayRecord?.check_in;
   const hasCheckedOut = !!todayRecord?.check_out;
@@ -401,12 +446,14 @@ export default function AttendancePage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="px-3 py-3 w-10"></th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Date</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check In</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Check Out</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Worked</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Late</th>
+              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Details</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -414,40 +461,71 @@ export default function AttendancePage() {
               <>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <tr key={i} className="animate-pulse">
+                    <td className="px-3 py-4"><div className="h-4 w-4 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
                     <td className="px-6 py-4"><div className="h-4 w-10 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-6 bg-gray-200 rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">No records for this month</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No records for this month</td></tr>
             ) : (
-              records.map((r: any) => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{new Date(r.date).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      r.status === "present" ? "bg-green-50 text-green-700"
-                        : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-                        : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-                        : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-                        : "bg-red-50 text-red-700"
-                    }`}>
-                      {r.status === "checked_in" ? "checked in" : r.status.replace(/_/g, " ")}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
-                </tr>
-              ))
+              records.map((r: any) => {
+                const expanded = expandedRowId === r.id;
+                return (
+                  <Fragment key={r.id}>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-3 py-4 w-10">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedRowId(expanded ? null : r.id)}
+                        className="inline-flex items-center justify-center p-1.5 rounded text-gray-500 hover:bg-gray-100"
+                        aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
+                        title={expanded ? "Hide timeline" : "Show timeline"}
+                        aria-expanded={expanded}
+                      >
+                        {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{new Date(r.date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        r.status === "present" ? "bg-green-50 text-green-700"
+                          : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
+                          : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
+                          : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
+                          : "bg-red-50 text-red-700"
+                      }`}>
+                        {r.status === "checked_in" ? "checked in" : r.status.replace(/_/g, " ")}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setDetailRecord(r)}
+                        className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
+                        aria-label="View attendance details"
+                        title="View details"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                  {expanded && <InlinePunchTimelineRow recordId={r.id} colSpan={8} />}
+                  </Fragment>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -461,6 +539,221 @@ export default function AttendancePage() {
             </div>
           </div>
         )}
+      </div>
+
+      {detailRecord && (
+        <AttendanceDetailModal
+          record={detailRecord}
+          onClose={() => setDetailRecord(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+// =============================================================================
+// Inline punch timeline + detail modal — mirrors the admin dashboard so that
+// the My Attendance drill-down shows the same per-day check-in / check-out
+// breakdown HR sees. Both components hit the existing
+// /attendance/records/:id/punches endpoint lazily.
+// =============================================================================
+
+function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSpan: number }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["attendance-punches", recordId],
+    queryFn: () =>
+      api.get(`/attendance/records/${recordId}/punches`).then((res) => res.data.data),
+    staleTime: 60_000,
+  });
+  return (
+    <tr className="bg-gray-50">
+      <td colSpan={colSpan} className="px-6 py-4">
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
+          </div>
+        ) : isError ? (
+          <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+        ) : !data?.punches?.length ? (
+          <p className="text-sm text-gray-500">No punch history for this day.</p>
+        ) : (
+          <ol className="space-y-2">
+            {(data.punches as PunchRow[]).map((p, idx, arr) => {
+              const isFirst = idx === 0;
+              const isLast = idx === arr.length - 1 && arr.length > 1;
+              const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
+              const labelCls = isFirst
+                ? "bg-green-100 text-green-800"
+                : isLast
+                ? "bg-rose-100 text-rose-800"
+                : "bg-gray-200 text-gray-700";
+              const meta = sourceMeta(p.source);
+              const Icon = meta.Icon;
+              return (
+                <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
+                  <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                    {label}
+                  </span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                    <Icon className="w-3 h-3" /> {meta.label}
+                  </span>
+                  {p.latitude != null && p.longitude != null && (
+                    <span className="text-xs text-gray-400">
+                      {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </td>
+    </tr>
+  );
+}
+
+function AttendanceDetailModal({
+  record: r,
+  onClose,
+}: {
+  record: any;
+  onClose: () => void;
+}) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["attendance-punches", r.id],
+    queryFn: () =>
+      api.get(`/attendance/records/${r.id}/punches`).then((res) => res.data.data),
+    staleTime: 60_000,
+  });
+
+  // ESC closes the modal.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const statusLabel = r.status === "checked_in" ? "Checked in" : (r.status || "").replace(/_/g, " ");
+  const statusCls =
+    r.status === "present" ? "bg-green-50 text-green-700"
+      : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
+      : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
+      : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
+      : "bg-red-50 text-red-700";
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Attendance details</h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {r.date ? new Date(r.date).toLocaleDateString() : ""}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 p-1 rounded"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+            <div>
+              <p className="text-xs uppercase text-gray-400">Check in</p>
+              <p className="text-gray-800 mt-0.5">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">Check out</p>
+              <p className="text-gray-800 mt-0.5">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">Worked</p>
+              <p className="text-gray-800 mt-0.5">
+                {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">Late</p>
+              <p className="text-gray-800 mt-0.5">
+                {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-gray-400">Status</p>
+              <p className="mt-0.5">
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCls}`}>{statusLabel}</span>
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium text-gray-500 uppercase mb-3">Punch timeline</p>
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
+              </div>
+            ) : isError ? (
+              <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+            ) : !data?.punches?.length ? (
+              <p className="text-sm text-gray-500">No punch history for this day.</p>
+            ) : (
+              <ol className="space-y-2">
+                {(data.punches as PunchRow[]).map((p, idx, arr) => {
+                  const isFirst = idx === 0;
+                  const isLast = idx === arr.length - 1 && arr.length > 1;
+                  const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
+                  const labelCls = isFirst
+                    ? "bg-green-100 text-green-800"
+                    : isLast
+                    ? "bg-rose-100 text-rose-800"
+                    : "bg-gray-200 text-gray-700";
+                  const meta = sourceMeta(p.source);
+                  const Icon = meta.Icon;
+                  return (
+                    <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
+                      <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                        {label}
+                      </span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                        <Icon className="w-3 h-3" /> {meta.label}
+                      </span>
+                      {p.latitude != null && p.longitude != null && (
+                        <span className="text-xs text-gray-400">
+                          {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </div>
+        </div>
+
+        <div className="px-6 py-3 border-t border-gray-200 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

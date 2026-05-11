@@ -3,8 +3,9 @@ import api from "@/api/client";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, CalendarDays, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor, ChevronDown, ChevronUp } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
+import { DateRangePicker } from "@/components/DateRangePicker";
 import { usePermissions } from "@/lib/use-permissions";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 import * as XLSX from "xlsx";
@@ -105,14 +106,6 @@ export default function AttendanceDashboardPage() {
       return api.get("/attendance/records", { params }).then((r) => r.data);
     },
   });
-
-  const handleDateRangeApply = () => {
-    if (dateFrom) {
-      setAppliedDateFrom(dateFrom);
-      setAppliedDateTo(dateTo);
-      setPage(1);
-    }
-  };
 
   const handleClearFilters = () => {
     const n = new Date();
@@ -518,32 +511,31 @@ export default function AttendanceDashboardPage() {
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-52"
             />
           </div>
-          <div className="border-l border-gray-200 pl-3 flex items-end gap-2">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateFrom')}</label>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateTo')}</label>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              />
-            </div>
-            <button
-              onClick={handleDateRangeApply}
-              disabled={!dateFrom}
-              className="flex items-center gap-1.5 px-3 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700 disabled:opacity-50"
-            >
-              <CalendarDays className="h-4 w-4" /> {t('attendance.apply')}
-            </button>
+          <div className="border-l border-gray-200 pl-3">
+            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateFrom')} &mdash; {t('attendance.dateTo')}</label>
+            {/* Single composite control replaces the legacy from + to pair.
+                Apply still drives `appliedDateFrom` / `appliedDateTo` so the
+                server contract is unchanged. */}
+            <DateRangePicker
+              from={dateFrom}
+              to={dateTo}
+              onApply={(f, to2) => {
+                setDateFrom(f);
+                setDateTo(to2);
+                if (f) {
+                  setAppliedDateFrom(f);
+                  setAppliedDateTo(to2);
+                  setPage(1);
+                } else {
+                  // Clear path — drop the applied range so the query falls
+                  // back to month/year scope.
+                  setAppliedDateFrom("");
+                  setAppliedDateTo("");
+                  setPage(1);
+                }
+              }}
+              allowEmpty
+            />
           </div>
           <button
             onClick={handleClearFilters}
@@ -629,15 +621,20 @@ export default function AttendanceDashboardPage() {
                     </select>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">{t('attendance.export.from')}</label>
-                      <input type="date" value={exportDateFrom} onChange={(e) => setExportDateFrom(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">{t('attendance.export.to')}</label>
-                      <input type="date" value={exportDateTo} onChange={(e) => setExportDateTo(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                    </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">{t('attendance.export.from')} &mdash; {t('attendance.export.to')}</label>
+                    {/* Same composite control as the dashboard filter so the
+                        export flow feels consistent. allowEmpty so users can
+                        wipe the picked range without picking a new one. */}
+                    <DateRangePicker
+                      from={exportDateFrom}
+                      to={exportDateTo}
+                      onApply={(f, to2) => {
+                        setExportDateFrom(f);
+                        setExportDateTo(to2);
+                      }}
+                      allowEmpty
+                    />
                   </div>
                 )}
               </div>
