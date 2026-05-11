@@ -473,7 +473,7 @@ router.post("/check-out", authenticate, async (req: Request, res: Response, next
 });
 
 // GET /api/v1/attendance/me/today
-router.get("/me/today", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/me/today", authenticate, requirePermission("attendance:view", "attendance:view_team", "attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const record = await attendanceService.getMyToday(req.user!.org_id, req.user!.sub);
     sendSuccess(res, record);
@@ -481,7 +481,7 @@ router.get("/me/today", authenticate, async (req: Request, res: Response, next: 
 });
 
 // GET /api/v1/attendance/me/history
-router.get("/me/history", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/me/history", authenticate, requirePermission("attendance:view", "attendance:view_team", "attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = attendanceQuerySchema.parse(req.query);
     const result = await attendanceService.getMyHistory(req.user!.org_id, req.user!.sub, {
