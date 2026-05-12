@@ -441,12 +441,49 @@ export async function getBillingSubscriptionId(
   return mapping?.billing_subscription_id ?? null;
 }
 
+// Short-lived cache so the three reads on the Billing summary page
+// (invoices + payments + summary) don't each hit billing's /clients/:id.
+const clientExistenceCache = new Map<string, { exists: boolean; ts: number }>();
+const CLIENT_EXISTENCE_TTL_MS = 30_000;
+
+async function isBillingClientStillAlive(clientId: string): Promise<boolean> {
+  if (!isBillingConfigured()) {
+    // Can't verify -- assume alive so we don't churn the mapping when
+    // billing is temporarily down.
+    return true;
+  }
+  const cached = clientExistenceCache.get(clientId);
+  const now = Date.now();
+  if (cached && now - cached.ts < CLIENT_EXISTENCE_TTL_MS) {
+    return cached.exists;
+  }
+  try {
+    const url = `${BILLING_BASE}/clients/${clientId}`;
+    const response = await fetch(url, { headers: getHeaders() });
+    if (response.status === 404) {
+      clientExistenceCache.set(clientId, { exists: false, ts: now });
+      return false;
+    }
+    // Any other status (200, 5xx, 401) -- treat as "still alive" so a
+    // transient billing failure can't cause us to re-provision and orphan
+    // historical invoices.
+    clientExistenceCache.set(clientId, { exists: true, ts: now });
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 /**
  * Resolve the billing-side `clients.id` UUID for an EmpCloud organization.
  * Used by the proxy reads (getInvoices / getPayments) to scope queries to
- * just the calling tenant. Returns null if the org has never been
- * provisioned in emp-billing -- callers in that case fall back to
- * unfiltered queries (which will be the historic single-tenant behaviour).
+ * just the calling tenant.
+ *
+ * Self-heals stale mappings: if the cached client_id no longer exists in
+ * billing (because billing was reseeded, the row was manually deleted, or
+ * a backup restore wiped it), we auto-re-provision and update the mapping
+ * so the next page load isn't broken either. Returns null only when the
+ * org has truly never been provisioned and re-provisioning also failed.
  */
 export async function getMappedBillingClientId(
   orgId: number
@@ -455,7 +492,40 @@ export async function getMappedBillingClientId(
   const mapping = await db("billing_client_mappings")
     .where({ organization_id: orgId })
     .first();
-  return mapping?.billing_client_id ?? null;
+
+  if (!mapping?.billing_client_id) {
+    // Org has never been provisioned in billing. Try to do it now so
+    // existing organizations that pre-date the auto-provision path still
+    // self-heal on first billing page load.
+    return getOrCreateBillingClientId(orgId);
+  }
+
+  const cachedId: string = mapping.billing_client_id;
+  if (await isBillingClientStillAlive(cachedId)) {
+    return cachedId;
+  }
+
+  // Stale: billing no longer has this client. Re-provision and update the
+  // mapping in place so HR isn't stuck staring at "No invoices yet" while
+  // the mapping silently points at a wiped UUID.
+  logger.warn(
+    `Stale billing client mapping for org ${orgId}: ${cachedId} not found in billing. Re-provisioning.`,
+  );
+  const org = await db("organizations").where({ id: orgId }).first();
+  if (!org) return cachedId;
+  const owner = await db("users")
+    .where({ organization_id: orgId, role: "owner" })
+    .first();
+  const email = owner?.email || org.contact_email || "billing@empcloud.com";
+  const newId = await autoProvisionClient(orgId, org.name, email);
+  if (newId && newId !== cachedId) {
+    await db("billing_client_mappings")
+      .where({ organization_id: orgId })
+      .update({ billing_client_id: newId });
+    clientExistenceCache.delete(cachedId);
+    return newId;
+  }
+  return cachedId;
 }
 
 // ---------------------------------------------------------------------------
