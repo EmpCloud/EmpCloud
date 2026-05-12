@@ -741,7 +741,7 @@ export async function getMonthlyReport(
 // (half day) in the grid. This way a 4-hour shift correctly shows as
 // half day even if the check-in/out path stored it as 'present'.
 
-export type AttendanceCode = "P" | "A" | "H" | "L" | "WO" | "HO" | "";
+export type AttendanceCode = "P" | "A" | "H" | "L" | "WO" | "HO" | "M" | "";
 
 export async function getMonthlyGrid(
   orgId: number,
@@ -813,12 +813,27 @@ export async function getMonthlyGrid(
     .whereBetween("date", [monthStart, monthEnd])
     .select("user_id", "date", "status", "worked_minutes");
 
-  const codeFor = (status: string | null | undefined, workedMinutes: number | null): AttendanceCode => {
+  // ISO date for "today" so a single-punch row on a past date doesn't get
+  // silently rewarded with a Present mark just because the worker forgot to
+  // check out -- HR sees an explicit M (missed check-out) on the grid and
+  // can override via the double-click cell editor.
+  const todayIso = isoLocal(new Date());
+  const codeFor = (
+    status: string | null | undefined,
+    workedMinutes: number | null,
+    dateIso: string,
+  ): AttendanceCode => {
     const s = (status || "").toLowerCase();
     if (s === "half_day") return "H";
     if (s === "absent") return "A";
     if (s === "on_leave") return "L";
-    if (s === "present" || s === "checked_in") {
+    if (s === "checked_in") {
+      // Today: still in progress, render as P. Past date: missed check-out
+      // -- distinct M code so it doesn't inflate the Present total.
+      if (dateIso < todayIso) return "M";
+      return "P";
+    }
+    if (s === "present") {
       // Auto-reclassify short shifts as half-day so a 4hr workday isn't
       // accidentally counted as a full present day.
       if (workedMinutes != null && workedMinutes > 0 && workedMinutes < halfDayThreshold) {
@@ -834,7 +849,11 @@ export async function getMonthlyGrid(
     const dStr = isoLocal(r.date);
     const uid = Number(r.user_id);
     if (!byUser[uid]) byUser[uid] = {};
-    byUser[uid][dStr] = codeFor(r.status, r.worked_minutes != null ? Number(r.worked_minutes) : null);
+    byUser[uid][dStr] = codeFor(
+      r.status,
+      r.worked_minutes != null ? Number(r.worked_minutes) : null,
+      dStr,
+    );
   }
 
   const employees = allUsers.map((u: any) => {

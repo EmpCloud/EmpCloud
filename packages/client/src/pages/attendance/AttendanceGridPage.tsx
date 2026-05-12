@@ -79,6 +79,8 @@ const codeStyle = (code: string): string => {
       return "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400";
     case "HO":
       return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200";
+    case "M":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200";
     default:
       return "bg-white text-gray-300 dark:bg-gray-900 dark:text-gray-600";
   }
@@ -240,7 +242,7 @@ export default function AttendanceGridPage() {
 
   const summaryFor = useMemo(
     () => (emp: EmployeeRow) => {
-      const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0 };
+      const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
       for (const d of data.days) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
         if (c in counts) counts[c as keyof typeof counts]++;
@@ -251,13 +253,16 @@ export default function AttendanceGridPage() {
   );
 
   // Per-DAY column totals -- on date column N, how many employees were
-  // P / A / H / L / WO / HO. Rendered as a tfoot block so HR can scan
-  // "how many people were absent on May 15?" at a glance. Totals follow
-  // the active filters so a department head sees only their team's totals.
+  // in each bucket. Rendered as a tfoot block so HR can scan "how many
+  // people were absent on May 15?" at a glance. Totals follow the active
+  // filters so a department head sees only their team's totals.
   const dayTotals = useMemo(() => {
-    const out: Record<string, { P: number; A: number; H: number; L: number; WO: number; HO: number }> = {};
+    const out: Record<
+      string,
+      { P: number; A: number; H: number; L: number; WO: number; HO: number; M: number }
+    > = {};
     for (const d of data.days) {
-      const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0 };
+      const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
       for (const emp of filteredEmployees) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
         if (c in counts) counts[c as keyof typeof counts]++;
@@ -270,7 +275,7 @@ export default function AttendanceGridPage() {
   // Org-wide totals across the whole month (sum of dayTotals) -- shown
   // in the right-hand summary column of the footer rows.
   const monthTotals = useMemo(() => {
-    const totals = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0 };
+    const totals = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
     for (const d of data.days) {
       const c = dayTotals[d.date];
       if (!c) continue;
@@ -280,6 +285,7 @@ export default function AttendanceGridPage() {
       totals.L += c.L;
       totals.WO += c.WO;
       totals.HO += c.HO;
+      totals.M += c.M;
     }
     return totals;
   }, [dayTotals, data.days]);
@@ -291,6 +297,7 @@ export default function AttendanceGridPage() {
     { code: "L", label: "On leave", cls: "text-blue-700 dark:text-blue-300" },
     { code: "WO", label: "Week off", cls: "text-gray-500 dark:text-gray-400" },
     { code: "HO", label: "Holiday", cls: "text-purple-700 dark:text-purple-300" },
+    { code: "M", label: "Missed check-out", cls: "text-orange-700 dark:text-orange-300" },
   ];
 
   return (
@@ -341,6 +348,7 @@ export default function AttendanceGridPage() {
           <LegendDot label="L" cls={codeStyle("L")} desc="On leave" />
           <LegendDot label="WO" cls={codeStyle("WO")} desc="Week off" />
           <LegendDot label="HO" cls={codeStyle("HO")} desc="Holiday" />
+          <LegendDot label="M" cls={codeStyle("M")} desc="Missed check-out" />
         </div>
       </div>
 
@@ -560,8 +568,11 @@ export default function AttendanceGridPage() {
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
         Tip: double-click any cell to mark P / A / H / L. WO and HO are computed automatically
-        from the org calendar; pick a value to override or "—" to revert. A `present` row with
-        less than 4 hours worked is shown as H automatically.
+        from the org calendar; pick a value to override or "—" to revert. A worker with both
+        check-in and check-out in a day is classified by hours worked vs shift length:
+        below 25% of shift &rarr; A (Absent), 25–50% &rarr; H (Half day), 50%+ &rarr; P (Present).
+        A past day where the worker checked in but never checked out shows as M (Missed
+        check-out) so HR can review and override before payroll.
       </p>
     </div>
   );
