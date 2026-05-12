@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp } from "lucide-react";
+import { usePermissions } from "@/lib/use-permissions";
+import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 
 const AVAILABLE_ROLES = [
   { value: "employee", label: "Employee" },
@@ -56,6 +57,17 @@ function useMarkAsRead() {
   });
 }
 
+function useDeleteAnnouncement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.delete(`/announcements/${id}`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["announcements"] });
+      qc.invalidateQueries({ queryKey: ["announcements-unread"] });
+    },
+  });
+}
+
 export default function AnnouncementsPage() {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -67,6 +79,12 @@ export default function AnnouncementsPage() {
   const user = useAuthStore((s) => s.user);
 
   const isHR = user && HR_ROLES.includes(user.role);
+  // Mirror the recent custom-role fixes: server gates POST on
+  // announcements:create|manage and DELETE on announcements:manage, so the
+  // UI must accept the same custom-role permission grants.
+  const { has } = usePermissions();
+  const canManage = isHR || has("announcements:manage");
+  const deleteAnnouncement = useDeleteAnnouncement();
   const announcements = data?.data || [];
   const meta = data?.meta;
 
@@ -356,16 +374,33 @@ export default function AnnouncementsPage() {
                       )}
                     </div>
 
-                    {/* Mark as read button */}
-                    {!isRead && (
-                      <button
-                        onClick={() => handleMarkRead(a.id)}
-                        disabled={markAsRead.isPending}
-                        className="flex-shrink-0 flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 disabled:opacity-50"
-                      >
-                        <Check className="h-3.5 w-3.5" /> Mark Read
-                      </button>
-                    )}
+                    <div className="flex-shrink-0 flex items-center gap-2">
+                      {/* Mark as read button */}
+                      {!isRead && (
+                        <button
+                          onClick={() => handleMarkRead(a.id)}
+                          disabled={markAsRead.isPending}
+                          className="flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 disabled:opacity-50"
+                        >
+                          <Check className="h-3.5 w-3.5" /> Mark Read
+                        </button>
+                      )}
+                      {canManage && (
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Delete announcement "${a.title}"? This cannot be undone.`)) {
+                              deleteAnnouncement.mutate(a.id);
+                            }
+                          }}
+                          disabled={deleteAnnouncement.isPending}
+                          title="Delete announcement"
+                          aria-label={`Delete announcement ${a.title}`}
+                          className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Footer */}
