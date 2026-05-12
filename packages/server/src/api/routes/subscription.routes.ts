@@ -21,8 +21,11 @@ import { paramInt, param } from "../../utils/params.js";
 
 const router = Router();
 
-// GET /api/v1/subscriptions — List org subscriptions
-router.get("/", authenticate, requirePermission("subscriptions:view"), async (req: Request, res: Response, next: NextFunction) => {
+// GET /api/v1/subscriptions — List org subscriptions.
+// Also accepts modules_access:* so the Module Access page can read which
+// modules are subscribed without separately granting subscriptions:view --
+// otherwise the page renders empty (no cards, no table columns, no toggles).
+router.get("/", authenticate, requirePermission("subscriptions:view", "modules_access:view", "modules_access:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const subs = await subService.listSubscriptions(req.user!.org_id);
     sendSuccess(res, subs);
