@@ -87,7 +87,7 @@ export const employeeNavItems: NavItem[] = [
     { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
     { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
   ]},
-  { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
+  { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
   { path: "/helpdesk/my-tickets", label: "Workplace", i18nKey: "nav.workplace", icon: Headphones, children: [
     { path: "/helpdesk/my-tickets", label: "My Tickets", i18nKey: "helpdesk.myTickets", icon: TicketCheck },
     { path: "/helpdesk/kb", label: "Knowledge Base", i18nKey: "helpdesk.knowledgeBase", icon: BookMarked },
@@ -127,7 +127,7 @@ export const adminNavItems: NavItem[] = [
   { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, requiredPermissions: ["employees:view_all", "employees:edit_all", "employees:invite"], children: [
     { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact, requiredPermissions: ["employees:view_all"] },
     { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck, requiredPermissions: ["employees:view_all", "employees:edit_all"] },
-    { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network },
+    { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
   ]},
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI" },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
