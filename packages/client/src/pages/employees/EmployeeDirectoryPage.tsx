@@ -5,6 +5,7 @@ import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, A
 import api from "@/api/client";
 import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import { showToast } from "@/components/ui/Toast";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
@@ -101,6 +102,11 @@ export default function EmployeeDirectoryPage() {
   const currentUser = useAuthStore((s) => s.user);
   const isOrgAdmin = currentUser?.role === "org_admin" || currentUser?.role === "super_admin";
   const canDelete = isOrgAdmin;
+  // Custom roles with employees:invite (no built-in admin role) should still
+  // see the invite workflow -- the route layer already accepts the permission
+  // alongside org_admin.
+  const { has } = usePermissions();
+  const canInvite = isOrgAdmin || has("employees:invite");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
@@ -226,7 +232,7 @@ export default function EmployeeDirectoryPage() {
     onSettled: () => setInvitingId(null),
   });
 
-  // Pending invitations panel — only fetched for org_admin.
+  // Pending invitations panel — fetched for anyone who can invite.
   const { data: pendingInvitations } = useQuery({
     queryKey: ["pending-invitations"],
     queryFn: () =>
@@ -234,7 +240,7 @@ export default function EmployeeDirectoryPage() {
         .get("/users/invitations", { params: { status: "pending" } })
         .then((r) => r.data.data)
         .catch(() => [] as any[]),
-    enabled: isOrgAdmin,
+    enabled: canInvite,
   });
   const invitations: any[] = (pendingInvitations as any[]) || [];
 
@@ -507,7 +513,7 @@ export default function EmployeeDirectoryPage() {
               className="hidden"
             />
           </label>
-          {isOrgAdmin && (
+          {canInvite && (
             <button
               onClick={() => setShowPendingInvitations(true)}
               className={`relative flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
@@ -533,7 +539,7 @@ export default function EmployeeDirectoryPage() {
               <FileSpreadsheet className="h-4 w-4" /> Import Employees
             </button>
           )}
-          {isOrgAdmin && (
+          {canInvite && (
             <button
               onClick={() => setShowBulkInviteConfirm(true)}
               disabled={bulkInvite.isPending}
@@ -543,7 +549,7 @@ export default function EmployeeDirectoryPage() {
               <Users className="h-4 w-4" /> Invite All
             </button>
           )}
-          {isOrgAdmin && (
+          {canInvite && (
             <button
               onClick={() => setShowInvite((v) => !v)}
               className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
@@ -557,7 +563,7 @@ export default function EmployeeDirectoryPage() {
       {/* Bulk-invite confirmation. Server enforces seat limits and skips
            anyone with a pending invite, but a friendly heads-up is still
            the right UX before firing N emails. */}
-      {isOrgAdmin && showBulkInviteConfirm && (
+      {canInvite && showBulkInviteConfirm && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={() => !bulkInvite.isPending && setShowBulkInviteConfirm(false)}
@@ -642,7 +648,7 @@ export default function EmployeeDirectoryPage() {
       )}
 
       {/* Invite form (absorbed from the retired Users page) */}
-      {showInvite && isOrgAdmin && (
+      {showInvite && canInvite && (
         <form
           onSubmit={handleInvite}
           className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-3"
@@ -737,7 +743,7 @@ export default function EmployeeDirectoryPage() {
 
       {/* Pending Invitations modal — opened via the action-bar button so the
           directory page stays uncluttered when many invitations are queued. */}
-      {isOrgAdmin && showPendingInvitations && (
+      {canInvite && showPendingInvitations && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={() => setShowPendingInvitations(false)}
@@ -1147,7 +1153,7 @@ export default function EmployeeDirectoryPage() {
                           inactive accounts (status != 1) so HR doesn't bounce
                           mail to disabled mailboxes; disabled while an invite
                           for this row is in flight. */}
-                      {emp.id !== currentUser?.id && emp.status === 1 && emp.email && (
+                      {canInvite && emp.id !== currentUser?.id && emp.status === 1 && emp.email && (
                         <button
                           type="button"
                           onClick={() => {
