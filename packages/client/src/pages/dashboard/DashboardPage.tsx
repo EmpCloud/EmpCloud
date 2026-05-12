@@ -1,7 +1,8 @@
 import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets, useBillingOverviewSummary } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import { useTranslation } from "react-i18next";
-import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap, AlertCircle } from "lucide-react";
+import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap, AlertCircle, MonitorPlay } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useCallback } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
@@ -50,12 +51,23 @@ const hrmsQuickLinkKeys = [
 export default function DashboardPage() {
   const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
+  const { hasAll } = usePermissions();
   const { data: stats, isLoading: statsLoading, isError: statsError } = useOrgStats();
   const { data: subscriptions } = useSubscriptions();
   const { data: modules } = useModules();
   const { data: widgets, isLoading: widgetsLoading } = useDashboardWidgets();
   const { data: billingSummary, isLoading: billingLoading } = useBillingOverviewSummary();
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
+  // Show a dedicated SSO entry to EMP Monitor as Admin when the user holds
+  // every monitor:* permission. Skips the regular "subscribed module"
+  // requirement -- a Monitor admin should be able to land in the admin UI
+  // even if their EmpCloud-side subscription isn't active yet.
+  const isMonitorAdmin = hasAll(
+    "monitor:view_own",
+    "monitor:view_team",
+    "monitor:view_all",
+    "monitor:manage_settings",
+  );
 
   const activeSubscriptions: Subscription[] = subscriptions?.filter(
     (s: Subscription) => s.status === "active" || s.status === "trial"
@@ -340,6 +352,29 @@ export default function DashboardPage() {
               </WidgetCard>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Monitor Admin SSO -- visible only when the user holds every monitor:* permission. */}
+      {isMonitorAdmin && moduleBaseUrls.get("emp-monitor") && (
+        <div className="mb-8 bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-5 text-white flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+              <MonitorPlay className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">EMP Monitor &mdash; Admin Access</p>
+              <p className="text-xs text-white/70 mt-0.5">
+                You have full Monitor permissions. Sign in as Admin via SSO.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => launchModule(moduleBaseUrls.get("emp-monitor")!)}
+            className="flex items-center gap-1.5 bg-white text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors flex-shrink-0"
+          >
+            Login as Admin <ExternalLink className="h-3.5 w-3.5" />
+          </button>
         </div>
       )}
 
