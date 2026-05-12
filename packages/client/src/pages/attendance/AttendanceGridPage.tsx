@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
-import { ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Search, X, CalendarPlus, AlertTriangle } from "lucide-react";
 
 const STORAGE_KEY_LOCATION = "empcloud:filter:grid:location_name";
 const STORAGE_KEY_DEPARTMENT = "empcloud:filter:grid:department_name";
@@ -487,31 +487,33 @@ export default function AttendanceGridPage() {
                         return (
                           <td
                             key={d.date}
-                            className="border-b border-gray-100 p-0.5 text-center dark:border-gray-800"
+                            className="relative border-b border-gray-100 p-0.5 text-center dark:border-gray-800"
                           >
                             {isEditing ? (
-                              <select
-                                autoFocus
-                                value={code === "WO" || code === "HO" ? "" : code}
-                                onChange={(e) => commitCell(emp.user_id, d.date, e.target.value)}
-                                onBlur={() => setEditing(null)}
-                                className="h-7 w-12 rounded border border-blue-400 text-center text-xs outline-none focus:ring-2 focus:ring-blue-500"
-                              >
-                                <option value="">—</option>
-                                <option value="P">P</option>
-                                <option value="A">A</option>
-                                <option value="H">H</option>
-                                <option value="L">L</option>
-                              </select>
-                            ) : (
-                              <div
-                                onDoubleClick={() => setEditing({ uid: emp.user_id, date: d.date })}
-                                title={`${d.date} — double-click to edit`}
-                                className={`mx-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[11px] font-semibold transition hover:ring-2 hover:ring-blue-300 ${codeStyle(code)}`}
-                              >
-                                {code || "—"}
-                              </div>
-                            )}
+                              <CellEditor
+                                userId={emp.user_id}
+                                userName={`${emp.first_name} ${emp.last_name}`.trim()}
+                                date={d.date}
+                                currentCode={code}
+                                onClose={() => setEditing(null)}
+                                onPickStatus={(c) => commitCell(emp.user_id, d.date, c)}
+                                onLeaveApplied={() => {
+                                  qc.invalidateQueries({ queryKey });
+                                  setEditing(null);
+                                  setStatus({
+                                    kind: "ok",
+                                    text: `Leave applied for ${emp.first_name} on ${d.date}`,
+                                  });
+                                }}
+                              />
+                            ) : null}
+                            <div
+                              onDoubleClick={() => setEditing({ uid: emp.user_id, date: d.date })}
+                              title={`${d.date} — double-click to edit`}
+                              className={`mx-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[11px] font-semibold transition hover:ring-2 hover:ring-blue-300 ${codeStyle(code)}`}
+                            >
+                              {code || "—"}
+                            </div>
                           </td>
                         );
                       })}
@@ -586,5 +588,216 @@ function LegendDot({ label, cls, desc }: { label: string; cls: string; desc: str
       </span>
       <span>{desc}</span>
     </span>
+  );
+}
+
+// Popover that opens on double-click of an attendance cell. Combines the
+// existing P/A/H/— status overrides with a leave-application flow: HR can
+// pick from the org leave types (with current balances) and apply directly.
+// Existing leave applications for the same date are surfaced at the top.
+function CellEditor({
+  userId,
+  userName,
+  date,
+  currentCode,
+  onClose,
+  onPickStatus,
+  onLeaveApplied,
+}: {
+  userId: number;
+  userName: string;
+  date: string;
+  currentCode: string;
+  onClose: () => void;
+  onPickStatus: (code: string) => void;
+  onLeaveApplied: () => void;
+}) {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [applyingId, setApplyingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const { data: ctxRes, isLoading } = useQuery({
+    queryKey: ["grid-leave-context", userId, date],
+    queryFn: () =>
+      api
+        .get("/attendance/grid/leave-context", { params: { user_id: userId, date } })
+        .then((r) => r.data?.data ?? r.data),
+  });
+  const leaveTypes: Array<{
+    id: number;
+    name: string;
+    code: string | null;
+    color: string | null;
+    available_now: number;
+    fiscal_year_label: string | null;
+  }> = ctxRes?.leaveTypes ?? [];
+  const existingApplications: Array<{
+    id: number;
+    leave_type_name: string;
+    status: string;
+    start_date: string;
+    end_date: string;
+    days_count: number;
+    is_half_day: boolean;
+  }> = ctxRes?.existingApplications ?? [];
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [onClose]);
+
+  async function applyLeave(typeId: number) {
+    setError(null);
+    setApplyingId(typeId);
+    try {
+      await api.post("/attendance/grid/apply-leave", {
+        user_id: userId,
+        date,
+        leave_type_id: typeId,
+      });
+      onLeaveApplied();
+    } catch (err: any) {
+      setError(err?.response?.data?.error?.message || err?.message || "Failed to apply leave");
+    } finally {
+      setApplyingId(null);
+    }
+  }
+
+  const STATUS_BUTTONS: Array<{ code: string; label: string; cls: string }> = [
+    { code: "P", label: "Present", cls: "bg-green-100 text-green-800 hover:bg-green-200" },
+    { code: "A", label: "Absent", cls: "bg-red-100 text-red-800 hover:bg-red-200" },
+    { code: "H", label: "Half day", cls: "bg-amber-100 text-amber-800 hover:bg-amber-200" },
+    { code: "", label: "Reset", cls: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
+  ];
+
+  return (
+    <div
+      ref={wrapRef}
+      className="absolute left-1/2 top-full z-50 mt-1 w-72 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-3 text-left shadow-xl dark:border-gray-700 dark:bg-gray-800"
+    >
+      <div className="mb-2 flex items-center justify-between">
+        <div className="min-w-0">
+          <p className="truncate text-xs font-semibold text-gray-900 dark:text-gray-100">
+            {userName}
+          </p>
+          <p className="truncate text-[10px] text-gray-500 dark:text-gray-400">{date}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      {existingApplications.length > 0 && (
+        <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-900 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
+          <p className="mb-1 font-semibold">Existing leave on this date</p>
+          <ul className="space-y-0.5">
+            {existingApplications.map((a) => (
+              <li key={a.id} className="flex items-center justify-between gap-2">
+                <span className="truncate">
+                  {a.leave_type_name} {a.is_half_day ? "(half day)" : ""}
+                </span>
+                <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-[10px] font-medium uppercase">
+                  {a.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mb-3">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+          Set status
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {STATUS_BUTTONS.map((b) => (
+            <button
+              key={b.code || "reset"}
+              type="button"
+              onClick={() => onPickStatus(b.code)}
+              className={`rounded px-2.5 py-1 text-xs font-semibold transition ${b.cls} ${currentCode === b.code ? "ring-2 ring-blue-400" : ""}`}
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+          Apply leave
+        </p>
+        {isLoading ? (
+          <div className="flex items-center gap-2 py-2 text-xs text-gray-400">
+            <Loader2 className="h-3 w-3 animate-spin" /> Loading types…
+          </div>
+        ) : leaveTypes.length === 0 ? (
+          <p className="py-2 text-xs text-gray-400">No active leave types in the org.</p>
+        ) : (
+          <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
+            {leaveTypes.map((t) => {
+              const disabled = t.available_now < 1 || applyingId !== null;
+              const isThisOne = applyingId === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => applyLeave(t.id)}
+                  className={`flex w-full items-center justify-between gap-2 rounded border px-2 py-1.5 text-left text-xs transition ${
+                    disabled
+                      ? "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400"
+                      : "border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+                  }`}
+                  title={
+                    t.available_now < 1
+                      ? `No balance left for ${t.name}`
+                      : `Apply 1 day of ${t.name}`
+                  }
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    {isThisOne ? (
+                      <Loader2 className="h-3 w-3 flex-shrink-0 animate-spin" />
+                    ) : (
+                      <CalendarPlus className="h-3 w-3 flex-shrink-0" />
+                    )}
+                    <span className="truncate">{t.name}</span>
+                  </span>
+                  <span
+                    className={`whitespace-nowrap text-[10px] font-semibold ${
+                      t.available_now < 1 ? "text-red-500" : "text-gray-500"
+                    }`}
+                  >
+                    {t.available_now} left
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="mt-2 flex items-start gap-1.5 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700 dark:border-red-700 dark:bg-red-900/30 dark:text-red-200">
+          <AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+    </div>
   );
 }

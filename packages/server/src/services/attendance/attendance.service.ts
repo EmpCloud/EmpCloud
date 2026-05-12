@@ -548,6 +548,11 @@ export async function listRecords(
   }
 
   const [{ count }] = await query.clone().count("* as count");
+  // For status='on_leave' rows, surface the actual leave type so the records
+  // page can show "On Leave (CL)" instead of just "On Leave". Correlated
+  // sub-selects only fire for the page (limit 20) so cost stays bounded.
+  // If multiple approved applications somehow overlap a date, MySQL picks
+  // one -- not data we expect to see, but won't crash either way.
   const records = await query
     .select(
       "ar.*",
@@ -555,7 +560,25 @@ export async function listRecords(
       "u.last_name",
       "u.email",
       "u.emp_code",
-      "dept.name as department_name"
+      "dept.name as department_name",
+      db.raw(
+        `(SELECT lt.name FROM leave_applications la
+          JOIN leave_types lt ON la.leave_type_id = lt.id
+          WHERE la.user_id = ar.user_id
+            AND la.organization_id = ar.organization_id
+            AND la.status = 'approved'
+            AND ar.date BETWEEN la.start_date AND la.end_date
+          LIMIT 1) AS leave_type_name`,
+      ),
+      db.raw(
+        `(SELECT lt.code FROM leave_applications la
+          JOIN leave_types lt ON la.leave_type_id = lt.id
+          WHERE la.user_id = ar.user_id
+            AND la.organization_id = ar.organization_id
+            AND la.status = 'approved'
+            AND ar.date BETWEEN la.start_date AND la.end_date
+          LIMIT 1) AS leave_type_code`,
+      ),
     )
     .orderBy("ar.date", "desc")
     .limit(perPage)

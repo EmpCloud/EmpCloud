@@ -12,6 +12,7 @@ export async function applyLeave(
   orgId: number,
   userId: number,
   data: ApplyLeaveInput,
+  options?: { skipBackdateCheck?: boolean },
 ): Promise<LeaveApplication> {
   const db = getDB();
 
@@ -53,13 +54,18 @@ export async function applyLeave(
     data.days_count = inclusiveDays;
   }
 
-  // Reject leave applications with start_date more than 7 days in the past
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const gracePeriod = new Date(today);
-  gracePeriod.setDate(gracePeriod.getDate() - 7);
-  if (startDate < gracePeriod) {
-    throw new ValidationError("Start date cannot be more than 7 days in the past");
+  // Reject leave applications with start_date more than 7 days in the past.
+  // HR-on-behalf flows (e.g. Attendance Grid retroactive leave entry) opt out
+  // of this guard via skipBackdateCheck because legitimate after-the-fact
+  // recording is the whole point of those flows.
+  if (!options?.skipBackdateCheck) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const gracePeriod = new Date(today);
+    gracePeriod.setDate(gracePeriod.getDate() - 7);
+    if (startDate < gracePeriod) {
+      throw new ValidationError("Start date cannot be more than 7 days in the past");
+    }
   }
 
   // Validate leave type exists and is active
