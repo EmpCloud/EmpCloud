@@ -9,6 +9,8 @@ import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
 import * as attendanceService from "../../services/attendance/attendance.service.js";
+import * as leaveApplicationService from "../../services/leave/leave-application.service.js";
+import * as leaveBalanceService from "../../services/leave/leave-balance.service.js";
 import * as geoFenceService from "../../services/attendance/geo-fence.service.js";
 import * as regularizationService from "../../services/attendance/regularization.service.js";
 import * as settingsService from "../../services/attendance/attendance-settings.service.js";
@@ -703,6 +705,139 @@ router.put("/cell", authenticate, requirePermission("attendance:manage"), async 
     sendSuccess(res, result);
   } catch (err) { next(err); }
 });
+
+// GET /api/v1/attendance/grid/leave-context?user_id=X&date=YYYY-MM-DD
+// Powers the cell editor popover on the Attendance Grid -- returns the
+// org's active leave types with the user's available balance, plus any
+// existing leave applications that overlap the selected date.
+router.get(
+  "/grid/leave-context",
+  authenticate,
+  requirePermission("attendance:manage"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number(req.query.user_id);
+      const date = String(req.query.date || "");
+      if (!userId || !date) throw new Error("user_id and date are required");
+      const orgId = req.user!.org_id;
+      const db = (await import("../../db/connection.js")).getDB();
+
+      const [types, balances, existing] = await Promise.all([
+        db("leave_types")
+          .where({ organization_id: orgId, is_active: true })
+          .select("id", "name", "code", "color", "requires_approval")
+          .orderBy("name", "asc"),
+        leaveBalanceService.getBalances(orgId, userId),
+        db("leave_applications")
+          .leftJoin("leave_types", "leave_applications.leave_type_id", "leave_types.id")
+          .where({
+            "leave_applications.organization_id": orgId,
+            "leave_applications.user_id": userId,
+          })
+          .whereNotIn("leave_applications.status", ["cancelled", "rejected"])
+          .where("leave_applications.start_date", "<=", date)
+          .where("leave_applications.end_date", ">=", date)
+          .select(
+            "leave_applications.id",
+            "leave_applications.leave_type_id",
+            "leave_applications.status",
+            "leave_applications.start_date",
+            "leave_applications.end_date",
+            "leave_applications.days_count",
+            "leave_applications.is_half_day",
+            "leave_applications.reason",
+            "leave_types.name as leave_type_name",
+            "leave_types.color as leave_type_color",
+          ),
+      ]);
+
+      // Merge balance into each type. Use .find() (first match) instead of
+      // a Map (which overwrites with the last) so the popover sees the same
+      // balance row that applyLeave will validate against -- otherwise a
+      // duplicate balance row produces "1 left" in the popover but
+      // "0 available" on submit.
+      const balanceFor = (id: number) =>
+        balances.find((b: any) => Number(b.leave_type_id) === id);
+      const merged = types.map((t: any) => {
+        const b = balanceFor(Number(t.id));
+        return {
+          id: t.id,
+          name: t.name,
+          code: t.code,
+          color: t.color,
+          requires_approval: !!t.requires_approval,
+          available_now: b ? Number((b as any).available_now ?? b.balance ?? 0) : 0,
+          fiscal_year_label: b ? (b as any).fiscal_year_label : null,
+        };
+      });
+
+      sendSuccess(res, { leaveTypes: merged, existingApplications: existing });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// POST /api/v1/attendance/grid/apply-leave
+// HR applies a single-day leave on behalf of an employee from the grid.
+// Creates a leave application then immediately approves it -- the existing
+// approveLeave path handles balance deduction and writes
+// attendance_records.status = 'on_leave' for the date.
+router.post(
+  "/grid/apply-leave",
+  authenticate,
+  requirePermission("attendance:manage"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id, date, leave_type_id, is_half_day } = req.body || {};
+      if (!user_id || !date || !leave_type_id) {
+        throw new Error("user_id, date and leave_type_id are required");
+      }
+      const orgId = req.user!.org_id;
+      const halfDay = Boolean(is_half_day);
+
+      // Capture WHO applied this so HR can audit later (the original
+      // "Applied by HR via Attendance Grid" was anonymous).
+      const actorFirst = (req.user as any).first_name || "";
+      const actorLast = (req.user as any).last_name || "";
+      const actorName = `${actorFirst} ${actorLast}`.trim() || "an admin";
+      const actorRole = (req.user as any).role
+        ? String((req.user as any).role).replace(/_/g, " ")
+        : "admin";
+      const reasonText = `Applied by ${actorName} (${actorRole}) via Attendance Grid`;
+
+      const application = await leaveApplicationService.applyLeave(
+        orgId,
+        Number(user_id),
+        {
+          leave_type_id: Number(leave_type_id),
+          start_date: String(date),
+          end_date: String(date),
+          days_count: halfDay ? 0.5 : 1,
+          is_half_day: halfDay,
+          half_day_type: halfDay ? "first_half" : undefined,
+          reason: reasonText,
+        } as any,
+        // HR is recording attendance on behalf, often retroactively (an
+        // employee brings sick-leave documentation a week or two later).
+        // The 7-day employee-side guard does not apply here.
+        { skipBackdateCheck: true },
+      );
+
+      const approved = await leaveApplicationService.approveLeave(
+        orgId,
+        req.user!.sub,
+        Number((application as any).id),
+        `Approved on behalf by ${actorName} via Attendance Grid`,
+        (req.user as any).permissions,
+      );
+
+      sendSuccess(res, { application: approved });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 // GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX
 router.get("/export", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {

@@ -878,7 +878,19 @@ function RecordRow({
             if (r.status === "half_day") return t('attendance.statusHalfDay');
             const k = `attendance.${r.status}`;
             const tr = t(k);
-            return tr !== k ? tr : r.status.replace(/_/g, " ");
+            // Title-case the fallback ("on_leave" -> "On Leave") so the badge
+            // doesn't look like a raw enum value when no translation hit.
+            const base =
+              tr !== k
+                ? tr
+                : r.status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+            // Append the specific leave type for on-leave rows -- HR scans
+            // the records page and needs to know it was CL vs SL vs EL etc.
+            if (r.status === "on_leave") {
+              const suffix = r.leave_type_code || r.leave_type_name;
+              if (suffix) return `${base} (${suffix})`;
+            }
+            return base;
           })()}
         </span>
       </td>
@@ -987,7 +999,15 @@ function AttendanceDetailModal({
     if (r.status === "half_day") return t('attendance.statusHalfDay');
     const k = `attendance.${r.status}`;
     const tr = t(k);
-    return tr !== k ? tr : (r.status || "").replace(/_/g, " ");
+    const base =
+      tr !== k
+        ? tr
+        : (r.status || "").replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+    if (r.status === "on_leave") {
+      const suffix = (r as any).leave_type_code || (r as any).leave_type_name;
+      if (suffix) return `${base} (${suffix})`;
+    }
+    return base;
   })();
   const statusCls =
     r.status === "present" ? "bg-green-50 text-green-700"

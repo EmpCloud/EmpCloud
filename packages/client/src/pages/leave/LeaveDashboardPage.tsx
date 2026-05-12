@@ -532,6 +532,11 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
           },
         })
         .then((r) => r.data),
+    // Override the global 30s staleTime -- switching status tabs (Pending /
+    // Approved / etc.) needs to hit the server every time so HR sees the
+    // current state, not a 30-second-stale snapshot.
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   const applications = data?.data || [];
@@ -767,6 +772,8 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
           },
         })
         .then((r) => r.data),
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   const approveMut = useMutation({
