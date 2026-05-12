@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
+import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
 import { lazy, Suspense, useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/client";
@@ -42,6 +44,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function RootRedirect() {
   const user = useAuthStore((s) => s.user);
+  const { permissions } = usePermissions();
+  const viewMode = useViewModeStore((s) => s.viewMode);
   const [checking, setChecking] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
@@ -88,6 +92,14 @@ function RootRedirect() {
 
   const isAdmin = user?.role === "org_admin" || user?.role === "hr_admin";
   if (isAdmin) return <DashboardPage />;
+  // Custom-role users with at least one admin-level permission see the admin
+  // dashboard whenever they've toggled into "Admin view" -- previously they
+  // were stuck on the self-service dashboard regardless of the toggle, so
+  // none of the admin widgets (Monitor SSO banner, module insights, etc.)
+  // ever rendered for them.
+  if (viewMode === "admin" && hasAnyAdminPermission(permissions)) {
+    return <DashboardPage />;
+  }
   return <SelfServiceDashboardPage />;
 }
 

@@ -173,10 +173,16 @@ export function requireAllPermissions(...required: string[]) {
 }
 
 /**
- * Allow access if user is accessing their own resource OR has HR role.
+ * Allow access if user is accessing their own resource OR has HR role OR
+ * holds one of the listed RBAC permissions. The third clause is what lets
+ * a custom role (e.g. an "Audit Viewer" with just `employees:view_all`)
+ * use endpoints that previously gated only on the built-in HR role.
+ *
  * paramName is the route param containing the user ID to compare against.
+ * permissions is an optional list of permission keys that grant access
+ * regardless of role; pass an empty list (or omit) for the legacy behavior.
  */
-export function requireSelfOrHR(paramName: string = "id") {
+export function requireSelfOrHR(paramName: string = "id", permissions: string[] = []) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       sendError(res, 401, "UNAUTHORIZED", "Authentication required");
@@ -191,6 +197,14 @@ export function requireSelfOrHR(paramName: string = "id") {
     if (isSelf || userRoleLevel >= hrLevel) {
       next();
       return;
+    }
+
+    if (permissions.length > 0) {
+      const granted = (req.user as any).permissions as string[] | undefined;
+      if (Array.isArray(granted) && permissions.some((p) => granted.includes(p))) {
+        next();
+        return;
+      }
     }
 
     sendError(res, 403, "FORBIDDEN", "Insufficient permissions");
