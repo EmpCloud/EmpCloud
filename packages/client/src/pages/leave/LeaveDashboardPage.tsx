@@ -1132,7 +1132,12 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
                 {new Date(app.start_date).toLocaleDateString(i18n.language, { day: "2-digit", month: "short", year: "numeric" })} &mdash; {new Date(app.end_date).toLocaleDateString(i18n.language, { day: "2-digit", month: "short", year: "numeric" })}
               </td>
               <td className="px-6 py-4 text-sm text-gray-700 font-medium">{Number(app.days_count)}</td>
-              <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{app.reason}</td>
+              <td
+                className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate cursor-help"
+                title={app.reason || ""}
+              >
+                {app.reason}
+              </td>
               <td className="px-6 py-4">
                 {statusFilter !== "pending" ? (
                   (() => {

@@ -330,7 +330,10 @@ export default function ManagerDashboardPage() {
                   <td className="px-6 py-4 text-sm text-gray-700 font-medium">
                     {Number(leave.days_count)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                  <td
+                    className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate cursor-help"
+                    title={leave.reason || ""}
+                  >
                     {leave.reason}
                   </td>
                   <td className="px-6 py-4">
