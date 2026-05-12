@@ -84,7 +84,7 @@ export const employeeNavItems: NavItem[] = [
   ]},
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, children: [
     { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
-    { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
+    { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone, requiredPermissions: ["announcements:view", "announcements:create", "announcements:manage"] },
     { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
   ]},
   { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
@@ -156,7 +156,7 @@ export const adminNavItems: NavItem[] = [
   ]},
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, children: [
     { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
-    { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone },
+    { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone, requiredPermissions: ["announcements:view", "announcements:create", "announcements:manage"] },
     { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
   ]},
   { path: "/helpdesk/my-tickets", label: "Workplace", i18nKey: "nav.workplace", icon: Headphones, children: [
