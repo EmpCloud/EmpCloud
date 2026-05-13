@@ -134,7 +134,8 @@ export default function OnboardingWizard() {
   ]);
 
   // Step 4 state
-  const [modules, setModules] = useState<Array<{ id: number; name: string; slug: string; description: string; icon: string; selected: boolean }>>([]);
+  const [modules, setModules] = useState<Array<{ id: number; name: string; slug: string; description: string; icon: string; selected: boolean; plan_tier: string; total_seats: number }>>([]);
+  const [skipTrial, setSkipTrial] = useState(false);
 
   // Step 5 state
   const [leaveTypes, setLeaveTypes] = useState(DEFAULT_LEAVE_TYPES.map((lt) => ({ ...lt, enabled: true })));
@@ -202,6 +203,8 @@ export default function OnboardingWizard() {
           description: m.description || "",
           icon: m.icon || "",
           selected: false,
+          plan_tier: "basic",
+          total_seats: 10,
         }));
         setModules(mods);
       } catch {
@@ -259,8 +262,14 @@ export default function OnboardingWizard() {
           break;
         }
         case 4: {
-          const selectedModuleIds = modules.filter((m) => m.selected).map((m) => m.id);
-          stepData = { module_ids: selectedModuleIds };
+          const selectedModules = modules
+            .filter((m) => m.selected)
+            .map((m) => ({
+              module_id: m.id,
+              plan_tier: m.plan_tier,
+              total_seats: m.total_seats,
+            }));
+          stepData = { modules: selectedModules, skip_trial: skipTrial };
           break;
         }
         case 5: {
@@ -302,32 +311,6 @@ export default function OnboardingWizard() {
     if (activeStep > 1) {
       animateTransition("left", activeStep - 1);
     }
-  };
-
-  const handleSkipStep = async () => {
-    if (activeStep < 5) {
-      animateTransition("right", activeStep + 1);
-    } else {
-      setSubmitting(true);
-      try {
-        await api.post("/onboarding/complete");
-      } catch {
-        // ignore
-      }
-      navigate("/", { replace: true });
-      setSubmitting(false);
-    }
-  };
-
-  const handleSkipAll = async () => {
-    setSubmitting(true);
-    try {
-      await api.post("/onboarding/skip");
-    } catch {
-      // ignore
-    }
-    navigate("/", { replace: true });
-    setSubmitting(false);
   };
 
   // Department helpers
@@ -407,13 +390,6 @@ export default function OnboardingWizard() {
             <Building2 className="h-7 w-7 text-brand-600" />
             <span className="text-lg font-bold text-gray-900">EMP Cloud Setup</span>
           </div>
-          <button
-            onClick={handleSkipAll}
-            disabled={submitting}
-            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            Skip setup &amp; go to dashboard
-          </button>
         </div>
       </div>
 
@@ -554,6 +530,18 @@ export default function OnboardingWizard() {
                 <Step4Modules
                   modules={modules}
                   toggleModule={toggleModule}
+                  updateModulePlan={(id, plan_tier) =>
+                    setModules((prev) =>
+                      prev.map((m) => (m.id === id ? { ...m, plan_tier } : m)),
+                    )
+                  }
+                  updateModuleSeats={(id, total_seats) =>
+                    setModules((prev) =>
+                      prev.map((m) => (m.id === id ? { ...m, total_seats } : m)),
+                    )
+                  }
+                  skipTrial={skipTrial}
+                  setSkipTrial={setSkipTrial}
                 />
               )}
 
@@ -591,13 +579,6 @@ export default function OnboardingWizard() {
               </div>
 
               <div className="flex items-center gap-3">
-                <button
-                  onClick={handleSkipStep}
-                  disabled={submitting}
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
-                >
-                  Skip
-                </button>
                 <button
                   onClick={handleNext}
                   disabled={submitting}
@@ -981,9 +962,17 @@ function Step3InviteTeam({
 function Step4Modules({
   modules,
   toggleModule,
+  updateModulePlan,
+  updateModuleSeats,
+  skipTrial,
+  setSkipTrial,
 }: {
-  modules: Array<{ id: number; name: string; slug: string; description: string; icon: string; selected: boolean }>;
+  modules: Array<{ id: number; name: string; slug: string; description: string; icon: string; selected: boolean; plan_tier: string; total_seats: number }>;
   toggleModule: (id: number) => void;
+  updateModulePlan: (id: number, plan_tier: string) => void;
+  updateModuleSeats: (id: number, total_seats: number) => void;
+  skipTrial: boolean;
+  setSkipTrial: (v: boolean) => void;
 }) {
   if (modules.length === 0) {
     return (
@@ -997,38 +986,87 @@ function Step4Modules({
     );
   }
 
+  const PLAN_TIERS = [
+    { value: "basic", label: "Basic" },
+    { value: "professional", label: "Professional" },
+    { value: "enterprise", label: "Enterprise" },
+  ];
+
   return (
     <div className="space-y-5 pt-2">
       <p className="text-sm text-gray-500">
-        Choose the modules your organization needs. You will get a 14-day free trial for each.
+        Choose the modules your organization needs, then set the plan tier and number of licenses for each.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <label className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+        <input
+          type="checkbox"
+          checked={skipTrial}
+          onChange={(e) => setSkipTrial(e.target.checked)}
+          className="mt-0.5 rounded border-gray-300"
+        />
+        <div>
+          <div className="text-sm font-medium text-gray-900">Skip trial — start paid subscription immediately</div>
+          <div className="text-xs text-gray-500 mt-0.5">
+            When checked, subscriptions are activated right away and an invoice is generated for each module. Leave unchecked to get a 14-day free trial.
+          </div>
+        </div>
+      </label>
+
+      <div className="space-y-3">
         {modules.map((mod) => (
-          <button
+          <div
             key={mod.id}
-            onClick={() => toggleModule(mod.id)}
-            className={`flex items-start gap-3 p-4 rounded-lg border text-left transition-all ${
-              mod.selected
-                ? "border-brand-500 bg-brand-50"
-                : "border-gray-200 bg-white hover:border-gray-300"
+            className={`rounded-lg border transition-all ${
+              mod.selected ? "border-brand-500 bg-brand-50" : "border-gray-200 bg-white"
             }`}
           >
-            <div
-              className={`w-5 h-5 rounded mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors ${
-                mod.selected ? "bg-brand-600 text-white" : "bg-gray-100"
-              }`}
+            <button
+              onClick={() => toggleModule(mod.id)}
+              className="w-full flex items-start gap-3 p-4 text-left"
             >
-              {mod.selected && <Check className="h-3.5 w-3.5" />}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900">{mod.name}</div>
-              {mod.description && (
-                <div className="text-xs text-gray-500 mt-0.5 line-clamp-2">{mod.description}</div>
-              )}
-              <div className="text-xs text-brand-600 font-medium mt-1">14-day free trial</div>
-            </div>
-          </button>
+              <div
+                className={`w-5 h-5 rounded mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors ${
+                  mod.selected ? "bg-brand-600 text-white" : "bg-gray-100"
+                }`}
+              >
+                {mod.selected && <Check className="h-3.5 w-3.5" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-gray-900">{mod.name}</div>
+                {mod.description && (
+                  <div className="text-xs text-gray-500 mt-0.5 line-clamp-2">{mod.description}</div>
+                )}
+              </div>
+            </button>
+            {mod.selected && (
+              <div className="px-4 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-brand-100">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Plan tier</label>
+                  <select
+                    value={mod.plan_tier}
+                    onChange={(e) => updateModulePlan(mod.id, e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                  >
+                    {PLAN_TIERS.map((p) => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Licenses (seats)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={10000}
+                    value={mod.total_seats}
+                    onChange={(e) => updateModuleSeats(mod.id, Math.max(1, Number(e.target.value) || 1))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>

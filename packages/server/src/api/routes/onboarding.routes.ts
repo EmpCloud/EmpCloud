@@ -7,7 +7,6 @@ import {
   getOnboardingStatus,
   completeStep,
   completeOnboarding,
-  skipOnboarding,
 } from "../../services/onboarding/onboarding.service.js";
 import { sendSuccess } from "../../utils/response.js";
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -44,16 +43,6 @@ router.post("/step/:step", requirePermission("org_settings:manage"), async (req:
 router.post("/complete", requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await completeOnboarding(req.user!.org_id);
-    sendSuccess(res, result);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// POST /api/v1/onboarding/skip
-router.post("/skip", requirePermission("org_settings:manage"), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await skipOnboarding(req.user!.org_id);
     sendSuccess(res, result);
   } catch (err) {
     next(err);

@@ -10,6 +10,7 @@ import { randomHex, hashToken } from "../../utils/crypto.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 import * as billingEmitter from "../billing/empcloud-webhook-emitter.js";
+import { getPricePerSeat, getOrgCurrency } from "../subscription/pricing.js";
 
 // ---------------------------------------------------------------------------
 // Step definitions
@@ -215,43 +216,74 @@ async function handleInviteTeam(orgId: number, userId: number, data: Record<stri
 // Step 4: Choose Modules
 // ---------------------------------------------------------------------------
 
-async function handleChooseModules(orgId: number, userId: number, data: Record<string, any>) {
+interface OnboardingModuleSelection {
+  module_id: number;
+  plan_tier: string;
+  total_seats: number;
+}
+
+async function handleChooseModules(orgId: number, _userId: number, data: Record<string, any>) {
   const db = getDB();
 
-  const moduleIds: number[] = data.module_ids;
-  if (!Array.isArray(moduleIds) || moduleIds.length === 0) {
-    return; // It's okay to skip module selection
+  // Accept new shape `{ modules: [...], skip_trial }`, and fall back to the
+  // legacy `{ module_ids: [...] }` shape (basic/10/14-day-trial defaults)
+  // so older clients during a rolling deploy don't 400.
+  const skipTrial: boolean = !!data.skip_trial;
+  let selections: OnboardingModuleSelection[] = [];
+
+  if (Array.isArray(data.modules) && data.modules.length > 0) {
+    selections = (data.modules as any[])
+      .filter((m) => m && typeof m.module_id === "number")
+      .map((m) => ({
+        module_id: Number(m.module_id),
+        plan_tier: typeof m.plan_tier === "string" ? m.plan_tier : "basic",
+        total_seats: Math.max(1, Number(m.total_seats) || 10),
+      }));
+  } else if (Array.isArray(data.module_ids)) {
+    selections = data.module_ids.map((id: number) => ({
+      module_id: Number(id),
+      plan_tier: "basic",
+      total_seats: 10,
+    }));
   }
 
-  for (const moduleId of moduleIds) {
-    // Check if already subscribed
+  if (selections.length === 0) return;
+
+  const currency = await getOrgCurrency(orgId);
+
+  for (const sel of selections) {
     const existing = await db("org_subscriptions")
-      .where({ organization_id: orgId, module_id: moduleId })
+      .where({ organization_id: orgId, module_id: sel.module_id })
       .whereNot({ status: "cancelled" })
       .first();
-    if (existing) continue;
+    if (existing) {
+      logger.info(`[onboarding step 4] org=${orgId} module=${sel.module_id} already subscribed (status=${existing.status}); skipping insert`);
+      continue;
+    }
 
-    // Get module info
-    const mod = await db("modules").where({ id: moduleId, is_active: true }).first();
-    if (!mod) continue;
+    const mod = await db("modules").where({ id: sel.module_id, is_active: true }).first();
+    if (!mod) {
+      logger.warn(`[onboarding step 4] org=${orgId} module=${sel.module_id} not found / inactive; skipping`);
+      continue;
+    }
 
     const now = new Date();
     const periodEnd = new Date(now);
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
-    // Create trial subscription
-    const trialEndsAt = new Date(now.getTime() + 14 * 86400000); // 14-day trial
+    const trialEndsAt = skipTrial ? null : new Date(now.getTime() + 14 * 86400000);
+    const pricePerSeat = skipTrial ? getPricePerSeat(sel.plan_tier, currency) : 0;
 
     const [subId] = await db("org_subscriptions").insert({
       organization_id: orgId,
-      module_id: moduleId,
-      plan_tier: "basic",
-      status: "trial",
-      total_seats: 10,
+      module_id: sel.module_id,
+      plan_tier: sel.plan_tier,
+      status: skipTrial ? "active" : "trial",
+      total_seats: sel.total_seats,
       used_seats: 0,
       billing_cycle: "monthly",
-      price_per_seat: 0,
-      currency: "USD",
+      price_per_seat: pricePerSeat,
+      currency,
       trial_ends_at: trialEndsAt,
       current_period_start: now,
       current_period_end: periodEnd,
@@ -259,16 +291,13 @@ async function handleChooseModules(orgId: number, userId: number, data: Record<s
       updated_at: now,
     });
 
-    // Notify emp-billing so the trial sub exists on the billing side too.
-    // Without this, the day-14 trial expiration cron can't find a matching
-    // billing subscription and no prepaid invoice is ever generated when
-    // the trial ends. Non-blocking — if billing is down the trial still
-    // gets created locally and the next emit (e.g. on seat upgrade) will
-    // re-attempt provisioning.
+    // Notify emp-billing. When skip_trial is true the billing side will
+    // generate the first prepaid invoice immediately; otherwise it mirrors
+    // the trial and waits for the trial-end webhook to invoice.
     billingEmitter
       .emitSubscriptionCreated(subId)
       .catch((err) => {
-        logger.warn(`emp-billing webhook failed for onboarding trial sub ${subId}: ${err?.message}`);
+        logger.warn(`emp-billing webhook failed for onboarding sub ${subId}: ${err?.message}`);
       });
   }
 }
@@ -362,18 +391,3 @@ export async function completeOnboarding(orgId: number) {
   return { completed: true };
 }
 
-// ---------------------------------------------------------------------------
-// Skip onboarding (mark as complete without finishing all steps)
-// ---------------------------------------------------------------------------
-
-export async function skipOnboarding(orgId: number) {
-  const db = getDB();
-
-  await db("organizations").where({ id: orgId }).update({
-    onboarding_completed: true,
-    updated_at: new Date(),
-  });
-
-  logger.info(`Onboarding skipped for org ${orgId}`);
-  return { completed: true, skipped: true };
-}
