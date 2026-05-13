@@ -180,7 +180,68 @@ export async function updateShiftAssignment(
   if (data.effective_from !== undefined) updates.effective_from = data.effective_from;
   if (data.effective_to !== undefined) updates.effective_to = data.effective_to;
 
-  await db("shift_assignments").where({ id: assignmentId }).update(updates);
+  // ── Sub-range override split ────────────────────────────────────────────
+  // When an admin clicks a single day in the schedule grid and saves the
+  // edit modal, the request lands here as a PUT that shrinks effective_from
+  // / effective_to to a tighter sub-range of the original assignment.
+  // Without splitting, the naive update below would mutate the row in
+  // place and silently destroy the surrounding tail dates — May 21 becomes
+  // the override but [05-22, NULL] from the original bulk assignment is
+  // gone, and the rest of the week visibly changes because other
+  // overlapping assignments now win the find() race in the frontend.
+  //
+  // Detect that shape and split into three rows: left tail (old shift),
+  // the override itself (whatever shift the PUT selected, new dates),
+  // right tail (old shift, possibly open-ended).
+  //
+  // This fires whether the picked shift is the same or different from the
+  // old shift. Same-shift edits are unusual (why click into the modal
+  // just to re-pick the same shift?) but the user's intent when clicking
+  // a single cell is always "this day's shift, leave the rest" — the
+  // split preserves that intent regardless of the shift dropdown value.
+  // Genuine "shorten the assignment" use cases should use DELETE on the
+  // right tail or DELETE the whole assignment, not this endpoint.
+  const oldFromStr = toDateString(assignment.effective_from);
+  const oldToStr = assignment.effective_to ? toDateString(assignment.effective_to) : null;
+  const newFromStr = data.effective_from !== undefined ? data.effective_from : oldFromStr;
+  const newToStr =
+    data.effective_to !== undefined ? (data.effective_to || null) : oldToStr;
+
+  const shrinkingLeft = newFromStr > oldFromStr;
+  const shrinkingRight =
+    newToStr !== null && (oldToStr === null || newToStr < oldToStr);
+
+  if (shrinkingLeft || shrinkingRight) {
+    await db.transaction(async (trx) => {
+      if (shrinkingLeft) {
+        await trx("shift_assignments").insert({
+          organization_id: orgId,
+          user_id: assignment.user_id,
+          shift_id: assignment.shift_id,
+          effective_from: oldFromStr,
+          effective_to: shiftPreviousDay(newFromStr),
+          created_by: assignment.created_by,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+      }
+      if (shrinkingRight) {
+        await trx("shift_assignments").insert({
+          organization_id: orgId,
+          user_id: assignment.user_id,
+          shift_id: assignment.shift_id,
+          effective_from: shiftNextDay(newToStr!),
+          effective_to: oldToStr,
+          created_by: assignment.created_by,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+      }
+      await trx("shift_assignments").where({ id: assignmentId }).update(updates);
+    });
+  } else {
+    await db("shift_assignments").where({ id: assignmentId }).update(updates);
+  }
 
   return db("shift_assignments as sa")
     .join("shifts as s", "sa.shift_id", "s.id")
@@ -188,6 +249,31 @@ export async function updateShiftAssignment(
     .where("sa.id", assignmentId)
     .select("sa.*", "s.name as shift_name", "u.first_name", "u.last_name", "u.email")
     .first();
+}
+
+function toDateString(d: Date | string): string {
+  if (typeof d === "string") return d.slice(0, 10);
+  // mysql2 returns DATE columns as a JS Date at midnight LOCAL time.
+  // toISOString() would shift it by the TZ offset and silently move the
+  // day backward in IST (and forward in time zones west of UTC), which
+  // would make the left/right tails of the sub-range split land on the
+  // wrong day. Use the local-component accessors instead.
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+
+function shiftPreviousDay(yyyyMmDd: string): string {
+  const d = new Date(yyyyMmDd + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function shiftNextDay(yyyyMmDd: string): string {
+  const d = new Date(yyyyMmDd + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
 }
 
 // ---------------------------------------------------------------------------
