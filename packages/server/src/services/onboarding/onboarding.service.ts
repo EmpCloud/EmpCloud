@@ -274,22 +274,47 @@ async function handleChooseModules(orgId: number, _userId: number, data: Record<
     const trialEndsAt = skipTrial ? null : new Date(now.getTime() + 14 * 86400000);
     const pricePerSeat = skipTrial ? getPricePerSeat(sel.plan_tier, currency) : 0;
 
-    const [subId] = await db("org_subscriptions").insert({
-      organization_id: orgId,
-      module_id: sel.module_id,
-      plan_tier: sel.plan_tier,
-      status: skipTrial ? "active" : "trial",
-      total_seats: sel.total_seats,
-      used_seats: 0,
-      billing_cycle: "monthly",
-      price_per_seat: pricePerSeat,
-      currency,
-      trial_ends_at: trialEndsAt,
-      current_period_start: now,
-      current_period_end: periodEnd,
-      created_at: now,
-      updated_at: now,
-    });
+    // Race-safe insert. If Cloudflare retries the onboarding POST or the
+    // admin double-clicks Finish, two completeStep(4) calls run in parallel
+    // and both pass the existence-check above. Without this guard both
+    // would INSERT and emit, producing duplicate billing subscriptions and
+    // invoices (which surfaced on prod for orgs 18 and 19 as two invoices
+    // per single user click). The org_subscriptions table has
+    // unique(organization_id, module_id) from migration 002, so the
+    // race-loser hits ER_DUP_ENTRY (errno 1062). Swallow that one error,
+    // load the winner's row, and emit once with the winning subId — both
+    // request handlers thus notify emp-billing about the *same* row, which
+    // emp-billing then dedupes via empcloud_subscription_id idempotency.
+    let subId: number;
+    try {
+      const [insertedId] = await db("org_subscriptions").insert({
+        organization_id: orgId,
+        module_id: sel.module_id,
+        plan_tier: sel.plan_tier,
+        status: skipTrial ? "active" : "trial",
+        total_seats: sel.total_seats,
+        used_seats: 0,
+        billing_cycle: "monthly",
+        price_per_seat: pricePerSeat,
+        currency,
+        trial_ends_at: trialEndsAt,
+        current_period_start: now,
+        current_period_end: periodEnd,
+        created_at: now,
+        updated_at: now,
+      });
+      subId = insertedId;
+    } catch (err: any) {
+      if (err?.code === "ER_DUP_ENTRY" || err?.errno === 1062) {
+        const winner = await db("org_subscriptions")
+          .where({ organization_id: orgId, module_id: sel.module_id })
+          .first();
+        if (!winner) throw err;
+        subId = winner.id;
+      } else {
+        throw err;
+      }
+    }
 
     // Notify emp-billing. When skip_trial is true the billing side will
     // generate the first prepaid invoice immediately; otherwise it mirrors

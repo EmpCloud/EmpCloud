@@ -132,23 +132,41 @@ export async function createSubscription(
       updated_at: now,
     });
   } else {
-    // Fresh subscription — insert new row
-    [id] = await db("org_subscriptions").insert({
-      organization_id: orgId,
-      module_id: data.module_id,
-      plan_tier: data.plan_tier,
-      status: trialEndsAt ? "trial" : "active",
-      total_seats: data.total_seats,
-      used_seats: 0,
-      billing_cycle: data.billing_cycle || "monthly",
-      price_per_seat: pricePerSeat,
-      currency,
-      trial_ends_at: trialEndsAt,
-      current_period_start: now,
-      current_period_end: periodEnd,
-      created_at: now,
-      updated_at: now,
-    });
+    // Fresh subscription — insert new row.
+    //
+    // Race-safe: if a parallel request (Cloudflare retry, double-click, or
+    // tab-spam) passes the existence check above at the same time, both
+    // would attempt to INSERT. The unique(organization_id, module_id)
+    // constraint from migration 002 lets the DB pick a winner; the loser
+    // gets ER_DUP_ENTRY. We treat that as a benign collision: rethrow as
+    // ConflictError so the caller sees the same outcome they would have
+    // gotten if their check had been sequenced after the winner's commit.
+    // Without this, both paths silently INSERT… wait, they can't — but
+    // the request that loses still surfaces a raw 500. Mapping it back to
+    // the standard 409 keeps the API contract clean.
+    try {
+      [id] = await db("org_subscriptions").insert({
+        organization_id: orgId,
+        module_id: data.module_id,
+        plan_tier: data.plan_tier,
+        status: trialEndsAt ? "trial" : "active",
+        total_seats: data.total_seats,
+        used_seats: 0,
+        billing_cycle: data.billing_cycle || "monthly",
+        price_per_seat: pricePerSeat,
+        currency,
+        trial_ends_at: trialEndsAt,
+        current_period_start: now,
+        current_period_end: periodEnd,
+        created_at: now,
+        updated_at: now,
+      });
+    } catch (err: any) {
+      if (err?.code === "ER_DUP_ENTRY" || err?.errno === 1062) {
+        throw new ConflictError("Organization already has an active subscription for this module");
+      }
+      throw err;
+    }
   }
 
   // --- emp-billing integration (non-blocking) ---

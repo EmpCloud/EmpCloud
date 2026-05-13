@@ -176,11 +176,19 @@ export async function getOrCreateBillingClientId(orgId: number): Promise<string 
     return null;
   }
 
-  // Get the org owner's email
-  const owner = await db("users")
-    .where({ organization_id: orgId, role: "owner" })
-    .first();
-  const email = owner?.email || org.contact_email || "billing@empcloud.com";
+  // Use the synthetic email `org-{orgId}@empcloud.internal`. This is the SAME
+  // email the emp-billing webhook handler uses inside its findOrCreateClient
+  // lookup (empcloud-webhook.routes.ts:findOrCreateClient). The two paths
+  // previously diverged — autoProvisionClient sent the org owner's real
+  // email, the webhook looked up by the synthetic one — so every org
+  // ended up with TWO billing clients: one created on first BillingPage
+  // load, another on first subscription.created webhook. Invoices landed
+  // on the second client, the mapping pointed at the first, and the UI
+  // returned an empty list.
+  //
+  // The org's real name still goes into the client's name field for human
+  // readability; only the lookup key (email) is forced synthetic.
+  const email = `org-${orgId}@empcloud.internal`;
 
   return autoProvisionClient(orgId, org.name, email);
 }
