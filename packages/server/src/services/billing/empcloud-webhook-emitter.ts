@@ -41,6 +41,7 @@ interface SubscriptionRow {
   currency: string | null;
   current_period_start?: Date | string | null;
   current_period_end?: Date | string | null;
+  trial_ends_at?: Date | string | null;
 }
 
 interface ModuleRow {
@@ -128,8 +129,10 @@ function buildSubscriptionPayload(
     price_per_seat: sub.price_per_seat,
     currency: sub.currency || "INR",
     billing_cycle: sub.billing_cycle,
+    status: sub.status,
     period_start: toIsoDate(sub.current_period_start),
     period_end: toIsoDate(sub.current_period_end),
+    trial_end: toIsoDate(sub.trial_ends_at),
   };
 }
 
