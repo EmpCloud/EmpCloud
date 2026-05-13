@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
+import { usePermissions } from "@/lib/use-permissions";
 import {
   Shield,
   Clock,
@@ -46,6 +47,12 @@ function getStatusBadge(status: string): { bg: string; text: string; label: stri
 
 export default function ProbationPage() {
   const queryClient = useQueryClient();
+  const { has } = usePermissions();
+  // Manage actions (confirm / extend) require probation:manage. Users with
+  // only probation:view should be able to read the page but not act on it.
+  // Backend enforces the same on the routes — this just hides the buttons
+  // so view-only users don't see a 403 when they click.
+  const canManage = has("probation:manage");
   const [confirmModal, setConfirmModal] = useState<any>(null);
   const [extendModal, setExtendModal] = useState<any>(null);
   const [extendDate, setExtendDate] = useState("");
@@ -325,7 +332,7 @@ export default function ProbationPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        {emp.probation_status === "confirmed" ? (
+                        {emp.probation_status === "confirmed" || !canManage ? (
                           <span className="text-xs text-gray-400">-</span>
                         ) : (
                           <div className="flex items-center justify-end gap-2">

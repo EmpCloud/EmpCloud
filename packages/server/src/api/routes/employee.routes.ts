@@ -375,7 +375,13 @@ router.get("/probation/confirmed-this-month", authenticate, requirePermission("p
 });
 
 // PUT /api/v1/employees/:id/probation/confirm — confirm probation
-router.put("/:id/probation/confirm", authenticate, requirePermission("probation:manage", "employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
+// Manage routes require probation:manage specifically — no legacy
+// employees:edit_all fallback. Customers who grant a custom role
+// probation:view alone shouldn't have it silently grandfathered into
+// "manage" just because they also hold the generic profile-edit
+// permission. The read endpoints above still accept the legacy
+// employees:view_all so audit-type roles keep working unchanged.
+router.put("/:id/probation/confirm", authenticate, requirePermission("probation:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await probationService.confirmProbation(
       req.user!.org_id,
@@ -398,7 +404,7 @@ router.put("/:id/probation/confirm", authenticate, requirePermission("probation:
 });
 
 // PUT /api/v1/employees/:id/probation/extend — extend probation
-router.put("/:id/probation/extend", authenticate, requirePermission("probation:manage", "employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/extend", authenticate, requirePermission("probation:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { new_end_date, reason } = req.body;
     if (!new_end_date) throw new ValidationError("new_end_date is required");
