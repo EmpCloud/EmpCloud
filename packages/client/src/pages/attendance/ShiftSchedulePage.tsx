@@ -893,17 +893,21 @@ export default function ShiftSchedulePage() {
                                 <span className="hidden group-hover:inline-flex items-center gap-0.5">
                                   <button
                                     onClick={() =>
+                                      // Pre-fill the modal with the day the
+                                      // user clicked, not the full assignment
+                                      // range. Clicking the pencil on a single
+                                      // cell almost always means "override this
+                                      // one day" — pre-selecting the assignment's
+                                      // whole range forced the user to manually
+                                      // shrink both dates every time. The
+                                      // backend's sub-range split logic
+                                      // (shift.service.ts:updateShiftAssignment)
+                                      // handles preserving the surrounding range.
                                       setEditAssignment({
                                         id: assignment.assignment_id,
                                         shift_id: assignment.shift_id,
-                                        effective_from: typeof assignment.effective_from === "string"
-                                          ? assignment.effective_from.split("T")[0]
-                                          : new Date(assignment.effective_from).toISOString().split("T")[0],
-                                        effective_to: assignment.effective_to
-                                          ? typeof assignment.effective_to === "string"
-                                            ? assignment.effective_to.split("T")[0]
-                                            : new Date(assignment.effective_to).toISOString().split("T")[0]
-                                          : null,
+                                        effective_from: date,
+                                        effective_to: date,
                                       })
                                     }
                                     className="text-gray-400 hover:text-brand-600 p-0.5"
