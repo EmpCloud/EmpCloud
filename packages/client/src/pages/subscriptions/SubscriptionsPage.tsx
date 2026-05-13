@@ -31,6 +31,18 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
   const hasChanges = planTier !== subscription.plan_tier || totalSeats !== subscription.total_seats || billingCycle !== subscription.billing_cycle;
   const seatsReduced = totalSeats < subscription.used_seats;
 
+  // Trial-end detection — must match server-side rank logic in
+  // EmpCloud/packages/server/src/services/subscription/trial-expiration.service.ts.
+  // Seat increase OR tier upgrade OR cycle lengthening ends the trial; pure
+  // downgrades / cycle shortening leave the trial intact.
+  const TIER_RANK: Record<string, number> = { free: 0, basic: 1, professional: 2, enterprise: 3 };
+  const CYCLE_RANK: Record<string, number> = { monthly: 0, quarterly: 1, semi_annual: 2, annual: 3 };
+  const isOnTrial = subscription.status === "trial";
+  const seatsIncreasing = totalSeats > subscription.total_seats;
+  const tierUpgrading = (TIER_RANK[planTier] ?? 0) > (TIER_RANK[subscription.plan_tier] ?? 0);
+  const cycleLengthening = (CYCLE_RANK[billingCycle] ?? 0) > (CYCLE_RANK[subscription.billing_cycle] ?? 0);
+  const willEndTrial = isOnTrial && (seatsIncreasing || tierUpgrading || cycleLengthening);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
@@ -137,6 +149,19 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
                   <li>Cycle: <span className="line-through">{subscription.billing_cycle}</span> → <span className="font-medium">{billingCycle}</span></li>
                 )}
               </ul>
+            </div>
+          )}
+
+          {/* Trial-end warning */}
+          {willEndTrial && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
+              <p className="font-medium text-red-800 mb-1">⚠️ This will end your free trial</p>
+              <p className="text-red-700">
+                {seatsIncreasing && "Adding seats"}
+                {!seatsIncreasing && tierUpgrading && "Upgrading your plan tier"}
+                {!seatsIncreasing && !tierUpgrading && cycleLengthening && "Switching to a longer billing cycle"}
+                {" "}during the trial will activate the subscription immediately. An invoice for the first billing period will be generated and due today.
+              </p>
             </div>
           )}
         </div>
@@ -298,6 +323,27 @@ export default function SubscriptionsPage() {
                   )}
                 </div>
               </div>
+
+              {/* Trial countdown / expiry banner */}
+              {sub.status === "trial" && sub.trial_ends_at && (() => {
+                const trialEnd = new Date(sub.trial_ends_at);
+                const msLeft = trialEnd.getTime() - Date.now();
+                const daysLeft = Math.ceil(msLeft / 86400000);
+                if (daysLeft <= 0) {
+                  return (
+                    <div className="mt-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
+                      Trial expired — converting to active subscription shortly. First invoice will be issued today.
+                    </div>
+                  );
+                }
+                const tone = daysLeft <= 3 ? "amber" : "blue";
+                return (
+                  <div className={`mt-3 ${tone === "amber" ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-blue-50 border-blue-200 text-blue-700"} border rounded-lg px-3 py-2 text-xs flex items-center gap-1.5`}>
+                    <Calendar className="h-3.5 w-3.5" />
+                    Trial ends in {daysLeft} day{daysLeft === 1 ? "" : "s"} ({trialEnd.toLocaleDateString()})
+                  </div>
+                );
+              })()}
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-100">
                 <div>
