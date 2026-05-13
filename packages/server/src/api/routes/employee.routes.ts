@@ -342,7 +342,7 @@ router.get("/headcount", authenticate, requirePermission("employees:view_all"), 
 // =========================================================================
 
 // GET /api/v1/employees/probation — list on probation
-router.get("/probation", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation", authenticate, requirePermission("probation:view", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getEmployeesOnProbation(req.user!.org_id);
     sendSuccess(res, data);
@@ -350,7 +350,7 @@ router.get("/probation", authenticate, requirePermission("employees:view_all"), 
 });
 
 // GET /api/v1/employees/probation/dashboard — stats
-router.get("/probation/dashboard", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/dashboard", authenticate, requirePermission("probation:view", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getProbationDashboard(req.user!.org_id);
     sendSuccess(res, data);
@@ -358,7 +358,7 @@ router.get("/probation/dashboard", authenticate, requirePermission("employees:vi
 });
 
 // GET /api/v1/employees/probation/upcoming — upcoming confirmations
-router.get("/probation/upcoming", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/upcoming", authenticate, requirePermission("probation:view", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const days = parseInt(req.query.days as string, 10) || 30;
     const data = await probationService.getUpcomingConfirmations(req.user!.org_id, days);
@@ -367,7 +367,7 @@ router.get("/probation/upcoming", authenticate, requirePermission("employees:vie
 });
 
 // #1419 — GET /api/v1/employees/probation/confirmed-this-month
-router.get("/probation/confirmed-this-month", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/probation/confirmed-this-month", authenticate, requirePermission("probation:view", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await probationService.getConfirmedThisMonth(req.user!.org_id);
     sendSuccess(res, data);
@@ -375,7 +375,7 @@ router.get("/probation/confirmed-this-month", authenticate, requirePermission("e
 });
 
 // PUT /api/v1/employees/:id/probation/confirm — confirm probation
-router.put("/:id/probation/confirm", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/confirm", authenticate, requirePermission("probation:manage", "employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await probationService.confirmProbation(
       req.user!.org_id,
@@ -398,7 +398,7 @@ router.put("/:id/probation/confirm", authenticate, requirePermission("employees:
 });
 
 // PUT /api/v1/employees/:id/probation/extend — extend probation
-router.put("/:id/probation/extend", authenticate, requirePermission("employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/probation/extend", authenticate, requirePermission("probation:manage", "employees:edit_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { new_end_date, reason } = req.body;
     if (!new_end_date) throw new ValidationError("new_end_date is required");

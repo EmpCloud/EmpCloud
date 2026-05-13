@@ -126,7 +126,7 @@ export const adminNavItems: NavItem[] = [
   { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt, requiredPermissions: ["billing:view", "billing:manage"] },
   { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, requiredPermissions: ["employees:view_all", "employees:edit_all", "employees:invite"], children: [
     { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact, requiredPermissions: ["employees:view_all"] },
-    { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck, requiredPermissions: ["employees:view_all", "employees:edit_all"] },
+    { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck, requiredPermissions: ["probation:view", "probation:manage", "employees:view_all", "employees:edit_all"] },
     { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
   ]},
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI", requiredPermissions: ["chatbot:use"] },
