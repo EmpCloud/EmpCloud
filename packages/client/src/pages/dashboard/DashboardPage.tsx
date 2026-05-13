@@ -58,17 +58,6 @@ export default function DashboardPage() {
   const { data: widgets, isLoading: widgetsLoading } = useDashboardWidgets();
   const { data: billingSummary, isLoading: billingLoading } = useBillingOverviewSummary();
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
-  // Show a dedicated SSO entry to EMP Monitor as Admin when the user holds
-  // every monitor:* permission. Skips the regular "subscribed module"
-  // requirement -- a Monitor admin should be able to land in the admin UI
-  // even if their EmpCloud-side subscription isn't active yet.
-  const isMonitorAdmin = hasAll(
-    "monitor:view_own",
-    "monitor:view_team",
-    "monitor:view_all",
-    "monitor:manage_settings",
-  );
-
   const activeSubscriptions: Subscription[] = subscriptions?.filter(
     (s: Subscription) => s.status === "active" || s.status === "trial"
   ) || [];
@@ -82,6 +71,21 @@ export default function DashboardPage() {
   const moduleBaseUrls = new Map<string, string>(
     modules?.filter((m: Module) => m.base_url).map((m: Module) => [m.slug, m.base_url!]) || []
   );
+
+  // Show a dedicated SSO entry to EMP Monitor as Admin when:
+  //   1. the user holds every monitor:* permission, AND
+  //   2. the org actually has an active emp-monitor subscription.
+  // Previously this only checked permissions, so a super_admin in an org
+  // that hadn't subscribed to Monitor still saw the "Login as Admin" banner
+  // -- clicking it would land them on a SSO target the customer is not
+  // entitled to.
+  const hasMonitorPerms = hasAll(
+    "monitor:view_own",
+    "monitor:view_team",
+    "monitor:view_all",
+    "monitor:manage_settings",
+  );
+  const isMonitorAdmin = hasMonitorPerms && subscribedSlugs.has("emp-monitor");
 
   // Launch a module with a fresh SSO token. Attempts to refresh the EmpCloud
   // access token first so the SSO exchange on the target module always succeeds.

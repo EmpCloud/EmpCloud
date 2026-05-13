@@ -90,6 +90,10 @@ export const PERMISSIONS: PermissionDef[] = [
   p("employees:deactivate", "Deactivate employees", "Employees", "Disable employee accounts"),
   p("employees:change_role", "Change employee role", "Employees", "Modify the system role assigned to a user"),
 
+  // ── Probation ──
+  p("probation:view", "View probation tracking", "Probation", "See who is on probation, due dates, dashboard stats"),
+  p("probation:manage", "Manage probation", "Probation", "Confirm probation, extend probation, mark fail"),
+
   // ── Positions ──
   p("positions:view", "View positions", "Positions", "Browse the position catalogue"),
   p("positions:manage", "Manage positions", "Positions", "Create / edit / archive positions"),
