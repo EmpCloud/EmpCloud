@@ -115,10 +115,28 @@ async function loadModule(moduleId: number): Promise<ModuleRow | null> {
   return (row as ModuleRow) ?? null;
 }
 
-function buildSubscriptionPayload(
+// Resolve the deliverable email for an org. Used by the webhook emitter
+// so the billing-side handler can store / self-heal the real address.
+// Mirrors the resolution in getOrCreateBillingClientId — owner email
+// first, then contact_email, then a synthetic fallback (sends but isn't
+// deliverable; only hit for orgs missing both an owner and a
+// contact_email, which is an edge case we want to surface in billing).
+async function resolveAdminEmail(organizationId: number): Promise<{ email: string; orgName: string }> {
+  const db = getDB();
+  const org = await db("organizations").where({ id: organizationId }).first();
+  const owner = await db("users")
+    .where({ organization_id: organizationId, role: "owner" })
+    .first();
+  const email = owner?.email || org?.contact_email || `org-${organizationId}@empcloud.internal`;
+  const orgName = org?.name || `EmpCloud Org #${organizationId}`;
+  return { email, orgName };
+}
+
+async function buildSubscriptionPayload(
   sub: SubscriptionRow,
   mod: ModuleRow | null,
-): Record<string, unknown> {
+): Promise<Record<string, unknown>> {
+  const { email: adminEmail, orgName } = await resolveAdminEmail(sub.organization_id);
   return {
     organization_id: sub.organization_id,
     subscription_id: sub.id,
@@ -133,6 +151,8 @@ function buildSubscriptionPayload(
     period_start: toIsoDate(sub.current_period_start),
     period_end: toIsoDate(sub.current_period_end),
     trial_end: toIsoDate(sub.trial_ends_at),
+    admin_email: adminEmail,
+    org_name: orgName,
   };
 }
 
@@ -215,7 +235,7 @@ export async function emitSubscriptionCreated(
     return null;
   }
   const mod = await loadModule(sub.module_id);
-  const payload = buildSubscriptionPayload(sub, mod);
+  const payload = await buildSubscriptionPayload(sub, mod);
   const result = await postWebhook("subscription.created", payload);
   if (result) {
     await persistMappings(sub, result);
@@ -238,7 +258,7 @@ export async function emitSubscriptionUpdated(
     return null;
   }
   const mod = await loadModule(sub.module_id);
-  return postWebhook("subscription.updated", buildSubscriptionPayload(sub, mod));
+  return postWebhook("subscription.updated", await buildSubscriptionPayload(sub, mod));
 }
 
 export async function emitSubscriptionCancelled(
@@ -250,7 +270,7 @@ export async function emitSubscriptionCancelled(
     .first()) as SubscriptionRow | undefined;
   if (!sub) return null;
   const mod = await loadModule(sub.module_id);
-  return postWebhook("subscription.cancelled", buildSubscriptionPayload(sub, mod));
+  return postWebhook("subscription.cancelled", await buildSubscriptionPayload(sub, mod));
 }
 
 /**
