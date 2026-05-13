@@ -123,7 +123,10 @@ export async function autoProvisionClient(
   // Resolve the org's currency
   const currency = await getOrgCurrency(orgId);
 
-  // Billing returns { client: { id, ... }, isNew: boolean }
+  // Send `metadata.empcloud_org_id` so the billing side can look the
+  // client up by a stable identifier instead of by email — this is what
+  // converges the auto-provision path with the webhook handler's
+  // findOrCreateClient on the same client row.
   const result = await billingFetch<{ client?: { id: string }; id?: string }>(
     "POST",
     "/clients/auto-provision",
@@ -131,6 +134,7 @@ export async function autoProvisionClient(
       name: orgName,
       email: orgEmail,
       currency,
+      metadata: { empcloud_org_id: orgId },
     }
   );
 
@@ -176,19 +180,17 @@ export async function getOrCreateBillingClientId(orgId: number): Promise<string 
     return null;
   }
 
-  // Use the synthetic email `org-{orgId}@empcloud.internal`. This is the SAME
-  // email the emp-billing webhook handler uses inside its findOrCreateClient
-  // lookup (empcloud-webhook.routes.ts:findOrCreateClient). The two paths
-  // previously diverged — autoProvisionClient sent the org owner's real
-  // email, the webhook looked up by the synthetic one — so every org
-  // ended up with TWO billing clients: one created on first BillingPage
-  // load, another on first subscription.created webhook. Invoices landed
-  // on the second client, the mapping pointed at the first, and the UI
-  // returned an empty list.
-  //
-  // The org's real name still goes into the client's name field for human
-  // readability; only the lookup key (email) is forced synthetic.
-  const email = `org-${orgId}@empcloud.internal`;
+  // Use the org owner's REAL email — this is what SendGrid sends invoices
+  // to. The previous synthetic `org-{N}@empcloud.internal` address made
+  // the two provisioning paths (BillingPage + webhook) converge on the
+  // same row by lookup-key, but invoices then went to a domain nobody
+  // owns. The webhook handler in emp-billing now converges via
+  // `customFields.empcloud_org_id` instead, so we're free to use the
+  // real address here without re-creating duplicate clients.
+  const owner = await db("users")
+    .where({ organization_id: orgId, role: "owner" })
+    .first();
+  const email = owner?.email || org.contact_email || `org-${orgId}@empcloud.internal`;
 
   return autoProvisionClient(orgId, org.name, email);
 }
