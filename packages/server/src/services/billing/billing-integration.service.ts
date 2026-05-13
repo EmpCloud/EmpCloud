@@ -98,11 +98,28 @@ async function billingFetchRaw(
 // Client provisioning
 // ---------------------------------------------------------------------------
 
+// Short-lived in-memory backoff so a broken emp-billing doesn't get hit on
+// every BillingPage load. Cleared on process restart and on first success.
+const PROVISION_FAILURE_TTL_MS = 5 * 60 * 1000;
+const provisionFailureCache = new Map<number, number>();
+
+function isProvisionRecentlyFailed(orgId: number): boolean {
+  const ts = provisionFailureCache.get(orgId);
+  if (!ts) return false;
+  if (Date.now() - ts > PROVISION_FAILURE_TTL_MS) {
+    provisionFailureCache.delete(orgId);
+    return false;
+  }
+  return true;
+}
+
 export async function autoProvisionClient(
   orgId: number,
   orgName: string,
   orgEmail: string
 ): Promise<string | null> {
+  if (isProvisionRecentlyFailed(orgId)) return null;
+
   // Resolve the org's currency
   const currency = await getOrgCurrency(orgId);
 
@@ -118,7 +135,11 @@ export async function autoProvisionClient(
   );
 
   const clientId = result?.client?.id ?? result?.id;
-  if (!clientId) return null;
+  if (!clientId) {
+    provisionFailureCache.set(orgId, Date.now());
+    return null;
+  }
+  provisionFailureCache.delete(orgId);
 
   const db = getDB();
   // Upsert the mapping
