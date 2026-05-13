@@ -145,11 +145,25 @@ async function persistMappings(
   const billingSubscriptionId = response.subscription_id;
   const billingPlanId = response.plan_id ?? null;
 
+  // Upsert the client mapping — always reflect the latest billing-side
+  // client_id returned by the webhook. The previous insert-only behaviour
+  // pinned the mapping to whatever the FIRST code path created (often the
+  // old autoProvisionClient call using the owner's real email), and any
+  // subsequent webhook that auto-provisioned a client under the synthetic
+  // email left the mapping pointing at an orphan client with no invoices.
+  // Upserting closes that loop: the next webhook for an affected org
+  // updates the mapping to the canonical billing client.
   if (billingClientId) {
     const existingClient = await db("billing_client_mappings")
       .where({ organization_id: sub.organization_id })
       .first();
-    if (!existingClient) {
+    if (existingClient) {
+      if (existingClient.billing_client_id !== billingClientId) {
+        await db("billing_client_mappings")
+          .where({ organization_id: sub.organization_id })
+          .update({ billing_client_id: billingClientId });
+      }
+    } else {
       await db("billing_client_mappings").insert({
         organization_id: sub.organization_id,
         billing_client_id: billingClientId,
