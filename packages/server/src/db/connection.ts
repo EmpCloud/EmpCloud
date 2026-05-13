@@ -19,20 +19,28 @@ export async function initDB(): Promise<Knex> {
       user: config.db.user,
       password: config.db.password,
       database: config.db.name,
-      // Return DATE / DATETIME / TIMESTAMP columns as raw strings instead
-      // of JS Date objects. mysql2's default parses DATE as a Date at
-      // midnight LOCAL time, which then ISO-serializes shifted by the
-      // server TZ offset — so a row with effective_from = '2026-05-15'
-      // shows up over the wire as "2026-05-14T18:30:00.000Z" on an IST
-      // server. Every frontend that does .slice(0, 10) on the ISO string
-      // to find the YYYY-MM-DD then renders the wrong day. Production
-      // (UTC server) gets away with it because midnight UTC = midnight
-      // UTC, but IST dev servers don't. Confirmed safe across the
-      // codebase: no service or route calls methods (.toISOString,
-      // .getTime, etc.) directly on date columns — everything either
-      // compares as strings or re-wraps in `new Date(...)` which accepts
-      // both Date and string inputs.
-      dateStrings: true,
+      // Return DATE columns as raw "YYYY-MM-DD" strings, but leave
+      // DATETIME / TIMESTAMP alone (still come back as JS Date objects).
+      //
+      // Why DATE-only: a DATE has no time component, so mysql2's default
+      // of parsing it as midnight LOCAL time causes a TZ-offset shift on
+      // any server not in UTC — a row stored as 2026-05-15 arrived at the
+      // client as "2026-05-14T18:30:00.000Z" on IST servers, breaking
+      // schedule-grid rendering (#2044).
+      //
+      // Why NOT DATETIME / TIMESTAMP: those carry meaningful time
+      // components. The frontend was built around receiving them as ISO
+      // strings (e.g. attendance check_in display via `new Date(str)
+      // .toLocaleTimeString()`). Returning them as raw "YYYY-MM-DD
+      // HH:MM:SS" strings drops the implicit UTC parsing and made
+      // check-in display 5h30m off on IST servers. Keep the Date-object
+      // path for these so toISOString() still emits a proper Z-suffixed
+      // string the browser can re-parse correctly.
+      //
+      // dateStrings: string[] is valid at runtime but missing from Knex's
+      // typings — casting through unknown bypasses without disabling
+      // strict null checks anywhere else.
+      dateStrings: ["DATE"] as unknown as boolean,
     },
     pool: { min: 2, max: 20 },
     migrations: {
