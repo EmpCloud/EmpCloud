@@ -9,6 +9,7 @@ import { logger } from "../../utils/logger.js";
 import { randomHex, hashToken } from "../../utils/crypto.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
+import * as billingEmitter from "../billing/empcloud-webhook-emitter.js";
 
 // ---------------------------------------------------------------------------
 // Step definitions
@@ -241,7 +242,7 @@ async function handleChooseModules(orgId: number, userId: number, data: Record<s
     // Create trial subscription
     const trialEndsAt = new Date(now.getTime() + 14 * 86400000); // 14-day trial
 
-    await db("org_subscriptions").insert({
+    const [subId] = await db("org_subscriptions").insert({
       organization_id: orgId,
       module_id: moduleId,
       plan_tier: "basic",
@@ -257,6 +258,18 @@ async function handleChooseModules(orgId: number, userId: number, data: Record<s
       created_at: now,
       updated_at: now,
     });
+
+    // Notify emp-billing so the trial sub exists on the billing side too.
+    // Without this, the day-14 trial expiration cron can't find a matching
+    // billing subscription and no prepaid invoice is ever generated when
+    // the trial ends. Non-blocking — if billing is down the trial still
+    // gets created locally and the next emit (e.g. on seat upgrade) will
+    // re-attempt provisioning.
+    billingEmitter
+      .emitSubscriptionCreated(subId)
+      .catch((err) => {
+        logger.warn(`emp-billing webhook failed for onboarding trial sub ${subId}: ${err?.message}`);
+      });
   }
 }
 
