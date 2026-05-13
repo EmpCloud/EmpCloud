@@ -27,6 +27,9 @@ export async function handleWebhook(
     case "payment.received":
       await handlePaymentReceived(data, orgId);
       break;
+    case "subscription.renewed":
+      await handleSubscriptionRenewed(data, orgId);
+      break;
     case "subscription.cancelled":
       await handleSubscriptionCancelled(data, orgId);
       break;
@@ -39,6 +42,77 @@ export async function handleWebhook(
     default:
       logger.warn(`Unhandled billing webhook event: ${event}`);
   }
+}
+
+// ---------------------------------------------------------------------------
+// subscription.renewed
+//
+// Fires from emp-billing's daily renewal cron when a subscription rolls into
+// its next billing period. Without this handler the EmpCloud-side period
+// dates (org_subscriptions.current_period_*) stay frozen at the old period
+// and every downstream consumer that reads them — monitor's pack.expiry
+// banner, payroll's billing summary, the v1/SSO license sync — keeps
+// showing stale "expired N days ago" data even though billing has moved on.
+// ---------------------------------------------------------------------------
+
+async function handleSubscriptionRenewed(
+  data: Record<string, any>,
+  orgId?: number,
+): Promise<void> {
+  const db = getDB();
+
+  const billingSubId = data.subscriptionId || data.subscription_id || data.id;
+  if (!billingSubId) {
+    logger.warn("subscription.renewed: missing subscription id in payload");
+    return;
+  }
+
+  const mapping = await db("billing_subscription_mappings")
+    .where({ billing_subscription_id: String(billingSubId) })
+    .first();
+
+  if (!mapping) {
+    logger.warn(`subscription.renewed: no mapping for billing sub ${billingSubId} — ignoring`);
+    return;
+  }
+
+  const sub = data.subscription || {};
+  const periodStart = sub.currentPeriodStart || sub.current_period_start || data.currentPeriodStart || data.current_period_start;
+  const periodEnd = sub.currentPeriodEnd || sub.current_period_end || data.currentPeriodEnd || data.current_period_end;
+  const nextBillingDate = sub.nextBillingDate || sub.next_billing_date || data.nextBillingDate || data.next_billing_date;
+
+  const update: Record<string, unknown> = { updated_at: new Date() };
+  if (periodStart) update.current_period_start = new Date(periodStart);
+  if (periodEnd) update.current_period_end = new Date(periodEnd);
+  if (nextBillingDate) update.next_billing_date = new Date(nextBillingDate);
+
+  // Reset status from past_due → active. A successful renewal cleared
+  // whatever invoice was overdue; the dunning state on the empcloud side
+  // should follow billing's lead.
+  await db("org_subscriptions")
+    .where({ id: mapping.cloud_subscription_id })
+    .whereIn("status", ["past_due", "suspended"])
+    .update({ ...update, status: "active" });
+
+  // For active / trial rows, just advance the period — don't override status.
+  await db("org_subscriptions")
+    .where({ id: mapping.cloud_subscription_id })
+    .whereIn("status", ["active", "trial"])
+    .update(update);
+
+  logger.info(`subscription.renewed: advanced period for cloud sub ${mapping.cloud_subscription_id}`, {
+    periodStart,
+    periodEnd,
+    nextBillingDate,
+  });
+
+  await logAudit({
+    organizationId: orgId ?? mapping.organization_id ?? null,
+    action: AuditAction.SUBSCRIPTION_UPDATED,
+    resourceType: "subscription",
+    resourceId: String(billingSubId),
+    details: { webhook_event: "subscription.renewed", ...data },
+  });
 }
 
 // ---------------------------------------------------------------------------
