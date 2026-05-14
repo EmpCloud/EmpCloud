@@ -82,18 +82,45 @@ router.get("/invoices/:id/pdf", authenticate, requirePermission("billing:view", 
 // POST /api/v1/billing/pay — Create a payment checkout session
 router.post("/pay", authenticate, requirePermission("billing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { invoiceId, gateway = "stripe" } = req.body;
+    const { invoiceId, gateway = "stripe", returnUrl } = req.body;
     if (!invoiceId) {
       sendError(res, 400, "VALIDATION_ERROR", "invoiceId is required");
       return;
     }
 
-    const result = await billingIntegration.createPaymentOrder(invoiceId, gateway);
+    const result = await billingIntegration.createPaymentOrder(
+      invoiceId,
+      gateway,
+      typeof returnUrl === "string" ? returnUrl : undefined,
+    );
     if (!result) {
       sendError(res, 502, "BILLING_UNAVAILABLE", "Could not create payment session. Billing service may be unavailable.");
       return;
     }
 
+    sendSuccess(res, result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/billing/verify-payment — Verify a gateway payment (Razorpay inline)
+router.post("/verify-payment", authenticate, requirePermission("billing:manage"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { invoiceId, gateway, gatewayOrderId, gatewayPaymentId, gatewaySignature } = req.body;
+    if (!invoiceId || !gateway || !gatewayOrderId || !gatewayPaymentId) {
+      sendError(res, 400, "VALIDATION_ERROR", "invoiceId, gateway, gatewayOrderId, and gatewayPaymentId are required");
+      return;
+    }
+    const result = await billingIntegration.verifyPayment(invoiceId, gateway, {
+      gatewayOrderId,
+      gatewayPaymentId,
+      gatewaySignature,
+    });
+    if (!result) {
+      sendError(res, 502, "BILLING_UNAVAILABLE", "Could not verify payment. Billing service may be unavailable.");
+      return;
+    }
     sendSuccess(res, result);
   } catch (err) {
     next(err);

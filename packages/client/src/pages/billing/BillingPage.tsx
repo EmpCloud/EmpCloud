@@ -746,24 +746,114 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showGateways]);
 
+  // Razorpay's inline checkout needs their CDN script. Loaded on demand
+  // so first BillingPage paint isn't held up by a third-party fetch.
+  const loadRazorpayScript = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (typeof window === "undefined") return resolve(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((window as any).Razorpay) return resolve(true);
+      const s = document.createElement("script");
+      s.src = "https://checkout.razorpay.com/v1/checkout.js";
+      s.async = true;
+      s.onload = () => resolve(true);
+      s.onerror = () => resolve(false);
+      document.body.appendChild(s);
+    });
+  };
+
   const handlePay = async (gateway: string) => {
     setLoading(true);
     try {
       const token = useAuthStore.getState().accessToken || null;
+      // Send the current URL as the returnUrl so the gateway redirects
+      // back to app.empcloud.com after success/cancel — not the billing
+      // portal at billing.empcloud.com.
+      const returnUrl = typeof window !== "undefined" ? window.location.href : undefined;
       const res = await fetch("/api/v1/billing/pay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ invoiceId, gateway }),
+        body: JSON.stringify({ invoiceId, gateway, returnUrl }),
       });
       const data = await res.json();
-      if (data.success && data.data?.checkoutUrl) {
-        window.open(data.data.checkoutUrl, "_blank");
-      } else {
+
+      if (!data.success) {
         alert(data.error?.message || "Could not create payment session");
+        return;
       }
+
+      // Stripe (and PayPal) — hosted checkout page; just navigate there.
+      // Open in same tab so the success_url redirect lands us back
+      // inside the EmpCloud SPA, not a stranded popup.
+      if (data.data?.checkoutUrl) {
+        window.location.href = data.data.checkoutUrl;
+        return;
+      }
+
+      // Razorpay — no checkoutUrl; the gateway returns an order id +
+      // public key and we open the Razorpay JS modal inline. On the
+      // success callback we POST the order/payment/signature trio to
+      // /billing/verify-payment so the backend can mark the invoice
+      // paid (signature-verified, not trusting the browser).
+      const meta = (data.data?.metadata || {}) as Record<string, unknown>;
+      const keyId = typeof meta.keyId === "string" ? meta.keyId : "";
+      const orderId = typeof meta.orderId === "string" ? meta.orderId : (data.data?.gatewayOrderId as string | undefined);
+      if (gateway === "razorpay" && keyId && orderId) {
+        const loaded = await loadRazorpayScript();
+        if (!loaded) {
+          alert("Could not load Razorpay. Check your network and try again.");
+          return;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const rzp = new (window as any).Razorpay({
+          key: keyId,
+          order_id: orderId,
+          amount: meta.amount,
+          currency: meta.currency,
+          name: "EmpCloud",
+          description: `Invoice payment`,
+          handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+            try {
+              const verifyRes = await fetch("/api/v1/billing/verify-payment", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                  invoiceId,
+                  gateway: "razorpay",
+                  gatewayOrderId: response.razorpay_order_id,
+                  gatewayPaymentId: response.razorpay_payment_id,
+                  gatewaySignature: response.razorpay_signature,
+                }),
+              });
+              const verifyData = await verifyRes.json();
+              if (verifyData.success) {
+                window.location.href = `${returnUrl ?? "/billing"}${(returnUrl ?? "").includes("?") ? "&" : "?"}payment=success`;
+              } else {
+                alert(verifyData.error?.message || "Payment verification failed");
+              }
+            } catch {
+              alert("Could not verify payment. Please contact support.");
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              // User closed without paying — nothing to do; the invoice
+              // stays unpaid and the Pay Now button is still there.
+            },
+          },
+        });
+        rzp.open();
+        return;
+      }
+
+      // Unknown / unconfigured gateway — surface a useful error.
+      alert("This payment method isn't configured yet. Try a different gateway.");
     } catch {
       alert("Payment service unavailable");
     } finally {
@@ -787,12 +877,12 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
           <button onClick={(e) => { e.stopPropagation(); handlePay("stripe"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-t-lg font-medium text-gray-700">
             Stripe (Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 font-medium text-gray-700">
+          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-b-lg font-medium text-gray-700">
             Razorpay (UPI/Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-b-lg font-medium text-gray-700">
-            PayPal
-          </button>
+          {/* PayPal hidden — gateway is registered server-side only when
+              PAYPAL_* env vars are set, but the option still triggered
+              a 500 from the prod env. Re-enable once those keys land. */}
         </div>
       )}
     </div>
