@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
+import { showToast } from "@/components/ui/Toast";
 import {
   useBillingInvoices,
   useBillingPayments,
@@ -324,16 +325,19 @@ export default function BillingPage() {
         });
         const data = await res.json();
         if (data.success) {
-          alert("Payment successful — the invoice has been marked paid.");
+          showToast("success", "Payment successful — the invoice has been marked paid.");
+          // Reload to the clean URL so the invoice list reflects the new
+          // status — short delay so the success toast is seen before refresh.
+          setTimeout(() => window.location.replace(cleanUrl), 1800);
         } else {
-          alert(data.error?.message || "PayPal payment could not be confirmed. If you completed the payment, please contact support.");
+          showToast("error", data.error?.message || "PayPal payment could not be confirmed. If you completed the payment, please contact support.");
+          // Drop the gateway params without reloading so the error toast stays
+          // on screen and a refresh doesn't re-trigger verification.
+          window.history.replaceState({}, "", cleanUrl);
         }
       } catch {
-        alert("Could not confirm the PayPal payment. Please contact support.");
-      } finally {
-        // Strip the gateway params so a refresh doesn't re-trigger
-        // verification, and reload so the invoice list reflects the new status.
-        window.location.replace(cleanUrl);
+        showToast("error", "Could not confirm the PayPal payment. Please contact support.");
+        window.history.replaceState({}, "", cleanUrl);
       }
     })();
   }, []);
@@ -834,7 +838,7 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
       const data = await res.json();
 
       if (!data.success) {
-        alert(data.error?.message || "Could not create payment session");
+        showToast("error", data.error?.message || "Could not create payment session");
         return;
       }
 
@@ -857,7 +861,7 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
       if (gateway === "razorpay" && keyId && orderId) {
         const loaded = await loadRazorpayScript();
         if (!loaded) {
-          alert("Could not load Razorpay. Check your network and try again.");
+          showToast("error", "Could not load Razorpay. Check your network and try again.");
           return;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -886,12 +890,17 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
               });
               const verifyData = await verifyRes.json();
               if (verifyData.success) {
-                window.location.href = `${returnUrl ?? "/billing"}${(returnUrl ?? "").includes("?") ? "&" : "?"}payment=success`;
+                showToast("success", "Payment successful — the invoice has been marked paid.");
+                // Brief delay so the toast is seen before the page reloads
+                // with the updated invoice list.
+                setTimeout(() => {
+                  window.location.href = `${returnUrl ?? "/billing"}${(returnUrl ?? "").includes("?") ? "&" : "?"}payment=success`;
+                }, 1800);
               } else {
-                alert(verifyData.error?.message || "Payment verification failed");
+                showToast("error", verifyData.error?.message || "Payment verification failed");
               }
             } catch {
-              alert("Could not verify payment. Please contact support.");
+              showToast("error", "Could not verify payment. Please contact support.");
             }
           },
           modal: {
@@ -906,9 +915,9 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
       }
 
       // Unknown / unconfigured gateway — surface a useful error.
-      alert("This payment method isn't configured yet. Try a different gateway.");
+      showToast("error", "This payment method isn't configured yet. Try a different gateway.");
     } catch {
-      alert("Payment service unavailable");
+      showToast("error", "Payment service unavailable");
     } finally {
       setLoading(false);
       setShowGateways(false);
