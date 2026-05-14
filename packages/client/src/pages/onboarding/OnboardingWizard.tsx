@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -269,6 +270,14 @@ export default function OnboardingWizard() {
               plan_tier: m.plan_tier,
               total_seats: m.total_seats,
             }));
+          // Module selection is mandatory — the wizard cannot advance past
+          // step 4 until at least one module is chosen. Return (not throw):
+          // the catch block below advances the step on error, so throwing
+          // here would defeat the gate.
+          if (selectedModules.length === 0) {
+            showToast("error", "Please select at least one module to continue.");
+            return;
+          }
           stepData = { modules: selectedModules, skip_trial: skipTrial };
           break;
         }
@@ -366,6 +375,10 @@ export default function OnboardingWizard() {
       prev.map((lt, i) => (i === index ? { ...lt, annual_quota: quota } : lt))
     );
   };
+
+  // Step 4 gate: at least one module must be selected before the wizard
+  // can advance past the Choose Modules step.
+  const selectedModuleCount = modules.filter((m) => m.selected).length;
 
   if (loading) {
     return (
@@ -581,8 +594,9 @@ export default function OnboardingWizard() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleNext}
-                  disabled={submitting}
-                  className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
+                  disabled={submitting || (activeStep === 4 && selectedModuleCount === 0)}
+                  title={activeStep === 4 && selectedModuleCount === 0 ? "Select at least one module to continue" : undefined}
+                  className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {activeStep === 5 ? (
@@ -652,11 +666,11 @@ function Step1CompanyInfo({
 
   const acceptFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file (PNG, JPG, WebP, or SVG).");
+      showToast("error", "Please upload an image file (PNG, JPG, WebP, or SVG).");
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      alert("Logo must be 2MB or smaller.");
+      showToast("error", "Logo must be 2MB or smaller.");
       return;
     }
     const reader = new FileReader();
@@ -992,11 +1006,20 @@ function Step4Modules({
     { value: "enterprise", label: "Enterprise" },
   ];
 
+  const selectedCount = modules.filter((m) => m.selected).length;
+
   return (
     <div className="space-y-5 pt-2">
       <p className="text-sm text-gray-500">
         Choose the modules your organization needs, then set the plan tier and number of licenses for each.
       </p>
+
+      {selectedCount === 0 && (
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+          <Package className="h-4 w-4 shrink-0" />
+          Select at least one module to continue — this step can't be skipped.
+        </div>
+      )}
 
       <label className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
         <input
