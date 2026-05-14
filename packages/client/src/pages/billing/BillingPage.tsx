@@ -290,6 +290,54 @@ export default function BillingPage() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabId>("subscriptions");
 
+  // PayPal redirect-return handler. PayPal's hosted checkout is a two-step
+  // flow — the buyer "approves" on PayPal, then the order must be "captured"
+  // to actually move the funds. PayPal redirects back here with
+  // ?payInvoiceId=<id>&payment=success&token=<orderId>&PayerID=<...>; we POST
+  // the order id to /billing/verify-payment, which triggers the capture and
+  // marks the invoice paid. Without this the invoice stays unpaid even after
+  // a successful PayPal approval. Stripe (recorded via webhook) and Razorpay
+  // (verified inline) don't need this — they never return with ?token=.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const orderToken = params.get("token");
+    const payerId = params.get("PayerID");
+    const payInvoiceId = params.get("payInvoiceId");
+    if (!orderToken || !payerId || !payInvoiceId) return; // not a PayPal return
+
+    const cleanUrl = window.location.origin + window.location.pathname;
+    (async () => {
+      try {
+        const authToken = useAuthStore.getState().accessToken || null;
+        const res = await fetch("/api/v1/billing/verify-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          },
+          body: JSON.stringify({
+            invoiceId: payInvoiceId,
+            gateway: "paypal",
+            gatewayOrderId: orderToken,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("Payment successful — the invoice has been marked paid.");
+        } else {
+          alert(data.error?.message || "PayPal payment could not be confirmed. If you completed the payment, please contact support.");
+        }
+      } catch {
+        alert("Could not confirm the PayPal payment. Please contact support.");
+      } finally {
+        // Strip the gateway params so a refresh doesn't re-trigger
+        // verification, and reload so the invoice list reflects the new status.
+        window.location.replace(cleanUrl);
+      }
+    })();
+  }, []);
+
   return (
     <div>
       <div className="mb-8">
@@ -766,10 +814,15 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
     setLoading(true);
     try {
       const token = useAuthStore.getState().accessToken || null;
-      // Send the current URL as the returnUrl so the gateway redirects
-      // back to app.empcloud.com after success/cancel — not the billing
-      // portal at billing.empcloud.com.
-      const returnUrl = typeof window !== "undefined" ? window.location.href : undefined;
+      // Return URL the gateway redirects to after success/cancel — keeps the
+      // user on app.empcloud.com instead of the billing portal. The invoice
+      // id is baked in as `payInvoiceId` so that when a hosted gateway
+      // (PayPal) redirects back, the return handler in BillingPage knows
+      // which invoice to capture and confirm — PayPal appends ?token= and
+      // &PayerID= on return, but not the invoice id.
+      const returnUrl = typeof window !== "undefined"
+        ? `${window.location.origin}${window.location.pathname}?payInvoiceId=${invoiceId}`
+        : undefined;
       const res = await fetch("/api/v1/billing/pay", {
         method: "POST",
         headers: {
