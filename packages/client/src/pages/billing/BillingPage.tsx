@@ -877,12 +877,12 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
           <button onClick={(e) => { e.stopPropagation(); handlePay("stripe"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-t-lg font-medium text-gray-700">
             Stripe (Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-b-lg font-medium text-gray-700">
+          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 font-medium text-gray-700">
             Razorpay (UPI/Card)
           </button>
-          {/* PayPal hidden — gateway is registered server-side only when
-              PAYPAL_* env vars are set, but the option still triggered
-              a 500 from the prod env. Re-enable once those keys land. */}
+          <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-b-lg font-medium text-gray-700">
+            PayPal
+          </button>
         </div>
       )}
     </div>
