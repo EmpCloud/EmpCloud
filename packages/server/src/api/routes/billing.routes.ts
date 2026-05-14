@@ -104,17 +104,21 @@ router.post("/pay", authenticate, requirePermission("billing:manage"), async (re
   }
 });
 
-// POST /api/v1/billing/verify-payment — Verify a gateway payment (Razorpay inline)
+// POST /api/v1/billing/verify-payment — Verify a gateway payment (Razorpay inline / PayPal redirect-return)
 router.post("/verify-payment", authenticate, requirePermission("billing:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { invoiceId, gateway, gatewayOrderId, gatewayPaymentId, gatewaySignature } = req.body;
-    if (!invoiceId || !gateway || !gatewayOrderId || !gatewayPaymentId) {
-      sendError(res, 400, "VALIDATION_ERROR", "invoiceId, gateway, gatewayOrderId, and gatewayPaymentId are required");
+    // PayPal's capture flow only needs the order id (token) — the payment /
+    // capture id doesn't exist until after the capture call. Razorpay's inline
+    // flow always returns both, so keep requiring gatewayPaymentId there.
+    const needsPaymentId = gateway !== "paypal";
+    if (!invoiceId || !gateway || !gatewayOrderId || (needsPaymentId && !gatewayPaymentId)) {
+      sendError(res, 400, "VALIDATION_ERROR", "invoiceId, gateway, and gatewayOrderId are required (gatewayPaymentId also required for non-PayPal gateways)");
       return;
     }
     const result = await billingIntegration.verifyPayment(invoiceId, gateway, {
       gatewayOrderId,
-      gatewayPaymentId,
+      gatewayPaymentId: gatewayPaymentId ?? "",
       gatewaySignature,
     });
     if (!result) {
