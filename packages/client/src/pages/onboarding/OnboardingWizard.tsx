@@ -274,7 +274,12 @@ export default function OnboardingWizard() {
           // step 4 until at least one module is chosen. Return (not throw):
           // the catch block below advances the step on error, so throwing
           // here would defeat the gate.
-          if (selectedModules.length === 0) {
+          //
+          // BUT only gate when modules actually loaded. If the /modules fetch
+          // returned empty (API error, or genuinely no active modules), there
+          // is nothing to select — gating here would hard-lock the new admin
+          // at step 4 with RequireOnboarding also blocking the rest of the app.
+          if (modules.length > 0 && selectedModules.length === 0) {
             showToast("error", "Please select at least one module to continue.");
             return;
           }
@@ -594,8 +599,8 @@ export default function OnboardingWizard() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleNext}
-                  disabled={submitting || (activeStep === 4 && selectedModuleCount === 0)}
-                  title={activeStep === 4 && selectedModuleCount === 0 ? "Select at least one module to continue" : undefined}
+                  disabled={submitting || (activeStep === 4 && modules.length > 0 && selectedModuleCount === 0)}
+                  title={activeStep === 4 && modules.length > 0 && selectedModuleCount === 0 ? "Select at least one module to continue" : undefined}
                   className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
