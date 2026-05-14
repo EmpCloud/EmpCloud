@@ -391,8 +391,9 @@ export async function getBillingSummary(orgId: number): Promise<object> {
 
 export async function createPaymentOrder(
   invoiceId: string,
-  gateway: string = "stripe"
-): Promise<{ checkoutUrl?: string; gatewayOrderId?: string } | null> {
+  gateway: string = "stripe",
+  returnUrl?: string,
+): Promise<{ checkoutUrl?: string; gatewayOrderId?: string; metadata?: Record<string, unknown> } | null> {
   const result = await billingFetch<{
     checkoutUrl?: string;
     gatewayOrderId?: string;
@@ -401,8 +402,32 @@ export async function createPaymentOrder(
   }>("POST", "/payments/online/create-order", {
     invoiceId,
     gateway,
+    returnUrl,
   });
 
+  return result;
+}
+
+/**
+ * Verify a gateway payment after the client-side checkout (Razorpay
+ * inline / Stripe redirect) returns. Used by /api/v1/billing/verify-payment
+ * so the EmpCloud UI can confirm a Razorpay payment without needing to
+ * call emp-billing directly with its API key.
+ */
+export async function verifyPayment(
+  invoiceId: string,
+  gateway: string,
+  payload: { gatewayOrderId: string; gatewayPaymentId: string; gatewaySignature?: string },
+): Promise<{ success: boolean } | null> {
+  const result = await billingFetch<{ success: boolean }>(
+    "POST",
+    "/payments/online/verify",
+    {
+      invoiceId,
+      gateway,
+      ...payload,
+    },
+  );
   return result;
 }
 
