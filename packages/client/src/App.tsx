@@ -42,16 +42,21 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function RootRedirect() {
+// Gates every protected (DashboardLayout) route behind a completed
+// onboarding. The check previously lived only in RootRedirect, so it fired
+// exclusively on "/" — a user mid-onboarding could open any real route
+// (/billing, /employees, …) directly and skip the wizard entirely. Wrapping
+// the whole DashboardLayout group means there is no page to reach until
+// onboarding (including module selection) is finished. The /onboarding route
+// is a sibling of this group, so there is no redirect loop.
+function RequireOnboarding({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);
-  const { permissions } = usePermissions();
-  const viewMode = useViewModeStore((s) => s.viewMode);
   const [checking, setChecking] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   useEffect(() => {
     let mounted = true;
-    // Skip onboarding for super_admin — they manage the platform, not a company
+    // super_admin manages the platform, not a company — no onboarding
     if (user?.role === "super_admin") {
       setChecking(false);
       return;
@@ -63,7 +68,7 @@ function RootRedirect() {
           setNeedsOnboarding(true);
         }
       } catch {
-        // If endpoint fails, skip onboarding check
+        // Endpoint failure — don't hard-lock the user out of the app
       } finally {
         if (mounted) setChecking(false);
       }
@@ -86,6 +91,17 @@ function RootRedirect() {
   if (needsOnboarding) {
     return <Navigate to="/onboarding" replace />;
   }
+
+  return <>{children}</>;
+}
+
+function RootRedirect() {
+  const user = useAuthStore((s) => s.user);
+  const { permissions } = usePermissions();
+  const viewMode = useViewModeStore((s) => s.viewMode);
+
+  // Onboarding is enforced by RequireOnboarding around the whole route
+  // group, so by the time RootRedirect renders, onboarding is complete.
 
   // Super admin goes straight to Platform Admin dashboard
   if (user?.role === "super_admin") return <Navigate to="/admin" replace />;
@@ -155,7 +171,9 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute>
-              <DashboardLayout />
+              <RequireOnboarding>
+                <DashboardLayout />
+              </RequireOnboarding>
             </ProtectedRoute>
           }
         >
