@@ -124,8 +124,14 @@ async function loadModule(moduleId: number): Promise<ModuleRow | null> {
 async function resolveAdminEmail(organizationId: number): Promise<{ email: string; orgName: string }> {
   const db = getDB();
   const org = await db("organizations").where({ id: organizationId }).first();
+  // EmpCloud has no "owner" role — the 5 roles are employee/manager/hr_admin/
+  // org_admin/super_admin. The old role:"owner" lookup always matched nothing,
+  // so every webhook fell through to the synthetic, undeliverable
+  // org-{id}@empcloud.internal address. The original org_admin (lowest id) is
+  // the owner-equivalent and the right invoice "to" address.
   const owner = await db("users")
-    .where({ organization_id: organizationId, role: "owner" })
+    .where({ organization_id: organizationId, role: "org_admin", status: 1 })
+    .orderBy("id", "asc")
     .first();
   const email = owner?.email || org?.contact_email || `org-${organizationId}@empcloud.internal`;
   const orgName = org?.name || `EmpCloud Org #${organizationId}`;
