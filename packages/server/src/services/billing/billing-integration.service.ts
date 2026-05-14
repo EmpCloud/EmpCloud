@@ -298,8 +298,19 @@ export async function getInvoices(
   // down to the right tenant. Without this, /invoices would return every
   // EmpCloud org's invoices that share the billing org.
   const clientId = await getMappedBillingClientId(orgId);
+  // FAIL CLOSED on no-client. The previous behaviour was to omit the
+  // clientId filter when getMappedBillingClientId returned null
+  // (org never provisioned, or auto-provision failed) — but emp-billing's
+  // /invoices endpoint without a clientId returns every invoice in the
+  // billing tenant, which leaks other EmpCloud orgs' data into this
+  // org's BillingPage. Surfaced on prod when org 21 (no subscriptions
+  // yet, mapping just wiped) saw 47 invoices belonging to orgs 1, 4, 5
+  // and 7. Return empty instead so a non-subscribed org sees nothing.
+  if (!clientId) {
+    return { invoices: [], total: 0, page: 1, totalPages: 1 };
+  }
   const query = new URLSearchParams();
-  if (clientId) query.set("clientId", clientId);
+  query.set("clientId", clientId);
   if (params?.page) query.set("page", String(params.page));
   if (params?.perPage) query.set("limit", String(params.perPage));
 
@@ -327,15 +338,16 @@ export async function getPayments(
   orgId: number,
   params?: { page?: number; perPage?: number }
 ): Promise<any> {
-  // Tenant scoping: same rationale as getInvoices(). The historical comment
-  // here ("clientId filter caused empty results") referred to the dead
-  // /clients/auto-provision path which created duplicate client records;
-  // the new empcloud-webhook-emitter writes the SAME client id that owns
-  // the payments into billing_client_mappings, so passing clientId now
-  // narrows correctly to this org instead of leaking another tenant's data.
+  // Tenant scoping: same rationale + same fail-closed guard as getInvoices().
+  // Without the early-return, an org with no billing_client_mappings row
+  // would query /payments without a clientId filter and see every other
+  // EmpCloud org's payments.
   const clientId = await getMappedBillingClientId(orgId);
+  if (!clientId) {
+    return { payments: [], total: 0, page: 1, totalPages: 1 };
+  }
   const query = new URLSearchParams();
-  if (clientId) query.set("clientId", clientId);
+  query.set("clientId", clientId);
   if (params?.page) query.set("page", String(params.page));
   if (params?.perPage) query.set("limit", String(params.perPage));
 
