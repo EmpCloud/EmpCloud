@@ -768,7 +768,13 @@ export async function getMonthlyReport(
 // (half day) in the grid. This way a 4-hour shift correctly shows as
 // half day even if the check-in/out path stored it as 'present'.
 
-export type AttendanceCode = "P" | "A" | "H" | "L" | "WO" | "HO" | "M" | "";
+// HPL ("Half Present + Half Leave") records the case where the employee was
+// physically present for half the workday and on leave for the other half
+// (e.g. an afternoon doctor's appointment counted against sick balance).
+// Distinct from H (half day, other half unworked / LOP) and from L
+// (full-day leave). Counts as 0.5 day present for payroll attendance and
+// 0.5 day leave for leave-balance accounting.
+export type AttendanceCode = "P" | "A" | "H" | "L" | "HPL" | "WO" | "HO" | "M" | "";
 
 export async function getMonthlyGrid(
   orgId: number,
@@ -935,6 +941,7 @@ export async function getMonthlyGrid(
   ): AttendanceCode => {
     const s = (status || "").toLowerCase();
     if (s === "half_day") return "H";
+    if (s === "half_present_half_leave") return "HPL";
     if (s === "absent") return "A";
     if (s === "on_leave") return "L";
     if (s === "checked_in") {
@@ -1018,6 +1025,14 @@ export async function updateAttendanceCell(
     A: "absent",
     H: "half_day",
     L: "on_leave",
+    // HPL = "half present + half leave". Recorded on the attendance row
+    // alone for now -- the matching leave_application / leave_balance side
+    // is intentionally not auto-managed here; HR can apply a half-day leave
+    // via the existing /grid/apply-leave flow if they need balance
+    // deduction. TODO(half-day-leave): auto-create / link a 0.5-day leave
+    // application for the date so leave balances reconcile without HR
+    // having to do two clicks.
+    HPL: "half_present_half_leave",
   };
   const upper = (params.code || "").toUpperCase();
   if (upper === "" || upper === "WO" || upper === "HO" || upper === "-") {
@@ -1028,7 +1043,7 @@ export async function updateAttendanceCell(
   }
   const status = map[upper];
   if (!status) {
-    throw new Error(`Unknown status code "${params.code}". Use P / A / H / L / WO / HO.`);
+    throw new Error(`Unknown status code "${params.code}". Use P / A / H / L / HPL / WO / HO.`);
   }
   const existing = await db("attendance_records")
     .where({ user_id: params.userId, organization_id: orgId, date: params.date })
