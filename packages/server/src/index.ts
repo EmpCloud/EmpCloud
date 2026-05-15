@@ -43,7 +43,6 @@ import moduleWebhookRoutes from "./api/routes/module-webhook.routes.js";
 import billingRoutes from "./api/routes/billing.routes.js";
 import adminRoutes from "./api/routes/admin.routes.js";
 import onboardingRoutes from "./api/routes/onboarding.routes.js";
-import biometricsRoutes from "./api/routes/biometrics.routes.js";
 import biometricLegacyRoutes from "./api/routes/biometric-legacy.routes.js";
 import nasRoutes from "./api/routes/nas.routes.js";
 import helpdeskRoutes from "./api/routes/helpdesk.routes.js";
@@ -223,7 +222,6 @@ async function main() {
   app.use("/api/v1/admin/ai-config", apiLimiter, aiConfigRoutes);
   app.use("/api/v1/admin/logs", apiLimiter, logRoutes);
   app.use("/api/v1/onboarding", apiLimiter, onboardingRoutes);
-  app.use("/api/v1/biometrics", apiLimiter, biometricsRoutes);
   // Legacy emp-monitor kiosk surface — same paths/responses as
   // emp-monitor's v3/bioMetric router, backed by EmpCloud tables.
   app.use("/api/v3/biometric", apiLimiter, biometricLegacyRoutes);
