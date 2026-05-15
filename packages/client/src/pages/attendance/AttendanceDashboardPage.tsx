@@ -774,6 +774,7 @@ interface PunchRow {
   source: string;
   latitude: number | string | null;
   longitude: number | string | null;
+  device_identifier: string | null;
 }
 
 function sourceMeta(source: string): { label: string; Icon: typeof Fingerprint; cls: string } {
@@ -959,6 +960,11 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
                       {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
                     </span>
                   )}
+                  {p.device_identifier && (
+                    <span className="text-xs text-gray-500" title="Device identifier">
+                      <span className="text-gray-400">via</span> {p.device_identifier}
+                    </span>
+                  )}
                 </li>
               );
             })}
@@ -1115,6 +1121,11 @@ function AttendanceDetailModal({
                       {p.latitude != null && p.longitude != null && (
                         <span className="text-xs text-gray-400">
                           {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
+                        </span>
+                      )}
+                      {p.device_identifier && (
+                        <span className="text-xs text-gray-500" title="Device identifier">
+                          <span className="text-gray-400">via</span> {p.device_identifier}
                         </span>
                       )}
                     </li>
