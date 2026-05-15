@@ -45,7 +45,10 @@ const MONTHS = [
 interface DayDef {
   day: number;
   date: string;
-  defaultCode: "WO" | "HO" | "";
+  // Server no longer emits "WO" as a date-level default -- weekoffs are
+  // per-user, shift-driven, and delivered in `EmployeeRow.weekoffDays`.
+  // Only HO (holiday) remains a date-level default.
+  defaultCode: "HO" | "";
 }
 
 interface EmployeeRow {
@@ -56,6 +59,12 @@ interface EmployeeRow {
   department: string | null;
   location: string | null;
   days: Record<string, string>;
+  // Per-employee set of dates that the shift assignment marks as a
+  // weekoff. Rendered as a small "WO" ribbon overlay on the cell so
+  // attendance + weekoff status can coexist (e.g. someone who worked on
+  // their off day shows "P" with a WO ribbon — overtime / comp-off
+  // candidate).
+  weekoffDays?: Record<string, boolean>;
 }
 
 interface GridResponse {
@@ -243,9 +252,15 @@ export default function AttendanceGridPage() {
   const summaryFor = useMemo(
     () => (emp: EmployeeRow) => {
       const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
+      const weekoff = emp.weekoffDays || {};
       for (const d of data.days) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
-        if (c in counts) counts[c as keyof typeof counts]++;
+        // WO count comes from the shift-driven weekoff map, NOT from
+        // the attendance code -- since attendance + weekoff can coexist
+        // on a single cell (worked on off day shows P with a WO ribbon).
+        // P/A/H/L/M still come from the attendance code.
+        if (weekoff[d.date]) counts.WO++;
+        if (c && c !== "WO" && c in counts) counts[c as keyof typeof counts]++;
       }
       return counts;
     },
@@ -265,7 +280,12 @@ export default function AttendanceGridPage() {
       const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
       for (const emp of filteredEmployees) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
-        if (c in counts) counts[c as keyof typeof counts]++;
+        // WO is derived from the shift's weekoff map -- counted in
+        // parallel to (not instead of) the attendance code so an
+        // employee who worked on their off day contributes to BOTH
+        // P and WO totals for that date.
+        if (emp.weekoffDays?.[d.date]) counts.WO++;
+        if (c && c !== "WO" && c in counts) counts[c as keyof typeof counts]++;
       }
       out[d.date] = counts;
     }
@@ -481,9 +501,26 @@ export default function AttendanceGridPage() {
                         )}
                       </td>
                       {data.days.map((d) => {
-                        const code = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
+                        const stored = emp.days[d.date] || "";
+                        const code = cellCode(emp.user_id, d.date, stored);
+                        const isWeekoff = !!emp.weekoffDays?.[d.date];
                         const isEditing =
                           editing?.uid === emp.user_id && editing.date === d.date;
+                        // Effective code shown in the cell: when the day
+                        // is a shift weekoff AND no attendance is recorded
+                        // (or it was explicitly set to ""), render "WO"
+                        // outright. When BOTH attendance and weekoff
+                        // coexist, render the attendance code as the
+                        // primary face and surface the weekoff via a
+                        // small "WO" ribbon overlay at the top-right of
+                        // the cell -- this is the "worked on off day"
+                        // (overtime / comp-off candidate) signal.
+                        const showAsWeekoffOnly = isWeekoff && !code;
+                        const showRibbon = isWeekoff && !!code;
+                        const displayCode = showAsWeekoffOnly ? "WO" : code;
+                        const cellTitle = isWeekoff
+                          ? `${d.date} — week off${code ? ` · marked ${code}` : ""} (double-click to edit)`
+                          : `${d.date} — double-click to edit`;
                         return (
                           <td
                             key={d.date}
@@ -507,12 +544,22 @@ export default function AttendanceGridPage() {
                                 }}
                               />
                             ) : null}
-                            <div
-                              onDoubleClick={() => setEditing({ uid: emp.user_id, date: d.date })}
-                              title={`${d.date} — double-click to edit`}
-                              className={`mx-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[11px] font-semibold transition hover:ring-2 hover:ring-blue-300 ${codeStyle(code)}`}
-                            >
-                              {code || "—"}
+                            <div className="relative mx-auto h-7 w-7">
+                              <div
+                                onDoubleClick={() => setEditing({ uid: emp.user_id, date: d.date })}
+                                title={cellTitle}
+                                className={`flex h-full w-full cursor-pointer items-center justify-center rounded text-[11px] font-semibold transition hover:ring-2 hover:ring-blue-300 ${codeStyle(displayCode)}`}
+                              >
+                                {displayCode || "—"}
+                              </div>
+                              {showRibbon && (
+                                <span
+                                  aria-label="Week off"
+                                  className="pointer-events-none absolute -right-1 -top-1 rounded-full bg-gray-700 px-1 py-px text-[7px] font-bold leading-none text-white shadow-sm dark:bg-gray-300 dark:text-gray-900"
+                                >
+                                  WO
+                                </span>
+                              )}
                             </div>
                           </td>
                         );

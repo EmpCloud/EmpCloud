@@ -797,14 +797,22 @@ export async function getMonthlyGrid(
   const holidaySet = new Set<string>();
   for (const h of holidayRows) holidaySet.add(isoLocal(h.holiday_date));
 
-  const days: Array<{ day: number; date: string; defaultCode: "WO" | "HO" | "" }> = [];
+  const days: Array<{
+    day: number;
+    date: string;
+    dow: number;
+    defaultCode: "HO" | "";
+  }> = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const dow = new Date(year, month - 1, d).getDay();
-    let defaultCode: "WO" | "HO" | "" = "";
-    if (dow === 0 || dow === 6) defaultCode = "WO";
-    else if (holidaySet.has(dateStr)) defaultCode = "HO";
-    days.push({ day: d, date: dateStr, defaultCode });
+    // Only holidays are a date-level default now. Week-offs are entirely
+    // driven by the per-user shift assignment computed below -- no
+    // Sat/Sun hardcode, since real orgs run 6-day weeks, rotating shifts,
+    // Tue-Sat shifts, etc. and the old default was painting WO for every
+    // employee regardless of their shift.
+    const defaultCode: "HO" | "" = holidaySet.has(dateStr) ? "HO" : "";
+    days.push({ day: d, date: dateStr, dow, defaultCode });
   }
 
   // Department + location names are joined in so the grid page can filter
@@ -835,6 +843,81 @@ export async function getMonthlyGrid(
     )
     .whereBetween("date", [monthStart, monthEnd])
     .select("user_id", "date", "status", "worked_minutes");
+
+  // Per-user weekoff resolution -- the single source of truth for WO
+  // cells. Week-offs come entirely from the employee's shift assignment,
+  // never from a hardcoded calendar rule:
+  //   1. Per-assignment `is_weekoff` flag (the "Mark as Week-off" toggle
+  //      on the Shift Schedule's Edit Assignment modal -- carves out a
+  //      sub-range as off, e.g. swapping Tuesday off for a long weekend).
+  //   2. The shift's `working_days` CSV (e.g. "1,2,3,4,5" = Mon-Fri off
+  //      on Sat+Sun; an employee on a Tue-Sat shift gets Sun+Mon WO; a
+  //      6-day shift gets only Sun WO; etc.).
+  // Employees with no shift assignment for a date get NO WO from this
+  // grid -- the cell renders blank rather than incorrectly marking
+  // someone off just because today is Saturday. When overlapping
+  // assignments exist (legacy or sub-range split), the LATER
+  // `effective_from` wins -- ORDER BY DESC + first-write-wins.
+  const assignments = await db("shift_assignments as sa")
+    .join("shifts as s", "sa.shift_id", "s.id")
+    .where("sa.organization_id", orgId)
+    .whereIn(
+      "sa.user_id",
+      allUsers.map((u: any) => u.user_id),
+    )
+    .whereRaw("DATE(sa.effective_from) <= ?", [monthEnd])
+    .where(function () {
+      this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [monthStart]);
+    })
+    // Defensive: drop rows where someone has stored effective_to before
+    // effective_from (artifact of an older sub-range split bug --
+    // observed on Atul Sharma id=440 in prod data).
+    .whereRaw("(sa.effective_to IS NULL OR DATE(sa.effective_to) >= DATE(sa.effective_from))")
+    // "Latest intent wins" -- when HR assigns a new shift, the freshly
+    // created row should claim every date in its range even if an older
+    // assignment also covers it. Ordering by created_at DESC means the
+    // newer row writes into the per-(user,date) slot first and the
+    // first-write-wins guard below blocks the older one. Tiebreak on
+    // id DESC for assignments created in the same second (e.g. the
+    // sub-range split inserts left+override+right in a single
+    // transaction).
+    .orderBy("sa.created_at", "desc")
+    .orderBy("sa.id", "desc")
+    .select(
+      "sa.user_id",
+      "sa.effective_from",
+      "sa.effective_to",
+      "s.working_days",
+      "s.is_weekoff",
+    );
+
+  // userId -> dateIso -> "WO" | "WORK"  (always set when an assignment
+  // covers the date so a later/older assignment can't "downgrade" a
+  // verified working day into a weekoff).
+  const userWeekoff: Record<number, Record<string, "WO" | "WORK">> = {};
+  for (const a of assignments as any[]) {
+    const uid = Number(a.user_id);
+    const from = isoLocal(a.effective_from);
+    const to = a.effective_to ? isoLocal(a.effective_to) : null;
+    const workingDays = String(a.working_days || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => Number(s));
+    const isWeekoffShift = !!a.is_weekoff;
+    for (const d of days) {
+      if (d.date < from) continue;
+      if (to && d.date > to) continue;
+      // assignments are ordered by effective_from DESC, so the first
+      // assignment to claim a (user, date) slot wins -- skip on conflict.
+      if (userWeekoff[uid] && userWeekoff[uid][d.date] !== undefined) continue;
+      const off =
+        isWeekoffShift ||
+        (workingDays.length > 0 && !workingDays.includes(d.dow));
+      if (!userWeekoff[uid]) userWeekoff[uid] = {};
+      userWeekoff[uid][d.date] = off ? "WO" : "WORK";
+    }
+  }
 
   // ISO date for "today" so a single-punch row on a past date doesn't get
   // silently rewarded with a Present mark just because the worker forgot to
@@ -881,9 +964,23 @@ export async function getMonthlyGrid(
 
   const employees = allUsers.map((u: any) => {
     const userMap = byUser[u.user_id] || {};
+    const offMap = userWeekoff[u.user_id] || {};
     const dayCodes: Record<string, AttendanceCode> = {};
+    // Parallel map: which dates are this employee's shift-defined
+    // weekoffs. Emitted alongside `days` so the FE can render a combined
+    // badge like "P/WO", "A/WO", "H/WO" when the employee actually
+    // worked / was marked on their off day -- typical overtime or
+    // comp-off candidate. Pure "WO" is rendered for weekoff dates with
+    // no attendance row.
+    const weekoffDays: Record<string, true> = {};
     for (const d of days) {
-      dayCodes[d.date] = (userMap[d.date] as AttendanceCode) || (d.defaultCode as AttendanceCode);
+      // Attendance code: real row if any, otherwise the date-level
+      // default (HO / "").
+      const real = userMap[d.date];
+      dayCodes[d.date] = (real || (d.defaultCode as AttendanceCode)) as AttendanceCode;
+      if (offMap[d.date] === "WO") {
+        weekoffDays[d.date] = true;
+      }
     }
     return {
       user_id: u.user_id,
@@ -893,6 +990,7 @@ export async function getMonthlyGrid(
       department: u.department || null,
       location: u.location || null,
       days: dayCodes,
+      weekoffDays,
     };
   });
 

@@ -73,15 +73,87 @@ export async function getShift(orgId: number, shiftId: number) {
 
 export async function listShifts(orgId: number) {
   const db = getDB();
+  // #67 — Ensure the org has a "Week-off" sentinel shift so the Shift
+  // Schedule UI's Edit Assignment modal can offer it as an option. Created
+  // lazily on first list so existing orgs don't need a backfill step.
+  await getOrCreateWeekoffShift(orgId);
   return db("shifts")
     .where({ organization_id: orgId, is_active: true })
     .orderBy("name", "asc");
+}
+
+/**
+ * Resolve the per-org "Week-off" sentinel shift, creating it on first use.
+ *
+ * Modelled as a regular row in `shifts` with `is_weekoff=true` and zero
+ * start/end times so the existing shift_assignments FK and join semantics
+ * keep working unchanged. The Shift Schedule UI surfaces this row as a
+ * distinct "Week-off" option in the Edit Assignment modal; assigning it
+ * to a sub-range carves out a weekoff day while the surrounding shift
+ * assignment is preserved by the existing sub-range split logic in
+ * updateShiftAssignment.
+ *
+ * Idempotent: re-uses the existing row if one is found.
+ */
+export async function getOrCreateWeekoffShift(orgId: number) {
+  const db = getDB();
+  const existing = await db("shifts")
+    .where({ organization_id: orgId, is_weekoff: true })
+    .first();
+  if (existing) {
+    // Self-heal: an admin who hit "Delete shift" on the sentinel via the
+    // generic shifts UI (the soft-delete sets is_active=false) would
+    // otherwise lock the Mark-as-Week-off toggle out for the whole org
+    // until the row was manually flipped back. Reactivate on read so the
+    // toggle never goes dead.
+    if (!existing.is_active) {
+      await db("shifts")
+        .where({ id: existing.id })
+        .update({ is_active: true, updated_at: new Date() });
+      return { ...existing, is_active: true };
+    }
+    return existing;
+  }
+
+  const [id] = await db("shifts").insert({
+    organization_id: orgId,
+    name: "Week-off",
+    start_time: "00:00:00",
+    end_time: "00:00:00",
+    break_minutes: 0,
+    grace_minutes_late: 0,
+    grace_minutes_early: 0,
+    is_night_shift: false,
+    is_default: false,
+    // The sentinel doesn't have a working-days CSV in the usual sense;
+    // an empty string means "no working days" which the renderer treats
+    // as Off regardless. Belt-and-braces alongside the is_weekoff flag.
+    working_days: "",
+    half_days: "",
+    is_weekoff: true,
+    is_active: true,
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+  return db("shifts").where({ id }).first();
 }
 
 export async function deleteShift(orgId: number, shiftId: number) {
   const db = getDB();
   const shift = await db("shifts").where({ id: shiftId, organization_id: orgId }).first();
   if (!shift) throw new NotFoundError("Shift");
+
+  // The "Week-off" sentinel is part of the Edit-Assignment UX -- soft-
+  // deleting it would disable the Mark-as-Week-off toggle for the whole
+  // org until someone manually reactivates. Refuse the delete (a future
+  // listShifts call would self-heal it anyway via
+  // getOrCreateWeekoffShift, but the explicit error here is a clearer
+  // signal to admins that this row isn't user-deletable).
+  if (shift.is_weekoff) {
+    throw new ValidationError(
+      "The Week-off shift is a system-managed row and cannot be deleted.",
+    );
+  }
 
   await db("shifts").where({ id: shiftId }).update({ is_active: false, updated_at: new Date() });
 }
@@ -376,6 +448,16 @@ export async function getSchedule(
     .where(function () {
       this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [params.start_date]);
     })
+    // Drop bogus rows where effective_to < effective_from (artifact of
+    // an older sub-range split bug). Same guard as attendance grid.
+    .whereRaw("(sa.effective_to IS NULL OR DATE(sa.effective_to) >= DATE(sa.effective_from))")
+    // "Latest intent wins" -- the .find() in the FE cell render picks
+    // the first array element matching the date. Order by most recently
+    // created so newer assignments override older overlapping ones, and
+    // the Attendance Grid + Shift Schedule + My Schedule all agree on
+    // which assignment wins for any (user, date).
+    .orderBy("sa.created_at", "desc")
+    .orderBy("sa.id", "desc")
     .select(
       "sa.id as assignment_id",
       "sa.user_id",
@@ -387,6 +469,9 @@ export async function getSchedule(
       "s.end_time",
       "s.is_night_shift",
       "s.working_days",
+      // #67 — Surface the weekoff flag so the schedule grid can render an
+      // "Off" pill for the cell instead of the shift name.
+      "s.is_weekoff",
     );
 
   // Build a map of user_id -> assignments
@@ -431,6 +516,9 @@ export async function getMySchedule(orgId: number, userId: number) {
     .where(function () {
       this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [startStr]);
     })
+    // Drop bogus rows where effective_to < effective_from, same guard
+    // as the team-schedule and attendance-grid reads.
+    .whereRaw("(sa.effective_to IS NULL OR DATE(sa.effective_to) >= DATE(sa.effective_from))")
     .select(
       "sa.id as assignment_id",
       "sa.shift_id",
@@ -442,8 +530,15 @@ export async function getMySchedule(orgId: number, userId: number) {
       "s.is_night_shift",
       "s.break_minutes",
       "s.working_days",
+      // #67 — Same Off-pill rendering applies on the employee's own
+      // schedule view, so surface the flag here too.
+      "s.is_weekoff",
     )
-    .orderBy("sa.effective_from", "asc");
+    // "Latest intent wins" -- order so the most recently created
+    // assignment is the first one the FE's .find() matches for any
+    // overlapping date.
+    .orderBy("sa.created_at", "desc")
+    .orderBy("sa.id", "desc");
 
   return {
     start_date: startStr,

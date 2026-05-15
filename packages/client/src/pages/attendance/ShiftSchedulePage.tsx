@@ -145,6 +145,12 @@ export default function ShiftSchedulePage() {
     effective_from: string;
     effective_to: string | null;
   } | null>(null);
+  // #67 — Week-off toggle for the Edit Assignment modal. Decoupled from
+  // the shift dropdown so HR can flip "this day is off" without scrolling
+  // a dropdown to find a sentinel entry. The actual shift_id sent to the
+  // server is the org's weekoff sentinel when this is on; otherwise it's
+  // whatever the dropdown is showing.
+  const [editIsWeekoff, setEditIsWeekoff] = useState(false);
 
   // Team Schedule grid: client-side search + pagination + filters.
   const [search, setSearch] = useState("");
@@ -160,6 +166,19 @@ export default function ShiftSchedulePage() {
   const week = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
   const { data: shifts = [] } = useShifts();
+
+  // #67 — Split shifts into "real" working shifts and the weekoff sentinel.
+  // The dropdown only shows working shifts now (the sentinel is exposed
+  // via the toggle below). `weekoffShiftId` is the id we substitute into
+  // the request payload when the toggle is on.
+  const workingShifts = useMemo(
+    () => (shifts as any[]).filter((s: any) => !s.is_weekoff),
+    [shifts],
+  );
+  const weekoffShiftId = useMemo(() => {
+    const found = (shifts as any[]).find((s: any) => s.is_weekoff);
+    return found ? (found.id as number) : null;
+  }, [shifts]);
   const { data: schedule = [], isLoading: scheduleLoading } = useSchedule(week.start, week.end);
   const { data: mySchedule } = useMySchedule();
   const { data: swapRequests = [], isLoading: swapsLoading } = useSwapRequests();
@@ -287,15 +306,47 @@ export default function ShiftSchedulePage() {
   const handleEditAssignment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editAssignment) return;
+    // #67 — Substitute the weekoff sentinel id when the toggle is on, so
+    // the existing sub-range split logic in updateShiftAssignment carves
+    // out the weekoff days and preserves the surrounding shift.
+    const submitShiftId =
+      editIsWeekoff && weekoffShiftId != null ? weekoffShiftId : editAssignment.shift_id;
     updateAssignment.mutate({
       id: editAssignment.id,
       data: {
-        shift_id: editAssignment.shift_id,
+        shift_id: submitShiftId,
         effective_from: editAssignment.effective_from,
         effective_to: editAssignment.effective_to || null,
       },
     });
   };
+
+  // #67 — Sync the toggle when the modal opens: if the user pencil-clicked
+  // a cell that's already a weekoff assignment, start the modal with the
+  // toggle on AND repoint the dropdown to a real working shift so the
+  // user has something sensible to fall back to if they flip the toggle
+  // off. The original shift_id from the assignment row is the weekoff
+  // sentinel id, which we deliberately hide from the dropdown.
+  useEffect(() => {
+    if (!editAssignment) {
+      setEditIsWeekoff(false);
+      return;
+    }
+    const isCurrentlyWeekoff =
+      weekoffShiftId != null && editAssignment.shift_id === weekoffShiftId;
+    setEditIsWeekoff(isCurrentlyWeekoff);
+    if (isCurrentlyWeekoff) {
+      // Repoint the dropdown silently. The submit handler ignores
+      // editAssignment.shift_id when editIsWeekoff is true, so this
+      // doesn't affect what gets sent -- it just keeps the disabled
+      // dropdown showing a real shift name for clarity.
+      const fallback = workingShifts[0]?.id as number | undefined;
+      if (fallback && editAssignment.shift_id !== fallback) {
+        setEditAssignment((prev) => (prev ? { ...prev, shift_id: fallback } : prev));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editAssignment?.id]);
 
   const toggleBulkUser = (id: number) => {
     setBulkUserIds((prev) =>
@@ -639,20 +690,103 @@ export default function ShiftSchedulePage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.shiftLabel')}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('attendance.shiftSchedule.edit.shiftLabel')}
+                </label>
+                {/*
+                  Shift dropdown stays enabled even when "Mark as Week-off"
+                  is on. The week-off override is intended for cases like
+                  "one extra weekoff this month on top of the existing
+                  shift" -- HR needs to see which shift is in effect for
+                  the surrounding range. The submit handler picks the
+                  weekoff sentinel id when the toggle is on, otherwise
+                  uses the dropdown value, so the two controls are
+                  decoupled: the dropdown is the "what shift applies on
+                  non-weekoff days" reference.
+                */}
                 <select
                   value={editAssignment.shift_id}
-                  onChange={(e) => setEditAssignment({ ...editAssignment, shift_id: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setEditAssignment({ ...editAssignment, shift_id: Number(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                   required
                 >
-                  {shifts.map((s: any) => (
+                  {workingShifts.map((s: any) => (
                     <option key={s.id} value={s.id}>
                       {s.name} ({s.start_time} - {s.end_time})
                     </option>
                   ))}
                 </select>
+                {editIsWeekoff && (
+                  <p className="mt-1 text-xs text-amber-700">
+                    {t('attendance.shiftSchedule.edit.weekoffOverrideHint', {
+                      defaultValue:
+                        'Selected date range will be saved as Week-off. The shift above stays in effect for the surrounding dates.',
+                    })}
+                  </p>
+                )}
               </div>
+
+              {/*
+                #67 — Week-off toggle. Sits below the shift dropdown so the
+                primary action (pick a shift) stays the visual default, with
+                "mark this day as off" as a single-click override that
+                disables the shift selector and submits the org's weekoff
+                sentinel instead.
+
+                Implementation note: this is a plain button with role=switch
+                (not a hidden checkbox + peer-checked Tailwind trick).
+                The peer-checked approach was unreliable in the form
+                context — clicks on the visible track were getting lost
+                somewhere between label, sr-only input, and form. An
+                explicit onClick eliminates the ambiguity entirely.
+              */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={editIsWeekoff}
+                aria-disabled={weekoffShiftId == null || undefined}
+                onClick={() => {
+                  if (weekoffShiftId == null) return;
+                  setEditIsWeekoff((v) => !v);
+                }}
+                className={`flex w-full items-start justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition ${
+                  weekoffShiftId == null
+                    ? 'cursor-not-allowed opacity-60 border-gray-200 bg-white'
+                    : editIsWeekoff
+                      ? 'cursor-pointer border-amber-300 bg-amber-50'
+                      : 'cursor-pointer border-gray-200 bg-white hover:bg-gray-50'
+                }`}
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900">
+                    {t('attendance.shiftSchedule.edit.weekoffToggle', {
+                      defaultValue: 'Mark as Week-off',
+                    })}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {t('attendance.shiftSchedule.edit.weekoffHint', {
+                      defaultValue:
+                        'Carves out the selected date range as off. Surrounding shift dates are preserved.',
+                    })}
+                  </p>
+                </div>
+                {/* Track */}
+                <span
+                  aria-hidden
+                  className={`relative inline-block h-6 w-11 flex-shrink-0 rounded-full transition-colors ${
+                    editIsWeekoff ? 'bg-brand-600' : 'bg-gray-300'
+                  }`}
+                >
+                  {/* Thumb */}
+                  <span
+                    className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                      editIsWeekoff ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </span>
+              </button>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.from')}</label>
                 <input
@@ -861,6 +995,15 @@ export default function ShiftSchedulePage() {
                         // weekends. Render "Off" on those cells so the schedule
                         // reflects what the shift definition actually says.
                         // dayOfWeek: 0=Sun..6=Sat (matches shift.working_days CSV).
+                        //
+                        // #67 — `assignment.is_weekoff` is the explicit
+                        // per-assignment override added by the "Week-off"
+                        // option in the Edit Assignment modal. When set,
+                        // every day in the assignment's date range renders
+                        // as Off regardless of working_days, since the
+                        // entire sub-range was intentionally carved out as
+                        // a weekoff (e.g. swapping Tuesday off for a long
+                        // weekend).
                         const dayOfWeek = new Date(date + "T00:00:00").getDay();
                         const workingDays = (assignment?.working_days ?? "")
                           .toString()
@@ -868,7 +1011,10 @@ export default function ShiftSchedulePage() {
                           .filter(Boolean)
                           .map((d: string) => Number(d));
                         const isOffDay =
-                          assignment && workingDays.length > 0 && !workingDays.includes(dayOfWeek);
+                          assignment && (
+                            !!assignment.is_weekoff ||
+                            (workingDays.length > 0 && !workingDays.includes(dayOfWeek))
+                          );
                         return (
                           <td key={date} className="px-2 py-3 text-center">
                             {assignment ? (
