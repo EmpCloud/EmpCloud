@@ -841,7 +841,7 @@ export async function matchAndPunch(
   orgIds: number[],
   loggedInUserId: number,
   timezone: string | null,
-  body: { finger?: string; face?: string; bio_code?: string },
+  body: { finger?: string; face?: string; bio_code?: string; device_identifier?: string },
 ) {
   const db = getDB();
 
@@ -930,14 +930,20 @@ export async function matchAndPunch(
   // gates are gone — both blocked legitimate workflows like a quick
   // step-out for a meeting.
   if (existing && existing.check_in) {
-    await attendanceService.checkOut(punchOrgId, user.id, { source: "biometric" } as any);
+    await attendanceService.checkOut(punchOrgId, user.id, {
+      source: "biometric",
+      device_identifier: body.device_identifier,
+    } as any);
     return {
       data: { auth, status: 1, time: timeStr, userData: employeeDetails },
       message: "Successfully Checked Out",
     };
   }
 
-  await attendanceService.checkIn(punchOrgId, user.id, { source: "biometric" } as any);
+  await attendanceService.checkIn(punchOrgId, user.id, {
+    source: "biometric",
+    device_identifier: body.device_identifier,
+  } as any);
   return {
     data: { auth, status: 0, time: timeStr, userData: employeeDetails },
     message: "Successfully Checked In",

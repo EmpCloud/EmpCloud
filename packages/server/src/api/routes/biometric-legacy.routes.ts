@@ -244,11 +244,18 @@ router.post("/get-user-info", kioskAuthenticate, async (req, res, next) => {
     const orgIds = getKioskOrgIds(req);
     const timezone = req.kioskUser!.userData.timezone ?? null;
     const loggedInId = req.kioskUser!.userData.id;
-    const { finger, face, bio_code } = req.body || {};
+    const { finger, face, bio_code, device_identifier } = req.body || {};
     if (finger == null && face == null && bio_code == null) {
       return resp(res, 400, null, "finger, face or bio_code required", "Validation Failed");
     }
-    const result = await svc.matchAndPunch(orgIds, loggedInId, timezone, { finger, face, bio_code });
+    // device_identifier is optional — clamp to 128 chars to match the
+    // attendance_punches column (migration 068). Anything longer is silently
+    // truncated rather than 400'd, so an over-eager kiosk doesn't lose a punch.
+    const deviceId =
+      typeof device_identifier === "string" && device_identifier.length > 0
+        ? device_identifier.slice(0, 128)
+        : undefined;
+    const result = await svc.matchAndPunch(orgIds, loggedInId, timezone, { finger, face, bio_code, device_identifier: deviceId });
     if ("error" in result) return resp(res, result.error!.code, null, result.error!.message);
     return resp(res, 200, result.data, result.message);
   } catch (err) { next(err); }
