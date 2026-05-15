@@ -15,6 +15,8 @@ import { sendInvitationEmail } from "../email/email.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
 import * as nasService from "../nas/nas.service.js";
 import { logger } from "../../utils/logger.js";
+import fs from "fs";
+import path from "path";
 
 /** Strip sensitive fields from user records before sending to client */
 function sanitizeUser(user: any): UserPublic {
@@ -570,6 +572,26 @@ export async function deactivateUser(
       logger.warn(
         `Failed to delete NAS face image for deleted user ${userId}`,
         { err: (err as Error)?.message, path: nasPath },
+      );
+    }
+  }
+
+  // Same pattern for the manually-uploaded profile photo. user.photo_path
+  // points at a file on the API server's local disk under uploads/photos/...,
+  // served by /api/v1/employees/:id/photo. Without this, the file lingers on
+  // disk forever once the user row is gone. user is loaded at the top of the
+  // function so user.photo_path is still in scope after the transaction.
+  if (user.photo_path) {
+    try {
+      const fullPath = path.join(process.cwd(), user.photo_path);
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+        logger.info(`Deleted local photo file for deleted user ${userId}`, { path: user.photo_path });
+      }
+    } catch (err) {
+      logger.warn(
+        `Failed to delete local photo file for deleted user ${userId}`,
+        { err: (err as Error)?.message, path: user.photo_path },
       );
     }
   }
