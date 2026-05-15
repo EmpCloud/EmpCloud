@@ -697,6 +697,11 @@ export const checkInSchema = z.object({
   longitude: z.number().min(-180).max(180).optional(),
   source: z.enum(["manual", "biometric", "geo", "dashboard", "app"]).default("manual"),
   remarks: z.string().optional(),
+  // Free-text identifier for the physical device that recorded the punch
+  // (kiosk tablet id, biometric reader serial, mobile device id, etc.).
+  // Persisted onto attendance_punches.device_identifier; surfaced in the
+  // attendance UI when populated.
+  device_identifier: z.string().max(128).optional(),
 });
 
 export const checkOutSchema = z.object({
@@ -704,6 +709,7 @@ export const checkOutSchema = z.object({
   longitude: z.number().min(-180).max(180).optional(),
   source: z.enum(["manual", "biometric", "geo", "dashboard", "app"]).default("manual"),
   remarks: z.string().optional(),
+  device_identifier: z.string().max(128).optional(),
 });
 
 // ---- Attendance settings (org level) ----

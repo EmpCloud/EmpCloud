@@ -29,6 +29,7 @@ interface PunchInput {
   latitude?: number | null;
   longitude?: number | null;
   remarks?: string | null;
+  device_identifier?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -231,6 +232,7 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
     source,
     latitude: lat,
     longitude: lng,
+    device_identifier: data.device_identifier ?? null,
   });
 
   // Recompute denormalised fields from the punch list. Cheap because the
@@ -406,6 +408,7 @@ export async function checkIn(orgId: number, userId: number, data: CheckInInput)
     latitude: data.latitude,
     longitude: data.longitude,
     remarks: data.remarks,
+    device_identifier: data.device_identifier,
   });
 }
 
@@ -414,6 +417,7 @@ export async function checkOut(orgId: number, userId: number, data: CheckOutInpu
     source: data.source,
     latitude: data.latitude,
     longitude: data.longitude,
+    device_identifier: data.device_identifier,
   });
 }
 
@@ -432,7 +436,7 @@ export async function listPunches(orgId: number, attendanceRecordId: number) {
   const punches = await db("attendance_punches")
     .where({ attendance_record_id: attendanceRecordId })
     .orderBy("punch_time", "asc")
-    .select("id", "punch_time", "source", "latitude", "longitude", "created_at");
+    .select("id", "punch_time", "source", "latitude", "longitude", "device_identifier", "created_at");
   return { record, punches };
 }
 
