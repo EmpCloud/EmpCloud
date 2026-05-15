@@ -13,6 +13,8 @@ import {
 } from "../subscription/subscription.service.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import type { CreateUserInput, UpdateUserInput, InviteUserInput, UserPublic } from "@empcloud/shared";
+import * as nasService from "../nas/nas.service.js";
+import { logger } from "../../utils/logger.js";
 
 /** Strip sensitive fields from user records before sending to client */
 function sanitizeUser(user: any): UserPublic {
@@ -534,10 +536,43 @@ export async function deactivateUser(
     );
   }
 
+  // Capture the biometric face_url BEFORE the transaction — the cascade
+  // DELETE wipes biometric_legacy_credentials, so the NAS path is
+  // unrecoverable afterwards. The actual NAS delete runs AFTER the
+  // transaction commits, so a rolled-back user delete never removes the
+  // file for a user who still exists. Legacy local-disk face files (no
+  // `nas:` prefix) are left alone here — they live on the API server's
+  // filesystem and the kiosk infra still references them.
+  const biometric = await db("biometric_legacy_credentials")
+    .where({ user_id: userId })
+    .first("face_url");
+  const faceUrl: string | null = biometric?.face_url ?? null;
+
   await db.transaction(async (trx) => {
     await purgeUserHard(trx, orgId, userId, actorUserId);
     await trx("organizations").where({ id: orgId }).decrement("current_user_count", 1);
   });
+
+  // Post-commit NAS cleanup — best-effort. Failures here log a warning and
+  // leave an orphan image on NAS, but never block or undo the user delete
+  // (the user is already gone). An orphan file is recoverable by a janitor
+  // job; reversing a committed user delete is not.
+  if (faceUrl && faceUrl.startsWith("nas:")) {
+    const nasPath = faceUrl.slice(4);
+    try {
+      const deleted = await nasService.deleteFile(nasPath);
+      if (deleted) {
+        logger.info(`Deleted NAS face image for deleted user ${userId}`, { path: nasPath });
+      } else {
+        logger.warn(`NAS face image not found for deleted user ${userId}`, { path: nasPath });
+      }
+    } catch (err) {
+      logger.warn(
+        `Failed to delete NAS face image for deleted user ${userId}`,
+        { err: (err as Error)?.message, path: nasPath },
+      );
+    }
+  }
 }
 
 // Strip all references to a user and DELETE the row. Caller is responsible
