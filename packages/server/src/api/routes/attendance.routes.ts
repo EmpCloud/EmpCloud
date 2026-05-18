@@ -745,6 +745,7 @@ router.get(
             "leave_applications.end_date",
             "leave_applications.days_count",
             "leave_applications.is_half_day",
+            "leave_applications.half_day_type",
             "leave_applications.reason",
             "leave_types.name as leave_type_name",
             "leave_types.color as leave_type_color",
@@ -789,12 +790,17 @@ router.post(
   requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user_id, date, leave_type_id, is_half_day } = req.body || {};
+      const { user_id, date, leave_type_id, is_half_day, half_day_type } = req.body || {};
       if (!user_id || !date || !leave_type_id) {
         throw new Error("user_id, date and leave_type_id are required");
       }
       const orgId = req.user!.org_id;
       const halfDay = Boolean(is_half_day);
+      // Whitelist the half_day_type — only the two enum values are accepted.
+      // Anything else (including legacy callers that omit it) falls back to
+      // "first_half" so back-compat is preserved.
+      const resolvedHalf: "first_half" | "second_half" =
+        half_day_type === "second_half" ? "second_half" : "first_half";
 
       // Capture WHO applied this so HR can audit later (the original
       // "Applied by HR via Attendance Grid" was anonymous).
@@ -815,7 +821,7 @@ router.post(
           end_date: String(date),
           days_count: halfDay ? 0.5 : 1,
           is_half_day: halfDay,
-          half_day_type: halfDay ? "first_half" : undefined,
+          half_day_type: halfDay ? resolvedHalf : undefined,
           reason: reasonText,
         } as any,
         // HR is recording attendance on behalf, often retroactively (an

@@ -706,6 +706,7 @@ function CellEditor({
     end_date: string;
     days_count: number;
     is_half_day: boolean;
+    half_day_type: "first_half" | "second_half" | null;
   }> = ctxRes?.existingApplications ?? [];
 
   useEffect(() => {
@@ -782,7 +783,16 @@ function CellEditor({
             {existingApplications.map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-2">
                 <span className="truncate">
-                  {a.leave_type_name} {a.is_half_day ? "(half day)" : ""}
+                  {a.leave_type_name}
+                  {a.is_half_day && (
+                    <span className="ml-1 text-blue-700/70">
+                      ({a.half_day_type === "second_half"
+                        ? "½ PM"
+                        : a.half_day_type === "first_half"
+                          ? "½ AM"
+                          : "half day"})
+                    </span>
+                  )}
                 </span>
                 <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-[10px] font-medium uppercase">
                   {a.status}
