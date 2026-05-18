@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Briefcase, AlertTriangle, MapPin, CheckCircle2 } from "lucide-react";
 import api from "@/api/client";
@@ -12,6 +13,9 @@ interface PendingConfirm {
 }
 
 export default function VacanciesPage() {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`positions.vacancies.${k}`, opts ?? {});
   const queryClient = useQueryClient();
   const [pending, setPending] = useState<PendingConfirm | null>(null);
   const { data, isLoading } = useQuery({
@@ -30,11 +34,16 @@ export default function VacanciesPage() {
       queryClient.invalidateQueries({ queryKey: ["position-vacancies"] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
       queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
-      showToast("success", pending ? `"${pending.title}" marked as filled.` : "Position marked as filled.");
+      showToast(
+        "success",
+        pending
+          ? (tx("markSuccess", { title: pending.title }) as string)
+          : (tx("markSuccessGeneric") as string),
+      );
       setPending(null);
     },
     onError: (err: any) => {
-      showToast("error", err?.response?.data?.error?.message || "Failed to mark position as filled");
+      showToast("error", err?.response?.data?.error?.message || (tx("markError") as string));
       setPending(null);
     },
   });
@@ -44,7 +53,7 @@ export default function VacanciesPage() {
   // Group by department
   const grouped: Record<string, any[]> = {};
   for (const v of vacancies) {
-    const dept = v.department_name || "Unassigned";
+    const dept = v.department_name || (tx("unassigned") as string);
     if (!grouped[dept]) grouped[dept] = [];
     grouped[dept].push(v);
   }
@@ -53,12 +62,12 @@ export default function VacanciesPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Open Vacancies</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
           <p className="text-gray-500 mt-1">
-            Positions where headcount is not yet filled.
+            {tx("subtitle")}
             {vacancies.length > 0 && (
               <span className="ml-2 text-brand-600 font-medium">
-                {vacancies.length} position{vacancies.length !== 1 ? "s" : ""} with openings
+                {tx("positionsWithOpenings", { count: vacancies.length })}
               </span>
             )}
           </p>
@@ -67,13 +76,13 @@ export default function VacanciesPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-400">Loading vacancies...</div>
+          <div className="text-gray-400">{tx("loading")}</div>
         </div>
       ) : vacancies.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
           <Briefcase className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-gray-900">No Open Vacancies</h3>
-          <p className="text-sm text-gray-500 mt-1">All positions are fully staffed.</p>
+          <h3 className="text-lg font-medium text-gray-900">{tx("noVacanciesTitle")}</h3>
+          <p className="text-sm text-gray-500 mt-1">{tx("noVacanciesSubtitle")}</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -114,11 +123,11 @@ export default function VacanciesPage() {
                         <div>
                           <span className="text-lg font-bold text-amber-600">{pos.open_count}</span>
                           <span className="text-xs text-gray-500 ml-1">
-                            opening{pos.open_count !== 1 ? "s" : ""}
+                            {tx("openings", { count: pos.open_count })}
                           </span>
                         </div>
                         <span className="text-xs text-gray-400">
-                          {pos.headcount_filled}/{pos.headcount_budget} filled
+                          {tx("filledRatio", { filled: pos.headcount_filled, budget: pos.headcount_budget })}
                         </span>
                       </div>
 
@@ -149,8 +158,8 @@ export default function VacanciesPage() {
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {markFilledMutation.isPending && markFilledMutation.variables === pos.id
-                        ? "Marking..."
-                        : "Mark as Filled"}
+                        ? tx("marking")
+                        : tx("mark")}
                     </button>
                   </div>
                 ))}
@@ -162,9 +171,9 @@ export default function VacanciesPage() {
 
       <ConfirmDialog
         open={pending !== null}
-        title={pending ? `Mark "${pending.title}" as filled?` : ""}
-        description="This position will be removed from the open vacancies list."
-        confirmText="Mark as Filled"
+        title={pending ? (tx("confirmTitle", { title: pending.title }) as string) : ""}
+        description={tx("confirmDescription") as string}
+        confirmText={tx("mark") as string}
         variant="success"
         loading={markFilledMutation.isPending}
         onConfirm={() => pending && markFilledMutation.mutate(pending.id)}

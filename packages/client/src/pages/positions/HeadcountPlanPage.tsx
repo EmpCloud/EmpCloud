@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText, X } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 
 export default function HeadcountPlanPage() {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`positions.headcountPlans.${k}`, opts ?? {});
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -99,11 +103,11 @@ export default function HeadcountPlanPage() {
     const planned = parseInt(form.planned_headcount, 10);
     const current = parseInt(form.current_headcount, 10);
     if (!Number.isFinite(planned) || planned < 0) {
-      alert("Planned Headcount must be 0 or greater.");
+      alert(tx("alertPlannedInvalid"));
       return;
     }
     if (!Number.isFinite(current) || current < 0) {
-      alert("Current Headcount must be 0 or greater.");
+      alert(tx("alertCurrentInvalid"));
       return;
     }
     createMutation.mutate({
@@ -142,78 +146,77 @@ export default function HeadcountPlanPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Headcount Plans</h1>
-          <p className="text-gray-500 mt-1">Plan and track workforce growth across departments.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
+          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
-          New Plan
+          {tx("newPlan")}
         </button>
       </div>
 
       {/* Create Form */}
       {showCreate && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Create Headcount Plan</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{tx("createTitle")}</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("planTitleLabel")} *</label>
               <input
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Q2 2026 Engineering Hiring"
+                placeholder={tx("planTitlePlaceholder") as string}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fiscal Year *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("fiscalYear")} *</label>
               <select
                 value={form.fiscal_year}
                 onChange={(e) => setForm({ ...form, fiscal_year: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 required
               >
-                <option value="">Select year</option>
+                <option value="">{tx("selectYear")}</option>
                 {fiscalYearOptions.map((y) => (
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quarter</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("quarter")}</label>
               <select
                 value={form.quarter}
                 onChange={(e) => setForm({ ...form, quarter: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
-                <option value="">Annual / None</option>
+                <option value="">{tx("annualOrNone")}</option>
                 <option value="Q1">Q1</option>
                 <option value="Q2">Q2</option>
                 <option value="Q3">Q3</option>
                 <option value="Q4">Q4</option>
-                <option value="annual">Annual</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("department")}</label>
               <select
                 value={form.department_id}
                 onChange={(e) => setForm({ ...form, department_id: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
-                <option value="">Organization-wide</option>
+                <option value="">{tx("orgWide")}</option>
                 {deptList.map((d: any) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Planned Headcount</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("plannedHeadcount")}</label>
               <input
                 type="number"
                 value={form.planned_headcount}
@@ -224,7 +227,7 @@ export default function HeadcountPlanPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Current Headcount</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("currentHeadcount")}</label>
               <input
                 type="number"
                 value={form.current_headcount}
@@ -235,7 +238,7 @@ export default function HeadcountPlanPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Budget (paise/cents)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("budgetForm")}</label>
               <input
                 type="number"
                 value={form.budget_amount}
@@ -244,7 +247,7 @@ export default function HeadcountPlanPage() {
               />
             </div>
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("notes")}</label>
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
@@ -258,15 +261,15 @@ export default function HeadcountPlanPage() {
                 disabled={createMutation.isPending}
                 className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
               >
-                {createMutation.isPending ? "Creating..." : "Create Plan"}
+                {createMutation.isPending ? tx("creating") : tx("create")}
               </button>
               <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
-                Cancel
+                {tx("cancel")}
               </button>
             </div>
             {createMutation.isError && (
               <p className="col-span-full text-sm text-red-600">
-                {(createMutation.error as any)?.response?.data?.error?.message || "Failed to create plan"}
+                {(createMutation.error as any)?.response?.data?.error?.message || tx("failedCreate")}
               </p>
             )}
           </form>
@@ -280,11 +283,11 @@ export default function HeadcountPlanPage() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="submitted">Submitted</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
+          <option value="">{tx("allStatuses")}</option>
+          <option value="draft">{tx("statusDraft")}</option>
+          <option value="submitted">{tx("statusSubmitted")}</option>
+          <option value="approved">{tx("statusApproved")}</option>
+          <option value="rejected">{tx("statusRejected")}</option>
         </select>
       </div>
 
@@ -293,21 +296,21 @@ export default function HeadcountPlanPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Plan</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Fiscal Year</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Planned</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Approved</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Current</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colPlan")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("fiscalYear")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("department")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colPlanned")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colApproved")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colCurrent")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colStatus")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{tx("loading")}</td></tr>
             ) : plans.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No headcount plans found</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{tx("noPlans")}</td></tr>
             ) : (
               plans.map((plan: any) => (
                 // #1548 — Row is clickable and opens the details modal. Action
@@ -334,12 +337,14 @@ export default function HeadcountPlanPage() {
                     {plan.quarter && <span className="text-xs text-gray-400 ml-6">{plan.quarter}</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{plan.fiscal_year}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{plan.department_name || "Org-wide"}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{plan.department_name || tx("orgWideShort")}</td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{plan.planned_headcount}</td>
                   <td className="px-6 py-4 text-sm font-medium text-green-600">{plan.approved_headcount}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{plan.current_headcount}</td>
                   <td className="px-6 py-4">
-                    <span className={statusBadge(plan.status)}>{plan.status}</span>
+                    <span className={statusBadge(plan.status)}>
+                      {tx(`status${plan.status.charAt(0).toUpperCase()}${plan.status.slice(1)}`, { defaultValue: plan.status })}
+                    </span>
                   </td>
                   <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <div className="flex gap-2">
@@ -349,7 +354,7 @@ export default function HeadcountPlanPage() {
                           disabled={submitMutation.isPending}
                           className="text-xs text-blue-600 hover:underline"
                         >
-                          Submit
+                          {tx("actionSubmit")}
                         </button>
                       )}
                       {(plan.status === "submitted" || plan.status === "draft") && (
@@ -359,17 +364,17 @@ export default function HeadcountPlanPage() {
                             disabled={approveMutation.isPending}
                             className="text-xs text-green-600 hover:underline"
                           >
-                            Approve
+                            {tx("actionApprove")}
                           </button>
                           <button
                             onClick={() => {
-                              const reason = prompt("Rejection reason (optional):");
+                              const reason = prompt(tx("rejectPrompt") as string);
                               rejectMutation.mutate({ planId: plan.id, reason: reason || undefined });
                             }}
                             disabled={rejectMutation.isPending}
                             className="text-xs text-red-600 hover:underline"
                           >
-                            Reject
+                            {tx("actionReject")}
                           </button>
                         </>
                       )}
@@ -397,12 +402,14 @@ export default function HeadcountPlanPage() {
                   {statusIcon(viewingPlan.status)}
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">{viewingPlan.title}</h2>
-                    <span className={statusBadge(viewingPlan.status)}>{viewingPlan.status}</span>
+                    <span className={statusBadge(viewingPlan.status)}>
+                      {tx(`status${viewingPlan.status.charAt(0).toUpperCase()}${viewingPlan.status.slice(1)}`, { defaultValue: viewingPlan.status })}
+                    </span>
                   </div>
                 </div>
                 <button
                   onClick={() => setViewingPlan(null)}
-                  aria-label="Close"
+                  aria-label={tx("close") as string}
                   className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
                 >
                   <X className="h-5 w-5" />
@@ -410,35 +417,35 @@ export default function HeadcountPlanPage() {
               </div>
               <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Fiscal Year</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("fiscalYear")}</p>
                   <p className="text-gray-900 font-medium">{viewingPlan.fiscal_year || "\u2014"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Quarter</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("quarter")}</p>
                   <p className="text-gray-900 font-medium">{viewingPlan.quarter || "\u2014"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Department</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.department_name || "Org-wide"}</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("department")}</p>
+                  <p className="text-gray-900 font-medium">{viewingPlan.department_name || tx("orgWideShort")}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Currency</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("currency")}</p>
                   <p className="text-gray-900 font-medium">{viewingPlan.currency || "\u2014"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Planned Headcount</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("plannedHeadcount")}</p>
                   <p className="text-gray-900 font-medium">{viewingPlan.planned_headcount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Approved Headcount</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("approvedHeadcount")}</p>
                   <p className="text-green-600 font-medium">{viewingPlan.approved_headcount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Current Headcount</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("currentHeadcount")}</p>
                   <p className="text-gray-900 font-medium">{viewingPlan.current_headcount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Budget</p>
+                  <p className="text-xs text-gray-500 mb-1">{tx("budget")}</p>
                   <p className="text-gray-900 font-medium">
                     {viewingPlan.budget_amount != null
                       ? `${viewingPlan.budget_amount} ${viewingPlan.currency || ""}`.trim()
@@ -447,19 +454,19 @@ export default function HeadcountPlanPage() {
                 </div>
                 {viewingPlan.created_by_name && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Created By</p>
+                    <p className="text-xs text-gray-500 mb-1">{tx("createdBy")}</p>
                     <p className="text-gray-900 font-medium">{viewingPlan.created_by_name}</p>
                   </div>
                 )}
                 {viewingPlan.created_at && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Created</p>
+                    <p className="text-xs text-gray-500 mb-1">{tx("createdAt")}</p>
                     <p className="text-gray-900 font-medium">{new Date(viewingPlan.created_at).toLocaleString()}</p>
                   </div>
                 )}
                 {viewingPlan.notes && (
                   <div className="sm:col-span-2">
-                    <p className="text-xs text-gray-500 mb-1">Notes</p>
+                    <p className="text-xs text-gray-500 mb-1">{tx("notes")}</p>
                     <p className="text-gray-800 whitespace-pre-wrap bg-gray-50 rounded-lg border border-gray-200 px-3 py-2">{viewingPlan.notes}</p>
                   </div>
                 )}
@@ -469,7 +476,7 @@ export default function HeadcountPlanPage() {
                   onClick={() => setViewingPlan(null)}
                   className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                 >
-                  Close
+                  {tx("close")}
                 </button>
               </div>
             </div>
@@ -479,7 +486,7 @@ export default function HeadcountPlanPage() {
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Page {meta.page} of {meta.total_pages} ({meta.total} total)
+              {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
@@ -487,14 +494,14 @@ export default function HeadcountPlanPage() {
                 disabled={page === 1}
                 className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
               >
-                <ChevronLeft className="h-4 w-4" /> Previous
+                <ChevronLeft className="h-4 w-4" /> {tx("previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
                 className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
               >
-                Next <ChevronRight className="h-4 w-4" />
+                {tx("next")} <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>

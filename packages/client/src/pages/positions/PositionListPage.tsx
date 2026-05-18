@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 
 export default function PositionListPage() {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`positions.list.${k}`, opts ?? {});
   const queryClient = useQueryClient();
   // #1553 — Seed the status filter from ?status= so deep-links from the
   // Position Dashboard top cards land on the matching filtered list.
@@ -61,7 +65,7 @@ export default function PositionListPage() {
       // Roll the optimistic removal back so the row reappears if the server
       // rejected the delete.
       context?.snapshots?.forEach(({ key, value }) => queryClient.setQueryData(key as any, value));
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete position");
+      setDeleteError(err?.response?.data?.error?.message || (tx("failedDelete") as string));
     },
   });
 
@@ -136,25 +140,25 @@ export default function PositionListPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Positions</h1>
-          <p className="text-gray-500 mt-1">Manage budgeted positions across the organization.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
+          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Create Position
+          {tx("createPosition")}
         </button>
       </div>
 
       {/* Create Form */}
       {showCreate && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">New Position</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{tx("newPosition")}</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("titleLabel")} *</label>
               <input
                 type="text"
                 value={form.title}
@@ -164,33 +168,33 @@ export default function PositionListPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("common.department")}</label>
               <select
                 value={form.department_id}
                 onChange={(e) => setForm({ ...form, department_id: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
-                <option value="">None</option>
+                <option value="">{tx("none")}</option>
                 {deptList.map((d: any) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("employmentType")}</label>
               <select
                 value={form.employment_type}
                 onChange={(e) => setForm({ ...form, employment_type: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
-                <option value="full_time">Full Time</option>
-                <option value="part_time">Part Time</option>
-                <option value="contract">Contract</option>
-                <option value="intern">Intern</option>
+                <option value="full_time">{tx("fullTime")}</option>
+                <option value="part_time">{tx("partTime")}</option>
+                <option value="contract">{tx("contract")}</option>
+                <option value="intern">{tx("intern")}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Headcount Budget</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("headcountBudget")}</label>
               <input
                 type="number"
                 value={form.headcount_budget}
@@ -200,7 +204,7 @@ export default function PositionListPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Min Salary (paise/cents)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("minSalary")}</label>
               <input
                 type="number"
                 value={form.min_salary}
@@ -209,7 +213,7 @@ export default function PositionListPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Salary (paise/cents)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("maxSalary")}</label>
               <input
                 type="number"
                 value={form.max_salary}
@@ -218,7 +222,7 @@ export default function PositionListPage() {
               />
             </div>
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("jobDescription")}</label>
               <textarea
                 value={form.job_description}
                 onChange={(e) => setForm({ ...form, job_description: e.target.value })}
@@ -234,7 +238,7 @@ export default function PositionListPage() {
                 onChange={(e) => setForm({ ...form, is_critical: e.target.checked })}
                 className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
               />
-              <label htmlFor="is_critical" className="text-sm text-gray-700">Critical Role</label>
+              <label htmlFor="is_critical" className="text-sm text-gray-700">{tx("criticalRole")}</label>
             </div>
             <div className="col-span-full flex gap-3">
               <button
@@ -242,7 +246,7 @@ export default function PositionListPage() {
                 disabled={createMutation.isPending}
                 className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
               >
-                {createMutation.isPending ? "Creating..." : "Create Position"}
+                {createMutation.isPending ? tx("creating") : tx("createPosition")}
               </button>
               <button
                 type="button"
@@ -263,12 +267,12 @@ export default function PositionListPage() {
                 }}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </div>
             {createMutation.isError && (
               <p className="col-span-full text-sm text-red-600">
-                {(createMutation.error as any)?.response?.data?.error?.message || "Failed to create position"}
+                {(createMutation.error as any)?.response?.data?.error?.message || tx("failedCreate")}
               </p>
             )}
           </form>
@@ -284,7 +288,7 @@ export default function PositionListPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            placeholder="Search by title or code..."
+            placeholder={tx("searchPlaceholder") as string}
           />
         </div>
         <select
@@ -292,7 +296,7 @@ export default function PositionListPage() {
           onChange={(e) => { setDepartmentId(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="">All Departments</option>
+          <option value="">{tx("allDepartments")}</option>
           {deptList.map((d: any) => (
             <option key={d.id} value={d.id}>{d.name}</option>
           ))}
@@ -302,11 +306,11 @@ export default function PositionListPage() {
           onChange={(e) => { setStatus(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="filled">Filled</option>
-          <option value="frozen">Frozen</option>
-          <option value="closed">Closed</option>
+          <option value="">{tx("allStatuses")}</option>
+          <option value="active">{tx("statusActive")}</option>
+          <option value="filled">{tx("statusFilled")}</option>
+          <option value="frozen">{tx("statusFrozen")}</option>
+          <option value="closed">{tx("statusClosed")}</option>
         </select>
       </div>
 
@@ -315,24 +319,24 @@ export default function PositionListPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Code</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Title</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Headcount</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Critical</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colCode")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colTitle")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.department")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colType")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colHeadcount")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.status")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colCritical")}</th>
+              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
               <tr>
-                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">Loading...</td>
+                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">{t("common.loading")}</td>
               </tr>
             ) : positions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">No positions found</td>
+                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">{tx("noPositions")}</td>
               </tr>
             ) : (
               positions.map((pos: any) => (
@@ -349,7 +353,17 @@ export default function PositionListPage() {
                   <td className="px-6 py-4 text-sm text-gray-500">{pos.department_name || "-"}</td>
                   <td className="px-6 py-4">
                     <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 capitalize">
-                      {(pos.employment_type || "").replace("_", " ")}
+                      {(() => {
+                        // Map server enum → localized label; fall back to the
+                        // raw word with underscores stripped.
+                        const map: Record<string, string> = {
+                          full_time: tx("fullTime") as string,
+                          part_time: tx("partTime") as string,
+                          contract: tx("contract") as string,
+                          intern: tx("intern") as string,
+                        };
+                        return map[pos.employment_type] || (pos.employment_type || "").replace("_", " ");
+                      })()}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -366,7 +380,7 @@ export default function PositionListPage() {
                       pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
                       "bg-gray-100 text-gray-500"
                     }`}>
-                      {pos.status}
+                      {tx(`status${pos.status.charAt(0).toUpperCase()}${pos.status.slice(1)}`, { defaultValue: pos.status })}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -383,7 +397,7 @@ export default function PositionListPage() {
                         setDeleteError(null);
                       }}
                       className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
-                      title="Delete position"
+                      title={tx("deleteTooltip") as string}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -397,7 +411,7 @@ export default function PositionListPage() {
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Page {meta.page} of {meta.total_pages} ({meta.total} total)
+              {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
@@ -405,14 +419,14 @@ export default function PositionListPage() {
                 disabled={page === 1}
                 className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
               >
-                <ChevronLeft className="h-4 w-4" /> Previous
+                <ChevronLeft className="h-4 w-4" /> {t("common.previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
                 className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
               >
-                Next <ChevronRight className="h-4 w-4" />
+                {t("common.next")} <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -435,11 +449,9 @@ export default function PositionListPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete position?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{tx("deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
-                    Active assignments are ended and the position is closed. This cannot be undone.
+                    {tx("deleteConfirm", { title: deleteTarget.title })}
                   </p>
                 </div>
               </div>
@@ -456,7 +468,7 @@ export default function PositionListPage() {
                 disabled={deleteMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
@@ -466,10 +478,10 @@ export default function PositionListPage() {
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {tx("deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("common.delete")
                 )}
               </button>
             </div>
