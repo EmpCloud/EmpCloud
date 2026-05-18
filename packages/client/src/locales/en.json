@@ -1049,5 +1049,42 @@
       "policy_created": "Policy Created",
       "policy_acknowledged": "Policy Acknowledged"
     }
+  },
+  "employees": {
+    "directory": {
+      "title": "Employee Directory",
+      "subtitle": "Browse and search your organization's employees.",
+      "exportExcel": "Export Excel",
+      "exporting": "Exporting...",
+      "bulkUpdate": "Bulk Update",
+      "pendingInvitations": "Pending Invitations",
+      "importEmployees": "Import Employees",
+      "inviteAll": "Invite All",
+      "inviteAllTooltip": "Send invitations to every employee who hasn't set a password yet",
+      "inviteEmployee": "Invite Employee",
+      "searchPlaceholder": "Search by name, email, designation, or department...",
+      "allDepartments": "All Departments",
+      "allLocations": "All Locations",
+      "allRoles": "All Roles",
+      "roleEmployee": "Employee",
+      "roleManager": "Manager",
+      "roleHrAdmin": "HR Admin",
+      "roleOrgAdmin": "Org Admin",
+      "colEmployee": "Employee",
+      "colEmail": "Email",
+      "colDesignation": "Designation",
+      "colRole": "Role",
+      "colEmpCode": "Emp Code",
+      "noEmployees": "No employees found",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "sendInviteTooltip": "Send invitation to {{email}}",
+      "sendInviteAria": "Send invitation to {{name}}",
+      "editTooltip": "Edit employee",
+      "editAria": "Edit {{name}}",
+      "deleteSelfTooltip": "You cannot delete your own account",
+      "deleteTooltip": "Delete employee",
+      "deleteAria": "Delete {{name}}"
+    }
   }
 }

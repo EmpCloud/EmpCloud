@@ -1049,5 +1049,42 @@
       "policy_created": "Richtlinie erstellt",
       "policy_acknowledged": "Richtlinie best\u00e4tigt"
     }
+  },
+  "employees": {
+    "directory": {
+      "title": "Mitarbeiterverzeichnis",
+      "subtitle": "Durchsuchen Sie die Mitarbeiter Ihrer Organisation.",
+      "exportExcel": "Excel exportieren",
+      "exporting": "Wird exportiert...",
+      "bulkUpdate": "Massenaktualisierung",
+      "pendingInvitations": "Ausstehende Einladungen",
+      "importEmployees": "Mitarbeiter importieren",
+      "inviteAll": "Alle einladen",
+      "inviteAllTooltip": "Einladungen an alle Mitarbeiter senden, die noch kein Passwort festgelegt haben",
+      "inviteEmployee": "Mitarbeiter einladen",
+      "searchPlaceholder": "Nach Name, E-Mail, Bezeichnung oder Abteilung suchen...",
+      "allDepartments": "Alle Abteilungen",
+      "allLocations": "Alle Standorte",
+      "allRoles": "Alle Rollen",
+      "roleEmployee": "Mitarbeiter",
+      "roleManager": "Manager",
+      "roleHrAdmin": "HR-Administrator",
+      "roleOrgAdmin": "Org-Administrator",
+      "colEmployee": "Mitarbeiter",
+      "colEmail": "E-Mail",
+      "colDesignation": "Bezeichnung",
+      "colRole": "Rolle",
+      "colEmpCode": "Mitarb.-Nr.",
+      "noEmployees": "Keine Mitarbeiter gefunden",
+      "statusActive": "Aktiv",
+      "statusInactive": "Inaktiv",
+      "sendInviteTooltip": "Einladung an {{email}} senden",
+      "sendInviteAria": "Einladung an {{name}} senden",
+      "editTooltip": "Mitarbeiter bearbeiten",
+      "editAria": "{{name}} bearbeiten",
+      "deleteSelfTooltip": "Sie k\u00f6nnen Ihr eigenes Konto nicht l\u00f6schen",
+      "deleteTooltip": "Mitarbeiter l\u00f6schen",
+      "deleteAria": "{{name}} l\u00f6schen"
+    }
   }
 }

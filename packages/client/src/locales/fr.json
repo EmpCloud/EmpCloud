@@ -1049,5 +1049,42 @@
       "policy_created": "Politique cr\u00e9\u00e9e",
       "policy_acknowledged": "Politique reconnue"
     }
+  },
+  "employees": {
+    "directory": {
+      "title": "Annuaire des employ\u00e9s",
+      "subtitle": "Parcourez et recherchez les employ\u00e9s de votre organisation.",
+      "exportExcel": "Exporter Excel",
+      "exporting": "Exportation...",
+      "bulkUpdate": "Mise \u00e0 jour group\u00e9e",
+      "pendingInvitations": "Invitations en attente",
+      "importEmployees": "Importer des employ\u00e9s",
+      "inviteAll": "Inviter tous",
+      "inviteAllTooltip": "Envoyer une invitation \u00e0 tous les employ\u00e9s qui n'ont pas encore d\u00e9fini de mot de passe",
+      "inviteEmployee": "Inviter un employ\u00e9",
+      "searchPlaceholder": "Rechercher par nom, e-mail, poste ou d\u00e9partement...",
+      "allDepartments": "Tous les d\u00e9partements",
+      "allLocations": "Tous les sites",
+      "allRoles": "Tous les r\u00f4les",
+      "roleEmployee": "Employ\u00e9",
+      "roleManager": "Manager",
+      "roleHrAdmin": "Admin RH",
+      "roleOrgAdmin": "Admin Org.",
+      "colEmployee": "Employ\u00e9",
+      "colEmail": "E-mail",
+      "colDesignation": "Poste",
+      "colRole": "R\u00f4le",
+      "colEmpCode": "Code emp.",
+      "noEmployees": "Aucun employ\u00e9 trouv\u00e9",
+      "statusActive": "Actif",
+      "statusInactive": "Inactif",
+      "sendInviteTooltip": "Envoyer une invitation \u00e0 {{email}}",
+      "sendInviteAria": "Envoyer une invitation \u00e0 {{name}}",
+      "editTooltip": "Modifier l'employ\u00e9",
+      "editAria": "Modifier {{name}}",
+      "deleteSelfTooltip": "Vous ne pouvez pas supprimer votre propre compte",
+      "deleteTooltip": "Supprimer l'employ\u00e9",
+      "deleteAria": "Supprimer {{name}}"
+    }
   }
 }

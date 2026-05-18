@@ -1049,5 +1049,42 @@
       "policy_created": "Pol\u00edtica creada",
       "policy_acknowledged": "Pol\u00edtica reconocida"
     }
+  },
+  "employees": {
+    "directory": {
+      "title": "Directorio de Empleados",
+      "subtitle": "Navega y busca los empleados de tu organizaci\u00f3n.",
+      "exportExcel": "Exportar Excel",
+      "exporting": "Exportando...",
+      "bulkUpdate": "Actualizaci\u00f3n Masiva",
+      "pendingInvitations": "Invitaciones Pendientes",
+      "importEmployees": "Importar Empleados",
+      "inviteAll": "Invitar a Todos",
+      "inviteAllTooltip": "Enviar invitaciones a todos los empleados que a\u00fan no han establecido una contrase\u00f1a",
+      "inviteEmployee": "Invitar Empleado",
+      "searchPlaceholder": "Buscar por nombre, correo, cargo o departamento...",
+      "allDepartments": "Todos los Departamentos",
+      "allLocations": "Todas las Ubicaciones",
+      "allRoles": "Todos los Roles",
+      "roleEmployee": "Empleado",
+      "roleManager": "Gerente",
+      "roleHrAdmin": "Administrador RR.HH.",
+      "roleOrgAdmin": "Administrador de Org.",
+      "colEmployee": "Empleado",
+      "colEmail": "Correo",
+      "colDesignation": "Cargo",
+      "colRole": "Rol",
+      "colEmpCode": "C\u00f3digo",
+      "noEmployees": "No se encontraron empleados",
+      "statusActive": "Activo",
+      "statusInactive": "Inactivo",
+      "sendInviteTooltip": "Enviar invitaci\u00f3n a {{email}}",
+      "sendInviteAria": "Enviar invitaci\u00f3n a {{name}}",
+      "editTooltip": "Editar empleado",
+      "editAria": "Editar {{name}}",
+      "deleteSelfTooltip": "No puedes eliminar tu propia cuenta",
+      "deleteTooltip": "Eliminar empleado",
+      "deleteAria": "Eliminar {{name}}"
+    }
   }
 }

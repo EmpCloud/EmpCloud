@@ -1049,5 +1049,42 @@
       "policy_created": "\u30dd\u30ea\u30b7\u30fc\u4f5c\u6210",
       "policy_acknowledged": "\u30dd\u30ea\u30b7\u30fc\u627f\u8a8d"
     }
+  },
+  "employees": {
+    "directory": {
+      "title": "\u5f93\u696d\u54e1\u30c7\u30a3\u30ec\u30af\u30c8\u30ea",
+      "subtitle": "\u7d44\u7e54\u306e\u5f93\u696d\u54e1\u3092\u95b2\u89a7\u30fb\u691c\u7d22\u3057\u307e\u3059\u3002",
+      "exportExcel": "Excel \u30a8\u30af\u30b9\u30dd\u30fc\u30c8",
+      "exporting": "\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u4e2d...",
+      "bulkUpdate": "\u4e00\u62ec\u66f4\u65b0",
+      "pendingInvitations": "\u4fdd\u7559\u4e2d\u306e\u62db\u5f85",
+      "importEmployees": "\u5f93\u696d\u54e1\u306e\u30a4\u30f3\u30dd\u30fc\u30c8",
+      "inviteAll": "\u5168\u54e1\u3092\u62db\u5f85",
+      "inviteAllTooltip": "\u307e\u3060\u30d1\u30b9\u30ef\u30fc\u30c9\u3092\u8a2d\u5b9a\u3057\u3066\u3044\u306a\u3044\u3059\u3079\u3066\u306e\u5f93\u696d\u54e1\u306b\u62db\u5f85\u3092\u9001\u4fe1\u3057\u307e\u3059",
+      "inviteEmployee": "\u5f93\u696d\u54e1\u3092\u62db\u5f85",
+      "searchPlaceholder": "\u540d\u524d\u3001\u30e1\u30fc\u30eb\u3001\u5f79\u8077\u3001\u90e8\u9580\u3067\u691c\u7d22...",
+      "allDepartments": "\u3059\u3079\u3066\u306e\u90e8\u9580",
+      "allLocations": "\u3059\u3079\u3066\u306e\u52e4\u52d9\u5730",
+      "allRoles": "\u3059\u3079\u3066\u306e\u30ed\u30fc\u30eb",
+      "roleEmployee": "\u5f93\u696d\u54e1",
+      "roleManager": "\u30de\u30cd\u30fc\u30b8\u30e3\u30fc",
+      "roleHrAdmin": "HR \u7ba1\u7406\u8005",
+      "roleOrgAdmin": "\u7d44\u7e54\u7ba1\u7406\u8005",
+      "colEmployee": "\u5f93\u696d\u54e1",
+      "colEmail": "\u30e1\u30fc\u30eb",
+      "colDesignation": "\u5f79\u8077",
+      "colRole": "\u30ed\u30fc\u30eb",
+      "colEmpCode": "\u793e\u54e1\u756a\u53f7",
+      "noEmployees": "\u5f93\u696d\u54e1\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093",
+      "statusActive": "\u6709\u52b9",
+      "statusInactive": "\u7121\u52b9",
+      "sendInviteTooltip": "{{email}} \u306b\u62db\u5f85\u3092\u9001\u4fe1",
+      "sendInviteAria": "{{name}} \u306b\u62db\u5f85\u3092\u9001\u4fe1",
+      "editTooltip": "\u5f93\u696d\u54e1\u3092\u7de8\u96c6",
+      "editAria": "{{name}} \u3092\u7de8\u96c6",
+      "deleteSelfTooltip": "\u81ea\u5206\u306e\u30a2\u30ab\u30a6\u30f3\u30c8\u306f\u524a\u9664\u3067\u304d\u307e\u305b\u3093",
+      "deleteTooltip": "\u5f93\u696d\u54e1\u3092\u524a\u9664",
+      "deleteAria": "{{name}} \u3092\u524a\u9664"
+    }
   }
 }
