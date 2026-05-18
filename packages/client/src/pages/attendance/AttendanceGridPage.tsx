@@ -84,6 +84,11 @@ const codeStyle = (code: string): string => {
       return "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200";
     case "L":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200";
+    case "HPL":
+      // Half Present + Half Leave -- distinct teal to read clearly against
+      // the green/amber/blue family that already covers P / H / L. Slightly
+      // darker text since the code is 3 chars vs the usual single letter.
+      return "bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200";
     case "WO":
       return "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400";
     case "HO":
@@ -251,14 +256,14 @@ export default function AttendanceGridPage() {
 
   const summaryFor = useMemo(
     () => (emp: EmployeeRow) => {
-      const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
+      const counts = { P: 0, A: 0, H: 0, L: 0, HPL: 0, WO: 0, HO: 0, M: 0 };
       const weekoff = emp.weekoffDays || {};
       for (const d of data.days) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
         // WO count comes from the shift-driven weekoff map, NOT from
         // the attendance code -- since attendance + weekoff can coexist
         // on a single cell (worked on off day shows P with a WO ribbon).
-        // P/A/H/L/M still come from the attendance code.
+        // P/A/H/L/HPL/M still come from the attendance code.
         if (weekoff[d.date]) counts.WO++;
         if (c && c !== "WO" && c in counts) counts[c as keyof typeof counts]++;
       }
@@ -274,10 +279,10 @@ export default function AttendanceGridPage() {
   const dayTotals = useMemo(() => {
     const out: Record<
       string,
-      { P: number; A: number; H: number; L: number; WO: number; HO: number; M: number }
+      { P: number; A: number; H: number; L: number; HPL: number; WO: number; HO: number; M: number }
     > = {};
     for (const d of data.days) {
-      const counts = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
+      const counts = { P: 0, A: 0, H: 0, L: 0, HPL: 0, WO: 0, HO: 0, M: 0 };
       for (const emp of filteredEmployees) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
         // WO is derived from the shift's weekoff map -- counted in
@@ -295,7 +300,7 @@ export default function AttendanceGridPage() {
   // Org-wide totals across the whole month (sum of dayTotals) -- shown
   // in the right-hand summary column of the footer rows.
   const monthTotals = useMemo(() => {
-    const totals = { P: 0, A: 0, H: 0, L: 0, WO: 0, HO: 0, M: 0 };
+    const totals = { P: 0, A: 0, H: 0, L: 0, HPL: 0, WO: 0, HO: 0, M: 0 };
     for (const d of data.days) {
       const c = dayTotals[d.date];
       if (!c) continue;
@@ -303,6 +308,7 @@ export default function AttendanceGridPage() {
       totals.A += c.A;
       totals.H += c.H;
       totals.L += c.L;
+      totals.HPL += c.HPL;
       totals.WO += c.WO;
       totals.HO += c.HO;
       totals.M += c.M;
@@ -315,6 +321,7 @@ export default function AttendanceGridPage() {
     { code: "A", label: "Absent", cls: "text-red-700 dark:text-red-300" },
     { code: "H", label: "Half day", cls: "text-amber-700 dark:text-amber-300" },
     { code: "L", label: "On leave", cls: "text-blue-700 dark:text-blue-300" },
+    { code: "HPL", label: "½ Present + ½ Leave", cls: "text-teal-700 dark:text-teal-300" },
     { code: "WO", label: "Week off", cls: "text-gray-500 dark:text-gray-400" },
     { code: "HO", label: "Holiday", cls: "text-purple-700 dark:text-purple-300" },
     { code: "M", label: "Missed check-out", cls: "text-orange-700 dark:text-orange-300" },
@@ -366,6 +373,7 @@ export default function AttendanceGridPage() {
           <LegendDot label="A" cls={codeStyle("A")} desc="Absent" />
           <LegendDot label="H" cls={codeStyle("H")} desc="Half day" />
           <LegendDot label="L" cls={codeStyle("L")} desc="On leave" />
+          <LegendDot label="HPL" cls={codeStyle("HPL")} desc="½ Present + ½ Leave" />
           <LegendDot label="WO" cls={codeStyle("WO")} desc="Week off" />
           <LegendDot label="HO" cls={codeStyle("HO")} desc="Holiday" />
           <LegendDot label="M" cls={codeStyle("M")} desc="Missed check-out" />
@@ -471,13 +479,19 @@ export default function AttendanceGridPage() {
                 <th className="border-b border-gray-200 px-2 py-2 text-center font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-200">
                   L
                 </th>
+                <th
+                  className="border-b border-gray-200 px-2 py-2 text-center font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                  title="Half Present + Half Leave"
+                >
+                  HPL
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredEmployees.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={data.days.length + 5}
+                    colSpan={data.days.length + 6}
                     className="px-4 py-8 text-center text-gray-400 dark:text-gray-500"
                   >
                     {data.employees.length === 0
@@ -576,6 +590,12 @@ export default function AttendanceGridPage() {
                       <td className="px-2 py-2 text-center font-semibold text-blue-700 dark:text-blue-300">
                         {summary.L}
                       </td>
+                      <td
+                        className="px-2 py-2 text-center font-semibold text-teal-700 dark:text-teal-300"
+                        title="Half Present + Half Leave"
+                      >
+                        {summary.HPL}
+                      </td>
                     </tr>
                   );
                 })
@@ -602,7 +622,7 @@ export default function AttendanceGridPage() {
                       );
                     })}
                     <td
-                      colSpan={4}
+                      colSpan={5}
                       className={`border-l border-gray-200 px-2 py-1.5 text-center text-[11px] font-bold dark:border-gray-700 ${row.cls}`}
                     >
                       {monthTotals[row.code]}
@@ -616,7 +636,7 @@ export default function AttendanceGridPage() {
       </div>
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        Tip: double-click any cell to mark P / A / H / L. WO and HO are computed automatically
+        Tip: double-click any cell to mark P / A / H / L / HPL. WO and HO are computed automatically
         from the org calendar; pick a value to override or "—" to revert. A worker with both
         check-in and check-out in a day is classified by hours worked vs shift length:
         below 25% of shift &rarr; A (Absent), 25–50% &rarr; H (Half day), 50%+ &rarr; P (Present).
@@ -686,6 +706,7 @@ function CellEditor({
     end_date: string;
     days_count: number;
     is_half_day: boolean;
+    half_day_type: "first_half" | "second_half" | null;
   }> = ctxRes?.existingApplications ?? [];
 
   useEffect(() => {
@@ -724,6 +745,12 @@ function CellEditor({
     { code: "P", label: "Present", cls: "bg-green-100 text-green-800 hover:bg-green-200" },
     { code: "A", label: "Absent", cls: "bg-red-100 text-red-800 hover:bg-red-200" },
     { code: "H", label: "Half day", cls: "bg-amber-100 text-amber-800 hover:bg-amber-200" },
+    // HPL = "Half Present + Half Leave" -- e.g. worked the morning, took
+    // the afternoon as half-day leave. Records the attendance row only;
+    // the leave-balance side is intentionally manual for now (HR can use
+    // the "Apply leave" section below in half-day mode if they also need
+    // to deduct balance).
+    { code: "HPL", label: "½P + ½L", cls: "bg-teal-100 text-teal-800 hover:bg-teal-200" },
     { code: "", label: "Reset", cls: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
   ];
 
@@ -756,7 +783,16 @@ function CellEditor({
             {existingApplications.map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-2">
                 <span className="truncate">
-                  {a.leave_type_name} {a.is_half_day ? "(half day)" : ""}
+                  {a.leave_type_name}
+                  {a.is_half_day && (
+                    <span className="ml-1 text-blue-700/70">
+                      ({a.half_day_type === "second_half"
+                        ? "½ PM"
+                        : a.half_day_type === "first_half"
+                          ? "½ AM"
+                          : "half day"})
+                    </span>
+                  )}
                 </span>
                 <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-[10px] font-medium uppercase">
                   {a.status}
