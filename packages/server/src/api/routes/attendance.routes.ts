@@ -845,48 +845,122 @@ router.post(
   },
 );
 
-// GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX
+// GET /api/v1/attendance/export — Export ALL attendance records (no pagination) for CSV/XLSX.
+//
+// Builds a USER × DATE matrix rather than just listing rows from
+// attendance_records. This is the difference between an HR-grade
+// "who-worked-when" report and a raw event log:
+//
+//   - The old query inner-joined attendance_records → users, so any
+//     employee with zero check-ins for the period was silently dropped
+//     from the sheet. If nobody in an org had punched yet (new tenant,
+//     biometric outage, holiday week), the export came back EMPTY.
+//   - The matrix approach enumerates every active employee for every
+//     date in the range and LEFT JOINs the attendance row. Days with
+//     no record fall through to a synthetic "absent" row with empty
+//     shift / check-in / check-out -- exactly the "user is on the list
+//     but didn't punch" semantics HR / payroll expect.
+//
+// Future dates are skipped so opening an export for "this month" on
+// the 15th doesn't pre-mark the 16th-31st as absent for everyone.
 router.get("/export", authenticate, requirePermission("attendance:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = (await import("../../db/connection.js")).getDB();
     const orgId = req.user!.org_id;
     const month = req.query.month ? Number(req.query.month) : undefined;
     const year = req.query.year ? Number(req.query.year) : undefined;
-    const dateFrom = req.query.date_from as string | undefined;
-    const dateTo = req.query.date_to as string | undefined;
+    const dateFromRaw = req.query.date_from as string | undefined;
+    const dateToRaw = req.query.date_to as string | undefined;
     const departmentId = req.query.department_id ? Number(req.query.department_id) : undefined;
+    const locationId = req.query.location_id ? Number(req.query.location_id) : undefined;
     const employeeId = req.query.employee_id ? Number(req.query.employee_id) : undefined;
     const status = req.query.status as string | undefined;
 
-    let query = db("attendance_records as ar")
-      .join("users as u", function () { this.on("ar.user_id", "u.id").andOn("ar.organization_id", "u.organization_id"); })
+    // Resolve the date window. Custom range wins; otherwise fall back
+    // to the month/year pair; otherwise default to the current month.
+    let startDate: string;
+    let endDate: string;
+    if (dateFromRaw) {
+      startDate = String(dateFromRaw);
+      endDate = String(dateToRaw || dateFromRaw);
+    } else if (month && year) {
+      startDate = `${year}-${String(month).padStart(2, "0")}-01`;
+      const last = new Date(year, month, 0).getDate();
+      endDate = `${year}-${String(month).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
+    } else {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + 1;
+      startDate = `${y}-${String(m).padStart(2, "0")}-01`;
+      const last = new Date(y, m, 0).getDate();
+      endDate = `${y}-${String(m).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
+    }
+
+    // Local-tz YYYY-MM-DD formatter (avoids the UTC-shift trap from
+    // toISOString around midnight).
+    const isoLocal = (d: Date): string => {
+      const y = d.getFullYear();
+      const mo = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${mo}-${day}`;
+    };
+    const todayIso = isoLocal(new Date());
+
+    // Generate the date list. Cap at today so future dates don't
+    // appear as "absent" for everyone -- that's nonsensical for
+    // forward-looking ranges and would pollute month-end exports run
+    // mid-month.
+    const dates: string[] = [];
+    if (startDate && endDate) {
+      let cursor = new Date(`${startDate}T00:00:00`);
+      const stop = new Date(`${endDate}T00:00:00`);
+      while (cursor <= stop) {
+        const iso = isoLocal(cursor);
+        if (iso <= todayIso) dates.push(iso);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+
+    // Active employees in scope. Filters are applied at the USER level
+    // (not the attendance_record level) because we want absent rows for
+    // them too.
+    let userQuery = db("users as u")
       .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
-      .leftJoin("shifts as s", "ar.shift_id", "s.id")
-      .where("ar.organization_id", orgId)
+      .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+      .where("u.organization_id", orgId)
       .where("u.status", 1)
       .whereNot("u.role", "super_admin");
-
-    if (dateFrom) {
-      query = query.where("ar.date", ">=", dateFrom);
-      if (dateTo) query = query.where("ar.date", "<=", dateTo);
-    } else if (month && year) {
-      const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-      const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
-      query = query.whereBetween("ar.date", [startDate, endDate]);
-    }
-    if (departmentId) query = query.where("u.department_id", departmentId);
-    if (employeeId) query = query.where("ar.user_id", employeeId);
-    if (status) query = query.where("ar.status", status);
-
-    const records = await query.select(
-      "ar.id",
-      "ar.user_id",
+    if (departmentId) userQuery = userQuery.where("u.department_id", departmentId);
+    if (locationId) userQuery = userQuery.where("u.location_id", locationId);
+    if (employeeId) userQuery = userQuery.where("u.id", employeeId);
+    const users = await userQuery.select(
+      "u.id as user_id",
       "u.first_name",
       "u.last_name",
       "u.email",
       "u.emp_code",
-      "dept.name as department_name",
       "u.designation",
+      "dept.name as department_name",
+      "loc.name as location_name",
+    );
+
+    // Existing attendance rows for the same (users × dates) window.
+    let recordQuery = db("attendance_records as ar")
+      .leftJoin("shifts as s", "ar.shift_id", "s.id")
+      .where("ar.organization_id", orgId);
+    if (dates.length > 0) {
+      recordQuery = recordQuery.whereBetween("ar.date", [dates[0], dates[dates.length - 1]]);
+    } else {
+      // Empty matrix -- nothing to export. Short-circuit.
+      sendSuccess(res, []);
+      return;
+    }
+    if (users.length > 0) {
+      recordQuery = recordQuery.whereIn("ar.user_id", users.map((u: any) => u.user_id));
+    }
+    const records = await recordQuery.select(
+      "ar.id",
+      "ar.user_id",
       "ar.date",
       "ar.check_in",
       "ar.check_out",
@@ -898,9 +972,98 @@ router.get("/export", authenticate, requirePermission("attendance:view_all"), as
       "s.name as shift_name",
       "s.start_time as shift_start",
       "s.end_time as shift_end",
-    ).orderBy([{ column: "u.first_name", order: "asc" }, { column: "ar.date", order: "asc" }]);
+    );
 
-    sendSuccess(res, records);
+    // Build (uid, dateIso) -> record. Date is stored as a DATE column
+    // so the JS driver may return either a Date instance or a string
+    // depending on driver flags -- normalise via isoLocal.
+    const recordMap = new Map<string, any>();
+    for (const r of records as any[]) {
+      const dateIso =
+        typeof r.date === "string" ? r.date.slice(0, 10) : isoLocal(new Date(r.date));
+      recordMap.set(`${r.user_id}|${dateIso}`, { ...r, date: dateIso });
+    }
+
+    // Cartesian product: for every employee, for every date in the
+    // window, emit either the real attendance row OR a synthetic
+    // "absent" placeholder. The placeholder has the same shape as a
+    // real row so the FE Excel mapper is unchanged.
+    const fullRows: any[] = [];
+    for (const u of users as any[]) {
+      for (const d of dates) {
+        const key = `${u.user_id}|${d}`;
+        const rec = recordMap.get(key);
+        if (rec) {
+          fullRows.push({
+            id: rec.id,
+            user_id: u.user_id,
+            first_name: u.first_name,
+            last_name: u.last_name,
+            email: u.email,
+            emp_code: u.emp_code,
+            department_name: u.department_name,
+            location_name: u.location_name,
+            designation: u.designation,
+            date: rec.date,
+            check_in: rec.check_in,
+            check_out: rec.check_out,
+            worked_minutes: rec.worked_minutes,
+            overtime_minutes: rec.overtime_minutes,
+            late_minutes: rec.late_minutes,
+            early_departure_minutes: rec.early_departure_minutes,
+            status: rec.status,
+            shift_name: rec.shift_name,
+            shift_start: rec.shift_start,
+            shift_end: rec.shift_end,
+          });
+        } else {
+          // No record for (user, date) -- treat as absent. Shift /
+          // check-in / check-out fields stay null so the Excel cell
+          // renders blank rather than "-" or "0" (worked minutes etc.
+          // are 0 since the employee logged no time at all).
+          fullRows.push({
+            id: null,
+            user_id: u.user_id,
+            first_name: u.first_name,
+            last_name: u.last_name,
+            email: u.email,
+            emp_code: u.emp_code,
+            department_name: u.department_name,
+            location_name: u.location_name,
+            designation: u.designation,
+            date: d,
+            check_in: null,
+            check_out: null,
+            worked_minutes: 0,
+            overtime_minutes: 0,
+            late_minutes: 0,
+            early_departure_minutes: 0,
+            status: "absent",
+            shift_name: null,
+            shift_start: null,
+            shift_end: null,
+          });
+        }
+      }
+    }
+
+    // Apply status filter post-matrix so the user's "Status = absent"
+    // filter still works against the synthetic rows (which is the whole
+    // point -- without this, status=absent on an empty DB would have
+    // matched the same zero rows as before).
+    const filtered = status ? fullRows.filter((r) => r.status === status) : fullRows;
+
+    // Order: by employee then by date so each person's row block is
+    // contiguous in the sheet.
+    filtered.sort((a, b) => {
+      const an = `${a.first_name || ""} ${a.last_name || ""}`.trim().toLowerCase();
+      const bn = `${b.first_name || ""} ${b.last_name || ""}`.trim().toLowerCase();
+      const cmp = an.localeCompare(bn);
+      if (cmp !== 0) return cmp;
+      return (a.date || "").localeCompare(b.date || "");
+    });
+
+    sendSuccess(res, filtered);
   } catch (err) { next(err); }
 });
 
@@ -912,6 +1075,7 @@ router.get("/export/consolidated", authenticate, requirePermission("attendance:v
     const month = req.query.month ? Number(req.query.month) : new Date().getMonth() + 1;
     const year = req.query.year ? Number(req.query.year) : new Date().getFullYear();
     const departmentId = req.query.department_id ? Number(req.query.department_id) : undefined;
+    const locationId = req.query.location_id ? Number(req.query.location_id) : undefined;
 
     const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
     const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
@@ -933,12 +1097,14 @@ router.get("/export/consolidated", authenticate, requirePermission("attendance:v
     let query = db("attendance_records as ar")
       .join("users as u", "ar.user_id", "u.id")
       .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
+      .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
       .where("ar.organization_id", orgId)
       .where("u.status", 1)
       .whereNot("u.role", "super_admin")
       .whereBetween("ar.date", [startDate, endDate]);
 
     if (departmentId) query = query.where("u.department_id", departmentId);
+    if (locationId) query = query.where("u.location_id", locationId);
 
     const records = await query.select(
       "ar.user_id",
@@ -948,6 +1114,7 @@ router.get("/export/consolidated", authenticate, requirePermission("attendance:v
       "u.emp_code",
       "u.designation",
       "dept.name as department_name",
+      "loc.name as location_name",
       db.raw("COUNT(*) as total_records"),
       db.raw("SUM(CASE WHEN ar.status IN ('present','checked_in') THEN 1 ELSE 0 END) as present_days"),
       db.raw("SUM(CASE WHEN ar.status = 'half_day' THEN 1 ELSE 0 END) as half_days"),
@@ -959,7 +1126,7 @@ router.get("/export/consolidated", authenticate, requirePermission("attendance:v
       db.raw("SUM(COALESCE(ar.early_departure_minutes, 0)) as total_early_departure_minutes"),
       db.raw("COUNT(CASE WHEN ar.late_minutes > 0 THEN 1 END) as late_count"),
       db.raw("AVG(CASE WHEN ar.worked_minutes > 0 THEN ar.worked_minutes END) as avg_worked_minutes"),
-    ).groupBy("ar.user_id", "u.first_name", "u.last_name", "u.email", "u.emp_code", "u.designation", "dept.name");
+    ).groupBy("ar.user_id", "u.first_name", "u.last_name", "u.email", "u.emp_code", "u.designation", "dept.name", "loc.name");
 
     // #1822 — Bug 19: Per-employee Present + Absent did not add up to the
     // org's total Working Days because days with NO attendance row at all

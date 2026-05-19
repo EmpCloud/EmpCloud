@@ -132,6 +132,7 @@ export default function AttendanceDashboardPage() {
   const [exportMonth, setExportMonth] = useState(month);
   const [exportYear, setExportYear] = useState(year);
   const [exportDept, setExportDept] = useState<string>("");
+  const [exportLoc, setExportLoc] = useState<string>("");
   const [exportEmployee] = useState<string>("");
   const [exportStatus, setExportStatus] = useState<string>("");
   const [exportDateFrom, setExportDateFrom] = useState("");
@@ -176,6 +177,7 @@ export default function AttendanceDashboardPage() {
         params.year = exportYear;
       }
       if (exportDept) params.department_id = exportDept;
+      if (exportLoc) params.location_id = exportLoc;
       if (exportEmployee) params.employee_id = exportEmployee;
       if (exportStatus && exportType === "detailed") params.status = exportStatus;
 
@@ -183,13 +185,13 @@ export default function AttendanceDashboardPage() {
         const res = await api.get("/attendance/export", { params });
         const data = res.data.data || [];
         const headers = [
-          "Employee", "Emp Code", "Email", "Department", "Designation", "Date",
+          "Employee", "Emp Code", "Email", "Department", "Location", "Designation", "Date",
           "Shift", "Shift Start", "Shift End", "Check In", "Check Out",
           "Worked", "Overtime", "Late", "Early Departure", "Status",
         ];
         const rows = data.map((r: any) => [
           `${r.first_name || ""} ${r.last_name || ""}`.trim(),
-          r.emp_code || "", r.email || "", r.department_name || "", r.designation || "",
+          r.emp_code || "", r.email || "", r.department_name || "", r.location_name || "", r.designation || "",
           fmtDate(r.date), r.shift_name || "-", r.shift_start || "", r.shift_end || "",
           fmtTime(r.check_in), fmtTime(r.check_out),
           r.worked_minutes != null ? fmtMin(r.worked_minutes) : "",
@@ -204,7 +206,7 @@ export default function AttendanceDashboardPage() {
         const res = await api.get("/attendance/export/consolidated", { params });
         const { report = [], total_working_days } = res.data.data || {};
         const headers = [
-          "Employee", "Emp Code", "Email", "Department", "Designation",
+          "Employee", "Emp Code", "Email", "Department", "Location", "Designation",
           "Present Days", "Half Days", "Absent Days", "Leave Days", "Late Count",
           "Total Worked", "Avg Daily Worked", "Total Overtime", "Total Late", "Total Early Departure",
           `Attendance % (of ${total_working_days} days)`,
@@ -214,7 +216,7 @@ export default function AttendanceDashboardPage() {
           const pct = total_working_days > 0 ? ((present / total_working_days) * 100).toFixed(1) + "%" : "-";
           return [
             `${r.first_name || ""} ${r.last_name || ""}`.trim(),
-            r.emp_code || "", r.email || "", r.department_name || "", r.designation || "",
+            r.emp_code || "", r.email || "", r.department_name || "", r.location_name || "", r.designation || "",
             r.present_days, r.half_days, r.absent_days, r.leave_days, r.late_count,
             fmtMin(Number(r.total_worked_minutes)),
             r.avg_worked_minutes ? fmtMin(Math.round(Number(r.avg_worked_minutes))) : "-",
@@ -544,7 +546,16 @@ export default function AttendanceDashboardPage() {
             {t('attendance.clearFilters')}
           </button>
           <button
-            onClick={() => { setExportMonth(month); setExportYear(year); setShowExport(true); }}
+            onClick={() => {
+              setExportMonth(month);
+              setExportYear(year);
+              // Carry the dashboard's department + location filter into the
+              // export modal so HR doesn't have to re-pick what they just
+              // applied. Status/employee remain modal-local.
+              setExportDept(departmentId ? String(departmentId) : "");
+              setExportLoc(locationId ? String(locationId) : "");
+              setShowExport(true);
+            }}
             className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
           >
             <Download className="h-4 w-4" /> {t('attendance.exportReport')}
@@ -648,8 +659,15 @@ export default function AttendanceDashboardPage() {
                     {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
                   </select>
                 </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
+                  <select value={exportLoc} onChange={(e) => setExportLoc(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="">All locations</option>
+                    {locations.map((l: any) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                </div>
                 {exportType === "detailed" && (
-                  <div>
+                  <div className="col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">{t('common.status')}</label>
                     <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
                       <option value="">{t('attendance.export.allStatuses')}</option>
