@@ -319,6 +319,8 @@
       "appliedSuccess": "Urlaubsantrag erfolgreich eingereicht.",
       "updatedSuccess": "Urlaubsantrag erfolgreich aktualisiert.",
       "cancelledSuccess": "Urlaubsantrag erfolgreich storniert.",
+      "approvedBy": "Genehmigt von {{name}}",
+      "rejectedBy": "Abgelehnt von {{name}}",
       "submitError": "Urlaubsantrag konnte nicht gesendet werden. Bitte Felder pr\u00fcfen und erneut versuchen.",
       "recentTitle": "Letzte Antr\u00e4ge",
       "noApplications": "Noch keine Antr\u00e4ge.",

@@ -319,6 +319,8 @@
       "appliedSuccess": "Leave application submitted successfully.",
       "updatedSuccess": "Leave application updated successfully.",
       "cancelledSuccess": "Leave application cancelled successfully.",
+      "approvedBy": "Approved by {{name}}",
+      "rejectedBy": "Rejected by {{name}}",
       "submitError": "Failed to submit leave application. Please check all fields and try again.",
       "recentTitle": "Recent Applications",
       "noApplications": "No applications yet.",
