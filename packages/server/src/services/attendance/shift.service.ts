@@ -158,6 +158,113 @@ export async function deleteShift(orgId: number, shiftId: number) {
   await db("shifts").where({ id: shiftId }).update({ is_active: false, updated_at: new Date() });
 }
 
+// Shift an ISO date (YYYY-MM-DD) by N days, returning ISO. UTC-anchored so
+// the result never drifts across a DST/timezone boundary.
+function shiftIsoDay(dateStr: string, deltaDays: number): string {
+  const d = new Date(dateStr + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + deltaDays);
+  return d.toISOString().split("T")[0];
+}
+
+function toIsoDate(v: unknown): string | null {
+  if (v == null) return null;
+  if (typeof v === "string") return v.slice(0, 10);
+  const d = new Date(v as any);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().split("T")[0];
+}
+
+/**
+ * Make the date window [newFrom, newTo] free of any prior shift_assignments
+ * for the given users, so a fresh assignment over that window leaves a clean,
+ * NON-OVERLAPPING timeline.
+ *
+ * The previous logic only closed rows whose effective_from was on/before the
+ * new start, so any assignment STARTING INSIDE or AFTER the new window (e.g. a
+ * future-dated night shift) survived and silently overlapped — employees
+ * accumulated dozens of overlapping rows over time (one user had 22+). This
+ * reconciles every overlap case:
+ *
+ *   - existing fully inside the window           -> delete (superseded)
+ *   - existing overlaps only the start           -> close at newFrom − 1
+ *   - existing overlaps only the end             -> move start to newTo + 1
+ *   - existing spans the whole window            -> split (close head, re-add tail)
+ *
+ * `newTo === null` means the new assignment is open-ended (covers everything
+ * from newFrom onward), so nothing can "end after" it.
+ */
+async function reconcileOverlappingAssignments(
+  db: ReturnType<typeof getDB>,
+  orgId: number,
+  userIds: number[],
+  newFrom: string,
+  newTo: string | null,
+  createdBy: number,
+) {
+  if (!userIds.length) return;
+  const existing = await db("shift_assignments")
+    .where({ organization_id: orgId })
+    .whereIn("user_id", userIds)
+    .select("id", "user_id", "shift_id", "created_by", "effective_from", "effective_to");
+
+  const toDelete: number[] = [];
+  const toClose: Array<{ id: number; effective_to: string }> = [];
+  const toTrimStart: Array<{ id: number; effective_from: string }> = [];
+  const toInsert: Array<Record<string, unknown>> = [];
+
+  for (const r of existing) {
+    const ef = toIsoDate(r.effective_from);
+    if (!ef) continue;
+    const et = toIsoDate(r.effective_to); // null = open-ended
+
+    // Overlap with [newFrom, newTo]?  (treat nulls as ±infinity)
+    const overlapsOnStartSide = et === null || et >= newFrom;
+    const overlapsOnEndSide = newTo === null || ef <= newTo;
+    if (!overlapsOnStartSide || !overlapsOnEndSide) continue; // disjoint — leave it
+
+    const startsBefore = ef < newFrom;
+    const endsAfter = newTo !== null && (et === null || et > newTo);
+
+    if (startsBefore && endsAfter) {
+      // Existing brackets the whole new window — keep the head, re-add the tail.
+      toClose.push({ id: r.id, effective_to: shiftIsoDay(newFrom, -1) });
+      toInsert.push({
+        organization_id: orgId,
+        user_id: r.user_id,
+        shift_id: r.shift_id,
+        effective_from: shiftIsoDay(newTo as string, 1),
+        effective_to: et, // may be null (open tail)
+        created_by: r.created_by ?? createdBy,
+        created_at: new Date(),
+        updated_at: new Date(),
+      });
+    } else if (startsBefore) {
+      toClose.push({ id: r.id, effective_to: shiftIsoDay(newFrom, -1) });
+    } else if (endsAfter) {
+      toTrimStart.push({ id: r.id, effective_from: shiftIsoDay(newTo as string, 1) });
+    } else {
+      toDelete.push(r.id);
+    }
+  }
+
+  if (toDelete.length) {
+    await db("shift_assignments").whereIn("id", toDelete).del();
+  }
+  for (const c of toClose) {
+    await db("shift_assignments")
+      .where({ id: c.id })
+      .update({ effective_to: c.effective_to, updated_at: new Date() });
+  }
+  for (const t of toTrimStart) {
+    await db("shift_assignments")
+      .where({ id: t.id })
+      .update({ effective_from: t.effective_from, updated_at: new Date() });
+  }
+  if (toInsert.length) {
+    await db("shift_assignments").insert(toInsert);
+  }
+}
+
 export async function assignShift(
   orgId: number,
   data: { user_id: number; shift_id: number; effective_from: string; effective_to?: string | null },
@@ -173,19 +280,17 @@ export async function assignShift(
   const user = await db("users").where({ id: data.user_id, organization_id: orgId }).first();
   if (!user) throw new NotFoundError("User");
 
-  // Auto-end any overlapping open-ended assignments for this employee
-  const newFrom = data.effective_from;
-  const endDate = new Date(newFrom);
-  endDate.setDate(endDate.getDate() - 1);
-  const endStr = endDate.toISOString().split("T")[0];
-
-  await db("shift_assignments")
-    .where({ organization_id: orgId, user_id: data.user_id })
-    .whereRaw("DATE(effective_from) <= ?", [newFrom])
-    .where(function () {
-      this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [newFrom]);
-    })
-    .update({ effective_to: endStr, updated_at: new Date() });
+  // Clear the target window of any prior overlapping assignments so the
+  // timeline stays non-overlapping (handles future-dated and spanning rows,
+  // not just rows starting before the new one).
+  await reconcileOverlappingAssignments(
+    db,
+    orgId,
+    [data.user_id],
+    data.effective_from,
+    data.effective_to || null,
+    createdBy,
+  );
 
   const [id] = await db("shift_assignments").insert({
     organization_id: orgId,
@@ -390,20 +495,17 @@ export async function bulkAssignShifts(
     throw new ValidationError(`Users not found in organization: ${missingIds.join(", ")}`);
   }
 
-  // Auto-end any overlapping open-ended assignments for these employees
-  const newFrom = data.effective_from;
-  const endDate = new Date(newFrom);
-  endDate.setDate(endDate.getDate() - 1);
-  const endStr = endDate.toISOString().split("T")[0];
-
-  await db("shift_assignments")
-    .where({ organization_id: orgId })
-    .whereIn("user_id", data.user_ids)
-    .whereRaw("DATE(effective_from) <= ?", [newFrom])
-    .where(function () {
-      this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [newFrom]);
-    })
-    .update({ effective_to: endStr, updated_at: new Date() });
+  // Clear the target window of any prior overlapping assignments for all
+  // selected employees so each timeline stays non-overlapping (handles
+  // future-dated and spanning rows, not just rows starting before newFrom).
+  await reconcileOverlappingAssignments(
+    db,
+    orgId,
+    data.user_ids,
+    data.effective_from,
+    data.effective_to || null,
+    createdBy,
+  );
 
   const rows = data.user_ids.map((userId) => ({
     organization_id: orgId,

@@ -28,27 +28,47 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
 // --- Helpers ---
 
-function getWeekDates(offset: number): { start: string; end: string; dates: string[] } {
+// Whole-month view: every calendar day of the month `offset` months from
+// the current one becomes a column, so an employee's full month of shifts
+// reads in a single row (navigate by month, not week).
+function getMonthDates(offset: number): {
+  start: string;
+  end: string;
+  dates: string[];
+  year: number;
+  month: number; // 0-11
+} {
   const now = new Date();
-  const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay() + offset * 7);
+  const base = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  const year = base.getFullYear();
+  const month = base.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const pad = (n: number) => String(n).padStart(2, "0");
   const dates: string[] = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    dates.push(d.toISOString().split("T")[0]);
+  for (let d = 1; d <= daysInMonth; d++) {
+    dates.push(`${year}-${pad(month + 1)}-${pad(d)}`);
   }
-  return {
-    start: dates[0],
-    end: dates[6],
-    dates,
-  };
+  return { start: dates[0], end: dates[dates.length - 1], dates, year, month };
 }
 
-// Uses the active i18n locale so column headers match the UI language.
+// Uses the active i18n locale so labels match the UI language.
 function formatDate(dateStr: string, locale: string): string {
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
+}
+
+function formatMonthLabel(year: number, month: number, locale: string): string {
+  return new Date(year, month, 1).toLocaleDateString(locale, { month: "long", year: "numeric" });
+}
+
+// Compact per-day column header for the month grid: weekday initial + day
+// number stacked, so ~31 columns stay narrow.
+function dayHeaderParts(dateStr: string, locale: string): { weekday: string; day: number } {
+  const d = new Date(dateStr + "T00:00:00");
+  return {
+    weekday: d.toLocaleDateString(locale, { weekday: "short" }),
+    day: d.getDate(),
+  };
 }
 
 // #1954 — `effective_from` / `effective_to` may arrive from the API as full
@@ -124,7 +144,7 @@ export default function ShiftSchedulePage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("schedule");
-  const [weekOffset, setWeekOffset] = useState(0);
+  const [monthOffset, setMonthOffset] = useState(0);
   const [showBulkAssign, setShowBulkAssign] = useState(false);
   const [showAssign, setShowAssign] = useState<{ userId: number; date: string } | null>(null);
 
@@ -163,7 +183,7 @@ export default function ShiftSchedulePage() {
   const [locationId, setLocationId] = useStickyLocationFilter();
   const [roleFilter, setRoleFilter] = useState<string>("");
 
-  const week = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
+  const month = useMemo(() => getMonthDates(monthOffset), [monthOffset]);
 
   const { data: shifts = [] } = useShifts();
 
@@ -179,7 +199,7 @@ export default function ShiftSchedulePage() {
     const found = (shifts as any[]).find((s: any) => s.is_weekoff);
     return found ? (found.id as number) : null;
   }, [shifts]);
-  const { data: schedule = [], isLoading: scheduleLoading } = useSchedule(week.start, week.end);
+  const { data: schedule = [], isLoading: scheduleLoading } = useSchedule(month.start, month.end);
   const { data: mySchedule } = useMySchedule();
   const { data: swapRequests = [], isLoading: swapsLoading } = useSwapRequests();
   const { data: employees = [] } = useEmployees();
@@ -826,23 +846,34 @@ export default function ShiftSchedulePage() {
       {/* Tab Content: Team Schedule */}
       {tab === "schedule" && (
         <div>
-          {/* Week navigation */}
+          {/* Month navigation — the whole month shows in one row, so this
+              steps a full month at a time instead of week by week. */}
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={() => setWeekOffset((w) => w - 1)}
+              onClick={() => setMonthOffset((m) => m - 1)}
               className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
             >
               <ChevronLeft className="h-4 w-4" /> {t('attendance.previous')}
             </button>
-            <span className="text-sm font-medium text-gray-700">
-              {formatDate(week.start, i18n.language)} &mdash; {formatDate(week.end, i18n.language)}
+            <span className="text-sm font-semibold text-gray-700">
+              {formatMonthLabel(month.year, month.month, i18n.language)}
             </span>
-            <button
-              onClick={() => setWeekOffset((w) => w + 1)}
-              className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
-            >
-              {t('attendance.next')} <ChevronRight className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              {monthOffset !== 0 && (
+                <button
+                  onClick={() => setMonthOffset(0)}
+                  className="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
+                >
+                  {t('attendance.shiftSchedule.thisMonth', { defaultValue: 'This month' })}
+                </button>
+              )}
+              <button
+                onClick={() => setMonthOffset((m) => m + 1)}
+                className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
+              >
+                {t('attendance.next')} <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Shift Legend */}
@@ -950,29 +981,40 @@ export default function ShiftSchedulePage() {
                   <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 z-20 bg-gray-50 border-r border-gray-200 min-w-[180px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">
                     {t('attendance.shiftSchedule.team.employee')}
                   </th>
-                  {week.dates.map((date) => (
-                    <th key={date} className="text-center text-xs font-medium text-gray-500 uppercase px-2 py-3 min-w-[120px]">
-                      {formatDate(date, i18n.language)}
-                    </th>
-                  ))}
+                  {month.dates.map((date) => {
+                    const { weekday, day } = dayHeaderParts(date, i18n.language);
+                    const dow = new Date(date + "T00:00:00").getDay();
+                    const isWeekend = dow === 0 || dow === 6;
+                    return (
+                      <th
+                        key={date}
+                        className={`text-center text-xs font-medium uppercase px-1.5 py-2 min-w-[64px] ${
+                          isWeekend ? "text-gray-400 bg-gray-100/60" : "text-gray-500"
+                        }`}
+                      >
+                        <div className="text-[10px] leading-tight">{weekday}</div>
+                        <div className="text-sm font-semibold leading-tight">{day}</div>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {scheduleLoading ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-gray-400">
                       {t('attendance.shiftSchedule.team.loading')}
                     </td>
                   </tr>
                 ) : schedule.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-gray-400">
                       {t('attendance.shiftSchedule.team.noEmployees')}
                     </td>
                   </tr>
                 ) : pagedSchedule.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-gray-400">
                       {t('attendance.shiftSchedule.search.noResults')}
                     </td>
                   </tr>
@@ -987,7 +1029,7 @@ export default function ShiftSchedulePage() {
                           <div className="text-xs text-gray-400">{emp.emp_code}</div>
                         )}
                       </td>
-                      {week.dates.map((date) => {
+                      {month.dates.map((date) => {
                         const assignment = emp.assignments.find((a: any) =>
                           isDateInRange(date, a.effective_from, a.effective_to),
                         );

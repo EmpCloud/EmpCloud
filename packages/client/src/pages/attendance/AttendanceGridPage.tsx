@@ -93,6 +93,14 @@ const codeStyle = (code: string): string => {
       return "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400";
     case "HO":
       return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200";
+    case "WOT":
+      // Worked on a week-off (overtime) — indigo so it reads distinctly
+      // from plain WO (grey) and P (green).
+      return "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200";
+    case "HOT":
+      // Worked on a holiday (overtime) — fuchsia, in the purple HO family
+      // but clearly "worked" rather than a plain holiday.
+      return "bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/40 dark:text-fuchsia-200";
     case "M":
       return "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200";
     default:
@@ -376,6 +384,8 @@ export default function AttendanceGridPage() {
           <LegendDot label="HPL" cls={codeStyle("HPL")} desc="½ Present + ½ Leave" />
           <LegendDot label="WO" cls={codeStyle("WO")} desc="Week off" />
           <LegendDot label="HO" cls={codeStyle("HO")} desc="Holiday" />
+          <LegendDot label="WOT" cls={codeStyle("WOT")} desc="Week-off OT (worked)" />
+          <LegendDot label="HOT" cls={codeStyle("HOT")} desc="Holiday OT (worked)" />
           <LegendDot label="M" cls={codeStyle("M")} desc="Missed check-out" />
         </div>
       </div>
@@ -636,7 +646,7 @@ export default function AttendanceGridPage() {
       </div>
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
-        Tip: double-click any cell to mark P / A / H / L / HPL. WO and HO are computed automatically
+        Tip: double-click any cell to mark P / A / H / L / HPL / WOT / HOT. WO and HO are computed automatically
         from the org calendar; pick a value to override or "—" to revert. A worker with both
         check-in and check-out in a day is classified by hours worked vs shift length:
         below 25% of shift &rarr; A (Absent), 25–50% &rarr; H (Half day), 50%+ &rarr; P (Present).
@@ -751,6 +761,14 @@ function CellEditor({
     // the "Apply leave" section below in half-day mode if they also need
     // to deduct balance).
     { code: "HPL", label: "½P + ½L", cls: "bg-teal-100 text-teal-800 hover:bg-teal-200" },
+    // Overtime on a rest day: worked a week-off (WOT) or holiday (HOT).
+    // Payroll pays the configured overtime premium per such day.
+    {
+      code: "WOT",
+      label: "Week-off OT",
+      cls: "bg-indigo-100 text-indigo-800 hover:bg-indigo-200",
+    },
+    { code: "HOT", label: "Holiday OT", cls: "bg-fuchsia-100 text-fuchsia-800 hover:bg-fuchsia-200" },
     { code: "", label: "Reset", cls: "bg-gray-100 text-gray-700 hover:bg-gray-200" },
   ];
 
