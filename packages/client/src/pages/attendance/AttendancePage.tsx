@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import {
   LogIn,
   LogOut,
@@ -9,6 +9,7 @@ import {
   PlusCircle,
   Lock,
   Eye,
+  Pencil,
   ChevronDown,
   ChevronUp,
   Loader2,
@@ -142,6 +143,60 @@ export default function AttendancePage() {
   const setRegField = (key: keyof typeof regForm, value: string) =>
     setRegForm((f) => ({ ...f, [key]: value }));
 
+  // The regularization form lives above the history table; clicking the
+  // per-row pencil scrolls it back into view after we prefill it.
+  const regFormRef = useRef<HTMLFormElement | null>(null);
+
+  // Local-time YYYY-MM-DD from a record's `date` (which may be an ISO
+  // timestamp or a plain date string depending on the driver).
+  const toDateInput = (v: string | null | undefined): string => {
+    if (!v) return "";
+    const d = new Date(v);
+    if (isNaN(d.getTime())) return String(v).slice(0, 10);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  };
+
+  // Local-time YYYY-MM-DDTHH:mm for a <input type="datetime-local">.
+  const toDatetimeLocal = (v: string | null | undefined): string => {
+    if (!v) return "";
+    const d = new Date(v);
+    if (isNaN(d.getTime())) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  // Open the regularization form for a specific history row. The date is
+  // auto-selected from the row; the requested check-in/out are prefilled
+  // with the actual punch when it exists, otherwise the SAME date with a
+  // sensible placeholder time (so the date is always populated and the
+  // employee only has to adjust the time for a missed punch).
+  const openRegularizeFor = (record: any) => {
+    const dateStr = toDateInput(record?.date);
+    const checkIn = record?.check_in
+      ? toDatetimeLocal(record.check_in)
+      : dateStr
+        ? `${dateStr}T09:00`
+        : "";
+    const checkOut = record?.check_out
+      ? toDatetimeLocal(record.check_out)
+      : dateStr
+        ? `${dateStr}T18:00`
+        : "";
+    setRegForm({
+      date: dateStr,
+      requested_check_in: checkIn,
+      requested_check_out: checkOut,
+      reason: "",
+    });
+    setRegFormError(null);
+    setShowRegForm(true);
+    // Defer the scroll a tick so the form is mounted before we scroll.
+    setTimeout(() => {
+      regFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  };
+
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setRegFormError(null);
@@ -271,7 +326,7 @@ export default function AttendancePage() {
       </div>
 
       {showRegForm && (
-        <form onSubmit={handleRegSubmit} className="bg-white rounded-xl border border-amber-200 p-6 mb-6">
+        <form ref={regFormRef} onSubmit={handleRegSubmit} className="bg-white rounded-xl border border-amber-200 p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-500" />
             Request Attendance Regularization
@@ -512,15 +567,26 @@ export default function AttendancePage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setDetailRecord(r)}
-                        className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
-                        aria-label="View attendance details"
-                        title="View details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+                      <div className="inline-flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openRegularizeFor(r)}
+                          className="inline-flex items-center justify-center p-1.5 rounded text-amber-600 hover:bg-amber-50"
+                          aria-label="Regularize this day"
+                          title="Regularize this day"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDetailRecord(r)}
+                          className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
+                          aria-label="View attendance details"
+                          title="View details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {expanded && <InlinePunchTimelineRow recordId={r.id} colSpan={8} />}
