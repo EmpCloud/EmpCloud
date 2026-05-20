@@ -774,7 +774,9 @@ export async function getMonthlyReport(
 // Distinct from H (half day, other half unworked / LOP) and from L
 // (full-day leave). Counts as 0.5 day present for payroll attendance and
 // 0.5 day leave for leave-balance accounting.
-export type AttendanceCode = "P" | "A" | "H" | "L" | "HPL" | "WO" | "HO" | "M" | "";
+// WOT / HOT — worked on a week-off / holiday (overtime). Distinct from a
+// plain P so payroll can pay the configured overtime premium for the day.
+export type AttendanceCode = "P" | "A" | "H" | "L" | "HPL" | "WO" | "HO" | "WOT" | "HOT" | "M" | "";
 
 export async function getMonthlyGrid(
   orgId: number,
@@ -787,25 +789,54 @@ export async function getMonthlyGrid(
   const daysInMonth = new Date(year, month, 0).getDate();
   const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
 
-  // Holidays in the period (org_holidays may use a different table name
-  // than payroll's `organization_holidays`; check both possibilities).
-  let holidayRows: Array<{ holiday_date: any }> = [];
-  try {
-    holidayRows = await db("organization_holidays")
-      .where("organization_id", orgId)
-      .whereBetween("holiday_date", [monthStart, monthEnd])
-      .select("holiday_date");
-  } catch {
-    // Older schemas without the table -- treat as no holidays.
-    holidayRows = [];
-  }
   const isoLocal = (v: any): string => {
     if (typeof v === "string") return v.slice(0, 10);
     if (!(v instanceof Date)) v = new Date(v);
     return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}-${String(v.getDate()).padStart(2, "0")}`;
   };
   const holidaySet = new Set<string>();
-  for (const h of holidayRows) holidaySet.add(isoLocal(h.holiday_date));
+
+  // Holiday source (primary) — `company_events` with event_type='holiday'.
+  // The HR Holidays page writes here (POST /events, event_type=holiday).
+  // The grid previously read only the legacy `organization_holidays` table,
+  // which is empty in live tenants, so HR-added holidays never appeared.
+  // Holiday rows can span multiple days (start_date..end_date), so expand
+  // each into the individual dates that fall inside this month.
+  try {
+    const eventRows: Array<{ start_date: any; end_date: any }> = await db("company_events")
+      .where({ organization_id: orgId, event_type: "holiday" })
+      .where("start_date", "<=", `${monthEnd} 23:59:59`)
+      .andWhere(function () {
+        this.where("end_date", ">=", `${monthStart} 00:00:00`).orWhereNull("end_date");
+      })
+      .select("start_date", "end_date");
+    for (const e of eventRows) {
+      const startIso = isoLocal(e.start_date);
+      const endIso = e.end_date ? isoLocal(e.end_date) : startIso;
+      let cur = startIso < monthStart ? monthStart : startIso;
+      const last = endIso > monthEnd ? monthEnd : endIso;
+      while (cur <= last) {
+        holidaySet.add(cur);
+        const d = new Date(cur + "T00:00:00Z");
+        d.setUTCDate(d.getUTCDate() + 1);
+        cur = d.toISOString().split("T")[0];
+      }
+    }
+  } catch {
+    // company_events absent on older schemas — fall through to legacy table.
+  }
+
+  // Holiday source (legacy, backward-compat) — `organization_holidays`.
+  // Retained so any tenant that populated the old table still works.
+  try {
+    const holidayRows: Array<{ holiday_date: any }> = await db("organization_holidays")
+      .where("organization_id", orgId)
+      .whereBetween("holiday_date", [monthStart, monthEnd])
+      .select("holiday_date");
+    for (const h of holidayRows) holidaySet.add(isoLocal(h.holiday_date));
+  } catch {
+    // Older schemas without the table -- ignore.
+  }
 
   const days: Array<{
     day: number;
@@ -942,6 +973,8 @@ export async function getMonthlyGrid(
     const s = (status || "").toLowerCase();
     if (s === "half_day") return "H";
     if (s === "half_present_half_leave") return "HPL";
+    if (s === "weekoff_overtime") return "WOT";
+    if (s === "holiday_overtime") return "HOT";
     if (s === "absent") return "A";
     if (s === "on_leave") return "L";
     if (s === "checked_in") {
@@ -988,8 +1021,22 @@ export async function getMonthlyGrid(
       // Attendance code: real row if any, otherwise the date-level
       // default (HO / "").
       const real = userMap[d.date];
-      dayCodes[d.date] = (real || (d.defaultCode as AttendanceCode)) as AttendanceCode;
-      if (offMap[d.date] === "WO") {
+      const isWeekoff = offMap[d.date] === "WO";
+      const isHoliday = d.defaultCode === "HO";
+      let code = (real || (d.defaultCode as AttendanceCode)) as AttendanceCode;
+      // Auto-overtime: a FULL present day worked on a holiday or week-off
+      // is shown as HOT / WOT automatically -- HR doesn't mark it by hand.
+      // Holiday wins when a date is both a holiday and a week-off. An
+      // explicitly-set WOT/HOT (status weekoff_overtime/holiday_overtime)
+      // already arrives as that code from codeFor() and is left as-is.
+      // Payroll derives OT days the same way (present on a rest day), so
+      // the grid and the payslip stay consistent.
+      if (real === "P") {
+        if (isHoliday) code = "HOT";
+        else if (isWeekoff) code = "WOT";
+      }
+      dayCodes[d.date] = code;
+      if (isWeekoff) {
         weekoffDays[d.date] = true;
       }
     }
@@ -1033,6 +1080,11 @@ export async function updateAttendanceCell(
     // application for the date so leave balances reconcile without HR
     // having to do two clicks.
     HPL: "half_present_half_leave",
+    // Overtime on a rest day. HR marks these on a week-off / holiday cell
+    // to record that the employee worked; payroll pays the configured
+    // overtime premium per such day.
+    WOT: "weekoff_overtime",
+    HOT: "holiday_overtime",
   };
   const upper = (params.code || "").toUpperCase();
   if (upper === "" || upper === "WO" || upper === "HO" || upper === "-") {
@@ -1043,7 +1095,9 @@ export async function updateAttendanceCell(
   }
   const status = map[upper];
   if (!status) {
-    throw new Error(`Unknown status code "${params.code}". Use P / A / H / L / HPL / WO / HO.`);
+    throw new Error(
+      `Unknown status code "${params.code}". Use P / A / H / L / HPL / WOT / HOT / WO / HO.`,
+    );
   }
   const existing = await db("attendance_records")
     .where({ user_id: params.userId, organization_id: orgId, date: params.date })
