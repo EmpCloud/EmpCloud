@@ -846,16 +846,8 @@ export const createLeavePolicySchema = z.object({
 export const applyLeaveSchema = z.object({
   leave_type_id: z.coerce.number().int().positive(),
   start_date: z.string().refine(
-    (val) => {
-      const d = new Date(val);
-      if (isNaN(d.getTime())) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const gracePeriod = new Date(today);
-      gracePeriod.setDate(gracePeriod.getDate() - 7);
-      return d >= gracePeriod;
-    },
-    { message: "Start date cannot be more than 7 days in the past" },
+    (val) => !isNaN(new Date(val).getTime()),
+    { message: "Invalid start_date format" },
   ),
   end_date: z.string(),
   days_count: z.coerce.number().min(0.5),
@@ -868,6 +860,21 @@ export const approveLeaveSchema = z.object({
   status: z.enum(["approved", "rejected"]),
   remarks: z.string().optional(),
 });
+
+// Edit a pending leave application — same shape as apply, all fields optional.
+// Service layer enforces status===pending + recomputes days_count from dates.
+export const updateLeaveSchema = z.object({
+  leave_type_id: z.coerce.number().int().positive().optional(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
+  days_count: z.coerce.number().min(0.5).optional(),
+  is_half_day: z.preprocess((v) => v === "true" || v === true, z.boolean()).optional(),
+  half_day_type: z.enum(["first_half", "second_half"]).optional().nullable(),
+  reason: z.string().min(1).optional(),
+}).refine(
+  (data) => Object.keys(data).length > 0,
+  { message: "At least one field must be provided to update" },
+);
 
 // #1921 — worked_date represents a day already worked; must not be future.
 // Compare in YYYY-MM-DD form so timezone offsets don't accept "tomorrow in
@@ -1015,6 +1022,7 @@ export type CreateShiftInput = z.infer<typeof createShiftSchema>;
 export type CheckInInput = z.infer<typeof checkInSchema>;
 export type CheckOutInput = z.infer<typeof checkOutSchema>;
 export type ApplyLeaveInput = z.infer<typeof applyLeaveSchema>;
+export type UpdateLeaveInput = z.infer<typeof updateLeaveSchema>;
 export type CreateLeaveTypeInput = z.infer<typeof createLeaveTypeSchema>;
 export type CreateLeavePolicyInput = z.infer<typeof createLeavePolicySchema>;
 export type UpdateLeaveOrgConfigInput = z.infer<typeof updateLeaveOrgConfigSchema>;

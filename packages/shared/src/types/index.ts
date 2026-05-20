@@ -106,6 +106,7 @@ export enum AuditAction {
   LEAVE_APPROVED = "leave_approved",
   LEAVE_REJECTED = "leave_rejected",
   LEAVE_CANCELLED = "leave_cancelled",
+  LEAVE_UPDATED = "leave_updated",
   LEAVE_BALANCE_ADJUSTED = "leave_balance_adjusted",
   LEAVE_BALANCE_OVERRIDDEN = "leave_balance_overridden",
   LEAVE_BALANCE_BULK_OVERRIDDEN = "leave_balance_bulk_overridden",
