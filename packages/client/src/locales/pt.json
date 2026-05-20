@@ -319,6 +319,8 @@
       "appliedSuccess": "Solicita\u00e7\u00e3o de licen\u00e7a enviada com sucesso.",
       "updatedSuccess": "Solicita\u00e7\u00e3o de licen\u00e7a atualizada com sucesso.",
       "cancelledSuccess": "Solicita\u00e7\u00e3o de licen\u00e7a cancelada com sucesso.",
+      "approvedBy": "Aprovado por {{name}}",
+      "rejectedBy": "Rejeitado por {{name}}",
       "submitError": "Falha ao enviar a solicita\u00e7\u00e3o de licen\u00e7a. Verifique os campos e tente novamente.",
       "recentTitle": "Solicita\u00e7\u00f5es recentes",
       "noApplications": "Ainda n\u00e3o h\u00e1 solicita\u00e7\u00f5es.",

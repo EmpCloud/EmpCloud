@@ -319,6 +319,8 @@
       "appliedSuccess": "Solicitud de permiso enviada correctamente.",
       "updatedSuccess": "Solicitud de permiso actualizada correctamente.",
       "cancelledSuccess": "Solicitud de permiso cancelada correctamente.",
+      "approvedBy": "Aprobado por {{name}}",
+      "rejectedBy": "Rechazado por {{name}}",
       "submitError": "Error al enviar la solicitud de licencia. Revisa los campos e int\u00e9ntalo de nuevo.",
       "recentTitle": "Solicitudes recientes",
       "noApplications": "A\u00fan no hay solicitudes.",

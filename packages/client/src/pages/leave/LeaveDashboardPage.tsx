@@ -785,7 +785,7 @@ function RecentApplications({
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.datesHeader')}</th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.daysHeader')}</th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.statusHeader')}</th>
-            <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.actionsHeader')}</th>
+            <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3 w-24 whitespace-nowrap">{t('leave.dashboard.actionsHeader')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -828,8 +828,30 @@ function RecentApplications({
                     <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
                       <Icon className="h-3 w-3" /> {statusLabel(app.status)}
                     </span>
+                    {/* Backend joins leave_approvals → approver name + acted_at.
+                        Only render the sub-line when the leave has actually
+                        been acted on (approved or rejected) AND the join
+                        populated both fields. Pending rows have nothing to
+                        show; the "CONCAT(NULL, ' ', NULL)" pattern returns
+                        the literal string "null null" on some MySQL configs
+                        when there's no matching leave_approvals row, so we
+                        guard with a real name check, not just truthiness. */}
+                    {(app.status === "approved" || app.status === "rejected") &&
+                      app.approver_name &&
+                      app.approver_name.trim() &&
+                      app.approver_name.trim().toLowerCase() !== "null null" && (
+                        <div className="mt-1 text-[11px] text-gray-500 leading-tight">
+                          {t(app.status === "approved" ? 'leave.dashboard.approvedBy' : 'leave.dashboard.rejectedBy', { name: app.approver_name.trim() })}
+                          {app.approval_date && (
+                            <span className="text-gray-400">
+                              {" · "}
+                              {new Date(app.approval_date).toLocaleDateString(locale, { day: "2-digit", month: "short" })}
+                            </span>
+                          )}
+                        </div>
+                      )}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap w-24">
                     {app.status === "pending" ? (
                       <div className="inline-flex items-center gap-1">
                         <button

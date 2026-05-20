@@ -319,6 +319,8 @@
       "appliedSuccess": "Demande de cong\u00e9 soumise avec succ\u00e8s.",
       "updatedSuccess": "Demande de cong\u00e9 mise \u00e0 jour avec succ\u00e8s.",
       "cancelledSuccess": "Demande de cong\u00e9 annul\u00e9e avec succ\u00e8s.",
+      "approvedBy": "Approuv\u00e9 par {{name}}",
+      "rejectedBy": "Refus\u00e9 par {{name}}",
       "submitError": "\u00c9chec de l'envoi de la demande de cong\u00e9. Veuillez v\u00e9rifier les champs et r\u00e9essayer.",
       "recentTitle": "Demandes r\u00e9centes",
       "noApplications": "Aucune demande pour le moment.",
