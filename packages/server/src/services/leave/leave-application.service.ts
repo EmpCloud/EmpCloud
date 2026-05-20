@@ -792,18 +792,31 @@ export async function listApplications(
   if (params.dateTo) query = query.where("leave_applications.start_date", "<=", params.dateTo);
 
   const [{ count }] = await query.clone().count("* as count");
+  // Approval columns come from a single, DECISIVE leave_approvals row via
+  // correlated subqueries -- NOT a leftJoin. A leftJoin matches EVERY
+  // approval for the application, so a multi-step / re-assigned approval
+  // (e.g. a pending level-1 row + the row that actually approved) returned
+  // the same leave twice. The subquery picks the approval that acted last:
+  // rows with a non-null acted_at rank above still-pending ones, then most
+  // recent acted_at, then highest id. So an approved leave shows the
+  // approver who approved it (with their timestamp/remarks), never the
+  // stale pending approver.
+  const decisiveApproval =
+    "WHERE la.leave_application_id = leave_applications.id " +
+    "ORDER BY (la.acted_at IS NOT NULL) DESC, la.acted_at DESC, la.id DESC LIMIT 1";
   const applications = await query
-    .leftJoin("leave_approvals", "leave_applications.id", "leave_approvals.leave_application_id")
-    .leftJoin("users as approver", "leave_approvals.approver_id", "approver.id")
     .select(
       "leave_applications.*",
       "users.first_name as user_first_name",
       "users.last_name as user_last_name",
       "users.email as user_email",
       "users.emp_code as user_emp_code",
-      "leave_approvals.remarks as admin_remarks",
-      "leave_approvals.acted_at as approval_date",
-      db.raw("CONCAT(approver.first_name, ' ', approver.last_name) as approver_name"),
+      db.raw(`(SELECT la.remarks FROM leave_approvals la ${decisiveApproval}) as admin_remarks`),
+      db.raw(`(SELECT la.acted_at FROM leave_approvals la ${decisiveApproval}) as approval_date`),
+      db.raw(
+        `(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM leave_approvals la ` +
+          `JOIN users u ON u.id = la.approver_id ${decisiveApproval}) as approver_name`,
+      ),
     )
     .orderBy("leave_applications.created_at", "desc")
     .limit(perPage)
@@ -814,16 +827,25 @@ export async function listApplications(
 
 export async function getApplication(orgId: number, id: number): Promise<LeaveApplication> {
   const db = getDB();
+  // Same decisive-approval rule as listApplications: pick the approval that
+  // acted last (actioned ranks above pending), so the approver shown is the
+  // one who actually decided it -- not a leftover pending row. Subqueries
+  // also avoid the row-multiplication a leftJoin causes on multi-step
+  // approvals (which .first() would silently resolve to an arbitrary row).
+  const decisiveApproval =
+    "WHERE la.leave_application_id = leave_applications.id " +
+    "ORDER BY (la.acted_at IS NOT NULL) DESC, la.acted_at DESC, la.id DESC LIMIT 1";
   const row = await db("leave_applications")
     .where({ "leave_applications.id": id, "leave_applications.organization_id": orgId })
-    .leftJoin("leave_approvals", "leave_applications.id", "leave_approvals.leave_application_id")
-    .leftJoin("users as approver", "leave_approvals.approver_id", "approver.id")
     .select(
       "leave_applications.*",
-      "leave_approvals.remarks as admin_remarks",
-      "leave_approvals.status as approval_status",
-      "leave_approvals.acted_at as approval_date",
-      db.raw("CONCAT(approver.first_name, ' ', approver.last_name) as approver_name"),
+      db.raw(`(SELECT la.remarks FROM leave_approvals la ${decisiveApproval}) as admin_remarks`),
+      db.raw(`(SELECT la.status FROM leave_approvals la ${decisiveApproval}) as approval_status`),
+      db.raw(`(SELECT la.acted_at FROM leave_approvals la ${decisiveApproval}) as approval_date`),
+      db.raw(
+        `(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM leave_approvals la ` +
+          `JOIN users u ON u.id = la.approver_id ${decisiveApproval}) as approver_name`,
+      ),
     )
     .first();
   if (!row) throw new NotFoundError("Leave application");
