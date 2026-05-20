@@ -5,7 +5,8 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { Link } from "react-router-dom";
-import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2, Filter, X as XIcon } from "lucide-react";
+import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircle, Settings2, Filter, X as XIcon, Pencil, Trash2 } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 
@@ -54,6 +55,20 @@ export default function LeaveDashboardPage() {
     "leave:override_balance",
   ) || (user ? HR_ROLES.includes(user.role) : false);
   const [showApply, setShowApply] = useState(false);
+  // When set, the apply form is in edit-mode and submits PATCH instead of POST.
+  // Cleared whenever the form closes or completes successfully.
+  const [editingId, setEditingId] = useState<number | null>(null);
+  // ID of the leave application the user is being asked to confirm cancellation
+  // for. null = dialog closed.
+  const [cancelTargetId, setCancelTargetId] = useState<number | null>(null);
+  // Transient success banner. Set by mutation onSuccess callbacks; cleared
+  // after 3 s by a useEffect.
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  useEffect(() => {
+    if (!successMsg) return;
+    const id = setTimeout(() => setSuccessMsg(null), 3000);
+    return () => clearTimeout(id);
+  }, [successMsg]);
   // #1578 — form renders below the fold on smaller viewports, so clicks on
   // Apply Leave looked like nothing happened. Scroll the form into view once
   // it mounts so the user sees the apply flow.
@@ -83,6 +98,20 @@ export default function LeaveDashboardPage() {
     half_day_type: "" as string | null,
     reason: "",
   });
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const resetForm = () => {
+    setForm({ leave_type_id: 0, start_date: "", end_date: "", days_count: 1, is_half_day: false, half_day_type: "", reason: "" });
+    setEditingId(null);
+    setFormError(null);
+  };
+
+  const invalidateLeaveQueries = () => {
+    qc.invalidateQueries({ queryKey: ["leave-balances"] });
+    qc.invalidateQueries({ queryKey: ["leave-applications"] });
+    qc.invalidateQueries({ queryKey: ["leave-applications-me"] });
+    qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
+  };
 
   const applyLeave = useMutation({
     mutationFn: (data: typeof form) =>
@@ -91,14 +120,52 @@ export default function LeaveDashboardPage() {
         half_day_type: data.half_day_type || null,
       }).then((r) => r.data.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["leave-balances"] });
-      qc.invalidateQueries({ queryKey: ["leave-applications"] });
-      qc.invalidateQueries({ queryKey: ["leave-applications-me"] });
-      qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
+      invalidateLeaveQueries();
       setShowApply(false);
-      setForm({ leave_type_id: 0, start_date: "", end_date: "", days_count: 1, is_half_day: false, half_day_type: "", reason: "" });
+      resetForm();
+      setSuccessMsg(t('leave.dashboard.appliedSuccess'));
     },
   });
+
+  const updateLeave = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: typeof form }) =>
+      api.patch(`/leave/applications/${id}`, {
+        ...data,
+        half_day_type: data.half_day_type || null,
+      }).then((r) => r.data.data),
+    onSuccess: () => {
+      invalidateLeaveQueries();
+      setShowApply(false);
+      resetForm();
+      setSuccessMsg(t('leave.dashboard.updatedSuccess'));
+    },
+  });
+
+  const cancelLeave = useMutation({
+    mutationFn: (id: number) =>
+      api.put(`/leave/applications/${id}/cancel`).then((r) => r.data.data),
+    onSuccess: () => {
+      invalidateLeaveQueries();
+      setSuccessMsg(t('leave.dashboard.cancelledSuccess'));
+    },
+  });
+
+  // Start editing a pending leave. Prefills the apply form, switches it to
+  // edit-mode, and scrolls the form into view via the existing showApply effect.
+  const startEdit = (app: any) => {
+    setForm({
+      leave_type_id: Number(app.leave_type_id) || 0,
+      start_date: String(app.start_date).slice(0, 10),
+      end_date: String(app.end_date).slice(0, 10),
+      days_count: Number(app.days_count) || 1,
+      is_half_day: Boolean(app.is_half_day),
+      half_day_type: app.half_day_type ?? "",
+      reason: app.reason ?? "",
+    });
+    setEditingId(Number(app.id));
+    setFormError(null);
+    setShowApply(true);
+  };
 
   // #1822 — Bug 25: previously this silently `return`-ed when fields were
   // missing, which made a click on Submit feel like nothing happened. Now
@@ -107,7 +174,6 @@ export default function LeaveDashboardPage() {
   // `required` HTML attributes too, so the browser's native bubble fires
   // first; this state is the fallback for cases where the user manages to
   // bypass that (e.g. JS-driven submit, stale form).
-  const [formError, setFormError] = useState<string | null>(null);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -131,11 +197,33 @@ export default function LeaveDashboardPage() {
       setFormError("Please describe the reason for your leave.");
       return;
     }
-    applyLeave.mutate(form);
+    if (editingId !== null) {
+      updateLeave.mutate({ id: editingId, data: form });
+    } else {
+      applyLeave.mutate(form);
+    }
   };
 
   return (
     <div>
+      {successMsg && (
+        <div
+          role="status"
+          className="fixed top-4 right-4 z-[60] flex items-start gap-3 max-w-sm rounded-lg border border-green-200 bg-green-50 px-4 py-3 shadow-lg animate-in fade-in slide-in-from-top-2"
+        >
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600 mt-0.5" />
+          <div className="flex-1 text-sm font-medium text-green-800">{successMsg}</div>
+          <button
+            type="button"
+            onClick={() => setSuccessMsg(null)}
+            aria-label={t('common.close')}
+            className="text-green-700 hover:text-green-900"
+          >
+            <XIcon className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('leave.dashboard.title')}</h1>
@@ -323,7 +411,9 @@ export default function LeaveDashboardPage() {
           onSubmit={handleSubmit}
           className="bg-white rounded-xl border border-gray-200 p-6 mb-8 scroll-mt-4"
         >
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('leave.dashboard.applyTitle')}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            {editingId !== null ? t('leave.dashboard.editTitle') : t('leave.dashboard.applyTitle')}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.leaveType')} <span className="text-red-500">*</span></label>
@@ -448,9 +538,15 @@ export default function LeaveDashboardPage() {
               {formError}
             </div>
           )}
-          {applyLeave.isError && (
+          {(applyLeave.isError || updateLeave.isError) && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
-              {(applyLeave.error && typeof applyLeave.error === "object" && "response" in applyLeave.error ? (applyLeave.error as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message : null) || t('leave.dashboard.submitError')}
+              {(() => {
+                const err = editingId !== null ? updateLeave.error : applyLeave.error;
+                const msg = err && typeof err === "object" && "response" in err
+                  ? (err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message
+                  : null;
+                return msg || t('leave.dashboard.submitError');
+              })()}
             </div>
           )}
           <div className="flex justify-end gap-3 mt-4">
@@ -458,8 +554,9 @@ export default function LeaveDashboardPage() {
               type="button"
               onClick={() => {
                 setShowApply(false);
-                setForm({ leave_type_id: 0, start_date: "", end_date: "", days_count: 1, is_half_day: false, half_day_type: "", reason: "" });
+                resetForm();
                 applyLeave.reset();
+                updateLeave.reset();
               }}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
@@ -467,10 +564,13 @@ export default function LeaveDashboardPage() {
             </button>
             <button
               type="submit"
-              disabled={applyLeave.isPending}
+              disabled={applyLeave.isPending || updateLeave.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              <CalendarDays className="h-4 w-4" /> {applyLeave.isPending ? t('leave.dashboard.submitting') : t('leave.dashboard.submitApplication')}
+              <CalendarDays className="h-4 w-4" />
+              {editingId !== null
+                ? (updateLeave.isPending ? t('leave.dashboard.saving') : t('leave.dashboard.saveChanges'))
+                : (applyLeave.isPending ? t('leave.dashboard.submitting') : t('leave.dashboard.submitApplication'))}
             </button>
           </div>
         </form>
@@ -480,7 +580,13 @@ export default function LeaveDashboardPage() {
       {isAdmin && <PendingApprovals leaveTypes={leaveTypes} />}
 
       {/* Recent Applications */}
-      <RecentApplications leaveTypes={leaveTypes} locale={i18n.language} />
+      <RecentApplications
+        leaveTypes={leaveTypes}
+        locale={i18n.language}
+        onEdit={startEdit}
+        onCancel={(id: number) => setCancelTargetId(id)}
+        cancelPending={cancelLeave.isPending}
+      />
 
       {/* Legend */}
       <div className="flex items-center gap-6 text-xs text-gray-500 mt-6">
@@ -488,6 +594,36 @@ export default function LeaveDashboardPage() {
         <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> {t('common.approved')}</span>
         <span className="flex items-center gap-1"><XCircle className="h-3.5 w-3.5 text-red-500" /> {t('common.rejected')}</span>
       </div>
+
+      <ConfirmDialog
+        open={cancelTargetId !== null}
+        title={t('leave.dashboard.cancelConfirmTitle')}
+        description={
+          cancelLeave.isError
+            ? ((cancelLeave.error as { response?: { data?: { error?: { message?: string } } } })
+                ?.response?.data?.error?.message) || t('leave.dashboard.cancelFailed')
+            : t('leave.dashboard.cancelConfirm')
+        }
+        confirmText={t('leave.dashboard.cancelAction')}
+        cancelText={t('common.close')}
+        variant="danger"
+        loading={cancelLeave.isPending}
+        onConfirm={() => {
+          if (cancelTargetId !== null) {
+            cancelLeave.mutate(cancelTargetId, {
+              onSuccess: () => {
+                setCancelTargetId(null);
+                cancelLeave.reset();
+              },
+              // On error: keep dialog open so the inline message is visible.
+            });
+          }
+        }}
+        onCancel={() => {
+          setCancelTargetId(null);
+          cancelLeave.reset();
+        }}
+      />
     </div>
   );
 }
@@ -503,7 +639,19 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clo
   cancelled: { bg: "bg-gray-50", text: "text-gray-500", icon: Ban },
 };
 
-function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; locale: string }) {
+function RecentApplications({
+  leaveTypes,
+  locale,
+  onEdit,
+  onCancel,
+  cancelPending,
+}: {
+  leaveTypes: LeaveType[];
+  locale: string;
+  onEdit: (app: any) => void;
+  onCancel: (id: number) => void;
+  cancelPending: boolean;
+}) {
   const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState<number | undefined>(undefined);
@@ -637,6 +785,7 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.datesHeader')}</th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.daysHeader')}</th>
             <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.statusHeader')}</th>
+            <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.dashboard.actionsHeader')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -648,12 +797,13 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
                   <td className="px-6 py-4"><div className="h-4 w-32 bg-gray-200 rounded" /></td>
                   <td className="px-6 py-4"><div className="h-4 w-8 bg-gray-200 rounded" /></td>
                   <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
+                  <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded ml-auto" /></td>
                 </tr>
               ))}
             </>
           ) : applications.length === 0 ? (
             <tr>
-              <td colSpan={4} className="px-6 py-8 text-center text-gray-400">{t('leave.dashboard.noApplications')}</td>
+              <td colSpan={5} className="px-6 py-8 text-center text-gray-400">{t('leave.dashboard.noApplications')}</td>
             </tr>
           ) : (
             applications.map((app: any) => {
@@ -678,6 +828,33 @@ function RecentApplications({ leaveTypes, locale }: { leaveTypes: LeaveType[]; l
                     <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
                       <Icon className="h-3 w-3" /> {statusLabel(app.status)}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {app.status === "pending" ? (
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => onEdit(app)}
+                          aria-label={t('leave.dashboard.editAction')}
+                          title={t('leave.dashboard.editAction')}
+                          className="p-1.5 rounded-md text-gray-500 hover:text-brand-700 hover:bg-brand-50 transition-colors cursor-pointer"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onCancel(Number(app.id))}
+                          disabled={cancelPending}
+                          aria-label={t('leave.dashboard.cancelAction')}
+                          title={t('leave.dashboard.cancelAction')}
+                          className="p-1.5 rounded-md text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-300">—</span>
+                    )}
                   </td>
                 </tr>
               );

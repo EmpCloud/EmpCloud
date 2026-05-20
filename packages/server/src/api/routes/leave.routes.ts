@@ -19,6 +19,7 @@ import {
   updateLeaveTypeSchema,
   createLeavePolicySchema,
   applyLeaveSchema,
+  updateLeaveSchema,
   approveLeaveSchema,
   createCompOffSchema,
   leaveQuerySchema,
@@ -285,6 +286,31 @@ router.post("/applications", authenticate, async (req: Request, res: Response, n
     });
 
     sendSuccess(res, application, 201);
+  } catch (err) { next(err); }
+});
+
+// PATCH /api/v1/leave/applications/:id — edit a pending leave application
+router.patch("/applications/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateLeaveSchema.parse(req.body);
+    const application = await leaveApplicationService.updateLeave(
+      req.user!.org_id,
+      req.user!.sub,
+      paramInt(req.params.id),
+      data,
+    );
+
+    await logAudit({
+      organizationId: req.user!.org_id,
+      userId: req.user!.sub,
+      action: AuditAction.LEAVE_UPDATED,
+      resourceType: "leave_application",
+      resourceId: String(application.id),
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+
+    sendSuccess(res, application);
   } catch (err) { next(err); }
 });
 

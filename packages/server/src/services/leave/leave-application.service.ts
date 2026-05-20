@@ -6,7 +6,7 @@ import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import * as balanceService from "./leave-balance.service.js";
-import type { LeaveApplication, ApplyLeaveInput } from "@empcloud/shared";
+import type { LeaveApplication, ApplyLeaveInput, UpdateLeaveInput } from "@empcloud/shared";
 
 export async function applyLeave(
   orgId: number,
@@ -52,20 +52,6 @@ export async function applyLeave(
     Number(data.days_count) > inclusiveDays
   ) {
     data.days_count = inclusiveDays;
-  }
-
-  // Reject leave applications with start_date more than 7 days in the past.
-  // HR-on-behalf flows (e.g. Attendance Grid retroactive leave entry) opt out
-  // of this guard via skipBackdateCheck because legitimate after-the-fact
-  // recording is the whole point of those flows.
-  if (!options?.skipBackdateCheck) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const gracePeriod = new Date(today);
-    gracePeriod.setDate(gracePeriod.getDate() - 7);
-    if (startDate < gracePeriod) {
-      throw new ValidationError("Start date cannot be more than 7 days in the past");
-    }
   }
 
   // Validate leave type exists and is active
@@ -308,6 +294,171 @@ export async function cancelLeave(
       startDateObj,
     );
   }
+
+  return getApplication(orgId, applicationId);
+}
+
+// Edit a leave application. Only pending applications are editable. Recomputes
+// days_count from dates, re-checks balance and overlap (excluding self), and
+// updates the row. No balance debit/credit needed because pending leaves
+// haven't been deducted yet (deduction happens at approve time for types that
+// require approval; types that don't require approval go straight to approved
+// and never sit in pending).
+export async function updateLeave(
+  orgId: number,
+  userId: number,
+  applicationId: number,
+  data: UpdateLeaveInput,
+): Promise<LeaveApplication> {
+  const db = getDB();
+
+  const existing = await db("leave_applications")
+    .where({ id: applicationId, organization_id: orgId })
+    .first();
+  if (!existing) throw new NotFoundError("Leave application");
+
+  // Ownership: only the applicant can edit (HR cancels via the cancel route,
+  // not edit — different audit trail).
+  if (existing.user_id !== userId) {
+    throw new ForbiddenError("Not authorized to edit this leave application");
+  }
+
+  if (existing.status !== "pending") {
+    throw new ValidationError(
+      `Cannot edit a leave application with status '${existing.status}'. Only pending leaves can be edited.`,
+    );
+  }
+
+  const toDateStr = (v: unknown): string => {
+    if (v instanceof Date) return v.toISOString().slice(0, 10);
+    if (typeof v === "string") return v.slice(0, 10);
+    return String(v).slice(0, 10);
+  };
+
+  // Build the merged record — caller's fields win, fall back to existing
+  const merged = {
+    leave_type_id: data.leave_type_id ?? existing.leave_type_id,
+    start_date: data.start_date ?? toDateStr(existing.start_date),
+    end_date: data.end_date ?? toDateStr(existing.end_date),
+    is_half_day: data.is_half_day ?? Boolean(existing.is_half_day),
+    half_day_type: data.half_day_type !== undefined ? data.half_day_type : existing.half_day_type,
+    reason: data.reason ?? existing.reason,
+    days_count: data.days_count ?? Number(existing.days_count),
+  };
+
+  const startDate = new Date(merged.start_date);
+  const endDate = new Date(merged.end_date);
+  if (isNaN(startDate.getTime())) throw new ValidationError("Invalid start_date format");
+  if (isNaN(endDate.getTime())) throw new ValidationError("Invalid end_date format");
+  if (endDate < startDate) throw new ValidationError("End date must not be before start date");
+
+  // Recompute days_count from the date span if the supplied value is missing,
+  // zero, negative, or larger than the span — same coercion as applyLeave.
+  const inclusiveDays =
+    Math.floor(
+      (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) -
+        Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())) /
+        (1000 * 60 * 60 * 24),
+    ) + 1;
+  if (merged.is_half_day) {
+    merged.days_count = 0.5;
+  } else if (!merged.days_count || merged.days_count <= 0 || merged.days_count > inclusiveDays) {
+    merged.days_count = inclusiveDays;
+  }
+
+  // Validate (possibly changed) leave type
+  const leaveType = await db("leave_types")
+    .where({ id: merged.leave_type_id, organization_id: orgId, is_active: true })
+    .first();
+  if (!leaveType) throw new NotFoundError("Leave type");
+
+  // Probation gate — same logic as applyLeave
+  const applicant = await db("users")
+    .where({ id: userId, organization_id: orgId })
+    .whereIn("probation_status", ["on_probation", "extended"])
+    .whereNotNull("probation_end_date")
+    .whereRaw("probation_end_date >= CURDATE()")
+    .select("probation_status")
+    .first();
+  if (applicant) {
+    const haystack = `${leaveType.name ?? ""} ${leaveType.code ?? ""}`.toLowerCase();
+    const allowedKeywords = ["sick", "emergency", "sl", "eml"];
+    if (!allowedKeywords.some((kw) => haystack.includes(kw))) {
+      throw new ValidationError(
+        "Employees on probation can only apply for Sick Leave or Emergency Leave",
+      );
+    }
+  }
+
+  // Balance check (fiscal-year aware, matches applyLeave)
+  const org = await db("organizations")
+    .where({ id: orgId })
+    .select("fiscal_year_start_month")
+    .first();
+  const fyStartMonth = Number(org?.fiscal_year_start_month) || 4;
+  const fiscalYear =
+    startDate.getMonth() + 1 >= fyStartMonth
+      ? startDate.getFullYear()
+      : startDate.getFullYear() - 1;
+
+  const balances = await balanceService.getBalances(orgId, userId, fiscalYear);
+  const balance = balances.find((b) => b.leave_type_id === merged.leave_type_id);
+  const typeName = (balance as any)?.leave_type_name || leaveType.name || "this leave type";
+  if (!balance) {
+    throw new ValidationError(
+      `No leave balance allocated for ${typeName}. Please contact HR to initialize your balance.`,
+    );
+  }
+  const availableNow = Number((balance as any).available_now ?? balance.balance);
+  const fyLabel = (balance as any).fiscal_year_label ?? String(fiscalYear);
+  if (availableNow < merged.days_count) {
+    throw new ValidationError(
+      `Insufficient balance for ${typeName} in ${fyLabel}. Available: ${availableNow} day(s), Requested: ${merged.days_count} day(s).`,
+    );
+  }
+
+  // Overlap check — EXCLUDE the application being edited (else it'd
+  // conflict with its own current date range).
+  const overlaps = await db("leave_applications")
+    .where({ organization_id: orgId, user_id: userId })
+    .whereNot("id", applicationId)
+    .whereIn("status", ["pending", "approved"])
+    .where(function () {
+      this.where("start_date", "<=", merged.end_date).andWhere("end_date", ">=", merged.start_date);
+    });
+  const reqStart = toDateStr(merged.start_date);
+  const reqEnd = toDateStr(merged.end_date);
+  for (const overlap of overlaps) {
+    const overlapStart = toDateStr(overlap.start_date);
+    const overlapEnd = toDateStr(overlap.end_date);
+    const isSameSingleDay =
+      reqStart === reqEnd && overlapStart === overlapEnd && reqStart === overlapStart;
+    if (isSameSingleDay && merged.is_half_day && overlap.is_half_day) {
+      if (
+        merged.half_day_type &&
+        overlap.half_day_type &&
+        merged.half_day_type !== overlap.half_day_type
+      ) {
+        continue;
+      }
+    }
+    throw new ValidationError(
+      `You already have a ${overlap.status} leave application from ${overlapStart} to ${overlapEnd}.`,
+    );
+  }
+
+  await db("leave_applications")
+    .where({ id: applicationId })
+    .update({
+      leave_type_id: merged.leave_type_id,
+      start_date: merged.start_date,
+      end_date: merged.end_date,
+      days_count: merged.days_count,
+      is_half_day: merged.is_half_day,
+      half_day_type: merged.half_day_type ?? null,
+      reason: merged.reason,
+      updated_at: new Date(),
+    });
 
   return getApplication(orgId, applicationId);
 }
