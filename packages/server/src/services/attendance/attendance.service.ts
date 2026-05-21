@@ -481,15 +481,23 @@ export async function getMyHistory(
     return String(v).slice(0, 10);
   };
 
-  // Fetch existing attendance_records, holidays, and the user's active shift in
-  // parallel — three independent queries.
+  // Fetch existing records + holidays from BOTH sources + the user's shift
+  // assignments in parallel.
   //
-  // Holidays live in `company_events` rows where event_type='holiday'. The same
-  // table powers /events/holidays and is the canonical source the rest of the
-  // app reads from. We pull anything whose date range *overlaps* the requested
-  // month so multi-day holidays (e.g. Diwali week) light up every day they cover,
-  // not just the start_date.
-  const [existing, holidays, shiftRow] = await Promise.all([
+  // Holidays:
+  //   - `company_events` rows where event_type='holiday' is the canonical
+  //     source (powers /events/holidays).
+  //   - `organization_holidays` is a legacy table the Attendance Grid still
+  //     reads. We union both so a holiday stored only in the legacy table
+  //     still shows up here (parity with the Grid).
+  //
+  // Shift:
+  //   - Match the Grid's lookup exactly — order by created_at desc (latest
+  //     intent wins), tiebreak on id desc — and surface `is_weekoff` so the
+  //     per-assignment "Mark as Week-off" toggle is honored. The Grid then
+  //     uses first-write-wins per (user, date). We replicate that here for
+  //     a single user.
+  const [existing, eventHolidays, legacyHolidays, assignments] = await Promise.all([
     db("attendance_records")
       .where({ organization_id: orgId, user_id: userId })
       .whereBetween("date", [startDate, endDate])
@@ -502,19 +510,26 @@ export async function getMyHistory(
         this.where("end_date", ">=", `${startDate} 00:00:00`).orWhereNull("end_date");
       })
       .select("title", "start_date", "end_date"),
-    // Pull the user's currently-effective shift to know their weekly off days.
-    // Falls back to Mon-Fri (1-5) if the user has no assignment.
+    // Legacy fallback table. Some older deployments still write here only.
+    // Returning [] on schema-mismatch / missing-table is what the Grid does
+    // too — see getMonthlyGrid above.
+    db("organization_holidays")
+      .where({ organization_id: orgId })
+      .whereBetween("holiday_date", [startDate, endDate])
+      .select("holiday_date", "holiday_name")
+      .catch(() => [] as Array<{ holiday_date: any; holiday_name: string }>),
     db("shift_assignments as sa")
+      .join("shifts as s", "sa.shift_id", "s.id")
       .where("sa.organization_id", orgId)
       .andWhere("sa.user_id", userId)
-      .andWhere("sa.effective_from", "<=", endDate)
+      .whereRaw("DATE(sa.effective_from) <= ?", [endDate])
       .andWhere(function () {
-        this.whereNull("sa.effective_to").orWhere("sa.effective_to", ">=", startDate);
+        this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [startDate]);
       })
-      .leftJoin("shifts as s", "sa.shift_id", "s.id")
-      .orderBy("sa.effective_from", "desc")
-      .select("s.working_days as working_days")
-      .first(),
+      .whereRaw("(sa.effective_to IS NULL OR DATE(sa.effective_to) >= DATE(sa.effective_from))")
+      .orderBy("sa.created_at", "desc")
+      .orderBy("sa.id", "desc")
+      .select("sa.effective_from", "sa.effective_to", "s.working_days", "s.is_weekoff"),
   ]);
 
   const byDate = new Map<string, any>();
@@ -528,15 +543,14 @@ export async function getMyHistory(
   // requested [startDate, endDate] window so we don't iterate beyond what
   // we'll render.
   const holidayByDate = new Map<string, string>();
-  const monthStart = new Date(year, month - 1, 1);
-  const monthEnd = new Date(year, month - 1, daysInMonth);
-  for (const h of holidays as any[]) {
+  const monthStartDate = new Date(year, month - 1, 1);
+  const monthEndDate = new Date(year, month - 1, daysInMonth);
+  for (const h of eventHolidays as any[]) {
     const start = new Date(h.start_date);
     const end = h.end_date ? new Date(h.end_date) : new Date(h.start_date);
     if (isNaN(start.getTime()) || isNaN(end.getTime())) continue;
-    const from = start < monthStart ? new Date(monthStart) : new Date(start);
-    const to = end > monthEnd ? new Date(monthEnd) : new Date(end);
-    // Walk day-by-day in local time. setHours(0) prevents DST drift.
+    const from = start < monthStartDate ? new Date(monthStartDate) : new Date(start);
+    const to = end > monthEndDate ? new Date(monthEndDate) : new Date(end);
     from.setHours(0, 0, 0, 0);
     to.setHours(0, 0, 0, 0);
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
@@ -549,16 +563,48 @@ export async function getMyHistory(
       if (!holidayByDate.has(key)) holidayByDate.set(key, h.title);
     }
   }
+  // Layer the legacy table on top — only fills gaps so company_events wins
+  // when both have the same date.
+  for (const h of legacyHolidays as any[]) {
+    const key = toDateKey(h.holiday_date);
+    if (!holidayByDate.has(key)) holidayByDate.set(key, h.holiday_name);
+  }
 
-  // Working-day set as a Set<weekday-number> where 0=Sunday, 1=Monday, …, 6=Saturday.
-  // Schema stores e.g. "1,2,3,4,5" (Mon-Fri). Default to Mon-Fri when missing.
-  const workingDaysRaw = (shiftRow?.working_days as string | undefined) ?? "1,2,3,4,5";
-  const workingDays = new Set(
-    workingDaysRaw
+  // Per-day week-off resolution — matches getMonthlyGrid (lines ~995-1070):
+  // walk assignments in created_at-desc order and write the (user, date) slot
+  // first-write-wins. An assignment marks a date as week-off when either:
+  //   - is_weekoff flag is set on the assignment (the "Mark as Week-off"
+  //     toggle on the Shift Schedule's Edit Assignment modal), or
+  //   - the day-of-week is NOT in the shift's `working_days` CSV.
+  // Days with no covering assignment get NO synthesized week_off (matching
+  // the Grid's behavior — see the "no shift → blank cell" comment there).
+  const weekOffByDate = new Map<string, boolean>();
+  for (const a of assignments as any[]) {
+    const from = toDateKey(a.effective_from);
+    const to = a.effective_to ? toDateKey(a.effective_to) : null;
+    const workingDays = String(a.working_days || "")
       .split(",")
-      .map((s) => parseInt(s.trim(), 10))
-      .filter((n) => Number.isFinite(n)),
-  );
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => Number(s));
+    const isWeekoffShift = !!a.is_weekoff;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      if (dateKey < from) continue;
+      if (to && dateKey > to) continue;
+      if (weekOffByDate.has(dateKey)) continue; // first-write-wins
+      const dow = new Date(year, month - 1, d).getDay();
+      const off =
+        isWeekoffShift || (workingDays.length > 0 && !workingDays.includes(dow));
+      weekOffByDate.set(dateKey, off);
+    }
+  }
+
+  // Today key for the "don't mark future working days as absent" guard.
+  // Recomputed in the user's-via-server local tz; close enough for HR display
+  // purposes and matches how the rest of the file treats dates.
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   // Walk every calendar day in the month. Days with a real record use it as-is;
   // missing days get classified as holiday > week_off > absent. We use a
@@ -576,17 +622,24 @@ export async function getMyHistory(
     }
 
     const holidayName = holidayByDate.get(dateKey);
-    // JS Date.getDay() returns 0=Sun…6=Sat. We parse the YYYY-MM-DD locally so
-    // the weekday isn't shifted by the server's timezone.
-    const weekday = new Date(year, month - 1, d).getDay();
+    const isWeekOff = weekOffByDate.get(dateKey) === true;
 
     let synthStatus: "holiday" | "week_off" | "absent";
     if (holidayName) {
       synthStatus = "holiday";
-    } else if (!workingDays.has(weekday)) {
+    } else if (isWeekOff) {
       synthStatus = "week_off";
     } else {
       synthStatus = "absent";
+    }
+
+    // Don't mark FUTURE working days as absent — those haven't happened yet,
+    // so calling them absent is misleading. Holidays and week-offs ARE
+    // calendar facts regardless of "now", so those still render for future
+    // dates. (E.g. May 25 a future Sunday: still shows as week_off; May 23
+    // a future Saturday with a holiday: still shows as holiday.)
+    if (synthStatus === "absent" && dateKey > todayKey) {
+      continue;
     }
 
     records.push({
