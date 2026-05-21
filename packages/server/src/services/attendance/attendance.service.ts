@@ -600,9 +600,9 @@ export async function getMyHistory(
     }
   }
 
-  // Today key for the "don't mark future working days as absent" guard.
-  // Recomputed in the user's-via-server local tz; close enough for HR display
-  // purposes and matches how the rest of the file treats dates.
+  // Today key for the "don't render future days" guard. Computed in the
+  // server's local tz; close enough for HR display purposes and matches
+  // how the rest of this file treats dates.
   const today = new Date();
   const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
@@ -615,6 +615,13 @@ export async function getMyHistory(
   const records: any[] = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+    // Hide ALL future dates — the user only wants to see days they've
+    // actually lived (or are living right now). Future weekends, holidays,
+    // and absent days all get skipped. Past holidays/week-offs still
+    // render since those happened.
+    if (dateKey > todayKey) continue;
+
     const existingRow = byDate.get(dateKey);
     if (existingRow) {
       records.push(existingRow);
@@ -631,15 +638,6 @@ export async function getMyHistory(
       synthStatus = "week_off";
     } else {
       synthStatus = "absent";
-    }
-
-    // Don't mark FUTURE working days as absent — those haven't happened yet,
-    // so calling them absent is misleading. Holidays and week-offs ARE
-    // calendar facts regardless of "now", so those still render for future
-    // dates. (E.g. May 25 a future Sunday: still shows as week_off; May 23
-    // a future Saturday with a holiday: still shows as holiday.)
-    if (synthStatus === "absent" && dateKey > todayKey) {
-      continue;
     }
 
     records.push({
