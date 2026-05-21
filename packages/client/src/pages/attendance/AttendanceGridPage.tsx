@@ -65,6 +65,11 @@ interface EmployeeRow {
   // their off day shows "P" with a WO ribbon — overtime / comp-off
   // candidate).
   weekoffDays?: Record<string, boolean>;
+  // Per-employee approved leaves by date: the leave type code (EL / CL / …)
+  // and whether it's a half day. The cell's `days[date]` code is already
+  // L (full) or HPL (half + worked) from the server; this drives the small
+  // leave-type badge so HR sees WHICH leave it is.
+  leaves?: Record<string, { code: string; isHalf: boolean }>;
 }
 
 interface GridResponse {
@@ -542,9 +547,17 @@ export default function AttendanceGridPage() {
                         const showAsWeekoffOnly = isWeekoff && !code;
                         const showRibbon = isWeekoff && !!code;
                         const displayCode = showAsWeekoffOnly ? "WO" : code;
-                        const cellTitle = isWeekoff
-                          ? `${d.date} — week off${code ? ` · marked ${code}` : ""} (double-click to edit)`
-                          : `${d.date} — double-click to edit`;
+                        // Approved leave on this date — show its type code
+                        // (EL/CL/…) as a badge. The cell code is already
+                        // L / HPL from the server.
+                        const leave = emp.leaves?.[d.date];
+                        const cellTitle = leave
+                          ? `${d.date} — ${leave.isHalf ? "half-day " : ""}${leave.code} leave${
+                              code === "HPL" ? " · ½ present" : ""
+                            } (double-click to edit)`
+                          : isWeekoff
+                            ? `${d.date} — week off${code ? ` · marked ${code}` : ""} (double-click to edit)`
+                            : `${d.date} — double-click to edit`;
                         return (
                           <td
                             key={d.date}
@@ -582,6 +595,14 @@ export default function AttendanceGridPage() {
                                   className="pointer-events-none absolute -right-1 -top-1 rounded-full bg-gray-700 px-1 py-px text-[7px] font-bold leading-none text-white shadow-sm dark:bg-gray-300 dark:text-gray-900"
                                 >
                                   WO
+                                </span>
+                              )}
+                              {leave && (
+                                <span
+                                  aria-label={`${leave.code} leave`}
+                                  className="pointer-events-none absolute -bottom-1 -left-1 rounded-full bg-blue-600 px-1 py-px text-[7px] font-bold leading-none text-white shadow-sm"
+                                >
+                                  {leave.code}
                                 </span>
                               )}
                             </div>

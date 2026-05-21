@@ -583,6 +583,27 @@ export async function listRecords(
             AND ar.date BETWEEN la.start_date AND la.end_date
           LIMIT 1) AS leave_type_code`,
       ),
+      // Half-day flag for the matched leave. A record can be stamped
+      // `on_leave` even when only HALF the day was taken as leave and the
+      // employee actually worked the other half (e.g. Plash worked the first
+      // half, EL second_half) -- the records page needs this to render
+      // "Half Day (EL)" instead of a misleading full "On Leave (EL)".
+      db.raw(
+        `(SELECT la.is_half_day FROM leave_applications la
+          WHERE la.user_id = ar.user_id
+            AND la.organization_id = ar.organization_id
+            AND la.status = 'approved'
+            AND ar.date BETWEEN la.start_date AND la.end_date
+          LIMIT 1) AS leave_is_half_day`,
+      ),
+      db.raw(
+        `(SELECT la.half_day_type FROM leave_applications la
+          WHERE la.user_id = ar.user_id
+            AND la.organization_id = ar.organization_id
+            AND la.status = 'approved'
+            AND ar.date BETWEEN la.start_date AND la.end_date
+          LIMIT 1) AS leave_half_day_type`,
+      ),
     )
     .orderBy("ar.date", "desc")
     .limit(perPage)
@@ -984,17 +1005,27 @@ export async function getMonthlyGrid(
       return "P";
     }
     if (s === "present") {
-      // Auto-reclassify short shifts as half-day so a 4hr workday isn't
-      // accidentally counted as a full present day.
-      if (workedMinutes != null && workedMinutes > 0 && workedMinutes < halfDayThreshold) {
-        return "H";
-      }
+      // Trust the stored status. We previously auto-downgraded a present
+      // day to half-day when worked_minutes < threshold, but that made the
+      // grid disagree with the attendance record itself: a day explicitly
+      // marked / regularized as "present" (especially short, valid days —
+      // a single-punch correction, a part-day approved by HR) showed as
+      // "H" on the grid while every other view said present. If a day is a
+      // genuine half-day it carries status = 'half_day' (rendered above);
+      // the grid no longer second-guesses an explicit present status from
+      // worked_minutes.
       return "P";
     }
     return "";
   };
 
   const byUser: Record<number, Record<string, AttendanceCode>> = {};
+  // Parallel "did the employee actually work this date" map. We need this
+  // because a record can be stamped `on_leave` (codeFor -> "L") while still
+  // carrying real punches / worked_minutes -- a HALF-day leave where the
+  // other half was worked. Without it the leave-merge below can't tell that
+  // an `on_leave` cell should become HPL rather than a flat L.
+  const workedByUser: Record<number, Record<string, boolean>> = {};
   for (const r of rows) {
     const dStr = isoLocal(r.date);
     const uid = Number(r.user_id);
@@ -1004,6 +1035,67 @@ export async function getMonthlyGrid(
       r.worked_minutes != null ? Number(r.worked_minutes) : null,
       dStr,
     );
+    if (!workedByUser[uid]) workedByUser[uid] = {};
+    workedByUser[uid][dStr] =
+      (r.worked_minutes != null && Number(r.worked_minutes) > 0) || !!r.check_in;
+  }
+
+  // Approved leaves overlapping the month, merged into the grid. The grid
+  // previously read ONLY attendance_records, so a day with an approved
+  // leave (especially a HALF-day leave the employee partly worked) showed
+  // as plain "Present" with no sign of the leave. We now fold leaves in:
+  //   - full-day leave            -> L
+  //   - half-day leave + worked   -> HPL (½ present + ½ leave)
+  //   - half-day leave + no work  -> L
+  // and surface the leave type code (EL / CL / …) per date so the FE can
+  // label it. Multi-day leaves are expanded across the month.
+  const leaveByUser: Record<
+    number,
+    Record<string, { code: string; name: string; isHalf: boolean; halfType: string | null }>
+  > = {};
+  try {
+    const leaveRows = await db("leave_applications as la")
+      .join("leave_types as lt", "lt.id", "la.leave_type_id")
+      .where("la.organization_id", orgId)
+      .where("la.status", "approved")
+      .whereIn(
+        "la.user_id",
+        allUsers.map((u: any) => u.user_id),
+      )
+      .where("la.start_date", "<=", monthEnd)
+      .where("la.end_date", ">=", monthStart)
+      .select(
+        "la.user_id",
+        "la.start_date",
+        "la.end_date",
+        "la.is_half_day",
+        "la.half_day_type",
+        "lt.code as leave_code",
+        "lt.name as leave_name",
+      );
+    for (const lv of leaveRows) {
+      const uid = Number(lv.user_id);
+      const startIso = isoLocal(lv.start_date);
+      const endIso = isoLocal(lv.end_date);
+      let cur = startIso < monthStart ? monthStart : startIso;
+      const last = endIso > monthEnd ? monthEnd : endIso;
+      while (cur <= last) {
+        if (!leaveByUser[uid]) leaveByUser[uid] = {};
+        if (!leaveByUser[uid][cur]) {
+          leaveByUser[uid][cur] = {
+            code: lv.leave_code || "L",
+            name: lv.leave_name || "Leave",
+            isHalf: !!Number(lv.is_half_day),
+            halfType: lv.half_day_type || null,
+          };
+        }
+        const dd = new Date(cur + "T00:00:00Z");
+        dd.setUTCDate(dd.getUTCDate() + 1);
+        cur = dd.toISOString().split("T")[0];
+      }
+    }
+  } catch {
+    // leave tables absent on older schemas — skip leave merging.
   }
 
   const employees = allUsers.map((u: any) => {
@@ -1017,6 +1109,11 @@ export async function getMonthlyGrid(
     // comp-off candidate. Pure "WO" is rendered for weekoff dates with
     // no attendance row.
     const weekoffDays: Record<string, true> = {};
+    const leaveMap = leaveByUser[u.user_id] || {};
+    // Parallel map: leave type + half-day flag per date, so the FE can
+    // label the cell (e.g. "EL", "½ CL"). Cell code itself is set to
+    // L / HPL below.
+    const leaves: Record<string, { code: string; isHalf: boolean }> = {};
     for (const d of days) {
       // Attendance code: real row if any, otherwise the date-level
       // default (HO / "").
@@ -1035,6 +1132,28 @@ export async function getMonthlyGrid(
         if (isHoliday) code = "HOT";
         else if (isWeekoff) code = "WOT";
       }
+      // Approved leave on this date wins over a plain present/blank cell:
+      //   half-day leave + worked (P/H) -> HPL ; otherwise (no work) -> L
+      //   full-day leave                -> L
+      const lv = leaveMap[d.date];
+      if (lv) {
+        if (lv.isHalf) {
+          // Half-day leave -> HPL when the OTHER half was actually worked.
+          // "Worked" includes a row stamped `on_leave` that still carries
+          // punches / worked_minutes (real === "L" but workedByUser is true)
+          // -- exactly the half-present-half-leave case the stored status
+          // failed to capture.
+          const workedHalf =
+            real === "P" ||
+            real === "H" ||
+            real === "HPL" ||
+            workedByUser[u.user_id]?.[d.date] === true;
+          code = workedHalf ? "HPL" : "L";
+        } else {
+          code = "L";
+        }
+        leaves[d.date] = { code: lv.code, isHalf: lv.isHalf };
+      }
       dayCodes[d.date] = code;
       if (isWeekoff) {
         weekoffDays[d.date] = true;
@@ -1049,6 +1168,7 @@ export async function getMonthlyGrid(
       location: u.location || null,
       days: dayCodes,
       weekoffDays,
+      leaves,
     };
   });
 
