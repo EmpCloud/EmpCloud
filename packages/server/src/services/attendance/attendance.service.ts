@@ -483,15 +483,25 @@ export async function getMyHistory(
 
   // Fetch existing attendance_records, holidays, and the user's active shift in
   // parallel — three independent queries.
+  //
+  // Holidays live in `company_events` rows where event_type='holiday'. The same
+  // table powers /events/holidays and is the canonical source the rest of the
+  // app reads from. We pull anything whose date range *overlaps* the requested
+  // month so multi-day holidays (e.g. Diwali week) light up every day they cover,
+  // not just the start_date.
   const [existing, holidays, shiftRow] = await Promise.all([
     db("attendance_records")
       .where({ organization_id: orgId, user_id: userId })
       .whereBetween("date", [startDate, endDate])
       .select(),
-    db("organization_holidays")
-      .where({ organization_id: orgId })
-      .whereBetween("holiday_date", [startDate, endDate])
-      .select("holiday_date", "holiday_name"),
+    db("company_events")
+      .where({ organization_id: orgId, event_type: "holiday" })
+      // overlap with [startDate, endDate]: start_date <= endDate AND (end_date >= startDate OR end_date IS NULL)
+      .where("start_date", "<=", `${endDate} 23:59:59`)
+      .andWhere(function () {
+        this.where("end_date", ">=", `${startDate} 00:00:00`).orWhereNull("end_date");
+      })
+      .select("title", "start_date", "end_date"),
     // Pull the user's currently-effective shift to know their weekly off days.
     // Falls back to Mon-Fri (1-5) if the user has no assignment.
     db("shift_assignments as sa")
@@ -512,9 +522,32 @@ export async function getMyHistory(
     byDate.set(toDateKey(row.date), row);
   }
 
+  // Expand each holiday's [start_date, end_date] range into per-day entries
+  // so a multi-day holiday flags every day it covers. If end_date is NULL,
+  // treat it as a single-day holiday. The expansion is clamped to the
+  // requested [startDate, endDate] window so we don't iterate beyond what
+  // we'll render.
   const holidayByDate = new Map<string, string>();
+  const monthStart = new Date(year, month - 1, 1);
+  const monthEnd = new Date(year, month - 1, daysInMonth);
   for (const h of holidays as any[]) {
-    holidayByDate.set(toDateKey(h.holiday_date), h.holiday_name);
+    const start = new Date(h.start_date);
+    const end = h.end_date ? new Date(h.end_date) : new Date(h.start_date);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) continue;
+    const from = start < monthStart ? new Date(monthStart) : new Date(start);
+    const to = end > monthEnd ? new Date(monthEnd) : new Date(end);
+    // Walk day-by-day in local time. setHours(0) prevents DST drift.
+    from.setHours(0, 0, 0, 0);
+    to.setHours(0, 0, 0, 0);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const yy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      // First-write-wins so if two holidays overlap (rare but possible) the
+      // earlier-inserted name sticks instead of flickering.
+      const key = `${yy}-${mm}-${dd}`;
+      if (!holidayByDate.has(key)) holidayByDate.set(key, h.title);
+    }
   }
 
   // Working-day set as a Set<weekday-number> where 0=Sunday, 1=Monday, …, 6=Saturday.
