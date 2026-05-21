@@ -12,6 +12,68 @@ interface SubmitRegularizationInput {
   reason: string;
 }
 
+/**
+ * Resolve the timezone an employee's wall-clock attendance times are in:
+ * their location's timezone, then the org's, then UTC. Mirrors the check-in
+ * pipeline (attendance.service.ts) so a regularized time is stored on the
+ * same UTC basis as a biometric punch — otherwise the grid (which renders
+ * stored timestamps back in the location TZ) shows the requested time
+ * shifted by the TZ offset (e.g. a 3:00 PM IST request displayed as 8:30 PM).
+ */
+async function resolveUserTz(
+  db: ReturnType<typeof getDB>,
+  orgId: number,
+  userId: number,
+): Promise<string> {
+  const u = await db("users").where({ id: userId }).select("location_id").first();
+  if (u?.location_id) {
+    const loc = await db("organization_locations")
+      .where({ id: u.location_id })
+      .select("timezone")
+      .first();
+    if (loc?.timezone) return loc.timezone;
+  }
+  const org = await db("organizations").where({ id: orgId }).select("timezone").first();
+  if (org?.timezone) return org.timezone;
+  return "UTC";
+}
+
+/**
+ * Convert a wall-clock datetime interpreted in `tz` into a UTC
+ * "YYYY-MM-DD HH:mm:ss" string for storage (matching how biometric punches
+ * are stored). Accepts "YYYY-MM-DDTHH:mm[:ss]" or "YYYY-MM-DD HH:mm[:ss]".
+ * A value that already carries a zone ("Z" or an explicit ±HH:MM offset) is
+ * treated as a real instant and just normalised to UTC — never double-shifted.
+ */
+function wallClockToUtcString(value: string, tz: string): string {
+  const v = value.trim();
+  const timePart = v.length > 11 ? v.slice(11) : "";
+  if (/[zZ]$/.test(v) || /[+-]\d{2}:?\d{2}$/.test(timePart)) {
+    return new Date(v).toISOString().slice(0, 19).replace("T", " ");
+  }
+  const m = v.replace("T", " ").match(/^(\d{4})-(\d{2})-(\d{2})[ ](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return v; // unrecognised shape — store as-is rather than corrupt it
+  const [, y, mo, d, h, mi, s] = m;
+  const asUtcMs = Date.UTC(+y, +mo - 1, +d, +h, +mi, +(s || 0));
+  // What wall-clock does that UTC instant show in tz? The gap is tz's offset.
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date(asUtcMs));
+  const g = (t: string) => parseInt(parts.find((p) => p.type === t)?.value || "0", 10);
+  let hh = g("hour");
+  if (hh === 24) hh = 0;
+  const tzAsUtcMs = Date.UTC(g("year"), g("month") - 1, g("day"), hh, g("minute"), g("second"));
+  const offsetMs = tzAsUtcMs - asUtcMs; // tz ahead of UTC by this many ms
+  return new Date(asUtcMs - offsetMs).toISOString().slice(0, 19).replace("T", " ");
+}
+
 export async function submitRegularization(orgId: number, userId: number, data: SubmitRegularizationInput) {
   const db = getDB();
 
@@ -20,13 +82,16 @@ export async function submitRegularization(orgId: number, userId: number, data: 
     .where({ organization_id: orgId, user_id: userId, date: data.date })
     .first();
 
-  // Helper: if value looks like a bare time (HH:mm or HH:mm:ss), prefix with the date
+  // The requested time is wall-clock in the employee's location/org timezone.
+  // Convert it to UTC before storing so it lines up with biometric punches
+  // (and renders correctly on the grid). Bare "HH:mm[:ss]" values are
+  // anchored to the request date first.
+  const tz = await resolveUserTz(db, orgId, userId);
   const toTimestamp = (value: string | null | undefined): string | null => {
     if (!value) return null;
-    // Already a full datetime / ISO string
-    if (value.includes("T") || value.length > 10) return value;
-    // Bare time like "09:00" → combine with request date
-    return `${data.date}T${value}`;
+    let v = value.trim();
+    if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(v)) v = `${data.date}T${v}`;
+    return wallClockToUtcString(v, tz);
   };
 
   const [id] = await db("attendance_regularizations").insert({

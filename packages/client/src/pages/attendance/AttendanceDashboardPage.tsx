@@ -885,33 +885,54 @@ function RecordRow({
         })()}
       </td>
       <td className="px-6 py-4">
-        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-          r.status === "present" ? "bg-green-50 text-green-700"
-            : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-            : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-            : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-            : "bg-red-50 text-red-700"
-        }`}>
-          {(() => {
-            if (r.status === "checked_in") return t('attendance.statusCheckedIn');
-            if (r.status === "half_day") return t('attendance.statusHalfDay');
-            const k = `attendance.${r.status}`;
-            const tr = t(k);
-            // Title-case the fallback ("on_leave" -> "On Leave") so the badge
-            // doesn't look like a raw enum value when no translation hit.
-            const base =
-              tr !== k
-                ? tr
-                : r.status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
-            // Append the specific leave type for on-leave rows -- HR scans
-            // the records page and needs to know it was CL vs SL vs EL etc.
-            if (r.status === "on_leave") {
-              const suffix = r.leave_type_code || r.leave_type_name;
-              if (suffix) return `${base} (${suffix})`;
-            }
-            return base;
-          })()}
-        </span>
+        {(() => {
+          // A row stamped `on_leave` can actually be a HALF-day leave where the
+          // employee worked the other half (check-in/out present, worked_minutes
+          // > 0). Showing a flat "On Leave (EL)" is wrong -- they were present
+          // for half the day. Treat it as half-day-present and label it
+          // "Half Day (EL)" so HR sees both the presence and the leave type.
+          const worked = (r.worked_minutes ?? 0) > 0 || !!r.check_in;
+          const isHalfLeavePresent =
+            r.status === "on_leave" && Number(r.leave_is_half_day) === 1 && worked;
+          const effStatus = isHalfLeavePresent ? "half_day" : r.status;
+          const leaveSuffix = r.leave_type_code || r.leave_type_name;
+          return (
+            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+              effStatus === "present" ? "bg-green-50 text-green-700"
+                : effStatus === "checked_in" ? "bg-brand-50 text-brand-700"
+                : effStatus === "half_day" ? "bg-yellow-50 text-yellow-700"
+                : effStatus === "on_leave" ? "bg-blue-50 text-blue-700"
+                : "bg-red-50 text-red-700"
+            }`}>
+              {(() => {
+                if (isHalfLeavePresent) {
+                  // "Half Day / EL" — the slash reads as ½ present + ½ EL,
+                  // clearer than the parenthesised form which looked like the
+                  // whole day was leave.
+                  return leaveSuffix
+                    ? `${t('attendance.statusHalfDay')} / ${leaveSuffix}`
+                    : t('attendance.statusHalfDay');
+                }
+                if (effStatus === "checked_in") return t('attendance.statusCheckedIn');
+                if (effStatus === "half_day") return t('attendance.statusHalfDay');
+                const k = `attendance.${effStatus}`;
+                const tr = t(k);
+                // Title-case the fallback ("on_leave" -> "On Leave") so the badge
+                // doesn't look like a raw enum value when no translation hit.
+                const base =
+                  tr !== k
+                    ? tr
+                    : effStatus.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+                // Append the specific leave type for on-leave rows -- HR scans
+                // the records page and needs to know it was CL vs SL vs EL etc.
+                if (effStatus === "on_leave" && leaveSuffix) {
+                  return `${base} (${leaveSuffix})`;
+                }
+                return base;
+              })()}
+            </span>
+          );
+        })()}
       </td>
       <td className="px-6 py-4 text-sm text-gray-600">
         {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
