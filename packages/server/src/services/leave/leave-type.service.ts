@@ -23,6 +23,63 @@ export async function listLeaveTypes(orgId: number): Promise<LeaveType[]> {
   }));
 }
 
+/**
+ * Return leave types that have at least one active policy applicable to the
+ * given user. A policy applies when its `applicable_gender` is NULL/empty
+ * (everyone) or matches the user's `gender` (case-insensitive). Used by the
+ * employee self-service dashboard so a male employee does not see Maternity,
+ * a female employee does not see Paternity, etc.
+ */
+export async function listLeaveTypesForUser(
+  orgId: number,
+  userId: number,
+): Promise<LeaveType[]> {
+  const db = getDB();
+  const user = await db("users")
+    .where({ id: userId, organization_id: orgId })
+    .select("gender")
+    .first();
+  const userGender = (user?.gender ?? "").toString().toLowerCase() || null;
+
+  const rows = await db("leave_types")
+    .leftJoin("leave_policies", function () {
+      this.on("leave_policies.leave_type_id", "=", "leave_types.id").andOn(
+        "leave_policies.organization_id",
+        "=",
+        "leave_types.organization_id",
+      );
+    })
+    .where("leave_types.organization_id", orgId)
+    .andWhere((qb) => {
+      // Either the type has no policy at all (legacy data) — keep it visible —
+      // or it has at least one active policy whose gender constraint allows
+      // this user.
+      qb.whereNull("leave_policies.id").orWhere((q2) => {
+        q2.where("leave_policies.is_active", true).andWhere((q3) => {
+          q3.whereNull("leave_policies.applicable_gender").orWhere(
+            "leave_policies.applicable_gender",
+            "",
+          );
+          if (userGender) {
+            q3.orWhereRaw("LOWER(leave_policies.applicable_gender) = ?", [userGender]);
+          }
+        });
+      });
+    })
+    .select("leave_types.*")
+    .groupBy("leave_types.id")
+    .orderBy("leave_types.name", "asc");
+
+  return rows.map((t: any) => ({
+    ...t,
+    is_paid: !!t.is_paid,
+    is_carry_forward: !!t.is_carry_forward,
+    is_encashable: !!t.is_encashable,
+    requires_approval: !!t.requires_approval,
+    is_active: !!t.is_active,
+  }));
+}
+
 export async function getLeaveType(orgId: number, id: number): Promise<LeaveType> {
   const db = getDB();
   const row = await db("leave_types")

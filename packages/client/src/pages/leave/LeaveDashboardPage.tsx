@@ -89,6 +89,17 @@ export default function LeaveDashboardPage() {
     queryFn: () => api.get("/leave/types").then((r) => r.data.data),
   });
 
+  // Subset of `leaveTypes` whose active policy applies to the current user's
+  // gender (server-side filter on `leave_policies.applicable_gender`). Used
+  // for the employee balance cards and the apply-leave dropdown so a male
+  // employee does not see Maternity, etc. The unfiltered `leaveTypes` is
+  // still passed to admin sub-components so they can resolve names for any
+  // leave type when reviewing other employees' applications.
+  const { data: myLeaveTypes = [] } = useQuery<LeaveType[]>({
+    queryKey: ["leave-types-me"],
+    queryFn: () => api.get("/leave/types/me").then((r) => r.data.data),
+  });
+
   const [form, setForm] = useState({
     leave_type_id: 0,
     start_date: "",
@@ -262,12 +273,12 @@ export default function LeaveDashboardPage() {
               </div>
             ))}
           </>
-        ) : leaveTypes.filter((lt) => Boolean(lt.is_active)).length === 0 ? (
+        ) : myLeaveTypes.filter((lt) => Boolean(lt.is_active)).length === 0 ? (
           <div className="col-span-full text-center text-gray-400 py-8">
             {t('leave.noTypes')}
           </div>
         ) : (
-          leaveTypes
+          myLeaveTypes
             .filter((lt) => Boolean(lt.is_active))
             // #1612 — when the org has multiple leave_types rows with the same
             // display name (e.g. an old "SL" + a re-added "SL_440514" both
@@ -424,7 +435,7 @@ export default function LeaveDashboardPage() {
                 required
               >
                 <option value={0} disabled>{t('leave.dashboard.selectType')}</option>
-                {leaveTypes
+                {myLeaveTypes
                   .filter((lt) => Boolean(lt.is_active))
                   // #1917 / #1924 — When the org has duplicate leave_types rows
                   // with the same display name (e.g. an old "SL" with 0 quota

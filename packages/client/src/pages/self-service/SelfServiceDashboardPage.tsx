@@ -100,13 +100,15 @@ export default function SelfServiceDashboardPage() {
         .catch(() => []),
   });
 
-  // #1414 — fetch all active leave types so we can render a card per type
-  // even before balances are initialized (missing balances render as 0).
+  // #1414 — fetch leave types so we can render a card per type even before
+  // balances are initialized. Uses /leave/types/me which filters out policies
+  // whose `applicable_gender` does not match the current user's gender, so
+  // e.g. Maternity does not appear for male employees.
   const { data: leaveTypes } = useQuery({
-    queryKey: ["leave-types"],
+    queryKey: ["leave-types-me"],
     queryFn: () =>
       api
-        .get("/leave/types")
+        .get("/leave/types/me")
         .then((r) => r.data.data)
         .catch(() => []),
   });

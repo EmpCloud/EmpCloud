@@ -37,6 +37,7 @@ interface LeavePolicy {
   annual_quota: number;
   accrual_type: string;
   applicable_from_months: number;
+  applicable_gender: string | null;
   max_consecutive_days: number | null;
   min_days_before_application: number;
   period_carry_forward: boolean;
@@ -94,6 +95,8 @@ const EMPTY_POLICY = {
   annual_quota: 12,
   accrual_type: "annual" as string,
   applicable_from_months: 0,
+  // null = applicable to all genders; "male" | "female" | "other" restricts.
+  applicable_gender: null as string | null,
   max_consecutive_days: null as number | null,
   min_days_before_application: 0,
   period_carry_forward: false,
@@ -267,6 +270,7 @@ export default function LeaveTypesPage() {
       annual_quota: p.annual_quota,
       accrual_type: p.accrual_type,
       applicable_from_months: p.applicable_from_months,
+      applicable_gender: p.applicable_gender ?? null,
       max_consecutive_days: p.max_consecutive_days,
       min_days_before_application: p.min_days_before_application,
       period_carry_forward: !!p.period_carry_forward,
@@ -899,6 +903,29 @@ function PoliciesSection(props: {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Applicable To
+              </label>
+              <select
+                value={policyForm.applicable_gender ?? ""}
+                onChange={(e) =>
+                  setPolicyForm({
+                    ...policyForm,
+                    applicable_gender: e.target.value === "" ? null : e.target.value,
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="">Everyone</option>
+                <option value="female">Female only</option>
+                <option value="male">Male only</option>
+                <option value="other">Other only</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Restricts who sees and can apply for this leave (e.g. Maternity → Female only).
+              </p>
+            </div>
             <div className="md:col-span-3">
               <label className="flex items-start gap-2 text-sm text-gray-700">
                 <input
@@ -952,13 +979,14 @@ function PoliciesSection(props: {
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Quota</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Accrual</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Carry</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Applicable</th>
               <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {policies.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
                   No policies configured
                 </td>
               </tr>
@@ -989,6 +1017,37 @@ function PoliciesSection(props: {
                           Resets
                         </span>
                       )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {(() => {
+                        const g = (p.applicable_gender ?? "").toLowerCase();
+                        if (g === "female") {
+                          return (
+                            <span className="text-xs bg-pink-50 text-pink-700 px-2 py-1 rounded-full">
+                              Female only
+                            </span>
+                          );
+                        }
+                        if (g === "male") {
+                          return (
+                            <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                              Male only
+                            </span>
+                          );
+                        }
+                        if (g === "other") {
+                          return (
+                            <span className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full">
+                              Other only
+                            </span>
+                          );
+                        }
+                        return (
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                            Everyone
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
