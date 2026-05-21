@@ -41,6 +41,14 @@ export async function initDB(): Promise<Knex> {
       // typings — casting through unknown bypasses without disabling
       // strict null checks anywhere else.
       dateStrings: ["DATE"] as unknown as boolean,
+      // Interpret DATETIME / TIMESTAMP columns as UTC, explicitly, instead of
+      // inheriting the Node process's local timezone. Production runs in UTC
+      // so this is a NO-OP there; but a dev box (or any server) in another tz
+      // — e.g. IST — would otherwise read a stored UTC value as local time and
+      // shift every timestamp by the offset (a 22:00 IST instant stored as
+      // 16:30 UTC came back as 16:30 local). Pinning to "Z" makes reads/writes
+      // consistent on any host and matches how prod already behaves.
+      timezone: "Z",
     },
     pool: { min: 2, max: 20 },
     migrations: {
