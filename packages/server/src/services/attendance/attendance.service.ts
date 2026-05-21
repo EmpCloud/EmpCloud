@@ -461,27 +461,218 @@ export async function getMyHistory(
   params?: { page?: number; perPage?: number; month?: number; year?: number }
 ) {
   const db = getDB();
-  const page = params?.page || 1;
-  const perPage = params?.perPage || 20;
   const now = new Date();
   const month = params?.month || now.getMonth() + 1;
   const year = params?.year || now.getFullYear();
 
   const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-  const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const endDate = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
 
-  let query = db("attendance_records")
-    .where({ organization_id: orgId, user_id: userId })
-    .whereBetween("date", [startDate, endDate]);
+  // Normalize date values (driver may hydrate to Date or string) to YYYY-MM-DD
+  // for stable keying when we merge calendar days against fetched rows.
+  const toDateKey = (v: unknown): string => {
+    if (v instanceof Date) {
+      const y = v.getFullYear();
+      const m = String(v.getMonth() + 1).padStart(2, "0");
+      const d = String(v.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+    return String(v).slice(0, 10);
+  };
 
-  const [{ count }] = await query.clone().count("* as count");
-  const records = await query
-    .select()
-    .orderBy("date", "desc")
-    .limit(perPage)
-    .offset((page - 1) * perPage);
+  // Fetch existing records + holidays from BOTH sources + the user's shift
+  // assignments in parallel.
+  //
+  // Holidays:
+  //   - `company_events` rows where event_type='holiday' is the canonical
+  //     source (powers /events/holidays).
+  //   - `organization_holidays` is a legacy table the Attendance Grid still
+  //     reads. We union both so a holiday stored only in the legacy table
+  //     still shows up here (parity with the Grid).
+  //
+  // Shift:
+  //   - Match the Grid's lookup exactly — order by created_at desc (latest
+  //     intent wins), tiebreak on id desc — and surface `is_weekoff` so the
+  //     per-assignment "Mark as Week-off" toggle is honored. The Grid then
+  //     uses first-write-wins per (user, date). We replicate that here for
+  //     a single user.
+  const [existing, eventHolidays, legacyHolidays, assignments] = await Promise.all([
+    db("attendance_records")
+      .where({ organization_id: orgId, user_id: userId })
+      .whereBetween("date", [startDate, endDate])
+      .select(),
+    db("company_events")
+      .where({ organization_id: orgId, event_type: "holiday" })
+      // overlap with [startDate, endDate]: start_date <= endDate AND (end_date >= startDate OR end_date IS NULL)
+      .where("start_date", "<=", `${endDate} 23:59:59`)
+      .andWhere(function () {
+        this.where("end_date", ">=", `${startDate} 00:00:00`).orWhereNull("end_date");
+      })
+      .select("title", "start_date", "end_date"),
+    // Legacy fallback table. Some older deployments still write here only.
+    // Returning [] on schema-mismatch / missing-table is what the Grid does
+    // too — see getMonthlyGrid above.
+    db("organization_holidays")
+      .where({ organization_id: orgId })
+      .whereBetween("holiday_date", [startDate, endDate])
+      .select("holiday_date", "holiday_name")
+      .catch(() => [] as Array<{ holiday_date: any; holiday_name: string }>),
+    db("shift_assignments as sa")
+      .join("shifts as s", "sa.shift_id", "s.id")
+      .where("sa.organization_id", orgId)
+      .andWhere("sa.user_id", userId)
+      .whereRaw("DATE(sa.effective_from) <= ?", [endDate])
+      .andWhere(function () {
+        this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [startDate]);
+      })
+      .whereRaw("(sa.effective_to IS NULL OR DATE(sa.effective_to) >= DATE(sa.effective_from))")
+      .orderBy("sa.created_at", "desc")
+      .orderBy("sa.id", "desc")
+      .select("sa.effective_from", "sa.effective_to", "s.working_days", "s.is_weekoff"),
+  ]);
 
-  return { records, total: Number(count) };
+  const byDate = new Map<string, any>();
+  for (const row of existing) {
+    byDate.set(toDateKey(row.date), row);
+  }
+
+  // Expand each holiday's [start_date, end_date] range into per-day entries
+  // so a multi-day holiday flags every day it covers. If end_date is NULL,
+  // treat it as a single-day holiday. The expansion is clamped to the
+  // requested [startDate, endDate] window so we don't iterate beyond what
+  // we'll render.
+  const holidayByDate = new Map<string, string>();
+  const monthStartDate = new Date(year, month - 1, 1);
+  const monthEndDate = new Date(year, month - 1, daysInMonth);
+  for (const h of eventHolidays as any[]) {
+    const start = new Date(h.start_date);
+    const end = h.end_date ? new Date(h.end_date) : new Date(h.start_date);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) continue;
+    const from = start < monthStartDate ? new Date(monthStartDate) : new Date(start);
+    const to = end > monthEndDate ? new Date(monthEndDate) : new Date(end);
+    from.setHours(0, 0, 0, 0);
+    to.setHours(0, 0, 0, 0);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const yy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      // First-write-wins so if two holidays overlap (rare but possible) the
+      // earlier-inserted name sticks instead of flickering.
+      const key = `${yy}-${mm}-${dd}`;
+      if (!holidayByDate.has(key)) holidayByDate.set(key, h.title);
+    }
+  }
+  // Layer the legacy table on top — only fills gaps so company_events wins
+  // when both have the same date.
+  for (const h of legacyHolidays as any[]) {
+    const key = toDateKey(h.holiday_date);
+    if (!holidayByDate.has(key)) holidayByDate.set(key, h.holiday_name);
+  }
+
+  // Per-day week-off resolution — matches getMonthlyGrid (lines ~995-1070):
+  // walk assignments in created_at-desc order and write the (user, date) slot
+  // first-write-wins. An assignment marks a date as week-off when either:
+  //   - is_weekoff flag is set on the assignment (the "Mark as Week-off"
+  //     toggle on the Shift Schedule's Edit Assignment modal), or
+  //   - the day-of-week is NOT in the shift's `working_days` CSV.
+  // Days with no covering assignment get NO synthesized week_off (matching
+  // the Grid's behavior — see the "no shift → blank cell" comment there).
+  const weekOffByDate = new Map<string, boolean>();
+  for (const a of assignments as any[]) {
+    const from = toDateKey(a.effective_from);
+    const to = a.effective_to ? toDateKey(a.effective_to) : null;
+    const workingDays = String(a.working_days || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => Number(s));
+    const isWeekoffShift = !!a.is_weekoff;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      if (dateKey < from) continue;
+      if (to && dateKey > to) continue;
+      if (weekOffByDate.has(dateKey)) continue; // first-write-wins
+      const dow = new Date(year, month - 1, d).getDay();
+      const off =
+        isWeekoffShift || (workingDays.length > 0 && !workingDays.includes(dow));
+      weekOffByDate.set(dateKey, off);
+    }
+  }
+
+  // Today key for the "don't mark future working days as absent" guard.
+  // Recomputed in the user's-via-server local tz; close enough for HR display
+  // purposes and matches how the rest of the file treats dates.
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+  // Walk every calendar day in the month. Days with a real record use it as-is;
+  // missing days get classified as holiday > week_off > absent. We use a
+  // unique negative `id` per synthesized row (derived from the date) so the
+  // client can use it as a React key without collisions and so its
+  // `expandedRowId === r.id` predicate doesn't accidentally match `null` for
+  // every synthesized row.
+  const records: any[] = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const existingRow = byDate.get(dateKey);
+    if (existingRow) {
+      records.push(existingRow);
+      continue;
+    }
+
+    const holidayName = holidayByDate.get(dateKey);
+    const isWeekOff = weekOffByDate.get(dateKey) === true;
+
+    let synthStatus: "holiday" | "week_off" | "absent";
+    if (holidayName) {
+      synthStatus = "holiday";
+    } else if (isWeekOff) {
+      synthStatus = "week_off";
+    } else {
+      synthStatus = "absent";
+    }
+
+    // Don't mark FUTURE working days as absent — those haven't happened yet,
+    // so calling them absent is misleading. Holidays and week-offs ARE
+    // calendar facts regardless of "now", so those still render for future
+    // dates. (E.g. May 25 a future Sunday: still shows as week_off; May 23
+    // a future Saturday with a holiday: still shows as holiday.)
+    if (synthStatus === "absent" && dateKey > todayKey) {
+      continue;
+    }
+
+    records.push({
+      // Negative pseudo-id derived from YYYYMMDD so React keys are unique and
+      // the client doesn't expand every synthesized row when the default
+      // expandedRowId is null.
+      id: -(year * 10000 + month * 100 + d),
+      organization_id: orgId,
+      user_id: userId,
+      date: dateKey,
+      shift_id: null,
+      check_in: null,
+      check_out: null,
+      check_in_source: null,
+      check_out_source: null,
+      check_in_lat: null,
+      check_in_lng: null,
+      check_out_lat: null,
+      check_out_lng: null,
+      status: synthStatus,
+      holiday_name: holidayName ?? null,
+      worked_minutes: null,
+      overtime_minutes: null,
+      late_minutes: null,
+      early_departure_minutes: null,
+      synthesized: true,
+    });
+  }
+
+  // Ascending by date — 1st of the month at the top, last day at the bottom.
+  records.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  return { records, total: records.length };
 }
 
 export async function listRecords(
