@@ -458,9 +458,36 @@ export const upsertEmployeeProfileSchema = z.object({
   blood_group: z.string().max(5).optional().nullable(),
   marital_status: z.enum(["single", "married", "divorced", "widowed"]).optional().nullable(),
   nationality: z.string().max(55).optional().nullable(),
-  aadhar_number: z.string().length(12).optional().nullable(),
-  pan_number: z.string().length(10).optional().nullable(),
-  uan_number: z.string().length(12).optional().nullable(),
+  // Aadhaar / PAN / UAN are fixed-length, but the profile form submits an
+  // empty string for an unset field — and `z.string().length(N)` rejects ""
+  // (it's neither undefined nor null), which 400'd the WHOLE profile save and
+  // looked like "can't edit PAN/Aadhaar". Preprocess: strip spaces, treat ""
+  // as null (cleared), uppercase PAN; validate the length only for a real
+  // value.
+  aadhar_number: z.preprocess(
+    (v) => {
+      if (typeof v !== "string") return v;
+      const s = v.replace(/\s/g, "");
+      return s === "" ? null : s;
+    },
+    z.string().length(12, "Aadhaar must be 12 digits").nullable().optional(),
+  ),
+  pan_number: z.preprocess(
+    (v) => {
+      if (typeof v !== "string") return v;
+      const s = v.replace(/\s/g, "").toUpperCase();
+      return s === "" ? null : s;
+    },
+    z.string().length(10, "PAN must be 10 characters").nullable().optional(),
+  ),
+  uan_number: z.preprocess(
+    (v) => {
+      if (typeof v !== "string") return v;
+      const s = v.replace(/\s/g, "");
+      return s === "" ? null : s;
+    },
+    z.string().length(12, "UAN must be 12 digits").nullable().optional(),
+  ),
   passport_number: z.string().max(20).optional().nullable(),
   passport_expiry: z.string().optional().nullable(),
   visa_status: z.string().max(50).optional().nullable(),

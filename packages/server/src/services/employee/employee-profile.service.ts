@@ -4,7 +4,9 @@
 // =============================================================================
 
 import { getDB } from "../../db/connection.js";
+import { getPayrollDB, isPayrollDBAccessible } from "../../db/payroll-connection.js";
 import { ConflictError, NotFoundError } from "../../utils/errors.js";
+import { logger } from "../../utils/logger.js";
 import type { UpsertEmployeeProfileInput } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -239,7 +241,82 @@ export async function upsertProfile(
     });
   }
 
+  // Sync PAN / UAN to the payroll module so a statutory ID entered on EmpCloud's
+  // profile screen surfaces on the payroll side too. The two products keep these
+  // in SEPARATE stores — EmpCloud `employee_profiles.pan_number/uan_number` vs
+  // payroll `employee_payroll_profiles.tax_info` (a JSON blob keyed `pan`/`uan`).
+  // Without this mirror, a PAN added here never reaches payroll's TDS/Form-16
+  // logic. The payroll→EmpCloud direction is handled in emp-payroll's
+  // employee.service.ts update(); together they keep both sides consistent
+  // regardless of which screen HR (or the employee) used.
+  //
+  // Best-effort and fully isolated: we never CREATE a payroll profile from here
+  // (seating/identity is payroll's concern) — we only patch tax_info on an
+  // existing row. Any payroll-DB problem is swallowed so it can't break the
+  // EmpCloud profile save the user actually asked for.
+  await syncStatutoryIdsToPayroll(orgId, userId, profileData);
+
   return getProfile(orgId, userId);
+}
+
+// ---------------------------------------------------------------------------
+// Cross-module statutory ID sync (EmpCloud -> payroll)
+// ---------------------------------------------------------------------------
+
+async function syncStatutoryIdsToPayroll(
+  orgId: number,
+  userId: number,
+  profileData: Record<string, unknown>,
+): Promise<void> {
+  const hasPan = typeof profileData.pan_number === "string";
+  const hasUan = typeof profileData.uan_number === "string";
+  if (!hasPan && !hasUan) return;
+
+  try {
+    if (!(await isPayrollDBAccessible())) return;
+    const pdb = getPayrollDB();
+
+    // Only mirror onto an existing payroll profile — don't manufacture one.
+    const profile = await pdb("employee_payroll_profiles")
+      .where({ empcloud_user_id: userId, empcloud_org_id: orgId })
+      .first();
+    if (!profile) return;
+
+    // tax_info may be a JSON string, an already-parsed object, or null.
+    let taxInfo: Record<string, unknown> = {};
+    const raw = profile.tax_info;
+    if (raw != null) {
+      if (typeof raw === "string") {
+        try {
+          taxInfo = JSON.parse(raw || "{}") || {};
+        } catch {
+          taxInfo = {};
+        }
+      } else if (typeof raw === "object") {
+        taxInfo = { ...(raw as Record<string, unknown>) };
+      }
+    }
+
+    if (hasPan) {
+      const pan = String(profileData.pan_number ?? "").trim().toUpperCase();
+      taxInfo.pan = pan || "";
+    }
+    if (hasUan) {
+      const uan = String(profileData.uan_number ?? "").trim();
+      taxInfo.uan = uan || "";
+    }
+
+    await pdb("employee_payroll_profiles")
+      .where({ id: profile.id })
+      .update({ tax_info: JSON.stringify(taxInfo) });
+  } catch (err) {
+    // Never let a payroll-side hiccup fail the EmpCloud profile save.
+    logger.warn("Failed to sync statutory IDs to payroll", {
+      orgId,
+      userId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------
