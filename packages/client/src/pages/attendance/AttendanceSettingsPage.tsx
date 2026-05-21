@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import GeofenceMapPicker from "@/components/maps/GeofenceMapPicker";
 
 type Channel = "dashboard" | "biometric" | "app";
@@ -222,12 +223,17 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Geofence | null>(null);
   const [creating, setCreating] = useState(false);
+  // Pending deletion target. The trash icon sets this; ConfirmDialog (rendered
+  // at the bottom of the section) reads it. Replaces window.confirm() which
+  // surfaces an unstyled browser alert.
+  const [pendingDelete, setPendingDelete] = useState<Geofence | null>(null);
 
   const removeFence = useMutation({
     mutationFn: (id: number) => api.delete(`/attendance/geo-fences/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-geo-fences"] });
       showToast("success", "Geofence removed");
+      setPendingDelete(null);
     },
     onError: (err: any) =>
       showToast("error", err?.response?.data?.error?.message ?? "Could not remove geofence"),
@@ -284,15 +290,7 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => {
-                    if (
-                      confirm(
-                        `Remove geofence "${f.name}"? Any per-user overrides pinned to it will fall back to inheriting org defaults.`,
-                      )
-                    ) {
-                      removeFence.mutate(f.id);
-                    }
-                  }}
+                  onClick={() => setPendingDelete(f)}
                   className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
                   aria-label="Delete geofence"
                 >
@@ -325,6 +323,24 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
           }}
         />
       )}
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Remove geofence?"
+        description={
+          pendingDelete
+            ? `"${pendingDelete.name}" will be deleted. Any per-user overrides pinned to it will fall back to inheriting org defaults.`
+            : ""
+        }
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="danger"
+        loading={removeFence.isPending}
+        onConfirm={() => {
+          if (pendingDelete) removeFence.mutate(pendingDelete.id);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </section>
   );
 }
@@ -347,6 +363,17 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
   const [radius, setRadius] = useState<string>(
     existing ? String(existing.radius_meters) : "200",
   );
+  // Field-level validation errors. The toast at the bottom-right is easy to
+  // miss for inline form mistakes (especially on the geofence dialog where
+  // the user is focused on the map). Render the message right under the
+  // offending field instead — keyed by field name so each input can show
+  // / clear its own error independently.
+  const [errors, setErrors] = useState<{
+    name?: string;
+    latitude?: string;
+    longitude?: string;
+    radius?: string;
+  }>({});
 
   const save = useMutation({
     mutationFn: () => {
@@ -370,16 +397,19 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
   });
 
   const submit = () => {
-    if (!name.trim()) return showToast("error", "Name is required");
     const lat = Number(latitude);
     const lng = Number(longitude);
     const rad = Number(radius);
-    if (Number.isNaN(lat) || lat < -90 || lat > 90)
-      return showToast("error", "Latitude must be between -90 and 90");
-    if (Number.isNaN(lng) || lng < -180 || lng > 180)
-      return showToast("error", "Longitude must be between -180 and 180");
-    if (Number.isNaN(rad) || rad < 10 || rad > 50000)
-      return showToast("error", "Radius must be between 10 and 50000 metres");
+    const next: typeof errors = {};
+    if (!name.trim()) next.name = "Name is required";
+    if (Number.isNaN(lat) || lat < -90 || lat > 90) next.latitude = "Latitude must be between -90 and 90";
+    if (Number.isNaN(lng) || lng < -180 || lng > 180) next.longitude = "Longitude must be between -180 and 180";
+    if (Number.isNaN(rad) || rad < 10 || rad > 50000) next.radius = "Radius must be between 10 and 50000 metres";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      return;
+    }
+    setErrors({});
     save.mutate();
   };
 
@@ -411,11 +441,22 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors((p) => ({ ...p, name: undefined }));
+              }}
               placeholder="HQ Bangalore"
               maxLength={100}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              aria-invalid={!!errors.name}
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+                errors.name
+                  ? "border-red-300 focus:ring-red-300 focus:border-red-400"
+                  : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+              }`}
             />
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-600">{errors.name}</p>
+            )}
           </div>
 
           {/* Map picker — click anywhere or drag the marker to set the
@@ -448,10 +489,21 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 type="number"
                 step="0.0000001"
                 value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
+                onChange={(e) => {
+                  setLatitude(e.target.value);
+                  if (errors.latitude) setErrors((p) => ({ ...p, latitude: undefined }));
+                }}
                 placeholder="12.9716"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                aria-invalid={!!errors.latitude}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+                  errors.latitude
+                    ? "border-red-300 focus:ring-red-300 focus:border-red-400"
+                    : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+                }`}
               />
+              {errors.latitude && (
+                <p className="mt-1 text-xs text-red-600">{errors.latitude}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
@@ -459,10 +511,21 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 type="number"
                 step="0.0000001"
                 value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
+                onChange={(e) => {
+                  setLongitude(e.target.value);
+                  if (errors.longitude) setErrors((p) => ({ ...p, longitude: undefined }));
+                }}
                 placeholder="77.5946"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                aria-invalid={!!errors.longitude}
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+                  errors.longitude
+                    ? "border-red-300 focus:ring-red-300 focus:border-red-400"
+                    : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+                }`}
               />
+              {errors.longitude && (
+                <p className="mt-1 text-xs text-red-600">{errors.longitude}</p>
+              )}
             </div>
           </div>
 
@@ -475,13 +538,25 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               min={10}
               max={50000}
               value={radius}
-              onChange={(e) => setRadius(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              onChange={(e) => {
+                setRadius(e.target.value);
+                if (errors.radius) setErrors((p) => ({ ...p, radius: undefined }));
+              }}
+              aria-invalid={!!errors.radius}
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+                errors.radius
+                  ? "border-red-300 focus:ring-red-300 focus:border-red-400"
+                  : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+              }`}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Mobile app considers the user "inside" if they're within this distance of the
-              coordinates.
-            </p>
+            {errors.radius ? (
+              <p className="mt-1 text-xs text-red-600">{errors.radius}</p>
+            ) : (
+              <p className="text-xs text-gray-500 mt-1">
+                Mobile app considers the user "inside" if they're within this distance of the
+                coordinates.
+              </p>
+            )}
           </div>
         </div>
 
@@ -575,11 +650,16 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
     },
   });
 
+  // Pending deletion target for the override list. See GeofencesSection for
+  // the same pattern — ConfirmDialog at the bottom reads this.
+  const [pendingDelete, setPendingDelete] = useState<OverrideRow | null>(null);
+
   const removeOverride = useMutation({
     mutationFn: (id: number) => api.delete(`/attendance/overrides/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-overrides-all"] });
       showToast("success", "Override removed");
+      setPendingDelete(null);
     },
     onError: (err: any) =>
       showToast("error", err?.response?.data?.error?.message ?? "Could not remove override"),
@@ -705,11 +785,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => {
-                          if (confirm("Remove this override? The user will fall back to the org default immediately.")) {
-                            removeOverride.mutate(row.id);
-                          }
-                        }}
+                        onClick={() => setPendingDelete(row)}
                         className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
                         aria-label="Delete override"
                       >
@@ -750,6 +826,24 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
           }}
         />
       )}
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Remove per-user override?"
+        description={
+          pendingDelete
+            ? `${pendingDelete.user?.first_name ?? "This user"}'s override will be removed. They will fall back to the org default immediately.`
+            : ""
+        }
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="danger"
+        loading={removeOverride.isPending}
+        onConfirm={() => {
+          if (pendingDelete) removeOverride.mutate(pendingDelete.id);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </section>
   );
 }

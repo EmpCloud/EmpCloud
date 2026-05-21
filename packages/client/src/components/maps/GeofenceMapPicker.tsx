@@ -97,6 +97,7 @@ export default function GeofenceMapPicker({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <InvalidateOnMount />
         <ClickHandler onPick={(latlng) => onChange({ latitude: latlng.lat, longitude: latlng.lng })} />
         {hasPoint && (
           <>
@@ -134,6 +135,26 @@ function ClickHandler({ onPick }: { onPick: (latlng: L.LatLng) => void }) {
       onPick(e.latlng);
     },
   });
+  return null;
+}
+
+// When MapContainer mounts inside a modal/dialog, the modal's open animation
+// can leave Leaflet computing tile coverage against the pre-animation
+// container size (often 0×0 or stale). The visible symptom is a solid blue
+// rectangle — Leaflet thinks it doesn't need to fetch any tiles. Calling
+// invalidateSize() after the next animation frame (and again at 150ms in
+// case the modal uses a longer transition) forces a re-measure and re-tile.
+function InvalidateOnMount() {
+  const map = useMap();
+  useEffect(() => {
+    const fire = () => map.invalidateSize();
+    const raf = requestAnimationFrame(fire);
+    const t = setTimeout(fire, 150);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t);
+    };
+  }, [map]);
   return null;
 }
 
