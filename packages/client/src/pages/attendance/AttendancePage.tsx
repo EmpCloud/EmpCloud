@@ -532,21 +532,30 @@ export default function AttendancePage() {
               <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No records for this month</td></tr>
             ) : (
               records.map((r: any) => {
-                const expanded = expandedRowId === r.id;
+                // Synthesized rows (holiday / week_off / absent with no real
+                // attendance_records row) have no punches timeline to show,
+                // so we hide the chevron entirely. The server marks them with
+                // `synthesized: true`; we also fall back to a negative-id
+                // check in case an older response lacks that flag.
+                const isSynth = r.synthesized === true || (typeof r.id === "number" && r.id < 0);
+                const canExpand = !isSynth;
+                const expanded = canExpand && expandedRowId === r.id;
                 return (
                   <Fragment key={r.id}>
                   <tr className="hover:bg-gray-50">
                     <td className="px-3 py-4 w-10">
-                      <button
-                        type="button"
-                        onClick={() => setExpandedRowId(expanded ? null : r.id)}
-                        className="inline-flex items-center justify-center p-1.5 rounded text-gray-500 hover:bg-gray-100"
-                        aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
-                        title={expanded ? "Hide timeline" : "Show timeline"}
-                        aria-expanded={expanded}
-                      >
-                        {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                      </button>
+                      {canExpand && (
+                        <button
+                          type="button"
+                          onClick={() => setExpandedRowId(expanded ? null : r.id)}
+                          className="inline-flex items-center justify-center p-1.5 rounded text-gray-500 hover:bg-gray-100"
+                          aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
+                          title={expanded ? "Hide timeline" : "Show timeline"}
+                          aria-expanded={expanded}
+                        >
+                          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </button>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{new Date(r.date).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
@@ -560,9 +569,15 @@ export default function AttendancePage() {
                           : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
                           : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
                           : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
+                          : r.status === "holiday" ? "bg-purple-50 text-purple-700"
+                          : r.status === "week_off" ? "bg-gray-100 text-gray-600"
                           : "bg-red-50 text-red-700"
                       }`}>
-                        {r.status === "checked_in" ? "checked in" : r.status.replace(/_/g, " ")}
+                        {r.status === "checked_in"
+                          ? "checked in"
+                          : r.status === "holiday" && r.holiday_name
+                            ? r.holiday_name
+                            : r.status.replace(/_/g, " ")}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
@@ -577,15 +592,20 @@ export default function AttendancePage() {
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDetailRecord(r)}
-                          className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
-                          aria-label="View attendance details"
-                          title="View details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
+                        {/* View-details opens the modal that fetches the
+                            punches timeline by record id; synthesized rows
+                            have no real id, so the modal would 404. Hide it. */}
+                        {canExpand && (
+                          <button
+                            type="button"
+                            onClick={() => setDetailRecord(r)}
+                            className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
+                            aria-label="View attendance details"
+                            title="View details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

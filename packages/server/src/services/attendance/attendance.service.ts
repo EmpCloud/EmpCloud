@@ -461,27 +461,132 @@ export async function getMyHistory(
   params?: { page?: number; perPage?: number; month?: number; year?: number }
 ) {
   const db = getDB();
-  const page = params?.page || 1;
-  const perPage = params?.perPage || 20;
   const now = new Date();
   const month = params?.month || now.getMonth() + 1;
   const year = params?.year || now.getFullYear();
 
   const startDate = `${year}-${String(month).padStart(2, "0")}-01`;
-  const endDate = new Date(year, month, 0).toISOString().slice(0, 10);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const endDate = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
 
-  let query = db("attendance_records")
-    .where({ organization_id: orgId, user_id: userId })
-    .whereBetween("date", [startDate, endDate]);
+  // Normalize date values (driver may hydrate to Date or string) to YYYY-MM-DD
+  // for stable keying when we merge calendar days against fetched rows.
+  const toDateKey = (v: unknown): string => {
+    if (v instanceof Date) {
+      const y = v.getFullYear();
+      const m = String(v.getMonth() + 1).padStart(2, "0");
+      const d = String(v.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+    return String(v).slice(0, 10);
+  };
 
-  const [{ count }] = await query.clone().count("* as count");
-  const records = await query
-    .select()
-    .orderBy("date", "desc")
-    .limit(perPage)
-    .offset((page - 1) * perPage);
+  // Fetch existing attendance_records, holidays, and the user's active shift in
+  // parallel — three independent queries.
+  const [existing, holidays, shiftRow] = await Promise.all([
+    db("attendance_records")
+      .where({ organization_id: orgId, user_id: userId })
+      .whereBetween("date", [startDate, endDate])
+      .select(),
+    db("organization_holidays")
+      .where({ organization_id: orgId })
+      .whereBetween("holiday_date", [startDate, endDate])
+      .select("holiday_date", "holiday_name"),
+    // Pull the user's currently-effective shift to know their weekly off days.
+    // Falls back to Mon-Fri (1-5) if the user has no assignment.
+    db("shift_assignments as sa")
+      .where("sa.organization_id", orgId)
+      .andWhere("sa.user_id", userId)
+      .andWhere("sa.effective_from", "<=", endDate)
+      .andWhere(function () {
+        this.whereNull("sa.effective_to").orWhere("sa.effective_to", ">=", startDate);
+      })
+      .leftJoin("shifts as s", "sa.shift_id", "s.id")
+      .orderBy("sa.effective_from", "desc")
+      .select("s.working_days as working_days")
+      .first(),
+  ]);
 
-  return { records, total: Number(count) };
+  const byDate = new Map<string, any>();
+  for (const row of existing) {
+    byDate.set(toDateKey(row.date), row);
+  }
+
+  const holidayByDate = new Map<string, string>();
+  for (const h of holidays as any[]) {
+    holidayByDate.set(toDateKey(h.holiday_date), h.holiday_name);
+  }
+
+  // Working-day set as a Set<weekday-number> where 0=Sunday, 1=Monday, …, 6=Saturday.
+  // Schema stores e.g. "1,2,3,4,5" (Mon-Fri). Default to Mon-Fri when missing.
+  const workingDaysRaw = (shiftRow?.working_days as string | undefined) ?? "1,2,3,4,5";
+  const workingDays = new Set(
+    workingDaysRaw
+      .split(",")
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => Number.isFinite(n)),
+  );
+
+  // Walk every calendar day in the month. Days with a real record use it as-is;
+  // missing days get classified as holiday > week_off > absent. We use a
+  // unique negative `id` per synthesized row (derived from the date) so the
+  // client can use it as a React key without collisions and so its
+  // `expandedRowId === r.id` predicate doesn't accidentally match `null` for
+  // every synthesized row.
+  const records: any[] = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const existingRow = byDate.get(dateKey);
+    if (existingRow) {
+      records.push(existingRow);
+      continue;
+    }
+
+    const holidayName = holidayByDate.get(dateKey);
+    // JS Date.getDay() returns 0=Sun…6=Sat. We parse the YYYY-MM-DD locally so
+    // the weekday isn't shifted by the server's timezone.
+    const weekday = new Date(year, month - 1, d).getDay();
+
+    let synthStatus: "holiday" | "week_off" | "absent";
+    if (holidayName) {
+      synthStatus = "holiday";
+    } else if (!workingDays.has(weekday)) {
+      synthStatus = "week_off";
+    } else {
+      synthStatus = "absent";
+    }
+
+    records.push({
+      // Negative pseudo-id derived from YYYYMMDD so React keys are unique and
+      // the client doesn't expand every synthesized row when the default
+      // expandedRowId is null.
+      id: -(year * 10000 + month * 100 + d),
+      organization_id: orgId,
+      user_id: userId,
+      date: dateKey,
+      shift_id: null,
+      check_in: null,
+      check_out: null,
+      check_in_source: null,
+      check_out_source: null,
+      check_in_lat: null,
+      check_in_lng: null,
+      check_out_lat: null,
+      check_out_lng: null,
+      status: synthStatus,
+      holiday_name: holidayName ?? null,
+      worked_minutes: null,
+      overtime_minutes: null,
+      late_minutes: null,
+      early_departure_minutes: null,
+      synthesized: true,
+    });
+  }
+
+  // Ascending by date — 1st of the month at the top, last day at the bottom.
+  records.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  return { records, total: records.length };
 }
 
 export async function listRecords(

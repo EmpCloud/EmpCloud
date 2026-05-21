@@ -483,16 +483,20 @@ router.get("/me/today", authenticate, requirePermission("attendance:view", "atte
 });
 
 // GET /api/v1/attendance/me/history
+//
+// Returns one row per calendar day in the requested month (defaults to the
+// current month). Days with no attendance_records row come back synthesized
+// with status="absent" so the My Attendance page never has gaps. Because
+// the response is bounded (28-31 days), pagination is no-op here — we emit
+// total_pages=1 by setting per_page = records.length.
 router.get("/me/history", authenticate, requirePermission("attendance:view", "attendance:view_team", "attendance:view_all", "attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = attendanceQuerySchema.parse(req.query);
     const result = await attendanceService.getMyHistory(req.user!.org_id, req.user!.sub, {
-      page: params.page,
-      perPage: params.per_page,
       month: params.month,
       year: params.year,
     });
-    sendPaginated(res, result.records, result.total, params.page, params.per_page);
+    sendPaginated(res, result.records, result.total, 1, Math.max(result.records.length, 1));
   } catch (err) { next(err); }
 });
 
