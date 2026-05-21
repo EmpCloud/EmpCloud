@@ -291,6 +291,33 @@ export async function rejectRegularization(
   return db("attendance_regularizations").where({ id: regularizationId }).first();
 }
 
+/**
+ * Delete (withdraw) a regularization request. Only PENDING requests can be
+ * removed — once approved/rejected the decision is part of the attendance
+ * record's history. The owner may delete their own; privileged roles (HR /
+ * attendance:manage) may delete anyone's pending request.
+ */
+export async function deleteRegularization(
+  orgId: number,
+  regularizationId: number,
+  requesterId: number,
+  isPrivileged: boolean,
+) {
+  const db = getDB();
+  const reg = await db("attendance_regularizations")
+    .where({ id: regularizationId, organization_id: orgId })
+    .first();
+  if (!reg) throw new NotFoundError("Regularization request");
+  if (!isPrivileged && Number(reg.user_id) !== Number(requesterId)) {
+    throw new ForbiddenError("You can only delete your own regularization requests");
+  }
+  if (reg.status !== "pending") {
+    throw new ValidationError("Only pending requests can be deleted");
+  }
+  await db("attendance_regularizations").where({ id: regularizationId }).del();
+  return { id: regularizationId, deleted: true };
+}
+
 export async function getMyRegularizations(
   orgId: number,
   userId: number,

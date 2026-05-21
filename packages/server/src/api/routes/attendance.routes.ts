@@ -1259,4 +1259,27 @@ router.put("/regularizations/:id/approve", authenticate, requirePermission("atte
   } catch (err) { next(err); }
 });
 
+// DELETE /api/v1/attendance/regularizations/:id
+// Withdraw a PENDING regularization request. The owner can delete their own;
+// HR / attendance:manage can delete anyone's pending request.
+router.delete("/regularizations/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const regId = paramInt(req.params.id);
+    const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
+    const perms = (req.user as any).permissions as string[] | undefined;
+    const isPrivileged =
+      HR_ROLES.includes(req.user!.role) ||
+      (Array.isArray(perms) &&
+        (perms.includes("attendance:manage") ||
+          perms.includes("attendance:approve_regularization_all")));
+    const result = await regularizationService.deleteRegularization(
+      req.user!.org_id,
+      regId,
+      req.user!.sub,
+      isPrivileged,
+    );
+    sendSuccess(res, result);
+  } catch (err) { next(err); }
+});
+
 export default router;
