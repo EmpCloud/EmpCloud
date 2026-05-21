@@ -39,20 +39,32 @@ async function resolveUserTz(
 }
 
 /**
- * Convert a wall-clock datetime interpreted in `tz` into a UTC
- * "YYYY-MM-DD HH:mm:ss" string for storage (matching how biometric punches
- * are stored). Accepts "YYYY-MM-DDTHH:mm[:ss]" or "YYYY-MM-DD HH:mm[:ss]".
- * A value that already carries a zone ("Z" or an explicit ±HH:MM offset) is
- * treated as a real instant and just normalised to UTC — never double-shifted.
+ * Convert a wall-clock datetime interpreted in `tz` into the real instant it
+ * represents, returned as a JS `Date`.
+ *
+ * Why a Date and NOT a pre-formatted "YYYY-MM-DD HH:mm:ss" UTC string:
+ * mysql2 interprets DATETIME columns in the CONNECTION timezone (default
+ * "local" = the Node process's tz). Prod runs in UTC, but a dev box in IST
+ * does not. A pre-formatted UTC string written verbatim is then RE-READ in
+ * the connection tz, double-shifting it (a 22:00 IST request stored as the
+ * string "16:30" came back as 11:00). Passing a Date lets mysql2 do the tz
+ * conversion symmetrically on write AND read, so the stored instant round-
+ * trips correctly on any server tz — exactly how biometric `check_in` Dates
+ * already behave.
+ *
+ * Accepts "YYYY-MM-DDTHH:mm[:ss]" or "YYYY-MM-DD HH:mm[:ss]". A value that
+ * already carries a zone ("Z" or an explicit ±HH:MM offset) is a real instant
+ * already and is parsed as-is — never double-shifted.
  */
-function wallClockToUtcString(value: string, tz: string): string {
+function wallClockToInstant(value: string, tz: string): Date | null {
   const v = value.trim();
   const timePart = v.length > 11 ? v.slice(11) : "";
   if (/[zZ]$/.test(v) || /[+-]\d{2}:?\d{2}$/.test(timePart)) {
-    return new Date(v).toISOString().slice(0, 19).replace("T", " ");
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
   }
   const m = v.replace("T", " ").match(/^(\d{4})-(\d{2})-(\d{2})[ ](\d{2}):(\d{2})(?::(\d{2}))?/);
-  if (!m) return v; // unrecognised shape — store as-is rather than corrupt it
+  if (!m) return null; // unrecognised shape — skip rather than corrupt it
   const [, y, mo, d, h, mi, s] = m;
   const asUtcMs = Date.UTC(+y, +mo - 1, +d, +h, +mi, +(s || 0));
   // What wall-clock does that UTC instant show in tz? The gap is tz's offset.
@@ -71,7 +83,7 @@ function wallClockToUtcString(value: string, tz: string): string {
   if (hh === 24) hh = 0;
   const tzAsUtcMs = Date.UTC(g("year"), g("month") - 1, g("day"), hh, g("minute"), g("second"));
   const offsetMs = tzAsUtcMs - asUtcMs; // tz ahead of UTC by this many ms
-  return new Date(asUtcMs - offsetMs).toISOString().slice(0, 19).replace("T", " ");
+  return new Date(asUtcMs - offsetMs);
 }
 
 export async function submitRegularization(orgId: number, userId: number, data: SubmitRegularizationInput) {
@@ -87,11 +99,11 @@ export async function submitRegularization(orgId: number, userId: number, data: 
   // (and renders correctly on the grid). Bare "HH:mm[:ss]" values are
   // anchored to the request date first.
   const tz = await resolveUserTz(db, orgId, userId);
-  const toTimestamp = (value: string | null | undefined): string | null => {
+  const toTimestamp = (value: string | null | undefined): Date | null => {
     if (!value) return null;
     let v = value.trim();
     if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(v)) v = `${data.date}T${v}`;
-    return wallClockToUtcString(v, tz);
+    return wallClockToInstant(v, tz);
   };
 
   const [id] = await db("attendance_regularizations").insert({

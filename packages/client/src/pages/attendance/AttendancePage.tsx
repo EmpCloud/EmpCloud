@@ -439,10 +439,16 @@ export default function AttendancePage() {
                 <tr><td colSpan={5} className="px-6 py-6 text-center text-gray-400">No regularization requests yet.</td></tr>
               ) : (
                 myRegRequests.map((r) => {
+                  // requested_check_in/out come back as proper UTC instants
+                  // (ISO strings). Render them in the viewer's local time —
+                  // NOT a regex slice of the raw string, which showed the UTC
+                  // wall-clock (e.g. 16:30) instead of the entered 22:00.
                   const fmtTime = (v?: string | null) => {
                     if (!v) return "-";
-                    const m = String(v).match(/(\d{2}):(\d{2})/);
-                    return m ? `${m[1]}:${m[2]}` : String(v);
+                    const d = new Date(v);
+                    return isNaN(d.getTime())
+                      ? String(v)
+                      : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                   };
                   return (
                     <tr key={r.id} className="hover:bg-gray-50">
