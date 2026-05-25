@@ -55,6 +55,18 @@ router.get("/types", authenticate, async (req: Request, res: Response, next: Nex
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/leave/types/me — leave types applicable to current user
+// (filters by `leave_policies.applicable_gender` vs `users.gender`). Used by
+// the self-service dashboard so gender-restricted leaves are only shown to
+// matching employees. Must be declared before `/types/:id` so the literal
+// segment wins over the param route.
+router.get("/types/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const types = await leaveTypeService.listLeaveTypesForUser(req.user!.org_id, req.user!.sub);
+    sendSuccess(res, types);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/leave/types/:id
 router.get("/types/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
