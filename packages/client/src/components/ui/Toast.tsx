@@ -62,13 +62,13 @@ export default function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm">
+    <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm">
       {toasts.map((toast) => {
         const Icon = ICONS[toast.type];
         return (
           <div
             key={toast.id}
-            className={`flex items-start gap-3 px-4 py-3 rounded-lg border shadow-lg animate-in slide-in-from-right ${COLORS[toast.type]}`}
+            className={`flex items-start gap-3 px-4 py-3 rounded-lg border shadow-lg animate-in fade-in slide-in-from-top-2 ${COLORS[toast.type]}`}
             role="alert"
           >
             <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${ICON_COLORS[toast.type]}`} />
