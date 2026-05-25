@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy, Send, Users } from "lucide-react";
 import api from "@/api/client";
@@ -98,6 +99,9 @@ function parseUploadedFile(file: File): Promise<any[]> {
 // ---------------------------------------------------------------------------
 
 export default function EmployeeDirectoryPage() {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`employees.directory.${k}`, opts ?? {});
   const qc = useQueryClient();
   const currentUser = useAuthStore((s) => s.user);
   const isOrgAdmin = currentUser?.role === "org_admin" || currentUser?.role === "super_admin";
@@ -490,8 +494,8 @@ export default function EmployeeDirectoryPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Employee Directory</h1>
-          <p className="text-gray-500 mt-1">Browse and search your organization's employees.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
+          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -500,11 +504,11 @@ export default function EmployeeDirectoryPage() {
             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
             <Download className="h-4 w-4" />
-            {exportQuery.isFetching ? "Exporting..." : "Export Excel"}
+            {exportQuery.isFetching ? tx("exporting") : tx("exportExcel")}
           </button>
           <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
             <Upload className="h-4 w-4" />
-            Bulk Update
+            {tx("bulkUpdate")}
             <input
               ref={fileRef}
               type="file"
@@ -523,7 +527,7 @@ export default function EmployeeDirectoryPage() {
               }`}
             >
               <Mail className="h-4 w-4" />
-              Pending Invitations
+              {tx("pendingInvitations")}
               {invitations.length > 0 && (
                 <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-600 text-white text-xs font-semibold">
                   {invitations.length}
@@ -536,17 +540,17 @@ export default function EmployeeDirectoryPage() {
               onClick={() => setShowCsvImport(true)}
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              <FileSpreadsheet className="h-4 w-4" /> Import Employees
+              <FileSpreadsheet className="h-4 w-4" /> {tx("importEmployees")}
             </button>
           )}
           {canInvite && (
             <button
               onClick={() => setShowBulkInviteConfirm(true)}
               disabled={bulkInvite.isPending}
-              title="Send invitations to every employee who hasn't set a password yet"
+              title={tx("inviteAllTooltip") as string}
               className="flex items-center gap-2 px-4 py-2 border border-brand-300 bg-brand-50 text-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 disabled:opacity-50"
             >
-              <Users className="h-4 w-4" /> Invite All
+              <Users className="h-4 w-4" /> {tx("inviteAll")}
             </button>
           )}
           {canInvite && (
@@ -554,7 +558,7 @@ export default function EmployeeDirectoryPage() {
               onClick={() => setShowInvite((v) => !v)}
               className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
             >
-              <UserPlus className="h-4 w-4" /> Invite Employee
+              <UserPlus className="h-4 w-4" /> {tx("inviteEmployee")}
             </button>
           )}
         </div>
@@ -983,7 +987,7 @@ export default function EmployeeDirectoryPage() {
               setPage(1);
             }}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-            placeholder="Search by name, email, designation, or department..."
+            placeholder={tx("searchPlaceholder") as string}
           />
         </div>
         <select
@@ -994,7 +998,7 @@ export default function EmployeeDirectoryPage() {
           }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
-          <option value="">All Departments</option>
+          <option value="">{tx("allDepartments")}</option>
           {deptList.map((d: any) => (
             <option key={d.id} value={d.id}>
               {d.name}
@@ -1009,7 +1013,7 @@ export default function EmployeeDirectoryPage() {
           }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
-          <option value="">All Locations</option>
+          <option value="">{tx("allLocations")}</option>
           {(locations || []).map((l: any) => (
             <option key={l.id} value={l.id}>
               {l.name}
@@ -1024,11 +1028,11 @@ export default function EmployeeDirectoryPage() {
           }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
-          <option value="">All Roles</option>
-          <option value="employee">Employee</option>
-          <option value="manager">Manager</option>
-          <option value="hr_admin">HR Admin</option>
-          <option value="org_admin">Org Admin</option>
+          <option value="">{tx("allRoles")}</option>
+          <option value="employee">{tx("roleEmployee")}</option>
+          <option value="manager">{tx("roleManager")}</option>
+          <option value="hr_admin">{tx("roleHrAdmin")}</option>
+          <option value="org_admin">{tx("roleOrgAdmin")}</option>
         </select>
       </div>
 
@@ -1045,14 +1049,14 @@ export default function EmployeeDirectoryPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Email</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Department</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Designation</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Role</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Emp Code</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colEmployee")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colEmail")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.department")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colDesignation")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colRole")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colEmpCode")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.status")}</th>
+              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -1079,7 +1083,7 @@ export default function EmployeeDirectoryPage() {
             ) : employees.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
-                  No employees found
+                  {tx("noEmployees")}
                 </td>
               </tr>
             ) : (
@@ -1111,25 +1115,38 @@ export default function EmployeeDirectoryPage() {
                     {emp.designation || "-"}
                   </td>
                   <td className="px-6 py-4">
-                    {isOrgAdmin && emp.id !== currentUser?.id ? (
-                      <select
-                        value={emp.role || "employee"}
-                        onChange={(e) =>
-                          updateRoleMut.mutate({ userId: emp.id, role: e.target.value })
-                        }
-                        disabled={updateRoleMut.isPending}
-                        className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 capitalize cursor-pointer hover:bg-gray-100 disabled:opacity-50"
-                      >
-                        <option value="employee">Employee</option>
-                        <option value="manager">Manager</option>
-                        <option value="hr_admin">HR Admin</option>
-                        <option value="org_admin">Org Admin</option>
-                      </select>
-                    ) : (
-                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full capitalize">
-                        {(emp.role || "employee").replace(/_/g, " ")}
-                      </span>
-                    )}
+                    {(() => {
+                      // Map server enum → localized label, fall back to the
+                      // raw enum word with underscores stripped.
+                      const roleLabel = (role: string) => {
+                        const map: Record<string, string> = {
+                          employee: tx("roleEmployee") as string,
+                          manager: tx("roleManager") as string,
+                          hr_admin: tx("roleHrAdmin") as string,
+                          org_admin: tx("roleOrgAdmin") as string,
+                        };
+                        return map[role] || role.replace(/_/g, " ");
+                      };
+                      return isOrgAdmin && emp.id !== currentUser?.id ? (
+                        <select
+                          value={emp.role || "employee"}
+                          onChange={(e) =>
+                            updateRoleMut.mutate({ userId: emp.id, role: e.target.value })
+                          }
+                          disabled={updateRoleMut.isPending}
+                          className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+                        >
+                          <option value="employee">{tx("roleEmployee")}</option>
+                          <option value="manager">{tx("roleManager")}</option>
+                          <option value="hr_admin">{tx("roleHrAdmin")}</option>
+                          <option value="org_admin">{tx("roleOrgAdmin")}</option>
+                        </select>
+                      ) : (
+                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                          {roleLabel(emp.role || "employee")}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {emp.emp_code || "-"}
@@ -1142,7 +1159,7 @@ export default function EmployeeDirectoryPage() {
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {emp.status === 1 ? "Active" : "Inactive"}
+                      {emp.status === 1 ? tx("statusActive") : tx("statusInactive")}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -1163,8 +1180,8 @@ export default function EmployeeDirectoryPage() {
                           }}
                           disabled={invitingId !== null}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
-                          title={`Send invitation to ${emp.email}`}
-                          aria-label={`Send invitation to ${emp.first_name} ${emp.last_name}`}
+                          title={tx("sendInviteTooltip", { email: emp.email }) as string}
+                          aria-label={tx("sendInviteAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                         >
                           {invitingId === emp.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1180,8 +1197,8 @@ export default function EmployeeDirectoryPage() {
                           setEditError(null);
                         }}
                         className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-brand-50 hover:text-brand-600 transition-colors"
-                        title="Edit employee"
-                        aria-label={`Edit ${emp.first_name} ${emp.last_name}`}
+                        title={tx("editTooltip") as string}
+                        aria-label={tx("editAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
@@ -1193,8 +1210,8 @@ export default function EmployeeDirectoryPage() {
                           }
                           disabled={emp.id === currentUser?.id}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500"
-                          title={emp.id === currentUser?.id ? "You cannot delete your own account" : "Delete employee"}
-                          aria-label={`Delete ${emp.first_name} ${emp.last_name}`}
+                          title={(emp.id === currentUser?.id ? tx("deleteSelfTooltip") : tx("deleteTooltip")) as string}
+                          aria-label={tx("deleteAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

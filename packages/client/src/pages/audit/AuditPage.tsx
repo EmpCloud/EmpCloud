@@ -1,41 +1,20 @@
 import { useAuditLogs } from "@/api/hooks";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Filter, Calendar, RotateCcw } from "lucide-react";
 
-const AUDIT_ACTIONS = [
-  { value: "", label: "All actions" },
-  { value: "login", label: "Login" },
-  { value: "logout", label: "Logout" },
-  { value: "login_failed", label: "Login Failed" },
-  { value: "register", label: "Register" },
-  { value: "password_change", label: "Password Change" },
-  { value: "password_reset", label: "Password Reset" },
-  { value: "user_created", label: "User Created" },
-  { value: "user_updated", label: "User Updated" },
-  { value: "user_deactivated", label: "User Deactivated" },
-  { value: "user_invited", label: "User Invited" },
-  { value: "org_updated", label: "Org Updated" },
-  { value: "subscription_created", label: "Subscription Created" },
-  { value: "subscription_updated", label: "Subscription Updated" },
-  { value: "subscription_cancelled", label: "Subscription Cancelled" },
-  { value: "seat_assigned", label: "Seat Assigned" },
-  { value: "seat_revoked", label: "Seat Revoked" },
-  { value: "token_issued", label: "Token Issued" },
-  { value: "token_revoked", label: "Token Revoked" },
-  { value: "oauth_authorize", label: "OAuth Authorize" },
-  { value: "oauth_token", label: "OAuth Token" },
-  { value: "profile_updated", label: "Profile Updated" },
-  { value: "attendance_checkin", label: "Attendance Check-in" },
-  { value: "attendance_checkout", label: "Attendance Check-out" },
-  { value: "leave_applied", label: "Leave Applied" },
-  { value: "leave_approved", label: "Leave Approved" },
-  { value: "leave_rejected", label: "Leave Rejected" },
-  { value: "leave_cancelled", label: "Leave Cancelled" },
-  { value: "document_uploaded", label: "Document Uploaded" },
-  { value: "document_verified", label: "Document Verified" },
-  { value: "announcement_created", label: "Announcement Created" },
-  { value: "policy_created", label: "Policy Created" },
-  { value: "policy_acknowledged", label: "Policy Acknowledged" },
+// Enum values stay frozen (these are what the server sends); the human
+// labels come from `audit.actions.<value>` per locale.
+const AUDIT_ACTION_VALUES = [
+  "", "login", "logout", "login_failed", "register", "password_change",
+  "password_reset", "user_created", "user_updated", "user_deactivated",
+  "user_invited", "org_updated", "subscription_created",
+  "subscription_updated", "subscription_cancelled", "seat_assigned",
+  "seat_revoked", "token_issued", "token_revoked", "oauth_authorize",
+  "oauth_token", "profile_updated", "attendance_checkin",
+  "attendance_checkout", "leave_applied", "leave_approved", "leave_rejected",
+  "leave_cancelled", "document_uploaded", "document_verified",
+  "announcement_created", "policy_created", "policy_acknowledged",
 ];
 
 // Color-code action categories
@@ -51,6 +30,13 @@ function getActionStyle(action: string): string {
 }
 
 export default function AuditPage() {
+  const { t, i18n } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`audit.${k}`, opts ?? {});
+  const actionLabel = (value: string) =>
+    value === ""
+      ? (tx("allActions") as string)
+      : (t(`audit.actions.${value}`, { defaultValue: value.replace(/_/g, " ") }) as string);
   const [page, setPage] = useState(1);
   const [action, setAction] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -75,8 +61,10 @@ export default function AuditPage() {
     setPage(1);
   };
 
+  // Use the active locale for date formatting so e.g. ES renders
+  // "18 may 2026, 9:38" instead of the en-IN fallback.
   const formatDate = (d: string) =>
-    new Date(d).toLocaleString("en-IN", {
+    new Date(d).toLocaleString(i18n.language || undefined, {
       dateStyle: "medium",
       timeStyle: "short",
     });
@@ -84,35 +72,35 @@ export default function AuditPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Audit Log</h1>
-        <p className="text-gray-500 mt-1">Complete activity trail for SOC 2 compliance.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
+        <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
       </div>
 
       {/* Filter Controls */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-700">Filters</span>
+          <span className="text-sm font-medium text-gray-700">{tx("filters")}</span>
           {hasFilters && (
             <button
               onClick={clearFilters}
               className="ml-auto flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
             >
-              <RotateCcw className="h-3 w-3" /> Clear all
+              <RotateCcw className="h-3 w-3" /> {tx("clearAll")}
             </button>
           )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Action Type Filter */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Action Type</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{tx("actionType")}</label>
             <select
               value={action}
               onChange={(e) => { setAction(e.target.value); setPage(1); }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
-              {AUDIT_ACTIONS.map((a) => (
-                <option key={a.value} value={a.value}>{a.label}</option>
+              {AUDIT_ACTION_VALUES.map((value) => (
+                <option key={value} value={value}>{actionLabel(value)}</option>
               ))}
             </select>
           </div>
@@ -120,7 +108,7 @@ export default function AuditPage() {
           {/* Start Date */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
-              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> From Date</span>
+              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {tx("fromDate")}</span>
             </label>
             <input
               type="date"
@@ -134,7 +122,7 @@ export default function AuditPage() {
           {/* End Date */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
-              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> To Date</span>
+              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {tx("toDate")}</span>
             </label>
             <input
               type="date"
@@ -150,10 +138,10 @@ export default function AuditPage() {
       {/* Results Summary */}
       {hasFilters && meta && (
         <div className="text-sm text-gray-500 mb-3">
-          Showing {logs.length} of {meta.total} filtered results
-          {action && <span className="ml-1">for <span className="font-medium text-gray-700">{AUDIT_ACTIONS.find((a) => a.value === action)?.label}</span></span>}
-          {startDate && <span className="ml-1">from <span className="font-medium text-gray-700">{startDate}</span></span>}
-          {endDate && <span className="ml-1">to <span className="font-medium text-gray-700">{endDate}</span></span>}
+          {tx("showingResults", { count: logs.length, total: meta.total })}
+          {action && <span className="ml-1">{tx("showingFor")} <span className="font-medium text-gray-700">{actionLabel(action)}</span></span>}
+          {startDate && <span className="ml-1">{tx("showingFrom")} <span className="font-medium text-gray-700">{startDate}</span></span>}
+          {endDate && <span className="ml-1">{tx("showingTo")} <span className="font-medium text-gray-700">{endDate}</span></span>}
         </div>
       )}
 
@@ -161,11 +149,11 @@ export default function AuditPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Time</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Action</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">User</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Resource</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">IP Address</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colTime")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colAction")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colUser")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colResource")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colIp")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -186,11 +174,11 @@ export default function AuditPage() {
                 <td colSpan={5} className="px-6 py-12 text-center">
                   <Search className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                   <p className="text-gray-400 text-sm">
-                    {hasFilters ? "No audit logs match your filters." : "No audit logs yet."}
+                    {hasFilters ? tx("noMatchingFilters") : tx("noLogs")}
                   </p>
                   {hasFilters && (
                     <button onClick={clearFilters} className="text-brand-600 text-sm mt-1 hover:underline">
-                      Clear filters
+                      {tx("clearFilters")}
                     </button>
                   )}
                 </td>
@@ -208,8 +196,8 @@ export default function AuditPage() {
                     {log.user_first_name
                       ? `${log.user_first_name} ${log.user_last_name || ""}`.trim()
                       : log.user_id
-                        ? `User #${log.user_id}`
-                        : "System"}
+                        ? (tx("userHash", { id: log.user_id }) as string)
+                        : (tx("system") as string)}
                     {log.user_email && (
                       <span className="block text-xs text-gray-400">{log.user_email}</span>
                     )}
@@ -233,10 +221,12 @@ export default function AuditPage() {
 
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">Page {meta.page} of {meta.total_pages} ({meta.total} total)</p>
+            <p className="text-sm text-gray-500">
+              {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
+            </p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50">Next</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50">{t("common.previous")}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50">{t("common.next")}</button>
             </div>
           </div>
         )}

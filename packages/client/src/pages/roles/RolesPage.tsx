@@ -10,6 +10,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   Shield,
   Plus,
@@ -51,6 +52,9 @@ interface CataloguePayload {
   keys: string[];
 }
 
+// English fallbacks; the live UI resolves these via t(`roles.${name}`) so
+// the active locale wins. Kept here so the modal placeholder + builder
+// title can still read them when i18n isn't ready yet.
 const SYSTEM_ROLE_LABELS: Record<string, string> = {
   org_admin: "Org Admin",
   hr_admin: "HR Admin",
@@ -59,6 +63,25 @@ const SYSTEM_ROLE_LABELS: Record<string, string> = {
 };
 
 export default function RolesPage() {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`roles.page.${k}`, opts ?? {});
+  // Localized role label resolver: system roles get the `roles.<name>` key,
+  // custom roles fall through to the user-entered name.
+  const localizedRoleName = (role: Role): string => {
+    if (role.type === 0) {
+      return t(`roles.${role.name}`, { defaultValue: SYSTEM_ROLE_LABELS[role.name] || role.name }) as string;
+    }
+    return role.name;
+  };
+  // System roles ship with English descriptions in the DB seed. Override
+  // them client-side per locale so the cards localize too.
+  const localizedRoleDescription = (role: Role): string | null => {
+    if (role.type === 0) {
+      return t(`roles.descriptions.${role.name}`, { defaultValue: role.description ?? "" }) as string;
+    }
+    return role.description;
+  };
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<{ role: Role | null; mode: "create" | "edit" } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Role | null>(null);
@@ -91,43 +114,42 @@ export default function RolesPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Shield className="h-6 w-6 text-brand-600" />
-            Roles & Permissions
+            {tx("title")}
           </h1>
-          <p className="text-gray-500 mt-1">
-            Manage who can do what. System roles ship with sensible defaults; create
-            custom roles for finer control.
-          </p>
+          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
         </div>
         <button
           type="button"
           onClick={() => setEditing({ role: null, mode: "create" })}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" /> New custom role
+          <Plus className="h-4 w-4" /> {tx("newCustomRole")}
         </button>
       </div>
 
       {/* System Roles */}
       <SectionHeader
         icon={<Lock className="h-4 w-4" />}
-        title="System roles"
-        subtitle="Built-in templates. Editable per-org — your edits don't affect other organizations."
+        title={tx("systemRolesTitle") as string}
+        subtitle={tx("systemRolesSubtitle") as string}
       />
       {isLoading ? (
         <div className="flex items-center gap-2 text-gray-400 text-sm py-6">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading roles…
+          <Loader2 className="h-4 w-4 animate-spin" /> {tx("loadingRoles")}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
           {systemRoles.length === 0 && (
             <p className="text-sm text-gray-400 col-span-2">
-              No system roles found. Run the seed migration?
+              {tx("noSystemRoles")}
             </p>
           )}
           {systemRoles.map((r) => (
             <RoleCard
               key={`sys-${r.id}`}
               role={r}
+              displayName={localizedRoleName(r)}
+              displayDescription={localizedRoleDescription(r)}
               isCustomized={r.organization_id !== null}
               onEdit={() => setEditing({ role: r, mode: "edit" })}
               onReset={r.organization_id !== null ? () => setConfirmDelete(r) : undefined}
@@ -139,19 +161,19 @@ export default function RolesPage() {
       {/* Custom Roles */}
       <SectionHeader
         icon={<Sparkles className="h-4 w-4" />}
-        title="Custom roles"
-        subtitle="Created by your organization. Assign to users on each user's profile page."
+        title={tx("customRolesTitle") as string}
+        subtitle={tx("customRolesSubtitle") as string}
       />
       {customRoles.length === 0 ? (
         <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center text-sm text-gray-500">
-          No custom roles yet.{" "}
+          {tx("noCustomRolesPrefix")}{" "}
           <button
             onClick={() => setEditing({ role: null, mode: "create" })}
             className="text-brand-600 hover:underline font-medium"
           >
-            Create one
+            {tx("noCustomRolesCreateOne")}
           </button>{" "}
-          to grant fine-grained access without changing a user's primary role.
+          {tx("noCustomRolesSuffix")}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -159,6 +181,8 @@ export default function RolesPage() {
             <RoleCard
               key={`custom-${r.id}`}
               role={r}
+              displayName={localizedRoleName(r)}
+              displayDescription={localizedRoleDescription(r)}
               onEdit={() => setEditing({ role: r, mode: "edit" })}
               onDelete={() => setConfirmDelete(r)}
             />
@@ -219,19 +243,25 @@ function SectionHeader({
 
 function RoleCard({
   role,
+  displayName,
+  displayDescription,
   isCustomized,
   onEdit,
   onDelete,
   onReset,
 }: {
   role: Role;
+  displayName: string;
+  displayDescription: string | null;
   isCustomized?: boolean;
   onEdit: () => void;
   onDelete?: () => void;
   onReset?: () => void;
 }) {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`roles.page.${k}`, opts ?? {});
   const isSystem = role.type === 0;
-  const displayName = isSystem ? SYSTEM_ROLE_LABELS[role.name] || role.name : role.name;
 
   return (
     <div className="border border-gray-200 rounded-xl bg-white p-4 hover:border-gray-300 transition-colors">
@@ -241,23 +271,23 @@ function RoleCard({
             <h3 className="font-semibold text-gray-900 truncate">{displayName}</h3>
             {isSystem && (
               <span className="text-[10px] font-semibold uppercase tracking-wide bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
-                system
+                {tx("badgeSystem")}
               </span>
             )}
             {isCustomized && (
               <span
-                title="This org has customized this system role. Reset to revert to the global default."
+                title={tx("badgeCustomizedTooltip") as string}
                 className="text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded"
               >
-                customized
+                {tx("badgeCustomized")}
               </span>
             )}
           </div>
-          {role.description && (
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{role.description}</p>
+          {displayDescription && (
+            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{displayDescription}</p>
           )}
           <p className="text-xs text-gray-400 mt-2">
-            {role.permissions.length} permission{role.permissions.length === 1 ? "" : "s"}
+            {tx("permissionsCount", { count: role.permissions.length })}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -265,7 +295,7 @@ function RoleCard({
             type="button"
             onClick={onEdit}
             className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded"
-            title="Edit role"
+            title={tx("editRoleTooltip") as string}
           >
             <Pencil className="h-4 w-4" />
           </button>
@@ -274,7 +304,7 @@ function RoleCard({
               type="button"
               onClick={onDelete}
               className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-              title="Delete role"
+              title={tx("deleteRoleTooltip") as string}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -284,7 +314,7 @@ function RoleCard({
               type="button"
               onClick={onReset}
               className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded"
-              title="Reset to default"
+              title={tx("resetRoleTooltip") as string}
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -312,6 +342,9 @@ function RoleBuilderModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`roles.page.${k}`, opts ?? {});
   const isSystemRole = role?.type === 0;
   const [name, setName] = useState(role?.name || "");
   const [description, setDescription] = useState(role?.description || "");
@@ -397,10 +430,14 @@ function RoleBuilderModal({
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="min-w-0">
             <h2 className="text-lg font-semibold text-gray-900">
-              {mode === "create" ? "Create custom role" : `Edit ${isSystemRole ? "system role" : "role"}`}
+              {mode === "create"
+                ? tx("createCustomRoleTitle")
+                : isSystemRole
+                  ? tx("editSystemRoleTitle")
+                  : tx("editRoleTitle")}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              {selectedCount} of {totalCount} permissions selected
+              {tx("permissionsSelected", { selected: selectedCount, total: totalCount })}
             </p>
           </div>
           <button
@@ -418,17 +455,21 @@ function RoleBuilderModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role name
+                {tx("roleNameLabel")}
                 {isSystemRole && (
-                  <span className="text-xs font-normal text-gray-400 ml-2">(system role — name locked)</span>
+                  <span className="text-xs font-normal text-gray-400 ml-2">{tx("roleNameLocked")}</span>
                 )}
               </label>
               <input
                 type="text"
-                value={isSystemRole ? SYSTEM_ROLE_LABELS[name] || name : name}
+                value={
+                  isSystemRole
+                    ? (t(`roles.${name}`, { defaultValue: SYSTEM_ROLE_LABELS[name] || name }) as string)
+                    : name
+                }
                 onChange={(e) => setName(e.target.value)}
                 disabled={isSystemRole}
-                placeholder="e.g. Payroll Approver"
+                placeholder={tx("roleNamePlaceholder") as string}
                 className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 ${
                   isSystemRole ? "bg-gray-50 text-gray-500 cursor-not-allowed" : ""
                 }`}
@@ -436,13 +477,13 @@ function RoleBuilderModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description <span className="text-xs font-normal text-gray-400">(optional)</span>
+                {tx("descriptionLabel")} <span className="text-xs font-normal text-gray-400">{tx("descriptionOptional")}</span>
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="What this role is for…"
+                placeholder={tx("descriptionPlaceholder") as string}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500"
               />
             </div>
@@ -455,7 +496,7 @@ function RoleBuilderModal({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search permissions by name, key, or description…"
+              placeholder={tx("searchPermissionsPlaceholder") as string}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
             />
           </div>
@@ -464,7 +505,7 @@ function RoleBuilderModal({
           <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
             {filteredGroups.length === 0 && (
               <div className="px-4 py-6 text-center text-sm text-gray-400">
-                No permissions match "{search}".
+                {tx("noPermissionsMatch", { query: search })}
               </div>
             )}
             {filteredGroups.map(([group, perms]) => {
@@ -547,7 +588,7 @@ function RoleBuilderModal({
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="button"
@@ -560,7 +601,7 @@ function RoleBuilderModal({
               ) : (
                 <Check className="h-4 w-4" />
               )}
-              {mode === "create" ? "Create role" : "Save changes"}
+              {mode === "create" ? tx("createRoleButton") : tx("saveChanges")}
             </button>
           </div>
         </div>
@@ -586,12 +627,18 @@ function ConfirmDialog({
   onCancel: () => void;
   error: string | null;
 }) {
+  const { t } = useTranslation();
+  const tx = (k: string, opts?: Record<string, unknown>) =>
+    t(`roles.page.${k}`, opts ?? {});
   const isReset = role.type === 0 && role.organization_id !== null;
-  const title = isReset ? "Reset to default?" : "Delete custom role?";
-  const verb = isReset ? "Reset" : "Delete";
+  const displayName = role.type === 0
+    ? (t(`roles.${role.name}`, { defaultValue: SYSTEM_ROLE_LABELS[role.name] || role.name }) as string)
+    : role.name;
+  const title = isReset ? tx("resetTitle") : tx("deleteTitle");
+  const verb = isReset ? tx("resetButton") : tx("deleteButton");
   const body = isReset
-    ? `Reset "${SYSTEM_ROLE_LABELS[role.name] || role.name}" to its system default permissions? Your customization will be discarded.`
-    : `Delete the custom role "${role.name}"? This will remove it from any user it's assigned to.`;
+    ? tx("resetBody", { name: displayName })
+    : tx("deleteBody", { name: displayName });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -612,7 +659,7 @@ function ConfirmDialog({
             onClick={onCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="button"
@@ -631,6 +678,9 @@ function ConfirmDialog({
   );
 }
 
+// extractApiError stays untranslated by design: it returns server-side error
+// messages verbatim so they aren't lossy in logs. Only the final-fallback
+// string was previously hardcoded — that one goes through i18n at call site.
 function extractApiError(err: any): string {
   return (
     err?.response?.data?.error?.message ||
