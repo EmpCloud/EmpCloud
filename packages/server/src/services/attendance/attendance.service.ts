@@ -1078,6 +1078,8 @@ export async function getMonthlyGrid(
       "u.first_name",
       "u.last_name",
       "u.emp_code",
+      "u.date_of_joining",
+      "u.date_of_exit",
       "dept.name as department",
       "loc.name as location",
     );
@@ -1290,6 +1292,11 @@ export async function getMonthlyGrid(
   const employees = allUsers.map((u: any) => {
     const userMap = byUser[u.user_id] || {};
     const offMap = userWeekoff[u.user_id] || {};
+    // Employment window — used to synthesize Absent only for days the
+    // employee was actually employed (don't paint pre-joining / post-exit
+    // days red).
+    const joinIso = u.date_of_joining ? isoLocal(u.date_of_joining) : null;
+    const exitIso = u.date_of_exit ? isoLocal(u.date_of_exit) : null;
     const dayCodes: Record<string, AttendanceCode> = {};
     // Parallel map: which dates are this employee's shift-defined
     // weekoffs. Emitted alongside `days` so the FE can render a combined
@@ -1310,6 +1317,21 @@ export async function getMonthlyGrid(
       const isWeekoff = offMap[d.date] === "WO";
       const isHoliday = d.defaultCode === "HO";
       let code = (real || (d.defaultCode as AttendanceCode)) as AttendanceCode;
+      // A passed working day with no attendance row, no holiday and no
+      // week-off is an Absent — match the employee's own "My Attendance"
+      // view (which synthesizes Absent) instead of rendering a blank cell.
+      // Today and future days stay blank (the day isn't over), and days
+      // outside the employee's join–exit window are never marked absent.
+      if (
+        !real &&
+        code === "" &&
+        !isWeekoff &&
+        d.date < todayIso &&
+        (!joinIso || d.date >= joinIso) &&
+        (!exitIso || d.date <= exitIso)
+      ) {
+        code = "A";
+      }
       // Auto-overtime: a FULL present day worked on a holiday or week-off
       // is shown as HOT / WOT automatically -- HR doesn't mark it by hand.
       // Holiday wins when a date is both a holiday and a week-off. An
