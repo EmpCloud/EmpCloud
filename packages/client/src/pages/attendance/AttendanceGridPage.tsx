@@ -278,7 +278,16 @@ export default function AttendanceGridPage() {
         // on a single cell (worked on off day shows P with a WO ribbon).
         // P/A/H/L/HPL/M still come from the attendance code.
         if (weekoff[d.date]) counts.WO++;
-        if (c && c !== "WO" && c in counts) counts[c as keyof typeof counts]++;
+        // A half-day is half present + half absent (same as payroll, where a
+        // half-day is 0.5 paid + 0.5 LOP). Reflect both halves in the Present
+        // and Absent day-equivalents while still counting the occurrence in H.
+        if (c === "H") {
+          counts.H++;
+          counts.P += 0.5;
+          counts.A += 0.5;
+        } else if (c && c !== "WO" && c in counts) {
+          counts[c as keyof typeof counts]++;
+        }
       }
       return counts;
     },
@@ -303,7 +312,16 @@ export default function AttendanceGridPage() {
         // employee who worked on their off day contributes to BOTH
         // P and WO totals for that date.
         if (emp.weekoffDays?.[d.date]) counts.WO++;
-        if (c && c !== "WO" && c in counts) counts[c as keyof typeof counts]++;
+        // A half-day is half present + half absent (same as payroll, where a
+        // half-day is 0.5 paid + 0.5 LOP). Reflect both halves in the Present
+        // and Absent day-equivalents while still counting the occurrence in H.
+        if (c === "H") {
+          counts.H++;
+          counts.P += 0.5;
+          counts.A += 0.5;
+        } else if (c && c !== "WO" && c in counts) {
+          counts[c as keyof typeof counts]++;
+        }
       }
       out[d.date] = counts;
     }
