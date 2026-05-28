@@ -24,6 +24,7 @@ import {
   platformAdminNavItems,
   HR_ROLES,
   filterNavItem,
+  type NavItem,
 } from "./navigation.config";
 import { usePermissions } from "@/lib/use-permissions";
 import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
@@ -80,11 +81,9 @@ export default function DashboardLayout() {
   // on an empty sidebar.
   const effectiveViewMode = !showViewToggle && !isHR ? "self" : viewMode;
   const showAdminSidebar = isHR || (showViewToggle && effectiveViewMode === "admin");
-  const sidebarItems = showAdminSidebar
-    ? adminNavItems
-        .map((i) => filterNavItem(i, hasPerm))
-        .filter((i): i is typeof adminNavItems[number] => i !== null)
-    : employeeNavItems;
+  const sidebarItems = (showAdminSidebar ? adminNavItems : employeeNavItems)
+    .map((i) => filterNavItem(i, hasPerm))
+    .filter((i): i is NavItem => i !== null);
 
   // Auto-close sidebar on navigation
   useEffect(() => {
