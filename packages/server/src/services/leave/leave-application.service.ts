@@ -293,6 +293,30 @@ export async function cancelLeave(
       undefined, // service will derive fiscal year from start_date + org config
       startDateObj,
     );
+
+    // Remove the synthetic attendance rows that approval created for this
+    // leave so a cancelled leave no longer counts as paid leave in payroll,
+    // nor shows as L/HPL on the Attendance Grid. Scope is tight on purpose:
+    // only this leave's own date range, and only the two system leave
+    // statuses. The "cannot cancel leave that has already started" guard
+    // above guarantees the whole range is today-or-future, so there are no
+    // real punches in this window to clobber. Date strings are built with
+    // local getters to match how approveLeave wrote them. (cancel-cleanup F4)
+    const toIso = (v: unknown): string | null => {
+      const d = v instanceof Date ? v : new Date(v as any);
+      return Number.isNaN(d.getTime())
+        ? null
+        : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+    const startIso = toIso(application.start_date);
+    const endIso = toIso(application.end_date);
+    if (startIso && endIso) {
+      await db("attendance_records")
+        .where({ organization_id: orgId, user_id: application.user_id })
+        .whereBetween("date", [startIso, endIso])
+        .whereIn("status", ["on_leave", "half_present_half_leave"])
+        .del();
+    }
   }
 
   return getApplication(orgId, applicationId);
@@ -623,17 +647,29 @@ export async function approveLeave(
             .where({ organization_id: orgId, user_id: application.user_id, date: dateStr })
             .first();
 
+          // A half-day leave is stored as `half_present_half_leave` (HPL) so
+          // payroll books 0.5 leave + 0.5 worked instead of a full leave day,
+          // matching how the Attendance Grid already classifies it. A full-day
+          // leave stays `on_leave`. (half-day F3)
+          const leaveStatus = application.is_half_day ? "half_present_half_leave" : "on_leave";
+
           if (!existing) {
             // #1395/#1357 — The attendance_records table does not have a "source"
             // column. Sending it would fail the INSERT and abort the transaction,
             // causing every leave approval to silently fail.
             await trx("attendance_records").insert({
               organization_id: orgId, user_id: application.user_id,
-              date: dateStr, status: "on_leave",
+              date: dateStr, status: leaveStatus,
               created_at: txnNow, updated_at: txnNow,
             });
-          } else if (existing.status !== "on_leave") {
-            await trx("attendance_records").where({ id: existing.id }).update({ status: "on_leave", updated_at: txnNow });
+          } else if (existing.status === "absent") {
+            // Only convert a day with NO real attendance. Never overwrite a
+            // genuine punch (present / checked_in / weekoff_overtime /
+            // holiday_overtime / half_day / HPL) — doing so silently erased a
+            // day the employee actually worked, dropping their pay. (overwrite F5)
+            await trx("attendance_records")
+              .where({ id: existing.id })
+              .update({ status: leaveStatus, updated_at: txnNow });
           }
         }
       }
