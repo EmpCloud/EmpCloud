@@ -1005,6 +1005,14 @@ export async function getMonthlyGrid(
     return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}-${String(v.getDate()).padStart(2, "0")}`;
   };
   const holidaySet = new Set<string>();
+  // Sub-set of `holidaySet` — only the dates the org has marked as MANDATORY
+  // (closed-office) holidays. A present employee on a mandatory holiday is
+  // auto-classified as HOT; on an optional / restricted holiday they stay P
+  // (Bakrid, Holi, Onam etc. — HR offers the day off, employee may work).
+  // `is_mandatory` lives on company_events already; HR toggles it per row
+  // from the Holidays edit form. The legacy organization_holidays table has
+  // no such flag — its rows are treated as mandatory to preserve behaviour.
+  const mandatoryHolidaySet = new Set<string>();
 
   // Holiday source (primary) — `company_events` with event_type='holiday'.
   // The HR Holidays page writes here (POST /events, event_type=holiday).
@@ -1013,20 +1021,24 @@ export async function getMonthlyGrid(
   // Holiday rows can span multiple days (start_date..end_date), so expand
   // each into the individual dates that fall inside this month.
   try {
-    const eventRows: Array<{ start_date: any; end_date: any }> = await db("company_events")
+    const eventRows: Array<{ start_date: any; end_date: any; is_mandatory: number }> = await db(
+      "company_events",
+    )
       .where({ organization_id: orgId, event_type: "holiday" })
       .where("start_date", "<=", `${monthEnd} 23:59:59`)
       .andWhere(function () {
         this.where("end_date", ">=", `${monthStart} 00:00:00`).orWhereNull("end_date");
       })
-      .select("start_date", "end_date");
+      .select("start_date", "end_date", "is_mandatory");
     for (const e of eventRows) {
       const startIso = isoLocal(e.start_date);
       const endIso = e.end_date ? isoLocal(e.end_date) : startIso;
       let cur = startIso < monthStart ? monthStart : startIso;
       const last = endIso > monthEnd ? monthEnd : endIso;
+      const mandatory = !!Number(e.is_mandatory);
       while (cur <= last) {
         holidaySet.add(cur);
+        if (mandatory) mandatoryHolidaySet.add(cur);
         const d = new Date(cur + "T00:00:00Z");
         d.setUTCDate(d.getUTCDate() + 1);
         cur = d.toISOString().split("T")[0];
@@ -1037,13 +1049,18 @@ export async function getMonthlyGrid(
   }
 
   // Holiday source (legacy, backward-compat) — `organization_holidays`.
-  // Retained so any tenant that populated the old table still works.
+  // Retained so any tenant that populated the old table still works. Treated
+  // as mandatory since the legacy table has no optional flag.
   try {
     const holidayRows: Array<{ holiday_date: any }> = await db("organization_holidays")
       .where("organization_id", orgId)
       .whereBetween("holiday_date", [monthStart, monthEnd])
       .select("holiday_date");
-    for (const h of holidayRows) holidaySet.add(isoLocal(h.holiday_date));
+    for (const h of holidayRows) {
+      const k = isoLocal(h.holiday_date);
+      holidaySet.add(k);
+      mandatoryHolidaySet.add(k);
+    }
   } catch {
     // Older schemas without the table -- ignore.
   }
@@ -1053,17 +1070,25 @@ export async function getMonthlyGrid(
     date: string;
     dow: number;
     defaultCode: "HO" | "";
+    /**
+     * True only when this date's holiday is mandatory (closed office).
+     * Optional / restricted holidays still get defaultCode='HO' so the cell
+     * paints as a holiday, but the auto-HOT rule below skips them so a
+     * present employee stays P.
+     */
+    isMandatoryHoliday: boolean;
   }> = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const dow = new Date(year, month - 1, d).getDay();
-    // Only holidays are a date-level default now. Week-offs are entirely
-    // driven by the per-user shift assignment computed below -- no
-    // Sat/Sun hardcode, since real orgs run 6-day weeks, rotating shifts,
-    // Tue-Sat shifts, etc. and the old default was painting WO for every
-    // employee regardless of their shift.
     const defaultCode: "HO" | "" = holidaySet.has(dateStr) ? "HO" : "";
-    days.push({ day: d, date: dateStr, dow, defaultCode });
+    days.push({
+      day: d,
+      date: dateStr,
+      dow,
+      defaultCode,
+      isMandatoryHoliday: mandatoryHolidaySet.has(dateStr),
+    });
   }
 
   // Department + location names are joined in so the grid page can filter
@@ -1332,15 +1357,18 @@ export async function getMonthlyGrid(
       ) {
         code = "A";
       }
-      // Auto-overtime: a FULL present day worked on a holiday or week-off
-      // is shown as HOT / WOT automatically -- HR doesn't mark it by hand.
-      // Holiday wins when a date is both a holiday and a week-off. An
-      // explicitly-set WOT/HOT (status weekoff_overtime/holiday_overtime)
+      // Auto-overtime: a FULL present day worked on a MANDATORY holiday or a
+      // week-off is shown as HOT / WOT automatically -- HR doesn't mark it
+      // by hand. Optional / restricted holidays (Bakrid, Holi, Onam, etc.)
+      // are skipped: the employee chose to work, so it's a normal Present.
+      // Mandatory holiday wins when a date is both a holiday and a week-off.
+      // Explicitly-set WOT/HOT (status weekoff_overtime/holiday_overtime)
       // already arrives as that code from codeFor() and is left as-is.
-      // Payroll derives OT days the same way (present on a rest day), so
-      // the grid and the payslip stay consistent.
+      // Payroll derives OT days the same way, so the grid and the payslip
+      // stay consistent.
+      const isMandatoryHoliday = (d as any).isMandatoryHoliday === true;
       if (real === "P") {
-        if (isHoliday) code = "HOT";
+        if (isMandatoryHoliday) code = "HOT";
         else if (isWeekoff) code = "WOT";
       }
       // Approved leave on this date wins over a plain present/blank cell:
