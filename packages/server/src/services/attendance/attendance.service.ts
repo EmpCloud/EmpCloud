@@ -1093,11 +1093,22 @@ export async function getMonthlyGrid(
 
   // Department + location names are joined in so the grid page can filter
   // client-side without an extra round-trip per dropdown.
+  //
+  // Membership rule: include every ACTIVE user, plus any exited user whose
+  // date_of_exit falls on or after the start of the queried month. That way
+  // someone who left mid-May still shows up in the May grid (the per-cell
+  // trim logic below uses `date_of_exit` to blank out days after they left),
+  // but disappears from June onwards. Without this, exited employees vanish
+  // from the grid the moment HR closes their record, even for months they
+  // actually worked.
   const allUsers = await db("users as u")
     .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
     .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
-    .where({ "u.organization_id": orgId, "u.status": 1 })
+    .where("u.organization_id", orgId)
     .whereNot("u.role", "super_admin")
+    .where(function () {
+      this.where("u.status", 1).orWhere("u.date_of_exit", ">=", monthStart);
+    })
     .select(
       "u.id as user_id",
       "u.first_name",
