@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
-import { ChevronLeft, ChevronRight, Loader2, Search, X, CalendarPlus, AlertTriangle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Search, X, CalendarPlus, AlertTriangle, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 const STORAGE_KEY_LOCATION = "empcloud:filter:grid:location_name";
 const STORAGE_KEY_DEPARTMENT = "empcloud:filter:grid:department_name";
@@ -294,6 +295,83 @@ export default function AttendanceGridPage() {
     [data.days, overrides],
   );
 
+  // Export current grid view to XLSX.
+  // Pulls from `filteredEmployees` + `data.days` so the file matches exactly
+  // what HR sees on screen -- same filters, same month, same applied overrides.
+  // Layout: one sheet, first column = employee identity, then one column per
+  // day-of-month with the displayed code (P / A / H / L / WO / HO / HOT / WOT /
+  // M / HPL), followed by the same per-employee totals shown in the right rail.
+  const [exporting, setExporting] = useState(false);
+  const exportToExcel = () => {
+    if (!filteredEmployees.length || !data.days.length) return;
+    setExporting(true);
+    try {
+      // Build header row: identity + day-of-month columns + totals
+      const dayHeaders = data.days.map((d) => String(d.day));
+      const headers = [
+        "Employee",
+        "Emp Code",
+        "Department",
+        "Location",
+        ...dayHeaders,
+        "P",
+        "A",
+        "H",
+        "L",
+        "HPL",
+        "WO",
+        "HO",
+        "M",
+      ];
+
+      const rows = filteredEmployees.map((emp) => {
+        const counts = summaryFor(emp);
+        const dayCells = data.days.map((d) => {
+          const code = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
+          if (code) return code;
+          // No attendance code -- show WO if it's the employee's week-off so
+          // the export matches the on-screen ribbon, otherwise blank.
+          return emp.weekoffDays?.[d.date] ? "WO" : "";
+        });
+        return [
+          `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
+          emp.emp_code || "",
+          emp.department || "",
+          emp.location || "",
+          ...dayCells,
+          counts.P,
+          counts.A,
+          counts.H,
+          counts.L,
+          counts.HPL,
+          counts.WO,
+          counts.HO,
+          counts.M,
+        ];
+      });
+
+      const aoa = [headers, ...rows];
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      // Narrow day columns so 31 of them fit on one screen; wider for identity.
+      ws["!cols"] = headers.map((_h, i) => {
+        if (i === 0) return { wch: 24 };
+        if (i < 4) return { wch: 16 };
+        // day columns
+        if (i < 4 + dayHeaders.length) return { wch: 4 };
+        return { wch: 6 };
+      });
+      // Freeze the identity columns + header row so scrolling 31 days stays sane.
+      ws["!freeze"] = { xSplit: 4, ySplit: 1 };
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, `${MONTHS[month]} ${year}`);
+      const filename = `attendance_grid_${MONTHS[month]}_${year}.xlsx`;
+      XLSX.writeFile(wb, filename);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   // Per-DAY column totals -- on date column N, how many employees were
   // in each bucket. Rendered as a tfoot block so HR can scan "how many
   // people were absent on May 15?" at a glance. Totals follow the active
@@ -410,6 +488,20 @@ export default function AttendanceGridPage() {
           <LegendDot label="WOT" cls={codeStyle("WOT")} desc="Week-off OT (worked)" />
           <LegendDot label="HOT" cls={codeStyle("HOT")} desc="Holiday OT (worked)" />
           <LegendDot label="M" cls={codeStyle("M")} desc="Missed check-out" />
+          <button
+            type="button"
+            onClick={exportToExcel}
+            disabled={exporting || isLoading || !filteredEmployees.length}
+            title="Download the visible grid (with active filters) as an Excel file"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+          >
+            {exporting ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Download className="h-3.5 w-3.5" />
+            )}
+            {exporting ? "Exporting..." : "Export"}
+          </button>
         </div>
       </div>
 
