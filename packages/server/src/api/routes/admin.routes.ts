@@ -35,6 +35,10 @@ import {
   listSystemNotifications,
   deactivateSystemNotification,
 } from "../../services/admin/system-notification.service.js";
+import * as planPricingAdmin from "../../services/admin/plan-pricing-admin.service.js";
+import * as subscriptionAdmin from "../../services/admin/subscription-admin.service.js";
+import * as adminBilling from "../../services/admin/admin-billing.service.js";
+import { billingFetchRaw } from "../../services/billing/billing-integration.service.js";
 import { hashPassword } from "../../utils/crypto.js";
 
 const router = Router();
@@ -458,6 +462,265 @@ router.put("/modules/:id", async (req: Request, res: Response, next: NextFunctio
   } catch (err) {
     next(err);
   }
+});
+
+// =========================================================================
+// PRICING MANAGEMENT (super_admin)
+// Tiers (custom plan tiers beyond free / basic / professional /
+// enterprise) and pricing rows (currency x tier x volume band x
+// effective_from).
+// =========================================================================
+
+// ─── Tiers ────────────────────────────────────────────────────────────────
+
+router.get("/pricing/tiers", async (req, res, next) => {
+  try { sendSuccess(res, await planPricingAdmin.listTiers()); } catch (err) { next(err); }
+});
+
+router.post("/pricing/tiers", async (req, res, next) => {
+  try { sendSuccess(res, await planPricingAdmin.createTier(req.body || {})); } catch (err) { next(err); }
+});
+
+router.put("/pricing/tiers/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await planPricingAdmin.updateTier(id, req.body || {}));
+  } catch (err) { next(err); }
+});
+
+router.delete("/pricing/tiers/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await planPricingAdmin.deleteTier(id));
+  } catch (err) { next(err); }
+});
+
+// ─── Pricing rows ────────────────────────────────────────────────────────
+
+router.get("/pricing/rows", async (req, res, next) => {
+  try {
+    const { tier_id, currency } = req.query as any;
+    sendSuccess(res, await planPricingAdmin.listPricing({
+      tier_id: tier_id ? Number(tier_id) : undefined,
+      currency: currency ? String(currency) : undefined,
+    }));
+  } catch (err) { next(err); }
+});
+
+router.post("/pricing/rows", async (req, res, next) => {
+  try {
+    sendSuccess(res, await planPricingAdmin.createPricing({
+      ...(req.body || {}),
+      updated_by: req.user!.sub,
+    }));
+  } catch (err) { next(err); }
+});
+
+router.put("/pricing/rows/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await planPricingAdmin.updatePricing(id, {
+      ...(req.body || {}),
+      updated_by: req.user!.sub,
+    }));
+  } catch (err) { next(err); }
+});
+
+router.delete("/pricing/rows/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await planPricingAdmin.deletePricing(id));
+  } catch (err) { next(err); }
+});
+
+// ─── Billing cycles ──────────────────────────────────────────────────────
+
+router.get("/pricing/billing-cycles", async (req, res, next) => {
+  try { sendSuccess(res, await planPricingAdmin.listBillingCycles()); } catch (err) { next(err); }
+});
+
+router.post("/pricing/billing-cycles", async (req, res, next) => {
+  try { sendSuccess(res, await planPricingAdmin.createBillingCycle(req.body || {})); } catch (err) { next(err); }
+});
+
+router.put("/pricing/billing-cycles/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await planPricingAdmin.updateBillingCycle(id, req.body || {}));
+  } catch (err) { next(err); }
+});
+
+router.delete("/pricing/billing-cycles/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await planPricingAdmin.deleteBillingCycle(id));
+  } catch (err) { next(err); }
+});
+
+// =========================================================================
+// SUBSCRIPTION MANAGEMENT (super_admin)
+// Full per-subscription edit surface: list / detail / update any field /
+// status quick actions / comp (free) / record manual invoice intent.
+//
+// NOTE: the existing GET /admin/subscriptions returns aggregate METRICS
+// for backward compatibility. The new endpoints live under
+// /admin/subscriptions/list and /admin/subscriptions/:id so they don't
+// collide.
+// =========================================================================
+
+router.get("/subscriptions/list", async (req, res, next) => {
+  try {
+    const { status, plan_tier, currency, module_id, organization_id, q, page, limit } = req.query as any;
+    const out = await subscriptionAdmin.listSubscriptions({
+      status,
+      plan_tier,
+      currency,
+      module_id: module_id ? Number(module_id) : undefined,
+      organization_id: organization_id ? Number(organization_id) : undefined,
+      q,
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+    });
+    sendSuccess(res, out);
+  } catch (err) { next(err); }
+});
+
+router.get("/subscriptions/detail/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.getSubscription(id));
+  } catch (err) { next(err); }
+});
+
+router.put("/subscriptions/detail/:id", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.updateSubscription(id, req.body || {}, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+router.post("/subscriptions/detail/:id/suspend", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.suspendSubscription(id, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+router.post("/subscriptions/detail/:id/activate", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.activateSubscription(id, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+router.post("/subscriptions/detail/:id/cancel", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.cancelSubscription(id, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+router.post("/subscriptions/detail/:id/free", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    const { reason } = req.body || {};
+    sendSuccess(res, await subscriptionAdmin.markFree(id, String(reason || ""), req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+router.post("/subscriptions/detail/:id/unfree", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.unmarkFree(id, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+router.post("/subscriptions/detail/:id/manual-invoice", async (req, res, next) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    sendSuccess(res, await subscriptionAdmin.recordManualInvoiceIntent(id, req.body || {}, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+// =========================================================================
+// ADMIN BILLING (super_admin) — invoice mgmt + subscribe-on-behalf
+// All endpoints proxy to emp-billing under the hood. Failures here mean
+// emp-billing is unreachable or the BILLING_API_KEY is wrong.
+// =========================================================================
+
+// GET /admin/billing/invoices — list all invoices across all orgs
+router.get("/billing/invoices", async (req, res, next) => {
+  try {
+    const { status, client_id, organization_id, q, page, limit } = req.query as any;
+    sendSuccess(res, await adminBilling.listInvoices({
+      status,
+      client_id,
+      organization_id: organization_id ? Number(organization_id) : undefined,
+      q,
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+    }));
+  } catch (err) { next(err); }
+});
+
+// POST /admin/billing/invoices/:id/mark-paid
+router.post("/billing/invoices/:id/mark-paid", async (req, res, next) => {
+  try {
+    const id = String(req.params.id);
+    sendSuccess(res, await adminBilling.markInvoicePaid(id, req.body || {}, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+// POST /admin/billing/invoices/:id/send
+router.post("/billing/invoices/:id/send", async (req, res, next) => {
+  try {
+    const id = String(req.params.id);
+    sendSuccess(res, await adminBilling.sendInvoiceEmail(id, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+// GET /admin/billing/invoices/:id/pdf — pipes the PDF stream from emp-billing
+router.get("/billing/invoices/:id/pdf", async (req, res, next) => {
+  try {
+    const id = String(req.params.id);
+    // Fetch PDF stream from emp-billing and pipe through
+    const billingUrl = (process.env.BILLING_MODULE_URL || "") + `/api/v1/invoices/${id}/pdf`;
+    const r = await fetch(billingUrl, {
+      headers: { Authorization: `Bearer ${process.env.BILLING_API_KEY}` },
+    });
+    if (!r.ok) {
+      res.status(r.status).json({ success: false, error: { message: "PDF unavailable" } });
+      return;
+    }
+    res.setHeader("Content-Type", r.headers.get("content-type") || "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      r.headers.get("content-disposition") || `inline; filename="invoice-${id}.pdf"`,
+    );
+    const buf = Buffer.from(await r.arrayBuffer());
+    res.send(buf);
+  } catch (err) { next(err); }
+});
+
+// POST /admin/billing/subscribe-on-behalf — body { organization_id, module_id,
+//   plan_tier, total_seats, billing_cycle?, trial_days? }
+router.post("/billing/subscribe-on-behalf", async (req, res, next) => {
+  try {
+    sendSuccess(res, await adminBilling.subscribeOnBehalf(req.body || {}, req.user!.sub));
+  } catch (err) { next(err); }
+});
+
+// GET /admin/billing/invoices/:id — single invoice detail
+router.get("/billing/invoices/:id", async (req, res, next) => {
+  try {
+    const id = String(req.params.id);
+    const result = await billingFetchRaw("GET", `/invoices/${id}`);
+    if (!result) {
+      res.status(404).json({ success: false, error: { message: "Invoice not found" } });
+      return;
+    }
+    sendSuccess(res, result.data ?? result);
+  } catch (err) { next(err); }
 });
 
 export default router;
