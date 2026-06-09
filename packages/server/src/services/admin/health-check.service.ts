@@ -59,32 +59,84 @@ export interface HealthCheckResult {
 // Module definitions
 // ---------------------------------------------------------------------------
 
-const MODULES = [
-  { name: "EMP Cloud", slug: "empcloud", url: "http://localhost:3000/health", port: 3000 },
-  { name: "EMP Recruit", slug: "emp-recruit", url: "http://localhost:4500/health", port: 4500 },
-  { name: "EMP Performance", slug: "emp-performance", url: "http://localhost:4300/health", port: 4300 },
-  { name: "EMP Rewards", slug: "emp-rewards", url: "http://localhost:4600/health", port: 4600 },
-  { name: "EMP Exit", slug: "emp-exit", url: "http://localhost:4400/health", port: 4400 },
-  { name: "EMP Billing", slug: "emp-billing", url: "http://localhost:4001/health", port: 4001 },
-  { name: "EMP LMS", slug: "emp-lms", url: "http://localhost:6021/health", port: 6021 },
-  { name: "EMP Payroll", slug: "emp-payroll", url: "http://localhost:4000/health", port: 4000 },
-  { name: "EMP Projects", slug: "emp-projects", url: "http://localhost:9000/health", port: 9000 },
-  { name: "EMP Monitor", slug: "emp-monitor", url: "http://localhost:5000/health", port: 5000 },
-];
+// Modules are loaded from the `modules` DB table at check time (migration
+// 040 added `api_url`, which is populated per environment by the admin
+// "Module Registry" page). Previously this list was hardcoded with
+// http://localhost:<dev_port>/health URLs, so prod -- where modules live on
+// totally different ports / behind public HTTPS domains -- saw every
+// service as "stopped" because the dev-port localhost calls all timed out.
+// Reading from the DB makes the dashboard correct across local, test, and
+// prod with no code change per environment.
 
-// Key API endpoints to test per module
-const KEY_ENDPOINTS = [
-  { module: "EMP Cloud", endpoint: "/health", method: "GET", url: "http://localhost:3000/health" },
-  { module: "EMP Recruit", endpoint: "/health", method: "GET", url: "http://localhost:4500/health" },
-  { module: "EMP Performance", endpoint: "/health", method: "GET", url: "http://localhost:4300/health" },
-  { module: "EMP Rewards", endpoint: "/health", method: "GET", url: "http://localhost:4600/health" },
-  { module: "EMP Exit", endpoint: "/health", method: "GET", url: "http://localhost:4400/health" },
-  { module: "EMP Billing", endpoint: "/health", method: "GET", url: "http://localhost:4001/health" },
-  { module: "EMP LMS", endpoint: "/health", method: "GET", url: "http://localhost:6021/health" },
-  { module: "EMP Payroll", endpoint: "/health", method: "GET", url: "http://localhost:4000/health" },
-  { module: "EMP Projects", endpoint: "/health", method: "GET", url: "http://localhost:9000/health" },
-  { module: "EMP Monitor", endpoint: "/health", method: "GET", url: "http://localhost:5000/health" },
-];
+type DbModule = {
+  name: string;
+  slug: string;
+  api_url: string;
+  port: number;
+  health_url: string;
+};
+
+/**
+ * Derive a base health URL from a module's stored api_url.
+ *
+ *   https://payroll-api.empcloud.com/api/v1   ->  https://payroll-api.empcloud.com/health
+ *   http://localhost:4000/api/v1              ->  http://localhost:4000/health
+ *   https://project-api.empcloud.com/v1       ->  https://project-api.empcloud.com/health
+ */
+function deriveHealthUrl(apiUrl: string): string | null {
+  try {
+    const u = new URL(apiUrl);
+    return `${u.protocol}//${u.host}/health`;
+  } catch {
+    return null;
+  }
+}
+
+async function loadModulesFromDb(): Promise<DbModule[]> {
+  const db = getDB();
+  const rows = await db("modules")
+    .where({ is_active: true })
+    .whereNotNull("api_url")
+    .select("name", "slug", "api_url");
+
+  // Also include EMP Cloud Core itself. It isn't usually a row in `modules`
+  // (it IS the host that owns the table), so we add it explicitly so the
+  // dashboard surfaces the host's own health. Hits the same process via
+  // localhost, which is the cheapest possible check.
+  const selfPort = config.port ?? 3000;
+  const selfUrl = `http://localhost:${selfPort}/health`;
+
+  const out: DbModule[] = [
+    {
+      name: "EMP Cloud",
+      slug: "empcloud",
+      api_url: selfUrl,
+      port: selfPort,
+      health_url: selfUrl,
+    },
+  ];
+
+  for (const r of rows) {
+    const healthUrl = deriveHealthUrl(String(r.api_url));
+    if (!healthUrl) continue;
+    let port = 0;
+    try {
+      const u = new URL(String(r.api_url));
+      port = Number(u.port) || (u.protocol === "https:" ? 443 : 80);
+    } catch {
+      port = 0;
+    }
+    out.push({
+      name: r.name,
+      slug: r.slug,
+      api_url: String(r.api_url),
+      port,
+      health_url: healthUrl,
+    });
+  }
+
+  return out;
+}
 
 // ---------------------------------------------------------------------------
 // Cache
@@ -99,7 +151,7 @@ let checkInterval: ReturnType<typeof setInterval> | null = null;
 // Health check helpers
 // ---------------------------------------------------------------------------
 
-async function checkModuleHealth(mod: typeof MODULES[number]): Promise<ModuleHealth> {
+async function checkModuleHealth(mod: DbModule): Promise<ModuleHealth> {
   const start = Date.now();
   const lastChecked = new Date().toISOString();
 
@@ -107,7 +159,7 @@ async function checkModuleHealth(mod: typeof MODULES[number]): Promise<ModuleHea
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
 
-    const response = await fetch(mod.url, { signal: controller.signal });
+    const response = await fetch(mod.health_url, { signal: controller.signal });
     clearTimeout(timer);
 
     const responseTime = Date.now() - start;
@@ -267,7 +319,7 @@ async function checkRedisHealth(): Promise<InfraHealth> {
   }
 }
 
-async function checkEndpoint(ep: typeof KEY_ENDPOINTS[number]): Promise<EndpointStatus> {
+async function checkEndpoint(mod: DbModule): Promise<EndpointStatus> {
   const start = Date.now();
   const lastChecked = new Date().toISOString();
 
@@ -275,15 +327,15 @@ async function checkEndpoint(ep: typeof KEY_ENDPOINTS[number]): Promise<Endpoint
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
 
-    const response = await fetch(ep.url, { signal: controller.signal });
+    const response = await fetch(mod.health_url, { signal: controller.signal });
     clearTimeout(timer);
 
     const responseTime = Date.now() - start;
 
     return {
-      module: ep.module,
-      endpoint: ep.endpoint,
-      method: ep.method,
+      module: mod.name,
+      endpoint: "/health",
+      method: "GET",
       status: response.ok ? "healthy" : "down",
       statusCode: response.status,
       responseTime,
@@ -291,9 +343,9 @@ async function checkEndpoint(ep: typeof KEY_ENDPOINTS[number]): Promise<Endpoint
     };
   } catch {
     return {
-      module: ep.module,
-      endpoint: ep.endpoint,
-      method: ep.method,
+      module: mod.name,
+      endpoint: "/health",
+      method: "GET",
       status: "down",
       responseTime: Date.now() - start,
       lastChecked,
@@ -308,12 +360,23 @@ async function checkEndpoint(ep: typeof KEY_ENDPOINTS[number]): Promise<Endpoint
 async function performFullHealthCheck(): Promise<HealthCheckResult> {
   logger.info("Performing full health check...");
 
+  // Load the active module set from the DB. If the query fails (DB
+  // outage), fall back to an empty list -- the infra block below will
+  // still surface the MySQL outage so the dashboard shows the real
+  // cause rather than a spurious "no modules" silence.
+  let dbModules: DbModule[] = [];
+  try {
+    dbModules = await loadModulesFromDb();
+  } catch (err: any) {
+    logger.warn("Health check: could not load modules from DB", { error: err?.message });
+  }
+
   // Run all checks in parallel
   const [moduleResults, mysqlHealth, redisHealth, endpointResults] = await Promise.all([
-    Promise.all(MODULES.map(checkModuleHealth)),
+    Promise.all(dbModules.map(checkModuleHealth)),
     checkMySQLHealth(),
     checkRedisHealth(),
-    Promise.all(KEY_ENDPOINTS.map(checkEndpoint)),
+    Promise.all(dbModules.map(checkEndpoint)),
   ]);
 
   const healthyCount = moduleResults.filter((m) => m.status === "healthy").length;
