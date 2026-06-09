@@ -43,8 +43,13 @@ export default function LoginPage() {
           first_name: result.user.first_name,
           last_name: result.user.last_name,
           role: result.user.role,
-          org_id: result.org.id,
-          org_name: result.org.name,
+          // Super admins live at sentinel org_id=0 with no real org row,
+          // so the backend returns org=null. Fall back to the user's
+          // organization_id (0) + a known display name -- otherwise
+          // result.org.id throws and the catch shows "Can't reach the
+          // server" for a successful login.
+          org_id: result.org?.id ?? result.user.organization_id ?? 0,
+          org_name: result.org?.name ?? "EMP Cloud Platform",
         },
         result.tokens
       );
