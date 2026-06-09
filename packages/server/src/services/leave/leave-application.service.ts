@@ -29,28 +29,112 @@ export async function applyLeave(
     throw new ValidationError("End date must not be before start date");
   }
 
-  // #1822 — Bug 22: prod showed a 2-day Paid Leave with Days = 0. Zod
-  // already rejects days_count < 0.5, but the symptom proves the value
-  // sometimes lands at 0 anyway (likely a stale form state where the date
-  // pickers updated after days_count was already serialised). Coerce
-  // missing / falsy / out-of-range values to the inclusive calendar-day
-  // count between start and end. We only override when the supplied value
-  // is *clearly wrong* (zero, negative, or larger than the date span) —
-  // legitimate "5 days for a Mon–Fri week off a Sun–Sat range" stays
-  // intact because we don't reduce a smaller-than-span value.
+  // Always compute days_count on the server from the date range, the
+  // applicant's shift week-offs, and mandatory holidays. The client's
+  // value is ignored — letting it pass through let a stale form state
+  // submit a 6-day Earned Leave with days_count=1 (Abhishek, Jun 9–14,
+  // 2026) which then bypassed the balance check entirely. Bug 22 (#1822)
+  // already coerced obviously-bad values (zero, negative, larger than
+  // span), but anything between 0 and inclusiveDays slipped through.
+  //
+  // Conventions:
+  //   • Working day = a day the applicant would have been at work if
+  //     not on leave. So weekoffs (per the user's shift) and mandatory
+  //     holidays (per company_events + legacy organization_holidays)
+  //     don't debit the balance.
+  //   • Optional / restricted holidays (is_mandatory=0) DO debit — the
+  //     office is open on those days, so taking the day off is a real
+  //     leave day. Matches the auto-HOT rule on the attendance grid.
+  //   • Half-day applications collapse to 0.5 regardless of range.
+  //   • If the applicant has no shift assignment covering any day in
+  //     the range we don't subtract weekoffs for that day — the safer
+  //     default than guessing Sat/Sun, since many orgs run 6-day weeks.
   const inclusiveDays =
     Math.floor(
       (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) -
         Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())) /
         (1000 * 60 * 60 * 24),
     ) + 1;
+  const startStr = data.start_date.slice(0, 10);
+  const endStr = data.end_date.slice(0, 10);
   if (data.is_half_day) {
     data.days_count = 0.5;
-  } else if (
-    !data.days_count ||
-    Number(data.days_count) <= 0 ||
-    Number(data.days_count) > inclusiveDays
-  ) {
+  } else {
+    const [assignments, eventHolidays, legacyHolidays] = await Promise.all([
+      db("shift_assignments as sa")
+        .join("shifts as s", "sa.shift_id", "s.id")
+        .where("sa.organization_id", orgId)
+        .andWhere("sa.user_id", userId)
+        .whereRaw("DATE(sa.effective_from) <= ?", [endStr])
+        .andWhere(function () {
+          this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [startStr]);
+        })
+        .orderBy("sa.created_at", "desc")
+        .orderBy("sa.id", "desc")
+        .select("sa.effective_from", "sa.effective_to", "s.working_days"),
+      db("company_events")
+        .where({ organization_id: orgId, event_type: "holiday", is_mandatory: 1 })
+        .where("start_date", "<=", `${endStr} 23:59:59`)
+        .andWhere(function () {
+          this.where("end_date", ">=", `${startStr} 00:00:00`).orWhereNull("end_date");
+        })
+        .select("start_date", "end_date"),
+      db("organization_holidays")
+        .where({ organization_id: orgId })
+        .whereBetween("holiday_date", [startStr, endStr])
+        .select("holiday_date")
+        .catch(() => [] as Array<{ holiday_date: any }>),
+    ]);
+
+    const dateKey = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const mandatoryHolidaySet = new Set<string>();
+    for (const e of eventHolidays as any[]) {
+      const s = new Date(e.start_date);
+      const en = e.end_date ? new Date(e.end_date) : new Date(e.start_date);
+      for (let d = new Date(s); d <= en; d.setDate(d.getDate() + 1)) {
+        mandatoryHolidaySet.add(dateKey(d));
+      }
+    }
+    for (const h of legacyHolidays as any[]) {
+      mandatoryHolidaySet.add(dateKey(new Date(h.holiday_date)));
+    }
+
+    let workingDays = 0;
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      if (mandatoryHolidaySet.has(dateKey(d))) continue;
+      const dow = d.getDay();
+      const k = dateKey(d);
+      // First-write-wins per (user, date) — assignments are pre-sorted
+      // by created_at desc, so the most recent assignment covering this
+      // date wins. Mirrors the attendance grid's resolution.
+      let isWeekoff = false;
+      for (const sa of assignments as any[]) {
+        const effFrom = dateKey(new Date(sa.effective_from));
+        const effTo = sa.effective_to ? dateKey(new Date(sa.effective_to)) : null;
+        if (k >= effFrom && (effTo === null || k <= effTo)) {
+          const workingDow = String(sa.working_days || "")
+            .split(",")
+            .map((s) => Number(s.trim()))
+            .filter((n) => !isNaN(n));
+          if (workingDow.length > 0) isWeekoff = !workingDow.includes(dow);
+          break;
+        }
+      }
+      if (!isWeekoff) workingDays++;
+    }
+    data.days_count = workingDays;
+  }
+
+  if (!data.days_count || Number(data.days_count) <= 0) {
+    throw new ValidationError(
+      `Selected range contains no working days (only week-offs and holidays). Pick a range with at least one working day.`,
+    );
+  }
+  // Hard ceiling: never let a request exceed the inclusive calendar span,
+  // regardless of what the computed value comes out to. Belt-and-braces
+  // against any future shift-resolution bug.
+  if (Number(data.days_count) > inclusiveDays) {
     data.days_count = inclusiveDays;
   }
 
@@ -582,6 +666,40 @@ export async function approveLeave(
       .first();
 
     if (balance) {
+      // Hard balance re-check at approve time. applyLeave checks balance
+      // at submission, but the available balance can drop between apply
+      // and approve (another leave got approved, allocated was reduced,
+      // carry-forward expired, etc.). Without this re-check, the
+      // deduction below silently caps the balance at zero (Math.max) --
+      // the admin sees the approve succeed, the ledger ends up with
+      // total_used over-counted, and the employee gets time off they
+      // can't actually afford. Refuse with a clear message naming the
+      // employee, the leave type, and the gap so the admin can either
+      // reject the application or top up the balance first.
+      const days = Number(application.days_count);
+      const currentBalance = Number(balance.balance);
+      if (currentBalance < days) {
+        // Surface the employee's name + the leave type name so the
+        // admin's error toast is actionable in one read.
+        const [employee, leaveType] = await Promise.all([
+          trx("users")
+            .where({ id: application.user_id })
+            .select("first_name", "last_name", "emp_code")
+            .first(),
+          trx("leave_types")
+            .where({ id: application.leave_type_id })
+            .select("name", "code")
+            .first(),
+        ]);
+        const who = employee
+          ? `${[employee.first_name, employee.last_name].filter(Boolean).join(" ").trim()}${employee.emp_code ? " (" + employee.emp_code + ")" : ""}`
+          : "the applicant";
+        const typeLabel = leaveType?.name || leaveType?.code || "this leave type";
+        throw new ValidationError(
+          `Cannot approve: ${who} has only ${currentBalance} day(s) of ${typeLabel} available, but this request is for ${days} day(s). Reject the request, ask the employee to apply for a shorter period, or top up the balance first.`,
+        );
+      }
+
       // Determine whether the leave belongs to the *current* period — only
       // then do we touch period_used. We resolve the policy here to know the
       // accrual type for period bucketing.
@@ -602,12 +720,11 @@ export async function approveLeave(
       const currentPeriodIndex = Math.max(0, Math.floor(currentMonthsFromStart / monthsPer));
       const sameCurrentPeriod = applicationPeriodIndex === currentPeriodIndex;
 
-      const days = Number(application.days_count);
       await trx("leave_balances")
         .where({ id: balance.id })
         .update({
           total_used: Number(balance.total_used) + days,
-          balance: Math.max(0, Number(balance.balance) - days),
+          balance: currentBalance - days,
           period_used: sameCurrentPeriod
             ? Number(balance.period_used ?? 0) + days
             : Number(balance.period_used ?? 0),
