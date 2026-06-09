@@ -143,16 +143,27 @@ export async function login(params: {
     throw new UnauthorizedError("Invalid email or password");
   }
 
-  const org = await db("organizations").where({ id: user.organization_id }).first();
-  if (!org || !org.is_active) {
+  // Super admins live at organization_id=0 (a sentinel id reserved by
+  // migration 036 — no real org has id=0, MySQL auto_increment starts at
+  // 1). The convention keeps super admins out of every tenant's user
+  // list, but it also means the standard "look up org row and check
+  // is_active" gate would fail closed for every super_admin login since
+  // there is no row at id=0. Skip the org-active gate for super_admins;
+  // for everyone else the gate is unchanged.
+  const isSuperAdmin = user.role === "super_admin";
+  const org = isSuperAdmin
+    ? null
+    : await db("organizations").where({ id: user.organization_id }).first();
+  if (!isSuperAdmin && (!org || !org.is_active)) {
     throw new UnauthorizedError("Organization is inactive");
   }
 
   // --- Password expiry check ---
   // If the org has a password_expiry_days policy (> 0), check if the user's
   // password is older than that many days and flag it in the response.
+  // Super admins have no org policy -- treat as no expiry.
   let passwordExpired = false;
-  const expiryDays = org.password_expiry_days ?? 0;
+  const expiryDays = org?.password_expiry_days ?? 0;
   if (expiryDays > 0) {
     const changedAt = user.password_changed_at
       ? new Date(user.password_changed_at)
@@ -166,12 +177,12 @@ export async function login(params: {
 
   const tokens = await issueTokens({
     userId: user.id,
-    orgId: org.id,
+    orgId: org?.id ?? 0,
     email: user.email,
     role: user.role as UserRole,
     firstName: user.first_name,
     lastName: user.last_name,
-    orgName: org.name,
+    orgName: org?.name ?? "EMP Cloud Platform",
     scope: "openid profile email",
     clientId: EMPCLOUD_CLIENT_ID,
   });
