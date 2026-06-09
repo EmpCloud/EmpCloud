@@ -80,7 +80,10 @@ router.post("/login", loginLimiter, async (req: Request, res: Response, next: Ne
     const result = await login(data);
 
     await logAudit({
-      organizationId: (result.org as any).id,
+      // result.org is null for super_admin (lives at sentinel org_id=0).
+      // Fall back to the user's org_id (0 in that case) so the audit log
+      // still records a numeric organization id without crashing.
+      organizationId: (result.org as any)?.id ?? (result.user as any).organization_id ?? 0,
       userId: (result.user as any).id,
       action: AuditAction.LOGIN,
       ipAddress: req.ip,
