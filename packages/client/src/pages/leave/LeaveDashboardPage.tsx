@@ -111,6 +111,37 @@ export default function LeaveDashboardPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Always recompute days_count from (start_date, end_date, is_half_day)
+  // so the displayed number stays in sync regardless of the order the
+  // user fills the dates. Previously the recompute lived only inside
+  // each date input's onChange and read stale closure state -- typing
+  // the end date before the start date left the field at the initial
+  // value of 1.
+  //
+  // This is INCLUSIVE CALENDAR days. The server further subtracts the
+  // applicant's shift week-offs and mandatory holidays at submission
+  // time, so this number may be larger than the final debit. The hint
+  // below the field tells the user that.
+  useEffect(() => {
+    if (form.is_half_day) {
+      if (form.days_count !== 0.5) setForm((f) => ({ ...f, days_count: 0.5 }));
+      return;
+    }
+    if (!form.start_date || !form.end_date) return;
+    const start = new Date(form.start_date);
+    const end = new Date(form.end_date);
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || end < start) return;
+    const diff = Math.floor(
+      (Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()) -
+        Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())) /
+        (1000 * 60 * 60 * 24),
+    ) + 1;
+    if (diff > 0 && diff !== form.days_count) {
+      setForm((f) => ({ ...f, days_count: diff }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.start_date, form.end_date, form.is_half_day]);
+
   const resetForm = () => {
     setForm({ leave_type_id: 0, start_date: "", end_date: "", days_count: 1, is_half_day: false, half_day_type: "", reason: "" });
     setEditingId(null);
@@ -465,15 +496,7 @@ export default function LeaveDashboardPage() {
               <input
                 type="date"
                 value={form.start_date}
-                onChange={(e) => {
-                  const startDate = e.target.value;
-                  let days = form.days_count;
-                  if (startDate && form.end_date) {
-                    const diff = Math.ceil((new Date(form.end_date).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
-                    if (diff > 0) days = form.is_half_day ? 0.5 : diff;
-                  }
-                  setForm({ ...form, start_date: startDate, days_count: days });
-                }}
+                onChange={(e) => setForm({ ...form, start_date: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -483,15 +506,7 @@ export default function LeaveDashboardPage() {
               <input
                 type="date"
                 value={form.end_date}
-                onChange={(e) => {
-                  const endDate = e.target.value;
-                  let days = form.days_count;
-                  if (form.start_date && endDate) {
-                    const diff = Math.ceil((new Date(endDate).getTime() - new Date(form.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1;
-                    if (diff > 0) days = form.is_half_day ? 0.5 : diff;
-                  }
-                  setForm({ ...form, end_date: endDate, days_count: days });
-                }}
+                onChange={(e) => setForm({ ...form, end_date: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               />
@@ -500,17 +515,15 @@ export default function LeaveDashboardPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.dashboard.numberOfDays')} <span className="text-red-500">*</span></label>
               <input
                 type="number"
-                step="0.5"
-                min="0.5"
-                max="365"
                 value={form.days_count}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  if (!isNaN(val) && val >= 0.5 && val <= 365) setForm({ ...form, days_count: val });
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                required
+                readOnly
+                tabIndex={-1}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-700 cursor-not-allowed"
+                title="Auto-computed from the date range. The server adjusts the actual debit to exclude your week-offs and mandatory holidays."
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Auto-computed from the date range. Week-offs and mandatory holidays in this span will not be debited from your balance.
+              </p>
             </div>
             <div className="flex items-end gap-4">
               <label className="flex items-center gap-2 text-sm text-gray-700">
