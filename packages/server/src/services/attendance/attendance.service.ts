@@ -1207,6 +1207,25 @@ export async function getMonthlyGrid(
       userWeekoff[uid][d.date] = off ? "WO" : "WORK";
     }
   }
+  // BUG-GridSatAsAbsent — Fill in dow-based fallback for dates NOT covered
+  // by any shift assignment. The original behaviour was to leave such cells
+  // blank, but the auto-Absent rule further down then turned a blank Sat/Sun
+  // into an A (Vijay Patel May 22-31 — shift 1249 ended 21 May, next shift
+  // started 1 Jun; the four Sat/Sun in that gap rendered as A). Payroll's
+  // resolveCalendarLop already uses dow-based fallback for the same case
+  // (Sat = 6, Sun = 0 → weekoff), so this makes the Grid agree with the
+  // payslip when a shift assignment has gaps. Working days outside any
+  // shift remain "WORK", so a Mon-Fri date with no record still correctly
+  // shows as Absent — matching payroll's LOP for the same day.
+  for (const u of allUsers) {
+    const uid = Number(u.user_id);
+    if (!userWeekoff[uid]) userWeekoff[uid] = {};
+    for (const d of days) {
+      if (userWeekoff[uid][d.date] !== undefined) continue;
+      const off = d.dow === 0 || d.dow === 6;
+      userWeekoff[uid][d.date] = off ? "WO" : "WORK";
+    }
+  }
 
   // ISO date for "today" so a single-punch row on a past date doesn't get
   // silently rewarded with a Present mark just because the worker forgot to
