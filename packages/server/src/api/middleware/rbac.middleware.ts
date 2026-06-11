@@ -179,10 +179,21 @@ export function requireAllPermissions(...required: string[]) {
  * use endpoints that previously gated only on the built-in HR role.
  *
  * paramName is the route param containing the user ID to compare against.
- * permissions is an optional list of permission keys that grant access
- * regardless of role; pass an empty list (or omit) for the legacy behavior.
+ * permissions is an optional list of permission keys that grant access to
+ * ANY user's resource (i.e. the non-self case).
+ *
+ * selfPermissions gates the self case: when non-empty, a self user must still
+ * hold one of these keys to pass. This closes the hole where self access
+ * bypassed RBAC entirely — revoking e.g. `employees:view` from the employee
+ * role had no backend effect because `isSelf` short-circuited the check.
+ * When selfPermissions is empty (the default) the legacy "self always passes"
+ * behavior is preserved for the many routes that depend on it.
  */
-export function requireSelfOrHR(paramName: string = "id", permissions: string[] = []) {
+export function requireSelfOrHR(
+  paramName: string = "id",
+  permissions: string[] = [],
+  selfPermissions: string[] = [],
+) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       sendError(res, 401, "UNAUTHORIZED", "Authentication required");
@@ -193,18 +204,27 @@ export function requireSelfOrHR(paramName: string = "id", permissions: string[] 
     const isSelf = req.user.sub === targetUserId;
     const userRoleLevel = ROLE_HIERARCHY[req.user.role] ?? 0;
     const hrLevel = ROLE_HIERARCHY["hr_admin" as UserRole] ?? 60;
+    const granted = (req.user as any).permissions as string[] | undefined;
+    const hasAny = (keys: string[]) =>
+      Array.isArray(granted) && keys.some((p) => granted.includes(p));
 
-    if (isSelf || userRoleLevel >= hrLevel) {
+    // HR-level roles (hr_admin, org_admin, super_admin) always pass.
+    if (userRoleLevel >= hrLevel) {
       next();
       return;
     }
 
-    if (permissions.length > 0) {
-      const granted = (req.user as any).permissions as string[] | undefined;
-      if (Array.isArray(granted) && permissions.some((p) => granted.includes(p))) {
-        next();
-        return;
-      }
+    // Self access — when a self-permission gate is configured the user must
+    // still hold one of those keys; otherwise self bypasses RBAC (legacy).
+    if (isSelf && (selfPermissions.length === 0 || hasAny(selfPermissions))) {
+      next();
+      return;
+    }
+
+    // Broader grant for accessing another user's resource.
+    if (permissions.length > 0 && hasAny(permissions)) {
+      next();
+      return;
     }
 
     sendError(res, 403, "FORBIDDEN", "Insufficient permissions");
