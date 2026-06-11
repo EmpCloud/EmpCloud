@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { Link, useSearchParams } from "react-router-dom";
 import { Plus, Trash2, Play, Square, Eye, Edit } from "lucide-react";
@@ -22,6 +23,7 @@ const TYPE_BADGE: Record<string, string> = {
 };
 
 export default function SurveyListPage() {
+  const { t } = useTranslation();
   // #1532 — Seed statusFilter from ?status= so deep-links from the Survey
   // Dashboard top cards land on the matching filter instead of the full list.
   // Whitelisted against known values.
@@ -81,14 +83,14 @@ export default function SurveyListPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Surveys</h1>
-          <p className="text-gray-500 mt-1">Manage your employee surveys.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("surveys.list.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("surveys.list.subtitle")}</p>
         </div>
         <Link
           to="/surveys/builder"
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" /> New Survey
+          <Plus className="h-4 w-4" /> {t("surveys.list.new")}
         </Link>
       </div>
 
@@ -99,24 +101,24 @@ export default function SurveyListPage() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
         >
-          <option value="">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="active">Active</option>
-          <option value="closed">Closed</option>
-          <option value="archived">Archived</option>
+          <option value="">{t("surveys.list.allStatuses")}</option>
+          <option value="draft">{t("surveys.list.status.draft")}</option>
+          <option value="active">{t("surveys.list.status.active")}</option>
+          <option value="closed">{t("surveys.list.status.closed")}</option>
+          <option value="archived">{t("surveys.list.status.archived")}</option>
         </select>
         <select
           value={typeFilter}
           onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
         >
-          <option value="">All Types</option>
-          <option value="pulse">Pulse</option>
-          <option value="enps">eNPS</option>
-          <option value="engagement">Engagement</option>
-          <option value="custom">Custom</option>
-          <option value="onboarding">Onboarding</option>
-          <option value="exit_survey">Exit Survey</option>
+          <option value="">{t("surveys.list.allTypes")}</option>
+          <option value="pulse">{t("surveys.list.type.pulse")}</option>
+          <option value="enps">{t("surveys.list.type.enps")}</option>
+          <option value="engagement">{t("surveys.list.type.engagement")}</option>
+          <option value="custom">{t("surveys.list.type.custom")}</option>
+          <option value="onboarding">{t("surveys.list.type.onboarding")}</option>
+          <option value="exit_survey">{t("surveys.list.type.exit_survey")}</option>
         </select>
       </div>
 
@@ -126,24 +128,24 @@ export default function SurveyListPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Anonymous</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Responses</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Dates</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colTitle")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colType")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colStatus")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colAnonymous")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colResponses")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colDates")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colActions")}</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-400">Loading...</td>
+                  <td colSpan={7} className="px-6 py-8 text-center text-gray-400">{t("surveys.list.loading")}</td>
                 </tr>
               ) : surveys.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
-                    No surveys found. Create your first survey to get started.
+                    {t("surveys.list.empty")}
                   </td>
                 </tr>
               ) : (
@@ -157,21 +159,21 @@ export default function SurveyListPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.custom}`}>
-                        {s.type}
+                        {t(`surveys.list.type.${s.type}`, { defaultValue: s.type })}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] || STATUS_BADGE.draft}`}>
-                        {s.status}
+                        {t(`surveys.list.status.${s.status}`, { defaultValue: s.status })}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-600">
-                      {s.is_anonymous ? "Yes" : "No"}
+                      {s.is_anonymous ? t("surveys.list.yes") : t("surveys.list.no")}
                     </td>
                     <td className="px-6 py-4 text-gray-600">{s.response_count}</td>
                     <td className="px-6 py-4 text-xs text-gray-400">
-                      {s.start_date && <div>Start: {new Date(s.start_date).toLocaleDateString()}</div>}
-                      {s.end_date && <div>End: {new Date(s.end_date).toLocaleDateString()}</div>}
+                      {s.start_date && <div>{t("surveys.list.start", { date: new Date(s.start_date).toLocaleDateString() })}</div>}
+                      {s.end_date && <div>{t("surveys.list.end", { date: new Date(s.end_date).toLocaleDateString() })}</div>}
                       {!s.start_date && !s.end_date && <span>-</span>}
                     </td>
                     <td className="px-6 py-4">
@@ -181,7 +183,7 @@ export default function SurveyListPage() {
                             <Link
                               to={`/surveys/builder?id=${s.id}`}
                               className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                              title="Edit"
+                              title={t("surveys.list.titleEdit")}
                             >
                               <Edit className="h-4 w-4" />
                             </Link>
@@ -189,7 +191,7 @@ export default function SurveyListPage() {
                               onClick={() => publishMutation.mutate(s.id)}
                               disabled={publishMutation.isPending}
                               className="p-1.5 rounded hover:bg-green-50 text-green-600 hover:text-green-700"
-                              title="Publish"
+                              title={t("surveys.list.titlePublish")}
                             >
                               <Play className="h-4 w-4" />
                             </button>
@@ -197,7 +199,7 @@ export default function SurveyListPage() {
                               onClick={() => setDeleteSurveyId(s.id)}
                               disabled={deleteMutation.isPending}
                               className="p-1.5 rounded hover:bg-red-50 text-red-500 hover:text-red-700"
-                              title="Delete"
+                              title={t("surveys.list.titleDelete")}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -208,7 +210,7 @@ export default function SurveyListPage() {
                             <Link
                               to={`/surveys/${s.id}/results`}
                               className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                              title="View Results"
+                              title={t("surveys.list.titleViewResults")}
                             >
                               <Eye className="h-4 w-4" />
                             </Link>
@@ -216,7 +218,7 @@ export default function SurveyListPage() {
                               onClick={() => closeMutation.mutate(s.id)}
                               disabled={closeMutation.isPending}
                               className="p-1.5 rounded hover:bg-orange-50 text-orange-500 hover:text-orange-700"
-                              title="Close Survey"
+                              title={t("surveys.list.titleClose")}
                             >
                               <Square className="h-4 w-4" />
                             </button>
@@ -227,7 +229,7 @@ export default function SurveyListPage() {
                             <Link
                               to={`/surveys/${s.id}/results`}
                               className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                              title="View Results"
+                              title={t("surveys.list.titleViewResults")}
                             >
                               <Eye className="h-4 w-4" />
                             </Link>
@@ -235,7 +237,7 @@ export default function SurveyListPage() {
                               onClick={() => publishMutation.mutate(s.id)}
                               disabled={publishMutation.isPending}
                               className="p-1.5 rounded hover:bg-green-50 text-green-600 hover:text-green-700"
-                              title="Re-publish"
+                              title={t("surveys.list.titleRepublish")}
                             >
                               <Play className="h-4 w-4" />
                             </button>
@@ -257,7 +259,7 @@ export default function SurveyListPage() {
           {/* #1533 — Show the per-page count alongside the total so admins can
               tell at a glance how many surveys are in view, not just the total. */}
           <p className="text-sm text-gray-500">
-            Showing {surveys.length} of {meta.total} surveys &middot; Page {meta.page} of {meta.total_pages}
+            {t("surveys.list.showing", { shown: surveys.length, total: meta.total, page: meta.page, total_pages: meta.total_pages })}
           </p>
           <div className="flex gap-2">
             <button
@@ -265,14 +267,14 @@ export default function SurveyListPage() {
               disabled={page === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Previous
+              {t("surveys.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next
+              {t("surveys.list.next")}
             </button>
           </div>
         </div>

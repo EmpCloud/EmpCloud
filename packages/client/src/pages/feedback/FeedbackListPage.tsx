@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import {
@@ -50,6 +51,7 @@ const CATEGORIES = [
 const STATUSES = ["new", "acknowledged", "under_review", "resolved", "archived"];
 
 export default function FeedbackListPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const isHR = !!(user && HR_ROLES.includes(user.role));
@@ -129,7 +131,7 @@ export default function FeedbackListPage() {
       setDeleteError(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete feedback"),
+      setDeleteError(err?.response?.data?.error?.message || t("feedback.list.deleteFailed")),
   });
 
   const feedbackList = data?.data || [];
@@ -139,8 +141,8 @@ export default function FeedbackListPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Feedback</h1>
-          <p className="text-gray-500 mt-1">Anonymous feedback from employees. No identities are revealed.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("feedback.list.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("feedback.list.subtitle")}</p>
         </div>
       </div>
 
@@ -165,7 +167,7 @@ export default function FeedbackListPage() {
               <div className="flex items-center justify-between mb-1">
                 <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${cfg.color}`}>
                   <Icon className="h-3 w-3" />
-                  {cfg.label}
+                  {t(`feedback.list.status.${s}`)}
                 </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
@@ -179,7 +181,7 @@ export default function FeedbackListPage() {
       {/* Filters */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-gray-700">
-          <Filter className="h-4 w-4" /> Filters
+          <Filter className="h-4 w-4" /> {t("feedback.list.filters")}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <select
@@ -187,9 +189,9 @@ export default function FeedbackListPage() {
             onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Categories</option>
+            <option value="">{t("feedback.list.allCategories")}</option>
             {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+              <option key={c} value={c}>{t(`feedback.list.category.${c}`)}</option>
             ))}
           </select>
 
@@ -198,9 +200,9 @@ export default function FeedbackListPage() {
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Statuses</option>
+            <option value="">{t("feedback.list.allStatuses")}</option>
             {STATUSES.map((s) => (
-              <option key={s} value={s}>{STATUS_CONFIG[s]?.label || s}</option>
+              <option key={s} value={s}>{t(`feedback.list.status.${s}`)}</option>
             ))}
           </select>
 
@@ -212,7 +214,7 @@ export default function FeedbackListPage() {
               className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
             />
             <AlertTriangle className="h-4 w-4 text-red-500" />
-            Urgent Only
+            {t("feedback.list.urgentOnly")}
           </label>
 
           <div className="relative">
@@ -221,7 +223,7 @@ export default function FeedbackListPage() {
               type="text"
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-              placeholder="Search feedback..."
+              placeholder={t("feedback.list.searchPlaceholder")}
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
           </div>
@@ -232,12 +234,12 @@ export default function FeedbackListPage() {
       <div className="space-y-4">
         {isLoading ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading feedback...
+            {t("feedback.list.loading")}
           </div>
         ) : feedbackList.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
             <MessageSquare className="h-8 w-8 mx-auto mb-3 opacity-50" />
-            <p>No feedback matches the current filters.</p>
+            <p>{t("feedback.list.empty")}</p>
           </div>
         ) : (
           feedbackList.map((f: any) => {
@@ -257,19 +259,19 @@ export default function FeedbackListPage() {
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${catColor}`}>
-                        {f.category}
+                        {t(`feedback.list.category.${f.category}`, { defaultValue: f.category })}
                       </span>
                       <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full ${statusCfg.color}`}>
                         <StatusIcon className="h-3 w-3" />
-                        {statusCfg.label}
+                        {t(`feedback.list.status.${f.status}`, { defaultValue: statusCfg.label })}
                       </span>
                       <span className={`text-xs font-medium ${sentimentColor}`}>
-                        {f.sentiment}
+                        {t(`feedback.list.sentiment.${f.sentiment}`, { defaultValue: f.sentiment })}
                       </span>
                       {f.is_urgent && (
                         <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-100 text-red-700">
                           <AlertTriangle className="h-3 w-3" />
-                          Urgent
+                          {t("feedback.list.urgent")}
                         </span>
                       )}
                     </div>
@@ -289,7 +291,7 @@ export default function FeedbackListPage() {
 
                   {f.admin_response && (
                     <div className="bg-brand-50 border border-brand-200 rounded-lg p-3 mb-4">
-                      <p className="text-xs font-medium text-brand-700 mb-1">HR Response</p>
+                      <p className="text-xs font-medium text-brand-700 mb-1">{t("feedback.list.hrResponse")}</p>
                       <p className="text-sm text-brand-800">{f.admin_response}</p>
                     </div>
                   )}
@@ -300,13 +302,13 @@ export default function FeedbackListPage() {
                       className="flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
                     >
                       <Reply className="h-3.5 w-3.5" />
-                      {f.admin_response ? "Edit Response" : "Respond"}
+                      {f.admin_response ? t("feedback.list.editResponse") : t("feedback.list.respond")}
                     </button>
                     <button
                       onClick={() => { setStatusUpdateId(f.id); setNewStatus(f.status); }}
                       className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50"
                     >
-                      Update Status
+                      {t("feedback.list.updateStatus")}
                     </button>
                     {isHR && (
                       <button
@@ -314,7 +316,7 @@ export default function FeedbackListPage() {
                         className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        Delete
+                        {t("feedback.list.delete")}
                       </button>
                     )}
                   </div>
@@ -329,7 +331,7 @@ export default function FeedbackListPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("feedback.list.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -337,14 +339,14 @@ export default function FeedbackListPage() {
               disabled={page === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Previous
+              {t("feedback.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next
+              {t("feedback.list.next")}
             </button>
           </div>
         </div>
@@ -356,27 +358,27 @@ export default function FeedbackListPage() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setRespondingTo(null)} />
           <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full p-6 z-10">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Respond to Feedback</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("feedback.list.respondTitle")}</h3>
               <button onClick={() => setRespondingTo(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="mb-4 bg-gray-50 rounded-lg p-3">
-              <p className="text-xs font-medium text-gray-500 mb-1">{respondingTo.category} - {respondingTo.subject}</p>
+              <p className="text-xs font-medium text-gray-500 mb-1">{t(`feedback.list.category.${respondingTo.category}`, { defaultValue: respondingTo.category })} - {respondingTo.subject}</p>
               <p className="text-sm text-gray-700 line-clamp-3">{respondingTo.message}</p>
             </div>
             <textarea
               value={responseText}
               onChange={(e) => setResponseText(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[120px] mb-4"
-              placeholder="Write your response. This will be visible to the anonymous submitter."
+              placeholder={t("feedback.list.responsePlaceholder")}
             />
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setRespondingTo(null)}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("feedback.list.cancel")}
               </button>
               <button
                 onClick={() => respondMutation.mutate({ id: respondingTo.id, admin_response: responseText })}
@@ -384,7 +386,7 @@ export default function FeedbackListPage() {
                 className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
                 <Reply className="h-4 w-4" />
-                {respondMutation.isPending ? "Sending..." : "Send Response"}
+                {respondMutation.isPending ? t("feedback.list.sending") : t("feedback.list.sendResponse")}
               </button>
             </div>
           </div>
@@ -407,11 +409,9 @@ export default function FeedbackListPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete feedback?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("feedback.list.deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.subject}</span>?
-                    This cannot be undone.
+                    {t("feedback.list.deleteConfirm", { subject: deleteTarget.subject })}
                   </p>
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function FeedbackListPage() {
                 disabled={deleteMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("feedback.list.cancel")}
               </button>
               <button
                 type="button"
@@ -438,10 +438,10 @@ export default function FeedbackListPage() {
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("feedback.list.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("feedback.list.delete")
                 )}
               </button>
             </div>
@@ -455,7 +455,7 @@ export default function FeedbackListPage() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setStatusUpdateId(null)} />
           <div className="relative bg-white rounded-xl shadow-xl max-w-sm w-full p-6 z-10">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Update Status</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("feedback.list.updateStatusTitle")}</h3>
               <button onClick={() => setStatusUpdateId(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
@@ -466,7 +466,7 @@ export default function FeedbackListPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-4"
             >
               {STATUSES.map((s) => (
-                <option key={s} value={s}>{STATUS_CONFIG[s]?.label || s}</option>
+                <option key={s} value={s}>{t(`feedback.list.status.${s}`)}</option>
               ))}
             </select>
             <div className="flex justify-end gap-3">
@@ -474,14 +474,14 @@ export default function FeedbackListPage() {
                 onClick={() => setStatusUpdateId(null)}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("feedback.list.cancel")}
               </button>
               <button
                 onClick={() => statusMutation.mutate({ id: statusUpdateId, status: newStatus })}
                 disabled={statusMutation.isPending}
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
-                {statusMutation.isPending ? "Updating..." : "Update"}
+                {statusMutation.isPending ? t("feedback.list.updating") : t("feedback.list.update")}
               </button>
             </div>
           </div>

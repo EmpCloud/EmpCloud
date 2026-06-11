@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -38,6 +39,7 @@ const STATUSES = ["available", "assigned", "in_repair", "retired", "lost", "dama
 const CONDITIONS = ["new", "good", "fair", "poor"];
 
 export default function AssetListPage() {
+  const { t } = useTranslation();
   // #1531 — Seed `statusFilter` from ?status= so deep-links from the Asset
   // Dashboard top cards land on a pre-filtered list instead of showing every
   // asset. Whitelisted against known values so a bad URL doesn't wedge the
@@ -135,7 +137,7 @@ export default function AssetListPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formPurchaseDate && formWarrantyExpiry && formWarrantyExpiry < formPurchaseDate) {
-      showToast("error", "Warranty expiry date cannot be before the purchase date.");
+      showToast("error", t("assets.list.warrantyBeforePurchase"));
       return;
     }
     await createAsset.mutateAsync({
@@ -241,7 +243,7 @@ export default function AssetListPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err: any) {
-      showToast("error", err?.response?.data?.error?.message || "Failed to export PDF");
+      showToast("error", err?.response?.data?.error?.message || t("assets.list.exportPdfFailed"));
     }
   }
 
@@ -249,8 +251,8 @@ export default function AssetListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Assets</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage IT equipment and company assets</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("assets.list.title")}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t("assets.list.subtitle")}</p>
         </div>
         {isHR && (
           <div className="flex items-center gap-2 flex-wrap">
@@ -262,7 +264,7 @@ export default function AssetListPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
               >
                 <Download className="h-4 w-4" />
-                Export
+                {t("assets.list.export")}
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {showExportMenu && (
@@ -271,13 +273,13 @@ export default function AssetListPage() {
                     onClick={exportCsv}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
                   >
-                    Export as CSV
+                    {t("assets.list.exportCsv")}
                   </button>
                   <button
                     onClick={exportPdf}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg border-t border-gray-100"
                   >
-                    Export as PDF
+                    {t("assets.list.exportPdf")}
                   </button>
                 </div>
               )}
@@ -287,14 +289,14 @@ export default function AssetListPage() {
               className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
             >
               <Upload className="h-4 w-4" />
-              Bulk Upload
+              {t("assets.list.bulkUpload")}
             </button>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
             >
               <Plus className="h-4 w-4" />
-              Add Asset
+              {t("assets.list.addAsset")}
             </button>
           </div>
         )}
@@ -306,7 +308,7 @@ export default function AssetListPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by name, tag, or serial..."
+            placeholder={t("assets.list.searchPlaceholder")}
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
@@ -317,9 +319,9 @@ export default function AssetListPage() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="">All Statuses</option>
+          <option value="">{t("assets.list.allStatuses")}</option>
           {STATUSES.map((s) => (
-            <option key={s} value={s}>{s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</option>
+            <option key={s} value={s}>{t(`assets.list.status.${s}`)}</option>
           ))}
         </select>
         <select
@@ -327,7 +329,7 @@ export default function AssetListPage() {
           onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
-          <option value="">All Categories</option>
+          <option value="">{t("assets.list.allCategories")}</option>
           {(categories || []).map((c: any) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
@@ -337,12 +339,12 @@ export default function AssetListPage() {
       {/* Table */}
       {isLoading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="text-gray-400">Loading assets...</div>
+          <div className="text-gray-400">{t("assets.list.loading")}</div>
         </div>
       ) : assets.length === 0 ? (
         <div className="text-center py-16">
           <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No assets found</p>
+          <p className="text-gray-500">{t("assets.list.empty")}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -350,13 +352,13 @@ export default function AssetListPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Asset Tag</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Name</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Category</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Status</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Assigned To</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Condition</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-500">Warranty</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colTag")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colName")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colCategory")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colStatus")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colAssignedTo")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colCondition")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assets.list.colWarranty")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -372,14 +374,14 @@ export default function AssetListPage() {
                       <td className="px-4 py-3 text-gray-900">{asset.name}</td>
                       <td className="px-4 py-3 text-gray-600">{asset.category_name || "-"}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_COLORS[asset.status] || "bg-gray-100"}`}>
-                          {asset.status.replace(/_/g, " ")}
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[asset.status] || "bg-gray-100"}`}>
+                          {t(`assets.list.status.${asset.status}`, { defaultValue: asset.status.replace(/_/g, " ") })}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{asset.assigned_to_name || "-"}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-gray-100"}`}>
-                          {asset.condition_status}
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${CONDITION_COLORS[asset.condition_status] || "bg-gray-100"}`}>
+                          {t(`assets.list.condition.${asset.condition_status}`, { defaultValue: asset.condition_status })}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -406,7 +408,7 @@ export default function AssetListPage() {
                   only "Page N of M (T total)" was rendered, so admins couldn't
                   tell how many rows were in view. */}
               <p className="text-sm text-gray-500">
-                Showing {assets.length} of {meta.total} assets &middot; Page {meta.page} of {meta.total_pages}
+                {t("assets.list.showing", { shown: assets.length, total: meta.total, page: meta.page, total_pages: meta.total_pages })}
               </p>
               <div className="flex gap-2">
                 <button
@@ -434,7 +436,7 @@ export default function AssetListPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Add New Asset</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("assets.list.addModalTitle")}</h2>
               <button onClick={() => setShowForm(false)} className="p-1 rounded hover:bg-gray-100">
                 <X className="h-5 w-5 text-gray-400" />
               </button>
@@ -442,31 +444,31 @@ export default function AssetListPage() {
             <form onSubmit={handleCreate} className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldName")} *</label>
                   <input
                     type="text"
                     required
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="e.g. MacBook Pro 14"
+                    placeholder={t("assets.list.namePlaceholder")}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldCategory")}</label>
                   <select
                     value={formCategoryId}
                     onChange={(e) => setFormCategoryId(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="">Select category</option>
+                    <option value="">{t("assets.list.selectCategory")}</option>
                     {(categories || []).map((c: any) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldSerialNumber")}</label>
                   <input
                     type="text"
                     value={formSerialNumber}
@@ -475,7 +477,7 @@ export default function AssetListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldBrand")}</label>
                   <input
                     type="text"
                     value={formBrand}
@@ -484,7 +486,7 @@ export default function AssetListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldModel")}</label>
                   <input
                     type="text"
                     value={formModel}
@@ -493,19 +495,19 @@ export default function AssetListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldCondition")}</label>
                   <select
                     value={formCondition}
                     onChange={(e) => setFormCondition(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     {CONDITIONS.map((c) => (
-                      <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                      <option key={c} value={c}>{t(`assets.list.condition.${c}`)}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldPurchaseDate")}</label>
                   <input
                     type="date"
                     value={formPurchaseDate}
@@ -514,7 +516,7 @@ export default function AssetListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Cost</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldPurchaseCost")}</label>
                   <div className="flex items-stretch">
                     <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-sm text-gray-600">
                       ₹ INR
@@ -524,13 +526,13 @@ export default function AssetListPage() {
                       value={formPurchaseCost}
                       onChange={(e) => setFormPurchaseCost(e.target.value)}
                       className="flex-1 min-w-0 px-3 py-2 border border-gray-200 rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                      placeholder="e.g. 150000 (for ₹1,500.00)"
+                      placeholder={t("assets.list.costPlaceholder")}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Enter amount in paise (smallest currency unit).</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("assets.list.costHint")}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Warranty Expiry</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldWarrantyExpiry")}</label>
                   <input
                     type="date"
                     value={formWarrantyExpiry}
@@ -540,18 +542,18 @@ export default function AssetListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldLocation")}</label>
                   <input
                     type="text"
                     value={formLocation}
                     onChange={(e) => setFormLocation(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    placeholder="e.g. Floor 3, Rack B"
+                    placeholder={t("assets.list.locationPlaceholder")}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldDescription")}</label>
                 <textarea
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
@@ -560,7 +562,7 @@ export default function AssetListPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assets.list.fieldNotes")}</label>
                 <textarea
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
@@ -574,19 +576,19 @@ export default function AssetListPage() {
                   onClick={() => setShowForm(false)}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("assets.list.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={createAsset.isPending}
                   className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
                 >
-                  {createAsset.isPending ? "Creating..." : "Create Asset"}
+                  {createAsset.isPending ? t("assets.list.creating") : t("assets.list.create")}
                 </button>
               </div>
               {createAsset.isError && (
                 <p className="text-sm text-red-600">
-                  {(createAsset.error as any)?.response?.data?.error?.message || "Failed to create asset"}
+                  {(createAsset.error as any)?.response?.data?.error?.message || t("assets.list.createFailed")}
                 </p>
               )}
             </form>
