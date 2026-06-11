@@ -17,6 +17,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
+import { sanitizePlainText as cleanReason } from "../../utils/sanitize-html.js";
 import type { LeaveBalance } from "@empcloud/shared";
 import {
   type AccrualType,
@@ -473,7 +474,7 @@ export async function overrideBalance(
   if (!before) throw new NotFoundError("Leave balance");
 
   const updates: any = {
-    override_reason: data.reason,
+    override_reason: cleanReason(data.reason),
     overridden_by: actingUserId,
     overridden_at: new Date(),
     updated_at: new Date(),
@@ -550,7 +551,7 @@ export async function bulkOverrideBalance(
         .where({ id: existing.id })
         .update({
           extra_allocated: newExtra,
-          override_reason: data.reason,
+          override_reason: cleanReason(data.reason),
           overridden_by: actingUserId,
           overridden_at: new Date(),
           balance: Math.max(
@@ -575,7 +576,7 @@ export async function bulkOverrideBalance(
         ),
         period_used: 0,
         period_key: periodInfo.periodKey,
-        override_reason: data.reason,
+        override_reason: cleanReason(data.reason),
         overridden_by: actingUserId,
         overridden_at: new Date(),
         created_at: new Date(),

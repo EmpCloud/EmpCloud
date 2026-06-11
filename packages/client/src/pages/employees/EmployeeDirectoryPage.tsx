@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
 import CsvImportUsersModal from "@/components/CsvImportUsersModal";
 import { showToast } from "@/components/ui/Toast";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import CustomRolesField from "@/components/employees/CustomRolesField";
 import * as XLSX from "xlsx";
@@ -272,6 +273,10 @@ export default function EmployeeDirectoryPage() {
   // sitting in the directory. Activated users are left alone — admin
   // must use the per-row delete on the directory itself if they want
   // to remove an active account.
+  // Confirm-cancel dialog state (replaces window.confirm). Holds the
+  // invitation awaiting confirmation so the dialog can show its email.
+  const [cancelInviteTarget, setCancelInviteTarget] = useState<{ id: number; email: string } | null>(null);
+
   const cancelInvitation = useMutation({
     mutationFn: (invitationId: number) =>
       api.delete(`/users/invitations/${invitationId}`).then((r) => r.data.data as { email: string; user_deleted: boolean }),
@@ -284,6 +289,7 @@ export default function EmployeeDirectoryPage() {
       );
       qc.invalidateQueries({ queryKey: ["pending-invitations"] });
       qc.invalidateQueries({ queryKey: ["employee-directory"] });
+      setCancelInviteTarget(null);
     },
     onError: (err: any) => {
       showToast(
@@ -830,13 +836,7 @@ export default function EmployeeDirectoryPage() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => {
-                            const ok = window.confirm(
-                              `Cancel the invitation to ${inv.email}?\n\n` +
-                                "If they haven't set a password yet, their account will also be removed from the directory. Active accounts are left alone.",
-                            );
-                            if (ok) cancelInvitation.mutate(inv.id);
-                          }}
+                          onClick={() => setCancelInviteTarget({ id: inv.id, email: inv.email })}
                           disabled={
                             cancelInvitation.isPending && cancelInvitation.variables === inv.id
                           }
@@ -1679,6 +1679,18 @@ export default function EmployeeDirectoryPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={cancelInviteTarget !== null}
+        title={cancelInviteTarget ? `Cancel the invitation to ${cancelInviteTarget.email}?` : "Cancel invitation?"}
+        description="If they haven't set a password yet, their account will also be removed from the directory. Active accounts are left alone."
+        confirmText="Cancel invitation"
+        cancelText="Keep invitation"
+        variant="danger"
+        loading={cancelInvitation.isPending}
+        onConfirm={() => cancelInviteTarget && cancelInvitation.mutate(cancelInviteTarget.id)}
+        onCancel={() => setCancelInviteTarget(null)}
+      />
     </div>
   );
 }

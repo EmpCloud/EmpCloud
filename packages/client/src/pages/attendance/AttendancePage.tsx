@@ -20,6 +20,8 @@ import {
   Monitor,
 } from "lucide-react";
 import { useAttendancePolicy } from "@/lib/use-attendance-policy";
+import { showToast } from "@/components/ui/Toast";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 // Mirrors the admin dashboard's punch-timeline shape so the drill-down here
 // renders identically. The records/:id/punches endpoint is shared.
@@ -90,7 +92,10 @@ export default function AttendancePage() {
   const myRegRequests: any[] = regHistoryData?.data || [];
 
   const onAttendanceError = (err: any) =>
-    alert(err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.");
+    showToast(
+      "error",
+      err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.",
+    );
   const checkIn = useMutation({
     mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
     onSuccess: () => {
@@ -149,7 +154,10 @@ export default function AttendancePage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["my-regularizations"] });
       qc.invalidateQueries({ queryKey: ["attendance-history"] });
+      setDeleteRegId(null);
     },
+    onError: (err: any) =>
+      showToast("error", err?.response?.data?.error?.message ?? "Failed to delete request."),
   });
 
   const setRegField = (key: keyof typeof regForm, value: string) =>
@@ -232,6 +240,9 @@ export default function AttendancePage() {
   // Mirrors the admin dashboard's behaviour so My Attendance feels consistent.
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [detailRecord, setDetailRecord] = useState<any | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm for deleting a
+  // pending regularization request). Holds the id awaiting confirmation.
+  const [deleteRegId, setDeleteRegId] = useState<number | null>(null);
 
   const hasCheckedIn = !!todayRecord?.check_in;
   const hasCheckedOut = !!todayRecord?.check_out;
@@ -489,11 +500,7 @@ export default function AttendancePage() {
                         {r.status === "pending" && (
                           <button
                             type="button"
-                            onClick={() => {
-                              if (window.confirm("Delete this pending regularization request?")) {
-                                deleteRegularization.mutate(r.id);
-                              }
-                            }}
+                            onClick={() => setDeleteRegId(r.id)}
                             disabled={deleteRegularization.isPending}
                             className="inline-flex items-center justify-center p-1.5 rounded text-red-600 hover:bg-red-50 disabled:opacity-50"
                             aria-label="Delete pending request"
@@ -671,6 +678,17 @@ export default function AttendancePage() {
           onClose={() => setDetailRecord(null)}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteRegId !== null}
+        title="Delete regularization request?"
+        description="This pending regularization request will be permanently removed. This cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteRegularization.isPending}
+        onConfirm={() => deleteRegId !== null && deleteRegularization.mutate(deleteRegId)}
+        onCancel={() => setDeleteRegId(null)}
+      />
     </div>
   );
 }

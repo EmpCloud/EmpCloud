@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   X,
 } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
 
 // --- Hooks ---
 
@@ -328,7 +329,7 @@ export default function MyDocumentsPage() {
                           try {
                             await downloadDocument(doc.id, doc.name);
                           } catch {
-                            alert("Failed to download document.");
+                            showToast("error", "Failed to download document.");
                           }
                         }}
                         className="text-xs text-brand-600 hover:text-brand-800 font-medium"

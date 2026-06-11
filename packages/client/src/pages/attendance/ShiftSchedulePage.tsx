@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const ROLE_OPTIONS: { value: string; label: string }[] = [
   { value: "employee", label: "Employee" },
@@ -145,6 +146,8 @@ export default function ShiftSchedulePage() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("schedule");
   const [monthOffset, setMonthOffset] = useState(0);
+  // Confirm-delete dialog state (replaces window.confirm for removing a shift assignment).
+  const [removeAssignmentId, setRemoveAssignmentId] = useState<number | null>(null);
   const [showBulkAssign, setShowBulkAssign] = useState(false);
   const [showAssign, setShowAssign] = useState<{ userId: number; date: string } | null>(null);
 
@@ -286,6 +289,7 @@ export default function ShiftSchedulePage() {
     mutationFn: (id: number) => api.delete(`/attendance/shifts/assignments/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["shift-schedule"] });
+      setRemoveAssignmentId(null);
     },
   });
 
@@ -1104,11 +1108,7 @@ export default function ShiftSchedulePage() {
                                     <Pencil className="h-3 w-3" />
                                   </button>
                                   <button
-                                    onClick={() => {
-                                      if (confirm(t('attendance.shiftSchedule.team.removeConfirm'))) {
-                                        deleteAssignment.mutate(assignment.assignment_id);
-                                      }
-                                    }}
+                                    onClick={() => setRemoveAssignmentId(assignment.assignment_id)}
                                     className="text-gray-400 hover:text-red-600 p-0.5"
                                     title={t('attendance.shiftSchedule.team.removeTooltip')}
                                   >
@@ -1288,6 +1288,16 @@ export default function ShiftSchedulePage() {
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={removeAssignmentId !== null}
+        title={t('attendance.shiftSchedule.team.removeConfirm')}
+        confirmText={t('common.remove', 'Remove')}
+        variant="danger"
+        loading={deleteAssignment.isPending}
+        onConfirm={() => removeAssignmentId !== null && deleteAssignment.mutate(removeAssignmentId)}
+        onCancel={() => setRemoveAssignmentId(null)}
+      />
     </div>
   );
 }
