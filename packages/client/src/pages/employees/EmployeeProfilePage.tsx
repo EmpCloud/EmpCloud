@@ -20,7 +20,9 @@ import {
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 import CustomRolesField from "@/components/employees/CustomRolesField";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -42,17 +44,30 @@ export default function EmployeeProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>("personal");
   const [editing, setEditing] = useState(false);
   const currentUser = useAuthStore((s) => s.user);
+  const { has } = usePermissions();
 
   const isOwnProfile = currentUser?.id === userId;
   const isHR = currentUser ? HR_ROLES.includes(currentUser.role) : false;
-  const canEdit = isOwnProfile || isHR;
+
+  // RBAC: viewing / editing is gated by permissions, not identity alone.
+  // Own profile → employees:view / employees:edit_own; anyone else → the
+  // org-wide employees:view_all|view_team / employees:edit_all. Previously
+  // `isOwnProfile || isHR` let an employee keep viewing and editing their
+  // own profile even after those permissions were revoked. super_admin
+  // bypasses inside usePermissions.
+  const canViewProfile = isOwnProfile
+    ? has("employees:view", "employees:view_all", "employees:view_team")
+    : has("employees:view_all", "employees:view_team");
+  const canEdit = isOwnProfile
+    ? has("employees:edit_own", "employees:edit_all")
+    : has("employees:edit_all");
 
   const isValidId = !!id && !isNaN(userId);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["employee-profile", userId],
     queryFn: () => api.get(`/employees/${userId}/profile`).then((r) => r.data.data),
-    enabled: isValidId,
+    enabled: isValidId && canViewProfile,
   });
 
   const { data: education } = useQuery({
@@ -125,7 +140,7 @@ export default function EmployeeProfilePage() {
 
   // Load photo via authenticated API and convert to blob URL
   useEffect(() => {
-    if (!isValidId) return;
+    if (!isValidId || !canViewProfile) return;
     let revoked = false;
     api
       .get(`/employees/${userId}/photo`, { responseType: "blob" })
@@ -141,7 +156,7 @@ export default function EmployeeProfilePage() {
     return () => {
       revoked = true;
     };
-  }, [userId, isValidId]);
+  }, [userId, isValidId, canViewProfile]);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -173,9 +188,11 @@ export default function EmployeeProfilePage() {
   // server DELETE endpoint, drops the local objectURL, and busts the shared
   // photo query so every avatar across the app reverts to initials.
   const [removingPhoto, setRemovingPhoto] = useState(false);
+  // Confirm-dialog state (replaces window.confirm for removing the profile photo).
+  const [showRemovePhoto, setShowRemovePhoto] = useState(false);
   const handlePhotoRemove = async () => {
     if (!photoUrl || removingPhoto) return;
-    if (!confirm("Remove your profile photo? You'll show initials again.")) return;
+    setShowRemovePhoto(false);
     setRemovingPhoto(true);
     try {
       await api.delete(`/employees/${userId}/photo`);
@@ -199,6 +216,21 @@ export default function EmployeeProfilePage() {
         <p className="text-sm text-gray-500 mb-4">The employee ID in the URL is missing or invalid.</p>
         <Link to="/employees" className="text-brand-600 text-sm font-medium hover:text-brand-700">
           &larr; Back to Employee Directory
+        </Link>
+      </div>
+    );
+  }
+
+  if (!canViewProfile) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <User className="h-12 w-12 text-gray-300 mb-4" />
+        <h2 className="text-lg font-semibold text-gray-700 mb-1">Access denied</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          You don't have permission to view this profile.
+        </p>
+        <Link to="/" className="text-brand-600 text-sm font-medium hover:text-brand-700">
+          &larr; Back to Dashboard
         </Link>
       </div>
     );
@@ -310,7 +342,7 @@ export default function EmployeeProfilePage() {
                   {photoEditable && photoUrl && (
                     <button
                       type="button"
-                      onClick={handlePhotoRemove}
+                      onClick={() => setShowRemovePhoto(true)}
                       disabled={removingPhoto}
                       className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
                     >
@@ -389,6 +421,17 @@ export default function EmployeeProfilePage() {
         {activeTab === "addresses" && <AddressesTab data={addresses} userId={userId} canEdit={canEdit} />}
         {activeTab === "custom" && <CustomFieldsTab entityId={userId} />}
       </div>
+
+      <ConfirmDialog
+        open={showRemovePhoto}
+        title="Remove your profile photo?"
+        description="You'll show initials again."
+        confirmText="Remove photo"
+        variant="danger"
+        loading={removingPhoto}
+        onConfirm={handlePhotoRemove}
+        onCancel={() => setShowRemovePhoto(false)}
+      />
     </div>
   );
 }
@@ -813,11 +856,16 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
 // Read-only chip list of the user's assigned custom roles. Renders nothing
 // when there are no custom roles so the summary stays compact.
 function CustomRolesReadRow({ userId }: { userId?: number }) {
+  // Only viewers with roles:view / roles:manage can read a user's custom-role
+  // assignments. Without this gate the query fired for every profile viewer
+  // (e.g. an employee on their own profile) and 403'd on /roles/users/:id.
+  const { has } = usePermissions();
+  const canReadRoles = has("roles:view", "roles:manage");
   const { data = [] } = useQuery<any[]>({
     queryKey: ["user-custom-roles", userId],
     queryFn: () =>
       api.get(`/roles/users/${userId}`).then((r) => r.data?.data ?? []),
-    enabled: !!userId,
+    enabled: !!userId && canReadRoles,
   });
   if (!Array.isArray(data) || data.length === 0) return null;
   return (
@@ -1158,6 +1206,8 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const invalidate = () =>
@@ -1189,7 +1239,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/education/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1242,8 +1292,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this education record?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -1383,6 +1432,16 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this education record?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1404,6 +1463,8 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
     description: "",
   });
   const [error, setError] = useState<string | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["employee-experience", userId] });
@@ -1434,7 +1495,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/experience/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1476,8 +1537,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this experience record?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -1629,6 +1689,16 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this experience record?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1650,6 +1720,8 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
     nominee_percentage: "",
   });
   const [error, setError] = useState<string | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["employee-dependents", userId] });
@@ -1683,7 +1755,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/dependents/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1725,8 +1797,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this dependent?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -1895,6 +1966,16 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
           </table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this dependent?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1917,6 +1998,8 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
     zipcode: "",
   });
   const [error, setError] = useState<string | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["employee-addresses", userId] });
@@ -1948,7 +2031,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/addresses/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1991,8 +2074,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this address?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -2138,6 +2220,16 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this address?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }

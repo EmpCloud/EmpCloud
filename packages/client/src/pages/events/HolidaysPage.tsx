@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { PartyPopper, Plus, Trash2, CalendarDays } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -13,6 +14,7 @@ interface Holiday {
   start_date: string;
   end_date: string | null;
   is_all_day: boolean;
+  is_mandatory: boolean | number;
   status: string;
 }
 
@@ -59,8 +61,21 @@ export default function HolidaysPage() {
   const user = useAuthStore((s) => s.user);
   const isHR = user ? HR_ROLES.includes(user.role) : false;
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", start_date: "", end_date: "" });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    is_mandatory: false,
+  });
   const [addError, setAddError] = useState("");
+  // ID of the row currently saving its mandatory toggle, to disable repeat
+  // clicks and show a subtle spinner. Indexed by event id so toggling row A
+  // doesn't grey out row B.
+  const [savingMandatoryId, setSavingMandatoryId] = useState<number | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the holiday
+  // awaiting confirmation so the dialog can show its title.
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["holidays"],
@@ -73,7 +88,13 @@ export default function HolidaysPage() {
   const holidays: Holiday[] = data?.data || [];
 
   const createHoliday = useMutation({
-    mutationFn: (data: { title: string; description: string; start_date: string; end_date: string }) =>
+    mutationFn: (data: {
+      title: string;
+      description: string;
+      start_date: string;
+      end_date: string;
+      is_mandatory: boolean;
+    }) =>
       api
         .post("/events", {
           title: data.title,
@@ -91,13 +112,13 @@ export default function HolidaysPage() {
               : undefined,
           is_all_day: true,
           target_type: "all",
-          is_mandatory: false,
+          is_mandatory: data.is_mandatory,
         })
         .then((r) => r.data.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["holidays"] });
       setShowAdd(false);
-      setForm({ title: "", description: "", start_date: "", end_date: "" });
+      setForm({ title: "", description: "", start_date: "", end_date: "", is_mandatory: false });
       setAddError("");
     },
     onError: (err: any) => {
@@ -105,9 +126,24 @@ export default function HolidaysPage() {
     },
   });
 
+  // Per-row mandatory toggle. HR clicks the badge to flip is_mandatory on
+  // a single holiday — used for restricted/optional holidays (Bakrid, Holi,
+  // Onam) where the office stays open and a present employee should remain
+  // P, not auto-classify to HOT.
+  const updateMandatory = useMutation({
+    mutationFn: ({ id, is_mandatory }: { id: number; is_mandatory: boolean }) =>
+      api.put(`/events/${id}`, { is_mandatory }).then((r) => r.data.data),
+    onMutate: ({ id }) => setSavingMandatoryId(id),
+    onSettled: () => setSavingMandatoryId(null),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["holidays"] }),
+  });
+
   const deleteHoliday = useMutation({
     mutationFn: (id: number) => api.delete(`/events/${id}`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["holidays"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["holidays"] });
+      setDeleteTarget(null);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -208,12 +244,34 @@ export default function HolidaysPage() {
               />
             </div>
           </div>
+          {/* Mandatory toggle. Drives the auto-HOT rule in the attendance
+              grid: a present employee on a MANDATORY holiday auto-shifts to
+              HOT (Holiday OT); on an OPTIONAL holiday (Bakrid, Holi, Onam)
+              they stay Present, since the office is open and they chose to
+              work. Defaults to optional so a new holiday doesn't silently
+              flip everyone's attendance. */}
+          <div className="mt-4">
+            <label className="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.is_mandatory}
+                onChange={(e) => setForm({ ...form, is_mandatory: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+              />
+              <span>
+                <span className="font-medium">Mandatory holiday</span>
+                <span className="text-gray-500 ml-1">
+                  &mdash; office closed; present employees auto-marked as Holiday OT
+                </span>
+              </span>
+            </label>
+          </div>
           <div className="flex justify-end gap-3 mt-4">
             <button
               type="button"
               onClick={() => {
                 setShowAdd(false);
-                setForm({ title: "", description: "", start_date: "", end_date: "" });
+                setForm({ title: "", description: "", start_date: "", end_date: "", is_mandatory: false });
                 setAddError("");
               }}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -288,9 +346,40 @@ export default function HolidaysPage() {
                   {isPast(h.start_date) && (
                     <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Past</span>
                   )}
+                  {(() => {
+                    const mandatory = !!Number(h.is_mandatory);
+                    const saving = savingMandatoryId === h.id;
+                    // HR can click to toggle. Non-HR sees a plain badge.
+                    const baseCls =
+                      "text-[10px] uppercase tracking-wide font-medium px-2 py-0.5 rounded-full border";
+                    const colorCls = mandatory
+                      ? "bg-rose-50 text-rose-700 border-rose-200"
+                      : "bg-amber-50 text-amber-700 border-amber-200";
+                    const label = mandatory ? "Mandatory" : "Optional";
+                    if (!isHR) {
+                      return <span className={`${baseCls} ${colorCls}`}>{label}</span>;
+                    }
+                    return (
+                      <button
+                        type="button"
+                        disabled={saving}
+                        onClick={() =>
+                          updateMandatory.mutate({ id: h.id, is_mandatory: !mandatory })
+                        }
+                        className={`${baseCls} ${colorCls} hover:opacity-80 disabled:opacity-50 cursor-pointer`}
+                        title={
+                          mandatory
+                            ? "Mandatory holiday — present employees auto-marked HOT. Click to make optional."
+                            : "Optional holiday — present employees stay P. Click to make mandatory."
+                        }
+                      >
+                        {saving ? "..." : label}
+                      </button>
+                    );
+                  })()}
                   {isHR && (
                     <button
-                      onClick={() => { if (confirm(`Delete holiday "${h.title}"?`)) deleteHoliday.mutate(h.id); }}
+                      onClick={() => setDeleteTarget({ id: h.id, title: h.title })}
                       className="text-gray-400 hover:text-red-500 p-1"
                       title="Delete holiday"
                     >
@@ -303,6 +392,16 @@ export default function HolidaysPage() {
           </ul>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title={deleteTarget ? `Delete holiday "${deleteTarget.title}"?` : "Delete holiday?"}
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteHoliday.isPending}
+        onConfirm={() => deleteTarget && deleteHoliday.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

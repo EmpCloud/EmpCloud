@@ -17,6 +17,7 @@ import {
   Download,
   ChevronDown,
 } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
 
 const STATUS_COLORS: Record<string, string> = {
   available: "bg-green-100 text-green-700",
@@ -136,7 +137,7 @@ export default function AssetListPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formPurchaseDate && formWarrantyExpiry && formWarrantyExpiry < formPurchaseDate) {
-      alert(t("assets.list.warrantyBeforePurchase"));
+      showToast("error", t("assets.list.warrantyBeforePurchase"));
       return;
     }
     await createAsset.mutateAsync({
@@ -242,7 +243,7 @@ export default function AssetListPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err: any) {
-      alert(err?.response?.data?.error?.message || t("assets.list.exportPdfFailed"));
+      showToast("error", err?.response?.data?.error?.message || t("assets.list.exportPdfFailed"));
     }
   }
 

@@ -11,6 +11,7 @@ import {
   Eye,
 } from "lucide-react";
 import api from "@/api/client";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const ENTITY_TYPES = [
   { key: "employee", label: "Employee" },
@@ -80,6 +81,9 @@ export default function CustomFieldsSettingsPage() {
   const [optionInput, setOptionInput] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const formRef = useRef<HTMLDivElement | null>(null);
+  // Confirm-deactivate dialog state (replaces window.confirm). Holds the
+  // field awaiting confirmation so the dialog can show its name.
+  const [deleteFieldTarget, setDeleteFieldTarget] = useState<{ id: number; field_name: string } | null>(null);
 
   // #1491 — After the create/edit form is rendered, scroll it into view so the
   // user doesn't have to manually scroll up. Previously the form rendered above
@@ -132,6 +136,7 @@ export default function CustomFieldsSettingsPage() {
       queryClient.invalidateQueries({
         queryKey: ["custom-field-definitions"],
       });
+      setDeleteFieldTarget(null);
     },
   });
 
@@ -726,15 +731,7 @@ export default function CustomFieldsSettingsPage() {
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  `Deactivate field "${field.field_name}"? Existing values will be preserved.`
-                                )
-                              ) {
-                                deleteMutation.mutate(field.id);
-                              }
-                            }}
+                            onClick={() => setDeleteFieldTarget({ id: field.id, field_name: field.field_name })}
                             aria-label="Delete field"
                             className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
@@ -750,6 +747,17 @@ export default function CustomFieldsSettingsPage() {
           </div>
         ))
       )}
+
+      <ConfirmDialog
+        open={deleteFieldTarget !== null}
+        title={deleteFieldTarget ? `Deactivate field "${deleteFieldTarget.field_name}"?` : "Deactivate field?"}
+        description="Existing values will be preserved."
+        confirmText="Deactivate"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteFieldTarget && deleteMutation.mutate(deleteFieldTarget.id)}
+        onCancel={() => setDeleteFieldTarget(null)}
+      />
     </div>
   );
 }

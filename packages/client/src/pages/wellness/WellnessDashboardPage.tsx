@@ -16,6 +16,7 @@ import {
   Plus,
   X,
 } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
 
 const MOOD_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   great: { label: "Great", color: "text-green-600", icon: Smile },
@@ -74,7 +75,7 @@ export default function WellnessDashboardPage() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.start_date && form.end_date && form.end_date < form.start_date) {
-      alert("End date cannot be before the start date.");
+      showToast("error", "End date cannot be before the start date.");
       return;
     }
     createMutation.mutate({

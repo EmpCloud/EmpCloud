@@ -440,7 +440,7 @@
     "moduleOffline": "Module offline",
     "yourModules": "Your Modules",
     "coreHRMS": "Core HRMS",
-    "coreHRMSName": "EMP Cloud \u2014 Core HRMS",
+    "coreHRMSName": "EMP Cloud — Core HRMS",
     "coreHRMSDescription": "Your complete HR management platform. Manage employee profiles, track attendance with shifts and geo-fencing, handle leave applications with multi-level approvals, organize employee documents with expiry tracking, publish company-wide announcements, and manage policies with acknowledgment tracking. All included free with your EMP Cloud subscription.",
     "includedFree": "Included Free",
     "noModulesYet": "No paid modules yet. Core HRMS is active above.",
@@ -639,7 +639,6 @@
       "datesHeader": "Dates",
       "daysHeader": "Days",
       "reasonHeader": "Reason",
-      "actionsHeader": "Actions",
       "statusHeader": "Status",
       "userFallback": "User #{{id}}",
       "remarksPlaceholder": "Remarks (optional)",
@@ -753,7 +752,7 @@
     "clearFilters": "Clear Filters",
     "exportReport": "Export Report",
     "allDepartments": "All Departments",
-    "recordsTitle": "Attendance Records \u2014 {{month}} {{year}}",
+    "recordsTitle": "Attendance Records — {{month}} {{year}}",
     "filteredSuffix": "(Filtered)",
     "tableWorked": "Worked",
     "noRecords": "No attendance records found for the selected filters",
@@ -763,7 +762,7 @@
     "statusCheckedIn": "Checked In",
     "statusHalfDay": "Half Day",
     "breakdown": {
-      "title": "Attendance Details \u2014 {{date}}",
+      "title": "Attendance Details — {{date}}",
       "todayFallback": "Today",
       "tabAll": "All",
       "noEmployeesInCategory": "No employees in this category.",
@@ -876,7 +875,8 @@
         "reason": "Reason",
         "status": "Status",
         "actions": "Actions"
-      }
+      },
+      "rejectionPlaceholder": "e.g. Insufficient justification, dates do not match records"
     },
     "shiftSchedule": {
       "title": "Shift Schedule",
@@ -941,17 +941,17 @@
         "statusRejected": "Rejected"
       },
       "search": {
-      "placeholder": "Search by name or code...",
-      "show": "Show",
-      "entries": "Entries",
-      "showingRange": "Showing {{from}} to {{to}} of {{total}}",
-      "noResults": "No employees match your search."
-    }
+        "placeholder": "Search by name or code...",
+        "show": "Show",
+        "entries": "Entries",
+        "showingRange": "Showing {{from}} to {{to}} of {{total}}",
+        "noResults": "No employees match your search."
+      }
     }
   },
   "manager": {
     "title": "My Team",
-    "subtitle": "Manager dashboard \u2014 overview of your direct reports.",
+    "subtitle": "Manager dashboard — overview of your direct reports.",
     "stats": {
       "teamSize": "Team Size",
       "presentToday": "Present Today",
@@ -1094,10 +1094,10 @@
       "subtitle": "Manage who can do what. System roles ship with sensible defaults; create custom roles for finer control.",
       "newCustomRole": "New custom role",
       "systemRolesTitle": "System roles",
-      "systemRolesSubtitle": "Built-in templates. Editable per-org \u2014 your edits don't affect other organizations.",
+      "systemRolesSubtitle": "Built-in templates. Editable per-org — your edits don't affect other organizations.",
       "customRolesTitle": "Custom roles",
       "customRolesSubtitle": "Created by your organization. Assign to users on each user's profile page.",
-      "loadingRoles": "Loading roles\u2026",
+      "loadingRoles": "Loading roles…",
       "noSystemRoles": "No system roles found. Run the seed migration?",
       "noCustomRolesPrefix": "No custom roles yet.",
       "noCustomRolesCreateOne": "Create one",
@@ -1115,12 +1115,12 @@
       "editRoleTitle": "Edit role",
       "permissionsSelected": "{{selected}} of {{total}} permissions selected",
       "roleNameLabel": "Role name",
-      "roleNameLocked": "(system role \u2014 name locked)",
+      "roleNameLocked": "(system role — name locked)",
       "roleNamePlaceholder": "e.g. Payroll Approver",
       "descriptionLabel": "Description",
       "descriptionOptional": "(optional)",
-      "descriptionPlaceholder": "What this role is for\u2026",
-      "searchPermissionsPlaceholder": "Search permissions by name, key, or description\u2026",
+      "descriptionPlaceholder": "What this role is for…",
+      "searchPermissionsPlaceholder": "Search permissions by name, key, or description…",
       "noPermissionsMatch": "No permissions match \"{{query}}\".",
       "createRoleButton": "Create role",
       "saveChanges": "Save changes",
@@ -1133,8 +1133,8 @@
       "requestFailed": "Request failed"
     },
     "descriptions": {
-      "employee": "Self-service only \u2014 own profile, attendance, leave, payslip.",
-      "manager": "Team-scoped access \u2014 view and approve for direct reports.",
+      "employee": "Self-service only — own profile, attendance, leave, payslip.",
+      "manager": "Team-scoped access — view and approve for direct reports.",
       "hr_admin": "Full HR access (employees, payroll, leave, etc.) excluding billing and roles management.",
       "org_admin": "Full org access including billing, subscriptions, and roles management.",
       "super_admin": "Platform-wide access across all organizations."
@@ -1171,7 +1171,7 @@
       "removing": "Removing..."
     },
     "pagination": {
-      "showing": "Showing {{from}}\u2013{{to}} of {{total}} employees",
+      "showing": "Showing {{from}}–{{to}} of {{total}} employees",
       "previous": "Previous",
       "next": "Next"
     },
@@ -1189,8 +1189,8 @@
     "title": "Module Marketplace",
     "subtitle": "Browse and subscribe to EMP modules for your organization.",
     "aiBannerTitle": "All modules include EMP AI",
-    "aiBannerDesc": "Intelligent HR assistant powered by AI \u2014 ask questions, get insights, automate tasks across all your modules.",
-    "coreIncludedFree": "Core \u2014 Included Free",
+    "aiBannerDesc": "Intelligent HR assistant powered by AI — ask questions, get insights, automate tasks across all your modules.",
+    "coreIncludedFree": "Core — Included Free",
     "freeTier": "Free tier",
     "comingSoon": "Coming soon",
     "seatsAssigned": "{{used}} of {{total}} seats assigned",

@@ -6,6 +6,29 @@ import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
 import type { CreateShiftInput, BulkAssignShiftInput, ShiftSwapRequestInput, UpdateShiftAssignmentInput } from "@empcloud/shared";
 
+// BUG-09: a shift's is_night_shift flag could disagree with its hours — e.g.
+// "General Shift" 11:00-20:00 was flagged night, which is misleading in the UI
+// (and risks a wrong Night Allowance payout if the structure has one). A shift
+// is a TRUE night shift only when its hours cross midnight (start_time later
+// in the day than end_time, e.g. 22:00 -> 06:00). When the caller's flag
+// contradicts the hours, trust the hours and auto-correct, so the stored flag
+// always matches reality.
+function deriveNightFromHours(
+  start: string | undefined,
+  end: string | undefined,
+  requested: boolean,
+): boolean {
+  if (!start || !end) return requested; // can't derive — keep caller's intent
+  // Compare HH:MM lexicographically (zero-padded 24h strings sort correctly).
+  const s = String(start).slice(0, 5);
+  const e = String(end).slice(0, 5);
+  if (s === e) return requested; // 00:00-00:00 placeholder etc. — don't override
+  const crossesMidnight = s > e; // e.g. "22:00" > "06:00"
+  // Hours cross midnight  -> it IS a night shift regardless of the flag.
+  // Hours stay within one day -> it is NOT a night shift regardless of the flag.
+  return crossesMidnight;
+}
+
 export async function createShift(orgId: number, data: CreateShiftInput) {
   const db = getDB();
 
@@ -24,7 +47,11 @@ export async function createShift(orgId: number, data: CreateShiftInput) {
     break_minutes: data.break_minutes ?? 0,
     grace_minutes_late: data.grace_minutes_late ?? 0,
     grace_minutes_early: data.grace_minutes_early ?? 0,
-    is_night_shift: data.is_night_shift ?? false,
+    is_night_shift: deriveNightFromHours(
+      data.start_time,
+      data.end_time,
+      data.is_night_shift ?? false,
+    ),
     is_default: data.is_default ?? false,
     working_days: data.working_days ?? "1,2,3,4,5",
     half_days: data.half_days ?? "",
@@ -58,7 +85,21 @@ export async function updateShift(orgId: number, shiftId: number, data: Partial<
       .update({ is_default: false, updated_at: new Date() });
   }
 
-  await db("shifts").where({ id: shiftId }).update({ ...data, updated_at: new Date() });
+  // Re-derive the night flag from the (possibly updated) hours so a PATCH that
+  // changes the times — or sets a contradictory flag — keeps is_night_shift
+  // consistent with reality (BUG-09). Use the incoming hours when present,
+  // else the stored ones.
+  const effStart = data.start_time ?? shift.start_time;
+  const effEnd = data.end_time ?? shift.end_time;
+  const correctedNight = deriveNightFromHours(
+    effStart,
+    effEnd,
+    data.is_night_shift ?? !!shift.is_night_shift,
+  );
+
+  await db("shifts")
+    .where({ id: shiftId })
+    .update({ ...data, is_night_shift: correctedNight, updated_at: new Date() });
   return db("shifts").where({ id: shiftId }).first();
 }
 

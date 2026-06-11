@@ -19,6 +19,7 @@ import {
   MessagesSquare,
   BarChart3,
 } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -50,6 +51,10 @@ export default function PostDetailPage() {
   const [replyContent, setReplyContent] = useState("");
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyingToName, setReplyingToName] = useState("");
+  // Confirm-delete dialog state (replaces window.confirm). One holds the
+  // reply id awaiting deletion; the other gates the whole-post delete.
+  const [deleteReplyId, setDeleteReplyId] = useState<number | null>(null);
+  const [showDeletePost, setShowDeletePost] = useState(false);
 
   const { data: postData, isLoading } = useQuery({
     queryKey: ["forum-post", id],
@@ -92,7 +97,10 @@ export default function PostDetailPage() {
 
   const deleteReply = useMutation({
     mutationFn: (replyId: number) => api.delete(`/forum/replies/${replyId}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["forum-post", id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["forum-post", id] });
+      setDeleteReplyId(null);
+    },
   });
 
   const pinPost = useMutation({
@@ -210,9 +218,7 @@ export default function PostDetailPage() {
 
                 {canDeleteReply && (
                   <button
-                    onClick={() => {
-                      if (confirm("Delete this reply?")) deleteReply.mutate(reply.id);
-                    }}
+                    onClick={() => setDeleteReplyId(reply.id)}
                     className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -351,9 +357,7 @@ export default function PostDetailPage() {
 
               {canDelete && (
                 <button
-                  onClick={() => {
-                    if (confirm("Delete this post and all its replies?")) deletePost.mutate();
-                  }}
+                  onClick={() => setShowDeletePost(true)}
                   className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Delete
@@ -432,6 +436,27 @@ export default function PostDetailPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteReplyId !== null}
+        title="Delete this reply?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteReply.isPending}
+        onConfirm={() => deleteReplyId !== null && deleteReply.mutate(deleteReplyId)}
+        onCancel={() => setDeleteReplyId(null)}
+      />
+
+      <ConfirmDialog
+        open={showDeletePost}
+        title="Delete this post and all its replies?"
+        description="This cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deletePost.isPending}
+        onConfirm={() => deletePost.mutate()}
+        onCancel={() => setShowDeletePost(false)}
+      />
     </div>
   );
 }

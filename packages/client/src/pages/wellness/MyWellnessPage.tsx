@@ -15,6 +15,7 @@ import {
   CheckCircle,
   ArrowUpRight,
 } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
 
 const MOOD_EMOJI: Record<string, string> = {
   great: "😄",
@@ -46,6 +47,11 @@ export default function MyWellnessPage() {
   const [showGoalForm, setShowGoalForm] = useState(false);
   // #1458 — filter tab for enrolled programs: active (default) vs completed.
   const [programsTab, setProgramsTab] = useState<"active" | "completed">("active");
+  // Update-progress modal — replaces the native window.prompt() that was used
+  // to collect the increment to add to a goal. `progressTarget` holds the goal
+  // being updated; `progressInput` is the textbox value.
+  const [progressTarget, setProgressTarget] = useState<{ id: number; current_value: number; unit: string } | null>(null);
+  const [progressInput, setProgressInput] = useState("");
   const [goalForm, setGoalForm] = useState({
     title: "",
     goal_type: "exercise",
@@ -95,6 +101,8 @@ export default function MyWellnessPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wellness-goals"] });
       queryClient.invalidateQueries({ queryKey: ["wellness-summary"] });
+      setProgressTarget(null);
+      setProgressInput("");
     },
   });
 
@@ -106,10 +114,20 @@ export default function MyWellnessPage() {
     },
   });
 
+  const confirmProgress = () => {
+    if (!progressTarget) return;
+    const increment = parseInt(progressInput);
+    if (isNaN(increment)) return;
+    updateGoalMutation.mutate({
+      id: progressTarget.id,
+      data: { current_value: progressTarget.current_value + increment },
+    });
+  };
+
   const handleCreateGoal = (e: React.FormEvent) => {
     e.preventDefault();
     if (goalForm.start_date && goalForm.end_date && goalForm.end_date < goalForm.start_date) {
-      alert("End date cannot be before the start date.");
+      showToast("error", "End date cannot be before the start date.");
       return;
     }
     createGoalMutation.mutate({
@@ -281,16 +299,8 @@ export default function MyWellnessPage() {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => {
-                            const increment = prompt(
-                              `Add progress (current: ${goal.current_value} ${goal.unit}):`
-                            );
-                            if (increment) {
-                              const newVal = goal.current_value + parseInt(increment);
-                              updateGoalMutation.mutate({
-                                id: goal.id,
-                                data: { current_value: newVal },
-                              });
-                            }
+                            setProgressInput("");
+                            setProgressTarget({ id: goal.id, current_value: goal.current_value, unit: goal.unit });
                           }}
                           className="text-xs px-2 py-1 bg-brand-50 text-brand-600 rounded hover:bg-brand-100"
                         >
@@ -613,6 +623,51 @@ export default function MyWellnessPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Update-progress modal — replaces the native window.prompt() for
+          collecting the increment to add to a goal. Styled to match the rest
+          of the UI, with a number input, a Cancel, and a Confirm that fires
+          the update. */}
+      {progressTarget !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <ArrowUpRight className="h-5 w-5 text-brand-600" />
+              Update Progress
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Add progress (current: {progressTarget.current_value} {progressTarget.unit}):
+            </p>
+            <input
+              autoFocus
+              type="number"
+              value={progressInput}
+              onChange={(e) => setProgressInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") confirmProgress(); }}
+              placeholder={`Amount to add in ${progressTarget.unit}`}
+              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => { setProgressTarget(null); setProgressInput(""); }}
+                disabled={updateGoalMutation.isPending}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmProgress}
+                disabled={updateGoalMutation.isPending || !progressInput.trim()}
+                className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50"
+              >
+                {updateGoalMutation.isPending ? "Saving..." : "Update"}
+              </button>
+            </div>
           </div>
         </div>
       )}

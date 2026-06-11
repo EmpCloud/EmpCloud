@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
+import { sanitizePlainText as cleanReason } from "../../utils/sanitize-html.js";
 
 interface SubmitRegularizationInput {
   date: string;
@@ -115,7 +116,7 @@ export async function submitRegularization(orgId: number, userId: number, data: 
     original_check_out: attendance?.check_out || null,
     requested_check_in: toTimestamp(data.requested_check_in),
     requested_check_out: toTimestamp(data.requested_check_out),
-    reason: data.reason,
+    reason: cleanReason(data.reason),
     status: "pending",
     created_at: new Date(),
     updated_at: new Date(),
@@ -240,22 +241,57 @@ export async function approveRegularization(orgId: number, regularizationId: num
         });
       }
     } else {
-      // Create new attendance record
-      await trx("attendance_records").insert({
-        organization_id: orgId,
-        user_id: reg.user_id,
-        date: reg.date,
-        check_in: reg.requested_check_in || null,
-        check_out: reg.requested_check_out || null,
-        check_in_source: "manual",
-        check_out_source: reg.requested_check_out ? "manual" : null,
-        status: "present",
-        worked_minutes: reg.requested_check_in && reg.requested_check_out
-          ? Math.round((new Date(reg.requested_check_out).getTime() - new Date(reg.requested_check_in).getTime()) / 60000)
-          : null,
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
+      // Regularization wasn't linked to an attendance row at creation
+      // time -- either because none existed then, or because a parallel
+      // flow (HR cell-edit, auto-stamp on a leave-overlap day, etc.)
+      // wrote one between create and approve. Look it up again now: the
+      // unique key is (organization_id, user_id, date), so a blind insert
+      // would hit ER_DUP_ENTRY and fail the whole approval. If a row
+      // exists, update it the same way we update reg.attendance_id above;
+      // otherwise insert fresh.
+      const workedMinutes = reg.requested_check_in && reg.requested_check_out
+        ? Math.round((new Date(reg.requested_check_out).getTime() - new Date(reg.requested_check_in).getTime()) / 60000)
+        : null;
+      const existing = await trx("attendance_records")
+        .where({ organization_id: orgId, user_id: reg.user_id, date: reg.date })
+        .first();
+      if (existing) {
+        const attendanceUpdates: Record<string, any> = {
+          status: "present",
+          updated_at: new Date(),
+        };
+        if (reg.requested_check_in != null) {
+          attendanceUpdates.check_in = reg.requested_check_in;
+          attendanceUpdates.check_in_source = "manual";
+        }
+        if (reg.requested_check_out != null) {
+          attendanceUpdates.check_out = reg.requested_check_out;
+          attendanceUpdates.check_out_source = "manual";
+        }
+        if (workedMinutes != null) {
+          attendanceUpdates.worked_minutes = workedMinutes;
+        }
+        await trx("attendance_records").where({ id: existing.id }).update(attendanceUpdates);
+        // Backfill the link so the next approval / audit knows which row
+        // this regularization actually touched.
+        await trx("attendance_regularizations").where({ id: regularizationId }).update({
+          attendance_id: existing.id,
+        });
+      } else {
+        await trx("attendance_records").insert({
+          organization_id: orgId,
+          user_id: reg.user_id,
+          date: reg.date,
+          check_in: reg.requested_check_in || null,
+          check_out: reg.requested_check_out || null,
+          check_in_source: "manual",
+          check_out_source: reg.requested_check_out ? "manual" : null,
+          status: "present",
+          worked_minutes: workedMinutes,
+          created_at: new Date(),
+          updated_at: new Date(),
+        });
+      }
     }
   });
 
@@ -284,7 +320,7 @@ export async function rejectRegularization(
     status: "rejected",
     approved_by: approvedBy,
     approved_at: new Date(),
-    rejection_reason: rejectionReason || null,
+    rejection_reason: cleanReason(rejectionReason),
     updated_at: new Date(),
   });
 

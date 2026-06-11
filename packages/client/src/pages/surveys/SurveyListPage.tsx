@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { Link, useSearchParams } from "react-router-dom";
 import { Plus, Trash2, Play, Square, Eye, Edit } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const STATUS_BADGE: Record<string, string> = {
   draft: "bg-gray-100 text-gray-600",
@@ -34,6 +35,8 @@ export default function SurveyListPage() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [typeFilter, setTypeFilter] = useState("");
+  // Confirm-delete dialog state (replaces window.confirm for deleting a draft).
+  const [deleteSurveyId, setDeleteSurveyId] = useState<number | null>(null);
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -69,6 +72,7 @@ export default function SurveyListPage() {
     mutationFn: (id: number) => api.delete(`/surveys/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["surveys"] });
+      setDeleteSurveyId(null);
     },
   });
 
@@ -192,11 +196,7 @@ export default function SurveyListPage() {
                               <Play className="h-4 w-4" />
                             </button>
                             <button
-                              onClick={() => {
-                                if (window.confirm(t("surveys.list.confirmDelete"))) {
-                                  deleteMutation.mutate(s.id);
-                                }
-                              }}
+                              onClick={() => setDeleteSurveyId(s.id)}
                               disabled={deleteMutation.isPending}
                               className="p-1.5 rounded hover:bg-red-50 text-red-500 hover:text-red-700"
                               title={t("surveys.list.titleDelete")}
@@ -279,6 +279,17 @@ export default function SurveyListPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteSurveyId !== null}
+        title="Delete this draft survey?"
+        description="This draft survey will be permanently removed. This cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteSurveyId !== null && deleteMutation.mutate(deleteSurveyId)}
+        onCancel={() => setDeleteSurveyId(null)}
+      />
     </div>
   );
 }
