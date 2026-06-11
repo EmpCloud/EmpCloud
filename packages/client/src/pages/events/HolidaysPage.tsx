@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { PartyPopper, Plus, Trash2, CalendarDays } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -72,6 +73,9 @@ export default function HolidaysPage() {
   // clicks and show a subtle spinner. Indexed by event id so toggling row A
   // doesn't grey out row B.
   const [savingMandatoryId, setSavingMandatoryId] = useState<number | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the holiday
+  // awaiting confirmation so the dialog can show its title.
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["holidays"],
@@ -136,7 +140,10 @@ export default function HolidaysPage() {
 
   const deleteHoliday = useMutation({
     mutationFn: (id: number) => api.delete(`/events/${id}`).then((r) => r.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["holidays"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["holidays"] });
+      setDeleteTarget(null);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -372,7 +379,7 @@ export default function HolidaysPage() {
                   })()}
                   {isHR && (
                     <button
-                      onClick={() => { if (confirm(`Delete holiday "${h.title}"?`)) deleteHoliday.mutate(h.id); }}
+                      onClick={() => setDeleteTarget({ id: h.id, title: h.title })}
                       className="text-gray-400 hover:text-red-500 p-1"
                       title="Delete holiday"
                     >
@@ -385,6 +392,16 @@ export default function HolidaysPage() {
           </ul>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title={deleteTarget ? `Delete holiday "${deleteTarget.title}"?` : "Delete holiday?"}
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteHoliday.isPending}
+        onConfirm={() => deleteTarget && deleteHoliday.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

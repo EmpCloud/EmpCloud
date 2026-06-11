@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
+import { sanitizePlainText as cleanReason } from "../../utils/sanitize-html.js";
 
 interface SubmitRegularizationInput {
   date: string;
@@ -115,7 +116,7 @@ export async function submitRegularization(orgId: number, userId: number, data: 
     original_check_out: attendance?.check_out || null,
     requested_check_in: toTimestamp(data.requested_check_in),
     requested_check_out: toTimestamp(data.requested_check_out),
-    reason: data.reason,
+    reason: cleanReason(data.reason),
     status: "pending",
     created_at: new Date(),
     updated_at: new Date(),
@@ -319,7 +320,7 @@ export async function rejectRegularization(
     status: "rejected",
     approved_by: approvedBy,
     approved_at: new Date(),
-    rejection_reason: rejectionReason || null,
+    rejection_reason: cleanReason(rejectionReason),
     updated_at: new Date(),
   });
 

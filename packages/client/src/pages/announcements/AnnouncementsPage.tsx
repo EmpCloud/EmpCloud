@@ -4,6 +4,7 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const AVAILABLE_ROLES = [
   { value: "employee", label: "Employee" },
@@ -72,6 +73,9 @@ export default function AnnouncementsPage() {
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the
+  // announcement awaiting confirmation so the dialog can show its title.
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
   const { data, isLoading } = useAnnouncements(page);
   const { data: unreadCount } = useUnreadCount();
   const createAnnouncement = useCreateAnnouncement();
@@ -387,11 +391,7 @@ export default function AnnouncementsPage() {
                       )}
                       {canManage && (
                         <button
-                          onClick={() => {
-                            if (window.confirm(`Delete announcement "${a.title}"? This cannot be undone.`)) {
-                              deleteAnnouncement.mutate(a.id);
-                            }
-                          }}
+                          onClick={() => setDeleteTarget({ id: a.id, title: a.title })}
                           disabled={deleteAnnouncement.isPending}
                           title="Delete announcement"
                           aria-label={`Delete announcement ${a.title}`}
@@ -458,6 +458,23 @@ export default function AnnouncementsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title={deleteTarget ? `Delete announcement "${deleteTarget.title}"?` : "Delete announcement?"}
+        description="This cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteAnnouncement.isPending}
+        onConfirm={() => {
+          if (deleteTarget) {
+            deleteAnnouncement.mutate(deleteTarget.id, {
+              onSuccess: () => setDeleteTarget(null),
+            });
+          }
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

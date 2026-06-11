@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import CustomRolesField from "@/components/employees/CustomRolesField";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -173,9 +174,11 @@ export default function EmployeeProfilePage() {
   // server DELETE endpoint, drops the local objectURL, and busts the shared
   // photo query so every avatar across the app reverts to initials.
   const [removingPhoto, setRemovingPhoto] = useState(false);
+  // Confirm-dialog state (replaces window.confirm for removing the profile photo).
+  const [showRemovePhoto, setShowRemovePhoto] = useState(false);
   const handlePhotoRemove = async () => {
     if (!photoUrl || removingPhoto) return;
-    if (!confirm("Remove your profile photo? You'll show initials again.")) return;
+    setShowRemovePhoto(false);
     setRemovingPhoto(true);
     try {
       await api.delete(`/employees/${userId}/photo`);
@@ -310,7 +313,7 @@ export default function EmployeeProfilePage() {
                   {photoEditable && photoUrl && (
                     <button
                       type="button"
-                      onClick={handlePhotoRemove}
+                      onClick={() => setShowRemovePhoto(true)}
                       disabled={removingPhoto}
                       className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-red-600 disabled:opacity-50"
                     >
@@ -389,6 +392,17 @@ export default function EmployeeProfilePage() {
         {activeTab === "addresses" && <AddressesTab data={addresses} userId={userId} canEdit={canEdit} />}
         {activeTab === "custom" && <CustomFieldsTab entityId={userId} />}
       </div>
+
+      <ConfirmDialog
+        open={showRemovePhoto}
+        title="Remove your profile photo?"
+        description="You'll show initials again."
+        confirmText="Remove photo"
+        variant="danger"
+        loading={removingPhoto}
+        onConfirm={handlePhotoRemove}
+        onCancel={() => setShowRemovePhoto(false)}
+      />
     </div>
   );
 }
@@ -1158,6 +1172,8 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<Record<string, string>>({});
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const invalidate = () =>
@@ -1189,7 +1205,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/education/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1242,8 +1258,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this education record?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -1383,6 +1398,16 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this education record?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1404,6 +1429,8 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
     description: "",
   });
   const [error, setError] = useState<string | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["employee-experience", userId] });
@@ -1434,7 +1461,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/experience/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1476,8 +1503,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this experience record?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -1629,6 +1655,16 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this experience record?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1650,6 +1686,8 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
     nominee_percentage: "",
   });
   const [error, setError] = useState<string | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["employee-dependents", userId] });
@@ -1683,7 +1721,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/dependents/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1725,8 +1763,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this dependent?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -1895,6 +1932,16 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
           </table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this dependent?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1917,6 +1964,8 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
     zipcode: "",
   });
   const [error, setError] = useState<string | null>(null);
+  // Confirm-delete dialog state (replaces window.confirm). Holds the record id.
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["employee-addresses", userId] });
@@ -1948,7 +1997,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/addresses/${id}`),
-    onSuccess: () => invalidate(),
+    onSuccess: () => { invalidate(); setDeleteId(null); },
     onError: (err: any) => setError(extractApiError(err)),
   });
 
@@ -1991,8 +2040,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   }
 
   function handleDelete(id: number) {
-    if (!confirm("Delete this address?")) return;
-    deleteMutation.mutate(id);
+    setDeleteId(id);
   }
 
   const showForm = adding || editingId !== null;
@@ -2138,6 +2186,16 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete this address?"
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }

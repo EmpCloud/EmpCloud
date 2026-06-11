@@ -5,6 +5,7 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { sanitizePlainText as cleanReason } from "../../utils/sanitize-html.js";
 import * as balanceService from "./leave-balance.service.js";
 import type { LeaveApplication, ApplyLeaveInput, UpdateLeaveInput } from "@empcloud/shared";
 
@@ -290,7 +291,7 @@ export async function applyLeave(
     days_count: data.days_count,
     is_half_day: data.is_half_day ?? false,
     half_day_type: data.half_day_type ?? null,
-    reason: data.reason,
+    reason: cleanReason(data.reason),
     status: leaveType.requires_approval ? "pending" : "approved",
     current_approver_id: approverId,
     created_at: new Date(),
@@ -450,7 +451,7 @@ export async function updateLeave(
     end_date: data.end_date ?? toDateStr(existing.end_date),
     is_half_day: data.is_half_day ?? Boolean(existing.is_half_day),
     half_day_type: data.half_day_type !== undefined ? data.half_day_type : existing.half_day_type,
-    reason: data.reason ?? existing.reason,
+    reason: data.reason !== undefined ? cleanReason(data.reason) : existing.reason,
     days_count: data.days_count ?? Number(existing.days_count),
   };
 
@@ -564,7 +565,7 @@ export async function updateLeave(
       days_count: merged.days_count,
       is_half_day: merged.is_half_day,
       half_day_type: merged.half_day_type ?? null,
-      reason: merged.reason,
+      reason: cleanReason(merged.reason),
       updated_at: new Date(),
     });
 

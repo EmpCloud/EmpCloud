@@ -924,7 +924,7 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
   const [actionId, setActionId] = useState<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [bulkProcessing, setBulkProcessing] = useState(false);
-  const [bulkResult, setBulkResult] = useState<{ type: string; success: number; failed: number } | null>(null);
+  const [bulkResult, setBulkResult] = useState<{ type: string; success: number; failed: number; error?: string } | null>(null);
   // Status tab — admins were losing visibility of a leave once they approved
   // it because this panel only ever showed `status=pending`. Tabs let them
   // see approved/rejected/cancelled or the full list without leaving the
@@ -1066,6 +1066,12 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
     let failed = 0;
 
     const ids = Array.from(selectedIds);
+    // BUG-23: the catch used to swallow the error entirely (`catch {}`), so a
+    // failed reject/approve showed only "N failed" with no reason and the row
+    // silently stayed pending. Capture the first error message so the result
+    // banner can tell the user WHY it failed (e.g. a validation error from the
+    // server) instead of failing silently.
+    let firstError: string | undefined;
     for (const id of ids) {
       try {
         if (action === "approve") {
@@ -1074,13 +1080,14 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
           await api.put(`/leave/applications/${id}/reject`, { remarks: "" });
         }
         success++;
-      } catch {
+      } catch (err: any) {
         failed++;
+        if (!firstError) firstError = extractErr(err);
       }
     }
 
     setBulkProcessing(false);
-    setBulkResult({ type: action, success, failed });
+    setBulkResult({ type: action, success, failed, error: firstError });
     setSelectedIds(new Set());
     qc.invalidateQueries({ queryKey: ["leave-applications-pending"] });
     qc.invalidateQueries({ queryKey: ["leave-balances"] });
@@ -1289,6 +1296,9 @@ function PendingApprovals({ leaveTypes }: { leaveTypes: LeaveType[] }) {
             ? t('leave.dashboard.bulkApproved', { count: bulkResult.success })
             : t('leave.dashboard.bulkRejected', { count: bulkResult.success })}
           {bulkResult.failed > 0 && ` ${t('leave.dashboard.bulkFailed', { count: bulkResult.failed })}`}
+          {bulkResult.error && (
+            <span className="block mt-0.5 font-normal text-red-600">{bulkResult.error}</span>
+          )}
         </div>
       )}
 
