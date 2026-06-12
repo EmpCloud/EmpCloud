@@ -3,7 +3,7 @@ import api from "@/api/client";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Link } from "react-router-dom";
-import { Users, UserCheck, UserX, Clock, AlertTriangle, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertTriangle, Filter, Download, ClipboardCheck, SlidersHorizontal, X, FileSpreadsheet, BarChart3, Loader2, Eye, Fingerprint, Smartphone, Monitor, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { AiBadge } from "@/components/AiBadge";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { usePermissions } from "@/lib/use-permissions";
@@ -239,12 +239,34 @@ export default function AttendanceDashboardPage() {
 
   type BreakdownCategory = "total" | "present" | "absent" | "on_leave" | "late";
   const [breakdownOpen, setBreakdownOpen] = useState<BreakdownCategory | null>(null);
+  // "Attendance Details" modal — date filter + client-side pagination. The
+  // /dashboard/breakdown endpoint already supports ?date=YYYY-MM-DD; paging is
+  // client-side because the tab counts depend on the full per-status arrays the
+  // endpoint returns in a single shot.
+  const toDateStr = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const todayStr = toDateStr(now);
+  const [breakdownDate, setBreakdownDate] = useState(todayStr);
+  const [breakdownPage, setBreakdownPage] = useState(1);
+  const [breakdownSearch, setBreakdownSearch] = useState("");
+  const BREAKDOWN_PAGE_SIZE = 10;
 
   const { data: breakdown, isLoading: breakdownLoading } = useQuery({
-    queryKey: ["attendance-dashboard-breakdown"],
-    queryFn: () => api.get("/attendance/dashboard/breakdown").then((r) => r.data.data),
+    queryKey: ["attendance-dashboard-breakdown", breakdownDate],
+    queryFn: () =>
+      api
+        .get("/attendance/dashboard/breakdown", { params: { date: breakdownDate || undefined } })
+        .then((r) => r.data.data),
     enabled: breakdownOpen !== null,
   });
+
+  // Open the modal from a stat card — always start on today (so the modal
+  // matches the cards, which show today's numbers) and on the first page.
+  const openBreakdown = (category: BreakdownCategory) => {
+    setBreakdownDate(todayStr);
+    setBreakdownPage(1);
+    setBreakdownSearch("");
+    setBreakdownOpen(category);
+  };
 
   const stats: {
     label: string;
@@ -286,7 +308,7 @@ export default function AttendanceDashboardPage() {
             <button
               key={s.label}
               type="button"
-              onClick={() => setBreakdownOpen(s.category)}
+              onClick={() => openBreakdown(s.category!)}
               className="bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
               aria-label={s.label}
             >
@@ -300,8 +322,39 @@ export default function AttendanceDashboardPage() {
         })}
       </div>
 
-      {/* Breakdown Modal */}
-      {breakdownOpen !== null && (
+      {/* Breakdown Modal ("Attendance Details") */}
+      {breakdownOpen !== null && (() => {
+        // Active tab's employees. "total" stitches present + absent + on_leave
+        // together (late is a subset of present, so it isn't appended again).
+        const tabList: any[] = breakdownOpen === "total"
+          ? [
+              ...(breakdown?.present ?? []),
+              ...(breakdown?.absent ?? []),
+              ...(breakdown?.on_leave ?? []),
+            ]
+          : (breakdown?.[breakdownOpen] ?? []);
+        // Client-side search over name / email / department within the tab.
+        const q = breakdownSearch.trim().toLowerCase();
+        const filteredList = q
+          ? tabList.filter((emp: any) =>
+              `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.toLowerCase().includes(q) ||
+              String(emp.email ?? "").toLowerCase().includes(q) ||
+              String(emp.department ?? "").toLowerCase().includes(q)
+            )
+          : tabList;
+        const totalPages = Math.max(1, Math.ceil(filteredList.length / BREAKDOWN_PAGE_SIZE));
+        // Clamp so a shrinking list (after a tab/date/search change) can never
+        // strand us on an out-of-range page.
+        const safePage = Math.min(breakdownPage, totalPages);
+        const pageList = filteredList.slice((safePage - 1) * BREAKDOWN_PAGE_SIZE, safePage * BREAKDOWN_PAGE_SIZE);
+        const statusLabel = (emp: any) => {
+          const s = emp.attendance_status;
+          if (s === "present" || s === "checked_in") return { label: t('attendance.present'), color: "bg-green-50 text-green-700" };
+          if (s === "half_day") return { label: t('attendance.statusHalfDay'), color: "bg-green-50 text-green-700" };
+          if (s === "on_leave") return { label: t('attendance.onLeave'), color: "bg-purple-50 text-purple-700" };
+          return { label: t('attendance.absent'), color: "bg-red-50 text-red-700" };
+        };
+        return (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           onClick={() => setBreakdownOpen(null)}
@@ -310,16 +363,29 @@ export default function AttendanceDashboardPage() {
             className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">{t('attendance.breakdown.title', { date: breakdown?.date ?? t('attendance.breakdown.todayFallback') })}</h3>
-              <button
-                type="button"
-                onClick={() => setBreakdownOpen(null)}
-                className="text-gray-400 hover:text-gray-600"
-                aria-label={t('attendance.breakdown.close')}
-              >
-                <X className="h-5 w-5" />
-              </button>
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">{t('attendance.breakdown.title', { date: breakdown?.date ?? breakdownDate })}</h3>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="breakdown-date" className="text-xs font-medium text-gray-500 whitespace-nowrap">{t('attendance.breakdown.dateLabel')}</label>
+                  <input
+                    id="breakdown-date"
+                    type="date"
+                    value={breakdownDate}
+                    max={todayStr}
+                    onChange={(e) => { setBreakdownDate(e.target.value); setBreakdownPage(1); }}
+                    className="px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setBreakdownOpen(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                  aria-label={t('attendance.breakdown.close')}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
             <div className="px-6 pt-4 border-b border-gray-200">
               <div className="flex gap-1 flex-wrap">
@@ -340,7 +406,7 @@ export default function AttendanceDashboardPage() {
                     <button
                       key={tab.key}
                       type="button"
-                      onClick={() => setBreakdownOpen(tab.key)}
+                      onClick={() => { setBreakdownOpen(tab.key); setBreakdownPage(1); }}
                       className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
                         active ? tab.color : "text-gray-500 border-transparent hover:text-gray-700"
                       }`}
@@ -351,70 +417,93 @@ export default function AttendanceDashboardPage() {
                 })}
               </div>
             </div>
+            <div className="px-6 py-3 border-b border-gray-200">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={breakdownSearch}
+                  onChange={(e) => { setBreakdownSearch(e.target.value); setBreakdownPage(1); }}
+                  placeholder={t('attendance.breakdown.searchPlaceholder')}
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+            </div>
             <div className="overflow-y-auto flex-1 px-6 py-4">
               {breakdownLoading ? (
                 <div className="flex justify-center py-12">
                   <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                 </div>
-              ) : (() => {
-                const list = breakdownOpen === "total"
-                  ? [
-                      ...(breakdown?.present ?? []),
-                      ...(breakdown?.absent ?? []),
-                      ...(breakdown?.on_leave ?? []),
-                    ]
-                  : breakdown?.[breakdownOpen] ?? [];
-                if (list.length === 0) {
-                  return <p className="text-center text-sm text-gray-500 py-12">{t('attendance.breakdown.noEmployeesInCategory')}</p>;
-                }
-                const statusLabel = (emp: any) => {
-                  const s = emp.attendance_status;
-                  if (s === "present" || s === "checked_in") return { label: t('attendance.present'), color: "bg-green-50 text-green-700" };
-                  if (s === "half_day") return { label: t('attendance.statusHalfDay'), color: "bg-green-50 text-green-700" };
-                  if (s === "on_leave") return { label: t('attendance.onLeave'), color: "bg-purple-50 text-purple-700" };
-                  return { label: t('attendance.absent'), color: "bg-red-50 text-red-700" };
-                };
-                return (
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
-                        <th className="py-2 font-medium">{t('common.name')}</th>
-                        <th className="py-2 font-medium">{t('attendance.department')}</th>
-                        <th className="py-2 font-medium whitespace-nowrap">{t('attendance.checkIn')}</th>
-                        {breakdownOpen === "total" && <th className="py-2 font-medium">{t('common.status')}</th>}
-                        {breakdownOpen === "late" && <th className="py-2 font-medium">{t('attendance.breakdown.lateBy')}</th>}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {list.map((emp: any) => {
-                        const s = breakdownOpen === "total" ? statusLabel(emp) : null;
-                        return (
-                          <tr key={emp.id} className="border-b border-gray-100 last:border-0">
+              ) : filteredList.length === 0 ? (
+                <p className="text-center text-sm text-gray-500 py-12">
+                  {tabList.length === 0
+                    ? t('attendance.breakdown.noEmployeesInCategory')
+                    : t('attendance.breakdown.noSearchResults')}
+                </p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                      <th className="py-2 font-medium">{t('common.name')}</th>
+                      <th className="py-2 font-medium">{t('attendance.department')}</th>
+                      <th className="py-2 font-medium whitespace-nowrap">{t('attendance.checkIn')}</th>
+                      {breakdownOpen === "total" && <th className="py-2 font-medium">{t('common.status')}</th>}
+                      {breakdownOpen === "late" && <th className="py-2 font-medium">{t('attendance.breakdown.lateBy')}</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageList.map((emp: any) => {
+                      const s = breakdownOpen === "total" ? statusLabel(emp) : null;
+                      return (
+                        <tr key={emp.id} className="border-b border-gray-100 last:border-0">
+                          <td className="py-3">
+                            <div className="font-medium text-gray-900">{emp.first_name} {emp.last_name}</div>
+                            <div className="text-xs text-gray-500">{emp.email}</div>
+                          </td>
+                          <td className="py-3 text-gray-700">{emp.department || "—"}</td>
+                          <td className="py-3 text-gray-700">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                          {breakdownOpen === "total" && s && (
                             <td className="py-3">
-                              <div className="font-medium text-gray-900">{emp.first_name} {emp.last_name}</div>
-                              <div className="text-xs text-gray-500">{emp.email}</div>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${s.color}`}>{s.label}</span>
                             </td>
-                            <td className="py-3 text-gray-700">{emp.department || "—"}</td>
-                            <td className="py-3 text-gray-700">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
-                            {breakdownOpen === "total" && s && (
-                              <td className="py-3">
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${s.color}`}>{s.label}</span>
-                              </td>
-                            )}
-                            {breakdownOpen === "late" && (
-                              <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} {t('attendance.breakdown.minSuffix')}</td>
-                            )}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                );
-              })()}
+                          )}
+                          {breakdownOpen === "late" && (
+                            <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} {t('attendance.breakdown.minSuffix')}</td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
+            {/* Pagination footer — always shown when there are results so the
+                control is visibly part of the modal even for a single page. */}
+            {!breakdownLoading && filteredList.length > 0 && (
+              <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
+                <p className="text-sm text-gray-500">{t('attendance.pagination', { page: safePage, totalPages, total: filteredList.length })}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setBreakdownPage(Math.max(1, safePage - 1))}
+                    disabled={safePage === 1}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                  >
+                    {t('attendance.previous')}
+                  </button>
+                  <button
+                    onClick={() => setBreakdownPage(Math.min(totalPages, safePage + 1))}
+                    disabled={safePage >= totalPages}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                  >
+                    {t('attendance.next')}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* Quick Links */}
       <div className="flex gap-3 mb-6">

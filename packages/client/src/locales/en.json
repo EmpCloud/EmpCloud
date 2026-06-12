@@ -764,6 +764,9 @@
     "breakdown": {
       "title": "Attendance Details — {{date}}",
       "todayFallback": "Today",
+      "dateLabel": "Date",
+      "searchPlaceholder": "Search name, email, or department",
+      "noSearchResults": "No employees match your search.",
       "tabAll": "All",
       "noEmployeesInCategory": "No employees in this category.",
       "lateBy": "Late By",
