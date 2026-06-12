@@ -2,6 +2,7 @@ import { useAuditLogs } from "@/api/hooks";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, Filter, Calendar, RotateCcw } from "lucide-react";
+import { DateRangePicker } from "@/components/DateRangePicker";
 
 // Enum values stay frozen (these are what the server sends); the human
 // labels come from `audit.actions.<value>` per locale.
@@ -90,7 +91,7 @@ export default function AuditPage() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Action Type Filter */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">{tx("actionType")}</label>
@@ -105,31 +106,22 @@ export default function AuditPage() {
             </select>
           </div>
 
-          {/* Start Date */}
+          {/* Date range — single composite control matching the /attendance filter.
+              Replaces the old separate From/To native date inputs; Apply drives
+              start_date / end_date so the query contract is unchanged. */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
-              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {tx("fromDate")}</span>
+              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {t("attendance.dateFrom")} &mdash; {t("attendance.dateTo")}</span>
             </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-              max={endDate || undefined}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-
-          {/* End Date */}
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {tx("toDate")}</span>
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-              min={startDate || undefined}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            <DateRangePicker
+              from={startDate}
+              to={endDate}
+              onApply={(f, to2) => {
+                setStartDate(f);
+                setEndDate(to2);
+                setPage(1);
+              }}
+              allowEmpty
             />
           </div>
         </div>
