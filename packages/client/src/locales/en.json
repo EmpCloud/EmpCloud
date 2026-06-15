@@ -1418,6 +1418,8 @@
     "clearAll": "Clear all",
     "actionType": "Action Type",
     "allActions": "All actions",
+    "searchActions": "Search action type...",
+    "noActionMatches": "No matching action",
     "fromDate": "From Date",
     "toDate": "To Date",
     "showingResults": "Showing {{count}} of {{total}} filtered results",
