@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save, Loader2 } from "lucide-react";
 import { useDepartments } from "@/api/hooks";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 export default function PositionDetailPage() {
   const { id } = useParams();
@@ -62,14 +64,19 @@ export default function PositionDetailPage() {
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
         "Failed to assign employee to this position.";
-      alert(msg);
+      showToast("error", msg);
     },
   });
+
+  // Confirm-end dialog state (replaces window.confirm for ending an
+  // assignment). Holds the assignment id awaiting confirmation.
+  const [endAssignmentId, setEndAssignmentId] = useState<number | null>(null);
 
   const removeMutation = useMutation({
     mutationFn: (assignmentId: number) => api.delete(`/positions/assignments/${assignmentId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
+      setEndAssignmentId(null);
     },
   });
 
@@ -98,7 +105,7 @@ export default function PositionDetailPage() {
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
         "Failed to save position changes.";
-      alert(msg);
+      showToast("error", msg);
     },
   });
 
@@ -325,7 +332,7 @@ export default function PositionDetailPage() {
               e.preventDefault();
               const budget = parseInt(editForm.headcount_budget, 10);
               if (!Number.isFinite(budget) || budget < 1) {
-                alert("Headcount Budget must be at least 1.");
+                showToast("error", "Headcount Budget must be at least 1.");
                 return;
               }
               updateMutation.mutate({
@@ -530,9 +537,7 @@ export default function PositionDetailPage() {
                       </div>
                     </div>
                     <button
-                      onClick={() => {
-                        if (confirm("End this assignment?")) removeMutation.mutate(a.id);
-                      }}
+                      onClick={() => setEndAssignmentId(a.id)}
                       className="text-gray-400 hover:text-red-500"
                       title="End assignment"
                     >
@@ -620,6 +625,16 @@ export default function PositionDetailPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={endAssignmentId !== null}
+        title="End this assignment?"
+        confirmText="End assignment"
+        variant="danger"
+        loading={removeMutation.isPending}
+        onConfirm={() => endAssignmentId !== null && removeMutation.mutate(endAssignmentId)}
+        onCancel={() => setEndAssignmentId(null)}
+      />
     </div>
   );
 }

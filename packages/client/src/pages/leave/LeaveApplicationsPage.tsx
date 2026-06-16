@@ -66,7 +66,7 @@ export default function LeaveApplicationsPage() {
     err?.response?.data?.error?.message ||
     err?.response?.data?.message ||
     err?.message ||
-    "Action failed";
+    t("leave.applications.actionFailed");
 
   const approveMut = useMutation({
     mutationFn: (id: number) =>
@@ -113,8 +113,8 @@ export default function LeaveApplicationsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Leave Applications</h1>
-          <p className="text-gray-500 mt-1">Review, approve, or reject leave requests.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("leave.applications.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("leave.applications.subtitle")}</p>
         </div>
       </div>
 
@@ -126,7 +126,7 @@ export default function LeaveApplicationsPage() {
             onClick={() => setActionError(null)}
             className="text-xs text-red-500 hover:text-red-700"
           >
-            Dismiss
+            {t("leave.applications.dismiss")}
           </button>
         </div>
       )}
@@ -139,11 +139,11 @@ export default function LeaveApplicationsPage() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
         >
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-          <option value="cancelled">Cancelled</option>
+          <option value="">{t("leave.applications.allStatuses")}</option>
+          <option value="pending">{t("leave.applications.status.pending")}</option>
+          <option value="approved">{t("leave.applications.status.approved")}</option>
+          <option value="rejected">{t("leave.applications.status.rejected")}</option>
+          <option value="cancelled">{t("leave.applications.status.cancelled")}</option>
         </select>
       </div>
 
@@ -152,19 +152,19 @@ export default function LeaveApplicationsPage() {
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              {canApprove && <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Employee</th>}
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Type</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Dates</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Days</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Reason</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Remarks</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+              {canApprove && <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colEmployee")}</th>}
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colType")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colDates")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colDays")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colReason")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colStatus")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colRemarks")}</th>
+              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("leave.applications.colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoading ? (
-              <tr><td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">{t("leave.applications.loading")}</td></tr>
             ) : applications.length === 0 ? (
               <tr>
                 <td colSpan={canApprove ? 8 : 7} className="px-6 py-8 text-center text-gray-400">
@@ -178,17 +178,17 @@ export default function LeaveApplicationsPage() {
                   */}
                   {statusFilter ? (
                     <span>
-                      No {statusFilter} leave applications.{" "}
+                      {t("leave.applications.noFiltered", { status: t(`leave.applications.status.${statusFilter}`) })}{" "}
                       <button
                         type="button"
                         onClick={() => { setStatusFilter(""); setPage(1); }}
                         className="text-brand-600 hover:underline font-medium"
                       >
-                        Show all applications
+                        {t("leave.applications.showAll")}
                       </button>
                     </span>
                   ) : (
-                    "No applications found"
+                    t("leave.applications.empty")
                   )}
                 </td>
               </tr>
@@ -200,7 +200,7 @@ export default function LeaveApplicationsPage() {
                   <tr key={app.id} className="hover:bg-gray-50">
                     {canApprove && (
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {(app as any).user_first_name ? `${(app as any).user_first_name} ${(app as any).user_last_name || ""}` : `User #${app.user_id}`}
+                        {(app as any).user_first_name ? `${(app as any).user_first_name} ${(app as any).user_last_name || ""}` : t("leave.applications.userHash", { id: app.user_id })}
                       </td>
                     )}
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
@@ -208,7 +208,7 @@ export default function LeaveApplicationsPage() {
                       {/* #1609 — guard with Boolean(): MySQL tinyint 0 would
                           render as a literal "0" via JSX `&&` short-circuit. */}
                       {Boolean(app.is_half_day) && (
-                        <span className="ml-1 text-xs text-gray-400">(Half)</span>
+                        <span className="ml-1 text-xs text-gray-400">{t("leave.applications.half")}</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
@@ -222,13 +222,13 @@ export default function LeaveApplicationsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
-                        <Icon className="h-3 w-3" /> {app.status}
+                        <Icon className="h-3 w-3" /> {t(`leave.applications.status.${app.status}`, { defaultValue: app.status })}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                       {(app as any).admin_remarks || "-"}
                       {(app as any).approver_name && (app as any).admin_remarks && (
-                        <span className="block text-xs text-gray-400">by {(app as any).approver_name}</span>
+                        <span className="block text-xs text-gray-400">{t("leave.applications.by", { name: (app as any).approver_name })}</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -240,14 +240,14 @@ export default function LeaveApplicationsPage() {
                                 onClick={() => setActionId(actionId === app.id ? null : app.id)}
                                 className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100"
                               >
-                                Review
+                                {t("leave.applications.review")}
                               </button>
                             )}
                             <button
                               onClick={() => cancelMut.mutate(app.id)}
                               className="text-xs bg-gray-50 text-gray-600 px-2 py-1 rounded hover:bg-gray-100"
                             >
-                              Cancel
+                              {t("leave.applications.cancel")}
                             </button>
                           </>
                         )}
@@ -266,7 +266,7 @@ export default function LeaveApplicationsPage() {
                             type="text"
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
-                            placeholder="Remarks (optional)"
+                            placeholder={t("leave.applications.remarksPlaceholder")}
                             className="px-2 py-1 border border-gray-300 rounded text-xs flex-1"
                           />
                           <button
@@ -274,14 +274,14 @@ export default function LeaveApplicationsPage() {
                             disabled={approveMut.isPending}
                             className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50"
                           >
-                            Approve
+                            {t("leave.applications.approve")}
                           </button>
                           <button
                             onClick={() => rejectMut.mutate(app.id)}
                             disabled={rejectMut.isPending}
                             className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
                           >
-                            Reject
+                            {t("leave.applications.reject")}
                           </button>
                         </div>
                       )}
@@ -296,7 +296,7 @@ export default function LeaveApplicationsPage() {
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Page {meta.page} of {meta.total_pages} ({meta.total} total)
+              {t("leave.applications.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
@@ -304,14 +304,14 @@ export default function LeaveApplicationsPage() {
                 disabled={page === 1}
                 className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
               >
-                Previous
+                {t("leave.applications.previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
                 className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
               >
-                Next
+                {t("leave.applications.next")}
               </button>
             </div>
           </div>

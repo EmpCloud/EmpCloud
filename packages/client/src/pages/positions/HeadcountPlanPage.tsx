@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText, X } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
+import { showToast } from "@/components/ui/Toast";
 
 export default function HeadcountPlanPage() {
   const { t } = useTranslation();
@@ -17,6 +18,11 @@ export default function HeadcountPlanPage() {
   // so the notes, budget and all other fields captured at creation time are
   // viewable. Previously the table only surfaced a handful of columns.
   const [viewingPlan, setViewingPlan] = useState<any>(null);
+  // Reject modal — replaces the native window.prompt() used to collect the
+  // rejection reason. `rejectTarget` holds the plan id being rejected;
+  // `rejectReason` is the textarea value.
+  const [rejectTarget, setRejectTarget] = useState<number | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const { data: departments } = useDepartments();
   const deptList = departments || [];
@@ -87,8 +93,15 @@ export default function HeadcountPlanPage() {
       api.post(`/positions/headcount-plans/${planId}/reject`, { reason }).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+      setRejectTarget(null);
+      setRejectReason("");
     },
   });
+
+  const confirmReject = () => {
+    if (rejectTarget == null) return;
+    rejectMutation.mutate({ planId: rejectTarget, reason: rejectReason.trim() || undefined });
+  };
 
   const submitMutation = useMutation({
     mutationFn: (planId: number) =>
@@ -103,11 +116,11 @@ export default function HeadcountPlanPage() {
     const planned = parseInt(form.planned_headcount, 10);
     const current = parseInt(form.current_headcount, 10);
     if (!Number.isFinite(planned) || planned < 0) {
-      alert(tx("alertPlannedInvalid"));
+      showToast("error", tx("alertPlannedInvalid") as string);
       return;
     }
     if (!Number.isFinite(current) || current < 0) {
-      alert(tx("alertCurrentInvalid"));
+      showToast("error", tx("alertCurrentInvalid") as string);
       return;
     }
     createMutation.mutate({
@@ -367,10 +380,7 @@ export default function HeadcountPlanPage() {
                             {tx("actionApprove")}
                           </button>
                           <button
-                            onClick={() => {
-                              const reason = prompt(tx("rejectPrompt") as string);
-                              rejectMutation.mutate({ planId: plan.id, reason: reason || undefined });
-                            }}
+                            onClick={() => { setRejectReason(""); setRejectTarget(plan.id); }}
                             disabled={rejectMutation.isPending}
                             className="text-xs text-red-600 hover:underline"
                           >
@@ -507,6 +517,49 @@ export default function HeadcountPlanPage() {
           </div>
         )}
       </div>
+
+      {/* Reject modal — replaces the native window.prompt() for collecting the
+          rejection reason. Styled to match the rest of the UI, with a textarea,
+          a Cancel, and a Confirm that fires the rejection. The reason is
+          optional. */}
+      {rejectTarget !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <X className="h-5 w-5 text-red-600" />
+              {tx("actionReject")}
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {tx("rejectPrompt")}
+            </p>
+            <textarea
+              autoFocus
+              rows={3}
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => { setRejectTarget(null); setRejectReason(""); }}
+                disabled={rejectMutation.isPending}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                {tx("cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={confirmReject}
+                disabled={rejectMutation.isPending}
+                className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {rejectMutation.isPending ? tx("loading") : tx("actionReject")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

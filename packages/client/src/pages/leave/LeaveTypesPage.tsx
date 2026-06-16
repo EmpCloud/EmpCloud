@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Layers,
 } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface LeaveType {
   id: number;
@@ -120,6 +121,10 @@ export default function LeaveTypesPage() {
   const [typeForm, setTypeForm] = useState(EMPTY_TYPE);
   const [policyForm, setPolicyForm] = useState(EMPTY_POLICY);
   const [typeFormError, setTypeFormError] = useState<string | null>(null);
+  // Confirm-dialog state (replaces window.confirm). Each holds the id of the
+  // leave type / policy awaiting confirmation before the destructive action.
+  const [deleteTypeId, setDeleteTypeId] = useState<number | null>(null);
+  const [deletePolicyId, setDeletePolicyId] = useState<number | null>(null);
 
   // ---- Queries ----
   const { data: leaveTypes = [], isLoading: loadingTypes } = useQuery<LeaveType[]>({
@@ -174,7 +179,10 @@ export default function LeaveTypesPage() {
   });
   const deleteType = useMutation({
     mutationFn: (id: number) => api.delete(`/leave/types/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["leave-types"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leave-types"] });
+      setDeleteTypeId(null);
+    },
   });
   const reactivateType = useMutation({
     mutationFn: (id: number) => api.post(`/leave/types/${id}/reactivate`),
@@ -202,7 +210,10 @@ export default function LeaveTypesPage() {
   });
   const deletePolicy = useMutation({
     mutationFn: (id: number) => api.delete(`/leave/policies/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["leave-policies"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leave-policies"] });
+      setDeletePolicyId(null);
+    },
   });
   const initBalances = useMutation({
     mutationFn: () =>
@@ -356,10 +367,7 @@ export default function LeaveTypesPage() {
           typeFormError={typeFormError}
           onSubmit={handleTypeSubmit}
           onStartEdit={startEdit}
-          onDelete={(id) => {
-            if (confirm("Deactivate this leave type? The data is preserved and you can reactivate later."))
-              deleteType.mutate(id);
-          }}
+          onDelete={(id) => setDeleteTypeId(id)}
           onReactivate={(id) => reactivateType.mutate(id)}
           createPending={createType.isPending}
           updatePending={updateType.isPending}
@@ -379,10 +387,7 @@ export default function LeaveTypesPage() {
           setPolicyForm={setPolicyForm}
           onSubmit={handlePolicySubmit}
           onStartEdit={startEditPolicy}
-          onDelete={(id) => {
-            if (confirm("Delete this leave policy? This action cannot be undone."))
-              deletePolicy.mutate(id);
-          }}
+          onDelete={(id) => setDeletePolicyId(id)}
           createPending={createPolicy.isPending}
           updatePending={updatePolicy.isPending}
           t={t}
@@ -392,6 +397,28 @@ export default function LeaveTypesPage() {
       {tab === "employees" && (
         <EmployeesSection leaveTypes={leaveTypes} />
       )}
+
+      <ConfirmDialog
+        open={deleteTypeId !== null}
+        title="Deactivate this leave type?"
+        description="The data is preserved and you can reactivate later."
+        confirmText="Deactivate"
+        variant="danger"
+        loading={deleteType.isPending}
+        onConfirm={() => deleteTypeId !== null && deleteType.mutate(deleteTypeId)}
+        onCancel={() => setDeleteTypeId(null)}
+      />
+
+      <ConfirmDialog
+        open={deletePolicyId !== null}
+        title="Delete this leave policy?"
+        description="This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deletePolicy.isPending}
+        onConfirm={() => deletePolicyId !== null && deletePolicy.mutate(deletePolicyId)}
+        onCancel={() => setDeletePolicyId(null)}
+      />
     </div>
   );
 }
@@ -409,6 +436,8 @@ function SettingsSection({
   onSave: (month: number) => void;
 }) {
   const [pending, setPending] = useState<number | null>(null);
+  // Confirm-dialog state (replaces window.confirm for changing the fiscal year).
+  const [confirmFiscalChange, setConfirmFiscalChange] = useState(false);
   const month = pending ?? orgConfig?.fiscal_year_start_month ?? 4;
 
   return (
@@ -439,13 +468,7 @@ function SettingsSection({
           <button
             onClick={() => {
               if (pending != null && pending !== orgConfig?.fiscal_year_start_month) {
-                if (
-                  confirm(
-                    "Change fiscal year? Existing balance rows for the previous fiscal year remain in place; new initialization will use the new start month.",
-                  )
-                ) {
-                  onSave(pending);
-                }
+                setConfirmFiscalChange(true);
               }
             }}
             disabled={isPending || pending == null || pending === orgConfig?.fiscal_year_start_month}
@@ -464,6 +487,20 @@ function SettingsSection({
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmFiscalChange}
+        title="Change fiscal year?"
+        description="Existing balance rows for the previous fiscal year remain in place; new initialization will use the new start month."
+        confirmText="Change"
+        variant="info"
+        loading={isPending}
+        onConfirm={() => {
+          if (pending != null) onSave(pending);
+          setConfirmFiscalChange(false);
+        }}
+        onCancel={() => setConfirmFiscalChange(false)}
+      />
     </div>
   );
 }
@@ -1396,6 +1433,8 @@ function OverrideModal({
   const [extra, setExtra] = useState(Number(balance.extra_allocated ?? 0));
   const [used, setUsed] = useState(Number(balance.total_used ?? 0));
   const [reason, setReason] = useState("");
+  // Confirm-dialog state (replaces window.confirm for the "Reset Used to 0" action).
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const lt = leaveTypes.find((x) => x.id === balance.leave_type_id);
   const typeName = lt?.name ?? balance.leave_type_name ?? "Leave";
@@ -1523,13 +1562,7 @@ function OverrideModal({
               disabled={isResetPending || !reason.trim()}
               onClick={() => {
                 if (!reason.trim()) return;
-                if (
-                  confirm(
-                    "Reset Used to 0 for this fiscal year? The Available days will jump back up. Use this only when correcting a mistaken approval.",
-                  )
-                ) {
-                  onResetPeriod(reason.trim());
-                }
+                setConfirmReset(true);
               }}
               className="flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900 disabled:opacity-50"
             >
@@ -1554,6 +1587,20 @@ function OverrideModal({
           </div>
         </form>
       </div>
+
+      <ConfirmDialog
+        open={confirmReset}
+        title="Reset Used to 0 for this fiscal year?"
+        description="The Available days will jump back up. Use this only when correcting a mistaken approval."
+        confirmText="Reset Used to 0"
+        variant="danger"
+        loading={isResetPending}
+        onConfirm={() => {
+          if (reason.trim()) onResetPeriod(reason.trim());
+          setConfirmReset(false);
+        }}
+        onCancel={() => setConfirmReset(false)}
+      />
     </div>
   );
 }

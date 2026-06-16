@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import {
@@ -35,6 +36,7 @@ const STATUSES = [
 const PRIORITIES = ["low", "medium", "high", "urgent"];
 
 export default function TicketListPage() {
+  const { t } = useTranslation();
   // Initial filters come from the URL so links from the dashboard (e.g.
   // `/helpdesk/tickets?status=open`) apply the filter automatically.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,7 +85,7 @@ export default function TicketListPage() {
   // SLA status is computed from sla_resolution_due and the current time.
   const slaFilter = searchParams.get("sla");
   const tickets = slaFilter
-    ? allTickets.filter((t: any) => slaStatus(t) === slaFilter)
+    ? allTickets.filter((ticket: any) => slaStatus(ticket) === slaFilter)
     : allTickets;
 
   const handleSearch = (e: React.FormEvent) => {
@@ -112,8 +114,8 @@ export default function TicketListPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Tickets</h1>
-          <p className="text-gray-500 mt-1">Manage helpdesk tickets across the organization.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("helpdesk.list.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("helpdesk.list.subtitle")}</p>
         </div>
       </div>
 
@@ -127,7 +129,7 @@ export default function TicketListPage() {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search tickets..."
+                placeholder={t("helpdesk.list.searchPlaceholder")}
                 className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
             </div>
@@ -135,7 +137,7 @@ export default function TicketListPage() {
               type="submit"
               className="px-3 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700"
             >
-              Search
+              {t("helpdesk.list.search")}
             </button>
           </form>
 
@@ -144,10 +146,10 @@ export default function TicketListPage() {
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Statuses</option>
+            <option value="">{t("helpdesk.list.allStatuses")}</option>
             {STATUSES.map((s) => (
               <option key={s} value={s}>
-                {s.replace("_", " ")}
+                {t(`helpdesk.list.status.${s}`)}
               </option>
             ))}
           </select>
@@ -157,10 +159,10 @@ export default function TicketListPage() {
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Categories</option>
+            <option value="">{t("helpdesk.list.allCategories")}</option>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {t(`helpdesk.list.category.${c}`)}
               </option>
             ))}
           </select>
@@ -170,10 +172,10 @@ export default function TicketListPage() {
             onChange={(e) => { setPriority(e.target.value); setPage(1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Priorities</option>
+            <option value="">{t("helpdesk.list.allPriorities")}</option>
             {PRIORITIES.map((p) => (
               <option key={p} value={p}>
-                {p}
+                {t(`helpdesk.list.priority.${p}`)}
               </option>
             ))}
           </select>
@@ -181,12 +183,12 @@ export default function TicketListPage() {
         {resolvedDate && (
           <div className="mt-3 flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium">
-              Resolved {resolvedDate === "today" ? "today" : `on ${resolvedDate}`}
+              {resolvedDate === "today" ? t("helpdesk.list.resolvedToday") : t("helpdesk.list.resolvedOn", { date: resolvedDate })}
               <button
                 type="button"
                 onClick={() => { setResolvedDate(""); setPage(1); }}
                 className="hover:text-green-900"
-                aria-label="Clear resolved date filter"
+                aria-label={t("helpdesk.list.clearResolvedFilter")}
               >
                 ×
               </button>
@@ -198,93 +200,93 @@ export default function TicketListPage() {
       {/* Tickets Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-400">Loading tickets...</div>
+          <div className="p-8 text-center text-gray-400">{t("helpdesk.list.loading")}</div>
         ) : tickets.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No tickets found.</div>
+          <div className="p-8 text-center text-gray-400">{t("helpdesk.list.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">ID</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Subject</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Category</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Priority</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Raised By</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Assigned To</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">SLA</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Created</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colId")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colSubject")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colCategory")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colPriority")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colStatus")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colRaisedBy")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colAssignedTo")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colSla")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colCreated")}</th>
                 </tr>
               </thead>
               <tbody>
-                {tickets.map((t: any) => {
-                  const sla = slaStatus(t);
+                {tickets.map((ticket: any) => {
+                  const sla = slaStatus(ticket);
                   return (
                     <tr
-                      key={t.id}
+                      key={ticket.id}
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-4 py-3">
                         <Link
-                          to={`/helpdesk/tickets/${t.id}`}
+                          to={`/helpdesk/tickets/${ticket.id}`}
                           className="text-brand-600 font-medium hover:underline"
                         >
-                          #{t.id}
+                          #{ticket.id}
                         </Link>
                       </td>
                       <td className="px-4 py-3">
                         <Link
-                          to={`/helpdesk/tickets/${t.id}`}
+                          to={`/helpdesk/tickets/${ticket.id}`}
                           className="text-gray-900 hover:text-brand-600 font-medium truncate block max-w-[250px]"
                         >
-                          {t.subject}
+                          {ticket.subject}
                         </Link>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="capitalize text-gray-600">{t.category}</span>
+                        <span className="text-gray-600">{t(`helpdesk.list.category.${ticket.category}`, { defaultValue: ticket.category })}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
-                            PRIORITY_COLORS[t.priority] || ""
+                          className={`text-xs font-medium px-2 py-0.5 rounded ${
+                            PRIORITY_COLORS[ticket.priority] || ""
                           }`}
                         >
-                          {t.priority}
+                          {t(`helpdesk.list.priority.${ticket.priority}`, { defaultValue: ticket.priority })}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`text-xs font-medium px-2 py-0.5 rounded ${
-                            STATUS_COLORS[t.status] || ""
+                            STATUS_COLORS[ticket.status] || ""
                           }`}
                         >
-                          {t.status.replace(/_/g, " ")}
+                          {t(`helpdesk.list.status.${ticket.status}`, { defaultValue: ticket.status.replace(/_/g, " ") })}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-600">
-                        {t.raised_by_name || "-"}
+                        {ticket.raised_by_name || "-"}
                       </td>
                       <td className="px-4 py-3 text-gray-600">
-                        {t.assigned_to_name || (
-                          <span className="text-gray-400 italic">Unassigned</span>
+                        {ticket.assigned_to_name || (
+                          <span className="text-gray-400 italic">{t("helpdesk.list.unassigned")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
                         {sla ? (
                           <span
-                            className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
+                            className={`text-xs font-medium px-2 py-0.5 rounded ${
                               SLA_BADGE[sla] || ""
                             }`}
                           >
-                            {sla.replace("-", " ")}
+                            {t(`helpdesk.list.sla.${sla}`, { defaultValue: sla.replace("-", " ") })}
                           </span>
                         ) : (
                           <span className="text-xs text-gray-400">-</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs">
-                        {new Date(t.created_at).toLocaleDateString()}
+                        {new Date(ticket.created_at).toLocaleDateString()}
                       </td>
                     </tr>
                   );
@@ -299,7 +301,7 @@ export default function TicketListPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("helpdesk.list.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -307,14 +309,14 @@ export default function TicketListPage() {
               disabled={page === 1}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
+              <ChevronLeft className="h-4 w-4" /> {t("helpdesk.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
             >
-              Next <ChevronRight className="h-4 w-4" />
+              {t("helpdesk.list.next")} <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>

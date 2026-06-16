@@ -55,3 +55,21 @@ export function sanitizeHtml(input: string): string {
 
   return result;
 }
+
+/**
+ * Sanitize a PLAIN-TEXT field that should never contain any markup — leave
+ * reasons, regularization reasons, rejection reasons, override reasons,
+ * descriptions, etc. Strips dangerous HTML via sanitizeHtml, then removes any
+ * remaining angle brackets so nothing can render as a tag at all, and trims.
+ * Returns null for empty/blank input so callers can store NULL cleanly.
+ *
+ * Use this on EVERY user-supplied free-text field at write time. Stored-XSS
+ * payloads such as `<script>alert(1)</script>` and
+ * `<img src=x onerror=alert(document.cookie)>` were accepted raw across leave
+ * applications, regularizations and other reason fields (BUG-04 / BUG-04b).
+ */
+export function sanitizePlainText(input: string | null | undefined): string | null {
+  if (input == null) return null;
+  const stripped = sanitizeHtml(String(input)).replace(/[<>]/g, "").trim();
+  return stripped.length ? stripped : null;
+}

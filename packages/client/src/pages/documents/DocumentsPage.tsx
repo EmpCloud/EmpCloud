@@ -14,6 +14,8 @@ import {
   X,
   Users,
 } from "lucide-react";
+import { showToast } from "@/components/ui/Toast";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 // --- Hooks ---
 
@@ -117,6 +119,8 @@ export default function DocumentsPage() {
   const [activeTab, setActiveTab] = useState<DocTab>("all");
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  // Confirm-delete dialog state (replaces window.confirm for deleting a document).
+  const [deleteDocId, setDeleteDocId] = useState<number | null>(null);
 
   const params: Record<string, number | string> = { page };
   if (searchUserId) params.user_id = Number(searchUserId);
@@ -190,7 +194,7 @@ export default function DocumentsPage() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      alert("Failed to download document.");
+      showToast("error", "Failed to download document.");
     }
   }, []);
 
@@ -684,11 +688,7 @@ export default function DocumentsPage() {
                           )}
                           {isHR && (
                             <button
-                              onClick={() => {
-                                if (window.confirm("Delete this document?")) {
-                                  deleteDoc.mutate(doc.id);
-                                }
-                              }}
+                              onClick={() => setDeleteDocId(doc.id)}
                               className="text-xs text-red-600 hover:text-red-800 font-medium"
                             >
                               Delete
@@ -729,6 +729,23 @@ export default function DocumentsPage() {
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        open={deleteDocId !== null}
+        title="Delete this document?"
+        description="This document will be permanently removed. This cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteDoc.isPending}
+        onConfirm={() => {
+          if (deleteDocId !== null) {
+            deleteDoc.mutate(deleteDocId, {
+              onSuccess: () => setDeleteDocId(null),
+            });
+          }
+        }}
+        onCancel={() => setDeleteDocId(null)}
+      />
     </div>
   );
 }

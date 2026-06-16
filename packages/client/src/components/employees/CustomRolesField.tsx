@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import api from "@/api/client";
+import { usePermissions } from "@/lib/use-permissions";
 
 function extractApiError(err: any): string {
   return (
@@ -30,17 +31,24 @@ export default function CustomRolesField({
   compact?: boolean;
 }) {
   const queryClient = useQueryClient();
+  // Reading/assigning custom roles requires roles:view / roles:manage. Without
+  // it both /roles/users/:id and /roles 403, and the field has no purpose, so
+  // we skip the fetches and render nothing (e.g. a self-service employee in
+  // their own edit form).
+  const { has } = usePermissions();
+  const canReadRoles = has("roles:view", "roles:manage");
 
   const { data: assigned = [], isLoading } = useQuery<any[]>({
     queryKey: ["user-custom-roles", userId],
     queryFn: () =>
       api.get(`/roles/users/${userId}`).then((r) => r.data?.data ?? []),
+    enabled: canReadRoles,
   });
 
   const { data: allRoles = [] } = useQuery<any[]>({
     queryKey: ["roles-list"],
     queryFn: () => api.get("/roles").then((r) => r.data?.data ?? []),
-    enabled: canEdit,
+    enabled: canEdit && canReadRoles,
   });
 
   const assign = useMutation({
@@ -68,6 +76,8 @@ export default function CustomRolesField({
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  if (!canReadRoles) return null;
 
   const assignedIds = new Set<number>(assigned.map((r: any) => r.id));
   const candidates = (allRoles as any[]).filter(

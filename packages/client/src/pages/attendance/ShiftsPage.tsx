@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Pencil, Trash2, X, Clock, Moon, Sun } from "lucide-react";
 import { showToast } from "@/components/ui/Toast";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 // #1930 — Pull a human-readable message off any axios error so the form
 // surfaces it instead of silently spinning. The validator returns Zod
@@ -55,6 +56,8 @@ export default function ShiftsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState<ShiftForm>(emptyForm);
+  // Confirm-delete dialog state (replaces window.confirm for deactivating a shift).
+  const [deleteShiftId, setDeleteShiftId] = useState<number | null>(null);
 
   const { data: shifts = [], isLoading } = useQuery({
     queryKey: ["shifts"],
@@ -83,7 +86,10 @@ export default function ShiftsPage() {
 
   const deleteShift = useMutation({
     mutationFn: (id: number) => api.delete(`/attendance/shifts/${id}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["shifts"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["shifts"] });
+      setDeleteShiftId(null);
+    },
     onError: (err: any) => {
       showToast("error", shiftErrorMessage(err, "Could not delete shift."));
     },
@@ -452,7 +458,7 @@ export default function ShiftsPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button onClick={() => handleEdit(s)} className="text-gray-400 hover:text-brand-600"><Pencil className="h-4 w-4" /></button>
-                      <button onClick={() => { if (confirm(t('attendance.shifts.deactivateConfirm'))) deleteShift.mutate(s.id); }} className="text-gray-400 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
+                      <button onClick={() => setDeleteShiftId(s.id)} className="text-gray-400 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>
                 </tr>
@@ -461,6 +467,16 @@ export default function ShiftsPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={deleteShiftId !== null}
+        title={t('attendance.shifts.deactivateConfirm')}
+        confirmText={t('common.deactivate', 'Deactivate')}
+        variant="danger"
+        loading={deleteShift.isPending}
+        onConfirm={() => deleteShiftId !== null && deleteShift.mutate(deleteShiftId)}
+        onCancel={() => setDeleteShiftId(null)}
+      />
     </div>
   );
 }

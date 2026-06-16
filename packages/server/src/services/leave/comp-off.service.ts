@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
+import { sanitizePlainText as cleanReason } from "../../utils/sanitize-html.js";
 
 interface CompOffRequest {
   id: number;
@@ -51,7 +52,7 @@ export async function requestCompOff(
     user_id: userId,
     worked_date: workedDate,
     expires_on: data.expires_on,
-    reason: data.reason,
+    reason: cleanReason(data.reason),
     days: data.days ?? 1,
     status: "pending",
     created_at: new Date(),
@@ -298,7 +299,7 @@ export async function rejectCompOff(
     .update({
       status: "rejected",
       approved_by: approverId,
-      rejection_reason: reason ?? null,
+      rejection_reason: cleanReason(reason),
       updated_at: new Date(),
     });
 

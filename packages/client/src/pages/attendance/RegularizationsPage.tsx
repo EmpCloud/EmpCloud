@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, X, Clock, Plus } from "lucide-react";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
+import { showToast } from "@/components/ui/Toast";
 
 type RegRow = {
   id: number;
@@ -109,6 +110,12 @@ export default function RegularizationsPage() {
   // truncated at 200px so admins couldn't read longer explanations; the
   // modal shows the full record (employee, times, reason, rejection note).
   const [selectedRow, setSelectedRow] = useState<RegRow | null>(null);
+  // Reject modal — replaces the native window.prompt() that was used to
+  // collect the rejection reason (jarring, unstyled, blocks the page, and
+  // inconsistent with the rest of the UI). `rejectTarget` holds the row id
+  // being rejected; `rejectReason` is the textarea value.
+  const [rejectTarget, setRejectTarget] = useState<number | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const { data: pendingData, isLoading: pendingLoading } = useQuery({
     queryKey: ["regularizations", "pending", page, locationId, appliedSearch],
@@ -164,13 +171,35 @@ export default function RegularizationsPage() {
   const processReg = useMutation({
     mutationFn: ({ id, status, rejection_reason }: { id: number; status: "approved" | "rejected"; rejection_reason?: string }) =>
       api.put(`/attendance/regularizations/${id}/approve`, { status, rejection_reason }).then((r) => r.data.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["regularizations"] }),
+    onSuccess: async () => {
+      // BUG-22: the pending list didn't drop the approved/rejected row until a
+      // manual refresh. invalidateQueries by default only refetches ACTIVE
+      // queries and resolves immediately without awaiting; await it with an
+      // explicit refetchType: "all" so every regularization query (pending /
+      // all / my) is refetched right away and the row disappears reactively.
+      await qc.invalidateQueries({ queryKey: ["regularizations"], refetchType: "all" });
+      // Close the reject modal once the rejection lands.
+      setRejectTarget(null);
+      setRejectReason("");
+    },
+    onError: (err: any) =>
+      showToast("error", err?.response?.data?.error?.message ?? "Action failed."),
   });
 
   const handleApprove = (id: number) => processReg.mutate({ id, status: "approved" });
+  // Open the reject modal instead of a native prompt(). The actual reject
+  // fires from the modal's Confirm button below.
   const handleReject = (id: number) => {
-    const reason = prompt(t('attendance.regularizations.rejectionPrompt'));
-    processReg.mutate({ id, status: "rejected", rejection_reason: reason || undefined });
+    setRejectReason("");
+    setRejectTarget(id);
+  };
+  const confirmReject = () => {
+    if (rejectTarget == null) return;
+    processReg.mutate({
+      id: rejectTarget,
+      status: "rejected",
+      rejection_reason: rejectReason.trim() || undefined,
+    });
   };
 
   const currentData = tab === "pending" ? pendingData : tab === "all" ? allData : myData;
@@ -549,6 +578,50 @@ export default function RegularizationsPage() {
                 className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"
               >
                 {t('common.close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject modal — replaces the native window.prompt() for collecting the
+          rejection reason. Styled to match the rest of the UI, with a textarea
+          (multi-line, unlike prompt), a Cancel, and a Confirm that fires the
+          rejection. The reason is optional. */}
+      {rejectTarget !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <X className="h-5 w-5 text-red-600" />
+              {t('attendance.regularizations.reject')}
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {t('attendance.regularizations.rejectionPrompt')}
+            </p>
+            <textarea
+              autoFocus
+              rows={3}
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder={t('attendance.regularizations.rejectionPlaceholder')}
+              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+            />
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => { setRejectTarget(null); setRejectReason(""); }}
+                disabled={processReg.isPending}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={confirmReject}
+                disabled={processReg.isPending}
+                className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {processReg.isPending ? t('common.loading') : t('attendance.regularizations.reject')}
               </button>
             </div>
           </div>

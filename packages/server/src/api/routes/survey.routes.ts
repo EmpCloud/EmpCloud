@@ -30,7 +30,7 @@ function isEmployeeRole(role: string): boolean {
 const router = Router();
 
 // GET /api/v1/surveys/active — Active surveys for employee to respond
-router.get("/active", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/active", authenticate, requirePermission("surveys:submit"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const surveys = await surveyService.getActiveSurveys(
       req.user!.org_id,
@@ -49,7 +49,7 @@ router.get("/dashboard", authenticate, requirePermission("surveys:view", "survey
 });
 
 // GET /api/v1/surveys/my-responses — Employee's past responses
-router.get("/my-responses", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/my-responses", authenticate, requirePermission("surveys:submit"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const responses = await surveyService.getMyResponses(
       req.user!.org_id,
@@ -258,8 +258,8 @@ router.delete("/:id", authenticate, requirePermission("surveys:manage"), async (
   } catch (err) { next(err); }
 });
 
-// POST /api/v1/surveys/:id/respond — Submit response (any auth user)
-router.post("/:id/respond", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+// POST /api/v1/surveys/:id/respond — Submit response (requires surveys:submit)
+router.post("/:id/respond", authenticate, requirePermission("surveys:submit"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = submitSurveyResponseSchema.parse(req.body);
     const result = await surveyService.submitResponse(

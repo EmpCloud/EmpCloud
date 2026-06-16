@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/api/client";
 import { FolderOpen, Plus, Pencil, Trash2, X } from "lucide-react";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 // --- Hooks ---
 
@@ -51,6 +52,9 @@ export default function DocumentCategoriesPage() {
   const [formName, setFormName] = useState("");
   const [formDesc, setFormDesc] = useState("");
   const [formMandatory, setFormMandatory] = useState(false);
+  // Confirm-deactivate dialog state (replaces window.confirm). Holds the
+  // category awaiting confirmation so the dialog can show its name.
+  const [deactivateTarget, setDeactivateTarget] = useState<{ id: number; name: string } | null>(null);
 
   const resetForm = () => {
     setShowForm(false);
@@ -208,11 +212,7 @@ export default function DocumentCategoriesPage() {
                         <Pencil className="h-3 w-3" /> Edit
                       </button>
                       <button
-                        onClick={() => {
-                          if (window.confirm(`Deactivate category "${cat.name}"? Documents in this category will remain.`)) {
-                            deleteCategory.mutate(cat.id);
-                          }
-                        }}
+                        onClick={() => setDeactivateTarget({ id: cat.id, name: cat.name })}
                         className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium"
                       >
                         <Trash2 className="h-3 w-3" /> Delete
@@ -225,6 +225,23 @@ export default function DocumentCategoriesPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={deactivateTarget !== null}
+        title={deactivateTarget ? `Deactivate category "${deactivateTarget.name}"?` : "Deactivate category?"}
+        description="Documents in this category will remain."
+        confirmText="Deactivate"
+        variant="danger"
+        loading={deleteCategory.isPending}
+        onConfirm={() => {
+          if (deactivateTarget) {
+            deleteCategory.mutate(deactivateTarget.id, {
+              onSuccess: () => setDeactivateTarget(null),
+            });
+          }
+        }}
+        onCancel={() => setDeactivateTarget(null)}
+      />
     </div>
   );
 }

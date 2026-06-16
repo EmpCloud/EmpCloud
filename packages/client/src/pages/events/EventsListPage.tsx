@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { Link } from "react-router-dom";
@@ -59,6 +60,7 @@ function formatTime(dateStr: string) {
 }
 
 export default function EventsListPage() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -100,7 +102,7 @@ export default function EventsListPage() {
       setDeleteError(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete event"),
+      setDeleteError(err?.response?.data?.error?.message || t("events.list.deleteFailed")),
   });
 
   const events = data?.data || [];
@@ -110,15 +112,15 @@ export default function EventsListPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Company Events</h1>
-          <p className="text-gray-500 mt-1">Browse and RSVP to company events.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("events.list.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("events.list.subtitle")}</p>
         </div>
         {isHR && (
           <Link
             to="/events/dashboard"
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Manage Events
+            <Plus className="h-4 w-4" /> {t("events.list.manage")}
           </Link>
         )}
       </div>
@@ -132,9 +134,9 @@ export default function EventsListPage() {
             onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
             className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Types</option>
+            <option value="">{t("events.list.allTypes")}</option>
             {Object.entries(EVENT_TYPE_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+              <option key={key} value={key}>{t(`events.list.type.${key}`, { defaultValue: cfg.label })}</option>
             ))}
           </select>
         </div>
@@ -143,9 +145,9 @@ export default function EventsListPage() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
         >
-          <option value="">All Statuses</option>
+          <option value="">{t("events.list.allStatuses")}</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-            <option key={key} value={key}>{cfg.label}</option>
+            <option key={key} value={key}>{t(`events.list.status.${key}`, { defaultValue: cfg.label })}</option>
           ))}
         </select>
       </div>
@@ -154,11 +156,11 @@ export default function EventsListPage() {
       <div className="space-y-4">
         {isLoading ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading events...
+            {t("events.list.loading")}
           </div>
         ) : events.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            No events found.
+            {t("events.list.empty")}
           </div>
         ) : (
           events.map((event: any) => {
@@ -175,14 +177,14 @@ export default function EventsListPage() {
                     {/* Badges */}
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${typeConfig.color}`}>
-                        {typeConfig.label}
+                        {t(`events.list.type.${event.event_type}`, { defaultValue: typeConfig.label })}
                       </span>
                       <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${statusConfig.color}`}>
-                        {statusConfig.label}
+                        {t(`events.list.status.${event.status}`, { defaultValue: statusConfig.label })}
                       </span>
                       {event.is_mandatory && (
                         <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-50 text-red-600">
-                          <Star className="h-3 w-3" /> Mandatory
+                          <Star className="h-3 w-3" /> {t("events.list.mandatory")}
                         </span>
                       )}
                     </div>
@@ -215,7 +217,7 @@ export default function EventsListPage() {
                         </span>
                       )}
                       {event.is_all_day && (
-                        <span className="text-xs text-gray-400">All Day</span>
+                        <span className="text-xs text-gray-400">{t("events.list.allDay")}</span>
                       )}
                       {event.location && (
                         <span className="flex items-center gap-1">
@@ -231,7 +233,7 @@ export default function EventsListPage() {
                           className="flex items-center gap-1 text-brand-600 hover:underline"
                         >
                           <Video className="h-3.5 w-3.5" />
-                          Join Online
+                          {t("events.list.joinOnline")}
                         </a>
                       )}
                       {/* #1948 — Hide the "0 attending" line when there are
@@ -240,8 +242,8 @@ export default function EventsListPage() {
                       {(event.attending_count > 0 || event.max_attendees) && (
                         <span className="flex items-center gap-1">
                           <Users className="h-3.5 w-3.5" />
-                          {event.attending_count || 0} attending
-                          {event.max_attendees ? ` / ${event.max_attendees} max` : ""}
+                          {t("events.list.attending", { count: event.attending_count || 0 })}
+                          {event.max_attendees ? t("events.list.maxSuffix", { max: event.max_attendees }) : ""}
                         </span>
                       )}
                     </div>
@@ -259,9 +261,9 @@ export default function EventsListPage() {
                               ? "bg-green-100 border-green-400 text-green-700"
                               : "border-green-200 text-green-600 hover:bg-green-50"
                           }`}
-                          title="Attending"
+                          title={t("events.list.titleAttending")}
                         >
-                          <CheckCircle className="h-3.5 w-3.5" /> Yes
+                          <CheckCircle className="h-3.5 w-3.5" /> {t("events.list.rsvpYes")}
                         </button>
                         <button
                           onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "maybe" })}
@@ -271,9 +273,9 @@ export default function EventsListPage() {
                               ? "bg-amber-100 border-amber-400 text-amber-700"
                               : "border-amber-200 text-amber-600 hover:bg-amber-50"
                           }`}
-                          title="Maybe"
+                          title={t("events.list.titleMaybe")}
                         >
-                          <HelpCircle className="h-3.5 w-3.5" /> Maybe
+                          <HelpCircle className="h-3.5 w-3.5" /> {t("events.list.rsvpMaybe")}
                         </button>
                         <button
                           onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "declined" })}
@@ -283,9 +285,9 @@ export default function EventsListPage() {
                               ? "bg-red-100 border-red-400 text-red-700"
                               : "border-red-200 text-red-600 hover:bg-red-50"
                           }`}
-                          title="Decline"
+                          title={t("events.list.titleDecline")}
                         >
-                          <XCircle className="h-3.5 w-3.5" /> No
+                          <XCircle className="h-3.5 w-3.5" /> {t("events.list.rsvpNo")}
                         </button>
                       </>
                     )}
@@ -296,7 +298,7 @@ export default function EventsListPage() {
                           setDeleteError(null);
                         }}
                         className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
-                        title="Delete event"
+                        title={t("events.list.titleDelete")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -313,7 +315,7 @@ export default function EventsListPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("events.list.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -321,14 +323,14 @@ export default function EventsListPage() {
               disabled={page === 1}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
+              <ChevronLeft className="h-4 w-4" /> {t("events.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next <ChevronRight className="h-4 w-4" />
+              {t("events.list.next")} <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -350,11 +352,9 @@ export default function EventsListPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete event?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("events.list.deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
-                    This permanently removes the event and its RSVPs. This cannot be undone.
+                    {t("events.list.deleteConfirm", { title: deleteTarget.title })}
                   </p>
                 </div>
               </div>
@@ -371,7 +371,7 @@ export default function EventsListPage() {
                 disabled={deleteMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("events.list.cancel")}
               </button>
               <button
                 type="button"
@@ -381,10 +381,10 @@ export default function EventsListPage() {
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("events.list.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("events.list.delete")
                 )}
               </button>
             </div>

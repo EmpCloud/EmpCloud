@@ -5,6 +5,7 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { sanitizePlainText as cleanReason } from "../../utils/sanitize-html.js";
 import * as balanceService from "./leave-balance.service.js";
 import type { LeaveApplication, ApplyLeaveInput, UpdateLeaveInput } from "@empcloud/shared";
 
@@ -290,7 +291,7 @@ export async function applyLeave(
     days_count: data.days_count,
     is_half_day: data.is_half_day ?? false,
     half_day_type: data.half_day_type ?? null,
-    reason: data.reason,
+    reason: cleanReason(data.reason),
     status: leaveType.requires_approval ? "pending" : "approved",
     current_approver_id: approverId,
     created_at: new Date(),
@@ -380,12 +381,14 @@ export async function cancelLeave(
 
     // Remove the synthetic attendance rows that approval created for this
     // leave so a cancelled leave no longer counts as paid leave in payroll,
-    // nor shows as L/HPL on the Attendance Grid. Scope is tight on purpose:
-    // only this leave's own date range, and only the two system leave
-    // statuses. The "cannot cancel leave that has already started" guard
-    // above guarantees the whole range is today-or-future, so there are no
-    // real punches in this window to clobber. Date strings are built with
-    // local getters to match how approveLeave wrote them. (cancel-cleanup F4)
+    // nor shows as L/HPL/H on the Attendance Grid. Scope is tight on purpose:
+    // only this leave's own date range, and only the system leave-generated
+    // statuses — `on_leave` (full day), legacy `half_present_half_leave`
+    // (pre-fix half-day rows), and `half_day` (what a half-day leave now
+    // writes). The "cannot cancel leave that has already started" guard above
+    // guarantees the whole range is today-or-future, so there are no real
+    // punches in this window to clobber. Date strings are built with local
+    // getters to match how approveLeave wrote them. (cancel-cleanup F4)
     const toIso = (v: unknown): string | null => {
       const d = v instanceof Date ? v : new Date(v as any);
       return Number.isNaN(d.getTime())
@@ -398,7 +401,7 @@ export async function cancelLeave(
       await db("attendance_records")
         .where({ organization_id: orgId, user_id: application.user_id })
         .whereBetween("date", [startIso, endIso])
-        .whereIn("status", ["on_leave", "half_present_half_leave"])
+        .whereIn("status", ["on_leave", "half_present_half_leave", "half_day"])
         .del();
     }
   }
@@ -450,7 +453,7 @@ export async function updateLeave(
     end_date: data.end_date ?? toDateStr(existing.end_date),
     is_half_day: data.is_half_day ?? Boolean(existing.is_half_day),
     half_day_type: data.half_day_type !== undefined ? data.half_day_type : existing.half_day_type,
-    reason: data.reason ?? existing.reason,
+    reason: data.reason !== undefined ? cleanReason(data.reason) : existing.reason,
     days_count: data.days_count ?? Number(existing.days_count),
   };
 
@@ -564,7 +567,7 @@ export async function updateLeave(
       days_count: merged.days_count,
       is_half_day: merged.is_half_day,
       half_day_type: merged.half_day_type ?? null,
-      reason: merged.reason,
+      reason: cleanReason(merged.reason),
       updated_at: new Date(),
     });
 
@@ -764,11 +767,23 @@ export async function approveLeave(
             .where({ organization_id: orgId, user_id: application.user_id, date: dateStr })
             .first();
 
-          // A half-day leave is stored as `half_present_half_leave` (HPL) so
-          // payroll books 0.5 leave + 0.5 worked instead of a full leave day,
-          // matching how the Attendance Grid already classifies it. A full-day
-          // leave stays `on_leave`. (half-day F3)
-          const leaveStatus = application.is_half_day ? "half_present_half_leave" : "on_leave";
+          // A half-day leave books 0.5 PAID leave + 0.5 for the *other* half.
+          // We must NOT assume that other half was worked. `half_present_half_leave`
+          // (HPL) pays the worked half unconditionally — the payroll engine only
+          // charges LOP on the leave half, and only when that leave is unpaid
+          // (payroll.service.ts resolveCalendarLop) — so a half-day-leave taker who
+          // never actually punches in gets paid a FULL day for a day they were
+          // half-absent. That is the over-pay bug (Rama / 12-Jun: HPL + paid EL +
+          // zero punches => 0 LOP => full pay). Instead record `half_day`, which the
+          // engine ALWAYS books as 0.5 paid + 0.5 LOP: the leave half stays paid,
+          // the un-worked other half is correctly unpaid.
+          //
+          // Safe for employees who DO work the other half: recordPunch() overwrites
+          // this row's status from the real punches on the first tap, so the status
+          // chosen here only ever survives on a no-punch day — exactly the case that
+          // must not be paid in full. A full-day leave stays `on_leave`.
+          // (half-day F3 / LOP no-punch fix)
+          const leaveStatus = application.is_half_day ? "half_day" : "on_leave";
 
           if (!existing) {
             // #1395/#1357 — The attendance_records table does not have a "source"

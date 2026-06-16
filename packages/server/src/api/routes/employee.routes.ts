@@ -454,7 +454,7 @@ router.post("/", authenticate, requirePermission("employees:invite"), async (req
 });
 
 // GET /api/v1/employees/:id/profile
-router.get("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:view_all", "employees:view_team"]), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:view_all", "employees:view_team"], ["employees:view"]), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const profile = await profileService.getProfile(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, profile);
@@ -462,7 +462,7 @@ router.get("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:view_
 });
 
 // PUT /api/v1/employees/:id/profile
-router.put("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:edit_all"]), async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:edit_all"], ["employees:edit_own"]), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = upsertEmployeeProfileSchema.parse(req.body);
     // Allow reporting_manager_id to pass through (handled by service, lives on users table)
@@ -514,7 +514,7 @@ router.put("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:edit_
 // =========================================================================
 
 // POST /api/v1/employees/:id/photo
-router.post("/:id/photo", authenticate, requireSelfOrHR("id", ["employees:edit_all"]), photoUpload.single("photo"), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/:id/photo", authenticate, requireSelfOrHR("id", ["employees:edit_all"], ["employees:edit_own"]), photoUpload.single("photo"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) throw new ValidationError("No photo file provided");
     const userId = paramInt(req.params.id);
@@ -548,7 +548,7 @@ router.get("/:id/photo", authenticate, async (req: Request, res: Response, next:
 // #1650 — "Option to revert to initials avatar" from the issue. Removes the
 // stored file from disk and clears `photo_path` so display fallbacks kick in
 // everywhere. Self or HR only — same auth as upload.
-router.delete("/:id/photo", authenticate, requireSelfOrHR("id", ["employees:edit_all"]), async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id/photo", authenticate, requireSelfOrHR("id", ["employees:edit_all"], ["employees:edit_own"]), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = paramInt(req.params.id);
     const orgId = req.user!.org_id;

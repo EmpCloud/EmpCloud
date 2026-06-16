@@ -8,6 +8,7 @@ import { AiBadge } from "@/components/AiBadge";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { usePermissions } from "@/lib/use-permissions";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
+import { showToast } from "@/components/ui/Toast";
 import * as XLSX from "xlsx";
 
 export default function AttendanceDashboardPage() {
@@ -230,7 +231,7 @@ export default function AttendanceDashboardPage() {
       }
       setShowExport(false);
     } catch (err) {
-      alert(t('attendance.export.exportFailed'));
+      showToast("error", t('attendance.export.exportFailed'));
     } finally {
       setExporting(false);
     }
