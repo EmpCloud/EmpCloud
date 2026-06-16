@@ -1290,9 +1290,11 @@ export async function getMonthlyGrid(
   // previously read ONLY attendance_records, so a day with an approved
   // leave (especially a HALF-day leave the employee partly worked) showed
   // as plain "Present" with no sign of the leave. We now fold leaves in:
-  //   - full-day leave            -> L
-  //   - half-day leave + worked   -> HPL (½ present + ½ leave)
-  //   - half-day leave + no work  -> L
+  //   - full-day leave                       -> L
+  //   - half-day leave + other half worked   -> HPL (½ present + ½ leave)
+  //   - half-day leave + half_day row (no
+  //     punch — approveLeave's no-show marker) -> H  (½ paid + ½ unpaid)
+  //   - half-day leave + nothing worked       -> L
   // and surface the leave type code (EL / CL / …) per date so the FE can
   // label it. Multi-day leaves are expanded across the month.
   const leaveByUser: Record<
@@ -1402,22 +1404,26 @@ export async function getMonthlyGrid(
         else if (isWeekoff) code = "WOT";
       }
       // Approved leave on this date wins over a plain present/blank cell:
-      //   half-day leave + worked (P/H) -> HPL ; otherwise (no work) -> L
-      //   full-day leave                -> L
+      //   full-day leave                       -> L
+      //   half-day leave + other half worked   -> HPL (½ present + ½ leave)
+      //   half-day leave + half_day row (no
+      //     punch — approveLeave's no-show marker) -> H  (½ paid + ½ unpaid)
+      //   half-day leave + nothing worked      -> L
       const lv = leaveMap[d.date];
       if (lv) {
         if (lv.isHalf) {
-          // Half-day leave -> HPL when the OTHER half was actually worked.
-          // "Worked" includes a row stamped `on_leave` that still carries
-          // punches / worked_minutes (real === "L" but workedByUser is true)
-          // -- exactly the half-present-half-leave case the stored status
-          // failed to capture.
-          const workedHalf =
-            real === "P" ||
-            real === "H" ||
-            real === "HPL" ||
-            workedByUser[u.user_id]?.[d.date] === true;
-          code = workedHalf ? "HPL" : "L";
+          // HPL ONLY when the OTHER half was genuinely worked: a full present
+          // row, or any row carrying real punches / worked_minutes (this also
+          // covers an `on_leave` row that still has punches — the classic
+          // half-present-half-leave the stored status missed). A bare
+          // `half_day` with NO punches is approveLeave's marker for a half-day
+          // leave whose other half was NOT worked — it must read as H (½ paid
+          // + ½ unpaid), never HPL (which would imply a full paid day).
+          const workedOtherHalf =
+            real === "P" || workedByUser[u.user_id]?.[d.date] === true;
+          if (workedOtherHalf) code = "HPL";
+          else if (real === "H") code = "H";
+          else code = "L";
         } else {
           code = "L";
         }
