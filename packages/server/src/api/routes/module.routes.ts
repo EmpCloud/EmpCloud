@@ -10,23 +10,8 @@ import * as moduleService from "../../services/module/module.service.js";
 import { createModuleSchema, updateModuleSchema, ROLE_HIERARCHY } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
-import * as planPricingAdmin from "../../services/admin/plan-pricing-admin.service.js";
 
 const router = Router();
-
-// GET /api/v1/modules/pricing/public — feeds the customer Subscribe modal.
-// Returns active tiers (with name + description + per-seat price for the
-// given currency + seat count) and active billing cycles (with discount
-// pct and months-in-cycle). Authenticated so the modal is only visible
-// to logged-in users, but ANY role can read -- it's the public price card.
-router.get("/pricing/public", authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const currency = String(req.query.currency || "INR");
-    const seats = Number(req.query.seats || 1);
-    const out = await planPricingAdmin.getPublicPricing(currency, seats);
-    sendSuccess(res, out);
-  } catch (err) { next(err); }
-});
 
 /** Strip internal fields (webhook_secret) from module data for non-admin users.
  *  base_url is kept for all authenticated users — needed for SSO redirect. */

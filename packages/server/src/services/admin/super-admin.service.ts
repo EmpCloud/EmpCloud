@@ -13,43 +13,27 @@ import { logger } from "../../utils/logger.js";
 export async function getPlatformOverview() {
   const db = getDB();
 
-  // Exclude org_id=0 (platform sentinel) and the super_admin users on
-  // it from every aggregate -- they're internal, not real tenants /
-  // employees, and would inflate every overview KPI by 1.
-  const [orgCount] = await db("organizations").where("id", ">", 0).count("id as count");
-  const [userCount] = await db("users").where("organization_id", ">", 0).count("id as count");
+  const [orgCount] = await db("organizations").count("id as count");
+  const [userCount] = await db("users").count("id as count");
   const [activeSubCount] = await db("org_subscriptions")
-    .where("organization_id", ">", 0)
     .whereIn("status", ["active", "trial"])
     .count("id as count");
 
-  // MRR = SUM(price_per_seat * total_seats / months_in_cycle).
-  // price_per_seat is now the EFFECTIVE per-cycle price (not the monthly
-  // base it used to be). Normalise to monthly by dividing by the cycle's
-  // months_in_cycle so an annual ₹4,800/seat doesn't masquerade as
-  // ₹4,800/month. LEFT JOIN with COALESCE(...,1) keeps the math defined
-  // for any subscription on an unknown cycle string.
-  const [mrrResult] = await db("org_subscriptions as s")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-    .whereIn("s.status", ["active", "trial"])
-    .where("s.organization_id", ">", 0)
-    .select(
-      db.raw(
-        "COALESCE(SUM((s.price_per_seat * s.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as mrr",
-      ),
-    );
+  // MRR = SUM(price_per_seat * total_seats) for active subscriptions
+  // Uses total_seats (purchased) not used_seats (assigned) — revenue is based on what the customer pays for
+  const [mrrResult] = await db("org_subscriptions")
+    .whereIn("status", ["active", "trial"])
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as mrr"));
 
   const mrr = Number(mrrResult.mrr);
 
-  // New orgs this month — same sentinel guard as above.
+  // New orgs this month
   const [newOrgsThisMonth] = await db("organizations")
-    .where("id", ">", 0)
     .where("created_at", ">=", db.raw("DATE_FORMAT(NOW(), '%Y-%m-01')"))
     .count("id as count");
 
   // New users this month
   const [newUsersThisMonth] = await db("users")
-    .where("organization_id", ">", 0)
     .where("created_at", ">=", db.raw("DATE_FORMAT(NOW(), '%Y-%m-01')"))
     .count("id as count");
 
@@ -80,13 +64,7 @@ export async function getOrgList(params: {
   const perPage = params.per_page || 20;
   const offset = (page - 1) * perPage;
 
-  // Hide the platform sentinel org (id=0) from every super-admin org
-  // listing. It's the reserved row that super_admin users live on so
-  // they don't leak into tenant lists, and it satisfies the
-  // oauth_access_tokens.organization_id FK -- it is NOT a real customer
-  // tenant, so it must not appear here, in the org count, or in
-  // monthly-spend rollups. Anything else (id > 0) is a real org.
-  let baseQuery = db("organizations as o").where("o.id", ">", 0);
+  let baseQuery = db("organizations as o");
 
   if (params.search) {
     baseQuery = baseQuery.where(function () {
@@ -131,20 +109,11 @@ export async function getOrgList(params: {
       "sc.organization_id"
     )
     .leftJoin(
-      // monthly_spend per org. price_per_seat is the EFFECTIVE per-cycle
-      // amount, so normalise by months_in_cycle to get a true MRR.
-      // Annual ₹4,800/seat → ₹400/seat/mo. Otherwise the org-list inflates
-      // annual customers by 12x in the "monthly spend" column.
-      db("org_subscriptions as s")
-        .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-        .select("s.organization_id")
-        .whereIn("s.status", ["active", "trial"])
-        .select(
-          db.raw(
-            "COALESCE(SUM((s.price_per_seat * s.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as spend",
-          ),
-        )
-        .groupBy("s.organization_id")
+      db("org_subscriptions")
+        .select("organization_id")
+        .whereIn("status", ["active", "trial"])
+        .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as spend"))
+        .groupBy("organization_id")
         .as("sp"),
       "o.id",
       "sp.organization_id"
@@ -212,17 +181,11 @@ export async function getOrgDetail(orgId: number) {
     )
     .orderBy("s.created_at", "desc");
 
-  // Monthly revenue from this org. Normalised by months_in_cycle so
-  // annual/quarterly subs are reported at their true monthly cost.
-  const [revenueResult] = await db("org_subscriptions as s")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-    .where({ "s.organization_id": orgId })
-    .whereIn("s.status", ["active", "trial"])
-    .select(
-      db.raw(
-        "COALESCE(SUM((s.price_per_seat * s.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as monthly_revenue",
-      ),
-    );
+  // Revenue from this org (based on total_seats purchased, not just assigned)
+  const [revenueResult] = await db("org_subscriptions")
+    .where({ organization_id: orgId })
+    .whereIn("status", ["active", "trial"])
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as monthly_revenue"));
 
   // Total all-time revenue estimate (all subs including cancelled)
   const [totalSpendResult] = await db("org_subscriptions")
@@ -260,22 +223,14 @@ export async function getModuleAnalytics() {
 
   const modules = await db("modules as m")
     .leftJoin(
-      // Per-module revenue. price_per_seat is per-cycle; divide by
-      // months_in_cycle for true MRR. LEFT JOIN with COALESCE keeps the
-      // calc defined when a subscription is on an unknown cycle string.
-      db("org_subscriptions as os")
-        .leftJoin("billing_cycle_discounts as b", "os.billing_cycle", "b.cycle")
-        .whereIn("os.status", ["active", "trial"])
-        .select("os.module_id")
-        .count("os.id as subscriber_count")
-        .sum("os.total_seats as total_seats")
-        .sum("os.used_seats as used_seats")
-        .select(
-          db.raw(
-            "COALESCE(SUM((os.price_per_seat * os.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as revenue",
-          ),
-        )
-        .groupBy("os.module_id")
+      db("org_subscriptions")
+        .whereIn("status", ["active", "trial"])
+        .select("module_id")
+        .count("id as subscriber_count")
+        .sum("total_seats as total_seats")
+        .sum("used_seats as used_seats")
+        .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue"))
+        .groupBy("module_id")
         .as("s"),
       "m.id",
       "s.module_id"
@@ -331,60 +286,52 @@ export async function getModuleAnalytics() {
 export async function getRevenueAnalytics(period: string = "12m") {
   const db = getDB();
 
-  // MRR — every revenue total in this analytics block normalises
-  // (price_per_seat × seats) by months_in_cycle so annual/quarterly
-  // subscriptions don't masquerade as 12×/3× their actual monthly
-  // recurring revenue. LEFT JOIN with COALESCE(b.months_in_cycle, 1)
-  // is the same shape used in getPlatformOverview and the org list.
-  const mrrExpr =
-    "COALESCE(SUM((s.price_per_seat * s.total_seats) / COALESCE(b.months_in_cycle, 1)), 0)";
-
-  const [mrrResult] = await db("org_subscriptions as s")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-    .whereIn("s.status", ["active", "trial"])
-    .select(db.raw(`${mrrExpr} as mrr`));
+  // MRR = SUM(price_per_seat * total_seats) — revenue is based on purchased seats
+  const [mrrResult] = await db("org_subscriptions")
+    .whereIn("status", ["active", "trial"])
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as mrr"));
   const mrr = Number(mrrResult.mrr);
 
   // Previous month MRR for growth calculation
-  const [prevMrrResult] = await db("org_subscriptions as s")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-    .whereIn("s.status", ["active", "trial"])
-    .where("s.created_at", "<", db.raw("DATE_FORMAT(NOW(), '%Y-%m-01')"))
-    .select(db.raw(`${mrrExpr} as mrr`));
+  const [prevMrrResult] = await db("org_subscriptions")
+    .whereIn("status", ["active", "trial"])
+    .where("created_at", "<", db.raw("DATE_FORMAT(NOW(), '%Y-%m-01')"))
+    .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as mrr"));
   const prevMrr = Number(prevMrrResult.mrr);
   const mrrGrowth = prevMrr > 0 ? Math.round(((mrr - prevMrr) / prevMrr) * 100) : 0;
 
-  // Revenue by module (pie chart) — MRR per module
+  // Revenue by module (pie chart)
   const revenueByModule = await db("org_subscriptions as s")
     .join("modules as m", "s.module_id", "m.id")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
     .whereIn("s.status", ["active", "trial"])
     .groupBy("m.id", "m.name", "m.slug")
-    .select("m.name", "m.slug", db.raw(`${mrrExpr} as revenue`))
+    .select(
+      "m.name",
+      "m.slug",
+      db.raw("COALESCE(SUM(s.price_per_seat * s.total_seats), 0) as revenue")
+    )
     .orderBy("revenue", "desc");
 
-  // Revenue trend by month (last N months based on subscription creation)
+  // Revenue trend by month (last 12 months based on subscription creation)
   const months = period === "6m" ? 6 : 12;
   const revenueTrend = await db("org_subscriptions as s")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
     .whereIn("s.status", ["active", "trial", "cancelled"])
     .where("s.created_at", ">=", db.raw(`DATE_SUB(NOW(), INTERVAL ${months} MONTH)`))
     .select(
       db.raw("DATE_FORMAT(s.created_at, '%Y-%m') as month"),
-      db.raw(`${mrrExpr} as revenue`),
+      db.raw("COALESCE(SUM(s.price_per_seat * s.total_seats), 0) as revenue")
     )
     .groupByRaw("DATE_FORMAT(s.created_at, '%Y-%m')")
     .orderBy("month", "asc");
 
   // Revenue by plan tier
-  const revenueByTier = await db("org_subscriptions as s")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-    .whereIn("s.status", ["active", "trial"])
-    .groupBy("s.plan_tier")
+  const revenueByTier = await db("org_subscriptions")
+    .whereIn("status", ["active", "trial"])
+    .groupBy("plan_tier")
     .select(
-      "s.plan_tier",
-      db.raw(`${mrrExpr} as revenue`),
-      db.raw("COUNT(s.id) as count"),
+      "plan_tier",
+      db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue"),
+      db.raw("COUNT(id) as count")
     )
     .orderBy("revenue", "desc");
 
@@ -398,20 +345,17 @@ export async function getRevenueAnalytics(period: string = "12m") {
       db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue")
     );
 
-  // Top 10 customers by monthly spend (MRR per customer). Same
-  // months_in_cycle normalisation so annual customers don't dominate
-  // by 12x their real monthly rate.
+  // Top 10 customers by spend
   const topCustomers = await db("org_subscriptions as s")
     .join("organizations as o", "s.organization_id", "o.id")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
     .whereIn("s.status", ["active", "trial"])
     .groupBy("o.id", "o.name", "o.email")
     .select(
       "o.id",
       "o.name",
       "o.email",
-      db.raw(`${mrrExpr} as total_spend`),
-      db.raw("COUNT(s.id) as subscription_count"),
+      db.raw("COALESCE(SUM(s.price_per_seat * s.total_seats), 0) as total_spend"),
+      db.raw("COUNT(s.id) as subscription_count")
     )
     .orderBy("total_spend", "desc")
     .limit(10);
@@ -680,7 +624,6 @@ export async function getOverdueOrganizations() {
   const orgs = await db("org_subscriptions as s")
     .join("organizations as o", "s.organization_id", "o.id")
     .join("modules as m", "s.module_id", "m.id")
-    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
     .whereIn("s.status", ["past_due", "suspended", "deactivated"])
     .select(
       "o.id as org_id",
@@ -693,10 +636,6 @@ export async function getOverdueOrganizations() {
       "s.plan_tier",
       "s.total_seats",
       "s.price_per_seat",
-      "s.billing_cycle",
-      // Carry the cycle length so the JS-side per-row monthly_amount
-      // calc can normalise (price_per_seat is per-cycle).
-      "b.months_in_cycle as months_in_cycle",
       "s.current_period_end",
       "s.dunning_stage",
       "s.updated_at",
@@ -721,12 +660,7 @@ export async function getOverdueOrganizations() {
       plan_tier: row.plan_tier,
       total_seats: row.total_seats,
       price_per_seat: Number(row.price_per_seat),
-      // price_per_seat is per-cycle; divide by months_in_cycle for
-      // a truthful monthly amount.
-      monthly_amount: Math.round(
-        (Number(row.price_per_seat) * row.total_seats) /
-          Math.max(1, Number(row.months_in_cycle) || 1),
-      ),
+      monthly_amount: Number(row.price_per_seat) * row.total_seats,
       current_period_end: row.current_period_end,
       overdue_days: overdueDays,
       dunning_stage: row.dunning_stage || "current",
@@ -744,19 +678,13 @@ export async function getModuleAdoption() {
 
   const adoption = await db("modules as m")
     .leftJoin(
-      // Per-module MRR. Same per-cycle → monthly normalisation pattern.
-      db("org_subscriptions as os")
-        .leftJoin("billing_cycle_discounts as b", "os.billing_cycle", "b.cycle")
-        .whereIn("os.status", ["active", "trial"])
-        .select("os.module_id")
-        .count("os.id as org_count")
-        .sum("os.total_seats as total_seats")
-        .select(
-          db.raw(
-            "COALESCE(SUM((os.price_per_seat * os.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as revenue",
-          ),
-        )
-        .groupBy("os.module_id")
+      db("org_subscriptions")
+        .whereIn("status", ["active", "trial"])
+        .select("module_id")
+        .count("id as org_count")
+        .sum("total_seats as total_seats")
+        .select(db.raw("COALESCE(SUM(price_per_seat * total_seats), 0) as revenue"))
+        .groupBy("module_id")
         .as("s"),
       "m.id",
       "s.module_id"

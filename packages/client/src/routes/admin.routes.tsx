@@ -8,9 +8,6 @@ const OrgDetailPage = lazy(() => import("@/pages/admin/OrgDetailPage"));
 const ModuleAnalyticsPage = lazy(() => import("@/pages/admin/ModuleAnalyticsPage"));
 const RevenueAnalyticsPage = lazy(() => import("@/pages/admin/RevenueAnalyticsPage"));
 const SubscriptionMetricsPage = lazy(() => import("@/pages/admin/SubscriptionMetricsPage"));
-const SubscriptionsAdminPage = lazy(() => import("@/pages/admin/SubscriptionsAdminPage"));
-const PricingManagementPage = lazy(() => import("@/pages/admin/PricingManagementPage"));
-const InvoicesAdminPage = lazy(() => import("@/pages/admin/InvoicesAdminPage"));
 const AIConfigPage = lazy(() => import("@/pages/admin/AIConfigPage"));
 const LogDashboardPage = lazy(() => import("@/pages/admin/LogDashboardPage"));
 const PlatformSettingsPage = lazy(() => import("@/pages/admin/PlatformSettingsPage"));
@@ -47,9 +44,6 @@ export const adminRoutes = (
     <Route path="/admin/modules" element={<RequireRole roles={["super_admin"]}><ModuleAnalyticsPage /></RequireRole>} />
     <Route path="/admin/revenue" element={<RequireRole roles={["super_admin"]}><RevenueAnalyticsPage /></RequireRole>} />
     <Route path="/admin/subscriptions" element={<RequireRole roles={["super_admin"]}><SubscriptionMetricsPage /></RequireRole>} />
-    <Route path="/admin/subscriptions-manage" element={<RequireRole roles={["super_admin"]}><SubscriptionsAdminPage /></RequireRole>} />
-    <Route path="/admin/pricing" element={<RequireRole roles={["super_admin"]}><PricingManagementPage /></RequireRole>} />
-    <Route path="/admin/invoices" element={<RequireRole roles={["super_admin"]}><InvoicesAdminPage /></RequireRole>} />
     <Route path="/admin/ai-config" element={<RequireRole roles={["super_admin"]}><AIConfigPage /></RequireRole>} />
     <Route path="/admin/logs" element={<RequireRole roles={["super_admin"]}><LogDashboardPage /></RequireRole>} />
     <Route path="/admin/health" element={<RequireRole roles={["super_admin"]}><HealthDashboardPage /></RequireRole>} />

@@ -1,7 +1,7 @@
 import { getDB } from "../../db/connection.js";
 import { logger } from "../../utils/logger.js";
 import * as billingEmitter from "../billing/empcloud-webhook-emitter.js";
-import { getEffectivePricePerSeat, getOrgCurrency } from "./pricing.js";
+import { getPricePerSeat, getOrgCurrency } from "./pricing.js";
 
 interface ExpiredTrialResult {
   scanned: number;
@@ -59,12 +59,7 @@ export async function buildTrialEndPayload(params: {
     trial_ends_at: null,
     current_period_start: now,
     current_period_end: computePeriodEnd(now, params.billingCycle),
-    price_per_seat: await getEffectivePricePerSeat(
-      params.planTier,
-      currency,
-      params.billingCycle || "monthly",
-      Number((params as any).totalSeats) || 1,
-    ),
+    price_per_seat: getPricePerSeat(params.planTier, currency),
     currency,
     updated_at: now,
   };
