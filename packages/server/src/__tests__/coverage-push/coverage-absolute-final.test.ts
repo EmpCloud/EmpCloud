@@ -924,14 +924,14 @@ describe("import.service", () => {
 describe("subscription/pricing", () => {
   it("81: getPricePerSeat returns a number", async () => {
     const { getPricePerSeat } = await import("../../services/subscription/pricing.js");
-    const price = getPricePerSeat("basic", "INR");
+    const price = await getPricePerSeat("basic", "INR");
     expect(typeof price).toBe("number");
     expect(price).toBeGreaterThan(0);
   });
 
   it("82: getPricePerSeat for USD", async () => {
     const { getPricePerSeat } = await import("../../services/subscription/pricing.js");
-    const price = getPricePerSeat("basic", "USD");
+    const price = await getPricePerSeat("basic", "USD");
     expect(typeof price).toBe("number");
   });
 

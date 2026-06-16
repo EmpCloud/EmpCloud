@@ -66,7 +66,7 @@ async function billingFetch<T = any>(
 }
 
 // Like billingFetch but returns the full envelope { success, data, meta }
-async function billingFetchRaw(
+export async function billingFetchRaw(
   method: string,
   path: string,
   body?: unknown
