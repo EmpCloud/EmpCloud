@@ -4,13 +4,14 @@ import { CalendarDays, ChevronDown, X } from "lucide-react";
 import { DayPicker, type DateRange } from "react-day-picker";
 import "react-day-picker/style.css";
 
-// Conservative panel-height estimate used on the FIRST paint before
-// the real DOM node has been measured. The placement logic re-runs in
-// a rAF after mount and replaces this with the actual offsetHeight, so
-// being a bit pessimistic here is fine -- it just means we may flip up
-// preemptively on the very first frame.
-const PICKER_HEIGHT_FALLBACK = 520;
-const PICKER_WIDTH = 340;
+// Conservative panel-size estimates used on the FIRST paint before the real
+// DOM node has been measured. The placement logic re-runs in a rAF after
+// mount and replaces these with the actual offset size, so being a bit
+// pessimistic here is fine -- it just means we may flip up / shift on the
+// very first frame. The dual-month + preset-sidebar layout is wide, so the
+// estimate is generous; actual width is measured once mounted.
+const PICKER_HEIGHT_FALLBACK = 420;
+const PICKER_WIDTH = 720;
 const VIEWPORT_MARGIN = 8;
 
 type Props = {
@@ -28,7 +29,8 @@ const fmt = (iso: string): string => {
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
   if (isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  // "June 05, 2026" — long month + zero-padded day, matching the reference UI.
+  return d.toLocaleDateString(undefined, { month: "long", day: "2-digit", year: "numeric" });
 };
 
 const isoOf = (d: Date): string => {
@@ -42,6 +44,53 @@ const parseIso = (iso: string): Date | undefined => {
   if (!iso) return undefined;
   const d = new Date(iso + "T00:00:00");
   return isNaN(d.getTime()) ? undefined : d;
+};
+
+// Preset definitions + range math, shared by the sidebar buttons and the
+// "which preset does the current selection match?" detection that drives the
+// active highlight.
+type PresetKey = "today" | "yesterday" | "last7" | "last30" | "thisMonth" | "lastMonth";
+
+const PRESETS: { key: PresetKey; label: string }[] = [
+  { key: "today", label: "Today" },
+  { key: "yesterday", label: "Yesterday" },
+  { key: "last7", label: "Last 7 Days" },
+  { key: "last30", label: "Last 30 Days" },
+  { key: "thisMonth", label: "This Month" },
+  { key: "lastMonth", label: "Last Month" },
+];
+
+const presetRange = (kind: PresetKey): { from: Date; to: Date } => {
+  const now = new Date();
+  let start: Date;
+  let end: Date = now;
+  switch (kind) {
+    case "today":
+      start = now;
+      break;
+    case "yesterday":
+      start = new Date(now);
+      start.setDate(now.getDate() - 1);
+      end = new Date(start);
+      break;
+    case "last7":
+      start = new Date(now);
+      start.setDate(now.getDate() - 6);
+      break;
+    case "last30":
+      start = new Date(now);
+      start.setDate(now.getDate() - 29);
+      break;
+    case "thisMonth":
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = now;
+      break;
+    case "lastMonth":
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth(), 0);
+      break;
+  }
+  return { from: start, to: end };
 };
 
 export function DateRangePicker({
@@ -59,6 +108,9 @@ export function DateRangePicker({
     from: parseIso(from),
     to: parseIso(to),
   }));
+  // Which sidebar entry is highlighted. "custom" once the user touches the
+  // calendars directly; null when nothing is selected yet.
+  const [activePreset, setActivePreset] = useState<PresetKey | "custom" | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -72,9 +124,21 @@ export function DateRangePicker({
     { top: number; left: number; maxHeight: number } | null
   >(null);
 
+  // Detect which preset (if any) an ISO from/to pair corresponds to, so the
+  // sidebar can highlight it when the picker is reopened on an existing range.
+  const detectPreset = (f: string, t: string): PresetKey | "custom" | null => {
+    if (!f) return null;
+    for (const p of PRESETS) {
+      const r = presetRange(p.key);
+      if (isoOf(r.from) === f && isoOf(r.to) === t) return p.key;
+    }
+    return "custom";
+  };
+
   useEffect(() => {
     if (open) {
       setDraft({ from: parseIso(from), to: parseIso(to) });
+      setActivePreset(detectPreset(from, to));
     }
   }, [open, from, to]);
 
@@ -91,13 +155,14 @@ export function DateRangePicker({
     const vh = window.innerHeight;
     const vw = window.innerWidth;
 
-    // Real measured height once the panel has mounted; conservative
-    // fallback for the first frame. Using the real value is what makes
-    // the flip-up decision correct -- the old hard-coded estimate was
-    // smaller than the rendered panel, so it kept choosing "below" and
-    // the Apply button ended up off-screen.
-    const measured = panelRef.current?.offsetHeight ?? 0;
-    const panelH = measured > 0 ? measured : PICKER_HEIGHT_FALLBACK;
+    // Real measured size once the panel has mounted; conservative fallbacks
+    // for the first frame. Measuring width matters for the wide dual-month
+    // layout so right-alignment + the viewport clamp stay accurate regardless
+    // of the calendar's intrinsic size.
+    const measuredH = panelRef.current?.offsetHeight ?? 0;
+    const panelH = measuredH > 0 ? measuredH : PICKER_HEIGHT_FALLBACK;
+    const measuredW = panelRef.current?.offsetWidth ?? 0;
+    const panelW = measuredW > 0 ? measuredW : PICKER_WIDTH;
 
     const spaceBelow = vh - rect.bottom - VIEWPORT_MARGIN;
     const spaceAbove = rect.top - VIEWPORT_MARGIN;
@@ -124,11 +189,12 @@ export function DateRangePicker({
 
     // Horizontal placement: right-align with the trigger by default;
     // clamp to viewport so it never leaks off the screen edges.
-    let left = rect.right - PICKER_WIDTH;
+    let left = rect.right - panelW;
     if (left < VIEWPORT_MARGIN) left = VIEWPORT_MARGIN;
-    if (left + PICKER_WIDTH > vw - VIEWPORT_MARGIN) {
-      left = vw - PICKER_WIDTH - VIEWPORT_MARGIN;
+    if (left + panelW > vw - VIEWPORT_MARGIN) {
+      left = vw - panelW - VIEWPORT_MARGIN;
     }
+    if (left < VIEWPORT_MARGIN) left = VIEWPORT_MARGIN;
 
     setPanelPos({ top, left, maxHeight });
   };
@@ -138,10 +204,10 @@ export function DateRangePicker({
       setPanelPos(null);
       return;
     }
-    // Initial position with the fallback height estimate so the panel
-    // has somewhere to render. Then a rAF re-run picks up the real
-    // measured height and flips up if needed -- this two-pass dance is
-    // what guarantees Apply stays visible even in a tight modal.
+    // Initial position with the fallback size estimate so the panel has
+    // somewhere to render. Then a rAF re-run picks up the real measured
+    // size and flips up / shifts if needed -- this two-pass dance is what
+    // guarantees Apply stays visible even in a tight modal.
     recomputePosition();
     const raf = requestAnimationFrame(recomputePosition);
     const onScroll = () => recomputePosition();
@@ -182,32 +248,10 @@ export function DateRangePicker({
     };
   }, [open]);
 
-  const applyPreset = (kind: "today" | "last7" | "last30" | "thisMonth" | "lastMonth") => {
-    const now = new Date();
-    let start: Date;
-    let end: Date = now;
-    switch (kind) {
-      case "today":
-        start = now;
-        break;
-      case "last7":
-        start = new Date(now);
-        start.setDate(now.getDate() - 6);
-        break;
-      case "last30":
-        start = new Date(now);
-        start.setDate(now.getDate() - 29);
-        break;
-      case "thisMonth":
-        start = new Date(now.getFullYear(), now.getMonth(), 1);
-        end = now;
-        break;
-      case "lastMonth":
-        start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        end = new Date(now.getFullYear(), now.getMonth(), 0);
-        break;
-    }
+  const applyPreset = (kind: PresetKey) => {
+    const { from: start, to: end } = presetRange(kind);
     setDraft({ from: start, to: end });
+    setActivePreset(kind);
   };
 
   const handleApply = () => {
@@ -220,15 +264,20 @@ export function DateRangePicker({
 
   const handleClear = () => {
     setDraft(undefined);
+    setActivePreset(null);
     if (onClear) onClear();
     onApply("", "");
     setOpen(false);
   };
 
   const triggerLabel =
-    from && to ? `${fmt(from)} → ${fmt(to)}` : from ? `From ${fmt(from)}` : "Select date range";
+    from && to ? `${fmt(from)} - ${fmt(to)}` : from ? fmt(from) : "Select date range";
 
   const defaultMonth = useMemo(() => draft?.from ?? new Date(), [draft?.from]);
+
+  const footerLabel = draft?.from
+    ? `${fmt(isoOf(draft.from))}${draft?.to ? ` - ${fmt(isoOf(draft.to))}` : ""}`
+    : "—";
 
   return (
     <div ref={wrapRef} className={`relative inline-block ${className || ""}`}>
@@ -259,71 +308,79 @@ export function DateRangePicker({
             // Portalled to document.body so it escapes the overflow /
             // stacking context of any modal it's rendered inside. Fixed
             // positioning + z-[60] keeps it above modal backdrops (which
-            // typically sit at z-50). Width hard-locked to PICKER_WIDTH
-            // so the position calc stays accurate. maxHeight + overflow
-            // make sure the panel never spills past the viewport edge --
-            // the inner area scrolls and Apply remains clickable.
+            // typically sit at z-50). Width is intrinsic (sidebar + two
+            // months), capped to the viewport; maxHeight + overflow make
+            // sure the panel never spills past the viewport edge.
             style={{
               position: "fixed",
               top: panelPos.top,
               left: panelPos.left,
-              width: PICKER_WIDTH,
+              maxWidth: `calc(100vw - ${VIEWPORT_MARGIN * 2}px)`,
               maxHeight: panelPos.maxHeight,
-              overflowY: "auto",
+              overflow: "auto",
             }}
             className="z-[60] rounded-xl border border-gray-200 bg-white p-4 shadow-2xl"
           >
-            <div className="mb-3 flex flex-wrap gap-1.5">
-              {[
-                { key: "today", label: "Today" },
-                { key: "last7", label: "Last 7 days" },
-                { key: "last30", label: "Last 30 days" },
-                { key: "thisMonth", label: "This month" },
-                { key: "lastMonth", label: "Last month" },
-              ].map((p) => (
+            <div className="flex gap-3">
+              {/* Preset sidebar */}
+              <div className="flex w-32 shrink-0 flex-col gap-1 border-r border-gray-100 pr-2">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => applyPreset(p.key)}
+                    className={`rounded-md px-3 py-1.5 text-left text-sm transition ${
+                      activePreset === p.key
+                        ? "bg-brand-600 text-white"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
                 <button
-                  key={p.key}
                   type="button"
-                  onClick={() => applyPreset(p.key as any)}
-                  className="rounded-full border border-gray-200 px-2.5 py-1 text-xs text-gray-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                  onClick={() => setActivePreset("custom")}
+                  className={`rounded-md px-3 py-1.5 text-left text-sm transition ${
+                    activePreset === "custom"
+                      ? "bg-brand-600 text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
                 >
-                  {p.label}
+                  Custom Range
                 </button>
-              ))}
-            </div>
-
-            <div className="rdp-wrap text-sm">
-              <DayPicker
-                mode="range"
-                numberOfMonths={1}
-                defaultMonth={defaultMonth}
-                selected={draft}
-                onSelect={setDraft}
-                showOutsideDays
-                weekStartsOn={1}
-              />
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-gray-500">
-              <div>
-                <span className="font-medium uppercase">From</span>{" "}
-                <span className="text-gray-800">{draft?.from ? fmt(isoOf(draft.from)) : "—"}</span>
               </div>
-              <div>
-                <span className="font-medium uppercase">To</span>{" "}
-                <span className="text-gray-800">{draft?.to ? fmt(isoOf(draft.to)) : "—"}</span>
+
+              {/* Two-month calendar */}
+              <div className="rdp-wrap text-sm">
+                <DayPicker
+                  mode="range"
+                  numberOfMonths={2}
+                  defaultMonth={defaultMonth}
+                  selected={draft}
+                  onSelect={(r) => {
+                    setDraft(r);
+                    setActivePreset("custom");
+                  }}
+                  showOutsideDays
+                  weekStartsOn={0}
+                />
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={handleClear}
-                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-3 w-3" />
-                Clear
-              </button>
+            <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <span>{footerLabel}</span>
+                {allowEmpty && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-3 w-3" /> Clear
+                  </button>
+                )}
+              </div>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -336,7 +393,7 @@ export function DateRangePicker({
                   type="button"
                   onClick={handleApply}
                   disabled={!allowEmpty && !draft?.from}
-                  className="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+                  className="rounded-md bg-brand-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
                 >
                   Apply
                 </button>

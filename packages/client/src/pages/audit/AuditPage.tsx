@@ -1,7 +1,149 @@
 import { useAuditLogs } from "@/api/hooks";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, Filter, Calendar, RotateCcw } from "lucide-react";
+import { Search, Filter, Calendar, RotateCcw, ChevronDown } from "lucide-react";
+import { DateRangePicker } from "@/components/DateRangePicker";
+
+// Searchable single-select for the Action Type filter — the action list is long
+// (30+ values), so a plain <select> is hard to scan. Type to filter; click or
+// Enter to choose. Kept local to the audit page since it's the only consumer.
+function ActionTypeSelect({
+  value,
+  options,
+  onChange,
+  searchPlaceholder,
+  noMatchLabel,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+  searchPlaceholder: string;
+  noMatchLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const activeRef = useRef<HTMLButtonElement | null>(null);
+
+  const selected = options.find((o) => o.value === value);
+  const q = query.trim().toLowerCase();
+  const filtered = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+
+  // Close on outside click / Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Reset + focus the search box on open.
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setActiveIndex(0);
+      const id = window.setTimeout(() => inputRef.current?.focus(), 0);
+      return () => window.clearTimeout(id);
+    }
+  }, [open]);
+
+  useEffect(() => setActiveIndex(0), [query]);
+  // Keep the keyboard-highlighted row in view.
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
+  const choose = (v: string) => {
+    onChange(v);
+    setOpen(false);
+  };
+
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.min(filtered.length - 1, i + 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(0, i - 1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const opt = filtered[activeIndex];
+      if (opt) choose(opt.value);
+    }
+  };
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className="truncate">{selected?.label}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute z-30 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
+          <div className="border-b border-gray-100 p-2">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={onInputKeyDown}
+                placeholder={searchPlaceholder}
+                className="w-full rounded-md border border-gray-300 py-1.5 pl-8 pr-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+          </div>
+          <ul role="listbox" className="max-h-60 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <li className="px-3 py-2 text-sm text-gray-400">{noMatchLabel}</li>
+            ) : (
+              filtered.map((o, i) => {
+                const isSelected = o.value === value;
+                const isActive = i === activeIndex;
+                return (
+                  <li key={o.value}>
+                    <button
+                      ref={isActive ? activeRef : undefined}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => choose(o.value)}
+                      onMouseEnter={() => setActiveIndex(i)}
+                      className={`flex w-full items-center px-3 py-1.5 text-left text-sm ${
+                        isSelected ? "font-medium text-brand-700" : "text-gray-700"
+                      } ${isActive ? "bg-gray-100" : ""}`}
+                    >
+                      {o.label}
+                    </button>
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Enum values stay frozen (these are what the server sends); the human
 // labels come from `audit.actions.<value>` per locale.
@@ -90,46 +232,35 @@ export default function AuditPage() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* Action Type Filter */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Action Type Filter — searchable single-select */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">{tx("actionType")}</label>
-            <select
+            <ActionTypeSelect
               value={action}
-              onChange={(e) => { setAction(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            >
-              {AUDIT_ACTION_VALUES.map((value) => (
-                <option key={value} value={value}>{actionLabel(value)}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Start Date */}
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {tx("fromDate")}</span>
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-              max={endDate || undefined}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              options={AUDIT_ACTION_VALUES.map((value) => ({ value, label: actionLabel(value) }))}
+              onChange={(v) => { setAction(v); setPage(1); }}
+              searchPlaceholder={tx("searchActions") as string}
+              noMatchLabel={tx("noActionMatches") as string}
             />
           </div>
 
-          {/* End Date */}
+          {/* Date range — single composite control matching the /attendance filter.
+              Replaces the old separate From/To native date inputs; Apply drives
+              start_date / end_date so the query contract is unchanged. */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
-              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {tx("toDate")}</span>
+              <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {t("attendance.dateFrom")} &mdash; {t("attendance.dateTo")}</span>
             </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-              min={startDate || undefined}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            <DateRangePicker
+              from={startDate}
+              to={endDate}
+              onApply={(f, to2) => {
+                setStartDate(f);
+                setEndDate(to2);
+                setPage(1);
+              }}
+              allowEmpty
             />
           </div>
         </div>
