@@ -159,5 +159,9 @@ DROP TEMPORARY TABLE IF EXISTS _backfill_preview;
 -- Inspect the rows-updated count. If it matches what you saw in the
 -- "rows_affected" SELECT above (sum of increase + decrease), commit. If
 -- something is off, roll back.
-COMMIT;
--- ROLLBACK;
+--
+-- ⚠️ DEFAULT IS A SAFE ROLLBACK (preview only — nothing is written). After
+-- reviewing the preview / rows_affected output above, SWAP these two lines —
+-- comment out the ROLLBACK and uncomment the COMMIT — to actually apply.
+-- COMMIT;
+ROLLBACK;
