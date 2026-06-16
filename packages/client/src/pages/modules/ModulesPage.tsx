@@ -1,43 +1,9 @@
 import { useModules, useSubscriptions, useCreateSubscription, useCancelSubscription } from "@/api/hooks";
-import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar, Sparkles, Loader2 } from "lucide-react";
+import { Package, Check, Plus, ChevronDown, ChevronUp, Building2, X, Users, CreditCard, Calendar, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/api/client";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
-
-type PublicTier = {
-  id: number;
-  slug: string;
-  name: string;
-  description: string | null;
-  price_per_seat: number | null; // smallest currency unit, null = not priced in this currency
-};
-
-type PublicCycle = {
-  cycle: string;
-  label: string;
-  discount_pct: number;
-  months_in_cycle: number;
-  // If set and the org currency matches, this absolute per-seat amount
-  // replaces the (monthlyPerSeat × (1 - discount%) × months) calc.
-  override_amount_per_seat: number | null;
-};
-
-type PublicPricing = {
-  currency: string;
-  tiers: PublicTier[];
-  cycles: PublicCycle[];
-};
-
-const CURRENCY_SYMBOL: Record<string, string> = { INR: "₹", USD: "$", GBP: "£", EUR: "€" };
-
-function formatMoney(amount: number, currency: string) {
-  const sym = CURRENCY_SYMBOL[currency] || currency;
-  const major = amount / 100;
-  return `${sym}${major.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
-}
 
 const ADMIN_ROLES = ["org_admin", "hr_admin"];
 
@@ -49,63 +15,36 @@ interface SubscribeModalProps {
 }
 
 function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeModalProps) {
+  const [planTier, setPlanTier] = useState("basic");
   const [totalSeats, setTotalSeats] = useState(10);
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
-  // Pull every plan / price / cycle from the DB. Currency comes from the
-  // org's settings (server resolves it). The query refetches whenever
-  // seat count crosses a band boundary so volume-discount tiers show the
-  // right price for the current input.
-  const pricingQ = useQuery<{ data: PublicPricing }>({
-    queryKey: ["public-pricing", totalSeats],
-    queryFn: () =>
-      api
-        .get("/modules/pricing/public", { params: { seats: totalSeats } })
-        .then((r) => r.data),
-  });
-  const pricing = pricingQ.data?.data;
-  const tiers = pricing?.tiers ?? [];
-  const cycles = pricing?.cycles ?? [];
-  const currency = pricing?.currency || "INR";
+  const plans = [
+    { value: "basic", label: "Basic", description: "Essential features for small teams", priceMultiplier: 1 },
+    { value: "professional", label: "Professional", description: "Advanced features + priority support", priceMultiplier: 2 },
+    { value: "enterprise", label: "Enterprise", description: "Full features + dedicated support + SLA", priceMultiplier: 3.5 },
+  ];
 
-  // Seed selections from whatever the server returns (first tier with a
-  // price, first cycle). useState callbacks would also work but a
-  // controlled fallback to the first match on every render keeps the
-  // selection stable across band changes.
-  const [planTier, setPlanTier] = useState<string>("");
-  const [billingCycle, setBillingCycle] = useState<string>("");
-  const selectedTier =
-    tiers.find((t) => t.slug === planTier) ||
-    tiers.find((t) => t.price_per_seat != null) ||
-    tiers[0];
-  const selectedCycle =
-    cycles.find((c) => c.cycle === billingCycle) || cycles[0];
+  const cycles = [
+    { value: "monthly", label: "Monthly", discount: 0 },
+    { value: "quarterly", label: "Quarterly", discount: 5 },
+    { value: "annual", label: "Annual", discount: 20 },
+  ];
 
-  const monthlyPerSeat = selectedTier?.price_per_seat ?? 0;
-  const monthsInCycle = selectedCycle?.months_in_cycle ?? 1;
-  // Override path: if admin set an absolute per-seat per-cycle amount for
-  // this currency, use it directly. Treat 0 as "no override" because a 0
-  // would silently zero the total -- if the admin wanted a free cycle
-  // they should have picked the free tier.
-  const override =
-    selectedCycle?.override_amount_per_seat != null &&
-    selectedCycle.override_amount_per_seat > 0
-      ? selectedCycle.override_amount_per_seat
-      : null;
-  const perSeatPerCycle =
-    override != null
-      ? override
-      : Math.round(
-          monthlyPerSeat * (1 - (Number(selectedCycle?.discount_pct) || 0) / 100) * monthsInCycle,
-        );
-  const totalAmount = perSeatPerCycle * totalSeats;
+  const basePrice = 500; // ₹500 per seat per month
+  const selectedPlan = plans.find(p => p.value === planTier)!;
+  const selectedCycle = cycles.find(c => c.value === billingCycle)!;
+  const monthlyPerSeat = basePrice * selectedPlan.priceMultiplier;
+  const discountedPerSeat = monthlyPerSeat * (1 - selectedCycle.discount / 100);
+  const monthsInCycle = billingCycle === "monthly" ? 1 : billingCycle === "quarterly" ? 3 : 12;
+  const totalAmount = discountedPerSeat * totalSeats * monthsInCycle;
 
   const handleSubmit = async () => {
-    if (!selectedTier || !selectedCycle) return;
     await onSubscribe({
       module_id: module.id,
-      plan_tier: selectedTier.slug,
+      plan_tier: planTier,
       total_seats: totalSeats,
-      billing_cycle: selectedCycle.cycle,
+      billing_cycle: billingCycle,
     });
   };
 
@@ -129,40 +68,25 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
               <CreditCard className="h-4 w-4" /> Select Plan
             </label>
-            {pricingQ.isLoading ? (
-              <div className="flex items-center justify-center py-6 text-sm text-gray-400">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading plans...
-              </div>
-            ) : tiers.length === 0 ? (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-                No plans are currently published for this currency. Contact your administrator.
-              </div>
-            ) : (
-              <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${Math.min(tiers.length, 3)}, minmax(0, 1fr))` }}>
-                {tiers.map((plan) => {
-                  const isSelected = (selectedTier?.slug || "") === plan.slug;
-                  return (
-                    <button
-                      key={plan.slug}
-                      onClick={() => setPlanTier(plan.slug)}
-                      className={`p-3 rounded-xl border-2 text-left transition-all ${
-                        isSelected
-                          ? "border-brand-500 bg-brand-50 ring-1 ring-brand-200"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="font-semibold text-sm text-gray-900">{plan.name}</div>
-                      <div className="text-xs text-gray-500 mt-1">{plan.description}</div>
-                      <div className="text-sm font-bold text-brand-600 mt-2">
-                        {plan.price_per_seat != null
-                          ? `${formatMoney(plan.price_per_seat, currency)}/seat/mo`
-                          : "Not available"}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            <div className="grid grid-cols-3 gap-3">
+              {plans.map(plan => (
+                <button
+                  key={plan.value}
+                  onClick={() => setPlanTier(plan.value)}
+                  className={`p-3 rounded-xl border-2 text-left transition-all ${
+                    planTier === plan.value
+                      ? "border-brand-500 bg-brand-50 ring-1 ring-brand-200"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="font-semibold text-sm text-gray-900">{plan.label}</div>
+                  <div className="text-xs text-gray-500 mt-1">{plan.description}</div>
+                  <div className="text-sm font-bold text-brand-600 mt-2">
+                    ₹{(basePrice * plan.priceMultiplier).toLocaleString("en-IN")}/seat/mo
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Number of Seats */}
@@ -196,28 +120,23 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
               <Calendar className="h-4 w-4" /> Billing Cycle
             </label>
-            <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${Math.max(1, Math.min(cycles.length, 4))}, minmax(0, 1fr))` }}>
-              {cycles.map((cycle) => {
-                const isSelected = (selectedCycle?.cycle || "") === cycle.cycle;
-                return (
-                  <button
-                    key={cycle.cycle}
-                    onClick={() => setBillingCycle(cycle.cycle)}
-                    className={`p-3 rounded-xl border-2 text-center transition-all ${
-                      isSelected
-                        ? "border-brand-500 bg-brand-50 ring-1 ring-brand-200"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="font-semibold text-sm text-gray-900">{cycle.label}</div>
-                    {Number(cycle.discount_pct) > 0 && (
-                      <div className="text-xs text-green-600 font-medium mt-1">
-                        Save {Number(cycle.discount_pct)}%
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
+            <div className="grid grid-cols-3 gap-3">
+              {cycles.map(cycle => (
+                <button
+                  key={cycle.value}
+                  onClick={() => setBillingCycle(cycle.value)}
+                  className={`p-3 rounded-xl border-2 text-center transition-all ${
+                    billingCycle === cycle.value
+                      ? "border-brand-500 bg-brand-50 ring-1 ring-brand-200"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="font-semibold text-sm text-gray-900">{cycle.label}</div>
+                  {cycle.discount > 0 && (
+                    <div className="text-xs text-green-600 font-medium mt-1">Save {cycle.discount}%</div>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -225,11 +144,11 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
           <div className="bg-gray-50 rounded-xl p-4 space-y-2">
             <div className="flex justify-between text-sm text-gray-600">
               <span>Plan</span>
-              <span className="font-medium">{selectedTier?.name || "—"}</span>
+              <span className="font-medium capitalize">{planTier}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-600">
               <span>Price per seat</span>
-              <span>{formatMoney(monthlyPerSeat, currency)}/mo</span>
+              <span>₹{monthlyPerSeat.toLocaleString("en-IN")}/mo</span>
             </div>
             <div className="flex justify-between text-sm text-gray-600">
               <span>Seats</span>
@@ -237,26 +156,17 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
             </div>
             <div className="flex justify-between text-sm text-gray-600">
               <span>Billing cycle</span>
-              <span>{selectedCycle?.label || "—"}</span>
+              <span className="capitalize">{billingCycle}</span>
             </div>
-            {selectedCycle && Number(selectedCycle.discount_pct) > 0 && (
+            {selectedCycle.discount > 0 && (
               <div className="flex justify-between text-sm text-green-600">
                 <span>Discount</span>
-                <span>-{Number(selectedCycle.discount_pct)}%</span>
+                <span>-{selectedCycle.discount}%</span>
               </div>
             )}
             <div className="border-t pt-2 mt-2 flex justify-between text-lg font-bold text-gray-900">
               <span>Total</span>
-              <span>
-                {formatMoney(totalAmount, currency)}
-                {(selectedCycle?.months_in_cycle ?? 1) === 1
-                  ? "/mo"
-                  : (selectedCycle?.months_in_cycle ?? 1) === 3
-                    ? "/qtr"
-                    : (selectedCycle?.months_in_cycle ?? 1) === 12
-                      ? "/yr"
-                      : `/${selectedCycle?.months_in_cycle}mo`}
-              </span>
+              <span>₹{totalAmount.toLocaleString("en-IN")}{billingCycle === "monthly" ? "/mo" : billingCycle === "quarterly" ? "/qtr" : "/yr"}</span>
             </div>
           </div>
         </div>
@@ -271,9 +181,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
             disabled={isLoading}
             className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
-            {isLoading
-              ? "Subscribing..."
-              : `Subscribe — ${formatMoney(totalAmount, currency)}`}
+            {isLoading ? "Subscribing..." : `Subscribe — ₹${totalAmount.toLocaleString("en-IN")}`}
           </button>
         </div>
       </div>

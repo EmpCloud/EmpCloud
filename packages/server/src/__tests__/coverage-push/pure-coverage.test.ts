@@ -169,11 +169,11 @@ vi.mock("../../db/connection", () => {
 });
 
 describe("Pricing", () => {
-  it("free tier is 0", async () => { expect(await getPricePerSeat("free", "INR")).toBe(0); });
-  it("INR starter", async () => { expect(await getPricePerSeat("starter", "INR")).toBeGreaterThan(0); });
-  it("USD pro", async () => { expect(await getPricePerSeat("pro", "USD")).toBeGreaterThan(0); });
-  it("GBP starter", async () => { expect(await getPricePerSeat("starter", "GBP")).toBeGreaterThan(0); });
-  it("EUR starter", async () => { expect(await getPricePerSeat("starter", "EUR")).toBeGreaterThan(0); });
+  it("free tier is 0", () => { expect(getPricePerSeat("free", "INR")).toBe(0); });
+  it("INR starter", () => { expect(getPricePerSeat("starter", "INR")).toBeGreaterThan(0); });
+  it("USD pro", () => { expect(getPricePerSeat("pro", "USD")).toBeGreaterThan(0); });
+  it("GBP starter", () => { expect(getPricePerSeat("starter", "GBP")).toBeGreaterThan(0); });
+  it("EUR starter", () => { expect(getPricePerSeat("starter", "EUR")).toBeGreaterThan(0); });
 });
 
 // ===== Import parseCSV =====

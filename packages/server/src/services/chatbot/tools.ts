@@ -1035,29 +1035,14 @@ export const tools: ToolDefinition[] = [
     execute: async (orgId) => {
       const db = getDB();
 
-      // Carry billing_cycle + months_in_cycle so we can normalise the
-      // per-cycle stored price down to a real MRR. Annual subs at
-      // ₹4,800/seat must divide by 12, otherwise the chatbot answers
-      // a 12x inflated MRR.
-      const subs = await db("org_subscriptions as s")
-        .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-        .where({ "s.organization_id": orgId })
-        .whereIn("s.status", ["active", "trial"])
-        .select(
-          "s.plan_tier",
-          "s.price_per_seat",
-          "s.total_seats",
-          "s.status",
-          "s.billing_cycle",
-          "b.months_in_cycle",
-        );
+      const subs = await db("org_subscriptions")
+        .where({ organization_id: orgId })
+        .whereIn("status", ["active", "trial"])
+        .select("plan_tier", "price_per_seat", "total_seats", "status");
 
       let totalMRR = 0;
       for (const s of subs) {
-        const cycleLen = Math.max(1, Number(s.months_in_cycle) || 1);
-        totalMRR +=
-          ((Number(s.price_per_seat) || 0) * (Number(s.total_seats) || 0)) /
-          cycleLen;
+        totalMRR += (Number(s.price_per_seat) || 0) * (Number(s.total_seats) || 0);
       }
 
       const hasInvoices = await db.schema.hasTable("invoices");

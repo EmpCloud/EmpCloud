@@ -41,25 +41,25 @@ describe("pricing helpers", () => {
     PLAN_PRICING_BY_CURRENCY = mod.PLAN_PRICING_BY_CURRENCY;
   });
 
-  it("returns correct INR prices for all plan tiers", async () => {
-    expect(await getPricePerSeat("free", "INR")).toBe(0);
-    expect(await getPricePerSeat("basic", "INR")).toBe(50000);
-    expect(await getPricePerSeat("professional", "INR")).toBe(100000);
-    expect(await getPricePerSeat("enterprise", "INR")).toBe(175000);
+  it("returns correct INR prices for all plan tiers", () => {
+    expect(getPricePerSeat("free", "INR")).toBe(0);
+    expect(getPricePerSeat("basic", "INR")).toBe(50000);
+    expect(getPricePerSeat("professional", "INR")).toBe(100000);
+    expect(getPricePerSeat("enterprise", "INR")).toBe(175000);
   });
 
-  it("returns correct USD prices", async () => {
-    expect(await getPricePerSeat("free", "USD")).toBe(0);
-    expect(await getPricePerSeat("basic", "USD")).toBe(500);
-    expect(await getPricePerSeat("enterprise", "USD")).toBe(1750);
+  it("returns correct USD prices", () => {
+    expect(getPricePerSeat("free", "USD")).toBe(0);
+    expect(getPricePerSeat("basic", "USD")).toBe(500);
+    expect(getPricePerSeat("enterprise", "USD")).toBe(1750);
   });
 
-  it("falls back to USD for unknown currency", async () => {
-    expect(await getPricePerSeat("basic", "JPY")).toBe(500);
+  it("falls back to USD for unknown currency", () => {
+    expect(getPricePerSeat("basic", "JPY")).toBe(500);
   });
 
-  it("falls back to basic price for unknown tier", async () => {
-    expect(await getPricePerSeat("platinum", "USD")).toBe(500);
+  it("falls back to basic price for unknown tier", () => {
+    expect(getPricePerSeat("platinum", "USD")).toBe(500);
   });
 
   it("getCurrencyForCountry returns INR for India", () => {

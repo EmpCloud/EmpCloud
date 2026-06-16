@@ -10,7 +10,7 @@ import { randomHex, hashToken } from "../../utils/crypto.js";
 import { sendInvitationEmail } from "../email/email.service.js";
 import { TOKEN_DEFAULTS } from "@empcloud/shared";
 import * as billingEmitter from "../billing/empcloud-webhook-emitter.js";
-import { getEffectivePricePerSeat, getOrgCurrency } from "../subscription/pricing.js";
+import { getPricePerSeat, getOrgCurrency } from "../subscription/pricing.js";
 
 // ---------------------------------------------------------------------------
 // Step definitions
@@ -272,14 +272,7 @@ async function handleChooseModules(orgId: number, _userId: number, data: Record<
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
     const trialEndsAt = skipTrial ? null : new Date(now.getTime() + 14 * 86400000);
-    const pricePerSeat = skipTrial
-      ? await getEffectivePricePerSeat(
-          sel.plan_tier,
-          currency,
-          (sel as any).billing_cycle || "monthly",
-          Number((sel as any).total_seats) || 1,
-        )
-      : 0;
+    const pricePerSeat = skipTrial ? getPricePerSeat(sel.plan_tier, currency) : 0;
 
     // Race-safe insert. If Cloudflare retries the onboarding POST or the
     // admin double-clicks Finish, two completeStep(4) calls run in parallel
