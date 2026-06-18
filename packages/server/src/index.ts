@@ -44,6 +44,7 @@ import billingRoutes from "./api/routes/billing.routes.js";
 import adminRoutes from "./api/routes/admin.routes.js";
 import onboardingRoutes from "./api/routes/onboarding.routes.js";
 import biometricLegacyRoutes from "./api/routes/biometric-legacy.routes.js";
+import fieldLegacyRoutes from "./api/routes/field-legacy.routes.js";
 import nasRoutes from "./api/routes/nas.routes.js";
 import helpdeskRoutes from "./api/routes/helpdesk.routes.js";
 import surveyRoutes from "./api/routes/survey.routes.js";
@@ -225,6 +226,10 @@ async function main() {
   // Legacy emp-monitor kiosk surface — same paths/responses as
   // emp-monitor's v3/bioMetric router, backed by EmpCloud tables.
   app.use("/api/v3/biometric", apiLimiter, biometricLegacyRoutes);
+  // Legacy emp-monitor EMP Field surface — same paths/responses as
+  // emp-monitor's v3/hrms/* + v3/user/fieldAllEmployeeList field-tracking
+  // endpoints, gated by FIELD_TRACKING_SECRET_KEY, backed by EmpCloud tables.
+  app.use("/api/v3", apiLimiter, fieldLegacyRoutes);
   // Legacy emp-monitor NAS (SFTP file storage) surface.
   app.use("/api/v3/nas", apiLimiter, nasRoutes);
   app.use("/api/v1/helpdesk", apiLimiter, helpdeskRoutes);
