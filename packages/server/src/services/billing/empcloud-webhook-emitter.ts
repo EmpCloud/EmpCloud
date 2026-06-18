@@ -143,6 +143,15 @@ async function buildSubscriptionPayload(
   mod: ModuleRow | null,
 ): Promise<Record<string, unknown>> {
   const { email: adminEmail, orgName } = await resolveAdminEmail(sub.organization_id);
+  // org_subscriptions.price_per_seat is now the EFFECTIVE per-seat
+  // per-cycle price -- already includes any cycle discount or override.
+  // Surfaced under TWO field names so emp-billing can read either:
+  //   - price_per_seat: legacy field, kept for backward compatibility
+  //   - effective_price_per_seat: the canonical "exactly what we
+  //     promised the customer per seat per cycle" number
+  // emp-billing should treat effective_price_per_seat as the source of
+  // truth when present (it's per-cycle, ready to use), and only fall
+  // back to price_per_seat for old-shape payloads.
   return {
     organization_id: sub.organization_id,
     subscription_id: sub.id,
@@ -151,6 +160,7 @@ async function buildSubscriptionPayload(
     plan_tier: sub.plan_tier,
     total_seats: sub.total_seats,
     price_per_seat: sub.price_per_seat,
+    effective_price_per_seat: sub.price_per_seat,
     currency: sub.currency || "INR",
     billing_cycle: sub.billing_cycle,
     status: sub.status,

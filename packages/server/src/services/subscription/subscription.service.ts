@@ -7,7 +7,7 @@ import { NotFoundError, ConflictError, ValidationError, ForbiddenError } from ".
 import { getAccessibleFeatures } from "../module/module.service.js";
 import { logger } from "../../utils/logger.js";
 import * as billingEmitter from "../billing/empcloud-webhook-emitter.js";
-import { getPricePerSeat, getOrgCurrency } from "./pricing.js";
+import { getPricePerSeat, getEffectivePricePerSeat, getOrgCurrency } from "./pricing.js";
 import { buildTrialEndPayload, getTierRank, getCycleRank } from "./trial-expiration.service.js";
 import type {
   OrgSubscription,
@@ -104,9 +104,24 @@ export async function createSubscription(
     ? new Date(now.getTime() + data.trial_days * 86400000)
     : null;
 
-  // Determine currency from org settings, then compute price per seat
+  // Determine currency from org settings, then compute the EFFECTIVE
+  // per-seat per-cycle price -- exactly what the customer was promised on
+  // the Subscribe modal. This is the SINGLE number that:
+  //   - lands on org_subscriptions.price_per_seat (denormalised so this
+  //     subscription is reproducible even if pricing tables change later)
+  //   - rides the webhook to emp-billing for invoice creation
+  //   - shows on the modal Total
+  // Using the cycle-aware helper closes the gap where the modal showed
+  // ₹4,800/yr after a 20% discount but the stored price was the
+  // un-discounted ₹500/mo, so the invoice came out to ₹6,000/yr.
   const currency = await getOrgCurrency(orgId);
-  const pricePerSeat = getPricePerSeat(data.plan_tier, currency);
+  const cycle = data.billing_cycle || "monthly";
+  const pricePerSeat = await getEffectivePricePerSeat(
+    data.plan_tier,
+    currency,
+    cycle,
+    Number(data.total_seats) || 1,
+  );
 
   // (Module name is fetched by the emp-billing emitter when it builds the
   // webhook payload; nothing else in this function needs it.)
@@ -237,11 +252,25 @@ export async function updateSubscription(
         ? `tier ${sub.plan_tier}→${data.plan_tier}`
         : `cycle ${sub.billing_cycle}→${data.billing_cycle}`;
     logger.info(`Trial ended early for subscription ${subId}: ${reason}`);
-  } else if (data.plan_tier && data.plan_tier !== sub.plan_tier) {
-    // Non-trial tier change (or trial downgrade): recalculate price
-    // normally without ending the trial.
+  } else if (
+    (data.plan_tier && data.plan_tier !== sub.plan_tier) ||
+    (data.billing_cycle && data.billing_cycle !== sub.billing_cycle) ||
+    (data.total_seats !== undefined && data.total_seats !== sub.total_seats)
+  ) {
+    // Recompute the EFFECTIVE per-cycle price on ANY pricing-relevant
+    // change -- tier, cycle, or seat count. A cycle change kicks in /
+    // takes off the cycle discount; a seat-count change can move the
+    // customer across a volume band into a different per-seat price.
+    // Before this fix only tier changes recomputed, so a "switch to
+    // annual" left the stored price at the monthly rate and the next
+    // invoice was wrong by the discount.
     const currency = await getOrgCurrency(orgId);
-    updateData.price_per_seat = getPricePerSeat(data.plan_tier, currency);
+    updateData.price_per_seat = await getEffectivePricePerSeat(
+      data.plan_tier ?? sub.plan_tier,
+      currency,
+      data.billing_cycle ?? sub.billing_cycle ?? "monthly",
+      Number(data.total_seats ?? sub.total_seats) || 1,
+    );
     updateData.currency = currency;
   }
 
