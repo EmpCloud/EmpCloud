@@ -169,4 +169,14 @@ export const config = {
     // every call.
     secretKey: process.env.NAS_SECRET_KEY || "",
   },
+
+  fieldTracking: {
+    // Shared secret the EMP Field app sends as `secretKey` on every
+    // /api/v3/hrms/* and /api/v3/user/fieldAllEmployeeList request. Mirrors
+    // emp-monitor's `FIELD_TRACKING_SECRET_KEY` so the existing field client
+    // works unchanged. Fail-closed: if unset, the middleware rejects every
+    // call (unlike emp-monitor, whose `undefined === undefined` check let an
+    // unset secret silently disable auth).
+    secretKey: process.env.FIELD_TRACKING_SECRET_KEY || "",
+  },
 } as const;
