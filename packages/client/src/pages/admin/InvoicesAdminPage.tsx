@@ -124,6 +124,32 @@ export default function InvoicesAdminPage() {
     onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
   });
 
+  // ---- View PDF ----
+  // The PDF endpoint requires the Bearer token, so a plain <a href> (which the
+  // browser fetches without our auth header) 401s. Fetch it through the axios
+  // client as a blob, then open the object URL in a new tab.
+  const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
+  const openPdf = async (id: string) => {
+    // Open the tab synchronously (inside the click gesture) so popup blockers
+    // don't kill it after the await.
+    const win = window.open("about:blank", "_blank");
+    setPdfLoadingId(id);
+    try {
+      const res = await api.get(`/admin/billing/invoices/${id}/pdf`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(res.data as Blob);
+      if (win) win.location.href = url;
+      else window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch {
+      if (win) win.close();
+      toast.error("Failed to load invoice PDF");
+    } finally {
+      setPdfLoadingId(null);
+    }
+  };
+
   // ---- Subscribe-on-behalf modal ----
   const [subOpen, setSubOpen] = useState(false);
   const [subForm, setSubForm] = useState({
@@ -343,15 +369,18 @@ export default function InvoicesAdminPage() {
                       >
                         <Send className="h-4 w-4" />
                       </button>
-                      <a
-                        href={`/api/v1/admin/billing/invoices/${r.id}/pdf`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-gray-500 hover:text-gray-700"
+                      <button
+                        onClick={() => openPdf(r.id)}
+                        disabled={pdfLoadingId === r.id}
+                        className="text-gray-500 hover:text-gray-700 disabled:opacity-40"
                         title="PDF"
                       >
-                        <FileText className="h-4 w-4" />
-                      </a>
+                        {pdfLoadingId === r.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <FileText className="h-4 w-4" />
+                        )}
+                      </button>
                     </div>
                   </td>
                 </tr>
