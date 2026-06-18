@@ -37,6 +37,7 @@ export default function OrgDetailPage() {
   const [changeRoleModal, setChangeRoleModal] = useState<any>(null);
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("");
+  const [activeTab, setActiveTab] = useState<"users" | "subscriptions" | "audit">("users");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-org-detail", id],
@@ -196,7 +197,34 @@ export default function OrgDetailPage() {
         </div>
       </div>
 
+      {/* Tab bar — pick which big-data block to show. Stacking all three on
+          one screen made the page extremely long; tabs keep the cards above
+          visible while letting HR drill into the relevant detail. */}
+      <div className="bg-white rounded-xl border border-gray-200 p-1.5 mb-6 inline-flex gap-1">
+        {[
+          { id: "users", label: `Users (${users.length})`, icon: Users },
+          { id: "subscriptions", label: `Subscriptions (${subscriptions.length})`, icon: CreditCard },
+          ...(audit_logs && audit_logs.length > 0
+            ? [{ id: "audit", label: `Audit Log (Last ${audit_logs.length})`, icon: Shield }]
+            : []),
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeTab === tab.id
+                ? "bg-brand-600 text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* Users Table */}
+      {activeTab === "users" && (
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Users ({users.length})
@@ -315,8 +343,10 @@ export default function OrgDetailPage() {
           </table>
         </div>
       </div>
+      )}
 
       {/* Subscriptions Table */}
+      {activeTab === "subscriptions" && (
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Subscriptions ({subscriptions.length})
@@ -389,9 +419,10 @@ export default function OrgDetailPage() {
           </table>
         </div>
       </div>
+      )}
 
       {/* Audit Log */}
-      {audit_logs && audit_logs.length > 0 && (
+      {activeTab === "audit" && audit_logs && audit_logs.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Shield className="h-5 w-5 text-gray-500" />
