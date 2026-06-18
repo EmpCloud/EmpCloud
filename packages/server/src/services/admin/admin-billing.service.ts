@@ -44,7 +44,7 @@ export async function listInvoices(params?: {
   if (params?.client_id) qs.set("clientId", params.client_id);
   qs.set("page", String(page));
   qs.set("limit", String(limit));
-  if (params?.q) qs.set("q", params.q);
+  if (params?.q) qs.set("search", params.q);
 
   const result = await billingFetchRaw("GET", `/invoices?${qs.toString()}`);
   if (!result) {
