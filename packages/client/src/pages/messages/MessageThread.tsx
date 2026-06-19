@@ -1464,14 +1464,14 @@ export default function MessageThread({
       {/* ---------------- Group members panel ---------------- */}
       {isGroup && showMembers && conversation && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 flex justify-end"
+          className="fixed inset-0 z-40 bg-black/30 flex items-center justify-center p-4"
           onClick={() => setShowMembers(false)}
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Group members"
-            className="w-full max-w-xs h-full bg-white shadow-xl flex flex-col"
+            className="w-full max-w-sm max-h-[80vh] overflow-hidden rounded-2xl bg-white shadow-xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-200">
@@ -1541,7 +1541,7 @@ export default function MessageThread({
             </div>
 
             {/* Group profile: avatar + description */}
-            <div className="flex flex-col items-center gap-2 border-b border-gray-100 px-4 py-4">
+            <div className="flex flex-col items-center gap-2 border-b border-gray-100 px-4 py-4 flex-shrink-0">
               <div className="relative">
                 {conversation.avatar_url ? (
                   <img
@@ -1669,7 +1669,7 @@ export default function MessageThread({
               })}
             </ul>
             {/* Footer: add members + delete (owner) / leave group (non-owner) */}
-            <div className="border-t border-gray-100 p-3 space-y-1">
+            <div className="border-t border-gray-100 p-3 space-y-1 flex-shrink-0">
               {isOwner && (
                 <>
                   <button
