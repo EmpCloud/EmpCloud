@@ -18,7 +18,7 @@ import type { ConversationSummary, MessageSearchResult } from "@empcloud/shared"
 import api from "@/api/client";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import { GroupAvatar } from "./GroupAvatar";
-import { MessagesSquare, Plus, Search, BellOff, Archive } from "lucide-react";
+import { MessagesSquare, Plus, Search, BellOff, Archive, Pencil } from "lucide-react";
 import { splitName, relativeTime } from "./chat-utils";
 import MessageThread from "./MessageThread";
 import NewChatModal from "./NewChatModal";
@@ -139,6 +139,25 @@ export default function MessagesPage() {
   const [showNewChat, setShowNewChat] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
 
+  // My chat status / "About".
+  const { data: myStatus } = useQuery<{ status: string | null }>({
+    queryKey: ["chat-my-status"],
+    queryFn: () => api.get("/chat/me/status").then((r) => r.data.data),
+    staleTime: 60_000,
+  });
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [statusDraft, setStatusDraft] = useState("");
+  const saveStatus = async () => {
+    try {
+      await api.patch("/chat/me/status", { status: statusDraft.trim() });
+      await qc.invalidateQueries({ queryKey: ["chat-my-status"] });
+      qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      setEditingStatus(false);
+    } catch {
+      /* non-critical */
+    }
+  };
+
   const { data: conversations, isLoading, isError } = useConversations();
   const archivedCount = useMemo(
     () => (conversations ?? []).filter((c) => c.is_archived).length,
@@ -221,6 +240,45 @@ export default function MessagesPage() {
                 className="absolute inset-0 w-full h-full pl-9 pr-3 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
               />
             </div>
+
+            {/* My status / "About" — set a short line others see in 1:1 chats. */}
+            {editingStatus ? (
+              <div className="mt-2 flex items-center gap-1.5">
+                <input
+                  autoFocus
+                  value={statusDraft}
+                  onChange={(e) => setStatusDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveStatus();
+                    else if (e.key === "Escape") setEditingStatus(false);
+                  }}
+                  maxLength={140}
+                  placeholder="Set a status…"
+                  data-gramm="false"
+                  className="flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
+                />
+                <button
+                  type="button"
+                  onClick={saveStatus}
+                  className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setStatusDraft(myStatus?.status ?? "");
+                  setEditingStatus(true);
+                }}
+                title="Set your status"
+                className="mt-2 flex w-full items-center gap-1.5 text-left text-xs text-gray-400 hover:text-brand-600"
+              >
+                <Pencil className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{myStatus?.status || "Set a status…"}</span>
+              </button>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1">

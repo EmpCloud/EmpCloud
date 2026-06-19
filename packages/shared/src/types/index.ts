@@ -987,6 +987,8 @@ export interface ChatParticipant {
   email: string | null;
   designation: string | null;
   photo_path: string | null;
+  /** Self-set status / "About" line, shown under the name in 1:1 chats. */
+  chat_status?: string | null;
 }
 
 /** A file/photo attached to a chat message. */

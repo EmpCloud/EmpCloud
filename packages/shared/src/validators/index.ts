@@ -2151,6 +2151,11 @@ export const groupDescriptionSchema = z.object({
   description: z.string().trim().max(500),
 });
 
+/** Set the caller's chat status / "About" (blank clears it). */
+export const chatStatusSchema = z.object({
+  status: z.string().trim().max(140),
+});
+
 /** Forward one or more messages into one or more target conversations. */
 export const forwardMessageSchema = z.object({
   /** Messages to forward (chronological order is applied server-side). */

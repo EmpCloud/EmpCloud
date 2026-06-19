@@ -19,6 +19,7 @@ import {
   pinMessageSchema,
   archiveConversationSchema,
   groupDescriptionSchema,
+  chatStatusSchema,
   sendMessageSchema,
   sendMessageWithAttachmentSchema,
   editMessageSchema,
@@ -67,6 +68,29 @@ const router = Router();
 
 // Every chat route requires an authenticated user.
 router.use(authenticate);
+
+// ---- My chat profile ----
+
+// GET /api/v1/chat/me/status — the caller's own chat status / "About"
+router.get("/me/status", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const status = await chatService.getMyChatStatus(req.user!.sub);
+    sendSuccess(res, { status });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PATCH /api/v1/chat/me/status — set the caller's chat status (blank clears it)
+router.patch("/me/status", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { status } = chatStatusSchema.parse(req.body);
+    const saved = await chatService.setMyChatStatus(req.user!.sub, status);
+    sendSuccess(res, { status: saved });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ---- Conversations ----
 

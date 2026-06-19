@@ -1333,6 +1333,10 @@ export default function MessageThread({
               <p className="text-xs text-gray-400 truncate">
                 {lastSeenLabel(counterpartPresence.last_seen)}
               </p>
+            ) : conversation?.counterpart?.chat_status ? (
+              <p className="text-xs text-gray-400 truncate">
+                {conversation.counterpart.chat_status}
+              </p>
             ) : (
               subtitle && <p className="text-xs text-gray-400 truncate">{subtitle}</p>
             )}

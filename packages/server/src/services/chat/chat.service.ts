@@ -246,6 +246,7 @@ async function participantsByConversation(
       "u.email as email",
       "u.designation as designation",
       "u.photo_path as photo_path",
+      "u.chat_status as chat_status",
     );
 
   for (const r of rows) {
@@ -256,6 +257,7 @@ async function participantsByConversation(
       email: r.email ?? null,
       designation: r.designation ?? null,
       photo_path: r.photo_path ?? null,
+      chat_status: r.chat_status ?? null,
     });
     map.set(r.conversation_id, list);
   }
@@ -374,6 +376,22 @@ export async function getConversation(
   const found = all.find((c) => c.id === conversationId);
   if (!found) throw new NotFoundError("Conversation");
   return found;
+}
+
+/** The caller's own chat status / "About" line (null if unset). */
+export async function getMyChatStatus(userId: number): Promise<string | null> {
+  const row = await getDB()("users").where({ id: userId }).first("chat_status");
+  return row?.chat_status ?? null;
+}
+
+/** Set the caller's chat status (sanitized; blank clears it). */
+export async function setMyChatStatus(
+  userId: number,
+  status: string,
+): Promise<string | null> {
+  const clean = sanitizePlainText(status); // null when blank
+  await getDB()("users").where({ id: userId }).update({ chat_status: clean });
+  return clean;
 }
 
 /** Start a direct conversation with another employee (idempotent per pair). */
