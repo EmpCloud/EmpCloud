@@ -256,7 +256,7 @@ export default function MessagesPage() {
                     onClick={() => setShowProfile((v) => !v)}
                     title="Your profile"
                     aria-label="Your profile"
-                    className="rounded-full ring-2 ring-transparent hover:ring-brand-200"
+                    className="relative block rounded-full ring-2 ring-transparent hover:ring-brand-200"
                   >
                     <EmployeeAvatar
                       key={photoBust}
@@ -266,6 +266,8 @@ export default function MessagesPage() {
                       lastName={me?.last_name}
                       size="md"
                     />
+                    {/* You're online whenever you're using the app. */}
+                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
                   </button>
                   {showProfile && (
                     <>
