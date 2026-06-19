@@ -174,6 +174,7 @@ export default function MessagesPage() {
     queryFn: () => api.get("/chat/me/status").then((r) => r.data.data),
     staleTime: 60_000,
   });
+  const [showProfile, setShowProfile] = useState(false);
   const [editingStatus, setEditingStatus] = useState(false);
   const [statusDraft, setStatusDraft] = useState("");
   const saveStatus = async () => {
@@ -246,10 +247,116 @@ export default function MessagesPage() {
         >
           <div className="px-4 pt-4 pb-3 border-b border-gray-100">
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              <h1 className="text-lg font-bold text-gray-900">Messages</h1>
+              <div className="flex items-center gap-2 min-w-0">
+                {/* My profile — compact avatar; click opens a small popover to
+                    change photo / set status. */}
+                <div className="relative flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowProfile((v) => !v)}
+                    title="Your profile"
+                    aria-label="Your profile"
+                    className="rounded-full ring-2 ring-transparent hover:ring-brand-200"
+                  >
+                    <EmployeeAvatar
+                      key={photoBust}
+                      userId={me?.id}
+                      hasPhoto
+                      firstName={me?.first_name}
+                      lastName={me?.last_name}
+                      size="sm"
+                    />
+                  </button>
+                  {showProfile && (
+                    <>
+                      {/* click-away backdrop */}
+                      <div className="fixed inset-0 z-30" onClick={() => setShowProfile(false)} />
+                      <div className="absolute left-0 top-full z-40 mt-2 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => photoInputRef.current?.click()}
+                            title="Change your profile photo"
+                            aria-label="Change your profile photo"
+                            className="group relative flex-shrink-0"
+                          >
+                            <EmployeeAvatar
+                              key={photoBust}
+                              userId={me?.id}
+                              hasPhoto
+                              firstName={me?.first_name}
+                              lastName={me?.last_name}
+                              size="md"
+                            />
+                            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                              <Camera className="h-4 w-4" />
+                            </span>
+                          </button>
+                          <input
+                            ref={photoInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
+                          />
+                          <p className="truncate text-sm font-semibold text-gray-900">
+                            {me ? `${me.first_name} ${me.last_name}` : "You"}
+                          </p>
+                        </div>
+                        {/* Status */}
+                        <div className="mt-3">
+                          <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                            Status
+                          </p>
+                          {editingStatus ? (
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                autoFocus
+                                value={statusDraft}
+                                onChange={(e) => setStatusDraft(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") saveStatus();
+                                  else if (e.key === "Escape") setEditingStatus(false);
+                                }}
+                                maxLength={140}
+                                placeholder="Set a status…"
+                                data-gramm="false"
+                                className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
+                              />
+                              <button
+                                type="button"
+                                onClick={saveStatus}
+                                className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setStatusDraft(myStatus?.status ?? "");
+                                setEditingStatus(true);
+                              }}
+                              title="Set your status"
+                              className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1 text-left text-sm text-gray-600 hover:bg-gray-50"
+                            >
+                              <Pencil className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                              <span className="truncate">
+                                {myStatus?.status || "Set a status…"}
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <h1 className="text-lg font-bold text-gray-900">Messages</h1>
+              </div>
               <button
                 onClick={() => setShowNewChat(true)}
-                className="flex items-center gap-1.5 bg-brand-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-700"
+                className="flex items-center gap-1.5 bg-brand-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-700 flex-shrink-0"
               >
                 <Plus className="h-4 w-4" /> New chat
               </button>
@@ -364,80 +471,6 @@ export default function MessagesPage() {
                 )}
               </div>
             )}
-          </div>
-
-          {/* ---------------- My profile footer (avatar + name + status) ---- */}
-          <div className="flex items-center gap-2.5 border-t border-gray-100 px-3 py-2.5 flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => photoInputRef.current?.click()}
-              title="Change your profile photo"
-              aria-label="Change your profile photo"
-              className="group relative flex-shrink-0"
-            >
-              <EmployeeAvatar
-                key={photoBust}
-                userId={me?.id}
-                hasPhoto
-                firstName={me?.first_name}
-                lastName={me?.last_name}
-                size="md"
-              />
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
-                <Camera className="h-4 w-4" />
-              </span>
-            </button>
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
-            />
-            <div className="min-w-0 flex-1">
-              {editingStatus ? (
-                <div className="flex items-center gap-1.5">
-                  <input
-                    autoFocus
-                    value={statusDraft}
-                    onChange={(e) => setStatusDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") saveStatus();
-                      else if (e.key === "Escape") setEditingStatus(false);
-                    }}
-                    maxLength={140}
-                    placeholder="Set a status…"
-                    data-gramm="false"
-                    className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
-                  />
-                  <button
-                    type="button"
-                    onClick={saveStatus}
-                    className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
-                  >
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p className="truncate text-sm font-semibold text-gray-900">
-                    {me ? `${me.first_name} ${me.last_name}` : "You"}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStatusDraft(myStatus?.status ?? "");
-                      setEditingStatus(true);
-                    }}
-                    title="Set your status"
-                    className="flex w-full items-center gap-1 text-left text-xs text-gray-400 hover:text-brand-600"
-                  >
-                    <Pencil className="h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{myStatus?.status || "Set a status…"}</span>
-                  </button>
-                </>
-              )}
-            </div>
           </div>
         </aside>
 
