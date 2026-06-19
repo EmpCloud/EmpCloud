@@ -437,6 +437,15 @@ export default function MessageThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newestId]);
 
+  // Keep the typing indicator visible: when someone starts typing and the user
+  // is already at the bottom, scroll the new bubble into view (don't yank them
+  // if they're reading history).
+  const typingCount = typers.length;
+  useEffect(() => {
+    if (typingCount > 0 && wasNearBottomRef.current) scrollToBottom(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typingCount]);
+
   // On conversation switch, always land at the bottom and clear the pill.
   useEffect(() => {
     scrollToBottom();
@@ -2161,6 +2170,28 @@ export default function MessageThread({
                 </Fragment>
               );
             })}
+            {/* Typing indicator — sits at the bottom of the thread (like other
+                messaging apps), left-aligned as an incoming "bubble". */}
+            {typers.length > 0 && (
+              <div className="flex justify-start">
+                <div className="inline-flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-gray-100 px-3 py-2">
+                  <span className="flex gap-0.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:-0.3s]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:-0.15s]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-gray-400 animate-bounce" />
+                  </span>
+                  {isGroup && (
+                    <span className="text-xs text-gray-500">
+                      {typers.length === 1
+                        ? `${typers[0]} is typing…`
+                        : typers.length === 2
+                          ? `${typers[0]} and ${typers[1]} are typing…`
+                          : `${typers.length} people are typing…`}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
             {/* Sentinel for the IntersectionObserver-gated read marker. */}
             <div ref={bottomRef} className="h-px w-full" />
           </div>
@@ -2180,26 +2211,6 @@ export default function MessageThread({
               ? `${missedCount} new message${missedCount > 1 ? "s" : ""}`
               : "Jump to latest"}
           </button>
-        </div>
-      )}
-
-      {/* Typing indicator (above the composer) */}
-      {typers.length > 0 && (
-        <div className="px-4 py-1 flex-shrink-0">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1">
-            <span className="flex gap-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:-0.3s]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:-0.15s]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-gray-400 animate-bounce" />
-            </span>
-            <span className="text-xs text-gray-500">
-              {typers.length === 1
-                ? `${typers[0]} is typing…`
-                : typers.length === 2
-                  ? `${typers[0]} and ${typers[1]} are typing…`
-                  : `${typers.length} people are typing…`}
-            </span>
-          </div>
         </div>
       )}
 
