@@ -26,15 +26,16 @@ export function MessageTick({
       return <CheckCheck className="h-3.5 w-3.5 text-sky-500" aria-label="Read" />;
     case "failed":
       return (
-        <span
-          role="button"
+        <button
+          type="button"
           onClick={onRetry}
           title="Failed to send — tap to retry"
-          aria-label="Failed to send, retry"
-          className="text-red-500 hover:text-red-600 cursor-pointer"
+          aria-label="Failed to send, tap to retry"
+          className="inline-flex items-center gap-1 rounded-full bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300"
         >
-          <AlertCircle className="h-3.5 w-3.5" />
-        </span>
+          <AlertCircle className="h-3 w-3" />
+          Retry
+        </button>
       );
     default:
       return null;

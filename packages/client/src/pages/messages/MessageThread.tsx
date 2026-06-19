@@ -383,6 +383,19 @@ export default function MessageThread({
   const newestId = messages && messages.length > 0 ? messages[messages.length - 1].id : 0;
   const newestMine =
     messages && messages.length > 0 ? messages[messages.length - 1].is_mine : false;
+  // Screen-reader announcement for the newest RECEIVED message (own sends are
+  // not announced — the user just typed them). Polite so it doesn't interrupt.
+  const [srAnnounce, setSrAnnounce] = useState("");
+  useEffect(() => {
+    if (!newestId || newestMine || !messages) return;
+    const last = messages[messages.length - 1];
+    if (last.is_deleted || last.is_system) return;
+    const who = last.sender_name || "Someone";
+    const what = last.body || (last.attachment ? "sent an attachment" : "");
+    setSrAnnounce(`${who}: ${what}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newestId]);
+
   useEffect(() => {
     if (!newestId) return;
     // Follow the bottom if the user was already there, or this is our OWN send.
@@ -688,6 +701,21 @@ export default function MessageThread({
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; msg: ChatMessage } | null>(
     null,
   );
+
+  // Global Escape: close the top-most open overlay so keyboard users aren't
+  // trapped. Order = most transient first.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (showEmoji) return setShowEmoji(false);
+      if (contextMenu) return setContextMenu(null);
+      if (receiptsForId !== null) return setReceiptsForId(null);
+      if (showAddMembers) return setShowAddMembers(false);
+      if (showMembers) return setShowMembers(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
 
   const openContextMenu = (e: React.MouseEvent, msg: ChatMessage) => {
     if (msg.is_deleted || msg.id < 0) return; // no menu on deleted/optimistic
@@ -996,6 +1024,11 @@ export default function MessageThread({
 
   return (
     <div className="flex flex-col h-full min-h-0">
+      {/* Visually-hidden live region: announces newly received messages to
+          screen readers without stealing focus. */}
+      <div aria-live="polite" className="sr-only">
+        {srAnnounce}
+      </div>
       {/* ---------------- Header ---------------- */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 flex-shrink-0">
         {onBack && (
@@ -1085,6 +1118,9 @@ export default function MessageThread({
           onClick={() => setShowMembers(false)}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Group members"
             className="w-full max-w-xs h-full bg-white shadow-xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1396,7 +1432,7 @@ export default function MessageThread({
                 <Fragment key={msg.id}>
                   {showDayDivider && (
                     <div className="flex justify-center my-3">
-                      <span className="text-[11px] font-medium text-gray-400 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                      <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                         {dayLabel(msg.created_at)}
                       </span>
                     </div>
@@ -1641,7 +1677,7 @@ export default function MessageThread({
                         )}
                       </div>
                       <span
-                        className={`flex items-center gap-1 text-[10px] text-gray-400 mt-0.5 ${mine ? "mr-1" : "ml-1"}`}
+                        className={`flex items-center gap-1 text-[10px] text-gray-500 mt-0.5 ${mine ? "mr-1" : "ml-1"}`}
                       >
                         {clockTime(msg.created_at)}
                         {msg.edited_at && !msg.is_deleted ? " · edited" : ""}

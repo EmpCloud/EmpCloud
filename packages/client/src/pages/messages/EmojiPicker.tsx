@@ -75,11 +75,21 @@ export function EmojiPicker({
               <button
                 key={e}
                 type="button"
+                aria-label={`React with ${e}`}
+                // onMouseDown (with preventDefault) keeps the textarea focused for
+                // mouse use; onKeyDown handles keyboard activation (Enter/Space)
+                // since the preventDefault would otherwise swallow the click.
                 onMouseDown={(ev) => {
-                  ev.preventDefault(); // keep textarea focus
+                  ev.preventDefault();
                   onPick(e);
                 }}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-lg hover:bg-gray-100"
+                onKeyDown={(ev) => {
+                  if (ev.key === "Enter" || ev.key === " ") {
+                    ev.preventDefault();
+                    onPick(e);
+                  }
+                }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-lg hover:bg-gray-100 focus:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-300"
               >
                 {e}
               </button>
