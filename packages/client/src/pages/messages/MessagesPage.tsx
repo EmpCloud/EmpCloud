@@ -20,7 +20,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import { showToast } from "@/components/ui/Toast";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import { GroupAvatar } from "./GroupAvatar";
-import { MessagesSquare, Plus, Search, BellOff, Archive, Pencil, Camera } from "lucide-react";
+import { MessagesSquare, Plus, Search, BellOff, Archive, Pencil, Camera, Bookmark } from "lucide-react";
 import { splitName, relativeTime } from "./chat-utils";
 import MessageThread from "./MessageThread";
 import NewChatModal from "./NewChatModal";
@@ -81,7 +81,11 @@ function ConversationRow({
         active ? "bg-brand-50 border border-brand-200" : "hover:bg-gray-50 border border-transparent"
       }`}
     >
-      {isGroup ? (
+      {conv.is_self ? (
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+          <Bookmark className="h-5 w-5" />
+        </div>
+      ) : isGroup ? (
         <GroupAvatar url={conv.avatar_url} />
       ) : (
         <EmployeeAvatar
@@ -220,6 +224,18 @@ export default function MessagesPage() {
 
   const openConversation = (id: number) => navigate(`/messages/${id}`);
 
+  // Open (or create) the personal notes / self-chat.
+  const openSelfChat = async () => {
+    try {
+      const res = await api.post("/chat/conversations/self");
+      await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      setShowProfile(false);
+      navigate(`/messages/${res.data.data.id}`);
+    } catch {
+      showToast("error", "Couldn't open your notes.");
+    }
+  };
+
   // Open a conversation from a message search hit, then clear the search.
   const openFromSearch = (conversationId: number) => {
     setSearch("");
@@ -350,6 +366,15 @@ export default function MessagesPage() {
                             </button>
                           )}
                         </div>
+                        {/* Message yourself / personal notes */}
+                        <button
+                          type="button"
+                          onClick={openSelfChat}
+                          className="mt-3 flex w-full items-center gap-2 rounded-lg border-t border-gray-100 px-2 pt-3 text-left text-sm text-brand-700 hover:text-brand-800"
+                        >
+                          <Bookmark className="h-4 w-4 flex-shrink-0" />
+                          Message yourself (notes)
+                        </button>
                       </div>
                     </>
                   )}

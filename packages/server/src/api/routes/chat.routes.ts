@@ -142,6 +142,16 @@ router.post("/conversations/direct", async (req: Request, res: Response, next: N
   }
 });
 
+// POST /api/v1/chat/conversations/self — get or create the caller's notes chat
+router.post("/conversations/self", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const convo = await chatService.getOrCreateSelfChat(req.user!.org_id, req.user!.sub);
+    sendSuccess(res, convo, 201);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/v1/chat/conversations/group — create a group conversation
 router.post("/conversations/group", async (req: Request, res: Response, next: NextFunction) => {
   try {

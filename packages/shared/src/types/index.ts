@@ -1141,4 +1141,6 @@ export interface ConversationSummary {
   is_muted: boolean;
   /** True when the current user has archived this conversation (hidden from list). */
   is_archived: boolean;
+  /** True when this is the user's personal "self chat" / notes space. */
+  is_self?: boolean;
 }

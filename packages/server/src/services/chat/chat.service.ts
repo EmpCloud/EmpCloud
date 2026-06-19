@@ -287,6 +287,7 @@ export async function listConversations(
       "c.id as id",
       "c.type as type",
       "c.name as name",
+      "c.direct_key as direct_key",
       "c.description as description",
       "c.avatar_path as avatar_path",
       "c.created_by as created_by",
@@ -328,9 +329,16 @@ export async function listConversations(
 
   return convos.map((c) => {
     const participants = partsMap.get(c.id) ?? [];
+    const isSelf = c.type === "direct" && isSelfChatKey(c.direct_key, userId);
     const counterpart =
-      c.type === "direct" ? participants.find((p) => p.user_id !== userId) ?? null : null;
-    const title = c.type === "group" ? c.name ?? "Group" : counterpart?.name ?? "Direct message";
+      c.type === "direct" && !isSelf
+        ? participants.find((p) => p.user_id !== userId) ?? null
+        : null;
+    const title = isSelf
+      ? "You (notes)"
+      : c.type === "group"
+        ? c.name ?? "Group"
+        : counterpart?.name ?? "Direct message";
     // Preview text: deleted > body > attachment placeholder.
     let lastMessage: string | null;
     if (c.last_message_deleted) {
@@ -356,6 +364,7 @@ export async function listConversations(
       unread_count: unreadMap.get(c.id) ?? 0,
       is_muted: c.muted_until != null && new Date(c.muted_until) > new Date(),
       is_archived: c.archived_at != null,
+      is_self: isSelf,
       description: c.type === "group" ? c.description ?? null : null,
       avatar_url:
         c.type === "group" && c.avatar_path
@@ -431,6 +440,43 @@ export async function startDirect(
   ]);
 
   return getConversation(orgId, userId, conversationId);
+}
+
+/**
+ * Get (or create) the caller's personal "self chat" — a notes space where they
+ * message themselves to save links, files, reminders, etc. Modeled as a direct
+ * conversation keyed to (userId, userId) with a single participant.
+ */
+export async function getOrCreateSelfChat(
+  orgId: number,
+  userId: number,
+): Promise<ConversationSummary> {
+  const db = getDB();
+  const key = directKey(userId, userId); // "userId:userId" — unique per user
+  const existing = await db("conversations")
+    .where({ organization_id: orgId, direct_key: key })
+    .first();
+  if (existing) {
+    return getConversation(orgId, userId, existing.id);
+  }
+
+  const [conversationId] = await db("conversations").insert({
+    organization_id: orgId,
+    type: "direct",
+    direct_key: key,
+    created_by: userId,
+  });
+  await db("conversation_participants").insert({
+    conversation_id: conversationId,
+    user_id: userId,
+  });
+
+  return getConversation(orgId, userId, conversationId);
+}
+
+/** True if a conversation is the given user's personal self-chat. */
+export function isSelfChatKey(directKeyValue: string | null, userId: number): boolean {
+  return directKeyValue === directKey(userId, userId);
 }
 
 /**
