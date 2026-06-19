@@ -7,7 +7,7 @@
 // the newest message changes we mark the conversation read (POST .../read)
 // so the sidebar unread badge clears.
 
-import { useEffect, useRef, useState, useMemo, Fragment } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useMemo, Fragment } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ChatMessage, ConversationSummary } from "@empcloud/shared";
 import api from "@/api/client";
@@ -127,7 +127,24 @@ export default function MessageThread({
   const navigate = useNavigate();
 
   const { data: messages, isLoading, isError } = useMessages(conversationId);
-  const [draft, setDraft] = useState("");
+  // Per-conversation draft persistence: an unsent message survives switching
+  // chats / reloading. Keyed by conversation id in localStorage.
+  const draftKey = `empcloud-chat-draft:${conversationId}`;
+  const [draft, setDraft] = useState<string>(() => {
+    try {
+      return localStorage.getItem(draftKey) ?? "";
+    } catch {
+      return "";
+    }
+  });
+  useEffect(() => {
+    try {
+      if (draft.trim()) localStorage.setItem(draftKey, draft);
+      else localStorage.removeItem(draftKey);
+    } catch {
+      /* storage unavailable — non-critical */
+    }
+  }, [draft, draftKey]);
   const [sending, setSending] = useState(false);
   // Staged attachment (chosen but not yet sent) + a preview objectURL for images.
   const [file, setFile] = useState<File | null>(null);
@@ -263,6 +280,16 @@ export default function MessageThread({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
+
+  // Auto-grow the composer to fit its content (capped by the textarea's
+  // max-height; it scrolls beyond that). Runs on every draft change, including
+  // programmatic edits (mention insert, emoji, reset after send).
+  useLayoutEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [draft]);
 
   const onDraftChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -666,6 +693,30 @@ export default function MessageThread({
     if (msg.is_deleted || msg.id < 0) return; // no menu on deleted/optimistic
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY, msg });
+  };
+
+  // Long-press to open the message menu on touch devices (no right-click there).
+  // A ~500ms hold without moving opens the menu at the touch point.
+  const longPressTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
+  const clearLongPress = () => {
+    if (longPressTimer.current !== null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+  const onTouchStartMsg = (e: React.TouchEvent, msg: ChatMessage) => {
+    if (selectMode || msg.is_deleted || msg.id < 0) return;
+    longPressFired.current = false;
+    const t = e.touches[0];
+    const x = t.clientX;
+    const y = t.clientY;
+    longPressTimer.current = window.setTimeout(() => {
+      longPressFired.current = true;
+      // Haptic nudge where supported.
+      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
+      setContextMenu({ x, y, msg });
+    }, 500);
   };
 
   // Toggle an emoji reaction on a message, optimistically. The server's
@@ -1370,7 +1421,22 @@ export default function MessageThread({
                       isSelected ? "bg-brand-50" : ""
                     } ${highlightedId === msg.id ? "bg-amber-100/70" : ""}`}
                     onContextMenu={(e) => !selectMode && openContextMenu(e, msg)}
-                    onClick={selectable ? () => toggleSelected(msg.id) : undefined}
+                    onTouchStart={(e) => onTouchStartMsg(e, msg)}
+                    onTouchMove={clearLongPress}
+                    onTouchEnd={clearLongPress}
+                    onTouchCancel={clearLongPress}
+                    onClick={
+                      selectable
+                        ? () => toggleSelected(msg.id)
+                        : (e) => {
+                            // Swallow the click that follows a long-press so it
+                            // doesn't do anything unexpected after the menu opens.
+                            if (longPressFired.current) {
+                              e.preventDefault();
+                              longPressFired.current = false;
+                            }
+                          }
+                    }
                   >
                     {/* Selection checkbox (left of the bubble row) */}
                     {selectMode && (
@@ -1869,7 +1935,7 @@ export default function MessageThread({
               data-gramm="false"
               data-gramm_editor="false"
               data-enable-grammarly="false"
-              className="flex-1 resize-none max-h-32 self-center bg-transparent px-1 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
+              className="block flex-1 resize-none max-h-32 overflow-y-auto self-center bg-transparent px-1 py-2 text-sm leading-5 text-gray-800 placeholder:text-gray-400 focus:outline-none"
             />
             <button
               type="button"
