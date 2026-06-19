@@ -292,6 +292,7 @@ export async function listConversations(
       "lm.attachment_mime as last_message_attachment_mime",
       "me.last_read_message_id as last_read_message_id",
       "me.muted_until as muted_until",
+      "me.archived_at as archived_at",
     )
     .orderByRaw("c.last_message_at IS NULL, c.last_message_at DESC, c.id DESC");
 
@@ -350,6 +351,7 @@ export async function listConversations(
       last_message_at: c.last_message_at ?? null,
       unread_count: unreadMap.get(c.id) ?? 0,
       is_muted: c.muted_until != null && new Date(c.muted_until) > new Date(),
+      is_archived: c.archived_at != null,
     };
   });
 }
@@ -728,6 +730,24 @@ export async function setMute(
 }
 
 /**
+ * Archive or unarchive a conversation for the caller. Archived conversations are
+ * hidden from the main list (a new message un-archives — see sendMessage).
+ */
+export async function setArchived(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+  archived: boolean,
+): Promise<ConversationSummary> {
+  await requireParticipant(orgId, userId, conversationId);
+  const db = getDB();
+  await db("conversation_participants")
+    .where({ conversation_id: conversationId, user_id: userId })
+    .update({ archived_at: archived ? new Date() : null });
+  return getConversation(orgId, userId, conversationId);
+}
+
+/**
  * Rename a group (creator only). Updates conversations.name and posts a system
  * notice ("X renamed the group to Y"). Returns the updated conversation summary.
  */
@@ -952,6 +972,12 @@ export async function sendMessage(
         last_read_at: now,
         last_delivered_at: now,
       });
+    // A new message un-archives the conversation for everyone who had archived it
+    // (it surfaces back into their list).
+    await trx("conversation_participants")
+      .where({ conversation_id: conversationId })
+      .whereNotNull("archived_at")
+      .update({ archived_at: null });
     return id;
   });
 

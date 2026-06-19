@@ -17,7 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { ConversationSummary, MessageSearchResult } from "@empcloud/shared";
 import api from "@/api/client";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
-import { MessagesSquare, Plus, Search, Users, BellOff } from "lucide-react";
+import { MessagesSquare, Plus, Search, Users, BellOff, Archive } from "lucide-react";
 import { splitName, relativeTime } from "./chat-utils";
 import MessageThread from "./MessageThread";
 import NewChatModal from "./NewChatModal";
@@ -138,8 +138,13 @@ export default function MessagesPage() {
 
   const [search, setSearch] = useState("");
   const [showNewChat, setShowNewChat] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   const { data: conversations, isLoading, isError } = useConversations();
+  const archivedCount = useMemo(
+    () => (conversations ?? []).filter((c) => c.is_archived).length,
+    [conversations],
+  );
 
   const activeId = conversationId ? Number(conversationId) : null;
   const activeConv = useMemo(
@@ -150,9 +155,14 @@ export default function MessagesPage() {
   const filtered = useMemo(() => {
     const list = conversations ?? [];
     const q = search.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter((c) => c.title.toLowerCase().includes(q));
-  }, [conversations, search]);
+    return list.filter((c) => {
+      // Show archived chats only in the archived view (the open one is always
+      // visible so you're never stranded), and apply the title search.
+      const archiveOk = showArchived ? c.is_archived : !c.is_archived || c.id === activeId;
+      const titleOk = !q || c.title.toLowerCase().includes(q);
+      return archiveOk && titleOk;
+    });
+  }, [conversations, search, showArchived, activeId]);
 
   // Server-backed message-body search (debounced).
   const debouncedSearch = useDebounced(search, 300);
@@ -215,6 +225,20 @@ export default function MessagesPage() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
+            {/* Archived toggle — shown when viewing archived, or when archived
+                chats exist (so they're discoverable). */}
+            {(showArchived || archivedCount > 0) && (
+              <button
+                type="button"
+                onClick={() => setShowArchived((v) => !v)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-600 hover:bg-gray-50"
+              >
+                <Archive className="h-4 w-4 text-gray-400" />
+                {showArchived
+                  ? "← Back to chats"
+                  : `Archived${archivedCount > 0 ? ` (${archivedCount})` : ""}`}
+              </button>
+            )}
             {isLoading ? (
               <div className="space-y-2 p-1">
                 {[1, 2, 3, 4].map((i) => (

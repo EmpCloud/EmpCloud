@@ -17,6 +17,7 @@ import {
   renameGroupSchema,
   muteConversationSchema,
   pinMessageSchema,
+  archiveConversationSchema,
   sendMessageSchema,
   sendMessageWithAttachmentSchema,
   editMessageSchema,
@@ -224,6 +225,21 @@ router.patch(
       const { muted } = muteConversationSchema.parse(req.body);
       const convId = paramInt(req.params.id);
       const convo = await chatService.setMute(req.user!.org_id, req.user!.sub, convId, muted);
+      sendSuccess(res, convo);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// PATCH /api/v1/chat/conversations/:id/archive — archive/unarchive for the caller
+router.patch(
+  "/conversations/:id/archive",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { archived } = archiveConversationSchema.parse(req.body);
+      const convId = paramInt(req.params.id);
+      const convo = await chatService.setArchived(req.user!.org_id, req.user!.sub, convId, archived);
       sendSuccess(res, convo);
     } catch (err) {
       next(err);

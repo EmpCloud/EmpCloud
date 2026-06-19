@@ -47,6 +47,8 @@ import {
   Bell,
   BellOff,
   Pin,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import {
   splitName,
@@ -1043,6 +1045,22 @@ export default function MessageThread({
     }
   };
 
+  // Archive / unarchive this conversation (hides it from the main list).
+  const [archivingBusy, setArchivingBusy] = useState(false);
+  const isArchived = !!conversation?.is_archived;
+  const handleToggleArchive = async () => {
+    setArchivingBusy(true);
+    try {
+      await api.patch(`/chat/conversations/${conversationId}/archive`, { archived: !isArchived });
+      await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      showToast("success", isArchived ? "Conversation unarchived." : "Conversation archived.");
+    } catch {
+      showToast("error", "Couldn't update the conversation. Please try again.");
+    } finally {
+      setArchivingBusy(false);
+    }
+  };
+
   // Open (or start) a direct chat with a @-mentioned group member. Clicking your
   // own name is a no-op (there's no self-chat).
   const openMentionChat = async (userId: number) => {
@@ -1164,6 +1182,25 @@ export default function MessageThread({
             }`}
           >
             {isMuted ? <BellOff className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
+          </button>
+        )}
+        {/* Archive / unarchive toggle */}
+        {conversation && (
+          <button
+            type="button"
+            onClick={handleToggleArchive}
+            disabled={archivingBusy}
+            title={isArchived ? "Unarchive conversation" : "Archive conversation"}
+            aria-label={isArchived ? "Unarchive conversation" : "Archive conversation"}
+            className={`p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
+              isArchived ? "text-brand-500" : "text-gray-500"
+            }`}
+          >
+            {isArchived ? (
+              <ArchiveRestore className="h-5 w-5" />
+            ) : (
+              <Archive className="h-5 w-5" />
+            )}
           </button>
         )}
       </div>

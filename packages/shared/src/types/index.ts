@@ -1133,4 +1133,6 @@ export interface ConversationSummary {
   unread_count: number;
   /** True when the current user has muted this conversation (no notifications). */
   is_muted: boolean;
+  /** True when the current user has archived this conversation (hidden from list). */
+  is_archived: boolean;
 }
