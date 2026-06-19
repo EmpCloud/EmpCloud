@@ -1180,10 +1180,10 @@ export function swaggerUIHandler(_req: Request, res: Response) {
   );
   res.send(`<!DOCTYPE html>
 <html><head><title>EMP Cloud API</title>
-<link rel="stylesheet" href="/api/docs/ui/swagger-ui.css">
+<link rel="stylesheet" href="/api/docs/ui/swagger-ui.css?v=5.32.6">
 </head><body>
 <div id="swagger-ui"></div>
-<script src="/api/docs/ui/swagger-ui-bundle.js"></script>
+<script src="/api/docs/ui/swagger-ui-bundle.js?v=5.32.6"></script>
 <script>SwaggerUIBundle({ url: '/api/docs/openapi.json', dom_id: '#swagger-ui' })</script>
 </body></html>`);
 }
