@@ -11,14 +11,16 @@
 // The URL param (/messages/:conversationId) is the single source of truth
 // for which thread is open, so conversations are deep-linkable.
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ConversationSummary, MessageSearchResult } from "@empcloud/shared";
 import api from "@/api/client";
+import { useAuthStore } from "@/lib/auth-store";
+import { showToast } from "@/components/ui/Toast";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import { GroupAvatar } from "./GroupAvatar";
-import { MessagesSquare, Plus, Search, BellOff, Archive, Pencil } from "lucide-react";
+import { MessagesSquare, Plus, Search, BellOff, Archive, Pencil, Camera } from "lucide-react";
 import { splitName, relativeTime } from "./chat-utils";
 import MessageThread from "./MessageThread";
 import NewChatModal from "./NewChatModal";
@@ -139,6 +141,33 @@ export default function MessagesPage() {
   const [showNewChat, setShowNewChat] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
 
+  // My profile photo — uploads to the shared employee-photo endpoint, so it
+  // updates across the whole HRMS (directory, profile) AND chat.
+  const me = useAuthStore((s) => s.user);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [photoBust, setPhotoBust] = useState(0); // forces the avatar to refetch
+  const handleMyPhoto = async (f: File | null) => {
+    if (!f || !me) return;
+    if (!f.type.startsWith("image/")) {
+      showToast("error", "Profile photo must be an image.");
+      return;
+    }
+    const form = new FormData();
+    form.append("photo", f);
+    try {
+      await api.post(`/employees/${me.id}/photo`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      // Refresh the cached photo everywhere it's shown.
+      qc.invalidateQueries({ queryKey: ["employee-photo", me.id] });
+      qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      setPhotoBust((n) => n + 1);
+      showToast("success", "Profile photo updated.");
+    } catch {
+      showToast("error", "Couldn't upload the photo.");
+    }
+  };
+
   // My chat status / "About".
   const { data: myStatus } = useQuery<{ status: string | null }>({
     queryKey: ["chat-my-status"],
@@ -241,44 +270,80 @@ export default function MessagesPage() {
               />
             </div>
 
-            {/* My status / "About" — set a short line others see in 1:1 chats. */}
-            {editingStatus ? (
-              <div className="mt-2 flex items-center gap-1.5">
-                <input
-                  autoFocus
-                  value={statusDraft}
-                  onChange={(e) => setStatusDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") saveStatus();
-                    else if (e.key === "Escape") setEditingStatus(false);
-                  }}
-                  maxLength={140}
-                  placeholder="Set a status…"
-                  data-gramm="false"
-                  className="flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
-                />
-                <button
-                  type="button"
-                  onClick={saveStatus}
-                  className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
-                >
-                  Save
-                </button>
-              </div>
-            ) : (
+            {/* My profile: photo (click to change) + status line. */}
+            <div className="mt-2 flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  setStatusDraft(myStatus?.status ?? "");
-                  setEditingStatus(true);
-                }}
-                title="Set your status"
-                className="mt-2 flex w-full items-center gap-1.5 text-left text-xs text-gray-400 hover:text-brand-600"
+                onClick={() => photoInputRef.current?.click()}
+                title="Change your profile photo"
+                aria-label="Change your profile photo"
+                className="group relative flex-shrink-0"
               >
-                <Pencil className="h-3 w-3 flex-shrink-0" />
-                <span className="truncate">{myStatus?.status || "Set a status…"}</span>
+                <EmployeeAvatar
+                  key={photoBust}
+                  userId={me?.id}
+                  hasPhoto
+                  firstName={me?.first_name}
+                  lastName={me?.last_name}
+                  size="sm"
+                />
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                  <Camera className="h-3.5 w-3.5" />
+                </span>
               </button>
-            )}
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
+              />
+              <div className="min-w-0 flex-1">
+                {/* My status / "About" — a short line others see in 1:1 chats. */}
+                {editingStatus ? (
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      autoFocus
+                      value={statusDraft}
+                      onChange={(e) => setStatusDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveStatus();
+                        else if (e.key === "Escape") setEditingStatus(false);
+                      }}
+                      maxLength={140}
+                      placeholder="Set a status…"
+                      data-gramm="false"
+                      className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={saveStatus}
+                      className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
+                    >
+                      Save
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <p className="truncate text-sm font-medium text-gray-700">
+                      {me ? `${me.first_name} ${me.last_name}` : "You"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStatusDraft(myStatus?.status ?? "");
+                        setEditingStatus(true);
+                      }}
+                      title="Set your status"
+                      className="flex w-full items-center gap-1.5 text-left text-xs text-gray-400 hover:text-brand-600"
+                    >
+                      <Pencil className="h-3 w-3 flex-shrink-0" />
+                      <span className="truncate">{myStatus?.status || "Set a status…"}</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
