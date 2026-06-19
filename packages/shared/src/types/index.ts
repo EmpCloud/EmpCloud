@@ -1050,6 +1050,8 @@ export interface ChatMessage {
    * centered + author-less; not interactive (no ticks/reactions/menu).
    */
   is_system?: boolean;
+  /** True when this message is pinned in the conversation. */
+  is_pinned?: boolean;
   created_at: string;
   edited_at: string | null;
 }

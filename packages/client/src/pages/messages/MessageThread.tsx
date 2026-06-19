@@ -46,6 +46,7 @@ import {
   ChevronDown,
   Bell,
   BellOff,
+  Pin,
 } from "lucide-react";
 import {
   splitName,
@@ -697,6 +698,27 @@ export default function MessageThread({
     setDraft(failed.body);
   };
 
+  // Pinned messages bar (top of the thread).
+  const { data: pinnedMessages } = useQuery<ChatMessage[]>({
+    queryKey: ["chat-pinned", conversationId],
+    queryFn: () =>
+      api.get(`/chat/conversations/${conversationId}/pinned`).then((r) => r.data.data),
+    staleTime: 30_000,
+  });
+  const handleTogglePin = async (msg: ChatMessage) => {
+    const next = !msg.is_pinned;
+    try {
+      await api.post(`/chat/conversations/${conversationId}/messages/${msg.id}/pin`, {
+        pinned: next,
+      });
+      await qc.invalidateQueries({ queryKey: ["chat-pinned", conversationId] });
+      qc.invalidateQueries({ queryKey: ["chat-messages", conversationId] });
+      showToast("success", next ? "Message pinned." : "Message unpinned.");
+    } catch {
+      showToast("error", "Couldn't update the pin. Please try again.");
+    }
+  };
+
   // Which message's quick reaction-picker is open (null = none).
   const [reactPickerFor, setReactPickerFor] = useState<number | null>(null);
   // Messages to forward (drives the ForwardModal; empty = closed).
@@ -1146,6 +1168,27 @@ export default function MessageThread({
         )}
       </div>
 
+      {/* ---------------- Pinned-messages bar ---------------- */}
+      {pinnedMessages && pinnedMessages.length > 0 && (
+        <button
+          type="button"
+          onClick={() => jumpToMessage(pinnedMessages[0].id)}
+          title="Go to pinned message"
+          className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-4 py-1.5 text-left hover:bg-amber-100/70 flex-shrink-0"
+        >
+          <Pin className="h-3.5 w-3.5 flex-shrink-0 text-amber-500" />
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium text-amber-700">
+              Pinned{pinnedMessages.length > 1 ? ` · ${pinnedMessages.length}` : ""}
+            </p>
+            <p className="truncate text-xs text-gray-600">
+              <span className="text-gray-400">{pinnedMessages[0].sender_name}: </span>
+              {pinnedMessages[0].body || "📎 Attachment"}
+            </p>
+          </div>
+        </button>
+      )}
+
       {/* ---------------- Group members panel ---------------- */}
       {isGroup && showMembers && conversation && (
         <div
@@ -1358,6 +1401,11 @@ export default function MessageThread({
                       .then(() => showToast("success", "Message link copied."))
                       .catch(() => showToast("error", "Couldn't copy the link."));
                   }
+                : undefined,
+            isPinned: !!contextMenu.msg.is_pinned,
+            onTogglePin:
+              contextMenu.msg.id > 0
+                ? () => handleTogglePin(contextMenu.msg)
                 : undefined,
             onEdit:
               contextMenu.msg.is_mine && contextMenu.msg.body

@@ -16,6 +16,7 @@ import {
   addMembersSchema,
   renameGroupSchema,
   muteConversationSchema,
+  pinMessageSchema,
   sendMessageSchema,
   sendMessageWithAttachmentSchema,
   editMessageSchema,
@@ -451,6 +452,39 @@ router.post(
       // Push fresh per-recipient reactions to everyone in the conversation.
       await chatEvents.emitReactionUpdate(req.user!.org_id, convId, messageId);
       sendSuccess(res, result);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// GET /api/v1/chat/conversations/:id/pinned — pinned messages (for the pin bar)
+router.get(
+  "/conversations/:id/pinned",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const pinned = await chatService.getPinnedMessages(
+        req.user!.org_id,
+        req.user!.sub,
+        paramInt(req.params.id),
+      );
+      sendSuccess(res, pinned);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// POST /api/v1/chat/conversations/:id/messages/:messageId/pin — pin/unpin
+router.post(
+  "/conversations/:id/messages/:messageId/pin",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { pinned } = pinMessageSchema.parse(req.body);
+      const convId = paramInt(req.params.id);
+      const messageId = paramInt(req.params.messageId);
+      await chatService.setPinned(req.user!.org_id, req.user!.sub, convId, messageId, pinned);
+      sendSuccess(res, { pinned });
     } catch (err) {
       next(err);
     }

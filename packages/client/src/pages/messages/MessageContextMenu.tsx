@@ -7,7 +7,7 @@
 // positions itself at the cursor and stays inside the viewport.
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Reply, Forward, Pencil, Trash2, Copy, Check, CheckSquare, Eye, Link as LinkIcon } from "lucide-react";
+import { Reply, Forward, Pencil, Trash2, Copy, Check, CheckSquare, Eye, Link as LinkIcon, Pin } from "lucide-react";
 import { QUICK_REACTIONS } from "./MessageReactions";
 
 export interface MessageMenuActions {
@@ -20,6 +20,8 @@ export interface MessageMenuActions {
   onDelete?: () => void; // own messages only
   onCopy?: () => void; // messages with a body
   onCopyLink?: () => void; // copy a deep-link to this message
+  onTogglePin?: () => void; // pin / unpin this message
+  isPinned?: boolean;
 }
 
 export function MessageContextMenu({
@@ -147,6 +149,13 @@ export function MessageContextMenu({
           icon={<LinkIcon className="h-4 w-4" />}
           label="Copy link"
           onClick={() => run(actions.onCopyLink)}
+        />
+      )}
+      {actions.onTogglePin && (
+        <Item
+          icon={<Pin className="h-4 w-4" />}
+          label={actions.isPinned ? "Unpin" : "Pin"}
+          onClick={() => run(actions.onTogglePin)}
         />
       )}
       {actions.onEdit && (

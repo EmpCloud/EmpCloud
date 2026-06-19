@@ -800,6 +800,7 @@ export async function listMessages(
       "m.reply_to_message_id as reply_to_message_id",
       "m.forwarded_from_name as forwarded_from_name",
       "m.is_system as is_system",
+      "m.pinned_at as pinned_at",
       "m.created_at as created_at",
       "m.edited_at as edited_at",
     )
@@ -843,6 +844,7 @@ export async function listMessages(
       reactions: r.is_deleted ? [] : reactionMap.get(r.id) ?? [],
       forwarded_from: r.is_deleted ? null : r.forwarded_from_name ?? null,
       is_system: Boolean(r.is_system),
+      is_pinned: r.pinned_at != null,
       created_at: r.created_at,
       edited_at: r.edited_at ?? null,
     };
@@ -1134,6 +1136,74 @@ export async function deleteMessage(
     created_at: msg.created_at,
     edited_at: msg.edited_at ?? null,
   };
+}
+
+/**
+ * Pin or unpin a message in a conversation. Any participant may pin/unpin
+ * (flat chat permissions). Returns the affected message id.
+ */
+export async function setPinned(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+  messageId: number,
+  pinned: boolean,
+): Promise<void> {
+  await requireParticipant(orgId, userId, conversationId);
+  const db = getDB();
+  const msg = await db("chat_messages")
+    .where({ id: messageId, conversation_id: conversationId })
+    .first();
+  if (!msg || msg.is_deleted || msg.is_system) {
+    throw new NotFoundError("Message");
+  }
+  await db("chat_messages")
+    .where({ id: messageId })
+    .update(
+      pinned
+        ? { pinned_at: new Date(), pinned_by: userId }
+        : { pinned_at: null, pinned_by: null },
+    );
+}
+
+/** The pinned messages of a conversation (newest pin first), for the pin bar. */
+export async function getPinnedMessages(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+): Promise<ChatMessage[]> {
+  await requireParticipant(orgId, userId, conversationId);
+  const db = getDB();
+  const rows = await db("chat_messages as m")
+    .leftJoin("users as u", "u.id", "m.sender_id")
+    .where("m.conversation_id", conversationId)
+    .whereNotNull("m.pinned_at")
+    .where("m.is_deleted", false)
+    .orderBy("m.pinned_at", "desc")
+    .select(
+      "m.id as id",
+      "m.sender_id as sender_id",
+      "u.first_name as first_name",
+      "u.last_name as last_name",
+      "m.body as body",
+      "m.attachment_path as attachment_path",
+      "m.created_at as created_at",
+    );
+  return rows.map((r: any) => ({
+    id: r.id,
+    conversation_id: conversationId,
+    sender_id: r.sender_id,
+    sender_name: fullName(r.first_name, r.last_name),
+    body: r.body ?? "",
+    is_deleted: false,
+    is_mine: r.sender_id === userId,
+    attachment: null,
+    tick_status: null,
+    mentioned_user_ids: [],
+    is_pinned: true,
+    created_at: r.created_at,
+    edited_at: null,
+  }));
 }
 
 /**

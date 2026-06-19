@@ -2136,6 +2136,11 @@ export const muteConversationSchema = z.object({
   muted: z.boolean(),
 });
 
+/** Pin / unpin a message. */
+export const pinMessageSchema = z.object({
+  pinned: z.boolean(),
+});
+
 /** Forward one or more messages into one or more target conversations. */
 export const forwardMessageSchema = z.object({
   /** Messages to forward (chronological order is applied server-side). */
