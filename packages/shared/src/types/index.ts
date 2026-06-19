@@ -1137,6 +1137,9 @@ export interface ConversationSummary {
   last_message: string | null;
   last_message_at: string | null;
   unread_count: number;
+  /** The current user's last-read message id (0 if none) — drives the unread
+   *  divider and scroll-to-first-unread on open. */
+  my_last_read_id: number;
   /** True when the current user has muted this conversation (no notifications). */
   is_muted: boolean;
   /** True when the current user has archived this conversation (hidden from list). */

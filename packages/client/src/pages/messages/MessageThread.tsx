@@ -207,6 +207,14 @@ export default function MessageThread({
   const lastReadRef = useRef<number>(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const bottomVisibleRef = useRef<boolean>(true);
+  // The user's read marker FROZEN at the moment they opened this conversation —
+  // drives the "unread messages" divider + scroll-to-first-unread. We freeze it
+  // so the divider doesn't jump as we incrementally mark messages read.
+  const [unreadAnchor, setUnreadAnchor] = useState<number | null>(null);
+  // Highest message id the user has actually scrolled into view — the read
+  // marker only advances to here, so reading 10 of 60 leaves 50 unread.
+  const highestSeenRef = useRef<number>(0);
+  const didInitialUnreadScrollRef = useRef(false);
   // Whether the user was at/near the bottom on the LAST scroll event — sampled
   // continuously by onScroll, BEFORE any new message re-renders and changes
   // scrollHeight. The auto-scroll effect reads this (not a post-render
@@ -446,11 +454,40 @@ export default function MessageThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingCount]);
 
-  // On conversation switch, always land at the bottom and clear the pill.
+  // On conversation switch: reset unread tracking. Freeze the read anchor from
+  // the conversation summary so the unread divider stays put while we read.
   useEffect(() => {
-    scrollToBottom();
+    didInitialUnreadScrollRef.current = false;
+    highestSeenRef.current = conversation?.my_last_read_id ?? 0;
+    setUnreadAnchor(conversation?.my_last_read_id ?? 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
+
+  // The first unread message id = the oldest loaded message newer than the
+  // frozen read anchor. Null when there are no unread messages.
+  const firstUnreadId = useMemo(() => {
+    if (!messages || unreadAnchor == null) return null;
+    const m = messages.find((x) => x.id > unreadAnchor && !x.is_mine && x.id > 0);
+    return m ? m.id : null;
+  }, [messages, unreadAnchor]);
+
+  // Once messages have loaded for a freshly-opened conversation, land on the
+  // first unread message (so a 60-unread chat starts at #1 unread, not the
+  // bottom). If everything is read, land at the bottom as before.
+  useEffect(() => {
+    if (didInitialUnreadScrollRef.current || !messages || messages.length === 0) return;
+    didInitialUnreadScrollRef.current = true;
+    if (firstUnreadId) {
+      requestAnimationFrame(() => {
+        const node = scrollRef.current?.querySelector(`[data-msg-id="${firstUnreadId}"]`);
+        if (node) node.scrollIntoView({ block: "start" });
+        else scrollToBottom();
+      });
+    } else {
+      scrollToBottom();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, firstUnreadId]);
 
   // Reset pagination when switching conversations.
   useEffect(() => {
@@ -533,9 +570,10 @@ export default function MessageThread({
       ? presenceOf(conversation.counterpart.user_id)
       : undefined;
 
-  // Track whether the bottom of the thread is actually on screen — read is only
-  // marked when the user can really see the newest message (not in a bg tab or
-  // scrolled up). Fixes the "blue tick for an unseen message" problem.
+  // Track the bottom sentinel's visibility (still used to decide whether to
+  // auto-follow new messages) AND, via a per-message observer, the HIGHEST
+  // message id the user has actually scrolled into view. Read only advances to
+  // that id — so reading 10 of 60 leaves the other 50 unread.
   useEffect(() => {
     const el = bottomRef.current;
     if (!el) return;
@@ -551,19 +589,45 @@ export default function MessageThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
-  // Mark read up to the newest message — only when the tab is visible AND the
-  // bottom of the thread is on screen. Prefer the socket; fall back to REST so
-  // the unread badge clears even when the socket is down.
+  // Per-message observer: bump highestSeenRef as real messages scroll into view,
+  // then mark read up to there.
+  useEffect(() => {
+    const root = scrollRef.current;
+    if (!root) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        let bumped = false;
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          const id = Number((e.target as HTMLElement).dataset.msgId);
+          if (id > 0 && id > highestSeenRef.current) {
+            highestSeenRef.current = id;
+            bumped = true;
+          }
+        }
+        if (bumped) maybeMarkRead();
+      },
+      { root, threshold: 0.6 },
+    );
+    root.querySelectorAll("[data-msg-id]").forEach((n) => obs.observe(n));
+    return () => obs.disconnect();
+    // Re-observe when the message set changes (new page loaded / new message).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, messages?.length]);
+
+  // Mark read up to the HIGHEST message actually seen (not the newest in the
+  // thread) — only when the tab is visible. Prefer the socket; fall back to REST.
   const maybeMarkRead = () => {
-    if (!newestId || newestId === lastReadRef.current) return;
-    if (document.visibilityState !== "visible" || !bottomVisibleRef.current) return;
-    lastReadRef.current = newestId;
+    const upTo = highestSeenRef.current;
+    if (!upTo || upTo <= lastReadRef.current) return;
+    if (document.visibilityState !== "visible") return;
+    lastReadRef.current = upTo;
     if (connected) {
-      socketMarkRead(conversationId, newestId);
+      socketMarkRead(conversationId, upTo);
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
     } else {
       api
-        .post(`/chat/conversations/${conversationId}/read`, { last_read_message_id: newestId })
+        .post(`/chat/conversations/${conversationId}/read`, { last_read_message_id: upTo })
         .then(() => qc.invalidateQueries({ queryKey: ["chat-conversations"] }))
         .catch(() => {
           /* non-critical — badge clears on next successful read */
@@ -1893,6 +1957,15 @@ export default function MessageThread({
                       <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
                         {dayLabel(msg.created_at)}
                       </span>
+                    </div>
+                  )}
+                  {firstUnreadId === msg.id && (
+                    <div className="my-2 flex items-center gap-2">
+                      <span className="h-px flex-1 bg-brand-300" />
+                      <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-[11px] font-semibold text-brand-700">
+                        Unread messages
+                      </span>
+                      <span className="h-px flex-1 bg-brand-300" />
                     </div>
                   )}
                   {msg.is_system ? (

@@ -362,6 +362,7 @@ export async function listConversations(
       last_message: lastMessage,
       last_message_at: c.last_message_at ?? null,
       unread_count: unreadMap.get(c.id) ?? 0,
+      my_last_read_id: Number(c.last_read_message_id ?? 0),
       is_muted: c.muted_until != null && new Date(c.muted_until) > new Date(),
       is_archived: c.archived_at != null,
       is_self: isSelf,
