@@ -157,6 +157,9 @@ export default function MessageThread({
   // Staged attachment (chosen but not yet sent) + a preview objectURL for images.
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  // Extra files queued behind the staged one — sent one-per-message after it.
+  const [queuedFiles, setQueuedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [showMembers, setShowMembers] = useState(false);
@@ -579,15 +582,26 @@ export default function MessageThread({
     };
   }, [filePreview]);
 
-  const stageFile = (picked: File | null) => {
-    if (!picked) return;
-    if (picked.size > MAX_ATTACHMENT_BYTES) {
-      showToast("error", `"${picked.name}" is larger than 10 MB.`);
-      return;
+  // Stage one or more files: the first (if none staged) gets the live preview;
+  // the rest queue and send one-per-message after it.
+  const stageFiles = (picked: File[]) => {
+    const ok = picked.filter((f) => {
+      if (f.size > MAX_ATTACHMENT_BYTES) {
+        showToast("error", `"${f.name}" is larger than 10 MB.`);
+        return false;
+      }
+      return true;
+    });
+    if (ok.length === 0) return;
+    let rest = ok;
+    if (!file) {
+      const [first, ...more] = ok;
+      if (filePreview) URL.revokeObjectURL(filePreview);
+      setFile(first);
+      setFilePreview(first.type.startsWith("image/") ? URL.createObjectURL(first) : null);
+      rest = more;
     }
-    if (filePreview) URL.revokeObjectURL(filePreview);
-    setFile(picked);
-    setFilePreview(picked.type.startsWith("image/") ? URL.createObjectURL(picked) : null);
+    if (rest.length) setQueuedFiles((q) => [...q, ...rest]);
   };
 
   const clearFile = () => {
@@ -595,6 +609,24 @@ export default function MessageThread({
     setFile(null);
     setFilePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Drag-and-drop onto the thread + paste-image into the composer.
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const dropped = Array.from(e.dataTransfer?.files ?? []);
+    if (dropped.length) stageFiles(dropped);
+  };
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const imgs = Array.from(e.clipboardData?.items ?? [])
+      .filter((it) => it.kind === "file" && it.type.startsWith("image/"))
+      .map((it) => it.getAsFile())
+      .filter((f): f is File => !!f);
+    if (imgs.length) {
+      e.preventDefault();
+      stageFiles(imgs);
+    }
   };
 
   // Insert/replace/patch a message in the thread cache (optimistic helpers).
@@ -694,6 +726,71 @@ export default function MessageThread({
       setSending(false);
     }
   };
+
+  // Send a queued file directly (its own message), independent of composer
+  // state — used to drain the queue after the staged file is sent. Returns when
+  // the upload settles (success or failure is non-fatal to the batch).
+  const sendQueuedFile = async (f: File) => {
+    const clientMsgId = makeClientMsgId();
+    const tempId = -Date.now() - Math.floor(performance.now());
+    const optimistic: ChatMessage = {
+      id: tempId,
+      conversation_id: conversationId,
+      sender_id: me?.id ?? 0,
+      sender_name: me ? `${me.first_name} ${me.last_name}` : "You",
+      body: f.name,
+      is_deleted: false,
+      is_mine: true,
+      attachment: null,
+      tick_status: "sending",
+      client_msg_id: clientMsgId,
+      mentioned_user_ids: [],
+      reply_to: null,
+      created_at: new Date().toISOString(),
+      edited_at: null,
+    };
+    patchCache((old) => [...old, optimistic]);
+    try {
+      const form = new FormData();
+      form.append("file", f);
+      form.append("client_msg_id", clientMsgId);
+      const res = await api.post(
+        `/chat/conversations/${conversationId}/messages/attachment`,
+        form,
+        { headers: { "Content-Type": "multipart/form-data" } },
+      );
+      const saved: ChatMessage = res.data.data;
+      patchCache((old) => {
+        const withoutTemp = old.filter((m) => m.client_msg_id !== clientMsgId || m.id === saved.id);
+        if (withoutTemp.some((m) => m.id === saved.id)) return withoutTemp;
+        return [...withoutTemp.filter((m) => m.id !== tempId), saved];
+      });
+    } catch {
+      patchCache((old) =>
+        old.map((m) => (m.id === tempId ? { ...m, tick_status: "failed" } : m)),
+      );
+    }
+  };
+
+  // Drain the queued files sequentially (one message each) once the composer is
+  // free and nothing is staged. Runs them through sendQueuedFile so there's no
+  // stale-closure dependency on the main send path.
+  const drainingRef = useRef(false);
+  useEffect(() => {
+    if (sending || file || queuedFiles.length === 0 || drainingRef.current) return;
+    drainingRef.current = true;
+    const batch = queuedFiles;
+    setQueuedFiles([]);
+    (async () => {
+      for (const f of batch) {
+        // eslint-disable-next-line no-await-in-loop
+        await sendQueuedFile(f);
+      }
+      qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      drainingRef.current = false;
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sending, file, queuedFiles]);
 
   // Retry a failed optimistic message: drop it and restore its text to the draft.
   const handleRetry = (failed: ChatMessage) => {
@@ -1715,8 +1812,22 @@ export default function MessageThread({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50"
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!isDragging) setIsDragging(true);
+        }}
+        onDragLeave={(e) => {
+          // Only clear when truly leaving the container (not entering a child).
+          if (e.currentTarget === e.target) setIsDragging(false);
+        }}
+        onDrop={handleDrop}
+        className="relative flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50"
       >
+        {isDragging && (
+          <div className="pointer-events-none absolute inset-0 z-30 m-2 flex items-center justify-center rounded-xl border-2 border-dashed border-brand-400 bg-brand-50/80">
+            <p className="text-sm font-medium text-brand-700">Drop files to send</p>
+          </div>
+        )}
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -2194,13 +2305,30 @@ export default function MessageThread({
           </div>
         )}
 
-        {/* Hidden file input — images + the document types the server accepts. */}
+        {/* Queued-files indicator (extra files sending one-per-message) */}
+        {queuedFiles.length > 0 && (
+          <div className="mb-2 flex items-center gap-2 text-xs text-gray-500">
+            <Paperclip className="h-3.5 w-3.5" />
+            {queuedFiles.length} more file{queuedFiles.length > 1 ? "s" : ""} queued
+            <button
+              type="button"
+              onClick={() => setQueuedFiles([])}
+              className="rounded px-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            >
+              clear
+            </button>
+          </div>
+        )}
+
+        {/* Hidden file input — images + the document types the server accepts.
+            Multiple files are queued and sent one-per-message. */}
         <input
           ref={fileInputRef}
           type="file"
+          multiple
           className="hidden"
           accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
-          onChange={(e) => stageFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => stageFiles(Array.from(e.target.files ?? []))}
         />
 
         <div className="relative flex items-end gap-2">
@@ -2275,6 +2403,7 @@ export default function MessageThread({
               ref={textareaRef}
               value={draft}
               onChange={onDraftChange}
+              onPaste={handlePaste}
               onKeyDown={handleKeyDown}
               onKeyUp={(e) => {
                 // Don't recompute the mention context for navigation keys —
