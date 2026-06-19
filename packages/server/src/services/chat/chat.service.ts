@@ -1440,15 +1440,34 @@ async function upsertReceipt(
  * ledger row for the named message. Returns whether anything changed (so the
  * socket layer can emit a tick to senders) — true when the marker moved.
  */
+// Clamp a client-supplied read/delivered marker to the conversation's actual
+// latest message id, so a caller can't poison their high-water mark with an
+// arbitrary (e.g. cross-conversation) id. Returns the clamped value (0 if the
+// conversation has no messages).
+async function clampToLatestMessageId(
+  db: Knex,
+  conversationId: number,
+  candidate: number,
+): Promise<number> {
+  const row = await db("chat_messages")
+    .where({ conversation_id: conversationId })
+    .max("id as maxId")
+    .first();
+  const maxId = Number(row?.maxId ?? 0);
+  return Math.min(candidate, maxId);
+}
+
 export async function markDelivered(
   orgId: number,
   userId: number,
   conversationId: number,
-  upToMessageId: number,
+  upToMessageIdRaw: number,
 ): Promise<boolean> {
   await requireParticipant(orgId, userId, conversationId);
   const db = getDB();
   const now = new Date();
+  const upToMessageId = await clampToLatestMessageId(db, conversationId, upToMessageIdRaw);
+  if (upToMessageId <= 0) return false;
 
   const updated = await db("conversation_participants")
     .where({ conversation_id: conversationId, user_id: userId })
@@ -1470,11 +1489,13 @@ export async function markRead(
   orgId: number,
   userId: number,
   conversationId: number,
-  lastReadMessageId: number,
+  lastReadMessageIdRaw: number,
 ): Promise<boolean> {
   await requireParticipant(orgId, userId, conversationId);
   const db = getDB();
   const now = new Date();
+  const lastReadMessageId = await clampToLatestMessageId(db, conversationId, lastReadMessageIdRaw);
+  if (lastReadMessageId <= 0) return false;
 
   // Never move the read marker backwards (unchanged unread-badge semantics).
   const updated = await db("conversation_participants")

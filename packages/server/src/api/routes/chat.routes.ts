@@ -29,6 +29,36 @@ import {
 } from "@empcloud/shared";
 import { paramInt } from "../../utils/params.js";
 import * as chatEvents from "../../services/chat/chat-events.js";
+import rateLimit from "express-rate-limit";
+
+// ---- Chat-specific rate limits (anti-spam) ----
+// Disabled entirely during active development (RATE_LIMIT_DISABLED=true) and
+// keyed per-user so one noisy account can't be throttled by another's traffic.
+const rlDisabled = process.env.RATE_LIMIT_DISABLED === "true";
+const rlNoop = (_req: Request, _res: Response, next: NextFunction) => next();
+const byUser = (req: Request) => String(req.user?.sub ?? req.ip);
+// Sending messages: generous for normal chatting, blocks flood/spam.
+const sendLimiter = rlDisabled
+  ? rlNoop
+  : rateLimit({
+      windowMs: 60 * 1000,
+      max: Number(process.env.RATE_LIMIT_CHAT_SEND_MAX || 60),
+      keyGenerator: byUser,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { success: false, error: { code: "RATE_LIMIT", message: "You're sending messages too fast. Please slow down." } },
+    });
+// Attachment uploads: tighter (heavier on storage/bandwidth).
+const uploadLimiter = rlDisabled
+  ? rlNoop
+  : rateLimit({
+      windowMs: 60 * 1000,
+      max: Number(process.env.RATE_LIMIT_CHAT_UPLOAD_MAX || 20),
+      keyGenerator: byUser,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { success: false, error: { code: "RATE_LIMIT", message: "Too many uploads. Please wait a moment." } },
+    });
 
 const router = Router();
 
@@ -242,6 +272,7 @@ router.get(
 // POST /api/v1/chat/conversations/:id/messages — send a message
 router.post(
   "/conversations/:id/messages",
+  sendLimiter,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { body, client_msg_id, mentioned_user_ids, reply_to_message_id } =
@@ -284,6 +315,7 @@ async function guardAttachmentParticipant(
 
 router.post(
   "/conversations/:id/messages/attachment",
+  uploadLimiter,
   guardAttachmentParticipant,
   chatUpload.single("file"),
   async (req: Request, res: Response, next: NextFunction) => {

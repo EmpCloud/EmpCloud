@@ -2108,8 +2108,17 @@ export const editMessageSchema = z.object({
 
 /** Toggle an emoji reaction on a message. */
 export const toggleReactionSchema = z.object({
-  // A single emoji grapheme; capped well above any real emoji's byte length.
-  emoji: z.string().trim().min(1).max(32),
+  // Must actually be emoji (one or more Unicode emoji/pictographic codepoints,
+  // optionally with ZWJ/variation selectors) — not arbitrary text. Capped at 32
+  // chars to bound storage.
+  emoji: z
+    .string()
+    .trim()
+    .min(1)
+    .max(32)
+    .refine((v) => /^(\p{Extended_Pictographic}|\p{Emoji_Component}|‍|️)+$/u.test(v), {
+      message: "Reaction must be an emoji",
+    }),
 });
 
 /** Add one or more members to a group. */
