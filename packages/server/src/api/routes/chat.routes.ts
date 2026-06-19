@@ -18,6 +18,7 @@ import {
   muteConversationSchema,
   pinMessageSchema,
   archiveConversationSchema,
+  groupDescriptionSchema,
   sendMessageSchema,
   sendMessageWithAttachmentSchema,
   editMessageSchema,
@@ -368,6 +369,94 @@ router.post(
       if (req.file?.path) {
         fs.unlink(req.file.path, () => {});
       }
+      next(err);
+    }
+  },
+);
+
+// PATCH /api/v1/chat/conversations/:id/description — set group description (admin)
+router.patch(
+  "/conversations/:id/description",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { description } = groupDescriptionSchema.parse(req.body);
+      const convId = paramInt(req.params.id);
+      const convo = await chatService.setGroupDescription(
+        req.user!.org_id,
+        req.user!.sub,
+        convId,
+        description,
+      );
+      for (const p of convo.participants) {
+        chatEvents.emitConversationBump(req.user!.org_id, p.user_id, convId);
+      }
+      sendSuccess(res, convo);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// POST /api/v1/chat/conversations/:id/avatar — set group photo (admin)
+router.post(
+  "/conversations/:id/avatar",
+  uploadLimiter,
+  chatUpload.single("file"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) throw new NotFoundError("File");
+      if (!req.file.mimetype.startsWith("image/")) {
+        fs.unlink(req.file.path, () => {});
+        res.status(400).json({
+          success: false,
+          error: { code: "VALIDATION_ERROR", message: "Group photo must be an image" },
+        });
+        return;
+      }
+      const relativePath = path
+        .relative(process.cwd(), req.file.path)
+        .split(path.sep)
+        .join("/");
+      const convId = paramInt(req.params.id);
+      const convo = await chatService.setGroupAvatar(
+        req.user!.org_id,
+        req.user!.sub,
+        convId,
+        relativePath,
+      );
+      for (const p of convo.participants) {
+        chatEvents.emitConversationBump(req.user!.org_id, p.user_id, convId);
+      }
+      sendSuccess(res, convo);
+    } catch (err) {
+      if (req.file?.path) fs.unlink(req.file.path, () => {});
+      next(err);
+    }
+  },
+);
+
+// GET /api/v1/chat/conversations/:id/avatar — stream the group photo
+router.get(
+  "/conversations/:id/avatar",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const rel = await chatService.getGroupAvatarPath(
+        req.user!.org_id,
+        req.user!.sub,
+        paramInt(req.params.id),
+      );
+      if (!rel) throw new NotFoundError("Avatar");
+      const absolutePath = path.resolve(rel);
+      const uploadsBase = path.resolve(process.cwd(), "uploads");
+      if (!absolutePath.startsWith(uploadsBase) || rel.includes("..")) {
+        res
+          .status(403)
+          .json({ success: false, error: { code: "FORBIDDEN", message: "Invalid file path" } });
+        return;
+      }
+      if (!fs.existsSync(absolutePath)) throw new NotFoundError("Avatar");
+      res.sendFile(absolutePath);
+    } catch (err) {
       next(err);
     }
   },

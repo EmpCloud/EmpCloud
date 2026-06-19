@@ -2146,6 +2146,11 @@ export const archiveConversationSchema = z.object({
   archived: z.boolean(),
 });
 
+/** Set a group's description (blank clears it). */
+export const groupDescriptionSchema = z.object({
+  description: z.string().trim().max(500),
+});
+
 /** Forward one or more messages into one or more target conversations. */
 export const forwardMessageSchema = z.object({
   /** Messages to forward (chronological order is applied server-side). */

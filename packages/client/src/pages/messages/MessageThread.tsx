@@ -1046,6 +1046,51 @@ export default function MessageThread({
     }
   };
 
+  // Group description editing (admin only, in the members panel).
+  const [editingDesc, setEditingDesc] = useState(false);
+  const [descDraft, setDescDraft] = useState("");
+  const [savingDesc, setSavingDesc] = useState(false);
+  const startEditDesc = () => {
+    setDescDraft(conversation?.description ?? "");
+    setEditingDesc(true);
+  };
+  const handleSaveDesc = async () => {
+    setSavingDesc(true);
+    try {
+      await api.patch(`/chat/conversations/${conversationId}/description`, {
+        description: descDraft.trim(),
+      });
+      await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      showToast("success", "Description updated.");
+      setEditingDesc(false);
+    } catch {
+      showToast("error", "Couldn't update the description.");
+    } finally {
+      setSavingDesc(false);
+    }
+  };
+
+  // Group avatar upload (admin only).
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const handleAvatarPick = async (f: File | null) => {
+    if (!f) return;
+    if (!f.type.startsWith("image/")) {
+      showToast("error", "Group photo must be an image.");
+      return;
+    }
+    const form = new FormData();
+    form.append("file", f);
+    try {
+      await api.post(`/chat/conversations/${conversationId}/avatar`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      showToast("success", "Group photo updated.");
+    } catch {
+      showToast("error", "Couldn't upload the photo.");
+    }
+  };
+
   // Mute / unmute this conversation for the current user (notifications only;
   // unread counts still accrue).
   const [mutingBusy, setMutingBusy] = useState(false);
@@ -1378,6 +1423,87 @@ export default function MessageThread({
                 <X className="h-5 w-5" />
               </button>
             </div>
+
+            {/* Group profile: avatar + description */}
+            <div className="flex flex-col items-center gap-2 border-b border-gray-100 px-4 py-4">
+              <div className="relative">
+                {conversation.avatar_url ? (
+                  <img
+                    src={conversation.avatar_url}
+                    alt=""
+                    className="h-16 w-16 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-brand-700">
+                    <Users className="h-7 w-7" />
+                  </div>
+                )}
+                {isOwner && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      title="Change group photo"
+                      aria-label="Change group photo"
+                      className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-white shadow hover:bg-brand-700"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleAvatarPick(e.target.files?.[0] ?? null)}
+                    />
+                  </>
+                )}
+              </div>
+              {/* Description */}
+              {editingDesc ? (
+                <div className="w-full">
+                  <textarea
+                    autoFocus
+                    value={descDraft}
+                    onChange={(e) => setDescDraft(e.target.value)}
+                    maxLength={500}
+                    rows={2}
+                    placeholder="Add a group description…"
+                    className="w-full resize-none rounded-lg border border-brand-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-200"
+                  />
+                  <div className="mt-1 flex justify-end gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setEditingDesc(false)}
+                      disabled={savingDesc}
+                      className="rounded px-2 py-1 text-gray-500 hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveDesc}
+                      disabled={savingDesc}
+                      className="rounded bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={isOwner ? startEditDesc : undefined}
+                  className={`text-center text-xs ${
+                    isOwner ? "text-gray-500 hover:text-brand-600" : "text-gray-500"
+                  }`}
+                >
+                  {conversation.description ||
+                    (isOwner ? "Add a group description…" : "No description")}
+                </button>
+              )}
+            </div>
+
             <ul className="flex-1 overflow-y-auto py-2">
               {conversation.participants.map((p) => {
                 const { first, last } = splitName(p.name);

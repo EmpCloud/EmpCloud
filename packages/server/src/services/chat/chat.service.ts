@@ -285,6 +285,8 @@ export async function listConversations(
       "c.id as id",
       "c.type as type",
       "c.name as name",
+      "c.description as description",
+      "c.avatar_path as avatar_path",
       "c.created_by as created_by",
       "c.last_message_at as last_message_at",
       "lm.body as last_message_body",
@@ -352,6 +354,11 @@ export async function listConversations(
       unread_count: unreadMap.get(c.id) ?? 0,
       is_muted: c.muted_until != null && new Date(c.muted_until) > new Date(),
       is_archived: c.archived_at != null,
+      description: c.type === "group" ? c.description ?? null : null,
+      avatar_url:
+        c.type === "group" && c.avatar_path
+          ? `/api/v1/chat/conversations/${c.id}/avatar`
+          : null,
     };
   });
 }
@@ -751,6 +758,63 @@ export async function setArchived(
  * Rename a group (creator only). Updates conversations.name and posts a system
  * notice ("X renamed the group to Y"). Returns the updated conversation summary.
  */
+/**
+ * Set a group's description (creator only). Empty/blank clears it. Sanitized.
+ */
+export async function setGroupDescription(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+  description: string,
+): Promise<ConversationSummary> {
+  const { convo } = await requireParticipant(orgId, userId, conversationId);
+  if (convo.type !== "group") {
+    throw new ValidationError("Only groups have a description");
+  }
+  if (convo.created_by !== userId) {
+    throw new ForbiddenError("Only the group admin can edit the description");
+  }
+  const clean = sanitizePlainText(description); // null when blank
+  await getDB()("conversations").where({ id: conversationId }).update({ description: clean });
+  return getConversation(orgId, userId, conversationId);
+}
+
+/**
+ * Save a group's avatar file path (creator only). The file is written by the
+ * upload middleware; this records its relative path on the conversation.
+ */
+export async function setGroupAvatar(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+  relativePath: string,
+): Promise<ConversationSummary> {
+  const { convo } = await requireParticipant(orgId, userId, conversationId);
+  if (convo.type !== "group") {
+    throw new ValidationError("Only groups have an avatar");
+  }
+  if (convo.created_by !== userId) {
+    throw new ForbiddenError("Only the group admin can change the photo");
+  }
+  await getDB()("conversations")
+    .where({ id: conversationId })
+    .update({ avatar_path: relativePath });
+  return getConversation(orgId, userId, conversationId);
+}
+
+/** Resolve a group's avatar absolute path for the serving route (or null). */
+export async function getGroupAvatarPath(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+): Promise<string | null> {
+  await requireParticipant(orgId, userId, conversationId);
+  const convo = await getDB()("conversations")
+    .where({ id: conversationId, organization_id: orgId })
+    .first("avatar_path");
+  return convo?.avatar_path ?? null;
+}
+
 export async function renameGroup(
   orgId: number,
   userId: number,
