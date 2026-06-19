@@ -1423,14 +1423,14 @@ export default function MessageThread({
 
       {/* ---------------- Pinned-messages bar ---------------- */}
       {pinnedMessages && pinnedMessages.length > 0 && (
-        <button
-          type="button"
-          onClick={() => jumpToMessage(pinnedMessages[0].id)}
-          title="Go to pinned message"
-          className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-4 py-1.5 text-left hover:bg-amber-100/70 flex-shrink-0"
-        >
+        <div className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-4 py-1.5 flex-shrink-0">
           <Pin className="h-3.5 w-3.5 flex-shrink-0 text-amber-500" />
-          <div className="min-w-0 flex-1">
+          <button
+            type="button"
+            onClick={() => jumpToMessage(pinnedMessages[0].id)}
+            title="Go to pinned message"
+            className="min-w-0 flex-1 text-left"
+          >
             <p className="text-[11px] font-medium text-amber-700">
               Pinned{pinnedMessages.length > 1 ? ` · ${pinnedMessages.length}` : ""}
             </p>
@@ -1438,8 +1438,18 @@ export default function MessageThread({
               <span className="text-gray-400">{pinnedMessages[0].sender_name}: </span>
               {pinnedMessages[0].body || "📎 Attachment"}
             </p>
-          </div>
-        </button>
+          </button>
+          {/* Quick unpin */}
+          <button
+            type="button"
+            onClick={() => handleTogglePin({ ...pinnedMessages[0], is_pinned: true })}
+            title="Unpin message"
+            aria-label="Unpin message"
+            className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-amber-500 hover:bg-amber-200/60 hover:text-amber-700"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
       )}
 
       {/* ---------------- Group members panel ---------------- */}
