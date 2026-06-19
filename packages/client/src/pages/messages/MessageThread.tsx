@@ -24,7 +24,7 @@ import { AddMembersModal } from "./AddMembersModal";
 import { ForwardModal } from "./ForwardModal";
 import { MessageContextMenu } from "./MessageContextMenu";
 import { useChatSocket } from "@/realtime/SocketProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Send,
@@ -128,6 +128,7 @@ export default function MessageThread({
   const me = useAuthStore((s) => s.user);
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data: messages, isLoading, isError } = useMessages(conversationId);
   // Per-conversation draft persistence: an unsent message survives switching
@@ -378,6 +379,24 @@ export default function MessageThread({
     setHighlightedId(messageId);
     window.setTimeout(() => setHighlightedId((cur) => (cur === messageId ? null : cur)), 1600);
   };
+
+  // Deep-link: when the URL carries ?m=<id> (a copied message link), jump to and
+  // flash that message once it's in view, then strip the param so a refresh
+  // doesn't re-jump.
+  const deepLinkHandledRef = useRef(false);
+  useEffect(() => {
+    const target = Number(searchParams.get("m"));
+    if (!target || deepLinkHandledRef.current || !messages || messages.length === 0) return;
+    const exists = messages.some((m) => m.id === target);
+    if (!exists) return;
+    deepLinkHandledRef.current = true;
+    // Defer to after paint so the node is mounted.
+    requestAnimationFrame(() => jumpToMessage(target));
+    const next = new URLSearchParams(searchParams);
+    next.delete("m");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, searchParams]);
 
   // Auto-scroll on new messages ONLY when the user was already near the bottom
   // BEFORE the message arrived (sampled by onScroll into wasNearBottomRef). If
@@ -1026,6 +1045,15 @@ export default function MessageThread({
     return conversation.counterpart?.designation ?? conversation.counterpart?.email ?? "";
   }, [conversation, isGroup]);
 
+  // Full roster for the header tooltip (so large groups don't lose context when
+  // the subtitle collapses to "N members"). Capped to avoid an enormous title.
+  const rosterTitle = useMemo(() => {
+    if (!conversation || !isGroup) return undefined;
+    const names = conversation.participants.map((p) => p.name);
+    const shown = names.slice(0, 30).join(", ");
+    return names.length > 30 ? `${shown} +${names.length - 30} more` : shown;
+  }, [conversation, isGroup]);
+
   const cp = conversation?.counterpart;
   const { first: cpFirst, last: cpLast } = splitName(conversation?.title);
 
@@ -1071,7 +1099,7 @@ export default function MessageThread({
             type="button"
             onClick={() => setShowMembers(true)}
             className="min-w-0 flex items-center gap-1 text-left rounded-lg px-1 -mx-1 hover:bg-gray-50"
-            title="View members"
+            title={rosterTitle ? `Members: ${rosterTitle}` : "View members"}
           >
             <div className="min-w-0">
               <p className="text-sm font-semibold text-gray-900 truncate">
@@ -1321,6 +1349,16 @@ export default function MessageThread({
             onCopy: contextMenu.msg.body
               ? () => navigator.clipboard?.writeText(contextMenu.msg.body).catch(() => {})
               : undefined,
+            onCopyLink:
+              contextMenu.msg.id > 0
+                ? () => {
+                    const url = `${window.location.origin}/messages/${conversationId}?m=${contextMenu.msg.id}`;
+                    navigator.clipboard
+                      ?.writeText(url)
+                      .then(() => showToast("success", "Message link copied."))
+                      .catch(() => showToast("error", "Couldn't copy the link."));
+                  }
+                : undefined,
             onEdit:
               contextMenu.msg.is_mine && contextMenu.msg.body
                 ? () => startEdit(contextMenu.msg)
