@@ -255,22 +255,35 @@ export async function attachChatRealtime(server: HttpServer): Promise<Server> {
       ack?.({ ok: true });
     });
 
-    // ---- typing:start / typing:stop — relay to the rest of the room ----
-    // No DB. socket.to(room) excludes the sender's own socket. The recipient
+    // ---- typing:start / typing:stop — relay to the OTHER participants ----
+    // No DB write. We fan out to each active participant's USER room (which they
+    // join on connect) rather than only the conversation room, so the indicator
+    // reaches members even if their conversation:open join hasn't completed yet
+    // (it was previously flaky in groups for that reason). The recipient
     // self-expires the indicator after a short timeout, so a missed "stop" is
     // self-healing.
-    const relayTyping = (payload: { conversation_id?: number }, typing: boolean) => {
+    const relayTyping = async (payload: { conversation_id?: number }, typing: boolean) => {
       const conversationId = Number(payload?.conversation_id);
       if (!conversationId) return;
-      socket.to(convoRoom(conversationId)).emit("typing:update", {
+      const evt = {
         conversation_id: conversationId,
         user_id: uid,
         name: user.first_name || "Someone",
         typing,
-      });
+      };
+      try {
+        const ids = await chatService.getActiveParticipantIds(conversationId);
+        for (const memberId of ids) {
+          if (memberId === uid) continue; // never echo to the typer
+          chat.to(userRoom(org, memberId)).emit("typing:update", evt);
+        }
+      } catch {
+        // Fall back to the conversation room if the lookup fails.
+        socket.to(convoRoom(conversationId)).emit("typing:update", evt);
+      }
     };
-    socket.on("typing:start", (payload) => relayTyping(payload, true));
-    socket.on("typing:stop", (payload) => relayTyping(payload, false));
+    socket.on("typing:start", (payload) => void relayTyping(payload, true));
+    socket.on("typing:stop", (payload) => void relayTyping(payload, false));
 
     // ---- message:delivered — recipient device received a message ----
     socket.on("message:delivered", async (payload, ack) => {
