@@ -75,6 +75,7 @@ export const employeeNavItems: NavItem[] = [
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
   { path: "/my-profile", label: "My Profile", i18nKey: "nav.myProfile", icon: Contact },
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI", requiredPermissions: ["chatbot:use"] },
+  { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
   { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, children: [
@@ -130,6 +131,7 @@ export const adminNavItems: NavItem[] = [
     { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
   ]},
   { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI", requiredPermissions: ["chatbot:use"] },
+  { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
   { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"], children: [
     // The "View Attendance" page (AttendanceDashboardPage) renders the

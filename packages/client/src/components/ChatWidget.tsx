@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { usePermissions } from "@/lib/use-permissions";
@@ -110,9 +110,14 @@ function renderWidgetMarkdown(text: string, onClickSuggestion?: (text: string) =
 export default function ChatWidget() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation();
   const { i18n } = useTranslation();
   const { has } = usePermissions();
   const canUseChatbot = has("chatbot:use");
+  // Hide the floating AI widget on the Messages page — its bottom-right launcher
+  // overlaps the chat composer + message ticks, and an AI bubble inside a
+  // person-to-person chat UI is redundant.
+  const onMessagesPage = location.pathname.startsWith("/messages");
   const [isOpen, setIsOpen] = useState(false);
   const [convoId, setConvoId] = useState<number | null>(null);
   const [input, setInput] = useState("");
@@ -196,6 +201,8 @@ export default function ChatWidget() {
   }, [navigate]);
 
   if (!canUseChatbot) return null;
+  // Don't render the floating widget over the Messages page.
+  if (onMessagesPage) return null;
 
   if (!isOpen) {
     return (

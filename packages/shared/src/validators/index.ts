@@ -2043,3 +2043,135 @@ export type CreateCustomFieldDefinitionInput = z.infer<typeof createCustomFieldD
 export type UpdateCustomFieldDefinitionInput = z.infer<typeof updateCustomFieldDefinitionSchema>;
 export type SetCustomFieldValueInput = z.infer<typeof setCustomFieldValuesSchema>["values"][number];
 export type CustomFieldEntityType = z.infer<typeof customFieldEntityTypeEnum>;
+
+// ---------------------------------------------------------------------------
+// HRMS — Employee Chat / Private Messaging Validators
+// ---------------------------------------------------------------------------
+
+/** Start (or get the existing) direct conversation with one other employee. */
+export const startDirectConversationSchema = z.object({
+  user_id: z.coerce.number().int().positive(),
+});
+
+/** Create a named group conversation with 2+ other members. */
+export const createGroupConversationSchema = z.object({
+  name: z.string().trim().min(1).max(150),
+  member_ids: z.array(z.coerce.number().int().positive()).min(2),
+});
+
+/**
+ * Mentioned user ids: a list of user ids (0 = @everyone). The client resolves
+ * @Name to ids from the member list, so the server stores them verbatim.
+ */
+const mentionedUserIds = z.array(z.coerce.number().int().nonnegative()).max(200).optional();
+
+/** Send a message into a conversation. */
+export const sendMessageSchema = z.object({
+  body: z.string().trim().min(1).max(5000),
+  /** Optional optimistic-send nonce, echoed back for de-duplication. */
+  client_msg_id: z.string().trim().max(64).optional(),
+  mentioned_user_ids: mentionedUserIds,
+  /** Id of the message being replied to / quoted. */
+  reply_to_message_id: z.coerce.number().int().positive().optional(),
+});
+
+/**
+ * Send a message with an optional attachment (multipart form). The body may be
+ * empty when a file is attached; the server rejects a message with neither a
+ * body nor a file. Coerced because multipart fields arrive as strings.
+ */
+export const sendMessageWithAttachmentSchema = z.object({
+  body: z.string().trim().max(5000).optional().default(""),
+  client_msg_id: z.string().trim().max(64).optional(),
+  reply_to_message_id: z.coerce.number().int().positive().optional(),
+  // Multipart sends this as a JSON string; accept either and coerce.
+  mentioned_user_ids: z
+    .union([z.string(), z.array(z.coerce.number().int().nonnegative())])
+    .optional()
+    .transform((v) => {
+      if (v == null) return undefined;
+      if (Array.isArray(v)) return v;
+      try {
+        const parsed = JSON.parse(v);
+        return Array.isArray(parsed) ? parsed.map((n) => Number(n)).filter((n) => Number.isFinite(n)) : undefined;
+      } catch {
+        return undefined;
+      }
+    }),
+});
+
+/** Edit a message's body (and optionally its mentions). */
+export const editMessageSchema = z.object({
+  body: z.string().trim().max(5000),
+  mentioned_user_ids: mentionedUserIds,
+});
+
+/** Toggle an emoji reaction on a message. */
+export const toggleReactionSchema = z.object({
+  // A single emoji grapheme; capped well above any real emoji's byte length.
+  emoji: z.string().trim().min(1).max(32),
+});
+
+/** Add one or more members to a group. */
+export const addMembersSchema = z.object({
+  member_ids: z.array(z.coerce.number().int().positive()).min(1).max(100),
+});
+
+/** Rename a group conversation. */
+export const renameGroupSchema = z.object({
+  name: z.string().trim().min(1).max(150),
+});
+
+/** Mute / unmute a conversation for the current user. */
+export const muteConversationSchema = z.object({
+  muted: z.boolean(),
+});
+
+/** Forward one or more messages into one or more target conversations. */
+export const forwardMessageSchema = z.object({
+  /** Messages to forward (chronological order is applied server-side). */
+  message_ids: z.array(z.coerce.number().int().positive()).min(1).max(50),
+  target_conversation_ids: z.array(z.coerce.number().int().positive()).min(1).max(20),
+});
+
+/** Mark a conversation read up to a given message id. */
+export const markReadSchema = z.object({
+  last_read_message_id: z.coerce.number().int().positive(),
+});
+
+/** Mark a conversation delivered up to a given message id. */
+export const markDeliveredSchema = z.object({
+  up_to_message_id: z.coerce.number().int().positive(),
+});
+
+/** Resync tick state for messages at or after a cursor (lowest visible id). */
+export const tickResyncSchema = z.object({
+  since_message_id: z.coerce.number().int().nonnegative().default(0),
+});
+
+/** Search message bodies across the caller's conversations. */
+export const messageSearchSchema = z.object({
+  q: z.string().trim().min(1).max(100),
+  limit: z.coerce.number().int().min(1).max(50).default(25),
+});
+
+/** Paginated message history; `before` is a message id for back-scroll. */
+export const messageQuerySchema = z.object({
+  before: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(30),
+});
+
+export type StartDirectConversationInput = z.infer<typeof startDirectConversationSchema>;
+export type CreateGroupConversationInput = z.infer<typeof createGroupConversationSchema>;
+export type SendMessageInput = z.infer<typeof sendMessageSchema>;
+export type SendMessageWithAttachmentInput = z.infer<typeof sendMessageWithAttachmentSchema>;
+export type EditMessageInput = z.infer<typeof editMessageSchema>;
+export type ToggleReactionInput = z.infer<typeof toggleReactionSchema>;
+export type AddMembersInput = z.infer<typeof addMembersSchema>;
+export type RenameGroupInput = z.infer<typeof renameGroupSchema>;
+export type ForwardMessageInput = z.infer<typeof forwardMessageSchema>;
+export type MessageSearchInput = z.infer<typeof messageSearchSchema>;
+export type MarkDeliveredInput = z.infer<typeof markDeliveredSchema>;
+export type TickResyncInput = z.infer<typeof tickResyncSchema>;
+export type MarkReadInput = z.infer<typeof markReadSchema>;
+export type MessageQueryInput = z.infer<typeof messageQuerySchema>;
