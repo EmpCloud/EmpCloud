@@ -1735,6 +1735,7 @@ export async function searchMessages(
   userId: number,
   query: string,
   limit: number,
+  conversationId?: number,
 ): Promise<MessageSearchResult[]> {
   const db = getDB();
   const term = `%${query.trim()}%`;
@@ -1749,6 +1750,11 @@ export async function searchMessages(
     .join("users as u", "u.id", "m.sender_id")
     .where("c.organization_id", orgId)
     .where("m.is_deleted", false)
+    .where("m.is_system", false)
+    .modify((qb) => {
+      // In-thread search restricts to one conversation.
+      if (conversationId) qb.where("m.conversation_id", conversationId);
+    })
     .whereRaw("m.body LIKE ?", [term])
     .orderBy("m.id", "desc")
     .limit(limit)
@@ -1767,7 +1773,9 @@ export async function searchMessages(
 
   // For direct conversations the title is the OTHER participant's name — resolve
   // those in one query.
-  const directConvoIds = rows.filter((r) => r.conversation_type === "direct").map((r) => r.conversation_id);
+  const directConvoIds = rows
+    .filter((r: any) => r.conversation_type === "direct")
+    .map((r: any) => r.conversation_id);
   const directTitle = new Map<number, string>();
   if (directConvoIds.length > 0) {
     const others = await db("conversation_participants as cp")
@@ -1780,7 +1788,7 @@ export async function searchMessages(
     }
   }
 
-  return rows.map((r) => ({
+  return rows.map((r: any) => ({
     message_id: r.message_id,
     conversation_id: r.conversation_id,
     conversation_type: r.conversation_type,

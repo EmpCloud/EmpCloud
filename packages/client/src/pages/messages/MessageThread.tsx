@@ -49,6 +49,7 @@ import {
   Pin,
   Archive,
   ArchiveRestore,
+  Search,
 } from "lucide-react";
 import {
   splitName,
@@ -700,6 +701,23 @@ export default function MessageThread({
     setDraft(failed.body);
   };
 
+  // In-thread search (header search box). Results jump to the matched message.
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [threadQuery, setThreadQuery] = useState("");
+  const { data: threadHits } = useQuery<
+    { message_id: number; body: string; created_at: string }[]
+  >({
+    queryKey: ["chat-thread-search", conversationId, threadQuery.trim()],
+    queryFn: () =>
+      api
+        .get("/chat/search", {
+          params: { q: threadQuery.trim(), conversation_id: conversationId, limit: 25 },
+        })
+        .then((r) => r.data.data),
+    enabled: searchOpen && threadQuery.trim().length >= 2,
+    staleTime: 5_000,
+  });
+
   // Pinned messages bar (top of the thread).
   const { data: pinnedMessages } = useQuery<ChatMessage[]>({
     queryKey: ["chat-pinned", conversationId],
@@ -1169,6 +1187,23 @@ export default function MessageThread({
           </div>
         )}
 
+        {/* In-thread search toggle */}
+        {conversation && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearchOpen((v) => !v);
+              setThreadQuery("");
+            }}
+            title="Search in conversation"
+            aria-label="Search in conversation"
+            className={`ml-auto p-2 rounded-lg hover:bg-gray-100 ${
+              searchOpen ? "text-brand-600" : "text-gray-500"
+            }`}
+          >
+            <Search className="h-5 w-5" />
+          </button>
+        )}
         {/* Mute / unmute toggle (notifications only — unread still accrues). */}
         {conversation && (
           <button
@@ -1177,7 +1212,7 @@ export default function MessageThread({
             disabled={mutingBusy}
             title={isMuted ? "Unmute notifications" : "Mute notifications"}
             aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
-            className={`ml-auto p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
+            className={`p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
               isMuted ? "text-gray-400" : "text-gray-500"
             }`}
           >
@@ -1204,6 +1239,45 @@ export default function MessageThread({
           </button>
         )}
       </div>
+
+      {/* ---------------- In-thread search panel ---------------- */}
+      {searchOpen && (
+        <div className="border-b border-gray-200 bg-white px-3 py-2 flex-shrink-0">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              autoFocus
+              type="text"
+              value={threadQuery}
+              onChange={(e) => setThreadQuery(e.target.value)}
+              placeholder="Search in this conversation…"
+              data-gramm="false"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+          </div>
+          {threadQuery.trim().length >= 2 && (
+            <div className="mt-1.5 max-h-48 overflow-y-auto">
+              {(threadHits?.length ?? 0) === 0 ? (
+                <p className="px-2 py-2 text-xs text-gray-400">No matches.</p>
+              ) : (
+                threadHits!.map((hit) => (
+                  <button
+                    key={hit.message_id}
+                    type="button"
+                    onClick={() => {
+                      jumpToMessage(hit.message_id);
+                      setSearchOpen(false);
+                    }}
+                    className="block w-full truncate rounded-lg px-2 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
+                  >
+                    {hit.body}
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ---------------- Pinned-messages bar ---------------- */}
       {pinnedMessages && pinnedMessages.length > 0 && (

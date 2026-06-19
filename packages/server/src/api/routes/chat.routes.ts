@@ -92,12 +92,13 @@ router.get("/unread-count", async (req: Request, res: Response, next: NextFuncti
 // GET /api/v1/chat/search?q=...&limit=... — search message bodies across my chats
 router.get("/search", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { q, limit } = messageSearchSchema.parse(req.query);
+    const { q, limit, conversation_id } = messageSearchSchema.parse(req.query);
     const results = await chatService.searchMessages(
       req.user!.org_id,
       req.user!.sub,
       q,
       limit,
+      conversation_id,
     );
     sendSuccess(res, results);
   } catch (err) {

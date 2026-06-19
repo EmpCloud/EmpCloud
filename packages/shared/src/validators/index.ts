@@ -2168,10 +2168,12 @@ export const tickResyncSchema = z.object({
   since_message_id: z.coerce.number().int().nonnegative().default(0),
 });
 
-/** Search message bodies across the caller's conversations. */
+/** Search message bodies across the caller's conversations (or one of them). */
 export const messageSearchSchema = z.object({
   q: z.string().trim().min(1).max(100),
   limit: z.coerce.number().int().min(1).max(50).default(25),
+  /** Optional: restrict the search to a single conversation (in-thread search). */
+  conversation_id: z.coerce.number().int().positive().optional(),
 });
 
 /** Paginated message history; `before` is a message id for back-scroll. */
