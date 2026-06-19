@@ -352,7 +352,7 @@ export default function MessagesPage() {
                     </>
                   )}
                 </div>
-                {/* Logged-in user's name + a small "Messages" label below it. */}
+                {/* Logged-in user's name + their status line (WhatsApp-style). */}
                 <button
                   type="button"
                   onClick={() => setShowProfile((v) => !v)}
@@ -362,7 +362,9 @@ export default function MessagesPage() {
                   <p className="truncate text-sm font-semibold leading-tight text-gray-900">
                     {me ? `${me.first_name} ${me.last_name}` : "You"}
                   </p>
-                  <p className="text-[11px] leading-tight text-gray-400">Messages</p>
+                  <p className="truncate text-[11px] leading-tight text-gray-400">
+                    {myStatus?.status || "Set a status…"}
+                  </p>
                 </button>
               </div>
               <button
