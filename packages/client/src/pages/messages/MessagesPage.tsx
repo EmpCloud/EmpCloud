@@ -219,7 +219,7 @@ export default function MessagesPage() {
                 data-gramm="false"
                 data-gramm_editor="false"
                 data-enable-grammarly="false"
-                className="absolute inset-0 w-full h-full pl-9 pr-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="absolute inset-0 w-full h-full pl-9 pr-3 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
               />
             </div>
           </div>
