@@ -4,6 +4,7 @@
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -20,6 +21,12 @@ import { startTrialExpirationInterval, stopTrialExpirationInterval } from "./ser
 
 // Docs
 import { swaggerUIHandler, openapiHandler } from "./api/docs/index.js";
+
+// Self-hosted Swagger UI assets — served same-origin so the proxy CSP ('self')
+// allows them. The old unpkg.com CDN is blocked by the nginx/Cloudflare CSP
+// that overrides the app's own per-response CSP (browser enforces the
+// intersection, and the proxy policy lacks the CDN host).
+const swaggerUiAssetPath = createRequire(import.meta.url)("swagger-ui-dist").getAbsoluteFSPath();
 
 // Route imports
 import authRoutes from "./api/routes/auth.routes.js";
@@ -247,6 +254,7 @@ async function main() {
   app.use("/api/v1/roles", apiLimiter, roleRoutes);
 
   // API Documentation
+  app.use("/api/docs/ui", express.static(swaggerUiAssetPath, { maxAge: "7d", immutable: true }));
   app.get("/api/docs", swaggerUIHandler);
   app.get("/api/docs/openapi.json", openapiHandler);
 
