@@ -247,7 +247,7 @@ export default function MessagesPage() {
         >
           <div className="px-4 pt-4 pb-3 border-b border-gray-100">
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
                 {/* My profile — compact avatar; click opens a small popover to
                     change photo / set status. */}
                 <div className="relative flex-shrink-0">
@@ -264,7 +264,7 @@ export default function MessagesPage() {
                       hasPhoto
                       firstName={me?.first_name}
                       lastName={me?.last_name}
-                      size="sm"
+                      size="md"
                     />
                   </button>
                   {showProfile && (
@@ -359,10 +359,10 @@ export default function MessagesPage() {
                   className="min-w-0 text-left"
                   title="Your profile"
                 >
-                  <p className="truncate text-sm font-semibold leading-tight text-gray-900">
+                  <p className="truncate text-base font-semibold leading-snug text-gray-900">
                     {me ? `${me.first_name} ${me.last_name}` : "You"}
                   </p>
-                  <p className="truncate text-[11px] leading-tight text-gray-400">
+                  <p className="truncate text-xs leading-snug text-gray-500">
                     {myStatus?.status || "Set a status…"}
                   </p>
                 </button>
