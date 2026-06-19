@@ -17,7 +17,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { ConversationSummary, MessageSearchResult } from "@empcloud/shared";
 import api from "@/api/client";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
-import { MessagesSquare, Plus, Search, Users, BellOff, Archive } from "lucide-react";
+import { GroupAvatar } from "./GroupAvatar";
+import { MessagesSquare, Plus, Search, BellOff, Archive } from "lucide-react";
 import { splitName, relativeTime } from "./chat-utils";
 import MessageThread from "./MessageThread";
 import NewChatModal from "./NewChatModal";
@@ -79,9 +80,7 @@ function ConversationRow({
       }`}
     >
       {isGroup ? (
-        <div className="h-10 w-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center flex-shrink-0">
-          <Users className="h-5 w-5" />
-        </div>
+        <GroupAvatar url={conv.avatar_url} />
       ) : (
         <EmployeeAvatar
           userId={cp?.user_id}

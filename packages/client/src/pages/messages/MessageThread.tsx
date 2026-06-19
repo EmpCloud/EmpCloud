@@ -14,6 +14,7 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { showToast } from "@/components/ui/Toast";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
+import { GroupAvatar } from "./GroupAvatar";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { MessageAttachment } from "./MessageAttachment";
 import { MessageTick as TickGlyph } from "./MessageTicks";
@@ -29,7 +30,6 @@ import {
   ArrowLeft,
   Send,
   Trash2,
-  Users,
   X,
   ChevronRight,
   UserMinus,
@@ -75,35 +75,6 @@ function makeClientMsgId(): string {
 
 // Keep in sync with the server's chat-upload limit (10 MB).
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
-
-// Group avatar — the serving route needs a Bearer token, so a raw <img src>
-// would 404. Fetch it as an authenticated blob (same pattern as attachments).
-function GroupAvatar({ url, size = "h-16 w-16" }: { url: string | null | undefined; size?: string }) {
-  const { data: blobUrl, isError } = useQuery({
-    queryKey: ["chat-group-avatar", url],
-    queryFn: async () => {
-      const relative = (url ?? "").replace(/^\/api\/v1/, "");
-      const res = await api.get(relative, { responseType: "blob" });
-      return URL.createObjectURL(res.data);
-    },
-    enabled: !!url,
-    retry: false,
-    staleTime: 30 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
-    throwOnError: false,
-    refetchOnWindowFocus: false,
-  });
-  if (url && blobUrl && !isError) {
-    return <img src={blobUrl} alt="" className={`${size} rounded-full object-cover`} />;
-  }
-  return (
-    <div
-      className={`${size} flex items-center justify-center rounded-full bg-brand-100 text-brand-700`}
-    >
-      <Users className="h-7 w-7" />
-    </div>
-  );
-}
 
 const PAGE_SIZE = 30;
 // Mirror the server's body cap (sendMessageSchema.body.max) so the composer can
@@ -1317,9 +1288,7 @@ export default function MessageThread({
           </button>
         )}
         {isGroup ? (
-          <div className="h-10 w-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center flex-shrink-0">
-            <Users className="h-5 w-5" />
-          </div>
+          <GroupAvatar url={conversation?.avatar_url} />
         ) : (
           <div className="relative flex-shrink-0">
             <EmployeeAvatar
@@ -1575,7 +1544,7 @@ export default function MessageThread({
             {/* Group profile: avatar + description */}
             <div className="flex flex-col items-center gap-2 border-b border-gray-100 px-4 py-4 flex-shrink-0">
               <div className="relative">
-                <GroupAvatar url={conversation.avatar_url} />
+                <GroupAvatar url={conversation.avatar_url} size="h-16 w-16" iconSize="h-7 w-7" />
                 {isOwner && (
                   <>
                     <button
