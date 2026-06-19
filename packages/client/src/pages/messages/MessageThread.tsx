@@ -76,6 +76,35 @@ function makeClientMsgId(): string {
 // Keep in sync with the server's chat-upload limit (10 MB).
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 
+// Group avatar — the serving route needs a Bearer token, so a raw <img src>
+// would 404. Fetch it as an authenticated blob (same pattern as attachments).
+function GroupAvatar({ url, size = "h-16 w-16" }: { url: string | null | undefined; size?: string }) {
+  const { data: blobUrl, isError } = useQuery({
+    queryKey: ["chat-group-avatar", url],
+    queryFn: async () => {
+      const relative = (url ?? "").replace(/^\/api\/v1/, "");
+      const res = await api.get(relative, { responseType: "blob" });
+      return URL.createObjectURL(res.data);
+    },
+    enabled: !!url,
+    retry: false,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
+  });
+  if (url && blobUrl && !isError) {
+    return <img src={blobUrl} alt="" className={`${size} rounded-full object-cover`} />;
+  }
+  return (
+    <div
+      className={`${size} flex items-center justify-center rounded-full bg-brand-100 text-brand-700`}
+    >
+      <Users className="h-7 w-7" />
+    </div>
+  );
+}
+
 const PAGE_SIZE = 30;
 // Mirror the server's body cap (sendMessageSchema.body.max) so the composer can
 // warn before a send is rejected.
@@ -1191,6 +1220,9 @@ export default function MessageThread({
         headers: { "Content-Type": "multipart/form-data" },
       });
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
+      // The serving URL is stable, so bust the cached avatar blob to show the
+      // new image immediately.
+      qc.invalidateQueries({ queryKey: ["chat-group-avatar"] });
       showToast("success", "Group photo updated.");
     } catch {
       showToast("error", "Couldn't upload the photo.");
@@ -1543,17 +1575,7 @@ export default function MessageThread({
             {/* Group profile: avatar + description */}
             <div className="flex flex-col items-center gap-2 border-b border-gray-100 px-4 py-4 flex-shrink-0">
               <div className="relative">
-                {conversation.avatar_url ? (
-                  <img
-                    src={conversation.avatar_url}
-                    alt=""
-                    className="h-16 w-16 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-brand-700">
-                    <Users className="h-7 w-7" />
-                  </div>
-                )}
+                <GroupAvatar url={conversation.avatar_url} />
                 {isOwner && (
                   <>
                     <button
