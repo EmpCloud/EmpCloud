@@ -269,81 +269,6 @@ export default function MessagesPage() {
                 className="absolute inset-0 w-full h-full pl-9 pr-3 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
               />
             </div>
-
-            {/* My profile: photo (click to change) + status line. */}
-            <div className="mt-2 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => photoInputRef.current?.click()}
-                title="Change your profile photo"
-                aria-label="Change your profile photo"
-                className="group relative flex-shrink-0"
-              >
-                <EmployeeAvatar
-                  key={photoBust}
-                  userId={me?.id}
-                  hasPhoto
-                  firstName={me?.first_name}
-                  lastName={me?.last_name}
-                  size="sm"
-                />
-                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
-                  <Camera className="h-3.5 w-3.5" />
-                </span>
-              </button>
-              <input
-                ref={photoInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
-              />
-              <div className="min-w-0 flex-1">
-                {/* My status / "About" — a short line others see in 1:1 chats. */}
-                {editingStatus ? (
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      autoFocus
-                      value={statusDraft}
-                      onChange={(e) => setStatusDraft(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") saveStatus();
-                        else if (e.key === "Escape") setEditingStatus(false);
-                      }}
-                      maxLength={140}
-                      placeholder="Set a status…"
-                      data-gramm="false"
-                      className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={saveStatus}
-                      className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
-                    >
-                      Save
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <p className="truncate text-sm font-medium text-gray-700">
-                      {me ? `${me.first_name} ${me.last_name}` : "You"}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStatusDraft(myStatus?.status ?? "");
-                        setEditingStatus(true);
-                      }}
-                      title="Set your status"
-                      className="flex w-full items-center gap-1.5 text-left text-xs text-gray-400 hover:text-brand-600"
-                    >
-                      <Pencil className="h-3 w-3 flex-shrink-0" />
-                      <span className="truncate">{myStatus?.status || "Set a status…"}</span>
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
@@ -439,6 +364,80 @@ export default function MessagesPage() {
                 )}
               </div>
             )}
+          </div>
+
+          {/* ---------------- My profile footer (avatar + name + status) ---- */}
+          <div className="flex items-center gap-2.5 border-t border-gray-100 px-3 py-2.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              title="Change your profile photo"
+              aria-label="Change your profile photo"
+              className="group relative flex-shrink-0"
+            >
+              <EmployeeAvatar
+                key={photoBust}
+                userId={me?.id}
+                hasPhoto
+                firstName={me?.first_name}
+                lastName={me?.last_name}
+                size="md"
+              />
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                <Camera className="h-4 w-4" />
+              </span>
+            </button>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
+            />
+            <div className="min-w-0 flex-1">
+              {editingStatus ? (
+                <div className="flex items-center gap-1.5">
+                  <input
+                    autoFocus
+                    value={statusDraft}
+                    onChange={(e) => setStatusDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveStatus();
+                      else if (e.key === "Escape") setEditingStatus(false);
+                    }}
+                    maxLength={140}
+                    placeholder="Set a status…"
+                    data-gramm="false"
+                    className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={saveStatus}
+                    className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
+                  >
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {me ? `${me.first_name} ${me.last_name}` : "You"}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStatusDraft(myStatus?.status ?? "");
+                      setEditingStatus(true);
+                    }}
+                    title="Set your status"
+                    className="flex w-full items-center gap-1 text-left text-xs text-gray-400 hover:text-brand-600"
+                  >
+                    <Pencil className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{myStatus?.status || "Set a status…"}</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </aside>
 
