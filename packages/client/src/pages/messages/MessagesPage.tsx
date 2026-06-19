@@ -188,7 +188,7 @@ export default function MessagesPage() {
           } w-full sm:w-80 lg:w-[22rem] flex-shrink-0 border-r border-gray-200 flex-col min-h-0`}
         >
           <div className="px-4 pt-4 pb-3 border-b border-gray-100">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 flex-shrink-0">
               <h1 className="text-lg font-bold text-gray-900">Messages</h1>
               <button
                 onClick={() => setShowNewChat(true)}
@@ -197,14 +197,19 @@ export default function MessagesPage() {
                 <Plus className="h-4 w-4" /> New chat
               </button>
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="relative h-10">
+              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search chats & messages…"
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                // data-gramm*: stop Grammarly/extensions from injecting an overlay
+                // widget here (its outline was floating up over the heading).
+                data-gramm="false"
+                data-gramm_editor="false"
+                data-enable-grammarly="false"
+                className="absolute inset-0 w-full h-full pl-9 pr-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               />
             </div>
           </div>

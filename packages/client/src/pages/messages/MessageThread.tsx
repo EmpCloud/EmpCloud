@@ -1864,6 +1864,11 @@ export default function MessageThread({
               placeholder={
                 file ? "Add a caption…" : isGroup ? "Type a message… (@ to mention)" : "Type a message…"
               }
+              // Stop Grammarly/extensions from injecting their overlay widget
+              // into the composer (it was sitting on top of the rounded pill).
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
               className="flex-1 resize-none max-h-32 self-center bg-transparent px-1 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
             />
             <button
