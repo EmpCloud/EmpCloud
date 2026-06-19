@@ -1865,7 +1865,10 @@ export default function MessageThread({
             <p className="text-xs mt-1">Say hello to get the conversation started.</p>
           </div>
         ) : (
-          <div className="space-y-1">
+          // min-h-full + justify-end keeps a short conversation pinned to the
+          // bottom (next to the composer) instead of floating at the top with a
+          // big empty gap below; long threads scroll normally.
+          <div className="flex min-h-full flex-col justify-end space-y-1">
             {/* Top-of-list pagination affordance */}
             {loadingOlder && (
               <div className="flex justify-center py-2">
