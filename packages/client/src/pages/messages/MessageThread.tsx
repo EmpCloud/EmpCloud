@@ -73,6 +73,9 @@ function makeClientMsgId(): string {
 const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 
 const PAGE_SIZE = 30;
+// Mirror the server's body cap (sendMessageSchema.body.max) so the composer can
+// warn before a send is rejected.
+const MAX_MESSAGE_CHARS = 5000;
 
 // Merge a freshly-polled latest page into the existing thread cache WITHOUT
 // dropping older pages the user has scrolled back to load. Union by id; keep
@@ -578,6 +581,10 @@ export default function MessageThread({
   const handleSend = async () => {
     const body = draft.trim();
     if ((!body && !file) || sending) return;
+    if (body.length > MAX_MESSAGE_CHARS) {
+      showToast("error", `Message is too long (max ${MAX_MESSAGE_CHARS} characters).`);
+      return;
+    }
     setSending(true);
     const stagedFile = file;
     const clientMsgId = makeClientMsgId();
@@ -1990,17 +1997,31 @@ export default function MessageThread({
           {/* Circular send button */}
           <button
             onClick={handleSend}
-            disabled={(!draft.trim() && !file) || sending}
+            disabled={
+              (!draft.trim() && !file) || sending || draft.length > MAX_MESSAGE_CHARS
+            }
             className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:hover:bg-brand-600 disabled:active:scale-100"
             aria-label="Send message"
           >
             <Send className="h-[18px] w-[18px] -ml-0.5" />
           </button>
         </div>
-        <p className="text-[10px] text-gray-400 mt-1.5 ml-2">
-          Enter to send · Shift + Enter for a new line
-          {isGroup ? " · @ to mention" : " · Attach up to 10 MB"}
-        </p>
+        <div className="mt-1.5 ml-2 flex items-center justify-between gap-2">
+          <p className="text-[10px] text-gray-400">
+            Enter to send · Shift + Enter for a new line
+            {isGroup ? " · @ to mention" : " · Attach up to 10 MB"}
+          </p>
+          {/* Character counter — only shown as you approach / exceed the limit. */}
+          {draft.length > MAX_MESSAGE_CHARS - 200 && (
+            <span
+              className={`text-[10px] font-medium tabular-nums ${
+                draft.length > MAX_MESSAGE_CHARS ? "text-red-500" : "text-gray-400"
+              }`}
+            >
+              {draft.length}/{MAX_MESSAGE_CHARS}
+            </span>
+          )}
+        </div>
       </div>
       </>
       )}

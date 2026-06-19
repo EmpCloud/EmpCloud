@@ -69,17 +69,23 @@ const msgKey = (cid: number) => ["chat-messages", cid] as const;
 function appendMessage(cid: number, message: ChatMessage) {
   queryClient.setQueryData<ChatMessage[]>(msgKey(cid), (old) => {
     if (!old) return old; // thread not loaded yet; the poll/open will hydrate it
-    // Dedupe by real id and by optimistic client_msg_id.
+    // Already present by real id — nothing to do.
     if (old.some((m) => m.id === message.id)) return old;
-    if (message.client_msg_id) {
-      const tempIdx = old.findIndex(
-        (m) => m.client_msg_id && m.client_msg_id === message.client_msg_id,
-      );
-      if (tempIdx >= 0) {
-        const next = old.slice();
-        next[tempIdx] = message;
-        return next;
-      }
+    // Reconcile an optimistic temp bubble with the server echo. Match by
+    // client_msg_id when present; fall back to a same-sender/same-body/still-
+    // sending heuristic so a missing client_msg_id can't leave a duplicate.
+    const tempIdx = old.findIndex((m) =>
+      message.client_msg_id && m.client_msg_id
+        ? m.client_msg_id === message.client_msg_id
+        : m.id < 0 &&
+          m.tick_status === "sending" &&
+          m.sender_id === message.sender_id &&
+          m.body === message.body,
+    );
+    if (tempIdx >= 0) {
+      const next = old.slice();
+      next[tempIdx] = message;
+      return next;
     }
     return [...old, message];
   });
