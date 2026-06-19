@@ -352,7 +352,18 @@ export default function MessagesPage() {
                     </>
                   )}
                 </div>
-                <h1 className="text-lg font-bold text-gray-900">Messages</h1>
+                {/* Logged-in user's name + a small "Messages" label below it. */}
+                <button
+                  type="button"
+                  onClick={() => setShowProfile((v) => !v)}
+                  className="min-w-0 text-left"
+                  title="Your profile"
+                >
+                  <p className="truncate text-sm font-semibold leading-tight text-gray-900">
+                    {me ? `${me.first_name} ${me.last_name}` : "You"}
+                  </p>
+                  <p className="text-[11px] leading-tight text-gray-400">Messages</p>
+                </button>
               </div>
               <button
                 onClick={() => setShowNewChat(true)}
