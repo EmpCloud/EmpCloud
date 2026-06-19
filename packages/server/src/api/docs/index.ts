@@ -1161,26 +1161,29 @@ const spec = {
 };
 
 export function swaggerUIHandler(_req: Request, res: Response) {
-  // The global helmet() CSP only allows 'self', which blocks the unpkg CDN
-  // scripts/styles and the inline bootstrap <script> below. Override CSP
-  // *just for this response* so the rest of the API stays locked down.
+  // Swagger UI assets are self-hosted at /api/docs/ui (served by
+  // swagger-ui-dist via express.static in index.ts) so they load same-origin.
+  // Previously they came from unpkg.com, which the nginx/Cloudflare CSP blocks
+  // (that proxy CSP only allows 'self' and overrides this app's CSP — the
+  // browser enforces the intersection, so the CDN host was dropped). This CSP
+  // mirrors the proxy's so there is no intersection mismatch.
   res.setHeader(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://unpkg.com",
-      "style-src 'self' 'unsafe-inline' https://unpkg.com",
-      "img-src 'self' data: https://unpkg.com",
-      "font-src 'self' data: https://unpkg.com",
-      "connect-src 'self' https://unpkg.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "font-src 'self' data:",
+      "connect-src 'self'",
     ].join("; "),
   );
   res.send(`<!DOCTYPE html>
 <html><head><title>EMP Cloud API</title>
-<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+<link rel="stylesheet" href="/api/docs/ui/swagger-ui.css">
 </head><body>
 <div id="swagger-ui"></div>
-<script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="/api/docs/ui/swagger-ui-bundle.js"></script>
 <script>SwaggerUIBundle({ url: '/api/docs/openapi.json', dom_id: '#swagger-ui' })</script>
 </body></html>`);
 }
