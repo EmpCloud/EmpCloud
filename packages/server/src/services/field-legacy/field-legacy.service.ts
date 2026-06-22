@@ -224,7 +224,9 @@ export async function listFieldEmployees(body: {
     "u.location_id",
     "loc.name as location",
     "u.role",
-    "u.timezone",
+    // `users` has no timezone column — the employee's timezone comes from their
+    // work location (organization_locations.timezone), already joined as `loc`.
+    "loc.timezone as timezone",
     "u.date_of_joining as date_join",
   );
 
@@ -345,7 +347,8 @@ export async function getAttendanceSheet(body: {
       "u.location_id",
       "loc.name as location",
       "u.date_of_joining as date_join",
-      "u.timezone",
+      // `users` has no timezone column — use the joined work-location timezone.
+      "loc.timezone as timezone",
     );
 
   const totalCount = employees.length;
