@@ -366,6 +366,18 @@ async function guardAttachmentParticipant(
   }
 }
 
+// Authorize a group-avatar upload BEFORE multer writes the file: only the group
+// admin may set the photo, so a non-creator (or non-participant) is rejected
+// before any file lands on disk.
+async function guardGroupAdmin(req: Request, _res: Response, next: NextFunction) {
+  try {
+    await chatService.assertGroupAdmin(req.user!.org_id, req.user!.sub, paramInt(req.params.id));
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
 router.post(
   "/conversations/:id/messages/attachment",
   uploadLimiter,
@@ -435,6 +447,7 @@ router.patch(
 router.post(
   "/conversations/:id/avatar",
   uploadLimiter,
+  guardGroupAdmin, // authorize BEFORE multer writes the file to disk
   chatUpload.single("file"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {

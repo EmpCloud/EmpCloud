@@ -226,6 +226,25 @@ export async function assertParticipant(
   await requireParticipant(orgId, userId, conversationId);
 }
 
+/**
+ * Public guard: throws unless `userId` is the creator/admin of the given GROUP
+ * conversation in `orgId`. Used to authorize a group-avatar upload BEFORE multer
+ * writes the file to disk (so a non-creator can never plant a file).
+ */
+export async function assertGroupAdmin(
+  orgId: number,
+  userId: number,
+  conversationId: number,
+): Promise<void> {
+  const { convo } = await requireParticipant(orgId, userId, conversationId);
+  if (convo.type !== "group") {
+    throw new ValidationError("Only groups have a photo");
+  }
+  if (convo.created_by !== userId) {
+    throw new ForbiddenError("Only the group admin can change the photo");
+  }
+}
+
 // Fetch the participants of a set of conversations, keyed by conversation id.
 async function participantsByConversation(
   conversationIds: number[],
