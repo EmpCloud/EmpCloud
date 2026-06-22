@@ -73,6 +73,22 @@ router.post("/user/fieldAllEmployeeList", fieldAuthenticate, async (req, res) =>
 });
 
 // ---------------------------------------------------------------------------
+// /user/info — resolve a user by email.
+// OPEN (no shared-secret gate) by request, and returns a PLAIN
+// { data: [{ id, email }] } shape (not the legacy code/message envelope) to
+// match the consumer's expected response. Empty array when no user matches.
+// ---------------------------------------------------------------------------
+router.post("/user/info", async (req, res) => {
+  try {
+    const data = await svc.lookupUserByEmail(req.body || {});
+    return res.json({ data });
+  } catch (err) {
+    logger.error("Field-legacy /user/info error", { error: (err as Error)?.message });
+    return res.json({ data: [] });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // /hrms/getAttendanceField + /hrms/attendance-fieldtracking
 // ---------------------------------------------------------------------------
 async function attendanceSheetHandler(req: any, res: Response) {
