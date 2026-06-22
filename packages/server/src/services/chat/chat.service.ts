@@ -11,7 +11,7 @@ import { getDB } from "../../db/connection.js";
 import type { Knex } from "knex";
 import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 import { sanitizePlainText } from "../../utils/sanitize-html.js";
-import { createNotification } from "../notification/notification.service.js";
+import { createNotifications } from "../notification/notification.service.js";
 import { emitMessageNew } from "./chat-events.js";
 import { logger } from "../../utils/logger.js";
 import type {
@@ -1222,18 +1222,17 @@ async function notifyMentions(
     .where("muted_until", ">", new Date())
     .pluck("user_id");
   const mutedSet = new Set<number>(mutedRows);
-  for (const targetId of mentionedIds) {
-    if (mutedSet.has(targetId)) continue;
-    await createNotification(
-      orgId,
-      targetId,
-      "chat_mention",
-      `${senderName} mentioned you`,
-      `${where}: ${snippet}`,
-      "chat_conversation",
-      String(conversationId),
-    );
-  }
+  const targets = mentionedIds.filter((id) => !mutedSet.has(id));
+  // One bulk insert instead of an await-per-target N+1.
+  await createNotifications(
+    orgId,
+    targets,
+    "chat_mention",
+    `${senderName} mentioned you`,
+    `${where}: ${snippet}`,
+    "chat_conversation",
+    String(conversationId),
+  );
 }
 
 /**
@@ -1495,18 +1494,17 @@ export async function forwardMessage(
   if (srcRows.length === 0) throw new NotFoundError("Message");
 
   // Resolve provenance per source (re-forward keeps the ORIGINAL author).
-  const senderCache = new Map<number, string>();
-  const provenanceFor = async (row: any): Promise<string> => {
-    if (row.forwarded_from_name) return row.forwarded_from_name;
-    if (senderCache.has(row.sender_id)) return senderCache.get(row.sender_id)!;
-    const u = await db("users").where({ id: row.sender_id }).first();
-    const name = fullName(u?.first_name, u?.last_name);
-    senderCache.set(row.sender_id, name);
-    return name;
-  };
+  // Batch-load every distinct original sender's name in ONE query (no per-row
+  // user lookup), then resolve from the map.
+  const senderIds = [...new Set(srcRows.map((r: any) => r.sender_id).concat(userId))];
+  const userRows = await db("users").whereIn("id", senderIds).select("id", "first_name", "last_name");
+  const nameById = new Map<number, string>(
+    userRows.map((u: any) => [u.id, fullName(u.first_name, u.last_name)]),
+  );
+  const provenanceFor = (row: any): string =>
+    row.forwarded_from_name || nameById.get(row.sender_id) || "Unknown";
 
-  const me = await db("users").where({ id: userId }).first();
-  const myName = fullName(me?.first_name, me?.last_name);
+  const myName = nameById.get(userId) ?? "Unknown";
 
   const targets = [...new Set(targetConversationIds.filter((id) => id > 0))];
   const out: ChatMessage[] = [];
@@ -1523,7 +1521,7 @@ export async function forwardMessage(
 
     // Forward each source message in order into this target.
     for (const src of srcRows) {
-      const origSender = await provenanceFor(src);
+      const origSender = provenanceFor(src);
       const now = new Date();
       const newId = await db.transaction(async (trx) => {
         const [id] = await trx("chat_messages").insert({
