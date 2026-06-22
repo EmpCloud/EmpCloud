@@ -61,7 +61,7 @@ interface SendEmailParams {
  * Send a transactional email. Tries SendGrid first, falls back to SMTP,
  * and finally no-ops with a log line when neither is configured.
  */
-export async function sendEmail(params: SendEmailParams): Promise<void> {
+export async function sendEmail(params: SendEmailParams): Promise<boolean> {
   if (ensureSendgrid()) {
     try {
       await sgMail.send({
@@ -75,7 +75,7 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
         text: params.text || htmlToPlainText(params.html),
       });
       logger.info(`[email] sent via SendGrid "${params.subject}" to ${params.to}`);
-      return;
+      return true;
     } catch (err: any) {
       const detail =
         err?.response?.body?.errors?.map((e: any) => e.message).join("; ") ||
@@ -100,19 +100,20 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
         text: params.text || htmlToPlainText(params.html),
       });
       logger.info(`[email] sent via SMTP "${params.subject}" to ${params.to}`);
-      return;
+      return true;
     } catch (err: any) {
       logger.error(
         `[email] SMTP send failed for ${params.to} "${params.subject}": ${err?.message || err}`,
       );
       // Swallow — caller's flow continues even if delivery fails.
-      return;
+      return false;
     }
   }
 
   logger.info(
     `[email] no transport configured (set SENDGRID_API_KEY or SMTP_HOST) — skipping send to ${params.to} "${params.subject}"`,
   );
+  return false;
 }
 
 /** Very rough HTML → plain-text fallback for the `text` body. */
@@ -152,7 +153,7 @@ function layout(innerHtml: string, preheader: string): string {
 </td></tr>
 <tr><td style="padding:32px;">${innerHtml}</td></tr>
 <tr><td style="padding:20px 32px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:12px;text-align:center;">
-Sent by EMP Cloud &bull; If you didn't expect this email, you can safely ignore it.
+Sent by EMP Cloud • If you didn't expect this email, you can safely ignore it.
 </td></tr>
 </table></td></tr></table></body></html>`;
 }
@@ -179,6 +180,49 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+/**
+ * Turn a plain-text message (blank-line-separated paragraphs, single newlines
+ * within a paragraph) into branded HTML paragraphs. The text is HTML-escaped
+ * first, so an admin-authored template body is treated as plain text — exactly
+ * what the "simple" template editor promises — and can never inject markup.
+ */
+function messageToParagraphs(message: string): string {
+  return message
+    .split(/\n{2,}/)
+    .map((para) => {
+      const html = escapeHtml(para.trim()).replace(/\n/g, "<br>");
+      return html ? `<p style="margin:0 0 12px;line-height:1.6;">${html}</p>` : "";
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+/**
+ * Send a branded email from a plain-text message body — used by the
+ * template-driven emails (e.g. probation confirmation). Wraps the message in
+ * the same header/footer layout as the transactional emails. Returns whether a
+ * transport actually accepted the message.
+ */
+export function renderBrandedEmail(message: string): { html: string; text: string } {
+  return {
+    // Empty preheader: the subject is already the email's subject line, and
+    // passing it here duplicated it as a redundant heading at the top of the
+    // email body in some clients. The plain-text alternative is just the
+    // message itself — clean, with no layout chrome or HTML entities.
+    html: layout(messageToParagraphs(message), ""),
+    text: message,
+  };
+}
+
+export async function sendBrandedEmail(params: {
+  to: string;
+  subject: string;
+  message: string;
+}): Promise<boolean> {
+  const { html, text } = renderBrandedEmail(params.message);
+  return sendEmail({ to: params.to, subject: params.subject, html, text });
 }
 
 // ---------------------------------------------------------------------------

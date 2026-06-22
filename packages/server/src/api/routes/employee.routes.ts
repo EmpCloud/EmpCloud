@@ -23,6 +23,7 @@ import {
   createExperienceBaseSchema,
   createDependentSchema,
   employeeDirectoryQuerySchema,
+  confirmProbationSchema,
 } from "@empcloud/shared";
 import * as profileService from "../../services/employee/employee-profile.service.js";
 import * as detailService from "../../services/employee/employee-detail.service.js";
@@ -381,12 +382,27 @@ router.get("/probation/confirmed-this-month", authenticate, requirePermission("p
 // "manage" just because they also hold the generic profile-edit
 // permission. The read endpoints above still accept the legacy
 // employees:view_all so audit-type roles keep working unchanged.
+// GET /api/v1/employees/:id/probation/confirmation-email — render the
+// confirmation email for this employee (org template or built-in default) so
+// the confirm dialog can pre-fill an editable subject/body.
+router.get("/:id/probation/confirmation-email", authenticate, requirePermission("probation:manage"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await probationService.getProbationConfirmationEmail(
+      req.user!.org_id,
+      paramInt(req.params.id)
+    );
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
 router.put("/:id/probation/confirm", authenticate, requirePermission("probation:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { send_email, subject, body } = confirmProbationSchema.parse(req.body ?? {});
     const result = await probationService.confirmProbation(
       req.user!.org_id,
       paramInt(req.params.id),
-      req.user!.sub
+      req.user!.sub,
+      { sendEmail: send_email, subject, body }
     );
 
     await logAudit({

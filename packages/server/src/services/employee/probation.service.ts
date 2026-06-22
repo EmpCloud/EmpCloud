@@ -5,6 +5,9 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
+import { sanitizePlainText } from "../../utils/sanitize-html.js";
+import { sendBrandedEmail } from "../email/email.service.js";
+import * as emailTemplateService from "../email-template/email-template.service.js";
 
 // ---------------------------------------------------------------------------
 // Get employees currently on probation
@@ -108,10 +111,89 @@ export async function getConfirmedThisMonth(orgId: number) {
 }
 
 // ---------------------------------------------------------------------------
+// Probation confirmation email helpers
+// ---------------------------------------------------------------------------
+
+const PROBATION_TEMPLATE_KEY = "probation_confirmation";
+
+function formatEmailDate(d: string | Date | null): string {
+  if (!d) return "";
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+/**
+ * Build the {{placeholder}} values for an employee's probation-confirmation
+ * email — name, designation, company, manager, and the relevant dates.
+ */
+async function buildProbationEmailVars(orgId: number, employeeId: number) {
+  const db = getDB();
+  const user = await db("users")
+    .where({ id: employeeId, organization_id: orgId })
+    .first();
+  if (!user) throw new NotFoundError("Employee");
+
+  const org = await db("organizations").where({ id: orgId }).select("name").first();
+
+  let managerName = "";
+  if (user.reporting_manager_id) {
+    const mgr = await db("users")
+      .where({ id: user.reporting_manager_id })
+      .select("first_name", "last_name")
+      .first();
+    if (mgr) managerName = `${mgr.first_name || ""} ${mgr.last_name || ""}`.trim();
+  }
+
+  return {
+    email: user.email || "",
+    employee_name: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+    first_name: user.first_name || "",
+    last_name: user.last_name || "",
+    designation: user.designation || "",
+    emp_code: user.emp_code || "",
+    company_name: org?.name || "",
+    manager_name: managerName,
+    date_of_joining: formatEmailDate(user.date_of_joining),
+    probation_end_date: formatEmailDate(user.probation_end_date),
+    confirmation_date: formatEmailDate(new Date()),
+  };
+}
+
+/**
+ * The confirmation email rendered for a specific employee, using the org's
+ * customized template (or the built-in default). Used to pre-fill the confirm
+ * dialog so HR can tweak it per-employee before sending.
+ */
+export async function getProbationConfirmationEmail(orgId: number, employeeId: number) {
+  const vars = await buildProbationEmailVars(orgId, employeeId);
+  const tpl = await emailTemplateService.getTemplateOrDefault(orgId, PROBATION_TEMPLATE_KEY);
+  const rendered = emailTemplateService.renderTemplate(tpl, vars);
+  return {
+    to: vars.email,
+    subject: rendered.subject,
+    body: rendered.body,
+    template_is_default: tpl.is_default,
+    employee_name: vars.employee_name,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Confirm probation
 // ---------------------------------------------------------------------------
 
-export async function confirmProbation(orgId: number, employeeId: number, confirmedBy: number) {
+export interface ConfirmProbationOptions {
+  sendEmail?: boolean;
+  subject?: string;
+  body?: string;
+}
+
+export async function confirmProbation(
+  orgId: number,
+  employeeId: number,
+  confirmedBy: number,
+  opts: ConfirmProbationOptions = {},
+) {
   const db = getDB();
 
   const user = await db("users")
@@ -146,10 +228,48 @@ export async function confirmProbation(orgId: number, employeeId: number, confir
       });
   }
 
-  return db("users")
+  // In-app notification to the employee (best-effort — never block confirm).
+  try {
+    await db("notifications").insert({
+      organization_id: orgId,
+      user_id: employeeId,
+      type: "probation_update",
+      title: "Probation Confirmed",
+      body: "Congratulations! Your probation has been confirmed.",
+      reference_type: "probation",
+      reference_id: String(employeeId),
+      is_read: false,
+      created_at: new Date(),
+    });
+  } catch {
+    // notifications are non-critical
+  }
+
+  // Optional confirmation email. Uses the HR-edited subject/body when provided,
+  // otherwise renders the org template (or default) for this employee.
+  let emailSent = false;
+  if (opts.sendEmail && user.email) {
+    let subject = opts.subject?.trim();
+    let body = opts.body;
+    if (!subject || !body) {
+      const rendered = await getProbationConfirmationEmail(orgId, employeeId);
+      subject = subject || rendered.subject;
+      body = body || rendered.body;
+    }
+    const safeSubject = sanitizePlainText(subject) || "Probation Confirmation";
+    emailSent = await sendBrandedEmail({
+      to: user.email,
+      subject: safeSubject,
+      message: body || "",
+    });
+  }
+
+  const result = await db("users")
     .where({ id: employeeId, organization_id: orgId })
     .select("id", "first_name", "last_name", "probation_status", "probation_confirmed_by", "probation_confirmed_at")
     .first();
+
+  return { ...result, email_sent: emailSent };
 }
 
 // ---------------------------------------------------------------------------
