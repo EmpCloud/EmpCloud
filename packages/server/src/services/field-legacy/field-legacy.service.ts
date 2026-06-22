@@ -150,6 +150,22 @@ async function resolveOrgUser(orgId: number, employeeId: unknown) {
 }
 
 // ---------------------------------------------------------------------------
+// /user/info — resolve a user by email → [{ id, email }]
+// Open lookup (no shared secret). Email is globally unique, so 0 or 1 row.
+// ---------------------------------------------------------------------------
+export async function lookupUserByEmail(
+  body: { email?: unknown },
+): Promise<Array<{ id: number; email: string }>> {
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  if (!email) return [];
+  const db = getDB();
+  const rows = await db("users")
+    .whereRaw("LOWER(`email`) = LOWER(?)", [email])
+    .select("id", "email");
+  return rows.map((r: any) => ({ id: Number(r.id), email: r.email as string }));
+}
+
+// ---------------------------------------------------------------------------
 // /user/fieldAllEmployeeList — directory of employees for the field app
 // ---------------------------------------------------------------------------
 
