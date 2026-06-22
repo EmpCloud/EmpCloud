@@ -3,6 +3,7 @@
 // Manages employee probation status, confirmations, and extensions.
 // =============================================================================
 
+import type { Knex } from "knex";
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
 import { sanitizePlainText } from "../../utils/sanitize-html.js";
@@ -10,36 +11,107 @@ import { sendBrandedEmail } from "../email/email.service.js";
 import * as emailTemplateService from "../email-template/email-template.service.js";
 
 // ---------------------------------------------------------------------------
-// Get employees currently on probation
+// Probation list filters — search, department, location, view + pagination
 // ---------------------------------------------------------------------------
 
-export async function getEmployeesOnProbation(orgId: number) {
-  const db = getDB();
+export interface ProbationListParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  department_id?: number;
+  location_id?: number;
+  view?: "all" | "on_probation" | "extended" | "overdue" | "upcoming_30";
+}
 
-  return db("users")
-    .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
-    .where({
-      "users.organization_id": orgId,
-      "users.status": 1,
-      })
-    .whereIn("users.probation_status", ["on_probation", "extended"])
-    .whereNotNull("users.probation_end_date")
+const PROBATION_SELECT = [
+  "users.id",
+  "users.first_name",
+  "users.last_name",
+  "users.email",
+  "users.emp_code",
+  "users.designation",
+  "users.department_id",
+  "users.location_id",
+  "users.date_of_joining",
+  "users.probation_end_date",
+  "users.probation_status",
+  "users.photo_path",
+  "organization_departments.name as department_name",
+  "organization_locations.name as location_name",
+];
+
+function normalizePage(params: ProbationListParams): { page: number; perPage: number } {
+  const page = params.page && params.page > 0 ? params.page : 1;
+  const perPage = params.per_page && params.per_page > 0 ? Math.min(params.per_page, 500) : 20;
+  return { page, perPage };
+}
+
+// Apply the shared search / department / location / view filters. Mutates and
+// returns the query builder so it can be reused for both the data and count
+// queries.
+function applyProbationFilters(query: Knex.QueryBuilder, params: ProbationListParams) {
+  if (params.search) {
+    const s = `%${params.search}%`;
+    query.where((b) => {
+      b.where("users.first_name", "like", s)
+        .orWhere("users.last_name", "like", s)
+        .orWhere("users.email", "like", s)
+        .orWhere("users.emp_code", "like", s)
+        .orWhere("users.designation", "like", s)
+        .orWhereRaw("CONCAT(users.first_name, ' ', users.last_name) LIKE ?", [s]);
+    });
+  }
+  if (params.department_id) query.where("users.department_id", params.department_id);
+  if (params.location_id) query.where("users.location_id", params.location_id);
+
+  switch (params.view) {
+    case "on_probation":
+      query.where("users.probation_status", "on_probation");
+      break;
+    case "extended":
+      query.where("users.probation_status", "extended");
+      break;
+    case "overdue":
+      query.whereRaw("users.probation_end_date < CURDATE()");
+      break;
+    case "upcoming_30":
+      query
+        .whereRaw("users.probation_end_date >= CURDATE()")
+        .whereRaw("users.probation_end_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)");
+      break;
+    // "all" / undefined → no extra status/date predicate
+  }
+  return query;
+}
+
+// ---------------------------------------------------------------------------
+// Get employees currently on probation (search / filters / pagination)
+// ---------------------------------------------------------------------------
+
+export async function getEmployeesOnProbation(orgId: number, params: ProbationListParams = {}) {
+  const db = getDB();
+  const { page, perPage } = normalizePage(params);
+
+  const base = () =>
+    db("users")
+      .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
+      .leftJoin("organization_locations", "users.location_id", "organization_locations.id")
+      .where({ "users.organization_id": orgId, "users.status": 1 })
+      .whereIn("users.probation_status", ["on_probation", "extended"])
+      .whereNotNull("users.probation_end_date");
+
+  const data = await applyProbationFilters(base(), params)
     .select(
-      "users.id",
-      "users.first_name",
-      "users.last_name",
-      "users.email",
-      "users.emp_code",
-      "users.designation",
-      "users.department_id",
-      "users.date_of_joining",
-      "users.probation_end_date",
-      "users.probation_status",
-      "users.photo_path",
-      "organization_departments.name as department_name",
-      db.raw("DATEDIFF(users.probation_end_date, CURDATE()) as days_remaining")
+      ...PROBATION_SELECT,
+      db.raw("DATEDIFF(users.probation_end_date, CURDATE()) as days_remaining"),
     )
-    .orderBy("users.probation_end_date", "asc");
+    .orderBy("users.probation_end_date", "asc")
+    .limit(perPage)
+    .offset((page - 1) * perPage);
+
+  const [{ count }] = await applyProbationFilters(base(), params).count("users.id as count");
+
+  return { data, total: Number(count), page, per_page: perPage };
 }
 
 // ---------------------------------------------------------------------------
@@ -79,35 +151,40 @@ export async function getUpcomingConfirmations(orgId: number, days: number = 30)
 
 // ---------------------------------------------------------------------------
 // #1419 — Get employees confirmed in the current calendar month
+// (search / department / location filters + pagination)
 // ---------------------------------------------------------------------------
 
-export async function getConfirmedThisMonth(orgId: number) {
+export async function getConfirmedThisMonth(orgId: number, params: ProbationListParams = {}) {
   const db = getDB();
+  const { page, perPage } = normalizePage(params);
+  // No `view` here — every row is already "confirmed"; only the text/department/
+  // location filters apply.
+  const filters: ProbationListParams = {
+    search: params.search,
+    department_id: params.department_id,
+    location_id: params.location_id,
+  };
 
-  return db("users")
-    .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
-    .where({
-      "users.organization_id": orgId,
-      "users.probation_status": "confirmed",
-    })
-    .whereRaw("users.probation_confirmed_at >= DATE_FORMAT(NOW(), '%Y-%m-01')")
+  const base = () =>
+    db("users")
+      .leftJoin("organization_departments", "users.department_id", "organization_departments.id")
+      .leftJoin("organization_locations", "users.location_id", "organization_locations.id")
+      .where({ "users.organization_id": orgId, "users.probation_status": "confirmed" })
+      .whereRaw("users.probation_confirmed_at >= DATE_FORMAT(NOW(), '%Y-%m-01')");
+
+  const data = await applyProbationFilters(base(), filters)
     .select(
-      "users.id",
-      "users.first_name",
-      "users.last_name",
-      "users.email",
-      "users.emp_code",
-      "users.designation",
-      "users.department_id",
-      "users.date_of_joining",
-      "users.probation_end_date",
-      "users.probation_status",
+      ...PROBATION_SELECT,
       "users.probation_confirmed_at as actual_confirmation_date",
-      "users.photo_path",
-      "organization_departments.name as department_name",
-      db.raw("DATEDIFF(users.probation_end_date, CURDATE()) as days_remaining")
+      db.raw("DATEDIFF(users.probation_end_date, CURDATE()) as days_remaining"),
     )
-    .orderBy("users.probation_confirmed_at", "desc");
+    .orderBy("users.probation_confirmed_at", "desc")
+    .limit(perPage)
+    .offset((page - 1) * perPage);
+
+  const [{ count }] = await applyProbationFilters(base(), filters).count("users.id as count");
+
+  return { data, total: Number(count), page, per_page: perPage };
 }
 
 // ---------------------------------------------------------------------------

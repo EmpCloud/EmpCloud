@@ -24,6 +24,7 @@ import {
   createDependentSchema,
   employeeDirectoryQuerySchema,
   confirmProbationSchema,
+  probationListQuerySchema,
 } from "@empcloud/shared";
 import * as profileService from "../../services/employee/employee-profile.service.js";
 import * as detailService from "../../services/employee/employee-detail.service.js";
@@ -342,11 +343,12 @@ router.get("/headcount", authenticate, requirePermission("employees:view_all"), 
 // Probation Tracking (HR only)
 // =========================================================================
 
-// GET /api/v1/employees/probation — list on probation
+// GET /api/v1/employees/probation — list on probation (search / filters / pagination)
 router.get("/probation", authenticate, requirePermission("probation:view", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = await probationService.getEmployeesOnProbation(req.user!.org_id);
-    sendSuccess(res, data);
+    const params = probationListQuerySchema.parse(req.query);
+    const result = await probationService.getEmployeesOnProbation(req.user!.org_id, params);
+    sendPaginated(res, result.data, result.total, result.page, result.per_page);
   } catch (err) { next(err); }
 });
 
@@ -367,11 +369,12 @@ router.get("/probation/upcoming", authenticate, requirePermission("probation:vie
   } catch (err) { next(err); }
 });
 
-// #1419 — GET /api/v1/employees/probation/confirmed-this-month
+// #1419 — GET /api/v1/employees/probation/confirmed-this-month (filters + pagination)
 router.get("/probation/confirmed-this-month", authenticate, requirePermission("probation:view", "employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = await probationService.getConfirmedThisMonth(req.user!.org_id);
-    sendSuccess(res, data);
+    const params = probationListQuerySchema.parse(req.query);
+    const result = await probationService.getConfirmedThisMonth(req.user!.org_id, params);
+    sendPaginated(res, result.data, result.total, result.page, result.per_page);
   } catch (err) { next(err); }
 });
 
