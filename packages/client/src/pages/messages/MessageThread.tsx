@@ -215,6 +215,14 @@ export default function MessageThread({
   // marker only advances to here, so reading 10 of 60 leaves 50 unread.
   const highestSeenRef = useRef<number>(0);
   const didInitialUnreadScrollRef = useRef(false);
+  // Whether we've already frozen the anchor for THIS conversation. Lets us wait
+  // until the conversation summary has actually loaded (it's null on reload /
+  // deep-link) before freezing, so we never freeze the anchor to a stale 0.
+  const didFreezeAnchorRef = useRef(false);
+  // The frozen "first unread" message id for the divider (frozen once per open
+  // so it doesn't jump as messages stream in / older pages prepend).
+  const [firstUnreadId, setFirstUnreadId] = useState<number | null>(null);
+  const didSetUnreadDividerRef = useRef(false);
   // Whether the user was at/near the bottom on the LAST scroll event — sampled
   // continuously by onScroll, BEFORE any new message re-renders and changes
   // scrollHeight. The auto-scroll effect reads this (not a post-render
@@ -454,28 +462,75 @@ export default function MessageThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingCount]);
 
-  // On conversation switch: reset unread tracking. Freeze the read anchor from
-  // the conversation summary so the unread divider stays put while we read.
+  // On conversation switch: reset unread tracking (the anchor is (re)frozen by
+  // the effect below, once the conversation summary is actually available).
   useEffect(() => {
     didInitialUnreadScrollRef.current = false;
-    highestSeenRef.current = conversation?.my_last_read_id ?? 0;
-    setUnreadAnchor(conversation?.my_last_read_id ?? 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    didFreezeAnchorRef.current = false;
+    didSetUnreadDividerRef.current = false;
+    highestSeenRef.current = 0;
+    setUnreadAnchor(null);
+    setFirstUnreadId(null);
   }, [conversationId]);
 
-  // The first unread message id = the oldest loaded message newer than the
-  // frozen read anchor. Null when there are no unread messages.
-  const firstUnreadId = useMemo(() => {
-    if (!messages || unreadAnchor == null) return null;
-    const m = messages.find((x) => x.id > unreadAnchor && !x.is_mine && x.id > 0);
-    return m ? m.id : null;
-  }, [messages, unreadAnchor]);
-
-  // Once messages have loaded for a freshly-opened conversation, land on the
-  // first unread message (so a 60-unread chat starts at #1 unread, not the
-  // bottom). If everything is read, land at the bottom as before.
+  // Freeze the read anchor from the conversation summary — but only the FIRST
+  // time the summary is available for this conversation. On a hard reload /
+  // deep-link `conversation` is null until the conversations query resolves; if
+  // we froze then we'd lock the anchor to 0 and the whole thread would look
+  // unread. Waiting until conversation != null fixes that.
   useEffect(() => {
-    if (didInitialUnreadScrollRef.current || !messages || messages.length === 0) return;
+    if (didFreezeAnchorRef.current || !conversation) return;
+    didFreezeAnchorRef.current = true;
+    const anchor = conversation.my_last_read_id ?? 0;
+    highestSeenRef.current = anchor;
+    setUnreadAnchor(anchor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, conversation?.my_last_read_id, conversation]);
+
+  // Resolve & freeze the first-unread divider (declared above). Frozen the first
+  // time it resolves per open so the divider doesn't jump as messages stream in.
+  useEffect(() => {
+    if (didSetUnreadDividerRef.current || !messages || unreadAnchor == null) return;
+    const real = messages.filter((x) => x.id > 0);
+    const newest = real.length ? real[real.length - 1].id : 0;
+    if (newest <= unreadAnchor) {
+      // Everything loaded is already read → no divider.
+      didSetUnreadDividerRef.current = true;
+      setFirstUnreadId(null);
+      return;
+    }
+    const firstUnread = real.find((x) => x.id > unreadAnchor && !x.is_mine);
+    const oldest = real.length ? real[0].id : 0;
+    // If the first unread we found is also the OLDEST loaded message and the
+    // anchor is below it, the true first-unread may be on an older (unloaded)
+    // page — load more before placing the divider, up to the start.
+    const mayHaveOlderUnread = oldest > unreadAnchor && !reachedStart;
+    if (firstUnread && firstUnread.id !== oldest) {
+      didSetUnreadDividerRef.current = true;
+      setFirstUnreadId(firstUnread.id);
+    } else if (mayHaveOlderUnread) {
+      loadOlder(); // fetch the previous page; this effect re-runs with more loaded
+    } else if (firstUnread) {
+      // Oldest loaded IS the first unread and we've reached the start.
+      didSetUnreadDividerRef.current = true;
+      setFirstUnreadId(firstUnread.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, unreadAnchor, reachedStart]);
+
+  // Once BOTH the messages and the frozen anchor are ready for a freshly-opened
+  // conversation, land on the first unread message (so a 60-unread chat starts
+  // at #1 unread, not the bottom). If everything is read, land at the bottom.
+  // Waiting for unreadAnchor (frozen from the loaded summary) avoids a premature
+  // scroll-to-bottom while the summary is still loading.
+  useEffect(() => {
+    if (
+      didInitialUnreadScrollRef.current ||
+      !messages ||
+      messages.length === 0 ||
+      unreadAnchor == null
+    )
+      return;
     didInitialUnreadScrollRef.current = true;
     if (firstUnreadId) {
       requestAnimationFrame(() => {
