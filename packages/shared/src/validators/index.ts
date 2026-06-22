@@ -498,6 +498,29 @@ export const upsertEmployeeProfileSchema = z.object({
   notice_period_days: z.coerce.number().int().min(0).optional().nullable(),
 });
 
+// ---------------------------------------------------------------------------
+// Email Templates + Probation Confirmation
+// ---------------------------------------------------------------------------
+
+// Admin-customizable email template (subject + message body with {{placeholders}}).
+export const upsertEmailTemplateSchema = z.object({
+  name: z.string().min(1).max(150).optional(),
+  subject: z.string().min(1, "Subject is required").max(255),
+  body: z.string().min(1, "Message is required").max(20000),
+});
+export type UpsertEmailTemplateInput = z.infer<typeof upsertEmailTemplateSchema>;
+
+// Probation confirmation — optionally send the confirmation email. When
+// send_email is true the caller may pass an edited subject/body (already
+// rendered for that employee); otherwise the org's saved template (or the
+// built-in default) is used.
+export const confirmProbationSchema = z.object({
+  send_email: z.boolean().optional().default(false),
+  subject: z.string().max(255).optional(),
+  body: z.string().max(20000).optional(),
+});
+export type ConfirmProbationInput = z.infer<typeof confirmProbationSchema>;
+
 export const createAddressSchema = z.object({
   type: z.enum(["current", "permanent"]),
   line1: z.string().min(1).max(255),

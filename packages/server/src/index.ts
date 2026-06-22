@@ -42,6 +42,7 @@ import attendanceRoutes from "./api/routes/attendance.routes.js";
 import leaveRoutes from "./api/routes/leave.routes.js";
 import documentRoutes from "./api/routes/document.routes.js";
 import announcementRoutes from "./api/routes/announcement.routes.js";
+import emailTemplateRoutes from "./api/routes/email-template.routes.js";
 import policyRoutes from "./api/routes/policy.routes.js";
 import notificationRoutes from "./api/routes/notification.routes.js";
 import dashboardRoutes from "./api/routes/dashboard.routes.js";
@@ -222,6 +223,7 @@ async function main() {
   app.use("/api/v1/leave", apiLimiter, leaveRoutes);
   app.use("/api/v1/documents", apiLimiter, documentRoutes);
   app.use("/api/v1/announcements", apiLimiter, announcementRoutes);
+  app.use("/api/v1/email-templates", apiLimiter, emailTemplateRoutes);
   app.use("/api/v1/policies", apiLimiter, policyRoutes);
   app.use("/api/v1/notifications", apiLimiter, notificationRoutes);
   app.use("/api/v1/dashboard", apiLimiter, dashboardRoutes);
