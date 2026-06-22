@@ -521,6 +521,16 @@ export const confirmProbationSchema = z.object({
 });
 export type ConfirmProbationInput = z.infer<typeof confirmProbationSchema>;
 
+// Probation list filters: search + department/location + pagination + a `view`
+// (the dashboard-card filter), applied server-side so pagination stays correct.
+export const probationListQuerySchema = paginationSchema.extend({
+  search: z.string().trim().max(100).optional(),
+  department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
+  view: z.enum(["all", "on_probation", "extended", "overdue", "upcoming_30"]).optional(),
+});
+export type ProbationListQuery = z.infer<typeof probationListQuerySchema>;
+
 export const createAddressSchema = z.object({
   type: z.enum(["current", "permanent"]),
   line1: z.string().min(1).max(255),

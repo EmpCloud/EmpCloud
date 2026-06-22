@@ -11,9 +11,11 @@ import {
   CalendarClock,
   UserCheck,
   ChevronRight,
+  ChevronLeft,
   X,
   Mail,
   Send,
+  Search,
 } from "lucide-react";
 
 function formatDate(d: string | null): string {
@@ -114,6 +116,14 @@ export default function ProbationPage() {
     "all" | "on_probation" | "upcoming_30" | "confirmed_this_month" | "overdue"
   >("all");
 
+  // List filters: search + department + location + pagination
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [locationId, setLocationId] = useState("");
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 10;
+
   // Confirmation-email state (in the confirm modal)
   const [sendEmailOn, setSendEmailOn] = useState(true);
   const [emailSubject, setEmailSubject] = useState("");
@@ -129,33 +139,66 @@ export default function ProbationPage() {
   const [tplIsDefault, setTplIsDefault] = useState(true);
   const tplBodyRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // Dashboard stats
+  // Debounce the search box so we don't refetch on every keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Dashboard stats (overall counts — not narrowed by the list filters)
   const { data: dashboard } = useQuery({
     queryKey: ["probation-dashboard"],
     queryFn: () => api.get("/employees/probation/dashboard").then((r) => r.data.data),
   });
 
-  // On probation list
-  const { data: employees, isLoading } = useQuery({
-    queryKey: ["probation-list"],
-    queryFn: () => api.get("/employees/probation").then((r) => r.data.data),
-  });
-
-  // Upcoming confirmations
+  // Upcoming confirmations banner
   const { data: upcoming } = useQuery({
     queryKey: ["probation-upcoming"],
     queryFn: () => api.get("/employees/probation/upcoming?days=30").then((r) => r.data.data),
   });
 
-  // #1419 — Confirmed this month list (fetched only when that card is active,
-  // because /employees/probation returns on_probation/extended rows only and
-  // would never contain confirmed employees).
-  const { data: confirmedThisMonth, isLoading: loadingConfirmed } = useQuery({
-    queryKey: ["probation-confirmed-this-month"],
-    queryFn: () =>
-      api.get("/employees/probation/confirmed-this-month").then((r) => r.data.data),
-    enabled: cardFilter === "confirmed_this_month",
+  // Filter dropdown options
+  const { data: departments } = useQuery({
+    queryKey: ["org-departments"],
+    queryFn: () => api.get("/organizations/me/departments").then((r) => r.data.data),
+    staleTime: 60000,
   });
+  const { data: locations } = useQuery({
+    queryKey: ["org-locations"],
+    queryFn: () => api.get("/organizations/me/locations").then((r) => r.data.data),
+    staleTime: 60000,
+  });
+
+  const listParams = {
+    page,
+    per_page: PER_PAGE,
+    ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    ...(departmentId ? { department_id: departmentId } : {}),
+    ...(locationId ? { location_id: locationId } : {}),
+  };
+  const isConfirmedView = cardFilter === "confirmed_this_month";
+
+  // Single list query — picks the endpoint by card and passes filters + page.
+  // The dashboard card maps to a server-side `view` so pagination stays correct.
+  const { data: listResp, isLoading } = useQuery({
+    queryKey: ["probation-list", cardFilter, listParams],
+    queryFn: () => {
+      const endpoint = isConfirmedView
+        ? "/employees/probation/confirmed-this-month"
+        : "/employees/probation";
+      const params =
+        isConfirmedView || cardFilter === "all"
+          ? listParams
+          : { ...listParams, view: cardFilter };
+      return api.get(endpoint, { params }).then((r) => r.data);
+    },
+  });
+
+  const employees: any[] = listResp?.data || [];
+  const meta = listResp?.meta;
 
   // When the confirm modal opens, pull the rendered confirmation email for that
   // employee so HR can review/tweak it before sending.
@@ -297,24 +340,13 @@ export default function ProbationPage() {
     },
   ];
 
-  // #1394 / #1419 — Pick the source list for the active card and apply any
-  // additional client-side filtering. The confirmed-this-month card reads from
-  // a separate endpoint because the on-probation query excludes confirmed
-  // employees by design.
-  const sourceList: any[] =
-    cardFilter === "confirmed_this_month"
-      ? confirmedThisMonth || []
-      : employees || [];
+  // Switch the active dashboard-card view and reset to page 1.
+  function selectCard(next: typeof cardFilter) {
+    setCardFilter(next);
+    setPage(1);
+  }
 
-  const filteredEmployees = sourceList.filter((emp: any) => {
-    if (cardFilter === "all") return true;
-    const daysRemaining = Number(emp.days_remaining ?? 0);
-    if (cardFilter === "on_probation") return emp.probation_status === "on_probation";
-    if (cardFilter === "overdue") return daysRemaining < 0;
-    if (cardFilter === "upcoming_30") return daysRemaining >= 0 && daysRemaining <= 30;
-    // confirmed_this_month: server already filters, no extra predicate needed
-    return true;
-  });
+  const hasActiveFilters = !!(debouncedSearch || departmentId || locationId);
 
   return (
     <div>
@@ -351,7 +383,7 @@ export default function ProbationPage() {
             <button
               key={card.label}
               type="button"
-              onClick={() => setCardFilter(isActive ? "all" : card.filter)}
+              onClick={() => selectCard(isActive ? "all" : card.filter)}
               className={`text-left bg-white rounded-xl border p-5 transition-all hover:shadow-md ${
                 isActive ? "border-brand-500 ring-2 ring-brand-100" : "border-gray-200"
               }`}
@@ -374,7 +406,7 @@ export default function ProbationPage() {
           <span>Filtered by card.</span>
           <button
             type="button"
-            onClick={() => setCardFilter("all")}
+            onClick={() => selectCard("all")}
             className="text-brand-600 hover:underline"
           >
             Clear filter
@@ -417,6 +449,50 @@ export default function ProbationPage() {
         </div>
       )}
 
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, code, or email…"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+          />
+        </div>
+        <select
+          value={departmentId}
+          onChange={(e) => {
+            setDepartmentId(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+        >
+          <option value="">All Departments</option>
+          {(departments || []).map((d: any) => (
+            <option key={d.id} value={d.id}>
+              {d.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={locationId}
+          onChange={(e) => {
+            setLocationId(e.target.value);
+            setPage(1);
+          }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+        >
+          <option value="">All Locations</option>
+          {(locations || []).map((l: any) => (
+            <option key={l.id} value={l.id}>
+              {l.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Main Table */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -425,8 +501,7 @@ export default function ProbationPage() {
             : "Employees on Probation"}
         </h2>
 
-        {(isLoading && cardFilter !== "confirmed_this_month") ||
-        (cardFilter === "confirmed_this_month" && loadingConfirmed) ? (
+        {isLoading ? (
           <div className="flex items-center justify-center h-32">
             <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
           </div>
@@ -437,6 +512,7 @@ export default function ProbationPage() {
                 <tr className="border-b border-gray-200 bg-gray-50">
                   <th className="text-left py-3 px-4 font-medium text-gray-500">Employee</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500">Department</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">Location</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500">Join Date</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500">Probation Ends</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500">Days Remaining</th>
@@ -445,7 +521,7 @@ export default function ProbationPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredEmployees.map((emp: any) => {
+                {employees.map((emp: any) => {
                   const status = getStatusBadge(emp.probation_status);
                   const daysColor = getDaysColor(Number(emp.days_remaining));
                   return (
@@ -467,6 +543,9 @@ export default function ProbationPage() {
                       </td>
                       <td className="py-3 px-4 text-gray-600">
                         {emp.department_name || "-"}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {emp.location_name || "-"}
                       </td>
                       <td className="py-3 px-4 text-gray-600 text-xs">
                         {formatDate(emp.date_of_joining)}
@@ -515,10 +594,12 @@ export default function ProbationPage() {
                     </tr>
                   );
                 })}
-                {filteredEmployees.length === 0 && (
+                {employees.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-gray-400">
-                      {cardFilter === "confirmed_this_month"
+                    <td colSpan={8} className="py-12 text-center text-gray-400">
+                      {hasActiveFilters
+                        ? "No employees match your filters."
+                        : cardFilter === "confirmed_this_month"
                         ? "No employees confirmed this month."
                         : cardFilter === "overdue"
                         ? "No overdue probations."
@@ -530,6 +611,29 @@ export default function ProbationPage() {
                 )}
               </tbody>
             </table>
+          </div>
+        )}
+        {meta && meta.total_pages > 1 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+            <p className="text-sm text-gray-500">
+              Page {meta.page} of {meta.total_pages} · {meta.total} total
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              >
+                <ChevronLeft className="h-4 w-4" /> Previous
+              </button>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page >= meta.total_pages}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              >
+                Next <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>
