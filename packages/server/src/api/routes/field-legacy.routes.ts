@@ -73,20 +73,23 @@ router.post("/user/fieldAllEmployeeList", fieldAuthenticate, async (req, res) =>
 });
 
 // ---------------------------------------------------------------------------
-// /user/info — resolve a user by email.
-// OPEN (no shared-secret gate) by request, and returns a PLAIN
-// { data: [{ id, email }] } shape (not the legacy code/message envelope) to
-// match the consumer's expected response. Empty array when no user matches.
+// /auth/info  (+ /user/info alias) — resolve a user by email.
+// Mirrors emp-monitor's /api/v3/auth/info path so the field client works
+// unchanged. OPEN (no shared-secret gate) and returns a PLAIN
+// { data: [{ id, email }] } shape (not the legacy code/message envelope).
+// Empty array when no user matches.
 // ---------------------------------------------------------------------------
-router.post("/user/info", async (req, res) => {
+const userInfoHandler = async (req: any, res: Response) => {
   try {
     const data = await svc.lookupUserByEmail(req.body || {});
     return res.json({ data });
   } catch (err) {
-    logger.error("Field-legacy /user/info error", { error: (err as Error)?.message });
+    logger.error("Field-legacy /auth/info error", { error: (err as Error)?.message });
     return res.json({ data: [] });
   }
-});
+};
+router.post("/auth/info", userInfoHandler);
+router.post("/user/info", userInfoHandler);
 
 // ---------------------------------------------------------------------------
 // /hrms/getAttendanceField + /hrms/attendance-fieldtracking
