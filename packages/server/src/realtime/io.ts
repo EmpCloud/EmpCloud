@@ -273,13 +273,16 @@ export async function attachChatRealtime(server: HttpServer): Promise<Server> {
       };
       try {
         const ids = await chatService.getActiveParticipantIds(conversationId);
+        // Only relay if the EMITTER is actually a participant — otherwise a
+        // client could spoof typing into any conversation it isn't part of.
+        if (!ids.includes(uid)) return;
         for (const memberId of ids) {
           if (memberId === uid) continue; // never echo to the typer
           chat.to(userRoom(org, memberId)).emit("typing:update", evt);
         }
       } catch {
-        // Fall back to the conversation room if the lookup fails.
-        socket.to(convoRoom(conversationId)).emit("typing:update", evt);
+        // On lookup failure, drop the relay (fail closed) rather than fanning
+        // out to a room the caller may not belong to.
       }
     };
     socket.on("typing:start", (payload) => void relayTyping(payload, true));

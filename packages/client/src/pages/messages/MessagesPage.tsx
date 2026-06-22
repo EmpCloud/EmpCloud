@@ -188,7 +188,7 @@ export default function MessagesPage() {
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
       setEditingStatus(false);
     } catch {
-      /* non-critical */
+      showToast("error", "Couldn't update your status. Please try again.");
     }
   };
 

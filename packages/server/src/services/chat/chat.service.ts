@@ -388,7 +388,11 @@ export async function listConversations(
       description: c.type === "group" ? c.description ?? null : null,
       avatar_url:
         c.type === "group" && c.avatar_path
-          ? `/api/v1/chat/conversations/${c.id}/avatar`
+          ? // Version the URL with the file's unique basename so re-uploads
+            // change the URL → all members refetch (no stale cached photo).
+            `/api/v1/chat/conversations/${c.id}/avatar?v=${encodeURIComponent(
+              String(c.avatar_path).split("/").pop() ?? "",
+            )}`
           : null,
     };
   });
@@ -946,7 +950,9 @@ export async function listMessages(
   conversationId: number,
   opts: { before?: number; limit: number },
 ): Promise<ChatMessage[]> {
-  await requireParticipant(orgId, userId, conversationId);
+  const { convo } = await requireParticipant(orgId, userId, conversationId);
+  // Self-chat (notes) has no recipients — suppress the misleading "sent" tick.
+  const selfChat = convo.type === "direct" && isSelfChatKey(convo.direct_key, userId);
   const db = getDB();
 
   let q = db("chat_messages as m")
@@ -1006,7 +1012,8 @@ export async function listMessages(
       attachment: r.is_deleted ? null : attachmentFromRow(r),
       // Ticks are sender-only; deleted messages show none.
       // System messages carry no ticks (they aren't author-owned).
-      tick_status: mine && !r.is_deleted && !r.is_system ? tickFor(r.id, markers) : null,
+      tick_status:
+        mine && !r.is_deleted && !r.is_system && !selfChat ? tickFor(r.id, markers) : null,
       mentioned_user_ids: r.is_deleted ? [] : parseMentionIds(r.mentioned_user_ids),
       reply_to: r.reply_to_message_id ? quoteMap.get(r.reply_to_message_id) ?? null : null,
       reactions: r.is_deleted ? [] : reactionMap.get(r.id) ?? [],
@@ -1120,10 +1127,12 @@ export async function sendMessage(
         last_read_at: now,
         last_delivered_at: now,
       });
-    // A new message un-archives the conversation for everyone who had archived it
-    // (it surfaces back into their list).
+    // A new message un-archives the conversation for the RECIPIENTS who had
+    // archived it (it surfaces back into their list). The sender is excluded —
+    // their own send marks the chat read, not re-surfaced from archive.
     await trx("conversation_participants")
       .where({ conversation_id: conversationId })
+      .andWhereNot({ user_id: userId })
       .whereNotNull("archived_at")
       .update({ archived_at: null });
     return id;
@@ -1286,7 +1295,10 @@ export async function deleteMessage(
     try {
       const uploadsBase = path.resolve(process.cwd(), "uploads");
       const abs = path.resolve(process.cwd(), msg.attachment_path);
-      if (abs.startsWith(uploadsBase) && !msg.attachment_path.includes("..")) {
+      const relToBase = path.relative(uploadsBase, abs);
+      // Genuinely inside uploads/ (path.relative avoids the sibling-prefix flaw
+      // of startsWith, and rejects traversal).
+      if (relToBase !== "" && !relToBase.startsWith("..") && !path.isAbsolute(relToBase)) {
         fs.unlink(abs, () => {});
       }
     } catch (err) {

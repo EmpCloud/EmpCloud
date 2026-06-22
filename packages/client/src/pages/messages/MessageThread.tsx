@@ -50,6 +50,7 @@ import {
   Archive,
   ArchiveRestore,
   Search,
+  Bookmark,
 } from "lucide-react";
 import {
   splitName,
@@ -649,20 +650,26 @@ export default function MessageThread({
   useEffect(() => {
     const root = scrollRef.current;
     if (!root) return;
+    const rootTop = root.getBoundingClientRect().top;
     const obs = new IntersectionObserver(
       (entries) => {
         let bumped = false;
         for (const e of entries) {
-          if (!e.isIntersecting) continue;
+          // Count a message as "seen" if it's visibly in view OR has scrolled
+          // up past the top of the viewport (fully read past). The latter
+          // ensures a TALL message that never reaches a high visibility ratio
+          // still advances the read marker.
+          const scrolledAbove = e.boundingClientRect.bottom <= rootTop + 1;
+          if (!e.isIntersecting && !scrolledAbove) continue;
           const id = Number((e.target as HTMLElement).dataset.msgId);
           if (id > 0 && id > highestSeenRef.current) {
             highestSeenRef.current = id;
             bumped = true;
           }
         }
-        if (bumped) maybeMarkRead();
+        if (bumped) maybeMarkReadRef.current();
       },
-      { root, threshold: 0.6 },
+      { root, threshold: 0.1 },
     );
     root.querySelectorAll("[data-msg-id]").forEach((n) => obs.observe(n));
     return () => obs.disconnect();
@@ -689,6 +696,10 @@ export default function MessageThread({
         });
     }
   };
+  // Keep a live ref so observer callbacks (created with stale closures) always
+  // call the latest maybeMarkRead — picks up `connected` flips, etc.
+  const maybeMarkReadRef = useRef(maybeMarkRead);
+  maybeMarkReadRef.current = maybeMarkRead;
 
   // Re-evaluate read on new messages, focus, and visibility changes.
   useEffect(() => {
@@ -1406,7 +1417,11 @@ export default function MessageThread({
             <ArrowLeft className="h-5 w-5" />
           </button>
         )}
-        {isGroup ? (
+        {conversation?.is_self ? (
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+            <Bookmark className="h-5 w-5" />
+          </div>
+        ) : isGroup ? (
           <GroupAvatar url={conversation?.avatar_url} />
         ) : (
           <div className="relative flex-shrink-0">

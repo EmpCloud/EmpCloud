@@ -66,6 +66,15 @@ const uploadLimiter = rlDisabled
 
 const router = Router();
 
+// True only if `absolutePath` is genuinely INSIDE the uploads base directory.
+// Uses path.relative (not startsWith, which would match a sibling like
+// "uploads-backup/") and rejects any traversal.
+function isInsideUploads(absolutePath: string): boolean {
+  const uploadsBase = path.resolve(process.cwd(), "uploads");
+  const rel = path.relative(uploadsBase, absolutePath);
+  return rel !== "" && !rel.startsWith("..") && !path.isAbsolute(rel);
+}
+
 // Every chat route requires an authenticated user.
 router.use(authenticate);
 
@@ -494,8 +503,7 @@ router.get(
       );
       if (!rel) throw new NotFoundError("Avatar");
       const absolutePath = path.resolve(rel);
-      const uploadsBase = path.resolve(process.cwd(), "uploads");
-      if (!absolutePath.startsWith(uploadsBase) || rel.includes("..")) {
+      if (!isInsideUploads(absolutePath)) {
         res
           .status(403)
           .json({ success: false, error: { code: "FORBIDDEN", message: "Invalid file path" } });
@@ -523,8 +531,7 @@ router.get(
       );
       const absolutePath = path.resolve(att.path);
       // Path-traversal guard: the resolved path must stay under uploads/.
-      const uploadsBase = path.resolve(process.cwd(), "uploads");
-      if (!absolutePath.startsWith(uploadsBase) || att.path.includes("..")) {
+      if (!isInsideUploads(absolutePath)) {
         res
           .status(403)
           .json({ success: false, error: { code: "FORBIDDEN", message: "Invalid file path" } });
