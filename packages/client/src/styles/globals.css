@@ -89,3 +89,51 @@
     margin-top: 0.5rem;
   }
 }
+
+@layer components {
+  /* Rich-text content — shared by the policy RichTextEditor's editable surface
+     and the read-only display panels (dangerouslySetInnerHTML). Tailwind's
+     preflight (@layer base) strips heading sizes and list markers, and the
+     @tailwindcss/typography plugin is NOT installed, so we restore styling for
+     the handful of block elements the editor can emit. Lives in @layer
+     components so it beats preflight but still yields to utility classes. */
+  .rich-text {
+    @apply text-sm leading-relaxed text-gray-700;
+  }
+  .rich-text h1 {
+    @apply mb-2 mt-4 text-xl font-bold text-gray-900;
+  }
+  .rich-text h2 {
+    @apply mb-2 mt-3 text-lg font-semibold text-gray-900;
+  }
+  .rich-text p {
+    @apply mb-2;
+  }
+  .rich-text ul {
+    @apply mb-2 list-disc space-y-1 pl-6;
+  }
+  .rich-text ol {
+    @apply mb-2 list-decimal space-y-1 pl-6;
+  }
+  .rich-text li {
+    @apply pl-1;
+  }
+  .rich-text a {
+    @apply text-brand-600 underline hover:text-brand-700;
+  }
+  .rich-text strong,
+  .rich-text b {
+    @apply font-semibold;
+  }
+  .rich-text em,
+  .rich-text i {
+    @apply italic;
+  }
+  .rich-text u {
+    @apply underline;
+  }
+  /* No trailing gap after the last block so panels stay tight. */
+  .rich-text > :last-child {
+    @apply mb-0;
+  }
+}
