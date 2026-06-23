@@ -285,6 +285,7 @@ export async function listFieldEmployees(body: {
     "u.first_name",
     "u.last_name",
     "u.email",
+    "u.password",
     "u.emp_code",
     "u.contact_number as phone",
     "u.address",
@@ -324,9 +325,10 @@ export async function listFieldEmployees(body: {
   // returned. EMP Monitor desktop-agent fields (software_version,
   // computer_name, username, domain, tracking_mode/_rule_type,
   // shift_name/_data) and EmpCloud-absent fields (project_name) are emitted as
-  // null to keep the shape identical. `password`/`encriptedpassword` stay
-  // null — emp-monitor returned decrypted plaintext; EmpCloud bcrypt is
-  // one-way and is never exposed.
+  // null to keep the shape identical. `password`/`encriptedpassword` carry the
+  // stored bcrypt hash (NOT plaintext or MD5 — EmpCloud is one-way): the field
+  // client treats it as an opaque per-user credential. Exposed only behind the
+  // shared FIELD_TRACKING_SECRET_KEY gate.
   return rows.map((r: any) => {
     const roles = rolesByUser.get(r.id) ?? [];
     const primary = roles[0];
@@ -359,7 +361,7 @@ export async function listFieldEmployees(body: {
       total_count: totalCount,
       full_name: `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim(),
       software_version: null,
-      password: null,
+      password: r.password ?? null,
       computer_name: null,
       username: null,
       domain: null,
@@ -368,7 +370,7 @@ export async function listFieldEmployees(body: {
       employee_unique_id: r.email,
       project_name: null,
       roles,
-      encriptedpassword: null,
+      encriptedpassword: r.password ?? null,
       assigned: [],
     };
   });
