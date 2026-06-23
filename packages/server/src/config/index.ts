@@ -76,8 +76,11 @@ export const config = {
 
   chat: {
     // Org-id allowlist for the employee chat feature (comma-separated, e.g.
-    // "3" or "3,7,12"). Empty/unset => chat is enabled for ALL orgs.
-    // Used to pilot chat with specific orgs before a general rollout.
+    // "3" or "3,7,12") to pilot chat with specific orgs before a general
+    // rollout. Set CHAT_ENABLED_ORGS=all to enable for every org.
+    // IMPORTANT: empty/unset/garbage => chat OFF for everyone (fail closed),
+    // so a forgotten env var can't silently turn chat on org-wide.
+    enableForAllOrgs: (process.env.CHAT_ENABLED_ORGS ?? "").trim().toLowerCase() === "all",
     enabledOrgIds: (process.env.CHAT_ENABLED_ORGS ?? "")
       .split(",")
       .map((s) => parseInt(s.trim(), 10))

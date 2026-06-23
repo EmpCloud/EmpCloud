@@ -11,10 +11,12 @@ import { sendError } from "../../utils/response.js";
 
 /** Single source of truth: is chat enabled for this org? */
 export function isChatEnabledForOrg(orgId: number | undefined | null): boolean {
-  const allow = config.chat.enabledOrgIds;
-  // Empty/unset allowlist means chat is on for everyone.
-  if (allow.length === 0) return true;
-  return orgId != null && allow.includes(orgId);
+  // CHAT_ENABLED_ORGS=all → enabled for every org (explicit opt-in).
+  if (config.chat.enableForAllOrgs) return true;
+  // Otherwise only the allowlisted org ids. An empty/unset allowlist means
+  // chat is OFF for everyone (fail closed) — a missing env var can't silently
+  // enable chat org-wide.
+  return orgId != null && config.chat.enabledOrgIds.includes(orgId);
 }
 
 /**
