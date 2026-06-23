@@ -200,19 +200,26 @@ async function resolveOrgUser(orgId: number, employeeId: unknown) {
 }
 
 // ---------------------------------------------------------------------------
-// /user/info — resolve a user by email → [{ id, email }]
-// Open lookup (no shared secret). Email is globally unique, so 0 or 1 row.
+// /auth/info (+ /user/info alias) — resolve a user by email.
+// Returns the user's ORGANIZATION id as `id` (the field client feeds it back
+// as `orgId` to fieldAllEmployeeList), plus `user_id` for callers that need the
+// employee id. Open lookup (no shared secret); email is globally unique, so 0
+// or 1 row.
 // ---------------------------------------------------------------------------
 export async function lookupUserByEmail(
   body: { email?: unknown },
-): Promise<Array<{ id: number; email: string }>> {
+): Promise<Array<{ id: number; user_id: number; email: string }>> {
   const email = typeof body.email === "string" ? body.email.trim() : "";
   if (!email) return [];
   const db = getDB();
   const rows = await db("users")
     .whereRaw("LOWER(`email`) = LOWER(?)", [email])
-    .select("id", "email");
-  return rows.map((r: any) => ({ id: Number(r.id), email: r.email as string }));
+    .select("organization_id as id", "id as user_id", "email");
+  return rows.map((r: any) => ({
+    id: Number(r.id),
+    user_id: Number(r.user_id),
+    email: r.email as string,
+  }));
 }
 
 // ---------------------------------------------------------------------------
