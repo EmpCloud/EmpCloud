@@ -74,6 +74,16 @@ export const config = {
     password: process.env.REDIS_PASSWORD || undefined,
   },
 
+  chat: {
+    // Org-id allowlist for the employee chat feature (comma-separated, e.g.
+    // "3" or "3,7,12"). Empty/unset => chat is enabled for ALL orgs.
+    // Used to pilot chat with specific orgs before a general rollout.
+    enabledOrgIds: (process.env.CHAT_ENABLED_ORGS ?? "")
+      .split(",")
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => Number.isFinite(n)),
+  },
+
   oauth: {
     privateKeyPath: env("RSA_PRIVATE_KEY_PATH", "./keys/private.pem"),
     publicKeyPath: env("RSA_PUBLIC_KEY_PATH", "./keys/public.pem"),

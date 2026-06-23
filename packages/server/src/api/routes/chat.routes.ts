@@ -6,6 +6,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import path from "node:path";
 import fs from "node:fs";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { requireChatEnabled, isChatEnabledForOrg } from "../middleware/chat-gate.middleware.js";
 import { chatUpload } from "../middleware/chat-upload.middleware.js";
 import { sendSuccess } from "../../utils/response.js";
 import { NotFoundError } from "../../utils/errors.js";
@@ -77,6 +78,16 @@ function isInsideUploads(absolutePath: string): boolean {
 
 // Every chat route requires an authenticated user.
 router.use(authenticate);
+
+// GET /api/v1/chat/feature-status — whether chat is enabled for the caller's
+// org. Intentionally BEFORE the chat-enabled gate so a non-enabled org can ask
+// and get { enabled: false } (the client uses this to hide the Messages nav).
+router.get("/feature-status", (req: Request, res: Response) => {
+  sendSuccess(res, { enabled: isChatEnabledForOrg(req.user!.org_id) });
+});
+
+// All remaining chat routes require the caller's org to have chat enabled.
+router.use(requireChatEnabled);
 
 // ---- My chat profile ----
 

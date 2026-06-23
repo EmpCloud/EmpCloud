@@ -13,6 +13,7 @@ import { Server, Socket } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import type { AccessTokenPayload, ChatMessage } from "@empcloud/shared";
 import { verifyAccessToken } from "../services/oauth/jwt.service.js";
+import { isChatEnabledForOrg } from "../api/middleware/chat-gate.middleware.js";
 import { getDB } from "../db/connection.js";
 import { makeAdapterRedis } from "../db/redis.js";
 import { config } from "../config/index.js";
@@ -145,6 +146,11 @@ export async function attachChatRealtime(server: HttpServer): Promise<Server> {
         .whereNull("revoked_at")
         .first();
       if (!rec) return next(new Error("UNAUTHORIZED"));
+
+      // Gate chat to allowlisted orgs (same source of truth as the REST guard).
+      if (!isChatEnabledForOrg((decoded as SocketUser).org_id)) {
+        return next(new Error("CHAT_DISABLED"));
+      }
 
       socket.data.user = decoded as SocketUser;
       next();
