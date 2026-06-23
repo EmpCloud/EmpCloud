@@ -451,13 +451,24 @@ export async function getAttendanceSheet(body: {
     })
     .orderBy("sa.created_at", "desc")
     .orderBy("sa.id", "desc")
-    .select("sa.user_id", "s.id as shift_id", "s.working_days", "s.start_time", "s.end_time");
-  const shiftByUser = new Map<number, { shift_id: number; workingDays: number[]; start: string | null; end: string | null }>();
+    .select(
+      "sa.user_id",
+      "s.id as shift_id",
+      "s.name as shift_name",
+      "s.working_days",
+      "s.start_time",
+      "s.end_time",
+    );
+  const shiftByUser = new Map<
+    number,
+    { shift_id: number; shift_name: string | null; workingDays: number[]; start: string | null; end: string | null }
+  >();
   for (const sr of shiftRows as any[]) {
     const uid = Number(sr.user_id);
     if (shiftByUser.has(uid)) continue; // first (latest) wins
     shiftByUser.set(uid, {
       shift_id: sr.shift_id,
+      shift_name: sr.shift_name ?? null,
       workingDays: parseWorkingDays(sr.working_days),
       start: sr.start_time ?? null,
       end: sr.end_time ?? null,
@@ -469,7 +480,7 @@ export async function getAttendanceSheet(body: {
     .where("organization_id", orgId)
     .whereIn("user_id", userIds)
     .whereBetween("date", [start, end])
-    .select("id", "user_id", "date", "check_in", "check_out", "status", "worked_minutes");
+    .select("id", "user_id", "date", "check_in", "check_out", "status", "worked_minutes", "check_in_source");
   const recByUser = new Map<number, Map<string, any>>();
   for (const r of records as any[]) {
     const uid = Number(r.user_id);
@@ -547,6 +558,7 @@ export async function getAttendanceSheet(body: {
     const recs = recByUser.get(emp.id) ?? new Map();
     const lvs = leaveByUser.get(emp.id) ?? new Map();
     const shift = shiftByUser.get(emp.id);
+    const hasShift = !!shift;
     const workingDays = shift?.workingDays ?? [];
     const weeklyData = buildWeeklyData(workingDays, shift?.start ?? null, shift?.end ?? null);
 
@@ -557,23 +569,39 @@ export async function getAttendanceSheet(body: {
       const holidayName = holidayByDate.get(date);
       const lv = lvs.get(date);
       const dow = new Date(`${date}T00:00:00Z`).getUTCDay();
-      const dayOff = !workingDays.includes(dow);
+      // Only flag a week-off when we actually know the shift schedule. With no
+      // shift assigned we can't tell which days are off, so day_off stays false
+      // (the employee is surfaced as "No Shift" instead of every day marked off).
+      const dayOff = hasShift ? !workingDays.includes(dow) : false;
+      // is_manual_attendance: 2 = mobile/field app, 1 = manual web entry, 0 = device.
+      const src = rec?.check_in_source;
+      const manualFlag = src === "app" ? 2 : src === "manual" ? 1 : 0;
       return {
         employee_id: emp.id,
         attendance_id: rec?.id ?? null,
-        date,
+        // Raw ISO timestamps, matching the field client's expectations.
+        date: `${date}T00:00:00.000Z`,
         active_time: 0,
         office_time: 0,
         total_time: workedSeconds,
-        logged_duration: workedSeconds,
+        // logged_duration is the desktop-agent log time — no EmpCloud source.
+        logged_duration: null,
         status: present,
         min_hours: MIN_HOURS,
-        is_manual_attendance: 0,
+        is_manual_attendance: manualFlag,
         open_request: 0,
         leave_type: lv ? lv.leave_type : 0,
         leave_name: lv ? lv.leave_name : "Unpaid",
         holiday_name: holidayName ?? "",
         holiday_status: holidayName ? 1 : 0,
+        start_time: rec?.check_in ? new Date(rec.check_in).toISOString() : null,
+        end_time: rec?.check_out ? new Date(rec.check_out).toISOString() : null,
+        // No EmpCloud source for these — kept null for shape parity.
+        custom_status: null,
+        attendance_request_status: null,
+        check_out_detail: null,
+        check_in_detail: null,
+        overridden_by: null,
         day_off: dayOff,
         half_day: lv && lv.half ? 1 : 0,
         open_attendance_request: null,
@@ -592,7 +620,10 @@ export async function getAttendanceSheet(body: {
       department: emp.department ?? null,
       emp_code: emp.emp_code ?? null,
       shift_id: shift?.shift_id ?? null,
-      data: weeklyData,
+      shift_name: shift ? shift.shift_name : "No Shift",
+      // Weekly schedule object when a shift is assigned; 0 (emp-monitor's
+      // "no schedule" sentinel) when the employee has no shift.
+      data: hasShift ? weeklyData : 0,
       total_count: totalCount,
       org_total_count: orgTotalCount,
       geolocation: emp.geolocation ?? null,
@@ -600,8 +631,6 @@ export async function getAttendanceSheet(body: {
       date_join: emp.date_join ? new Date(emp.date_join).toISOString() : null,
       manual_clock_in: "0",
       attendance_colors: ATTENDANCE_COLORS,
-      includeWeeklyOffs: true,
-      includeHolidays: true,
       attendance,
     };
   });
