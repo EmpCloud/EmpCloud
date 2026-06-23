@@ -134,6 +134,56 @@ function leaveStatusCode(status: string | null | undefined): number {
   }
 }
 
+/** Default attendance-grid colours returned on each employee. */
+const ATTENDANCE_COLORS = {
+  leaves: "#da2b2b",
+  attendance_override: "#ff0000",
+  holidays: "#ff7300",
+  weekOff: "#1c77d9",
+  absent: "#ffffff",
+};
+
+/** Default per-day min-hours block (8h = 28800s). */
+const MIN_HOURS = [{ name: "attendance_hours", value: 28800, type: 1, manual_hours: 28800 }];
+
+/** Weekday key → JS getDay index (0=Sun..6=Sat), in Mon..Sun output order. */
+const WEEKDAY_KEYS: Array<[string, number]> = [
+  ["mon", 1],
+  ["tue", 2],
+  ["wed", 3],
+  ["thu", 4],
+  ["fri", 5],
+  ["sat", 6],
+  ["sun", 0],
+];
+
+/**
+ * Build the weekly-schedule `data` object from a shift's working days +
+ * start/end times. `workingDays` holds JS getDay numbers (0=Sun..6=Sat).
+ * Off days carry { start: null, end: null }.
+ */
+function buildWeeklyData(workingDays: number[], startTime: string | null, endTime: string | null) {
+  const hhmm = (t: string | null) => (t ? String(t).slice(0, 5) : null);
+  const start = hhmm(startTime);
+  const end = hhmm(endTime);
+  const data: Record<string, { status: boolean; time: { start: string | null; end: string | null } }> = {};
+  for (const [key, idx] of WEEKDAY_KEYS) {
+    const on = workingDays.includes(idx);
+    data[key] = { status: on, time: { start: on ? start : null, end: on ? end : null } };
+  }
+  return data;
+}
+
+/** Parse a shift's `working_days` (CSV or JSON array of day numbers) → number[]. */
+function parseWorkingDays(raw: unknown): number[] {
+  if (Array.isArray(raw)) return raw.map((n) => Number(n)).filter((n) => !Number.isNaN(n));
+  return String(raw ?? "")
+    .replace(/[[\]]/g, "")
+    .split(",")
+    .map((s) => Number(s.trim()))
+    .filter((n) => !Number.isNaN(n));
+}
+
 /**
  * Look up the user the field client is acting on, scoped to the org. Throws
  * NotFoundError if the id doesn't belong to that organization — this is the
@@ -323,6 +373,7 @@ export async function listFieldEmployees(body: {
 
 export async function getAttendanceSheet(body: {
   organization_id?: unknown;
+  employee_id?: unknown;
   date?: unknown;
   start_date?: unknown;
   end_date?: unknown;
@@ -343,25 +394,35 @@ export async function getAttendanceSheet(body: {
   }
   const range = eachDate(start, end);
 
-  // Field employees (org directory, minus super_admin).
-  const employees = await db("users as u")
+  // org_total_count — every non-super_admin user in the org.
+  const orgCountRow = await db("users")
+    .where({ organization_id: orgId })
+    .whereNot("role", "super_admin")
+    .count<{ c: number }[]>("* as c");
+  const orgTotalCount = Number(orgCountRow[0]?.c ?? 0);
+
+  // Field employees (org directory, minus super_admin). When `employee_id` is
+  // supplied, scope to that single user — getAttendanceField returns just that
+  // employee's row in the same array shape.
+  let empQuery = db("users as u")
     .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
     .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
     .where("u.organization_id", orgId)
-    .whereNot("u.role", "super_admin")
+    .whereNot("u.role", "super_admin");
+  if (body.employee_id) empQuery = empQuery.where("u.id", Number(body.employee_id));
+  const employees = await empQuery
     .orderBy("u.first_name", "asc")
     .select(
       "u.id",
       "u.first_name",
       "u.last_name",
-      "u.email",
-      "u.emp_code",
       "u.status",
       "u.organization_id",
       "u.department_id",
       "dept.name as department",
       "u.location_id",
       "loc.name as location",
+      "u.emp_code",
       "u.date_of_joining as date_join",
       // `users` has no timezone column — use the joined work-location timezone.
       "loc.timezone as timezone",
@@ -370,6 +431,31 @@ export async function getAttendanceSheet(body: {
   const totalCount = employees.length;
   if (!totalCount) return [] as any[];
   const userIds = employees.map((e: any) => e.id);
+
+  // Resolve each employee's current shift → shift_id + weekly schedule. Latest
+  // assignment covering the window wins (created_at desc, then id desc).
+  const shiftRows = await db("shift_assignments as sa")
+    .join("shifts as s", "sa.shift_id", "s.id")
+    .where("sa.organization_id", orgId)
+    .whereIn("sa.user_id", userIds)
+    .whereRaw("DATE(sa.effective_from) <= ?", [end])
+    .andWhere(function () {
+      this.whereNull("sa.effective_to").orWhereRaw("DATE(sa.effective_to) >= ?", [start]);
+    })
+    .orderBy("sa.created_at", "desc")
+    .orderBy("sa.id", "desc")
+    .select("sa.user_id", "s.id as shift_id", "s.working_days", "s.start_time", "s.end_time");
+  const shiftByUser = new Map<number, { shift_id: number; workingDays: number[]; start: string | null; end: string | null }>();
+  for (const sr of shiftRows as any[]) {
+    const uid = Number(sr.user_id);
+    if (shiftByUser.has(uid)) continue; // first (latest) wins
+    shiftByUser.set(uid, {
+      shift_id: sr.shift_id,
+      workingDays: parseWorkingDays(sr.working_days),
+      start: sr.start_time ?? null,
+      end: sr.end_time ?? null,
+    });
+  }
 
   // Attendance records for the window, keyed user → date.
   const records = await db("attendance_records")
@@ -446,20 +532,26 @@ export async function getAttendanceSheet(body: {
     }
   }
 
-  // Build each employee's per-day attendance cells. emp-monitor's cell keys:
-  // {employee_id, attendance_id, date, active_time, office_time, total_time,
-  //  logged_duration, status, min_hours, is_manual_attendance} plus
-  // holiday_status/holiday_name on holidays and leave_type/leave_name/
-  // half_day_status on leave days. active_time/office_time/logged_duration are
-  // EMP Monitor desktop-agent metrics with no EmpCloud source → 0.
+  // Build each employee + its per-day attendance cells in emp-monitor's shape.
+  // active_time / office_time / logged_duration are desktop-agent metrics with
+  // no EmpCloud source → 0. `data` is the weekly schedule; `day_off` is derived
+  // from it per date.
   return employees.map((emp: any) => {
     const recs = recByUser.get(emp.id) ?? new Map();
     const lvs = leaveByUser.get(emp.id) ?? new Map();
+    const shift = shiftByUser.get(emp.id);
+    const workingDays = shift?.workingDays ?? [];
+    const weeklyData = buildWeeklyData(workingDays, shift?.start ?? null, shift?.end ?? null);
+
     const attendance = range.map((date) => {
       const rec = recs.get(date);
       const workedSeconds = rec?.worked_minutes != null ? Number(rec.worked_minutes) * 60 : 0;
       const present = rec && ["present", "checked_in", "half_day"].includes(rec.status) ? 1 : 0;
-      const cell: any = {
+      const holidayName = holidayByDate.get(date);
+      const lv = lvs.get(date);
+      const dow = new Date(`${date}T00:00:00Z`).getUTCDay();
+      const dayOff = !workingDays.includes(dow);
+      return {
         employee_id: emp.id,
         attendance_id: rec?.id ?? null,
         date,
@@ -468,42 +560,41 @@ export async function getAttendanceSheet(body: {
         total_time: workedSeconds,
         logged_duration: workedSeconds,
         status: present,
-        min_hours: 0,
+        min_hours: MIN_HOURS,
         is_manual_attendance: 0,
+        open_request: 0,
+        leave_type: lv ? lv.leave_type : 0,
+        leave_name: lv ? lv.leave_name : "Unpaid",
+        holiday_name: holidayName ?? "",
+        holiday_status: holidayName ? 1 : 0,
+        day_off: dayOff,
+        half_day: lv && lv.half ? 1 : 0,
+        open_attendance_request: null,
       };
-      const holidayName = holidayByDate.get(date);
-      if (holidayName) {
-        cell.holiday_status = 1;
-        cell.holiday_name = holidayName;
-      }
-      const lv = lvs.get(date);
-      if (lv) {
-        cell.leave_type = lv.leave_type;
-        cell.leave_name = lv.leave_name;
-        if (lv.half) cell.half_day_status = 1;
-      }
-      return cell;
     });
+
     return {
       id: emp.id,
-      first_name: emp.first_name,
-      name: emp.first_name,
-      last_name: emp.last_name,
-      email: emp.email,
-      emp_code: emp.emp_code ?? null,
-      full_name: `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim(),
+      u_id: emp.id,
+      name: `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim(),
       status: emp.status,
       organization_id: emp.organization_id,
-      department_id: emp.department_id ?? null,
-      department: emp.department ?? null,
       location_id: emp.location_id ?? null,
       location: emp.location ?? null,
-      date_join: toDateOnly(emp.date_join),
-      timezone: emp.timezone ?? null,
+      department_id: emp.department_id ?? null,
+      department: emp.department ?? null,
+      emp_code: emp.emp_code ?? null,
+      shift_id: shift?.shift_id ?? null,
+      data: weeklyData,
       total_count: totalCount,
-      attendance_colors: null,
-      manual_clock_in: 0,
-      data: 0,
+      org_total_count: orgTotalCount,
+      geolocation: emp.geolocation ?? null,
+      timezone: emp.timezone ?? null,
+      date_join: emp.date_join ? new Date(emp.date_join).toISOString() : null,
+      manual_clock_in: "0",
+      attendance_colors: ATTENDANCE_COLORS,
+      includeWeeklyOffs: true,
+      includeHolidays: true,
       attendance,
     };
   });
