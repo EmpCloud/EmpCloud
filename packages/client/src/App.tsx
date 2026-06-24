@@ -6,6 +6,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/client";
 import ToastContainer from "@/components/ui/Toast";
+import { SocketProvider } from "@/realtime/SocketProvider";
 
 // Route config imports
 import { hrmsRoutes } from "./routes/hrms.routes";
@@ -17,6 +18,7 @@ import { feedbackRoutes } from "./routes/feedback.routes";
 import { eventRoutes } from "./routes/events.routes";
 import { wellnessRoutes } from "./routes/wellness.routes";
 import { forumRoutes } from "./routes/forum.routes";
+import { chatRoutes } from "./routes/chat.routes";
 import { whistleblowingRoutes } from "./routes/whistleblowing.routes";
 import { biometricRoutes } from "./routes/biometrics.routes";
 import { adminRoutes } from "./routes/admin.routes";
@@ -172,7 +174,9 @@ export default function App() {
           element={
             <ProtectedRoute>
               <RequireOnboarding>
-                <DashboardLayout />
+                <SocketProvider>
+                  <DashboardLayout />
+                </SocketProvider>
               </RequireOnboarding>
             </ProtectedRoute>
           }
@@ -193,6 +197,7 @@ export default function App() {
           {eventRoutes}
           {wellnessRoutes}
           {forumRoutes}
+          {chatRoutes}
           {whistleblowingRoutes}
           {biometricRoutes}
           {adminRoutes}

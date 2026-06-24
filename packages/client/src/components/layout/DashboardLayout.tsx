@@ -60,6 +60,17 @@ export default function DashboardLayout() {
     enabled: !!(user && HR_ROLES.includes(user.role)),
   });
 
+  // Chat is gated to an allowlist of orgs (pilot rollout). Hide the Messages
+  // nav item unless the caller's org has chat enabled. Default to true so the
+  // link isn't hidden while loading; the server still enforces access.
+  const { data: chatStatus } = useQuery({
+    queryKey: ["chat-feature-status"],
+    queryFn: () => api.get("/chat/feature-status").then((r) => r.data.data),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!user,
+  });
+  const chatEnabled = chatStatus?.enabled !== false;
+
   const hasBiometrics = (subscriptions || []).some(
     (s: any) => s.module_slug === "emp-biometrics" && (s.status === "active" || s.status === "trial")
   );
@@ -83,7 +94,9 @@ export default function DashboardLayout() {
   const showAdminSidebar = isHR || (showViewToggle && effectiveViewMode === "admin");
   const sidebarItems = (showAdminSidebar ? adminNavItems : employeeNavItems)
     .map((i) => filterNavItem(i, hasPerm))
-    .filter((i): i is NavItem => i !== null);
+    .filter((i): i is NavItem => i !== null)
+    // Hide the Messages link when chat isn't enabled for this org.
+    .filter((i) => chatEnabled || i.path !== "/messages");
 
   // Auto-close sidebar on navigation
   useEffect(() => {

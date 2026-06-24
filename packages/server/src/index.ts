@@ -13,6 +13,7 @@ import { config } from "./config/index.js";
 import { logger } from "./utils/logger.js";
 import { initDB, closeDB } from "./db/connection.js";
 import { loadKeys } from "./services/oauth/jwt.service.js";
+import { attachChatRealtime } from "./realtime/io.js";
 import { errorHandler } from "./api/middleware/error.middleware.js";
 import { requestIdMiddleware } from "./api/middleware/request-id.middleware.js";
 import { sendSuccess } from "./utils/response.js";
@@ -62,6 +63,7 @@ import feedbackRoutes from "./api/routes/anonymous-feedback.routes.js";
 import eventRoutes from "./api/routes/event.routes.js";
 import whistleblowingRoutes from "./api/routes/whistleblowing.routes.js";
 import chatbotRoutes from "./api/routes/chatbot.routes.js";
+import chatRoutes from "./api/routes/chat.routes.js";
 import forumRoutes from "./api/routes/forum.routes.js";
 import wellnessRoutes from "./api/routes/wellness.routes.js";
 import managerRoutes from "./api/routes/manager.routes.js";
@@ -249,6 +251,7 @@ async function main() {
   app.use("/api/v1/events", apiLimiter, eventRoutes);
   app.use("/api/v1/whistleblowing", apiLimiter, whistleblowingRoutes);
   app.use("/api/v1/chatbot", apiLimiter, chatbotRoutes);
+  app.use("/api/v1/chat", apiLimiter, chatRoutes);
   app.use("/api/v1/forum", apiLimiter, forumRoutes);
   app.use("/api/v1/wellness", apiLimiter, wellnessRoutes);
   app.use("/api/v1/manager", apiLimiter, managerRoutes);
@@ -286,9 +289,18 @@ async function main() {
     logger.info(`API Docs: ${config.baseUrl}/health`);
   });
 
+  // Attach the chat realtime gateway (socket.io) to the same http.Server.
+  // Failure here must not take the HTTP server down — chat degrades to polling.
+  const io = await attachChatRealtime(server).catch((err) => {
+    logger.error("Failed to attach chat realtime gateway — chat falls back to polling", err);
+    return null;
+  });
+
   // Graceful shutdown
   const shutdown = async (signal: string) => {
     logger.info(`${signal} received, shutting down gracefully...`);
+    // Close sockets first, else open WebSockets stall server.close().
+    if (io) await io.close().catch(() => {});
     server.close(async () => {
       stopHealthCheckInterval();
       stopTrialExpirationInterval();

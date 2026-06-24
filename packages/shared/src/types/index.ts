@@ -974,3 +974,176 @@ export interface PolicyAcknowledgment {
   user_id: number;
   acknowledged_at: string;
 }
+
+// ---------------------------------------------------------------------------
+// Employee Chat / Private Messaging
+// ---------------------------------------------------------------------------
+
+export type ConversationType = "direct" | "group";
+
+export interface ChatParticipant {
+  user_id: number;
+  name: string;
+  email: string | null;
+  designation: string | null;
+  photo_path: string | null;
+  /** Self-set status / "About" line, shown under the name in 1:1 chats. */
+  chat_status?: string | null;
+}
+
+/** A file/photo attached to a chat message. */
+export interface ChatAttachment {
+  /** Original filename as uploaded. */
+  name: string;
+  /** Size in bytes. */
+  size: number;
+  /** MIME type — clients use the `image/*` prefix to render an inline thumbnail. */
+  mime: string;
+  /** Authenticated URL to fetch the file (never the server filesystem path). */
+  url: string;
+  /** Convenience flag so the UI doesn't have to parse the mime. */
+  is_image: boolean;
+}
+
+/**
+ * Delivery/read state for a message, from the SENDER's perspective.
+ * - sent: stored on the server (single grey ✓)
+ * - delivered: reached every active recipient's device (double grey ✓✓)
+ * - read: opened+viewed by every active recipient (blue ✓✓)
+ * - sending / failed: client-only optimistic states (clock / red retry); never
+ *   sent by the server.
+ * Null/undefined for messages that aren't mine (recipients don't see ticks).
+ */
+export type TickStatus = "sending" | "sent" | "delivered" | "read" | "failed";
+
+export interface ChatMessage {
+  id: number;
+  conversation_id: number;
+  sender_id: number;
+  sender_name: string;
+  body: string;
+  is_deleted: boolean;
+  is_mine: boolean;
+  /** Present when the message carries a file/photo (null otherwise). */
+  attachment: ChatAttachment | null;
+  /** Sender-only delivery/read tick. Null for messages that aren't mine. */
+  tick_status: TickStatus | null;
+  /**
+   * User ids @-mentioned in this message (groups). A single `0` means
+   * @everyone. Empty/absent when nobody was mentioned. The client uses this to
+   * highlight the @tags in the bubble.
+   */
+  mentioned_user_ids?: number[];
+  /**
+   * Client-supplied nonce for optimistic-send reconciliation. Echoed back on
+   * the stored message + the realtime `message:new` event so the client can
+   * replace its temporary bubble instead of rendering a duplicate. Server
+   * messages from other users won't carry one.
+   */
+  client_msg_id?: string | null;
+  /** The message this one replies to / quotes, if any. */
+  reply_to?: ReplyQuote | null;
+  /** Aggregated emoji reactions on this message (empty when none). */
+  reactions?: MessageReaction[];
+  /** Original sender's name when this message was forwarded (null otherwise). */
+  forwarded_from?: string | null;
+  /**
+   * True for system event notices ("X left the group", "Y was added"). Rendered
+   * centered + author-less; not interactive (no ticks/reactions/menu).
+   */
+  is_system?: boolean;
+  /** True when this message is pinned in the conversation. */
+  is_pinned?: boolean;
+  created_at: string;
+  edited_at: string | null;
+}
+
+/** One emoji's reaction tally on a message. */
+export interface MessageReaction {
+  emoji: string;
+  /** How many people reacted with this emoji. */
+  count: number;
+  /** Whether the current user is one of them (drives the highlighted pill). */
+  reacted: boolean;
+  /** Names of reactors (for the hover tooltip), capped client-side if long. */
+  names: string[];
+}
+
+/** A compact snippet of the message being replied to (shown as a quote). */
+export interface ReplyQuote {
+  id: number;
+  sender_name: string;
+  /** Quoted text (truncated server-side); empty for attachment-only. */
+  body: string;
+  /** True when the quoted message carried a file/photo. */
+  has_attachment: boolean;
+  /** True when the quoted message was since deleted (render "deleted"). */
+  is_deleted: boolean;
+}
+
+/** One recipient's delivery/read state for a specific message (group panel). */
+export interface ChatMessageReceipt {
+  recipient_id: number;
+  name: string;
+  photo_path: string | null;
+  delivered_at: string | null;
+  read_at: string | null;
+}
+
+/** The per-name "Read by / Delivered to / Pending" breakdown for a message. */
+export interface MessageReceiptBreakdown {
+  message_id: number;
+  read: ChatMessageReceipt[];
+  delivered: ChatMessageReceipt[];
+  pending: ChatMessageReceipt[];
+}
+
+/** A single message's resolved tick state, used by tick:resync / GET /ticks. */
+export interface MessageTick {
+  message_id: number;
+  tick_status: TickStatus;
+  /** Group aggregate counts (delivered/read out of total active recipients). */
+  agg: { delivered_count: number; read_count: number; total_recipients: number };
+}
+
+/** A message-body search hit, used to deep-link into a conversation. */
+export interface MessageSearchResult {
+  message_id: number;
+  conversation_id: number;
+  /** Conversation display title (group name or the other person's name). */
+  conversation_title: string;
+  conversation_type: ConversationType;
+  sender_name: string;
+  /** The matching message body (full, for snippet/highlight on the client). */
+  body: string;
+  created_at: string;
+}
+
+/** A conversation as shown in the sidebar list (with derived display fields). */
+export interface ConversationSummary {
+  id: number;
+  type: ConversationType;
+  /** Who created the conversation (the group "owner" who can manage members). */
+  created_by: number;
+  /** For direct chats this is the other person's name; for groups the group name. */
+  title: string;
+  /** The other participant for direct chats (null for groups). */
+  counterpart: ChatParticipant | null;
+  participants: ChatParticipant[];
+  /** Group description (groups only). */
+  description?: string | null;
+  /** Group avatar serving URL (groups only). */
+  avatar_url?: string | null;
+  last_message: string | null;
+  last_message_at: string | null;
+  unread_count: number;
+  /** The current user's last-read message id (0 if none) — drives the unread
+   *  divider and scroll-to-first-unread on open. */
+  my_last_read_id: number;
+  /** True when the current user has muted this conversation (no notifications). */
+  is_muted: boolean;
+  /** True when the current user has archived this conversation (hidden from list). */
+  is_archived: boolean;
+  /** True when this is the user's personal "self chat" / notes space. */
+  is_self?: boolean;
+}

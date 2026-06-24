@@ -29,6 +29,37 @@ export async function createNotification(
   return db("notifications").where({ id }).first();
 }
 
+/**
+ * Bulk-create identical-shaped notifications for many recipients in ONE insert
+ * (avoids the N+1 of calling createNotification per user). Returns the row count.
+ */
+export async function createNotifications(
+  orgId: number,
+  userIds: number[],
+  type: string,
+  title: string,
+  body?: string | null,
+  referenceType?: string | null,
+  referenceId?: string | null
+): Promise<number> {
+  const ids = [...new Set(userIds)];
+  if (ids.length === 0) return 0;
+  const now = new Date();
+  const rows = ids.map((userId) => ({
+    organization_id: orgId,
+    user_id: userId,
+    type,
+    title,
+    body: body || null,
+    reference_type: referenceType || null,
+    reference_id: referenceId || null,
+    is_read: false,
+    created_at: now,
+  }));
+  await getDB()("notifications").insert(rows);
+  return rows.length;
+}
+
 export async function listNotifications(
   orgId: number,
   userId: number,

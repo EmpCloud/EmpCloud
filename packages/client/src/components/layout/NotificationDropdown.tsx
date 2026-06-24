@@ -1,14 +1,28 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import api from "@/api/client";
-import { Bell } from "lucide-react";
+import { Bell, BellRing } from "lucide-react";
+import { ensureNotificationPermission } from "@/realtime/desktop-notify";
+
+const NOTIF_SUPPORTED = typeof window !== "undefined" && "Notification" in window;
 
 export function NotificationDropdown() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  // Desktop-notification permission state (drives the enable row).
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission | "unsupported">(
+    NOTIF_SUPPORTED ? Notification.permission : "unsupported",
+  );
+
+  const enableDesktopAlerts = async () => {
+    const result = await ensureNotificationPermission();
+    setNotifPerm(result);
+  };
 
   const { data: unreadData } = useQuery({
     queryKey: ["notifications-unread-count"],
@@ -41,6 +55,21 @@ export function NotificationDropdown() {
 
   const unreadCount = unreadData?.count ?? 0;
   const notifications = notificationsData?.data || [];
+
+  // Clicking a notification marks it read and, when it deep-links (e.g. a chat
+  // mention), navigates to the target.
+  const handleNotificationClick = (n: {
+    id: number;
+    is_read: boolean;
+    reference_type?: string | null;
+    reference_id?: string | null;
+  }) => {
+    if (!n.is_read) markRead.mutate(n.id);
+    if (n.reference_type === "chat_conversation" && n.reference_id) {
+      setOpen(false);
+      navigate(`/messages/${n.reference_id}`);
+    }
+  };
 
   // Close on click outside
   useEffect(() => {
@@ -80,6 +109,24 @@ export function NotificationDropdown() {
               </button>
             )}
           </div>
+
+          {/* Desktop-alerts opt-in: get notified of new chat messages even while
+              focused on another app. */}
+          {notifPerm === "default" && (
+            <button
+              onClick={enableDesktopAlerts}
+              className="flex w-full items-center gap-2 px-4 py-2.5 border-b border-gray-100 bg-brand-50/50 text-left text-xs text-brand-700 hover:bg-brand-50"
+            >
+              <BellRing className="h-4 w-4 flex-shrink-0" />
+              <span>Enable desktop alerts for new messages</span>
+            </button>
+          )}
+          {notifPerm === "denied" && (
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100 bg-amber-50 text-xs text-amber-700">
+              <BellRing className="h-4 w-4 flex-shrink-0" />
+              <span>Desktop alerts are blocked. Enable them in your browser's site settings.</span>
+            </div>
+          )}
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-gray-400">
@@ -89,9 +136,7 @@ export function NotificationDropdown() {
               notifications.map((n: any) => (
                 <button
                   key={n.id}
-                  onClick={() => {
-                    if (!n.is_read) markRead.mutate(n.id);
-                  }}
+                  onClick={() => handleNotificationClick(n)}
                   className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors ${
                     !n.is_read ? "bg-brand-50/50" : ""
                   }`}
