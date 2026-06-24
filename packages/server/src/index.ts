@@ -22,6 +22,7 @@ import { startTrialExpirationInterval, stopTrialExpirationInterval } from "./ser
 
 // Docs
 import { swaggerUIHandler, openapiHandler } from "./api/docs/index.js";
+import { recordMounts } from "./api/docs/route-recorder.js";
 
 // Self-hosted Swagger UI assets — served same-origin so the proxy CSP ('self')
 // allows them. The old unpkg.com CDN is blocked by the nginx/Cloudflare CSP
@@ -113,6 +114,10 @@ async function main() {
 
   // Create Express app
   const app = express();
+
+  // Record route mounts for OpenAPI auto-discovery — must run before any
+  // app.use(prefix, router) calls below so the docs reflect the full API.
+  recordMounts(app);
 
   // Trust proxy (behind Nginx)
   app.set("trust proxy", 1);

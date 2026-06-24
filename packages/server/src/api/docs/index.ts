@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { Request, Response } from "express";
+import { discoveredPaths } from "./route-recorder.js";
 
 const spec = {
   openapi: "3.0.3",
@@ -1188,6 +1189,39 @@ export function swaggerUIHandler(_req: Request, res: Response) {
 </body></html>`);
 }
 
+// Merge auto-discovered routes into the curated spec: any path+method not
+// already hand-documented gets a minimal, tagged stub so the published API
+// surface is COMPLETE for integrators, while curated operations keep their
+// detailed request/response schemas. Built once and cached.
+let cachedSpec: unknown = null;
+
+function buildCompleteSpec(): unknown {
+  const merged: any = { ...spec, paths: { ...(spec as any).paths } };
+  for (const { path, methods } of discoveredPaths()) {
+    const node = (merged.paths[path] = merged.paths[path] || {});
+    const seg = path.split("/").filter(Boolean);
+    // Group under the resource segment (…/api/v1/<resource> or /<resource>).
+    const tag = seg[2] || seg[1] || seg[0] || "general";
+    for (const method of methods) {
+      if (method === "head" || method === "options" || node[method]) continue;
+      const params = Array.from(path.matchAll(/\{([A-Za-z0-9_]+)\}/g)).map((m) => ({
+        name: m[1],
+        in: "path",
+        required: true,
+        schema: { type: "string" as const },
+      }));
+      node[method] = {
+        tags: [tag],
+        summary: `${method.toUpperCase()} ${path}`,
+        ...(params.length ? { parameters: params } : {}),
+        responses: { "200": { description: "OK" } },
+      };
+    }
+  }
+  return merged;
+}
+
 export function openapiHandler(_req: Request, res: Response) {
-  res.json(spec);
+  if (!cachedSpec) cachedSpec = buildCompleteSpec();
+  res.json(cachedSpec);
 }
