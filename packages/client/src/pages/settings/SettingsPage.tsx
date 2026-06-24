@@ -4,6 +4,7 @@ import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
 import { Building2, MapPin, Briefcase, Pencil, X, Plus, Trash2, Save } from "lucide-react";
 import ChangePasswordCard from "@/components/ChangePasswordCard";
+import ApiKeysCard from "@/components/ApiKeysCard";
 
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
@@ -113,6 +114,10 @@ export default function SettingsPage() {
         {/* Locations */}
         <LocationsCard locations={locations || []} />
       </div>
+
+      {/* Programmatic access — org-admin-generated API keys that work across
+          EmpCloud and the Payroll module. */}
+      <ApiKeysCard />
 
       {/* Account security — same self-service password change card the
           /change-password route uses, embedded here so HR can change

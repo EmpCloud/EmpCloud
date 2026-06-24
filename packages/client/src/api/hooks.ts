@@ -66,6 +66,43 @@ export function useLocations() {
   });
 }
 
+// --- API Keys ---
+
+export interface ApiKey {
+  id: number;
+  name: string;
+  key_prefix: string;
+  last_used_at: string | null;
+  expires_at: string | null;
+  revoked_at: string | null;
+  created_at: string;
+}
+
+export function useApiKeys() {
+  return useQuery<ApiKey[]>({
+    queryKey: ["api-keys"],
+    queryFn: () => api.get("/api-keys").then((r) => r.data.data),
+  });
+}
+
+export function useCreateApiKey() {
+  const qc = useQueryClient();
+  return useMutation({
+    // Response includes the one-time raw `key` alongside the persisted metadata.
+    mutationFn: (data: { name: string; expiresInDays?: number | null }) =>
+      api.post("/api-keys", data).then((r) => r.data.data as ApiKey & { key: string }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["api-keys"] }),
+  });
+}
+
+export function useRevokeApiKey() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api.delete(`/api-keys/${id}`).then((r) => r.data.data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["api-keys"] }),
+  });
+}
+
 // --- Users ---
 
 export function useUsers(params?: { page?: number; search?: string; per_page?: number }) {
