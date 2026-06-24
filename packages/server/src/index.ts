@@ -72,6 +72,7 @@ import customFieldRoutes from "./api/routes/custom-field.routes.js";
 import aiConfigRoutes from "./api/routes/ai-config.routes.js";
 import logRoutes from "./api/routes/logs.routes.js";
 import roleRoutes from "./api/routes/role.routes.js";
+import apiKeyRoutes from "./api/routes/api-key.routes.js";
 
 async function main() {
   // Initialize database
@@ -262,6 +263,7 @@ async function main() {
   app.use("/api/v1/manager", apiLimiter, managerRoutes);
   app.use("/api/v1/custom-fields", apiLimiter, customFieldRoutes);
   app.use("/api/v1/roles", apiLimiter, roleRoutes);
+  app.use("/api/v1/api-keys", apiLimiter, apiKeyRoutes);
 
   // API Documentation
   app.use("/api/docs/ui", express.static(swaggerUiAssetPath, { maxAge: "7d", immutable: true }));

@@ -7,6 +7,10 @@ import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../../services/oauth/jwt.service.js";
 import { getDB } from "../../db/connection.js";
 import { sendError } from "../../utils/response.js";
+import {
+  API_KEY_PREFIX,
+  resolveApiKeyPrincipal,
+} from "../../services/auth/api-key.service.js";
 import type { AccessTokenPayload } from "@empcloud/shared";
 
 // Extend Express Request
@@ -29,6 +33,25 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
   }
 
   const token = authHeader.slice(7);
+
+  // API-key path — an `empc_` token is an opaque programmatic key, not a JWT.
+  // Resolve it to the owner's live RBAC principal (same shape as a JWT user)
+  // so every downstream permission check works unchanged.
+  if (token.startsWith(API_KEY_PREFIX)) {
+    resolveApiKeyPrincipal(token)
+      .then((principal) => {
+        if (!principal) {
+          sendError(res, 401, "UNAUTHORIZED", "Invalid or expired API key");
+          return;
+        }
+        req.user = principal;
+        next();
+      })
+      .catch(() => {
+        sendError(res, 401, "UNAUTHORIZED", "API key validation failed");
+      });
+    return;
+  }
 
   try {
     const decoded = verifyAccessToken(token);
