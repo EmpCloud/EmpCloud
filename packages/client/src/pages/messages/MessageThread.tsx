@@ -309,6 +309,18 @@ export default function MessageThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
+  // Auto-focus the composer when a conversation opens, so the user can start
+  // typing immediately. rAF defers until after the thread renders; skip on
+  // touch devices (focusing pops the virtual keyboard unexpectedly).
+  useEffect(() => {
+    const isTouch =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(pointer: coarse)").matches;
+    if (isTouch) return;
+    const id = requestAnimationFrame(() => textareaRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [conversationId]);
+
   // Auto-grow the composer to fit its content (capped by the textarea's
   // max-height; it scrolls beyond that). Runs on every draft change, including
   // programmatic edits (mention insert, emoji, reset after send).
