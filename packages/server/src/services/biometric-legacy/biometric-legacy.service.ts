@@ -36,6 +36,7 @@ import { getDB } from "../../db/connection.js";
 import { config } from "../../config/index.js";
 import { logger } from "../../utils/logger.js";
 import * as attendanceService from "../attendance/attendance.service.js";
+import { ensureBiometricSeat, releaseBiometricSeat } from "../subscription/subscription.service.js";
 import { signKioskToken, KioskUserData } from "./kiosk-auth.middleware.js";
 import * as nasService from "../nas/nas.service.js";
 
@@ -830,6 +831,17 @@ export async function updateBiometricUser(
       updated_at: new Date(),
     });
 
+  // Tie the enrolled face to a billable emp-biometrics seat (auto-expands the
+  // plan when full so usage past the purchased seats is billed, not capped).
+  // Best-effort: a seat/billing hiccup must not fail the enrollment itself.
+  if (face_url) {
+    try {
+      await ensureBiometricSeat(orgId, userId, userId);
+    } catch (err) {
+      logger.warn(`biometric seat assign failed for user ${userId}: ${(err as Error)?.message}`);
+    }
+  }
+
   return { data: null, message: "Biometric data updated successfully" };
 }
 
@@ -1395,6 +1407,13 @@ export async function deleteFaceImage(orgIds: number[], userId: number) {
     } catch {
       /* ignore */
     }
+  }
+
+  // Release the billable emp-biometrics seat now that the face is gone.
+  try {
+    await releaseBiometricSeat(user.organization_id, userId);
+  } catch (err) {
+    logger.warn(`biometric seat release failed for user ${userId}: ${(err as Error)?.message}`);
   }
 
   await db("biometric_legacy_credentials")

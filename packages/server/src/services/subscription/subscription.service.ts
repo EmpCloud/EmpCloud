@@ -386,6 +386,103 @@ export async function revokeSeat(orgId: number, moduleId: number, userId: number
     .decrement("used_seats", 1);
 }
 
+// ---------------------------------------------------------------------------
+// Biometric face-enrollment seats — auto-expand + bill actual
+//
+// Face enrollment runs through the legacy kiosk path, which historically never
+// touched the seat/billing tables — so an org could enroll well past its
+// purchased seats while used_seats stayed 0 and it was billed nothing. These
+// helpers tie a face enrollment to a real emp-biometrics seat: each new
+// enrolled face consumes a seat, auto-GROWING total_seats when the plan is
+// already full so billing (price_per_seat * total_seats) charges actual usage
+// instead of capping or under-billing. Idempotent and best-effort — callers
+// wrap them so a billing hiccup never blocks the enrollment itself.
+// ---------------------------------------------------------------------------
+
+const BIOMETRIC_MODULE_SLUG = "emp-biometrics";
+
+async function getBiometricSubscription(
+  orgId: number,
+): Promise<{ moduleId: number; sub: { id: number; total_seats: number } } | null> {
+  const db = getDB();
+  const mod = await db("modules").where({ slug: BIOMETRIC_MODULE_SLUG }).first();
+  if (!mod) return null;
+  const sub = await db("org_subscriptions")
+    .where({ organization_id: orgId, module_id: mod.id })
+    .whereIn("status", ["active", "trial"])
+    .first();
+  return sub ? { moduleId: mod.id, sub } : null;
+}
+
+/** Assign a billable emp-biometrics seat for a newly-enrolled face. Auto-grows
+ *  total_seats when the plan is full (bill actual). No-op if the org has no
+ *  active biometric subscription or the user is already seated. */
+export async function ensureBiometricSeat(
+  orgId: number,
+  userId: number,
+  assignedBy: number,
+): Promise<void> {
+  const db = getDB();
+  const ctx = await getBiometricSubscription(orgId);
+  if (!ctx) return; // no active emp-biometrics subscription — nothing to meter
+  const { moduleId, sub } = ctx;
+
+  const existing = await db("org_module_seats")
+    .where({ module_id: moduleId, user_id: userId })
+    .first();
+  if (existing) return; // already seated — idempotent
+
+  const [{ seatCount }] = await db("org_module_seats")
+    .where({ subscription_id: sub.id })
+    .count("* as seatCount");
+  const current = Number(seatCount);
+
+  // Auto-expand: if the plan is already full, grow total_seats to cover this
+  // enrollment so the org is billed for actual usage rather than being capped.
+  let expanded = false;
+  if (current >= sub.total_seats) {
+    await db("org_subscriptions")
+      .where({ id: sub.id })
+      .update({ total_seats: current + 1, updated_at: new Date() });
+    expanded = true;
+  }
+
+  await db("org_module_seats").insert({
+    subscription_id: sub.id,
+    organization_id: orgId,
+    module_id: moduleId,
+    user_id: userId,
+    assigned_by: assignedBy,
+    assigned_at: new Date(),
+  });
+  await db("org_subscriptions").where({ id: sub.id }).increment("used_seats", 1);
+
+  if (expanded) {
+    // Tell emp-billing the plan grew so the next invoice reflects the overage.
+    billingEmitter
+      .emitSubscriptionUpdated(sub.id)
+      .catch((err) =>
+        logger.warn(
+          `emp-billing webhook failed after biometric seat auto-expand (sub ${sub.id}): ${err?.message}`,
+        ),
+      );
+  }
+}
+
+/** Release the biometric seat when a face is removed. Leaves total_seats at its
+ *  high-water mark so billing doesn't flap on every removal. */
+export async function releaseBiometricSeat(orgId: number, userId: number): Promise<void> {
+  const db = getDB();
+  const ctx = await getBiometricSubscription(orgId);
+  if (!ctx) return;
+  const seat = await db("org_module_seats")
+    .where({ organization_id: orgId, module_id: ctx.moduleId, user_id: userId })
+    .first();
+  if (!seat) return;
+  await db("org_module_seats").where({ id: seat.id }).delete();
+  await db("org_subscriptions").where({ id: seat.subscription_id }).decrement("used_seats", 1);
+}
+
 export async function listSeats(orgId: number, moduleId: number) {
   const db = getDB();
   return db("org_module_seats as s")
