@@ -275,7 +275,13 @@ export default function NewChatModal({
         {mode === "group" && (
           <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
             <span className="text-xs text-gray-500">
-              {selectedIds.length} selected{selectedIds.length < 2 ? " · need ≥ 2" : ""}
+              {!groupName.trim() ? (
+                <span className="text-amber-600">Enter a group name to continue</span>
+              ) : selectedIds.length < 2 ? (
+                <span className="text-amber-600">{selectedIds.length} selected · need ≥ 2</span>
+              ) : (
+                `${selectedIds.length} selected`
+              )}
             </span>
             <button
               onClick={createGroup}
