@@ -16,6 +16,7 @@ import type { ChatMessage, MessageTick, MessageReaction, ConversationSummary } f
 import { useAuthStore } from "@/lib/auth-store";
 import { queryClient } from "@/main";
 import { notifyNewMessage } from "./desktop-notify";
+import { registerChatServiceWorker, syncTokenToServiceWorker } from "./sw-bridge";
 
 const WS_ENABLED = import.meta.env.VITE_CHAT_WS === "true";
 
@@ -136,6 +137,19 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     // and leaves permission stuck at "default" (no notifications ever show). The
     // user grants it via the explicit "Enable desktop alerts" button in the bell
     // dropdown instead.
+
+    // Register the chat service worker + sync the token so the SW can send an
+    // inline reply straight from a desktop notification. Listen for its
+    // "reply-sent" message to refresh the thread the reply landed in.
+    registerChatServiceWorker().then(() => syncTokenToServiceWorker(accessToken));
+    const onSwMessage = (e: MessageEvent) => {
+      if (e.data?.type === "chat:reply-sent") {
+        const cid = e.data.conversationId;
+        queryClient.invalidateQueries({ queryKey: ["chat-conversations"] });
+        if (cid) queryClient.invalidateQueries({ queryKey: msgKey(cid) });
+      }
+    };
+    navigator.serviceWorker?.addEventListener("message", onSwMessage);
 
     // Function-form auth re-reads the freshest token on every (re)connect.
     const socket = io("/chat", {
@@ -302,6 +316,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       socket.disconnect();
       socketRef.current = null;
       setConnected(false);
+      navigator.serviceWorker?.removeEventListener("message", onSwMessage);
       typingTimers.current.forEach((t) => clearTimeout(t));
       typingTimers.current.clear();
       setTyping({});

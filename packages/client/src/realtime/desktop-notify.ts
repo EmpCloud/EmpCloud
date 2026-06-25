@@ -8,6 +8,7 @@
 // worker. Requires the tab to be open somewhere (background is fine).
 
 import type { ChatMessage } from "@empcloud/shared";
+import { getChatSwRegistration } from "./sw-bridge";
 
 const SUPPORTED = typeof window !== "undefined" && "Notification" in window;
 // Only nag for permission once per session if the user dismissed it.
@@ -51,6 +52,10 @@ const recentlyNotified = new Set<number>();
  * Show a desktop notification for an incoming message. `conversationTitle` is
  * the group name or the sender's name (for direct chats). `onClick` is invoked
  * when the user clicks the notification (focus tab + open the conversation).
+ *
+ * Prefers the Service Worker's showNotification when available — that's the only
+ * way to attach a "Reply" action (inline reply box in Chrome/Edge). Falls back
+ * to the plain Notification (no reply action) when no SW is registered.
  */
 export function notifyNewMessage(
   message: ChatMessage,
@@ -72,13 +77,44 @@ export function notifyNewMessage(
     conversationTitle === message.sender_name
       ? message.sender_name
       : `${message.sender_name} · ${conversationTitle}`;
+  const body = previewOf(message);
+  const tag = `chat-${message.conversation_id}`;
 
+  // --- Preferred path: SW notification with an inline "Reply" action ---
+  const reg = getChatSwRegistration();
+  if (reg) {
+    reg
+      .showNotification(title, {
+        body,
+        tag,
+        icon: "/favicon.ico",
+        // Carry what the SW needs to send the reply / open the right thread.
+        data: { conversationId: message.conversation_id, origin: window.location.origin },
+        // `actions`/`renotify` exist at runtime but aren't all in the TS lib type.
+        actions: [{ action: "reply", type: "text", title: "Reply", placeholder: "Type a reply…" }],
+        renotify: true,
+        // Keep it on screen until the user acts — without this Windows/Chrome can
+        // auto-dismiss (or suppress) the popup, especially while the tab is
+        // focused, which makes the reply box easy to miss.
+        requireInteraction: true,
+      } as NotificationOptions & {
+        actions?: { action: string; type?: string; title: string; placeholder?: string }[];
+        renotify?: boolean;
+        requireInteraction?: boolean;
+      })
+      .catch(() => fallbackNotification(title, body, tag, onClick));
+    return;
+  }
+
+  // --- Fallback: plain Notification (no reply action) ---
+  fallbackNotification(title, body, tag, onClick);
+}
+
+function fallbackNotification(title: string, body: string, tag: string, onClick: () => void): void {
   try {
     const n = new Notification(title, {
-      body: previewOf(message),
-      // Group notifications from the same conversation so they stack/replace.
-      tag: `chat-${message.conversation_id}`,
-      // `renotify` is valid at runtime but missing from the TS lib's options.
+      body,
+      tag,
       renotify: true,
       icon: "/favicon.ico",
     } as NotificationOptions & { renotify?: boolean });
@@ -87,7 +123,6 @@ export function notifyNewMessage(
       onClick();
       n.close();
     };
-    // Auto-dismiss after a few seconds (some browsers keep them sticky).
     setTimeout(() => n.close(), 6000);
   } catch {
     /* notification construction can throw on some platforms — ignore */
