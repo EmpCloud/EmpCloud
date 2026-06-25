@@ -39,8 +39,10 @@ self.addEventListener("notificationclick", (event) => {
   notif.close();
 
   // Inline reply: send it to the chat API, then notify the page so it can
-  // refresh the thread if it's open.
-  if (event.action === "reply" && replyText && conversationId) {
+  // refresh the thread if it's open. Be lenient on `event.action` — some
+  // browsers fire the reply with an empty action string, so treat "has reply
+  // text + a conversation" as a reply regardless of the action label.
+  if (replyText && conversationId) {
     event.waitUntil(sendReply(conversationId, replyText, data.origin));
     return;
   }

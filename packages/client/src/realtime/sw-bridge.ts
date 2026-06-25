@@ -33,9 +33,15 @@ function idbSet(key: string, value: unknown): Promise<void> {
 /** Register the chat SW (idempotent). Returns the registration or null. */
 export async function registerChatServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!SW_SUPPORTED) return null;
-  if (registration) return registration;
+  if (registration?.active) return registration;
   try {
-    registration = await navigator.serviceWorker.register("/chat-sw.js", { scope: "/" });
+    await navigator.serviceWorker.register("/chat-sw.js", { scope: "/" });
+    // Wait until a worker is actually ACTIVE before we treat the SW as usable —
+    // a registration with no active worker can't reliably own showNotification
+    // (and its notificationclick wouldn't route back to it). navigator.
+    // serviceWorker.ready resolves with the active registration controlling
+    // this page.
+    registration = await navigator.serviceWorker.ready;
     await idbSet("origin", window.location.origin);
     return registration;
   } catch {

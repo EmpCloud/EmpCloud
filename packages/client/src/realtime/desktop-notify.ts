@@ -93,9 +93,14 @@ export function notifyNewMessage(
         // `actions`/`renotify` exist at runtime but aren't all in the TS lib type.
         actions: [{ action: "reply", type: "text", title: "Reply", placeholder: "Type a reply…" }],
         renotify: true,
+        // Keep it on screen until the user acts — without this Windows/Chrome can
+        // auto-dismiss (or suppress) the popup, especially while the tab is
+        // focused, which makes the reply box easy to miss.
+        requireInteraction: true,
       } as NotificationOptions & {
         actions?: { action: string; type?: string; title: string; placeholder?: string }[];
         renotify?: boolean;
+        requireInteraction?: boolean;
       })
       .catch(() => fallbackNotification(title, body, tag, onClick));
     return;
