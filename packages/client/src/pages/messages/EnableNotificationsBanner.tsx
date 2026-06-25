@@ -19,7 +19,9 @@ export function EnableNotificationsBanner() {
     SUPPORTED ? Notification.permission : "unsupported",
   );
   const [dismissed, setDismissed] = useState(
-    () => sessionStorage.getItem(DISMISS_KEY) === "1",
+    // localStorage (not sessionStorage) so a dismissal persists across reloads
+    // and browser restarts — the banner shouldn't keep coming back every visit.
+    () => localStorage.getItem(DISMISS_KEY) === "1",
   );
   const [asking, setAsking] = useState(false);
 
@@ -51,7 +53,7 @@ export function EnableNotificationsBanner() {
   };
 
   const dismiss = () => {
-    sessionStorage.setItem(DISMISS_KEY, "1");
+    localStorage.setItem(DISMISS_KEY, "1");
     setDismissed(true);
   };
 

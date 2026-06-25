@@ -108,7 +108,10 @@ function ConversationRow({
             )}
           </span>
           {conv.last_message_at && (
-            <span className="text-[11px] text-gray-400 flex-shrink-0">
+            <span
+              className="text-[11px] text-gray-400 flex-shrink-0"
+              title={new Date(conv.last_message_at).toLocaleString()}
+            >
               {relativeTime(conv.last_message_at)}
             </span>
           )}
@@ -498,7 +501,10 @@ export default function MessagesPage() {
                         <span className="truncate text-sm font-medium text-gray-800">
                           {hit.conversation_title}
                         </span>
-                        <span className="flex-shrink-0 text-[10px] text-gray-400">
+                        <span
+                          className="flex-shrink-0 text-[10px] text-gray-400"
+                          title={new Date(hit.created_at).toLocaleString()}
+                        >
                           {relativeTime(hit.created_at)}
                         </span>
                       </span>

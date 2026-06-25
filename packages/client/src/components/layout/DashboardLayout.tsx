@@ -71,6 +71,18 @@ export default function DashboardLayout() {
   });
   const chatEnabled = chatStatus?.enabled !== false;
 
+  // Live unread-message count for the Messages nav badge. Polls on a modest
+  // interval (the socket also nudges chat caches on new messages). Only runs
+  // when chat is enabled for this org.
+  const { data: chatUnread } = useQuery({
+    queryKey: ["chat-unread-count"],
+    queryFn: () => api.get("/chat/unread-count").then((r) => r.data.data?.unread_count ?? 0),
+    enabled: !!user && chatEnabled,
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+  });
+  const unreadByPath: Record<string, number> = { "/messages": chatUnread ?? 0 };
+
   const hasBiometrics = (subscriptions || []).some(
     (s: any) => s.module_slug === "emp-biometrics" && (s.status === "active" || s.status === "trial")
   );
@@ -174,7 +186,7 @@ export default function DashboardLayout() {
 
       <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
         {user?.role !== "super_admin" && <>
-          <NavSection label="" items={sidebarItems} location={location} t={t} />
+          <NavSection label="" items={sidebarItems} location={location} t={t} unreadByPath={unreadByPath} />
           {isHR && (
             // Positions is now a single collapsible parent (label rendered
             // by the NavItem itself), so the section label here would be a

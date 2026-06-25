@@ -458,7 +458,8 @@
       "documents": "ドキュメント",
       "announcements": "お知らせ",
       "policies": "ポリシー"
-    }
+    },
+    "opensInNewTab": "新しいタブで開く"
   },
   "plans": {
     "basic": "ベーシック",

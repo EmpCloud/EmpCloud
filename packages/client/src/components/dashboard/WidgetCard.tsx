@@ -171,6 +171,9 @@ export default function WidgetCard({
       {/* View Details link — refreshes token then launches with SSO */}
       {moduleUrl && (
         <button
+          // Opens the module in a new tab (SSO) — announce that to screen
+          // readers (WCAG 3.2.5); the icon is decorative.
+          aria-label={`${t('dashboard.viewDetails')} — ${title} (${t('dashboard.opensInNewTab')})`}
           onClick={async () => {
             let token = useAuthStore.getState().accessToken || "";
             const refreshToken = useAuthStore.getState().refreshToken;
@@ -195,7 +198,7 @@ export default function WidgetCard({
           }}
           className={`mt-4 flex items-center gap-1.5 text-xs font-medium ${c.icon} hover:underline`}
         >
-          {t('dashboard.viewDetails')} <ExternalLink className="h-3 w-3" />
+          {t('dashboard.viewDetails')} <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </button>
       )}
     </div>

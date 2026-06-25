@@ -458,7 +458,8 @@
       "documents": "المستندات",
       "announcements": "الإعلانات",
       "policies": "السياسات"
-    }
+    },
+    "opensInNewTab": "يفتح في علامة تبويب جديدة"
   },
   "plans": {
     "basic": "أساسي",

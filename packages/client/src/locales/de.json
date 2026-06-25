@@ -458,7 +458,8 @@
       "documents": "Dokumente",
       "announcements": "Ankündigungen",
       "policies": "Richtlinien"
-    }
+    },
+    "opensInNewTab": "wird in neuem Tab geöffnet"
   },
   "plans": {
     "basic": "Basis",

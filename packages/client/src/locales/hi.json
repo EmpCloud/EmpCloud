@@ -458,7 +458,8 @@
       "documents": "दस्तावेज़",
       "announcements": "घोषणाएँ",
       "policies": "नीतियाँ"
-    }
+    },
+    "opensInNewTab": "नए टैब में खुलता है"
   },
   "plans": {
     "basic": "बेसिक",
