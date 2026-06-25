@@ -1846,6 +1846,11 @@ export async function getMessageReceipts(
       "u.photo_path as photo_path",
       "cp.last_delivered_message_id as last_delivered_message_id",
       "cp.last_read_message_id as last_read_message_id",
+      // High-water timestamps — used as a fallback when the per-message ledger
+      // has no precise row (the marker can advance in bulk past a message that
+      // never got its own receipt row, leaving read_at null for a "read" entry).
+      "cp.last_delivered_at as last_delivered_at",
+      "cp.last_read_at as last_read_at",
     );
 
   // Precise per-name timestamps from the ledger (if present).
@@ -1864,12 +1869,16 @@ export async function getMessageReceipts(
     const led = ledgerByRecipient.get(r.recipient_id);
     const isRead = Number(r.last_read_message_id ?? 0) >= messageId;
     const isDelivered = Number(r.last_delivered_message_id ?? 0) >= messageId;
+    // Prefer the precise per-message ledger time; fall back to the participant's
+    // high-water timestamp so a "read"/"delivered" entry always shows a time
+    // (Aditya appeared under "Read by" with no timestamp because his ledger row
+    // was missing — the bulk read marker had advanced past this message).
     const entry: ChatMessageReceipt = {
       recipient_id: r.recipient_id,
       name: fullName(r.first_name, r.last_name),
       photo_path: r.photo_path ?? null,
-      delivered_at: led?.delivered_at ?? null,
-      read_at: led?.read_at ?? null,
+      delivered_at: led?.delivered_at ?? (isDelivered ? r.last_delivered_at ?? null : null),
+      read_at: led?.read_at ?? (isRead ? r.last_read_at ?? null : null),
     };
     if (isRead) read.push(entry);
     else if (isDelivered) delivered.push(entry);
