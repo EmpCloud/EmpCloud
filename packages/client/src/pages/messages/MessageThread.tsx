@@ -1458,10 +1458,22 @@ export default function MessageThread({
             <p className="text-sm font-semibold text-gray-900 truncate">
               {conversation?.title ?? "Conversation"}
             </p>
-            {/* Presence line: Online / last seen … / designation fallback.
-                The avatar already carries the green online dot, so the word
-                "Online" here stands alone (no second dot). */}
-            {counterpartPresence?.online ? (
+            {/* Presence line: "typing…" takes priority — when someone is typing
+                we show it here in place of Online / last seen. For a direct chat
+                it's just "typing…"; for a group we name who's typing. Falls back
+                to Online / last seen … / designation. The avatar already carries
+                the green online dot, so "Online" here stands alone (no 2nd dot). */}
+            {typers.length > 0 ? (
+              <p className="text-xs text-green-600 truncate">
+                {isGroup
+                  ? typers.length === 1
+                    ? `${typers[0]} is typing…`
+                    : typers.length === 2
+                      ? `${typers[0]} and ${typers[1]} are typing…`
+                      : `${typers.length} people are typing…`
+                  : "typing…"}
+              </p>
+            ) : counterpartPresence?.online ? (
               <p className="text-xs text-green-600">Online</p>
             ) : counterpartPresence ? (
               <p className="text-xs text-gray-400 truncate">
