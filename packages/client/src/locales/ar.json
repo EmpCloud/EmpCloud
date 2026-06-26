@@ -1840,5 +1840,38 @@
       "emptySearchHint": "جرّب كلمة مفتاحية أخرى.",
       "emptyHint": "استخدم المربع أعلاه لمشاركة شيء ما."
     }
+  },
+  "wellness": {
+    "checkIn": {
+      "completeTitle": "اكتمل تسجيل الحضور!",
+      "alreadyTitle": "لقد سجّلت حضورك اليوم",
+      "completeText": "عمل رائع لأخذك لحظة للاطمئنان على نفسك اليوم.",
+      "alreadyText": "يمكنك إرسال تسجيل حضورك التالي غدًا.",
+      "viewMyWellness": "عرض عافيتي",
+      "explorePrograms": "استكشاف البرامج",
+      "loading": "جارٍ التحميل...",
+      "title": "تسجيل الحضور اليومي",
+      "moodQuestion": "كيف تشعر اليوم؟",
+      "selectMood": "يرجى اختيار مزاجك",
+      "energyLevel": "مستوى الطاقة",
+      "low": "منخفض",
+      "high": "مرتفع",
+      "sleepHours": "النوم (ساعات)",
+      "sleepPlaceholder": "مثال: 7.5",
+      "exerciseMinutes": "التمارين (دقائق)",
+      "exercisePlaceholder": "مثال: 30",
+      "notesLabel": "ملاحظات (اختياري)",
+      "notesPlaceholder": "كيف كان يومك؟ هل هناك ما يشغلك؟",
+      "error": "فشل تسجيل الحضور. يرجى المحاولة مرة أخرى.",
+      "submitting": "جارٍ الإرسال...",
+      "submit": "إرسال تسجيل الحضور",
+      "mood": {
+        "great": "رائع",
+        "good": "جيد",
+        "okay": "مقبول",
+        "low": "منخفض",
+        "stressed": "متوتر"
+      }
+    }
   }
 }

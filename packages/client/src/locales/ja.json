@@ -1840,5 +1840,38 @@
       "emptySearchHint": "別のキーワードをお試しください。",
       "emptyHint": "上のボックスを使って何か共有しましょう。"
     }
+  },
+  "wellness": {
+    "checkIn": {
+      "completeTitle": "チェックイン完了！",
+      "alreadyTitle": "本日はチェックイン済みです",
+      "completeText": "今日、自分と向き合う時間をとれてよかったですね。",
+      "alreadyText": "次のチェックインは明日送信できます。",
+      "viewMyWellness": "自分のウェルネスを見る",
+      "explorePrograms": "プログラムを見る",
+      "loading": "読み込み中...",
+      "title": "デイリーチェックイン",
+      "moodQuestion": "今日の気分はいかがですか？",
+      "selectMood": "気分を選択してください",
+      "energyLevel": "エネルギーレベル",
+      "low": "低",
+      "high": "高",
+      "sleepHours": "睡眠（時間）",
+      "sleepPlaceholder": "例: 7.5",
+      "exerciseMinutes": "運動（分）",
+      "exercisePlaceholder": "例: 30",
+      "notesLabel": "メモ（任意）",
+      "notesPlaceholder": "今日はどんな一日でしたか？気になることはありますか？",
+      "error": "チェックインに失敗しました。もう一度お試しください。",
+      "submitting": "送信中...",
+      "submit": "チェックインを送信",
+      "mood": {
+        "great": "最高",
+        "good": "良い",
+        "okay": "普通",
+        "low": "低い",
+        "stressed": "ストレス"
+      }
+    }
   }
 }

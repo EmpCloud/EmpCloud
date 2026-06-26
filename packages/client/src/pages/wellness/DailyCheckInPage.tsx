@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useNavigate } from "react-router-dom";
@@ -13,15 +14,17 @@ import {
 
 const todayISO = () => new Date().toISOString().split("T")[0];
 
+// Mood options — label text comes from i18n (wellness.checkIn.mood.*).
 const MOODS = [
-  { value: "great", emoji: "😄", label: "Great", color: "border-green-400 bg-green-50 hover:bg-green-100" },
-  { value: "good", emoji: "🙂", label: "Good", color: "border-blue-400 bg-blue-50 hover:bg-blue-100" },
-  { value: "okay", emoji: "😐", label: "Okay", color: "border-amber-400 bg-amber-50 hover:bg-amber-100" },
-  { value: "low", emoji: "😔", label: "Low", color: "border-orange-400 bg-orange-50 hover:bg-orange-100" },
-  { value: "stressed", emoji: "😰", label: "Stressed", color: "border-red-400 bg-red-50 hover:bg-red-100" },
+  { value: "great", emoji: "😄", color: "border-green-400 bg-green-50 hover:bg-green-100" },
+  { value: "good", emoji: "🙂", color: "border-blue-400 bg-blue-50 hover:bg-blue-100" },
+  { value: "okay", emoji: "😐", color: "border-amber-400 bg-amber-50 hover:bg-amber-100" },
+  { value: "low", emoji: "😔", color: "border-orange-400 bg-orange-50 hover:bg-orange-100" },
+  { value: "stressed", emoji: "😰", color: "border-red-400 bg-red-50 hover:bg-red-100" },
 ];
 
 export default function DailyCheckInPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [submitted, setSubmitted] = useState(false);
@@ -77,25 +80,23 @@ export default function DailyCheckInPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {submitted ? "Check-in Complete!" : "You've checked in today"}
+            {submitted ? t("wellness.checkIn.completeTitle") : t("wellness.checkIn.alreadyTitle")}
           </h2>
           <p className="text-gray-500 mb-6">
-            {submitted
-              ? "Great job taking a moment to check in with yourself today."
-              : "You can submit your next check-in tomorrow."}
+            {submitted ? t("wellness.checkIn.completeText") : t("wellness.checkIn.alreadyText")}
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => navigate("/wellness/my")}
               className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 text-sm font-medium"
             >
-              View My Wellness
+              {t("wellness.checkIn.viewMyWellness")}
             </button>
             <button
               onClick={() => navigate("/wellness")}
               className="px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 text-sm"
             >
-              Explore Programs
+              {t("wellness.checkIn.explorePrograms")}
             </button>
           </div>
         </div>
@@ -106,7 +107,7 @@ export default function DailyCheckInPage() {
   if (loadingToday) {
     return (
       <div className="max-w-lg mx-auto mt-12 text-center text-gray-400">
-        Loading...
+        {t("wellness.checkIn.loading")}
       </div>
     );
   }
@@ -122,9 +123,9 @@ export default function DailyCheckInPage() {
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Daily Check-in</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("wellness.checkIn.title")}</h1>
           <p className="text-gray-500 text-sm">
-            {new Date().toLocaleDateString("en-US", {
+            {new Date().toLocaleDateString(undefined, {
               weekday: "long",
               month: "long",
               day: "numeric",
@@ -139,7 +140,7 @@ export default function DailyCheckInPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Heart className="h-5 w-5 text-pink-500" />
-            <h3 className="text-lg font-semibold text-gray-900">How are you feeling today?</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("wellness.checkIn.moodQuestion")}</h3>
           </div>
           <div className="grid grid-cols-5 gap-3">
             {MOODS.map((m) => (
@@ -154,12 +155,12 @@ export default function DailyCheckInPage() {
                 }`}
               >
                 <span className="text-3xl">{m.emoji}</span>
-                <span className="text-xs font-medium text-gray-600">{m.label}</span>
+                <span className="text-xs font-medium text-gray-600">{t(`wellness.checkIn.mood.${m.value}`)}</span>
               </button>
             ))}
           </div>
           {!form.mood && mutation.isError && (
-            <p className="text-sm text-red-500 mt-2">Please select your mood</p>
+            <p className="text-sm text-red-500 mt-2">{t("wellness.checkIn.selectMood")}</p>
           )}
         </div>
 
@@ -167,10 +168,10 @@ export default function DailyCheckInPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="h-5 w-5 text-yellow-500" />
-            <h3 className="text-lg font-semibold text-gray-900">Energy Level</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("wellness.checkIn.energyLevel")}</h3>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 w-8">Low</span>
+            <span className="text-sm text-gray-500 w-8">{t("wellness.checkIn.low")}</span>
             <div className="flex-1 flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((level) => (
                 <button
@@ -187,7 +188,7 @@ export default function DailyCheckInPage() {
                 </button>
               ))}
             </div>
-            <span className="text-sm text-gray-500 w-8">High</span>
+            <span className="text-sm text-gray-500 w-8">{t("wellness.checkIn.high")}</span>
           </div>
         </div>
 
@@ -197,14 +198,14 @@ export default function DailyCheckInPage() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Moon className="h-5 w-5 text-indigo-500" />
-                <label className="text-sm font-semibold text-gray-900">Sleep (hours)</label>
+                <label className="text-sm font-semibold text-gray-900">{t("wellness.checkIn.sleepHours")}</label>
               </div>
               <input
                 type="number"
                 value={form.sleep_hours}
                 onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="e.g., 7.5"
+                placeholder={t("wellness.checkIn.sleepPlaceholder")}
                 step="0.5"
                 min="0"
                 max="24"
@@ -213,14 +214,14 @@ export default function DailyCheckInPage() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Dumbbell className="h-5 w-5 text-green-500" />
-                <label className="text-sm font-semibold text-gray-900">Exercise (minutes)</label>
+                <label className="text-sm font-semibold text-gray-900">{t("wellness.checkIn.exerciseMinutes")}</label>
               </div>
               <input
                 type="number"
                 value={form.exercise_minutes}
                 onChange={(e) => setForm({ ...form, exercise_minutes: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="e.g., 30"
+                placeholder={t("wellness.checkIn.exercisePlaceholder")}
                 min="0"
               />
             </div>
@@ -230,21 +231,21 @@ export default function DailyCheckInPage() {
         {/* Notes */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <label className="block text-sm font-semibold text-gray-900 mb-3">
-            Notes (optional)
+            {t("wellness.checkIn.notesLabel")}
           </label>
           <textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            placeholder="How was your day? Anything on your mind?"
+            placeholder={t("wellness.checkIn.notesPlaceholder")}
           />
         </div>
 
         {/* Error */}
         {mutation.isError && (
           <p className="text-sm text-red-600 text-center">
-            {(mutation.error as any)?.response?.data?.error?.message || "Check-in failed. Please try again."}
+            {(mutation.error as any)?.response?.data?.error?.message || t("wellness.checkIn.error")}
           </p>
         )}
 
@@ -254,7 +255,7 @@ export default function DailyCheckInPage() {
           disabled={!form.mood || mutation.isPending}
           className="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors text-sm font-semibold disabled:opacity-50"
         >
-          {mutation.isPending ? "Submitting..." : "Submit Check-in"}
+          {mutation.isPending ? t("wellness.checkIn.submitting") : t("wellness.checkIn.submit")}
         </button>
       </form>
     </div>

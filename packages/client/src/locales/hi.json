@@ -1840,5 +1840,38 @@
       "emptySearchHint": "कोई अन्य कीवर्ड आज़माएं।",
       "emptyHint": "कुछ साझा करने के लिए ऊपर दिए गए बॉक्स का उपयोग करें।"
     }
+  },
+  "wellness": {
+    "checkIn": {
+      "completeTitle": "चेक-इन पूर्ण!",
+      "alreadyTitle": "आपने आज चेक-इन कर लिया है",
+      "completeText": "आज खुद से जुड़ने के लिए कुछ क्षण निकालने के लिए बढ़िया काम।",
+      "alreadyText": "आप अपना अगला चेक-इन कल भेज सकते हैं।",
+      "viewMyWellness": "मेरा कल्याण देखें",
+      "explorePrograms": "कार्यक्रम देखें",
+      "loading": "लोड हो रहा है...",
+      "title": "दैनिक चेक-इन",
+      "moodQuestion": "आज आप कैसा महसूस कर रहे हैं?",
+      "selectMood": "कृपया अपना मूड चुनें",
+      "energyLevel": "ऊर्जा स्तर",
+      "low": "कम",
+      "high": "उच्च",
+      "sleepHours": "नींद (घंटे)",
+      "sleepPlaceholder": "जैसे 7.5",
+      "exerciseMinutes": "व्यायाम (मिनट)",
+      "exercisePlaceholder": "जैसे 30",
+      "notesLabel": "नोट्स (वैकल्पिक)",
+      "notesPlaceholder": "आपका दिन कैसा रहा? कुछ मन में है?",
+      "error": "चेक-इन विफल। कृपया पुनः प्रयास करें।",
+      "submitting": "भेजा जा रहा है...",
+      "submit": "चेक-इन भेजें",
+      "mood": {
+        "great": "बढ़िया",
+        "good": "अच्छा",
+        "okay": "ठीक",
+        "low": "कम",
+        "stressed": "तनावग्रस्त"
+      }
+    }
   }
 }

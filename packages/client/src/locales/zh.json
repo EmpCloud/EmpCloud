@@ -1840,5 +1840,38 @@
       "emptySearchHint": "尝试其他关键词。",
       "emptyHint": "使用上方的输入框分享内容。"
     }
+  },
+  "wellness": {
+    "checkIn": {
+      "completeTitle": "打卡完成！",
+      "alreadyTitle": "您今天已经打卡",
+      "completeText": "很棒，今天花时间关注了自己的状态。",
+      "alreadyText": "您可以明天提交下一次打卡。",
+      "viewMyWellness": "查看我的健康",
+      "explorePrograms": "探索项目",
+      "loading": "加载中...",
+      "title": "每日打卡",
+      "moodQuestion": "您今天感觉如何？",
+      "selectMood": "请选择您的心情",
+      "energyLevel": "能量水平",
+      "low": "低",
+      "high": "高",
+      "sleepHours": "睡眠（小时）",
+      "sleepPlaceholder": "例如 7.5",
+      "exerciseMinutes": "运动（分钟）",
+      "exercisePlaceholder": "例如 30",
+      "notesLabel": "备注（可选）",
+      "notesPlaceholder": "今天过得怎么样？有什么想法吗？",
+      "error": "打卡失败。请重试。",
+      "submitting": "提交中...",
+      "submit": "提交打卡",
+      "mood": {
+        "great": "很好",
+        "good": "不错",
+        "okay": "一般",
+        "low": "低落",
+        "stressed": "压力大"
+      }
+    }
   }
 }

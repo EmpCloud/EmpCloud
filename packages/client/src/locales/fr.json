@@ -1840,5 +1840,38 @@
       "emptySearchHint": "Essayez un autre mot-clé.",
       "emptyHint": "Utilisez la zone ci-dessus pour partager quelque chose."
     }
+  },
+  "wellness": {
+    "checkIn": {
+      "completeTitle": "Check-in terminé !",
+      "alreadyTitle": "Vous avez fait votre check-in aujourd'hui",
+      "completeText": "Bravo d'avoir pris un moment pour faire le point aujourd'hui.",
+      "alreadyText": "Vous pourrez envoyer votre prochain check-in demain.",
+      "viewMyWellness": "Voir mon bien-être",
+      "explorePrograms": "Explorer les programmes",
+      "loading": "Chargement...",
+      "title": "Check-in quotidien",
+      "moodQuestion": "Comment vous sentez-vous aujourd'hui ?",
+      "selectMood": "Veuillez sélectionner votre humeur",
+      "energyLevel": "Niveau d'énergie",
+      "low": "Bas",
+      "high": "Élevé",
+      "sleepHours": "Sommeil (heures)",
+      "sleepPlaceholder": "ex. 7,5",
+      "exerciseMinutes": "Exercice (minutes)",
+      "exercisePlaceholder": "ex. 30",
+      "notesLabel": "Notes (facultatif)",
+      "notesPlaceholder": "Comment s'est passée votre journée ? Quelque chose en tête ?",
+      "error": "Échec du check-in. Veuillez réessayer.",
+      "submitting": "Envoi...",
+      "submit": "Envoyer le check-in",
+      "mood": {
+        "great": "Excellent",
+        "good": "Bien",
+        "okay": "Correct",
+        "low": "Bas",
+        "stressed": "Stressé"
+      }
+    }
   }
 }
