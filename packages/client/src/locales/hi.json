@@ -2043,6 +2043,7 @@
     "departments": "विभाग",
     "viewAllDepartments": "सभी विभाग देखें",
     "searchPlaceholder": "नाम, पदनाम या विभाग से खोजें...",
-    "clearSearch": "खोज साफ़ करें"
+    "clearSearch": "खोज साफ़ करें",
+    "downloadPng": "PNG के रूप में डाउनलोड करें"
   }
 }

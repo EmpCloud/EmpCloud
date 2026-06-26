@@ -726,7 +726,7 @@ export default function OrgChartPage() {
               type="button"
               onClick={() => exportChart("png")}
               disabled={exporting !== null}
-              title="Download as PNG"
+              title={t("orgChart.downloadPng")}
               className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exporting === "png" ? (

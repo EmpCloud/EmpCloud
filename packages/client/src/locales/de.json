@@ -2043,6 +2043,7 @@
     "departments": "Abteilungen",
     "viewAllDepartments": "Alle Abteilungen anzeigen",
     "searchPlaceholder": "Nach Name, Funktion oder Abteilung suchen...",
-    "clearSearch": "Suche löschen"
+    "clearSearch": "Suche löschen",
+    "downloadPng": "Als PNG herunterladen"
   }
 }

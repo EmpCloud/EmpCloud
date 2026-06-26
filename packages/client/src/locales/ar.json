@@ -2043,6 +2043,7 @@
     "departments": "الأقسام",
     "viewAllDepartments": "عرض جميع الأقسام",
     "searchPlaceholder": "البحث بالاسم أو المسمى أو القسم...",
-    "clearSearch": "مسح البحث"
+    "clearSearch": "مسح البحث",
+    "downloadPng": "تنزيل كملف PNG"
   }
 }

@@ -2043,6 +2043,7 @@
     "departments": "Departamentos",
     "viewAllDepartments": "Ver todos os departamentos",
     "searchPlaceholder": "Pesquisar por nome, cargo ou departamento...",
-    "clearSearch": "Limpar pesquisa"
+    "clearSearch": "Limpar pesquisa",
+    "downloadPng": "Baixar como PNG"
   }
 }
