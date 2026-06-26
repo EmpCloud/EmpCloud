@@ -598,10 +598,10 @@ export default function OrgChartPage() {
           pdf.save(`org-chart-${stamp}.pdf`);
         }
 
-        showToast("success", format === "png" ? "Chart exported as PNG." : "Chart exported as PDF.");
+        showToast("success", format === "png" ? t("orgChart.exportedPng") : t("orgChart.exportedPdf"));
       } catch (err) {
         console.error("Org chart export failed:", err);
-        showToast("error", "Export failed. Please try again.");
+        showToast("error", t("orgChart.exportFailed"));
       } finally {
         node.style.transform = prevTransform;
         node.style.transformOrigin = prevTransformOrigin;
@@ -996,7 +996,7 @@ function PersonList({
             </div>
             {p.children.length > 0 && (
               <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-600">
-                {p.children.length} report{p.children.length === 1 ? "" : "s"}
+                {t("orgChart.reportsBadge", { count: p.children.length })}
               </span>
             )}
           </button>

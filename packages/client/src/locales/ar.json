@@ -2061,6 +2061,11 @@
     "modalManagers": "المديرون ({{count}})",
     "modalDepartments": "الأقسام ({{count}})",
     "filterDepartments": "تصفية الأقسام أو الأشخاص...",
-    "filterPeople": "التصفية بالاسم أو المسمى أو القسم..."
+    "filterPeople": "التصفية بالاسم أو المسمى أو القسم...",
+    "reportsBadge_one": "{{count}} مرؤوس",
+    "reportsBadge_other": "{{count}} مرؤوسين",
+    "exportedPng": "تم تصدير المخطط كملف PNG.",
+    "exportedPdf": "تم تصدير المخطط كملف PDF.",
+    "exportFailed": "فشل التصدير. يرجى المحاولة مرة أخرى."
   }
 }

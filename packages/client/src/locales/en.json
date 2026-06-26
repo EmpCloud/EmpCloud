@@ -2066,6 +2066,11 @@
     "modalManagers": "Managers ({{count}})",
     "modalDepartments": "Departments ({{count}})",
     "filterDepartments": "Filter departments or people...",
-    "filterPeople": "Filter by name, designation, or department..."
+    "filterPeople": "Filter by name, designation, or department...",
+    "reportsBadge_one": "{{count}} report",
+    "reportsBadge_other": "{{count}} reports",
+    "exportedPng": "Chart exported as PNG.",
+    "exportedPdf": "Chart exported as PDF.",
+    "exportFailed": "Export failed. Please try again."
   }
 }

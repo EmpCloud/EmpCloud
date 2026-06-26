@@ -2061,6 +2061,11 @@
     "modalManagers": "Manager ({{count}})",
     "modalDepartments": "Abteilungen ({{count}})",
     "filterDepartments": "Abteilungen oder Personen filtern...",
-    "filterPeople": "Nach Name, Funktion oder Abteilung filtern..."
+    "filterPeople": "Nach Name, Funktion oder Abteilung filtern...",
+    "reportsBadge_one": "{{count}} unterstellt",
+    "reportsBadge_other": "{{count}} unterstellt",
+    "exportedPng": "Organigramm als PNG exportiert.",
+    "exportedPdf": "Organigramm als PDF exportiert.",
+    "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen."
   }
 }

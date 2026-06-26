@@ -2061,6 +2061,11 @@
     "modalManagers": "经理（{{count}}）",
     "modalDepartments": "部门（{{count}}）",
     "filterDepartments": "筛选部门或人员...",
-    "filterPeople": "按姓名、职位或部门筛选..."
+    "filterPeople": "按姓名、职位或部门筛选...",
+    "reportsBadge_one": "{{count}} 名下属",
+    "reportsBadge_other": "{{count}} 名下属",
+    "exportedPng": "组织结构图已导出为 PNG。",
+    "exportedPdf": "组织结构图已导出为 PDF。",
+    "exportFailed": "导出失败。请重试。"
   }
 }

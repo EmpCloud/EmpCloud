@@ -2061,6 +2061,11 @@
     "modalManagers": "Responsables ({{count}})",
     "modalDepartments": "Services ({{count}})",
     "filterDepartments": "Filtrer les services ou les personnes...",
-    "filterPeople": "Filtrer par nom, fonction ou service..."
+    "filterPeople": "Filtrer par nom, fonction ou service...",
+    "reportsBadge_one": "{{count}} subordonné",
+    "reportsBadge_other": "{{count}} subordonnés",
+    "exportedPng": "Organigramme exporté en PNG.",
+    "exportedPdf": "Organigramme exporté en PDF.",
+    "exportFailed": "Échec de l'exportation. Veuillez réessayer."
   }
 }

@@ -2061,6 +2061,11 @@
     "modalManagers": "Gerentes ({{count}})",
     "modalDepartments": "Departamentos ({{count}})",
     "filterDepartments": "Filtrar departamentos o personas...",
-    "filterPeople": "Filtrar por nombre, cargo o departamento..."
+    "filterPeople": "Filtrar por nombre, cargo o departamento...",
+    "reportsBadge_one": "{{count}} subordinado",
+    "reportsBadge_other": "{{count}} subordinados",
+    "exportedPng": "Organigrama exportado como PNG.",
+    "exportedPdf": "Organigrama exportado como PDF.",
+    "exportFailed": "La exportación falló. Inténtalo de nuevo."
   }
 }

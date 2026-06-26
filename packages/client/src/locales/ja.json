@@ -2061,6 +2061,11 @@
     "modalManagers": "マネージャー（{{count}}）",
     "modalDepartments": "部署（{{count}}）",
     "filterDepartments": "部署または人物を絞り込む...",
-    "filterPeople": "氏名、役職、または部署で絞り込む..."
+    "filterPeople": "氏名、役職、または部署で絞り込む...",
+    "reportsBadge_one": "部下{{count}}人",
+    "reportsBadge_other": "部下{{count}}人",
+    "exportedPng": "組織図をPNGとしてエクスポートしました。",
+    "exportedPdf": "組織図をPDFとしてエクスポートしました。",
+    "exportFailed": "エクスポートに失敗しました。もう一度お試しください。"
   }
 }

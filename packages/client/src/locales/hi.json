@@ -2061,6 +2061,11 @@
     "modalManagers": "प्रबंधक ({{count}})",
     "modalDepartments": "विभाग ({{count}})",
     "filterDepartments": "विभाग या लोग फ़िल्टर करें...",
-    "filterPeople": "नाम, पदनाम या विभाग से फ़िल्टर करें..."
+    "filterPeople": "नाम, पदनाम या विभाग से फ़िल्टर करें...",
+    "reportsBadge_one": "{{count}} रिपोर्ट",
+    "reportsBadge_other": "{{count}} रिपोर्ट",
+    "exportedPng": "चार्ट PNG के रूप में निर्यात किया गया।",
+    "exportedPdf": "चार्ट PDF के रूप में निर्यात किया गया।",
+    "exportFailed": "निर्यात विफल। कृपया पुनः प्रयास करें।"
   }
 }
