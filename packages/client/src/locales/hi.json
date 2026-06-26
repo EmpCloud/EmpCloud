@@ -2044,6 +2044,7 @@
     "viewAllDepartments": "सभी विभाग देखें",
     "searchPlaceholder": "नाम, पदनाम या विभाग से खोजें...",
     "clearSearch": "खोज साफ़ करें",
-    "downloadPng": "PNG के रूप में डाउनलोड करें"
+    "downloadPng": "PNG के रूप में डाउनलोड करें",
+    "downloadPdf": "PDF के रूप में डाउनलोड करें (A3 लैंडस्केप)"
   }
 }

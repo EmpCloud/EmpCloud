@@ -2044,6 +2044,7 @@
     "viewAllDepartments": "Voir tous les services",
     "searchPlaceholder": "Rechercher par nom, fonction ou service...",
     "clearSearch": "Effacer la recherche",
-    "downloadPng": "Télécharger en PNG"
+    "downloadPng": "Télécharger en PNG",
+    "downloadPdf": "Télécharger en PDF (A3 paysage)"
   }
 }

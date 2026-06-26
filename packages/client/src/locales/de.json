@@ -2044,6 +2044,7 @@
     "viewAllDepartments": "Alle Abteilungen anzeigen",
     "searchPlaceholder": "Nach Name, Funktion oder Abteilung suchen...",
     "clearSearch": "Suche löschen",
-    "downloadPng": "Als PNG herunterladen"
+    "downloadPng": "Als PNG herunterladen",
+    "downloadPdf": "Als PDF herunterladen (A3 Querformat)"
   }
 }

@@ -2044,6 +2044,7 @@
     "viewAllDepartments": "Ver todos los departamentos",
     "searchPlaceholder": "Buscar por nombre, cargo o departamento...",
     "clearSearch": "Borrar búsqueda",
-    "downloadPng": "Descargar como PNG"
+    "downloadPng": "Descargar como PNG",
+    "downloadPdf": "Descargar como PDF (A3 horizontal)"
   }
 }

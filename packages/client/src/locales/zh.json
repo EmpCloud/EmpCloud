@@ -2044,6 +2044,7 @@
     "viewAllDepartments": "查看所有部门",
     "searchPlaceholder": "按姓名、职位或部门搜索...",
     "clearSearch": "清除搜索",
-    "downloadPng": "下载为 PNG"
+    "downloadPng": "下载为 PNG",
+    "downloadPdf": "下载为 PDF（A3 横向）"
   }
 }

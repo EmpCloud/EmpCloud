@@ -2049,6 +2049,7 @@
     "viewAllDepartments": "View all departments",
     "searchPlaceholder": "Search by name, designation, or department...",
     "clearSearch": "Clear search",
-    "downloadPng": "Download as PNG"
+    "downloadPng": "Download as PNG",
+    "downloadPdf": "Download as PDF (A3 landscape)"
   }
 }
