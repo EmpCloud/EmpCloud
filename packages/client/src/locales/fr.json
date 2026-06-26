@@ -1909,6 +1909,26 @@
         "idea": "Idée",
         "poll": "Sondage"
       }
+    },
+    "create": {
+      "title": "Créer une publication",
+      "category": "Catégorie",
+      "selectCategory": "Sélectionner une catégorie...",
+      "noCategories": "Aucune catégorie — créez-les dans le tableau de bord du forum",
+      "postType": "Type de publication",
+      "fieldTitle": "Titre",
+      "titlePlaceholder": "À quoi pensez-vous ?",
+      "content": "Contenu",
+      "contentPlaceholder": "Partagez vos réflexions...",
+      "contentPlaceholderQuestion": "Décrivez votre question en détail...",
+      "contentPlaceholderIdea": "Partagez votre idée et expliquez son impact potentiel...",
+      "tags": "Tags",
+      "tagsHint": "(séparés par des virgules, facultatif)",
+      "tagsPlaceholder": "ex. ingénierie, culture, processus",
+      "error": "Échec de la création de la publication. Veuillez réessayer.",
+      "cancel": "Annuler",
+      "publishing": "Publication...",
+      "publish": "Publier"
     }
   }
 }

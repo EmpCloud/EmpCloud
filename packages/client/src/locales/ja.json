@@ -1909,6 +1909,26 @@
         "idea": "アイデア",
         "poll": "投票"
       }
+    },
+    "create": {
+      "title": "新規投稿を作成",
+      "category": "カテゴリ",
+      "selectCategory": "カテゴリを選択...",
+      "noCategories": "カテゴリがありません — フォーラムダッシュボードで作成してください",
+      "postType": "投稿タイプ",
+      "fieldTitle": "タイトル",
+      "titlePlaceholder": "いま何を考えていますか？",
+      "content": "内容",
+      "contentPlaceholder": "考えを共有しましょう...",
+      "contentPlaceholderQuestion": "質問を詳しく説明してください...",
+      "contentPlaceholderIdea": "アイデアを共有し、その潜在的な影響を説明してください...",
+      "tags": "タグ",
+      "tagsHint": "（カンマ区切り、任意）",
+      "tagsPlaceholder": "例: エンジニアリング、文化、プロセス",
+      "error": "投稿の作成に失敗しました。もう一度お試しください。",
+      "cancel": "キャンセル",
+      "publishing": "公開中...",
+      "publish": "投稿を公開"
     }
   }
 }

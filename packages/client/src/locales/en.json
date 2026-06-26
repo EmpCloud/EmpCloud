@@ -1914,6 +1914,26 @@
         "idea": "Idea",
         "poll": "Poll"
       }
+    },
+    "create": {
+      "title": "Create New Post",
+      "category": "Category",
+      "selectCategory": "Select category...",
+      "noCategories": "No categories — create them in Forum Dashboard",
+      "postType": "Post Type",
+      "fieldTitle": "Title",
+      "titlePlaceholder": "What's on your mind?",
+      "content": "Content",
+      "contentPlaceholder": "Share your thoughts...",
+      "contentPlaceholderQuestion": "Describe your question in detail...",
+      "contentPlaceholderIdea": "Share your idea and explain its potential impact...",
+      "tags": "Tags",
+      "tagsHint": "(comma-separated, optional)",
+      "tagsPlaceholder": "e.g. engineering, culture, process",
+      "error": "Failed to create post. Please try again.",
+      "cancel": "Cancel",
+      "publishing": "Publishing...",
+      "publish": "Publish Post"
     }
   }
 }

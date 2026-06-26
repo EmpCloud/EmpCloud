@@ -1909,6 +1909,26 @@
         "idea": "فكرة",
         "poll": "استطلاع"
       }
+    },
+    "create": {
+      "title": "إنشاء منشور جديد",
+      "category": "الفئة",
+      "selectCategory": "اختر الفئة...",
+      "noCategories": "لا توجد فئات — أنشئها في لوحة تحكم المنتدى",
+      "postType": "نوع المنشور",
+      "fieldTitle": "العنوان",
+      "titlePlaceholder": "بمَ تفكّر؟",
+      "content": "المحتوى",
+      "contentPlaceholder": "شارك أفكارك...",
+      "contentPlaceholderQuestion": "صف سؤالك بالتفصيل...",
+      "contentPlaceholderIdea": "شارك فكرتك واشرح تأثيرها المحتمل...",
+      "tags": "الوسوم",
+      "tagsHint": "(مفصولة بفواصل، اختياري)",
+      "tagsPlaceholder": "مثال: هندسة، ثقافة، عملية",
+      "error": "فشل إنشاء المنشور. يرجى المحاولة مرة أخرى.",
+      "cancel": "إلغاء",
+      "publishing": "جارٍ النشر...",
+      "publish": "نشر المنشور"
     }
   }
 }

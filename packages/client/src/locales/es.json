@@ -1909,6 +1909,26 @@
         "idea": "Idea",
         "poll": "Encuesta"
       }
+    },
+    "create": {
+      "title": "Crear Nueva Publicación",
+      "category": "Categoría",
+      "selectCategory": "Seleccionar categoría...",
+      "noCategories": "Sin categorías — créalas en el Panel del Foro",
+      "postType": "Tipo de Publicación",
+      "fieldTitle": "Título",
+      "titlePlaceholder": "¿Qué estás pensando?",
+      "content": "Contenido",
+      "contentPlaceholder": "Comparte tus ideas...",
+      "contentPlaceholderQuestion": "Describe tu pregunta en detalle...",
+      "contentPlaceholderIdea": "Comparte tu idea y explica su posible impacto...",
+      "tags": "Etiquetas",
+      "tagsHint": "(separadas por comas, opcional)",
+      "tagsPlaceholder": "p. ej. ingeniería, cultura, proceso",
+      "error": "No se pudo crear la publicación. Inténtalo de nuevo.",
+      "cancel": "Cancelar",
+      "publishing": "Publicando...",
+      "publish": "Publicar"
     }
   }
 }

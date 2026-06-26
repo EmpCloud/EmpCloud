@@ -1909,6 +1909,26 @@
         "idea": "想法",
         "poll": "投票"
       }
+    },
+    "create": {
+      "title": "创建新帖子",
+      "category": "分类",
+      "selectCategory": "选择分类...",
+      "noCategories": "没有分类 — 请在论坛仪表板中创建",
+      "postType": "帖子类型",
+      "fieldTitle": "标题",
+      "titlePlaceholder": "你在想什么？",
+      "content": "内容",
+      "contentPlaceholder": "分享你的想法...",
+      "contentPlaceholderQuestion": "详细描述你的问题...",
+      "contentPlaceholderIdea": "分享你的想法并说明其潜在影响...",
+      "tags": "标签",
+      "tagsHint": "（逗号分隔，可选）",
+      "tagsPlaceholder": "例如 工程、文化、流程",
+      "error": "创建帖子失败。请重试。",
+      "cancel": "取消",
+      "publishing": "发布中...",
+      "publish": "发布帖子"
     }
   }
 }

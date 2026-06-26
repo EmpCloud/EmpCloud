@@ -1909,6 +1909,26 @@
         "idea": "Idee",
         "poll": "Umfrage"
       }
+    },
+    "create": {
+      "title": "Neuen Beitrag erstellen",
+      "category": "Kategorie",
+      "selectCategory": "Kategorie auswählen...",
+      "noCategories": "Keine Kategorien — erstellen Sie sie im Forum-Dashboard",
+      "postType": "Beitragstyp",
+      "fieldTitle": "Titel",
+      "titlePlaceholder": "Was beschäftigt Sie?",
+      "content": "Inhalt",
+      "contentPlaceholder": "Teilen Sie Ihre Gedanken...",
+      "contentPlaceholderQuestion": "Beschreiben Sie Ihre Frage im Detail...",
+      "contentPlaceholderIdea": "Teilen Sie Ihre Idee und erläutern Sie ihre möglichen Auswirkungen...",
+      "tags": "Tags",
+      "tagsHint": "(durch Komma getrennt, optional)",
+      "tagsPlaceholder": "z. B. Technik, Kultur, Prozess",
+      "error": "Beitrag konnte nicht erstellt werden. Bitte erneut versuchen.",
+      "cancel": "Abbrechen",
+      "publishing": "Wird veröffentlicht...",
+      "publish": "Beitrag veröffentlichen"
     }
   }
 }
