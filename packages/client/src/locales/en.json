@@ -1815,5 +1815,35 @@
       "mismatch": "Passwords do not match.",
       "updateFailed": "Could not update password."
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "Back to dashboard",
+      "title": "Company Feed",
+      "admin": "Admin",
+      "subtitleHr": "Browse, post and moderate the company-wide conversation.",
+      "subtitleEmployee": "Share updates, ask questions, celebrate wins.",
+      "refresh": "Refresh feed",
+      "searchPlaceholder": "Search posts by keyword...",
+      "clearSearch": "Clear search",
+      "allPosts": "All posts",
+      "myPosts": "My posts",
+      "results_one": "{{count}} result",
+      "results_other": "{{count}} results",
+      "composerPlaceholder": "What's on your mind?",
+      "loadingMore": "Loading more...",
+      "statTotalPosts": "Total posts",
+      "statComments": "Comments",
+      "statActive7d": "Active 7d",
+      "statContributors": "Contributors",
+      "topContributors": "Top contributors",
+      "last30d": "last 30d",
+      "trendingWeek": "Trending this week",
+      "emptySearch": "No posts match that search.",
+      "emptyMine": "You haven't posted yet.",
+      "emptyAll": "Nothing here yet — be the first to post.",
+      "emptySearchHint": "Try a different keyword.",
+      "emptyHint": "Use the box above to share something."
+    }
   }
 }

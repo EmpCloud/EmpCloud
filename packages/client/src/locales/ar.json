@@ -1810,5 +1810,35 @@
       "mismatch": "كلمتا المرور غير متطابقتين.",
       "updateFailed": "تعذر تحديث كلمة المرور."
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "title": "موجز الشركة",
+      "admin": "مسؤول",
+      "subtitleHr": "تصفّح ونشر وأشرف على محادثة الشركة بأكملها.",
+      "subtitleEmployee": "شارك التحديثات، اطرح الأسئلة، احتفِ بالإنجازات.",
+      "refresh": "تحديث الموجز",
+      "searchPlaceholder": "البحث في المنشورات بكلمة مفتاحية...",
+      "clearSearch": "مسح البحث",
+      "allPosts": "كل المنشورات",
+      "myPosts": "منشوراتي",
+      "results_one": "{{count}} نتيجة",
+      "results_other": "{{count}} نتائج",
+      "composerPlaceholder": "بمَ تفكّر؟",
+      "loadingMore": "جارٍ تحميل المزيد...",
+      "statTotalPosts": "إجمالي المنشورات",
+      "statComments": "التعليقات",
+      "statActive7d": "نشط 7 أيام",
+      "statContributors": "المساهمون",
+      "topContributors": "أبرز المساهمين",
+      "last30d": "آخر 30 يومًا",
+      "trendingWeek": "الرائج هذا الأسبوع",
+      "emptySearch": "لا توجد منشورات تطابق هذا البحث.",
+      "emptyMine": "لم تنشر شيئًا بعد.",
+      "emptyAll": "لا شيء هنا بعد — كن أول من ينشر.",
+      "emptySearchHint": "جرّب كلمة مفتاحية أخرى.",
+      "emptyHint": "استخدم المربع أعلاه لمشاركة شيء ما."
+    }
   }
 }

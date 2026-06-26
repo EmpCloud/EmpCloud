@@ -1810,5 +1810,35 @@
       "mismatch": "Die Passwörter stimmen nicht überein.",
       "updateFailed": "Passwort konnte nicht aktualisiert werden."
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "Zurück zum Dashboard",
+      "title": "Unternehmens-Feed",
+      "admin": "Admin",
+      "subtitleHr": "Durchsuchen, posten und moderieren Sie die unternehmensweite Unterhaltung.",
+      "subtitleEmployee": "Teilen Sie Neuigkeiten, stellen Sie Fragen, feiern Sie Erfolge.",
+      "refresh": "Feed aktualisieren",
+      "searchPlaceholder": "Beiträge nach Stichwort suchen...",
+      "clearSearch": "Suche löschen",
+      "allPosts": "Alle Beiträge",
+      "myPosts": "Meine Beiträge",
+      "results_one": "{{count}} Ergebnis",
+      "results_other": "{{count}} Ergebnisse",
+      "composerPlaceholder": "Was beschäftigt Sie?",
+      "loadingMore": "Mehr wird geladen...",
+      "statTotalPosts": "Beiträge gesamt",
+      "statComments": "Kommentare",
+      "statActive7d": "Aktiv 7T",
+      "statContributors": "Beitragende",
+      "topContributors": "Top-Beitragende",
+      "last30d": "letzte 30T",
+      "trendingWeek": "Diese Woche im Trend",
+      "emptySearch": "Keine Beiträge entsprechen dieser Suche.",
+      "emptyMine": "Sie haben noch nichts gepostet.",
+      "emptyAll": "Noch nichts hier — seien Sie der Erste, der postet.",
+      "emptySearchHint": "Versuchen Sie ein anderes Stichwort.",
+      "emptyHint": "Nutzen Sie das Feld oben, um etwas zu teilen."
+    }
   }
 }

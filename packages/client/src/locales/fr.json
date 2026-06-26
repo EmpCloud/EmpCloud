@@ -1810,5 +1810,35 @@
       "mismatch": "Les mots de passe ne correspondent pas.",
       "updateFailed": "Impossible de mettre à jour le mot de passe."
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "Retour au tableau de bord",
+      "title": "Fil de l'entreprise",
+      "admin": "Admin",
+      "subtitleHr": "Parcourez, publiez et modérez la conversation à l'échelle de l'entreprise.",
+      "subtitleEmployee": "Partagez des actualités, posez des questions, célébrez les réussites.",
+      "refresh": "Actualiser le fil",
+      "searchPlaceholder": "Rechercher des publications par mot-clé...",
+      "clearSearch": "Effacer la recherche",
+      "allPosts": "Toutes les publications",
+      "myPosts": "Mes publications",
+      "results_one": "{{count}} résultat",
+      "results_other": "{{count}} résultats",
+      "composerPlaceholder": "À quoi pensez-vous ?",
+      "loadingMore": "Chargement...",
+      "statTotalPosts": "Total des publications",
+      "statComments": "Commentaires",
+      "statActive7d": "Actifs 7j",
+      "statContributors": "Contributeurs",
+      "topContributors": "Meilleurs contributeurs",
+      "last30d": "30 derniers j",
+      "trendingWeek": "Tendances cette semaine",
+      "emptySearch": "Aucune publication ne correspond à cette recherche.",
+      "emptyMine": "Vous n'avez encore rien publié.",
+      "emptyAll": "Rien ici pour l'instant — soyez le premier à publier.",
+      "emptySearchHint": "Essayez un autre mot-clé.",
+      "emptyHint": "Utilisez la zone ci-dessus pour partager quelque chose."
+    }
   }
 }

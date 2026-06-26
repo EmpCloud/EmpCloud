@@ -1810,5 +1810,35 @@
       "mismatch": "पासवर्ड मेल नहीं खाते।",
       "updateFailed": "पासवर्ड अपडेट नहीं किया जा सका।"
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "डैशबोर्ड पर वापस",
+      "title": "कंपनी फ़ीड",
+      "admin": "एडमिन",
+      "subtitleHr": "कंपनी-व्यापी बातचीत को ब्राउज़ करें, पोस्ट करें और मॉडरेट करें।",
+      "subtitleEmployee": "अपडेट साझा करें, प्रश्न पूछें, सफलताओं का जश्न मनाएं।",
+      "refresh": "फ़ीड रिफ्रेश करें",
+      "searchPlaceholder": "कीवर्ड से पोस्ट खोजें...",
+      "clearSearch": "खोज साफ़ करें",
+      "allPosts": "सभी पोस्ट",
+      "myPosts": "मेरी पोस्ट",
+      "results_one": "{{count}} परिणाम",
+      "results_other": "{{count}} परिणाम",
+      "composerPlaceholder": "आप क्या सोच रहे हैं?",
+      "loadingMore": "और लोड हो रहा है...",
+      "statTotalPosts": "कुल पोस्ट",
+      "statComments": "टिप्पणियां",
+      "statActive7d": "सक्रिय 7द",
+      "statContributors": "योगदानकर्ता",
+      "topContributors": "शीर्ष योगदानकर्ता",
+      "last30d": "पिछले 30द",
+      "trendingWeek": "इस सप्ताह ट्रेंडिंग",
+      "emptySearch": "उस खोज से कोई पोस्ट मेल नहीं खाती।",
+      "emptyMine": "आपने अभी तक पोस्ट नहीं किया है।",
+      "emptyAll": "यहां अभी कुछ नहीं — पोस्ट करने वाले पहले बनें।",
+      "emptySearchHint": "कोई अन्य कीवर्ड आज़माएं।",
+      "emptyHint": "कुछ साझा करने के लिए ऊपर दिए गए बॉक्स का उपयोग करें।"
+    }
   }
 }

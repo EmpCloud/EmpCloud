@@ -1810,5 +1810,35 @@
       "mismatch": "密码不匹配。",
       "updateFailed": "无法更新密码。"
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "返回仪表板",
+      "title": "公司动态",
+      "admin": "管理员",
+      "subtitleHr": "浏览、发布和管理全公司的对话。",
+      "subtitleEmployee": "分享动态、提出问题、庆祝成就。",
+      "refresh": "刷新动态",
+      "searchPlaceholder": "按关键词搜索帖子...",
+      "clearSearch": "清除搜索",
+      "allPosts": "全部帖子",
+      "myPosts": "我的帖子",
+      "results_one": "{{count}} 条结果",
+      "results_other": "{{count}} 条结果",
+      "composerPlaceholder": "你在想什么？",
+      "loadingMore": "加载更多...",
+      "statTotalPosts": "帖子总数",
+      "statComments": "评论",
+      "statActive7d": "活跃 7 天",
+      "statContributors": "贡献者",
+      "topContributors": "主要贡献者",
+      "last30d": "最近 30 天",
+      "trendingWeek": "本周热门",
+      "emptySearch": "没有帖子符合该搜索。",
+      "emptyMine": "您还没有发布过。",
+      "emptyAll": "这里还空空如也 — 来发第一条吧。",
+      "emptySearchHint": "尝试其他关键词。",
+      "emptyHint": "使用上方的输入框分享内容。"
+    }
   }
 }

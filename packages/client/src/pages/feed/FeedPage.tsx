@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -28,6 +29,7 @@ type FeedFilter = "all" | "mine";
 // Full feed — one column for employees, three (feed + stats sidebar) for HR.
 // Composer at the top so users land on /feed → post → read without a modal.
 export default function FeedPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -101,25 +103,23 @@ export default function FeedPage() {
             <button
               type="button"
               onClick={() => navigate(homePath)}
-              aria-label="Back to dashboard"
-              title="Back to dashboard"
+              aria-label={t("feed.page.backToDashboard")}
+              title={t("feed.page.backToDashboard")}
               className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/70 text-gray-600 backdrop-blur hover:bg-white hover:text-gray-900 transition-all"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-gray-900">Company Feed</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{t("feed.page.title")}</h1>
                 {isHR && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-[11px] font-medium text-brand-700">
-                    <Sparkles className="h-3 w-3" /> Admin
+                    <Sparkles className="h-3 w-3" /> {t("feed.page.admin")}
                   </span>
                 )}
               </div>
               <p className="text-gray-600 mt-1 text-sm">
-                {isHR
-                  ? "Browse, post and moderate the company-wide conversation."
-                  : "Share updates, ask questions, celebrate wins."}
+                {isHR ? t("feed.page.subtitleHr") : t("feed.page.subtitleEmployee")}
               </p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function FeedPage() {
             <button
               type="button"
               onClick={refresh}
-              aria-label="Refresh feed"
+              aria-label={t("feed.page.refresh")}
               disabled={isFetching}
               className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/70 text-gray-600 backdrop-blur hover:bg-white hover:text-brand-700 disabled:opacity-50 transition-all"
             >
@@ -158,14 +158,14 @@ export default function FeedPage() {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search posts by keyword..."
+                placeholder={t("feed.page.searchPlaceholder")}
                 className="w-full rounded-full border border-gray-200 bg-gray-50 pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white focus:border-transparent transition-all"
               />
               {(searchInput || search) && (
                 <button
                   type="button"
                   onClick={() => { setSearchInput(""); setSearch(undefined); }}
-                  aria-label="Clear search"
+                  aria-label={t("feed.page.clearSearch")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
                 >
                   <X className="h-4 w-4" />
@@ -175,10 +175,10 @@ export default function FeedPage() {
 
             <div className="flex items-center gap-2">
               <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>
-                All posts
+                {t("feed.page.allPosts")}
               </FilterChip>
               <FilterChip active={filter === "mine"} onClick={() => setFilter("mine")}>
-                My posts
+                {t("feed.page.myPosts")}
               </FilterChip>
               {/* #1560 — Inline spinner during a tab-triggered refetch so the
                   user sees an immediate signal that their click did
@@ -190,14 +190,14 @@ export default function FeedPage() {
               )}
               {(search || filter !== "all") && !isFetching && (
                 <span className="ml-auto text-xs text-gray-400">
-                  {posts.length} result{posts.length === 1 ? "" : "s"}
+                  {t("feed.page.results", { count: posts.length })}
                 </span>
               )}
             </div>
           </div>
 
           {/* Composer */}
-          <PostComposer placeholder="What's on your mind?" />
+          <PostComposer placeholder={t("feed.page.composerPlaceholder")} />
 
           {/* Posts */}
           {isLoading ? (
@@ -216,7 +216,7 @@ export default function FeedPage() {
 
           {isFetchingNextPage && (
             <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
-              <Loader2 className="h-3 w-3 animate-spin" /> Loading more...
+              <Loader2 className="h-3 w-3 animate-spin" /> {t("feed.page.loadingMore")}
             </div>
           )}
         </div>
@@ -235,25 +235,25 @@ export default function FeedPage() {
               <div className="grid grid-cols-2 gap-3">
                 <StatCard
                   icon={<MessagesSquare className="h-4 w-4" />}
-                  label="Total posts"
+                  label={t("feed.page.statTotalPosts")}
                   value={stats.total_posts ?? 0}
                   tone="blue"
                 />
                 <StatCard
                   icon={<MessageCircle className="h-4 w-4" />}
-                  label="Comments"
+                  label={t("feed.page.statComments")}
                   value={stats.total_replies ?? 0}
                   tone="green"
                 />
                 <StatCard
                   icon={<TrendingUp className="h-4 w-4" />}
-                  label="Active 7d"
+                  label={t("feed.page.statActive7d")}
                   value={stats.active_discussions ?? 0}
                   tone="amber"
                 />
                 <StatCard
                   icon={<Users className="h-4 w-4" />}
-                  label="Contributors"
+                  label={t("feed.page.statContributors")}
                   value={Array.isArray(stats.top_contributors) ? stats.top_contributors.length : 0}
                   tone="purple"
                 />
@@ -270,9 +270,9 @@ export default function FeedPage() {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <Users className="h-4 w-4 text-brand-600" />
-                    Top contributors
+                    {t("feed.page.topContributors")}
                   </h3>
-                  <span className="text-[11px] text-gray-400">last 30d</span>
+                  <span className="text-[11px] text-gray-400">{t("feed.page.last30d")}</span>
                 </div>
                 <ul className="space-y-2">
                   {stats.top_contributors.slice(0, 5).map((u: any, i: number) => (
@@ -309,7 +309,7 @@ export default function FeedPage() {
               <div className="rounded-xl border border-gray-200 bg-white p-4">
                 <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-3">
                   <TrendingUp className="h-4 w-4 text-amber-600" />
-                  Trending this week
+                  {t("feed.page.trendingWeek")}
                 </h3>
                 <ul className="space-y-2.5">
                   {stats.trending_posts.slice(0, 4).map((p: any) => (
@@ -412,6 +412,7 @@ function FeedSkeleton() {
 }
 
 function EmptyState({ search, filter }: { search?: string; filter: FeedFilter }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
       <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-3">
@@ -419,13 +420,13 @@ function EmptyState({ search, filter }: { search?: string; filter: FeedFilter })
       </div>
       <p className="text-sm font-medium text-gray-700">
         {search
-          ? "No posts match that search."
+          ? t("feed.page.emptySearch")
           : filter === "mine"
-            ? "You haven't posted yet."
-            : "Nothing here yet — be the first to post."}
+            ? t("feed.page.emptyMine")
+            : t("feed.page.emptyAll")}
       </p>
       <p className="mt-1 text-xs text-gray-400">
-        {search ? "Try a different keyword." : "Use the box above to share something."}
+        {search ? t("feed.page.emptySearchHint") : t("feed.page.emptyHint")}
       </p>
     </div>
   );

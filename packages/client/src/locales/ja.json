@@ -1810,5 +1810,35 @@
       "mismatch": "パスワードが一致しません。",
       "updateFailed": "パスワードを更新できませんでした。"
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "ダッシュボードに戻る",
+      "title": "会社フィード",
+      "admin": "管理者",
+      "subtitleHr": "全社的な会話を閲覧、投稿、モデレートします。",
+      "subtitleEmployee": "最新情報を共有し、質問し、成果を祝いましょう。",
+      "refresh": "フィードを更新",
+      "searchPlaceholder": "キーワードで投稿を検索...",
+      "clearSearch": "検索をクリア",
+      "allPosts": "すべての投稿",
+      "myPosts": "自分の投稿",
+      "results_one": "{{count}}件の結果",
+      "results_other": "{{count}}件の結果",
+      "composerPlaceholder": "いま何を考えていますか？",
+      "loadingMore": "さらに読み込み中...",
+      "statTotalPosts": "投稿総数",
+      "statComments": "コメント",
+      "statActive7d": "アクティブ7日",
+      "statContributors": "貢献者",
+      "topContributors": "トップ貢献者",
+      "last30d": "過去30日",
+      "trendingWeek": "今週の話題",
+      "emptySearch": "その検索に一致する投稿はありません。",
+      "emptyMine": "まだ投稿していません。",
+      "emptyAll": "まだ何もありません — 最初に投稿しましょう。",
+      "emptySearchHint": "別のキーワードをお試しください。",
+      "emptyHint": "上のボックスを使って何か共有しましょう。"
+    }
   }
 }

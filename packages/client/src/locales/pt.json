@@ -1810,5 +1810,35 @@
       "mismatch": "As senhas não coincidem.",
       "updateFailed": "Não foi possível atualizar a senha."
     }
+  },
+  "feed": {
+    "page": {
+      "backToDashboard": "Voltar ao painel",
+      "title": "Feed da Empresa",
+      "admin": "Admin",
+      "subtitleHr": "Navegue, publique e modere a conversa de toda a empresa.",
+      "subtitleEmployee": "Compartilhe novidades, faça perguntas, celebre conquistas.",
+      "refresh": "Atualizar feed",
+      "searchPlaceholder": "Pesquisar publicações por palavra-chave...",
+      "clearSearch": "Limpar pesquisa",
+      "allPosts": "Todas as publicações",
+      "myPosts": "Minhas publicações",
+      "results_one": "{{count}} resultado",
+      "results_other": "{{count}} resultados",
+      "composerPlaceholder": "O que você está pensando?",
+      "loadingMore": "Carregando mais...",
+      "statTotalPosts": "Total de publicações",
+      "statComments": "Comentários",
+      "statActive7d": "Ativos 7d",
+      "statContributors": "Colaboradores",
+      "topContributors": "Principais colaboradores",
+      "last30d": "últimos 30d",
+      "trendingWeek": "Em alta esta semana",
+      "emptySearch": "Nenhuma publicação corresponde à pesquisa.",
+      "emptyMine": "Você ainda não publicou nada.",
+      "emptyAll": "Nada por aqui ainda — seja o primeiro a publicar.",
+      "emptySearchHint": "Tente outra palavra-chave.",
+      "emptyHint": "Use a caixa acima para compartilhar algo."
+    }
   }
 }
