@@ -2046,6 +2046,7 @@
     "clearSearch": "Suche löschen",
     "downloadPng": "Als PNG herunterladen",
     "downloadPdf": "Als PDF herunterladen (A3 Querformat)",
-    "loading": "Organigramm wird geladen..."
+    "loading": "Organigramm wird geladen...",
+    "empty": "Keine Mitarbeiter gefunden. Fügen Sie Mitarbeiter hinzu, um das Organigramm zu sehen."
   }
 }

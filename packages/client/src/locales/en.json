@@ -2051,6 +2051,7 @@
     "clearSearch": "Clear search",
     "downloadPng": "Download as PNG",
     "downloadPdf": "Download as PDF (A3 landscape)",
-    "loading": "Loading org chart..."
+    "loading": "Loading org chart...",
+    "empty": "No employees found. Add employees to see the org chart."
   }
 }

@@ -2046,6 +2046,7 @@
     "clearSearch": "Effacer la recherche",
     "downloadPng": "Télécharger en PNG",
     "downloadPdf": "Télécharger en PDF (A3 paysage)",
-    "loading": "Chargement de l'organigramme..."
+    "loading": "Chargement de l'organigramme...",
+    "empty": "Aucun employé trouvé. Ajoutez des employés pour voir l'organigramme."
   }
 }

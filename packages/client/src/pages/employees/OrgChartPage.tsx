@@ -761,7 +761,7 @@ export default function OrgChartPage() {
         </div>
       ) : nodes.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-gray-400">
-          No employees found. Add employees to see the org chart.
+          {t("orgChart.empty")}
         </div>
       ) : (
         <>
