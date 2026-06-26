@@ -48,6 +48,21 @@
         "high": "High",
         "critical": "Critical"
       }
+    },
+    "track": {
+      "title": "Track Your Report",
+      "subtitle": "Enter your case number to check the status of your whistleblowing report",
+      "caseNumber": "Case Number",
+      "placeholder": "e.g. WB-2026-0001",
+      "lookup": "Lookup",
+      "lookingUp": "Looking up report...",
+      "notFound": "Report Not Found",
+      "notFoundDetail": "No report found with case number \"{{caseNumber}}\". Please double-check and try again.",
+      "category": "Category",
+      "subject": "Subject",
+      "submitted": "Submitted",
+      "resolved": "Resolved",
+      "updates": "Updates"
     }
   },
   "events": {

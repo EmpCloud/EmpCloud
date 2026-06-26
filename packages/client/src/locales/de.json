@@ -48,6 +48,21 @@
         "high": "Hoch",
         "critical": "Kritisch"
       }
+    },
+    "track": {
+      "title": "Meldung verfolgen",
+      "subtitle": "Geben Sie Ihre Fallnummer ein, um den Status Ihrer Meldung zu prüfen",
+      "caseNumber": "Fallnummer",
+      "placeholder": "z. B. WB-2026-0001",
+      "lookup": "Suchen",
+      "lookingUp": "Meldung wird gesucht...",
+      "notFound": "Meldung nicht gefunden",
+      "notFoundDetail": "Keine Meldung mit der Fallnummer \"{{caseNumber}}\" gefunden. Bitte überprüfen Sie die Nummer und versuchen Sie es erneut.",
+      "category": "Kategorie",
+      "subject": "Betreff",
+      "submitted": "Eingereicht",
+      "resolved": "Gelöst",
+      "updates": "Aktualisierungen"
     }
   },
   "events": {

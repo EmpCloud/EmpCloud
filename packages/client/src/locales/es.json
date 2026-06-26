@@ -48,6 +48,21 @@
         "high": "Alta",
         "critical": "Crítica"
       }
+    },
+    "track": {
+      "title": "Rastrear su Denuncia",
+      "subtitle": "Ingrese su número de caso para comprobar el estado de su denuncia",
+      "caseNumber": "Número de Caso",
+      "placeholder": "p. ej. WB-2026-0001",
+      "lookup": "Consultar",
+      "lookingUp": "Buscando denuncia...",
+      "notFound": "Denuncia no encontrada",
+      "notFoundDetail": "No se encontró ninguna denuncia con el número de caso \"{{caseNumber}}\". Verifique e inténtelo de nuevo.",
+      "category": "Categoría",
+      "subject": "Asunto",
+      "submitted": "Enviada",
+      "resolved": "Resuelta",
+      "updates": "Actualizaciones"
     }
   },
   "events": {

@@ -48,6 +48,21 @@
         "high": "Élevée",
         "critical": "Critique"
       }
+    },
+    "track": {
+      "title": "Suivre votre signalement",
+      "subtitle": "Saisissez votre numéro de dossier pour vérifier l'état de votre signalement",
+      "caseNumber": "Numéro de dossier",
+      "placeholder": "ex. WB-2026-0001",
+      "lookup": "Rechercher",
+      "lookingUp": "Recherche du signalement...",
+      "notFound": "Signalement introuvable",
+      "notFoundDetail": "Aucun signalement trouvé avec le numéro de dossier \"{{caseNumber}}\". Veuillez vérifier et réessayer.",
+      "category": "Catégorie",
+      "subject": "Sujet",
+      "submitted": "Envoyé",
+      "resolved": "Résolu",
+      "updates": "Mises à jour"
     }
   },
   "events": {

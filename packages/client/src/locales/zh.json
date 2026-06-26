@@ -48,6 +48,21 @@
         "high": "高",
         "critical": "严重"
       }
+    },
+    "track": {
+      "title": "追踪您的举报",
+      "subtitle": "输入您的案件编号以查看举报状态",
+      "caseNumber": "案件编号",
+      "placeholder": "例如 WB-2026-0001",
+      "lookup": "查询",
+      "lookingUp": "正在查询举报...",
+      "notFound": "未找到举报",
+      "notFoundDetail": "未找到案件编号为“{{caseNumber}}”的举报。请核对后重试。",
+      "category": "类别",
+      "subject": "主题",
+      "submitted": "已提交",
+      "resolved": "已解决",
+      "updates": "更新"
     }
   },
   "events": {

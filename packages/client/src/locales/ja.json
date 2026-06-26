@@ -48,6 +48,21 @@
         "high": "高",
         "critical": "重大"
       }
+    },
+    "track": {
+      "title": "報告を追跡",
+      "subtitle": "内部通報の状況を確認するにはケース番号を入力してください",
+      "caseNumber": "ケース番号",
+      "placeholder": "例: WB-2026-0001",
+      "lookup": "検索",
+      "lookingUp": "報告を検索中...",
+      "notFound": "報告が見つかりません",
+      "notFoundDetail": "ケース番号「{{caseNumber}}」の報告が見つかりませんでした。番号を確認して再度お試しください。",
+      "category": "カテゴリ",
+      "subject": "件名",
+      "submitted": "提出済み",
+      "resolved": "解決済み",
+      "updates": "更新"
     }
   },
   "events": {
