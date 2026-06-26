@@ -2039,6 +2039,7 @@
     }
   },
   "orgChart": {
-    "title": "Organization Chart"
+    "title": "Organization Chart",
+    "subtitle": "Visualize reporting structure across your organization."
   }
 }

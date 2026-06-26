@@ -620,7 +620,7 @@ export default function OrgChartPage() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{t("orgChart.title")}</h1>
               <p className="mt-0.5 text-sm text-gray-500">
-                Visualize reporting structure across your organization.
+                {t("orgChart.subtitle")}
               </p>
             </div>
           </div>
