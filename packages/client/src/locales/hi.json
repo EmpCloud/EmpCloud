@@ -2039,6 +2039,8 @@
     "people": "लोग",
     "viewAllPeople": "सभी लोग देखें",
     "managers": "प्रबंधक",
-    "viewAllManagers": "सभी प्रबंधक देखें"
+    "viewAllManagers": "सभी प्रबंधक देखें",
+    "departments": "विभाग",
+    "viewAllDepartments": "सभी विभाग देखें"
   }
 }

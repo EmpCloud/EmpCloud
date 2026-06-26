@@ -2044,6 +2044,8 @@
     "people": "People",
     "viewAllPeople": "View all people",
     "managers": "Managers",
-    "viewAllManagers": "View all managers"
+    "viewAllManagers": "View all managers",
+    "departments": "Departments",
+    "viewAllDepartments": "View all departments"
   }
 }

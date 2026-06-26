@@ -2039,6 +2039,8 @@
     "people": "人数",
     "viewAllPeople": "全員を表示",
     "managers": "マネージャー",
-    "viewAllManagers": "全マネージャーを表示"
+    "viewAllManagers": "全マネージャーを表示",
+    "departments": "部署",
+    "viewAllDepartments": "全部署を表示"
   }
 }

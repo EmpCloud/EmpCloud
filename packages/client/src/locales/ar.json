@@ -2039,6 +2039,8 @@
     "people": "الأشخاص",
     "viewAllPeople": "عرض جميع الأشخاص",
     "managers": "المديرون",
-    "viewAllManagers": "عرض جميع المديرين"
+    "viewAllManagers": "عرض جميع المديرين",
+    "departments": "الأقسام",
+    "viewAllDepartments": "عرض جميع الأقسام"
   }
 }

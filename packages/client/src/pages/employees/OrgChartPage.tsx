@@ -656,11 +656,11 @@ export default function OrgChartPage() {
                 type="button"
                 onClick={() => setStatModal("departments")}
                 className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
-                title="View all departments"
+                title={t("orgChart.viewAllDepartments")}
               >
                 <Building2 className="h-4 w-4 text-amber-500" />
                 <div className="text-left">
-                  <p className="text-xs text-gray-500">Departments</p>
+                  <p className="text-xs text-gray-500">{t("orgChart.departments")}</p>
                   <p className="text-sm font-semibold text-gray-900">{stats.departments}</p>
                 </div>
               </button>

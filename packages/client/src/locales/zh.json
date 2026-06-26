@@ -2039,6 +2039,8 @@
     "people": "人员",
     "viewAllPeople": "查看所有人员",
     "managers": "经理",
-    "viewAllManagers": "查看所有经理"
+    "viewAllManagers": "查看所有经理",
+    "departments": "部门",
+    "viewAllDepartments": "查看所有部门"
   }
 }

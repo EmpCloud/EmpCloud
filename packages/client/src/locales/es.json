@@ -2039,6 +2039,8 @@
     "people": "Personas",
     "viewAllPeople": "Ver todas las personas",
     "managers": "Gerentes",
-    "viewAllManagers": "Ver todos los gerentes"
+    "viewAllManagers": "Ver todos los gerentes",
+    "departments": "Departamentos",
+    "viewAllDepartments": "Ver todos los departamentos"
   }
 }
