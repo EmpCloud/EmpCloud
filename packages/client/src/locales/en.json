@@ -1604,7 +1604,8 @@
       }
     },
     "title": "Helpdesk",
-    "myTickets": {
+    "myTickets": "My Tickets",
+    "myTicketsPage": {
       "title": "My Tickets",
       "subtitle": "Track your helpdesk tickets and raise new requests.",
       "raiseTicket": "Raise a Ticket",

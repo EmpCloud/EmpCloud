@@ -1601,7 +1601,8 @@
       }
     },
     "title": "帮助中心",
-    "myTickets": {
+    "myTickets": "我的工单",
+    "myTicketsPage": {
       "title": "我的工单",
       "subtitle": "跟踪您的服务台工单并提交新请求。",
       "raiseTicket": "创建工单",
