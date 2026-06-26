@@ -2041,6 +2041,8 @@
     "managers": "Manager",
     "viewAllManagers": "Alle Manager anzeigen",
     "departments": "Abteilungen",
-    "viewAllDepartments": "Alle Abteilungen anzeigen"
+    "viewAllDepartments": "Alle Abteilungen anzeigen",
+    "searchPlaceholder": "Nach Name, Funktion oder Abteilung suchen...",
+    "clearSearch": "Suche löschen"
   }
 }

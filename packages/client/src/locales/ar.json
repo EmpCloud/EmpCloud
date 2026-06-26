@@ -2041,6 +2041,8 @@
     "managers": "المديرون",
     "viewAllManagers": "عرض جميع المديرين",
     "departments": "الأقسام",
-    "viewAllDepartments": "عرض جميع الأقسام"
+    "viewAllDepartments": "عرض جميع الأقسام",
+    "searchPlaceholder": "البحث بالاسم أو المسمى أو القسم...",
+    "clearSearch": "مسح البحث"
   }
 }

@@ -2041,6 +2041,8 @@
     "managers": "Responsables",
     "viewAllManagers": "Voir tous les responsables",
     "departments": "Services",
-    "viewAllDepartments": "Voir tous les services"
+    "viewAllDepartments": "Voir tous les services",
+    "searchPlaceholder": "Rechercher par nom, fonction ou service...",
+    "clearSearch": "Effacer la recherche"
   }
 }

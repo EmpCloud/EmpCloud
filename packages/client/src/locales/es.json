@@ -2041,6 +2041,8 @@
     "managers": "Gerentes",
     "viewAllManagers": "Ver todos los gerentes",
     "departments": "Departamentos",
-    "viewAllDepartments": "Ver todos los departamentos"
+    "viewAllDepartments": "Ver todos los departamentos",
+    "searchPlaceholder": "Buscar por nombre, cargo o departamento...",
+    "clearSearch": "Borrar búsqueda"
   }
 }

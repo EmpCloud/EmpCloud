@@ -2046,6 +2046,8 @@
     "managers": "Managers",
     "viewAllManagers": "View all managers",
     "departments": "Departments",
-    "viewAllDepartments": "View all departments"
+    "viewAllDepartments": "View all departments",
+    "searchPlaceholder": "Search by name, designation, or department...",
+    "clearSearch": "Clear search"
   }
 }

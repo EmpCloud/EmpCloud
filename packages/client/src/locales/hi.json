@@ -2041,6 +2041,8 @@
     "managers": "प्रबंधक",
     "viewAllManagers": "सभी प्रबंधक देखें",
     "departments": "विभाग",
-    "viewAllDepartments": "सभी विभाग देखें"
+    "viewAllDepartments": "सभी विभाग देखें",
+    "searchPlaceholder": "नाम, पदनाम या विभाग से खोजें...",
+    "clearSearch": "खोज साफ़ करें"
   }
 }

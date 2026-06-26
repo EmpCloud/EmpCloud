@@ -2041,6 +2041,8 @@
     "managers": "マネージャー",
     "viewAllManagers": "全マネージャーを表示",
     "departments": "部署",
-    "viewAllDepartments": "全部署を表示"
+    "viewAllDepartments": "全部署を表示",
+    "searchPlaceholder": "氏名、役職、または部署で検索...",
+    "clearSearch": "検索をクリア"
   }
 }
