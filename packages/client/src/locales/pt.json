@@ -348,7 +348,9 @@
     "community": "Comunidade",
     "feed": "Feed",
     "moduleAccess": "Acesso aos módulos",
-    "wellnessCheckIn": "Check-in diário"
+    "wellnessCheckIn": "Check-in diário",
+    "messages": "Mensagens",
+    "changePassword": "Alterar Senha"
   },
   "common": {
     "save": "Salvar",
@@ -1505,6 +1507,31 @@
       "deleteSelfTooltip": "Você não pode excluir sua própria conta",
       "deleteTooltip": "Excluir funcionário",
       "deleteAria": "Excluir {{name}}"
+    }
+  },
+  "accountSecurity": {
+    "title": "Segurança da Conta",
+    "subtitle": "Atualize a senha que você usa para entrar no EmpCloud.",
+    "changePassword": "Alterar Senha",
+    "hint": "Use uma senha que você não reutilize em nenhum outro lugar. Deve ter mais de 8 caracteres com maiúscula, minúscula, dígito e um caractere especial.",
+    "currentPassword": "Senha atual",
+    "newPassword": "Nova senha",
+    "confirmPassword": "Confirmar nova senha",
+    "updatePassword": "Atualizar senha",
+    "updating": "Atualizando...",
+    "updated": "Senha atualizada.",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "errors": {
+      "currentRequired": "Digite sua senha atual.",
+      "minLength": "A nova senha deve ter pelo menos {{min}} caracteres.",
+      "upper": "A nova senha deve conter pelo menos uma letra maiúscula.",
+      "lower": "A nova senha deve conter pelo menos uma letra minúscula.",
+      "digit": "A nova senha deve conter pelo menos um dígito.",
+      "special": "A nova senha deve conter pelo menos um caractere especial.",
+      "sameAsCurrent": "A nova senha deve ser diferente da senha atual.",
+      "mismatch": "As senhas não coincidem.",
+      "updateFailed": "Não foi possível atualizar a senha."
     }
   }
 }

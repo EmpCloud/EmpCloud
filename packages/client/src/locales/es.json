@@ -348,7 +348,9 @@
     "community": "Comunidad",
     "feed": "Novedades",
     "moduleAccess": "Acceso a módulos",
-    "wellnessCheckIn": "Check-in diario"
+    "wellnessCheckIn": "Check-in diario",
+    "messages": "Mensajes",
+    "changePassword": "Cambiar Contraseña"
   },
   "common": {
     "save": "Guardar",
@@ -1505,6 +1507,31 @@
       "deleteSelfTooltip": "No puedes eliminar tu propia cuenta",
       "deleteTooltip": "Eliminar empleado",
       "deleteAria": "Eliminar {{name}}"
+    }
+  },
+  "accountSecurity": {
+    "title": "Seguridad de la Cuenta",
+    "subtitle": "Actualiza la contraseña que usas para iniciar sesión en EmpCloud.",
+    "changePassword": "Cambiar Contraseña",
+    "hint": "Usa una contraseña que no reutilices en ningún otro lugar. Debe tener más de 8 caracteres con mayúscula, minúscula, dígito y un carácter especial.",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "updatePassword": "Actualizar contraseña",
+    "updating": "Actualizando...",
+    "updated": "Contraseña actualizada.",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "errors": {
+      "currentRequired": "Introduce tu contraseña actual.",
+      "minLength": "La nueva contraseña debe tener al menos {{min}} caracteres.",
+      "upper": "La nueva contraseña debe contener al menos una letra mayúscula.",
+      "lower": "La nueva contraseña debe contener al menos una letra minúscula.",
+      "digit": "La nueva contraseña debe contener al menos un dígito.",
+      "special": "La nueva contraseña debe contener al menos un carácter especial.",
+      "sameAsCurrent": "La nueva contraseña debe ser diferente de la actual.",
+      "mismatch": "Las contraseñas no coinciden.",
+      "updateFailed": "No se pudo actualizar la contraseña."
     }
   }
 }

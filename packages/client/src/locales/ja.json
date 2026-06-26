@@ -348,7 +348,9 @@
     "community": "コミュニティ",
     "feed": "フィード",
     "moduleAccess": "モジュールアクセス",
-    "wellnessCheckIn": "毎日のチェックイン"
+    "wellnessCheckIn": "毎日のチェックイン",
+    "messages": "メッセージ",
+    "changePassword": "パスワードの変更"
   },
   "common": {
     "save": "保存",
@@ -1505,6 +1507,31 @@
       "deleteSelfTooltip": "自分のアカウントは削除できません",
       "deleteTooltip": "従業員を削除",
       "deleteAria": "{{name}} を削除"
+    }
+  },
+  "accountSecurity": {
+    "title": "アカウントのセキュリティ",
+    "subtitle": "EmpCloud へのサインインに使用するパスワードを更新します。",
+    "changePassword": "パスワードの変更",
+    "hint": "他のどこでも再利用しないパスワードを使用してください。大文字・小文字・数字・特殊文字を含む8文字以上である必要があります。",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmPassword": "新しいパスワードの確認",
+    "updatePassword": "パスワードを更新",
+    "updating": "更新中...",
+    "updated": "パスワードを更新しました。",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを非表示",
+    "errors": {
+      "currentRequired": "現在のパスワードを入力してください。",
+      "minLength": "新しいパスワードは{{min}}文字以上である必要があります。",
+      "upper": "新しいパスワードには大文字を1文字以上含める必要があります。",
+      "lower": "新しいパスワードには小文字を1文字以上含める必要があります。",
+      "digit": "新しいパスワードには数字を1文字以上含める必要があります。",
+      "special": "新しいパスワードには特殊文字を1文字以上含める必要があります。",
+      "sameAsCurrent": "新しいパスワードは現在のパスワードと異なる必要があります。",
+      "mismatch": "パスワードが一致しません。",
+      "updateFailed": "パスワードを更新できませんでした。"
     }
   }
 }

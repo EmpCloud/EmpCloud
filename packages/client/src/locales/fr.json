@@ -348,7 +348,9 @@
     "community": "Communauté",
     "feed": "Fil d'actualité",
     "moduleAccess": "Accès aux modules",
-    "wellnessCheckIn": "Check-in quotidien"
+    "wellnessCheckIn": "Check-in quotidien",
+    "messages": "Messages",
+    "changePassword": "Changer le mot de passe"
   },
   "common": {
     "save": "Enregistrer",
@@ -1505,6 +1507,31 @@
       "deleteSelfTooltip": "Vous ne pouvez pas supprimer votre propre compte",
       "deleteTooltip": "Supprimer l'employé",
       "deleteAria": "Supprimer {{name}}"
+    }
+  },
+  "accountSecurity": {
+    "title": "Sécurité du compte",
+    "subtitle": "Mettez à jour le mot de passe que vous utilisez pour vous connecter à EmpCloud.",
+    "changePassword": "Changer le mot de passe",
+    "hint": "Utilisez un mot de passe que vous ne réutilisez nulle part ailleurs. Doit comporter au moins 8 caractères avec majuscule, minuscule, chiffre et un caractère spécial.",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "updating": "Mise à jour...",
+    "updated": "Mot de passe mis à jour.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "errors": {
+      "currentRequired": "Saisissez votre mot de passe actuel.",
+      "minLength": "Le nouveau mot de passe doit comporter au moins {{min}} caractères.",
+      "upper": "Le nouveau mot de passe doit contenir au moins une lettre majuscule.",
+      "lower": "Le nouveau mot de passe doit contenir au moins une lettre minuscule.",
+      "digit": "Le nouveau mot de passe doit contenir au moins un chiffre.",
+      "special": "Le nouveau mot de passe doit contenir au moins un caractère spécial.",
+      "sameAsCurrent": "Le nouveau mot de passe doit être différent de l'actuel.",
+      "mismatch": "Les mots de passe ne correspondent pas.",
+      "updateFailed": "Impossible de mettre à jour le mot de passe."
     }
   }
 }

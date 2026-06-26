@@ -12,6 +12,7 @@
 // =============================================================================
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
@@ -19,19 +20,22 @@ import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 
 const PASSWORD_MIN = 8;
 
-function validate(curr: string, next: string, confirm: string): string | null {
-  if (!curr) return "Enter your current password.";
-  if (next.length < PASSWORD_MIN) return `New password must be at least ${PASSWORD_MIN} characters.`;
-  if (!/[A-Z]/.test(next)) return "New password must contain at least one uppercase letter.";
-  if (!/[a-z]/.test(next)) return "New password must contain at least one lowercase letter.";
-  if (!/[0-9]/.test(next)) return "New password must contain at least one digit.";
-  if (!/[^A-Za-z0-9]/.test(next)) return "New password must contain at least one special character.";
-  if (next === curr) return "New password must be different from the current password.";
-  if (next !== confirm) return "Passwords do not match.";
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
+function validate(t: TFn, curr: string, next: string, confirm: string): string | null {
+  if (!curr) return t("accountSecurity.errors.currentRequired");
+  if (next.length < PASSWORD_MIN) return t("accountSecurity.errors.minLength", { min: PASSWORD_MIN });
+  if (!/[A-Z]/.test(next)) return t("accountSecurity.errors.upper");
+  if (!/[a-z]/.test(next)) return t("accountSecurity.errors.lower");
+  if (!/[0-9]/.test(next)) return t("accountSecurity.errors.digit");
+  if (!/[^A-Za-z0-9]/.test(next)) return t("accountSecurity.errors.special");
+  if (next === curr) return t("accountSecurity.errors.sameAsCurrent");
+  if (next !== confirm) return t("accountSecurity.errors.mismatch");
   return null;
 }
 
 export default function ChangePasswordCard() {
+  const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -48,7 +52,7 @@ export default function ChangePasswordCard() {
         })
         .then((r) => r.data),
     onSuccess: () => {
-      showToast("success", "Password updated.");
+      showToast("success", t("accountSecurity.updated"));
       setCurrentPassword("");
       setNewPassword("");
       setConfirm("");
@@ -58,7 +62,7 @@ export default function ChangePasswordCard() {
       const msg =
         err?.response?.data?.error?.message ||
         err?.message ||
-        "Could not update password.";
+        t("accountSecurity.errors.updateFailed");
       setError(msg);
     },
   });
@@ -68,17 +72,15 @@ export default function ChangePasswordCard() {
       <div className="flex items-center gap-3 mb-4">
         <KeyRound className="h-5 w-5 text-brand-600" />
         <div>
-          <h2 className="font-semibold text-gray-900">Change Password</h2>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Use a password you don't reuse anywhere else. Must be 8+ characters with upper, lower, digit, and a special character.
-          </p>
+          <h2 className="font-semibold text-gray-900">{t("accountSecurity.changePassword")}</h2>
+          <p className="text-xs text-gray-500 mt-0.5">{t("accountSecurity.hint")}</p>
         </div>
       </div>
 
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          const v = validate(currentPassword, newPassword, confirm);
+          const v = validate(t, currentPassword, newPassword, confirm);
           if (v) {
             setError(v);
             return;
@@ -89,7 +91,9 @@ export default function ChangePasswordCard() {
         className="space-y-4 max-w-md"
       >
         <PasswordField
-          label="Current password"
+          label={t("accountSecurity.currentPassword")}
+          showLabel={t("accountSecurity.showPassword")}
+          hideLabel={t("accountSecurity.hidePassword")}
           value={currentPassword}
           onChange={setCurrentPassword}
           show={showCurrent}
@@ -97,7 +101,9 @@ export default function ChangePasswordCard() {
           autoComplete="current-password"
         />
         <PasswordField
-          label="New password"
+          label={t("accountSecurity.newPassword")}
+          showLabel={t("accountSecurity.showPassword")}
+          hideLabel={t("accountSecurity.hidePassword")}
           value={newPassword}
           onChange={setNewPassword}
           show={showNew}
@@ -105,7 +111,9 @@ export default function ChangePasswordCard() {
           autoComplete="new-password"
         />
         <PasswordField
-          label="Confirm new password"
+          label={t("accountSecurity.confirmPassword")}
+          showLabel={t("accountSecurity.showPassword")}
+          hideLabel={t("accountSecurity.hidePassword")}
           value={confirm}
           onChange={setConfirm}
           show={showNew}
@@ -123,7 +131,7 @@ export default function ChangePasswordCard() {
           className="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
         >
           {change.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          {change.isPending ? "Updating..." : "Update password"}
+          {change.isPending ? t("accountSecurity.updating") : t("accountSecurity.updatePassword")}
         </button>
       </form>
     </div>
@@ -132,6 +140,8 @@ export default function ChangePasswordCard() {
 
 function PasswordField({
   label,
+  showLabel,
+  hideLabel,
   value,
   onChange,
   show,
@@ -139,6 +149,8 @@ function PasswordField({
   autoComplete,
 }: {
   label: string;
+  showLabel: string;
+  hideLabel: string;
   value: string;
   onChange: (v: string) => void;
   show: boolean;
@@ -160,7 +172,7 @@ function PasswordField({
           type="button"
           onClick={onToggleShow}
           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
-          aria-label={show ? "Hide password" : "Show password"}
+          aria-label={show ? hideLabel : showLabel}
           tabIndex={-1}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

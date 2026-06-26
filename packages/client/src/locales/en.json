@@ -349,7 +349,8 @@
     "community": "Community",
     "feed": "Feed",
     "moduleAccess": "Module Access",
-    "wellnessCheckIn": "Daily Check-in"
+    "wellnessCheckIn": "Daily Check-in",
+    "changePassword": "Change Password"
   },
   "common": {
     "save": "Save",
@@ -1511,6 +1512,31 @@
       "deleteSelfTooltip": "You cannot delete your own account",
       "deleteTooltip": "Delete employee",
       "deleteAria": "Delete {{name}}"
+    }
+  },
+  "accountSecurity": {
+    "title": "Account Security",
+    "subtitle": "Update the password you use to sign in to EmpCloud.",
+    "changePassword": "Change Password",
+    "hint": "Use a password you don't reuse anywhere else. Must be 8+ characters with upper, lower, digit, and a special character.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "updatePassword": "Update password",
+    "updating": "Updating...",
+    "updated": "Password updated.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "errors": {
+      "currentRequired": "Enter your current password.",
+      "minLength": "New password must be at least {{min}} characters.",
+      "upper": "New password must contain at least one uppercase letter.",
+      "lower": "New password must contain at least one lowercase letter.",
+      "digit": "New password must contain at least one digit.",
+      "special": "New password must contain at least one special character.",
+      "sameAsCurrent": "New password must be different from the current password.",
+      "mismatch": "Passwords do not match.",
+      "updateFailed": "Could not update password."
     }
   }
 }

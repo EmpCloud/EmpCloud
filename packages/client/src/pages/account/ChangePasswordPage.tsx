@@ -7,16 +7,16 @@
 // when navigated to directly.
 // =============================================================================
 
+import { useTranslation } from "react-i18next";
 import ChangePasswordCard from "@/components/ChangePasswordCard";
 
 export default function ChangePasswordPage() {
+  const { t } = useTranslation();
   return (
     <div className="max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Account Security</h1>
-        <p className="text-gray-500 mt-1">
-          Update the password you use to sign in to EmpCloud.
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("accountSecurity.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("accountSecurity.subtitle")}</p>
       </div>
       <ChangePasswordCard />
     </div>

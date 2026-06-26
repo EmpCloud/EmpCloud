@@ -348,7 +348,9 @@
     "community": "社区",
     "feed": "动态",
     "moduleAccess": "模块访问",
-    "wellnessCheckIn": "每日打卡"
+    "wellnessCheckIn": "每日打卡",
+    "messages": "消息",
+    "changePassword": "修改密码"
   },
   "common": {
     "save": "保存",
@@ -1505,6 +1507,31 @@
       "deleteSelfTooltip": "不能删除自己的账户",
       "deleteTooltip": "删除员工",
       "deleteAria": "删除 {{name}}"
+    }
+  },
+  "accountSecurity": {
+    "title": "账户安全",
+    "subtitle": "更新您用于登录 EmpCloud 的密码。",
+    "changePassword": "修改密码",
+    "hint": "请使用您不会在其他任何地方重复使用的密码。必须至少 8 个字符，包含大写字母、小写字母、数字和一个特殊字符。",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "updatePassword": "更新密码",
+    "updating": "正在更新...",
+    "updated": "密码已更新。",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "errors": {
+      "currentRequired": "请输入您的当前密码。",
+      "minLength": "新密码必须至少为 {{min}} 个字符。",
+      "upper": "新密码必须包含至少一个大写字母。",
+      "lower": "新密码必须包含至少一个小写字母。",
+      "digit": "新密码必须包含至少一个数字。",
+      "special": "新密码必须包含至少一个特殊字符。",
+      "sameAsCurrent": "新密码必须与当前密码不同。",
+      "mismatch": "密码不匹配。",
+      "updateFailed": "无法更新密码。"
     }
   }
 }

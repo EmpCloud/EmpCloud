@@ -348,7 +348,9 @@
     "community": "Community",
     "feed": "Feed",
     "moduleAccess": "Modulzugriff",
-    "wellnessCheckIn": "Tägliches Check-in"
+    "wellnessCheckIn": "Tägliches Check-in",
+    "messages": "Nachrichten",
+    "changePassword": "Passwort ändern"
   },
   "common": {
     "save": "Speichern",
@@ -1505,6 +1507,31 @@
       "deleteSelfTooltip": "Sie können Ihr eigenes Konto nicht löschen",
       "deleteTooltip": "Mitarbeiter löschen",
       "deleteAria": "{{name}} löschen"
+    }
+  },
+  "accountSecurity": {
+    "title": "Kontosicherheit",
+    "subtitle": "Aktualisieren Sie das Passwort, mit dem Sie sich bei EmpCloud anmelden.",
+    "changePassword": "Passwort ändern",
+    "hint": "Verwenden Sie ein Passwort, das Sie nirgendwo sonst wiederverwenden. Muss mindestens 8 Zeichen mit Groß-, Kleinbuchstabe, Ziffer und einem Sonderzeichen enthalten.",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "updatePassword": "Passwort aktualisieren",
+    "updating": "Wird aktualisiert...",
+    "updated": "Passwort aktualisiert.",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort ausblenden",
+    "errors": {
+      "currentRequired": "Geben Sie Ihr aktuelles Passwort ein.",
+      "minLength": "Das neue Passwort muss mindestens {{min}} Zeichen lang sein.",
+      "upper": "Das neue Passwort muss mindestens einen Großbuchstaben enthalten.",
+      "lower": "Das neue Passwort muss mindestens einen Kleinbuchstaben enthalten.",
+      "digit": "Das neue Passwort muss mindestens eine Ziffer enthalten.",
+      "special": "Das neue Passwort muss mindestens ein Sonderzeichen enthalten.",
+      "sameAsCurrent": "Das neue Passwort muss sich vom aktuellen unterscheiden.",
+      "mismatch": "Die Passwörter stimmen nicht überein.",
+      "updateFailed": "Passwort konnte nicht aktualisiert werden."
     }
   }
 }
