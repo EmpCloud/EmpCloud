@@ -2056,6 +2056,11 @@
     "noMatches": "Keine Treffer.",
     "collapseTeam": "Team einklappen",
     "expandReports_one": "{{count}} unterstellten Mitarbeiter einblenden",
-    "expandReports_other": "{{count}} unterstellte Mitarbeiter einblenden"
+    "expandReports_other": "{{count}} unterstellte Mitarbeiter einblenden",
+    "modalPeople": "Personen ({{count}})",
+    "modalManagers": "Manager ({{count}})",
+    "modalDepartments": "Abteilungen ({{count}})",
+    "filterDepartments": "Abteilungen oder Personen filtern...",
+    "filterPeople": "Nach Name, Funktion oder Abteilung filtern..."
   }
 }

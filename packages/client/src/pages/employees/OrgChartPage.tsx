@@ -887,14 +887,15 @@ function StatListModal({
   departments: { name: string; people: OrgChartNode[] }[];
   onNavigate: (id: number) => void;
 }) {
+  const { t } = useTranslation();
   const open = mode !== null;
   const title =
     mode === "people"
-      ? `People (${people.length})`
+      ? t("orgChart.modalPeople", { count: people.length })
       : mode === "managers"
-      ? `Managers (${managers.length})`
+      ? t("orgChart.modalManagers", { count: managers.length })
       : mode === "departments"
-      ? `Departments (${departments.length})`
+      ? t("orgChart.modalDepartments", { count: departments.length })
       : "";
 
   const [filter, setFilter] = useState("");
@@ -933,8 +934,8 @@ function StatListModal({
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder={
                   mode === "departments"
-                    ? "Filter departments or people..."
-                    : "Filter by name, designation, or department..."
+                    ? t("orgChart.filterDepartments")
+                    : t("orgChart.filterPeople")
                 }
                 className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
               />

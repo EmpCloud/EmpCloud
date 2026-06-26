@@ -2061,6 +2061,11 @@
     "noMatches": "No matches.",
     "collapseTeam": "Collapse team",
     "expandReports_one": "Expand {{count}} report",
-    "expandReports_other": "Expand {{count}} reports"
+    "expandReports_other": "Expand {{count}} reports",
+    "modalPeople": "People ({{count}})",
+    "modalManagers": "Managers ({{count}})",
+    "modalDepartments": "Departments ({{count}})",
+    "filterDepartments": "Filter departments or people...",
+    "filterPeople": "Filter by name, designation, or department..."
   }
 }

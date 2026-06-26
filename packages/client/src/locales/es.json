@@ -2056,6 +2056,11 @@
     "noMatches": "Sin resultados.",
     "collapseTeam": "Contraer equipo",
     "expandReports_one": "Expandir {{count}} subordinado",
-    "expandReports_other": "Expandir {{count}} subordinados"
+    "expandReports_other": "Expandir {{count}} subordinados",
+    "modalPeople": "Personas ({{count}})",
+    "modalManagers": "Gerentes ({{count}})",
+    "modalDepartments": "Departamentos ({{count}})",
+    "filterDepartments": "Filtrar departamentos o personas...",
+    "filterPeople": "Filtrar por nombre, cargo o departamento..."
   }
 }

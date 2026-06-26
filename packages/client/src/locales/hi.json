@@ -2056,6 +2056,11 @@
     "noMatches": "कोई मेल नहीं।",
     "collapseTeam": "टीम संक्षिप्त करें",
     "expandReports_one": "{{count}} रिपोर्ट विस्तृत करें",
-    "expandReports_other": "{{count}} रिपोर्ट विस्तृत करें"
+    "expandReports_other": "{{count}} रिपोर्ट विस्तृत करें",
+    "modalPeople": "लोग ({{count}})",
+    "modalManagers": "प्रबंधक ({{count}})",
+    "modalDepartments": "विभाग ({{count}})",
+    "filterDepartments": "विभाग या लोग फ़िल्टर करें...",
+    "filterPeople": "नाम, पदनाम या विभाग से फ़िल्टर करें..."
   }
 }

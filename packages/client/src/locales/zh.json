@@ -2056,6 +2056,11 @@
     "noMatches": "无匹配项。",
     "collapseTeam": "收起团队",
     "expandReports_one": "展开 {{count}} 名下属",
-    "expandReports_other": "展开 {{count}} 名下属"
+    "expandReports_other": "展开 {{count}} 名下属",
+    "modalPeople": "人员（{{count}}）",
+    "modalManagers": "经理（{{count}}）",
+    "modalDepartments": "部门（{{count}}）",
+    "filterDepartments": "筛选部门或人员...",
+    "filterPeople": "按姓名、职位或部门筛选..."
   }
 }

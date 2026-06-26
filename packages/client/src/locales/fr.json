@@ -2056,6 +2056,11 @@
     "noMatches": "Aucun résultat.",
     "collapseTeam": "Réduire l'équipe",
     "expandReports_one": "Développer {{count}} subordonné",
-    "expandReports_other": "Développer {{count}} subordonnés"
+    "expandReports_other": "Développer {{count}} subordonnés",
+    "modalPeople": "Personnes ({{count}})",
+    "modalManagers": "Responsables ({{count}})",
+    "modalDepartments": "Services ({{count}})",
+    "filterDepartments": "Filtrer les services ou les personnes...",
+    "filterPeople": "Filtrer par nom, fonction ou service..."
   }
 }

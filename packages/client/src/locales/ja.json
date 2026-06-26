@@ -2056,6 +2056,11 @@
     "noMatches": "一致なし。",
     "collapseTeam": "チームを折りたたむ",
     "expandReports_one": "{{count}}人の部下を展開",
-    "expandReports_other": "{{count}}人の部下を展開"
+    "expandReports_other": "{{count}}人の部下を展開",
+    "modalPeople": "人数（{{count}}）",
+    "modalManagers": "マネージャー（{{count}}）",
+    "modalDepartments": "部署（{{count}}）",
+    "filterDepartments": "部署または人物を絞り込む...",
+    "filterPeople": "氏名、役職、または部署で絞り込む..."
   }
 }

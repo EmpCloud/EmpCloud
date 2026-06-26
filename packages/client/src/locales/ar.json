@@ -2056,6 +2056,11 @@
     "noMatches": "لا توجد نتائج.",
     "collapseTeam": "طي الفريق",
     "expandReports_one": "توسيع {{count}} مرؤوس",
-    "expandReports_other": "توسيع {{count}} مرؤوسين"
+    "expandReports_other": "توسيع {{count}} مرؤوسين",
+    "modalPeople": "الأشخاص ({{count}})",
+    "modalManagers": "المديرون ({{count}})",
+    "modalDepartments": "الأقسام ({{count}})",
+    "filterDepartments": "تصفية الأقسام أو الأشخاص...",
+    "filterPeople": "التصفية بالاسم أو المسمى أو القسم..."
   }
 }
