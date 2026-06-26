@@ -1013,9 +1013,10 @@ function DepartmentList({
   departments: { name: string; people: OrgChartNode[] }[];
   onNavigate: (id: number) => void;
 }) {
+  const { t } = useTranslation();
   const [openDept, setOpenDept] = useState<string | null>(null);
   if (departments.length === 0) {
-    return <p className="px-4 py-8 text-center text-sm text-gray-400">No matches.</p>;
+    return <p className="px-4 py-8 text-center text-sm text-gray-400">{t("orgChart.noMatches")}</p>;
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -1034,7 +1035,7 @@ function DepartmentList({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-gray-900">{d.name}</p>
                 <p className="text-xs text-gray-500">
-                  {d.people.length} {d.people.length === 1 ? "person" : "people"}
+                  {t("orgChart.personCount", { count: d.people.length })}
                 </p>
               </div>
               {expanded ? (

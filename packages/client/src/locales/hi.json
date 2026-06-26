@@ -2066,6 +2066,8 @@
     "reportsBadge_other": "{{count}} रिपोर्ट",
     "exportedPng": "चार्ट PNG के रूप में निर्यात किया गया।",
     "exportedPdf": "चार्ट PDF के रूप में निर्यात किया गया।",
-    "exportFailed": "निर्यात विफल। कृपया पुनः प्रयास करें।"
+    "exportFailed": "निर्यात विफल। कृपया पुनः प्रयास करें।",
+    "personCount_one": "{{count}} व्यक्ति",
+    "personCount_other": "{{count}} लोग"
   }
 }

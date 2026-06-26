@@ -2066,6 +2066,8 @@
     "reportsBadge_other": "{{count}} unterstellt",
     "exportedPng": "Organigramm als PNG exportiert.",
     "exportedPdf": "Organigramm als PDF exportiert.",
-    "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen."
+    "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
+    "personCount_one": "{{count}} Person",
+    "personCount_other": "{{count}} Personen"
   }
 }

@@ -2066,6 +2066,8 @@
     "reportsBadge_other": "部下{{count}}人",
     "exportedPng": "組織図をPNGとしてエクスポートしました。",
     "exportedPdf": "組織図をPDFとしてエクスポートしました。",
-    "exportFailed": "エクスポートに失敗しました。もう一度お試しください。"
+    "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
+    "personCount_one": "{{count}}人",
+    "personCount_other": "{{count}}人"
   }
 }

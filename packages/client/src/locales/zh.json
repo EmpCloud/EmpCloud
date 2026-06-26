@@ -2066,6 +2066,8 @@
     "reportsBadge_other": "{{count}} 名下属",
     "exportedPng": "组织结构图已导出为 PNG。",
     "exportedPdf": "组织结构图已导出为 PDF。",
-    "exportFailed": "导出失败。请重试。"
+    "exportFailed": "导出失败。请重试。",
+    "personCount_one": "{{count}} 人",
+    "personCount_other": "{{count}} 人"
   }
 }

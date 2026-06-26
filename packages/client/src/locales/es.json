@@ -2066,6 +2066,8 @@
     "reportsBadge_other": "{{count}} subordinados",
     "exportedPng": "Organigrama exportado como PNG.",
     "exportedPdf": "Organigrama exportado como PDF.",
-    "exportFailed": "La exportación falló. Inténtalo de nuevo."
+    "exportFailed": "La exportación falló. Inténtalo de nuevo.",
+    "personCount_one": "{{count}} persona",
+    "personCount_other": "{{count}} personas"
   }
 }

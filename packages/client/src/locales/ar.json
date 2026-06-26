@@ -2066,6 +2066,8 @@
     "reportsBadge_other": "{{count}} مرؤوسين",
     "exportedPng": "تم تصدير المخطط كملف PNG.",
     "exportedPdf": "تم تصدير المخطط كملف PDF.",
-    "exportFailed": "فشل التصدير. يرجى المحاولة مرة أخرى."
+    "exportFailed": "فشل التصدير. يرجى المحاولة مرة أخرى.",
+    "personCount_one": "{{count}} شخص",
+    "personCount_other": "{{count}} أشخاص"
   }
 }

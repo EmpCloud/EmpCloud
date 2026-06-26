@@ -2071,6 +2071,8 @@
     "reportsBadge_other": "{{count}} reports",
     "exportedPng": "Chart exported as PNG.",
     "exportedPdf": "Chart exported as PDF.",
-    "exportFailed": "Export failed. Please try again."
+    "exportFailed": "Export failed. Please try again.",
+    "personCount_one": "{{count}} person",
+    "personCount_other": "{{count}} people"
   }
 }
