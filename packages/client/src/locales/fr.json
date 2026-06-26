@@ -735,7 +735,61 @@
     "review": "Examiner"
   },
   "announcements": {
-    "title": "Annonces"
+    "title": "Annonces",
+    "page": {
+      "title": "Annonces",
+      "subtitle": "Restez informé des annonces de l'entreprise.",
+      "newAnnouncement": "Nouvelle annonce",
+      "createTitle": "Créer une annonce",
+      "fieldTitle": "Titre",
+      "titlePlaceholder": "Titre de l'annonce",
+      "fieldContent": "Contenu",
+      "contentPlaceholder": "Rédigez votre annonce ici...",
+      "fieldPriority": "Priorité",
+      "fieldTarget": "Destinataire",
+      "targetAll": "Tous les employés",
+      "targetDepartment": "Service",
+      "targetRole": "Rôle",
+      "selectDepartments": "Sélectionner les services",
+      "loadingDepartments": "Chargement des services...",
+      "noDepartments": "Aucun service trouvé. Créez d'abord des services dans les paramètres.",
+      "departmentsSelected": "{{count}} service(s) sélectionné(s)",
+      "selectRoles": "Sélectionner les rôles",
+      "rolesSelected": "{{count}} rôle(s) sélectionné(s)",
+      "fieldExpires": "Expire le",
+      "cancel": "Annuler",
+      "publish": "Publier",
+      "loading": "Chargement des annonces...",
+      "empty": "Aucune annonce à afficher.",
+      "new": "Nouveau",
+      "showLess": "Afficher moins",
+      "readMore": "Lire la suite",
+      "markRead": "Marquer comme lu",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer l'annonce",
+      "deleteAria": "Supprimer l'annonce {{title}}",
+      "draft": "Brouillon",
+      "expires": "Expire le {{date}}",
+      "read": "Lu",
+      "pageOf": "Page {{page}} sur {{total_pages}} ({{total}} au total)",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "deleteConfirmTitle": "Supprimer l'annonce \"{{title}}\" ?",
+      "deleteConfirmTitleGeneric": "Supprimer l'annonce ?",
+      "deleteConfirmDesc": "Cette action est irréversible.",
+      "priority": {
+        "low": "Basse",
+        "normal": "Normale",
+        "high": "Haute",
+        "urgent": "Urgente"
+      },
+      "roles": {
+        "employee": "Employé",
+        "manager": "Manager",
+        "hr_admin": "Admin RH",
+        "org_admin": "Admin Org"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "Bon retour, {{name}} !",

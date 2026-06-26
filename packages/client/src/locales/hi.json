@@ -735,7 +735,61 @@
     "review": "समीक्षा"
   },
   "announcements": {
-    "title": "घोषणाएँ"
+    "title": "घोषणाएँ",
+    "page": {
+      "title": "घोषणाएं",
+      "subtitle": "कंपनी की घोषणाओं से अपडेट रहें।",
+      "newAnnouncement": "नई घोषणा",
+      "createTitle": "घोषणा बनाएं",
+      "fieldTitle": "शीर्षक",
+      "titlePlaceholder": "घोषणा का शीर्षक",
+      "fieldContent": "सामग्री",
+      "contentPlaceholder": "अपनी घोषणा यहां लिखें...",
+      "fieldPriority": "प्राथमिकता",
+      "fieldTarget": "लक्ष्य",
+      "targetAll": "सभी कर्मचारी",
+      "targetDepartment": "विभाग",
+      "targetRole": "भूमिका",
+      "selectDepartments": "विभाग चुनें",
+      "loadingDepartments": "विभाग लोड हो रहे हैं...",
+      "noDepartments": "कोई विभाग नहीं मिला। पहले सेटिंग्स में विभाग बनाएं।",
+      "departmentsSelected": "{{count}} विभाग चयनित",
+      "selectRoles": "भूमिकाएं चुनें",
+      "rolesSelected": "{{count}} भूमिकाएं चयनित",
+      "fieldExpires": "समाप्ति तिथि",
+      "cancel": "रद्द करें",
+      "publish": "प्रकाशित करें",
+      "loading": "घोषणाएं लोड हो रही हैं...",
+      "empty": "दिखाने के लिए कोई घोषणा नहीं।",
+      "new": "नया",
+      "showLess": "कम दिखाएं",
+      "readMore": "और पढ़ें",
+      "markRead": "पढ़ा हुआ चिह्नित करें",
+      "delete": "हटाएं",
+      "deleteTitle": "घोषणा हटाएं",
+      "deleteAria": "घोषणा {{title}} हटाएं",
+      "draft": "मसौदा",
+      "expires": "{{date}} को समाप्त",
+      "read": "पढ़ा गया",
+      "pageOf": "पृष्ठ {{page}} / {{total_pages}} (कुल {{total}})",
+      "previous": "पिछला",
+      "next": "अगला",
+      "deleteConfirmTitle": "घोषणा \"{{title}}\" हटाएं?",
+      "deleteConfirmTitleGeneric": "घोषणा हटाएं?",
+      "deleteConfirmDesc": "इसे पूर्ववत नहीं किया जा सकता।",
+      "priority": {
+        "low": "कम",
+        "normal": "सामान्य",
+        "high": "उच्च",
+        "urgent": "अत्यावश्यक"
+      },
+      "roles": {
+        "employee": "कर्मचारी",
+        "manager": "प्रबंधक",
+        "hr_admin": "एचआर एडमिन",
+        "org_admin": "संगठन एडमिन"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "वापसी स्वागत है, {{name}}!",

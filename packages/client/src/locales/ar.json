@@ -735,7 +735,61 @@
     "review": "مراجعة"
   },
   "announcements": {
-    "title": "الإعلانات"
+    "title": "الإعلانات",
+    "page": {
+      "title": "الإعلانات",
+      "subtitle": "ابق على اطلاع بإعلانات الشركة.",
+      "newAnnouncement": "إعلان جديد",
+      "createTitle": "إنشاء إعلان",
+      "fieldTitle": "العنوان",
+      "titlePlaceholder": "عنوان الإعلان",
+      "fieldContent": "المحتوى",
+      "contentPlaceholder": "اكتب إعلانك هنا...",
+      "fieldPriority": "الأولوية",
+      "fieldTarget": "الجهة المستهدفة",
+      "targetAll": "جميع الموظفين",
+      "targetDepartment": "القسم",
+      "targetRole": "الدور",
+      "selectDepartments": "اختر الأقسام",
+      "loadingDepartments": "جارٍ تحميل الأقسام...",
+      "noDepartments": "لم يتم العثور على أقسام. أنشئ الأقسام في الإعدادات أولاً.",
+      "departmentsSelected": "تم اختيار {{count}} قسم",
+      "selectRoles": "اختر الأدوار",
+      "rolesSelected": "تم اختيار {{count}} دور",
+      "fieldExpires": "تنتهي في",
+      "cancel": "إلغاء",
+      "publish": "نشر",
+      "loading": "جارٍ تحميل الإعلانات...",
+      "empty": "لا توجد إعلانات لعرضها.",
+      "new": "جديد",
+      "showLess": "عرض أقل",
+      "readMore": "اقرأ المزيد",
+      "markRead": "تعليم كمقروء",
+      "delete": "حذف",
+      "deleteTitle": "حذف الإعلان",
+      "deleteAria": "حذف الإعلان {{title}}",
+      "draft": "مسودة",
+      "expires": "تنتهي في {{date}}",
+      "read": "مقروء",
+      "pageOf": "الصفحة {{page}} من {{total_pages}} (الإجمالي {{total}})",
+      "previous": "السابق",
+      "next": "التالي",
+      "deleteConfirmTitle": "حذف الإعلان \"{{title}}\"؟",
+      "deleteConfirmTitleGeneric": "حذف الإعلان؟",
+      "deleteConfirmDesc": "لا يمكن التراجع عن هذا الإجراء.",
+      "priority": {
+        "low": "منخفضة",
+        "normal": "عادية",
+        "high": "عالية",
+        "urgent": "عاجلة"
+      },
+      "roles": {
+        "employee": "موظف",
+        "manager": "مدير",
+        "hr_admin": "مسؤول الموارد البشرية",
+        "org_admin": "مسؤول المؤسسة"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "مرحباً بعودتك، {{name}}!",

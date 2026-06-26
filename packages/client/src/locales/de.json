@@ -735,7 +735,61 @@
     "review": "Prüfen"
   },
   "announcements": {
-    "title": "Ankündigungen"
+    "title": "Ankündigungen",
+    "page": {
+      "title": "Ankündigungen",
+      "subtitle": "Bleiben Sie über Unternehmensankündigungen auf dem Laufenden.",
+      "newAnnouncement": "Neue Ankündigung",
+      "createTitle": "Ankündigung erstellen",
+      "fieldTitle": "Titel",
+      "titlePlaceholder": "Titel der Ankündigung",
+      "fieldContent": "Inhalt",
+      "contentPlaceholder": "Schreiben Sie hier Ihre Ankündigung...",
+      "fieldPriority": "Priorität",
+      "fieldTarget": "Empfänger",
+      "targetAll": "Alle Mitarbeiter",
+      "targetDepartment": "Abteilung",
+      "targetRole": "Rolle",
+      "selectDepartments": "Abteilungen auswählen",
+      "loadingDepartments": "Abteilungen werden geladen...",
+      "noDepartments": "Keine Abteilungen gefunden. Erstellen Sie zuerst Abteilungen in den Einstellungen.",
+      "departmentsSelected": "{{count}} Abteilung(en) ausgewählt",
+      "selectRoles": "Rollen auswählen",
+      "rolesSelected": "{{count}} Rolle(n) ausgewählt",
+      "fieldExpires": "Läuft ab am",
+      "cancel": "Abbrechen",
+      "publish": "Veröffentlichen",
+      "loading": "Ankündigungen werden geladen...",
+      "empty": "Keine Ankündigungen vorhanden.",
+      "new": "Neu",
+      "showLess": "Weniger anzeigen",
+      "readMore": "Mehr lesen",
+      "markRead": "Als gelesen markieren",
+      "delete": "Löschen",
+      "deleteTitle": "Ankündigung löschen",
+      "deleteAria": "Ankündigung {{title}} löschen",
+      "draft": "Entwurf",
+      "expires": "Läuft ab am {{date}}",
+      "read": "Gelesen",
+      "pageOf": "Seite {{page}} von {{total_pages}} ({{total}} gesamt)",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "deleteConfirmTitle": "Ankündigung \"{{title}}\" löschen?",
+      "deleteConfirmTitleGeneric": "Ankündigung löschen?",
+      "deleteConfirmDesc": "Dies kann nicht rückgängig gemacht werden.",
+      "priority": {
+        "low": "Niedrig",
+        "normal": "Normal",
+        "high": "Hoch",
+        "urgent": "Dringend"
+      },
+      "roles": {
+        "employee": "Mitarbeiter",
+        "manager": "Manager",
+        "hr_admin": "HR-Admin",
+        "org_admin": "Org-Admin"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "Willkommen zurück, {{name}}!",

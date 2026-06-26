@@ -735,7 +735,61 @@
     "review": "Revisar"
   },
   "announcements": {
-    "title": "Comunicados"
+    "title": "Comunicados",
+    "page": {
+      "title": "Comunicados",
+      "subtitle": "Fique por dentro dos comunicados da empresa.",
+      "newAnnouncement": "Novo Comunicado",
+      "createTitle": "Criar Comunicado",
+      "fieldTitle": "Título",
+      "titlePlaceholder": "Título do comunicado",
+      "fieldContent": "Conteúdo",
+      "contentPlaceholder": "Escreva seu comunicado aqui...",
+      "fieldPriority": "Prioridade",
+      "fieldTarget": "Destinatário",
+      "targetAll": "Todos os Funcionários",
+      "targetDepartment": "Departamento",
+      "targetRole": "Função",
+      "selectDepartments": "Selecionar Departamentos",
+      "loadingDepartments": "Carregando departamentos...",
+      "noDepartments": "Nenhum departamento encontrado. Crie departamentos em Configurações primeiro.",
+      "departmentsSelected": "{{count}} departamento(s) selecionado(s)",
+      "selectRoles": "Selecionar Funções",
+      "rolesSelected": "{{count}} função(ões) selecionada(s)",
+      "fieldExpires": "Expira em",
+      "cancel": "Cancelar",
+      "publish": "Publicar",
+      "loading": "Carregando comunicados...",
+      "empty": "Nenhum comunicado para exibir.",
+      "new": "Novo",
+      "showLess": "Mostrar menos",
+      "readMore": "Ler mais",
+      "markRead": "Marcar como lido",
+      "delete": "Excluir",
+      "deleteTitle": "Excluir comunicado",
+      "deleteAria": "Excluir comunicado {{title}}",
+      "draft": "Rascunho",
+      "expires": "Expira em {{date}}",
+      "read": "Lido",
+      "pageOf": "Página {{page}} de {{total_pages}} ({{total}} no total)",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "deleteConfirmTitle": "Excluir o comunicado \"{{title}}\"?",
+      "deleteConfirmTitleGeneric": "Excluir comunicado?",
+      "deleteConfirmDesc": "Esta ação não pode ser desfeita.",
+      "priority": {
+        "low": "Baixa",
+        "normal": "Normal",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "roles": {
+        "employee": "Funcionário",
+        "manager": "Gerente",
+        "hr_admin": "Admin de RH",
+        "org_admin": "Admin da Org"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "Bem-vindo de volta, {{name}}!",

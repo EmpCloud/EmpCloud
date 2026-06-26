@@ -735,7 +735,61 @@
     "review": "Review"
   },
   "announcements": {
-    "title": "Announcements"
+    "title": "Announcements",
+    "page": {
+      "title": "Announcements",
+      "subtitle": "Stay updated with company announcements.",
+      "newAnnouncement": "New Announcement",
+      "createTitle": "Create Announcement",
+      "fieldTitle": "Title",
+      "titlePlaceholder": "Announcement title",
+      "fieldContent": "Content",
+      "contentPlaceholder": "Write your announcement here...",
+      "fieldPriority": "Priority",
+      "fieldTarget": "Target",
+      "targetAll": "All Employees",
+      "targetDepartment": "Department",
+      "targetRole": "Role",
+      "selectDepartments": "Select Departments",
+      "loadingDepartments": "Loading departments...",
+      "noDepartments": "No departments found. Create departments in Settings first.",
+      "departmentsSelected": "{{count}} department(s) selected",
+      "selectRoles": "Select Roles",
+      "rolesSelected": "{{count}} role(s) selected",
+      "fieldExpires": "Expires At",
+      "cancel": "Cancel",
+      "publish": "Publish",
+      "loading": "Loading announcements...",
+      "empty": "No announcements to display.",
+      "new": "New",
+      "showLess": "Show less",
+      "readMore": "Read more",
+      "markRead": "Mark Read",
+      "delete": "Delete",
+      "deleteTitle": "Delete announcement",
+      "deleteAria": "Delete announcement {{title}}",
+      "draft": "Draft",
+      "expires": "Expires {{date}}",
+      "read": "Read",
+      "pageOf": "Page {{page}} of {{total_pages}} ({{total}} total)",
+      "previous": "Previous",
+      "next": "Next",
+      "deleteConfirmTitle": "Delete announcement \"{{title}}\"?",
+      "deleteConfirmTitleGeneric": "Delete announcement?",
+      "deleteConfirmDesc": "This cannot be undone.",
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "roles": {
+        "employee": "Employee",
+        "manager": "Manager",
+        "hr_admin": "HR Admin",
+        "org_admin": "Org Admin"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "Welcome back, {{name}}!",

@@ -735,7 +735,61 @@
     "review": "查看"
   },
   "announcements": {
-    "title": "公告"
+    "title": "公告",
+    "page": {
+      "title": "公告",
+      "subtitle": "及时了解公司公告。",
+      "newAnnouncement": "新建公告",
+      "createTitle": "创建公告",
+      "fieldTitle": "标题",
+      "titlePlaceholder": "公告标题",
+      "fieldContent": "内容",
+      "contentPlaceholder": "在此撰写您的公告...",
+      "fieldPriority": "优先级",
+      "fieldTarget": "目标",
+      "targetAll": "全体员工",
+      "targetDepartment": "部门",
+      "targetRole": "角色",
+      "selectDepartments": "选择部门",
+      "loadingDepartments": "正在加载部门...",
+      "noDepartments": "未找到部门。请先在设置中创建部门。",
+      "departmentsSelected": "已选择 {{count}} 个部门",
+      "selectRoles": "选择角色",
+      "rolesSelected": "已选择 {{count}} 个角色",
+      "fieldExpires": "过期时间",
+      "cancel": "取消",
+      "publish": "发布",
+      "loading": "正在加载公告...",
+      "empty": "暂无公告可显示。",
+      "new": "新",
+      "showLess": "收起",
+      "readMore": "阅读更多",
+      "markRead": "标记为已读",
+      "delete": "删除",
+      "deleteTitle": "删除公告",
+      "deleteAria": "删除公告 {{title}}",
+      "draft": "草稿",
+      "expires": "{{date}} 过期",
+      "read": "已读",
+      "pageOf": "第 {{page}} 页，共 {{total_pages}} 页（共 {{total}} 条）",
+      "previous": "上一页",
+      "next": "下一页",
+      "deleteConfirmTitle": "删除公告“{{title}}”？",
+      "deleteConfirmTitleGeneric": "删除公告？",
+      "deleteConfirmDesc": "此操作无法撤销。",
+      "priority": {
+        "low": "低",
+        "normal": "正常",
+        "high": "高",
+        "urgent": "紧急"
+      },
+      "roles": {
+        "employee": "员工",
+        "manager": "经理",
+        "hr_admin": "HR 管理员",
+        "org_admin": "组织管理员"
+      }
+    }
   },
   "selfService": {
     "welcomeBack": "欢迎回来，{{name}}！",
