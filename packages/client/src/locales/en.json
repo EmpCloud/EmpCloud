@@ -2042,6 +2042,8 @@
     "title": "Organization Chart",
     "subtitle": "Visualize reporting structure across your organization.",
     "people": "People",
-    "viewAllPeople": "View all people"
+    "viewAllPeople": "View all people",
+    "managers": "Managers",
+    "viewAllManagers": "View all managers"
   }
 }

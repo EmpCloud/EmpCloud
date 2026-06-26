@@ -2037,6 +2037,8 @@
     "title": "Organograma",
     "subtitle": "Visualize a estrutura hierárquica de toda a sua organização.",
     "people": "Pessoas",
-    "viewAllPeople": "Ver todas as pessoas"
+    "viewAllPeople": "Ver todas as pessoas",
+    "managers": "Gestores",
+    "viewAllManagers": "Ver todos os gestores"
   }
 }

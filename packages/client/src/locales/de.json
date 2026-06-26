@@ -2037,6 +2037,8 @@
     "title": "Organigramm",
     "subtitle": "Visualisieren Sie die Berichtsstruktur Ihrer gesamten Organisation.",
     "people": "Personen",
-    "viewAllPeople": "Alle Personen anzeigen"
+    "viewAllPeople": "Alle Personen anzeigen",
+    "managers": "Manager",
+    "viewAllManagers": "Alle Manager anzeigen"
   }
 }
