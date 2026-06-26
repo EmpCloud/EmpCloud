@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import { ArrowLeft, Send } from "lucide-react";
 
 export default function CreatePostPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -56,7 +58,7 @@ export default function CreatePostPage() {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">Create New Post</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("forum.create.title")}</h1>
       </div>
 
       <form
@@ -66,7 +68,7 @@ export default function CreatePostPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category <span className="text-red-500">*</span>
+              {t("forum.create.category")} <span className="text-red-500">*</span>
             </label>
             <select
               value={categoryId}
@@ -74,9 +76,9 @@ export default function CreatePostPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               required
             >
-              <option value="">Select category...</option>
+              <option value="">{t("forum.create.selectCategory")}</option>
               {(categories || []).length === 0 && (
-                <option value="" disabled>No categories — create them in Forum Dashboard</option>
+                <option value="" disabled>{t("forum.create.noCategories")}</option>
               )}
               {(categories || []).map((cat: any) => (
                 <option key={cat.id} value={cat.id}>
@@ -88,31 +90,31 @@ export default function CreatePostPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Post Type
+              {t("forum.create.postType")}
             </label>
             <select
               value={postType}
               onChange={(e) => setPostType(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             >
-              <option value="discussion">Discussion</option>
-              <option value="question">Question</option>
-              <option value="idea">Idea</option>
-              <option value="poll">Poll</option>
+              <option value="discussion">{t("forum.page.postType.discussion")}</option>
+              <option value="question">{t("forum.page.postType.question")}</option>
+              <option value="idea">{t("forum.page.postType.idea")}</option>
+              <option value="poll">{t("forum.page.postType.poll")}</option>
             </select>
           </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Title <span className="text-red-500">*</span>
+            {t("forum.create.fieldTitle")} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            placeholder="What's on your mind?"
+            placeholder={t("forum.create.titlePlaceholder")}
             maxLength={255}
             required
           />
@@ -120,7 +122,7 @@ export default function CreatePostPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Content <span className="text-red-500">*</span>
+            {t("forum.create.content")} <span className="text-red-500">*</span>
           </label>
           <textarea
             value={content}
@@ -128,10 +130,10 @@ export default function CreatePostPage() {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[200px] resize-y"
             placeholder={
               postType === "question"
-                ? "Describe your question in detail..."
+                ? t("forum.create.contentPlaceholderQuestion")
                 : postType === "idea"
-                ? "Share your idea and explain its potential impact..."
-                : "Share your thoughts..."
+                ? t("forum.create.contentPlaceholderIdea")
+                : t("forum.create.contentPlaceholder")
             }
             required
           />
@@ -139,14 +141,14 @@ export default function CreatePostPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Tags <span className="text-xs text-gray-400">(comma-separated, optional)</span>
+            {t("forum.create.tags")} <span className="text-xs text-gray-400">{t("forum.create.tagsHint")}</span>
           </label>
           <input
             type="text"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            placeholder="e.g. engineering, culture, process"
+            placeholder={t("forum.create.tagsPlaceholder")}
           />
           {tagsInput && (
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -168,7 +170,7 @@ export default function CreatePostPage() {
 
         {createPost.isError && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
-            Failed to create post. Please try again.
+            {t("forum.create.error")}
           </div>
         )}
 
@@ -178,7 +180,7 @@ export default function CreatePostPage() {
             onClick={() => navigate(-1)}
             className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
           >
-            Cancel
+            {t("forum.create.cancel")}
           </button>
           <button
             type="submit"
@@ -186,7 +188,7 @@ export default function CreatePostPage() {
             className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
-            {createPost.isPending ? "Publishing..." : "Publish Post"}
+            {createPost.isPending ? t("forum.create.publishing") : t("forum.create.publish")}
           </button>
         </div>
       </form>
