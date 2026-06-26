@@ -1601,7 +1601,8 @@
       }
     },
     "title": "Suporte",
-    "myTickets": {
+    "myTickets": "Meus Chamados",
+    "myTicketsPage": {
       "title": "Meus Chamados",
       "subtitle": "Acompanhe seus chamados de suporte e abra novas solicitações.",
       "raiseTicket": "Abrir Chamado",

@@ -1601,7 +1601,8 @@
       }
     },
     "title": "Assistance",
-    "myTickets": {
+    "myTickets": "Mes tickets",
+    "myTicketsPage": {
       "title": "Mes tickets",
       "subtitle": "Suivez vos tickets d'assistance et créez de nouvelles demandes.",
       "raiseTicket": "Créer un ticket",

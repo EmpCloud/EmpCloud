@@ -1601,7 +1601,8 @@
       }
     },
     "title": "ヘルプデスク",
-    "myTickets": {
+    "myTickets": "自分のチケット",
+    "myTicketsPage": {
       "title": "自分のチケット",
       "subtitle": "ヘルプデスクのチケットを追跡し、新しいリクエストを送信します。",
       "raiseTicket": "チケットを作成",
