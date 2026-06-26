@@ -2058,6 +2058,9 @@
     "fullscreen": "Toggle fullscreen",
     "panHint": "Scroll to zoom · Drag to pan",
     "noDesignation": "No designation",
-    "noMatches": "No matches."
+    "noMatches": "No matches.",
+    "collapseTeam": "Collapse team",
+    "expandReports_one": "Expand {{count}} report",
+    "expandReports_other": "Expand {{count}} reports"
   }
 }

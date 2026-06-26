@@ -2053,6 +2053,9 @@
     "fullscreen": "Vollbild umschalten",
     "panHint": "Scrollen zum Zoomen · Ziehen zum Verschieben",
     "noDesignation": "Keine Funktion",
-    "noMatches": "Keine Treffer."
+    "noMatches": "Keine Treffer.",
+    "collapseTeam": "Team einklappen",
+    "expandReports_one": "{{count}} unterstellten Mitarbeiter einblenden",
+    "expandReports_other": "{{count}} unterstellte Mitarbeiter einblenden"
   }
 }

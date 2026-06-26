@@ -2053,6 +2053,9 @@
     "fullscreen": "全画面表示の切り替え",
     "panHint": "スクロールでズーム・ドラッグで移動",
     "noDesignation": "役職なし",
-    "noMatches": "一致なし。"
+    "noMatches": "一致なし。",
+    "collapseTeam": "チームを折りたたむ",
+    "expandReports_one": "{{count}}人の部下を展開",
+    "expandReports_other": "{{count}}人の部下を展開"
   }
 }

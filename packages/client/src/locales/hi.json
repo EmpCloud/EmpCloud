@@ -2053,6 +2053,9 @@
     "fullscreen": "फ़ुलस्क्रीन टॉगल करें",
     "panHint": "ज़ूम के लिए स्क्रॉल करें · पैन के लिए खींचें",
     "noDesignation": "कोई पदनाम नहीं",
-    "noMatches": "कोई मेल नहीं।"
+    "noMatches": "कोई मेल नहीं।",
+    "collapseTeam": "टीम संक्षिप्त करें",
+    "expandReports_one": "{{count}} रिपोर्ट विस्तृत करें",
+    "expandReports_other": "{{count}} रिपोर्ट विस्तृत करें"
   }
 }

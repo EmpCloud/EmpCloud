@@ -2053,6 +2053,9 @@
     "fullscreen": "Plein écran",
     "panHint": "Faites défiler pour zoomer · Glissez pour déplacer",
     "noDesignation": "Aucune fonction",
-    "noMatches": "Aucun résultat."
+    "noMatches": "Aucun résultat.",
+    "collapseTeam": "Réduire l'équipe",
+    "expandReports_one": "Développer {{count}} subordonné",
+    "expandReports_other": "Développer {{count}} subordonnés"
   }
 }

@@ -2053,6 +2053,9 @@
     "fullscreen": "Alternar tela cheia",
     "panHint": "Role para ampliar · Arraste para mover",
     "noDesignation": "Sem cargo",
-    "noMatches": "Nenhum resultado."
+    "noMatches": "Nenhum resultado.",
+    "collapseTeam": "Recolher equipe",
+    "expandReports_one": "Expandir {{count}} subordinado",
+    "expandReports_other": "Expandir {{count}} subordinados"
   }
 }

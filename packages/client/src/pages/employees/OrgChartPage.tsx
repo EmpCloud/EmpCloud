@@ -159,6 +159,7 @@ function ChartNode({
   level?: number;
   highlightedId?: number | null;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(level < 2);
   const hasChildren = node.children.length > 0;
   const isHighlighted = highlightedId === node.id;
@@ -180,7 +181,7 @@ function ChartNode({
               setExpanded(!expanded);
             }}
             className="absolute -bottom-3 left-1/2 z-10 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
-            title={expanded ? "Collapse team" : `Expand ${node.children.length} report${node.children.length === 1 ? "" : "s"}`}
+            title={expanded ? t("orgChart.collapseTeam") : t("orgChart.expandReports", { count: node.children.length })}
           >
             {expanded ? (
               <ChevronDown className="h-3.5 w-3.5" />

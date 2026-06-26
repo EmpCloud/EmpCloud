@@ -2053,6 +2053,9 @@
     "fullscreen": "Pantalla completa",
     "panHint": "Desplázate para hacer zoom · Arrastra para mover",
     "noDesignation": "Sin cargo",
-    "noMatches": "Sin resultados."
+    "noMatches": "Sin resultados.",
+    "collapseTeam": "Contraer equipo",
+    "expandReports_one": "Expandir {{count}} subordinado",
+    "expandReports_other": "Expandir {{count}} subordinados"
   }
 }

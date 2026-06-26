@@ -2053,6 +2053,9 @@
     "fullscreen": "تبديل ملء الشاشة",
     "panHint": "مرّر للتكبير · اسحب للتحريك",
     "noDesignation": "بدون مسمى",
-    "noMatches": "لا توجد نتائج."
+    "noMatches": "لا توجد نتائج.",
+    "collapseTeam": "طي الفريق",
+    "expandReports_one": "توسيع {{count}} مرؤوس",
+    "expandReports_other": "توسيع {{count}} مرؤوسين"
   }
 }
