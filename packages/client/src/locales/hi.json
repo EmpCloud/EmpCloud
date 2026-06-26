@@ -1873,5 +1873,42 @@
         "stressed": "तनावग्रस्त"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "सामुदायिक फ़ोरम",
+      "subtitle": "अपने सहकर्मियों से जुड़ें, चर्चा करें और विचार साझा करें।",
+      "dashboard": "डैशबोर्ड",
+      "newPost": "नई पोस्ट",
+      "categories": "श्रेणियां",
+      "loadingCategories": "श्रेणियां लोड हो रही हैं...",
+      "categoriesError": "श्रेणियां लोड करने में विफल। कृपया पेज रिफ्रेश करें।",
+      "noCategories": "अभी तक कोई श्रेणी नहीं।",
+      "noCategoriesHr": "डैशबोर्ड से एक बनाएं।",
+      "noCategoriesEmployee": "श्रेणियां सेट करने के लिए अपनी एचआर टीम से कहें।",
+      "postsCount_one": "{{count}} पोस्ट",
+      "postsCount_other": "{{count}} पोस्ट",
+      "searchPlaceholder": "चर्चाएं खोजें...",
+      "sortRecent": "हाल की",
+      "sortPopular": "लोकप्रिय",
+      "sortTrending": "ट्रेंडिंग",
+      "postsError": "पोस्ट लोड करने में विफल",
+      "tryRefresh": "कृपया पेज रिफ्रेश करें।",
+      "noPosts": "अभी तक कोई पोस्ट नहीं",
+      "beFirst": "चर्चा शुरू करने वाले पहले बनें!",
+      "startDiscussion": "चर्चा शुरू करें",
+      "pinned": "पिन किया",
+      "locked": "लॉक किया",
+      "justNow": "अभी",
+      "minutesAgo": "{{count}}मि पहले",
+      "hoursAgo": "{{count}}घं पहले",
+      "daysAgo": "{{count}}दि पहले",
+      "postType": {
+        "discussion": "चर्चा",
+        "question": "प्रश्न",
+        "idea": "विचार",
+        "poll": "मतदान"
+      }
+    }
   }
 }

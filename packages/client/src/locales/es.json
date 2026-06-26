@@ -1873,5 +1873,42 @@
         "stressed": "Estresado"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "Foro de la Comunidad",
+      "subtitle": "Conéctate, debate y comparte ideas con tus colegas.",
+      "dashboard": "Panel",
+      "newPost": "Nueva Publicación",
+      "categories": "Categorías",
+      "loadingCategories": "Cargando categorías...",
+      "categoriesError": "No se pudieron cargar las categorías. Intenta actualizar la página.",
+      "noCategories": "Aún no hay categorías.",
+      "noCategoriesHr": "Crea una desde el Panel.",
+      "noCategoriesEmployee": "Pide a tu equipo de RR. HH. que configure categorías.",
+      "postsCount_one": "{{count}} publicación",
+      "postsCount_other": "{{count}} publicaciones",
+      "searchPlaceholder": "Buscar debates...",
+      "sortRecent": "Recientes",
+      "sortPopular": "Populares",
+      "sortTrending": "Tendencia",
+      "postsError": "No se pudieron cargar las publicaciones",
+      "tryRefresh": "Intenta actualizar la página.",
+      "noPosts": "Aún no hay publicaciones",
+      "beFirst": "¡Sé el primero en iniciar un debate!",
+      "startDiscussion": "Iniciar un Debate",
+      "pinned": "Fijado",
+      "locked": "Bloqueado",
+      "justNow": "ahora mismo",
+      "minutesAgo": "hace {{count}}min",
+      "hoursAgo": "hace {{count}}h",
+      "daysAgo": "hace {{count}}d",
+      "postType": {
+        "discussion": "Debate",
+        "question": "Pregunta",
+        "idea": "Idea",
+        "poll": "Encuesta"
+      }
+    }
   }
 }

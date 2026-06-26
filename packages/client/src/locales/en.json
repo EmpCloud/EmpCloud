@@ -1878,5 +1878,42 @@
         "stressed": "Stressed"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "Community Forum",
+      "subtitle": "Connect, discuss, and share ideas with your colleagues.",
+      "dashboard": "Dashboard",
+      "newPost": "New Post",
+      "categories": "Categories",
+      "loadingCategories": "Loading categories...",
+      "categoriesError": "Failed to load categories. Please try refreshing the page.",
+      "noCategories": "No categories yet.",
+      "noCategoriesHr": "Create one from the Dashboard.",
+      "noCategoriesEmployee": "Ask your HR team to set up categories.",
+      "postsCount_one": "{{count}} post",
+      "postsCount_other": "{{count}} posts",
+      "searchPlaceholder": "Search discussions...",
+      "sortRecent": "Recent",
+      "sortPopular": "Popular",
+      "sortTrending": "Trending",
+      "postsError": "Failed to load posts",
+      "tryRefresh": "Please try refreshing the page.",
+      "noPosts": "No posts yet",
+      "beFirst": "Be the first to start a discussion!",
+      "startDiscussion": "Start a Discussion",
+      "pinned": "Pinned",
+      "locked": "Locked",
+      "justNow": "just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago",
+      "postType": {
+        "discussion": "Discussion",
+        "question": "Question",
+        "idea": "Idea",
+        "poll": "Poll"
+      }
+    }
   }
 }

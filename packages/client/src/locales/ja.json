@@ -1873,5 +1873,42 @@
         "stressed": "ストレス"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "コミュニティフォーラム",
+      "subtitle": "同僚とつながり、議論し、アイデアを共有しましょう。",
+      "dashboard": "ダッシュボード",
+      "newPost": "新規投稿",
+      "categories": "カテゴリ",
+      "loadingCategories": "カテゴリを読み込み中...",
+      "categoriesError": "カテゴリの読み込みに失敗しました。ページを更新してください。",
+      "noCategories": "まだカテゴリがありません。",
+      "noCategoriesHr": "ダッシュボードから作成してください。",
+      "noCategoriesEmployee": "人事チームにカテゴリの設定を依頼してください。",
+      "postsCount_one": "{{count}}件の投稿",
+      "postsCount_other": "{{count}}件の投稿",
+      "searchPlaceholder": "ディスカッションを検索...",
+      "sortRecent": "最新",
+      "sortPopular": "人気",
+      "sortTrending": "話題",
+      "postsError": "投稿の読み込みに失敗しました",
+      "tryRefresh": "ページを更新してください。",
+      "noPosts": "まだ投稿がありません",
+      "beFirst": "最初にディスカッションを始めましょう！",
+      "startDiscussion": "ディスカッションを開始",
+      "pinned": "固定",
+      "locked": "ロック",
+      "justNow": "たった今",
+      "minutesAgo": "{{count}}分前",
+      "hoursAgo": "{{count}}時間前",
+      "daysAgo": "{{count}}日前",
+      "postType": {
+        "discussion": "ディスカッション",
+        "question": "質問",
+        "idea": "アイデア",
+        "poll": "投票"
+      }
+    }
   }
 }

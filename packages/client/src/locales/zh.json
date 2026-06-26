@@ -1873,5 +1873,42 @@
         "stressed": "压力大"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "社区论坛",
+      "subtitle": "与同事联系、讨论并分享想法。",
+      "dashboard": "仪表板",
+      "newPost": "发帖",
+      "categories": "分类",
+      "loadingCategories": "正在加载分类...",
+      "categoriesError": "加载分类失败。请尝试刷新页面。",
+      "noCategories": "还没有分类。",
+      "noCategoriesHr": "从仪表板创建一个。",
+      "noCategoriesEmployee": "请联系您的人力资源团队设置分类。",
+      "postsCount_one": "{{count}} 个帖子",
+      "postsCount_other": "{{count}} 个帖子",
+      "searchPlaceholder": "搜索讨论...",
+      "sortRecent": "最新",
+      "sortPopular": "热门",
+      "sortTrending": "趋势",
+      "postsError": "加载帖子失败",
+      "tryRefresh": "请尝试刷新页面。",
+      "noPosts": "还没有帖子",
+      "beFirst": "来发起第一个讨论吧！",
+      "startDiscussion": "发起讨论",
+      "pinned": "已置顶",
+      "locked": "已锁定",
+      "justNow": "刚刚",
+      "minutesAgo": "{{count}} 分钟前",
+      "hoursAgo": "{{count}} 小时前",
+      "daysAgo": "{{count}} 天前",
+      "postType": {
+        "discussion": "讨论",
+        "question": "问题",
+        "idea": "想法",
+        "poll": "投票"
+      }
+    }
   }
 }

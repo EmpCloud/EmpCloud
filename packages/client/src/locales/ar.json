@@ -1873,5 +1873,42 @@
         "stressed": "متوتر"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "منتدى المجتمع",
+      "subtitle": "تواصل وناقش وشارك الأفكار مع زملائك.",
+      "dashboard": "لوحة التحكم",
+      "newPost": "منشور جديد",
+      "categories": "الفئات",
+      "loadingCategories": "جارٍ تحميل الفئات...",
+      "categoriesError": "فشل تحميل الفئات. يرجى تحديث الصفحة.",
+      "noCategories": "لا توجد فئات بعد.",
+      "noCategoriesHr": "أنشئ واحدة من لوحة التحكم.",
+      "noCategoriesEmployee": "اطلب من فريق الموارد البشرية إعداد الفئات.",
+      "postsCount_one": "{{count}} منشور",
+      "postsCount_other": "{{count}} منشورات",
+      "searchPlaceholder": "البحث في النقاشات...",
+      "sortRecent": "الأحدث",
+      "sortPopular": "الأكثر شيوعًا",
+      "sortTrending": "الرائج",
+      "postsError": "فشل تحميل المنشورات",
+      "tryRefresh": "يرجى تحديث الصفحة.",
+      "noPosts": "لا توجد منشورات بعد",
+      "beFirst": "كن أول من يبدأ نقاشًا!",
+      "startDiscussion": "بدء نقاش",
+      "pinned": "مثبّت",
+      "locked": "مقفل",
+      "justNow": "الآن",
+      "minutesAgo": "قبل {{count}} د",
+      "hoursAgo": "قبل {{count}} س",
+      "daysAgo": "قبل {{count}} ي",
+      "postType": {
+        "discussion": "نقاش",
+        "question": "سؤال",
+        "idea": "فكرة",
+        "poll": "استطلاع"
+      }
+    }
   }
 }

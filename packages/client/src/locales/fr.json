@@ -1873,5 +1873,42 @@
         "stressed": "Stressé"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "Forum de la communauté",
+      "subtitle": "Connectez-vous, échangez et partagez des idées avec vos collègues.",
+      "dashboard": "Tableau de bord",
+      "newPost": "Nouvelle publication",
+      "categories": "Catégories",
+      "loadingCategories": "Chargement des catégories...",
+      "categoriesError": "Échec du chargement des catégories. Veuillez actualiser la page.",
+      "noCategories": "Aucune catégorie pour l'instant.",
+      "noCategoriesHr": "Créez-en une depuis le tableau de bord.",
+      "noCategoriesEmployee": "Demandez à votre équipe RH de configurer les catégories.",
+      "postsCount_one": "{{count}} publication",
+      "postsCount_other": "{{count}} publications",
+      "searchPlaceholder": "Rechercher des discussions...",
+      "sortRecent": "Récents",
+      "sortPopular": "Populaires",
+      "sortTrending": "Tendances",
+      "postsError": "Échec du chargement des publications",
+      "tryRefresh": "Veuillez actualiser la page.",
+      "noPosts": "Aucune publication pour l'instant",
+      "beFirst": "Soyez le premier à lancer une discussion !",
+      "startDiscussion": "Lancer une discussion",
+      "pinned": "Épinglé",
+      "locked": "Verrouillé",
+      "justNow": "à l'instant",
+      "minutesAgo": "il y a {{count}}min",
+      "hoursAgo": "il y a {{count}}h",
+      "daysAgo": "il y a {{count}}j",
+      "postType": {
+        "discussion": "Discussion",
+        "question": "Question",
+        "idea": "Idée",
+        "poll": "Sondage"
+      }
+    }
   }
 }

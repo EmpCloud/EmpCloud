@@ -1873,5 +1873,42 @@
         "stressed": "Gestresst"
       }
     }
+  },
+  "forum": {
+    "page": {
+      "title": "Community-Forum",
+      "subtitle": "Vernetzen Sie sich, diskutieren Sie und teilen Sie Ideen mit Ihren Kollegen.",
+      "dashboard": "Dashboard",
+      "newPost": "Neuer Beitrag",
+      "categories": "Kategorien",
+      "loadingCategories": "Kategorien werden geladen...",
+      "categoriesError": "Kategorien konnten nicht geladen werden. Bitte aktualisieren Sie die Seite.",
+      "noCategories": "Noch keine Kategorien.",
+      "noCategoriesHr": "Erstellen Sie eine im Dashboard.",
+      "noCategoriesEmployee": "Bitten Sie Ihr HR-Team, Kategorien einzurichten.",
+      "postsCount_one": "{{count}} Beitrag",
+      "postsCount_other": "{{count}} Beiträge",
+      "searchPlaceholder": "Diskussionen suchen...",
+      "sortRecent": "Neueste",
+      "sortPopular": "Beliebt",
+      "sortTrending": "Im Trend",
+      "postsError": "Beiträge konnten nicht geladen werden",
+      "tryRefresh": "Bitte aktualisieren Sie die Seite.",
+      "noPosts": "Noch keine Beiträge",
+      "beFirst": "Seien Sie der Erste, der eine Diskussion startet!",
+      "startDiscussion": "Diskussion starten",
+      "pinned": "Angeheftet",
+      "locked": "Gesperrt",
+      "justNow": "gerade eben",
+      "minutesAgo": "vor {{count}}Min",
+      "hoursAgo": "vor {{count}}Std",
+      "daysAgo": "vor {{count}}T",
+      "postType": {
+        "discussion": "Diskussion",
+        "question": "Frage",
+        "idea": "Idee",
+        "poll": "Umfrage"
+      }
+    }
   }
 }
