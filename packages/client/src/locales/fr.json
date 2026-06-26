@@ -1544,7 +1544,52 @@
       }
     },
     "title": "Assistance",
-    "myTickets": "Mes tickets",
+    "myTickets": {
+      "title": "Mes tickets",
+      "subtitle": "Suivez vos tickets d'assistance et créez de nouvelles demandes.",
+      "raiseTicket": "Créer un ticket",
+      "newTicket": "Nouveau ticket d'assistance",
+      "category": "Catégorie",
+      "priorityLabel": "Priorité",
+      "subject": "Objet",
+      "subjectPlaceholder": "Bref résumé de votre problème",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez votre problème en détail...",
+      "cancel": "Annuler",
+      "submitting": "Envoi...",
+      "submit": "Envoyer le ticket",
+      "tabAll": "Tous",
+      "noTickets": "Aucun ticket pour l'instant",
+      "noTicketsHint": "Cliquez sur « Créer un ticket » pour soumettre votre première demande d'assistance.",
+      "assigned": "Attribué : {{name}}",
+      "pageOf": "Page {{page}} sur {{total_pages}} ({{total}} au total)",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "cat": {
+        "leave": "Congé",
+        "payroll": "Paie",
+        "benefits": "Avantages",
+        "it": "Informatique",
+        "facilities": "Installations",
+        "onboarding": "Intégration",
+        "policy": "Politique",
+        "general": "Général"
+      },
+      "priority": {
+        "low": "Basse",
+        "medium": "Moyenne",
+        "high": "Haute",
+        "urgent": "Urgente"
+      },
+      "status": {
+        "open": "Ouvert",
+        "in_progress": "En cours",
+        "awaiting_response": "En attente de réponse",
+        "resolved": "Résolu",
+        "closed": "Fermé",
+        "reopened": "Rouvert"
+      }
+    },
     "allTickets": "Tous les tickets",
     "createTicket": "Créer un ticket",
     "knowledgeBase": "Base de connaissances",

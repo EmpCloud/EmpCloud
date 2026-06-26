@@ -1544,7 +1544,52 @@
       }
     },
     "title": "Mesa de ayuda",
-    "myTickets": "Mis tickets",
+    "myTickets": {
+      "title": "Mis Tickets",
+      "subtitle": "Sigue tus tickets de soporte y crea nuevas solicitudes.",
+      "raiseTicket": "Crear Ticket",
+      "newTicket": "Nuevo Ticket de Soporte",
+      "category": "Categoría",
+      "priorityLabel": "Prioridad",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Breve resumen de tu problema",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe tu problema en detalle...",
+      "cancel": "Cancelar",
+      "submitting": "Enviando...",
+      "submit": "Enviar Ticket",
+      "tabAll": "Todos",
+      "noTickets": "Aún no hay tickets",
+      "noTicketsHint": "Haz clic en \"Crear Ticket\" para enviar tu primera solicitud de soporte.",
+      "assigned": "Asignado: {{name}}",
+      "pageOf": "Página {{page}} de {{total_pages}} ({{total}} en total)",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "cat": {
+        "leave": "Permiso",
+        "payroll": "Nómina",
+        "benefits": "Beneficios",
+        "it": "TI",
+        "facilities": "Instalaciones",
+        "onboarding": "Incorporación",
+        "policy": "Política",
+        "general": "General"
+      },
+      "priority": {
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "status": {
+        "open": "Abierto",
+        "in_progress": "En Progreso",
+        "awaiting_response": "Esperando Respuesta",
+        "resolved": "Resuelto",
+        "closed": "Cerrado",
+        "reopened": "Reabierto"
+      }
+    },
     "allTickets": "Todos los tickets",
     "createTicket": "Crear ticket",
     "knowledgeBase": "Base de conocimientos",

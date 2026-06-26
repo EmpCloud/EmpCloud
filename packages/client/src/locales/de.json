@@ -1544,7 +1544,52 @@
       }
     },
     "title": "Helpdesk",
-    "myTickets": "Meine Tickets",
+    "myTickets": {
+      "title": "Meine Tickets",
+      "subtitle": "Verfolgen Sie Ihre Helpdesk-Tickets und stellen Sie neue Anfragen.",
+      "raiseTicket": "Ticket erstellen",
+      "newTicket": "Neues Helpdesk-Ticket",
+      "category": "Kategorie",
+      "priorityLabel": "Priorität",
+      "subject": "Betreff",
+      "subjectPlaceholder": "Kurze Zusammenfassung Ihres Problems",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie Ihr Problem im Detail...",
+      "cancel": "Abbrechen",
+      "submitting": "Wird gesendet...",
+      "submit": "Ticket senden",
+      "tabAll": "Alle",
+      "noTickets": "Noch keine Tickets",
+      "noTicketsHint": "Klicken Sie auf „Ticket erstellen“, um Ihre erste Helpdesk-Anfrage zu senden.",
+      "assigned": "Zugewiesen: {{name}}",
+      "pageOf": "Seite {{page}} von {{total_pages}} ({{total}} gesamt)",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "cat": {
+        "leave": "Urlaub",
+        "payroll": "Gehaltsabrechnung",
+        "benefits": "Leistungen",
+        "it": "IT",
+        "facilities": "Einrichtungen",
+        "onboarding": "Onboarding",
+        "policy": "Richtlinie",
+        "general": "Allgemein"
+      },
+      "priority": {
+        "low": "Niedrig",
+        "medium": "Mittel",
+        "high": "Hoch",
+        "urgent": "Dringend"
+      },
+      "status": {
+        "open": "Offen",
+        "in_progress": "In Bearbeitung",
+        "awaiting_response": "Wartet auf Antwort",
+        "resolved": "Gelöst",
+        "closed": "Geschlossen",
+        "reopened": "Wiedereröffnet"
+      }
+    },
     "allTickets": "Alle Tickets",
     "createTicket": "Ticket erstellen",
     "knowledgeBase": "Wissensdatenbank",

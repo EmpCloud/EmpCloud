@@ -1544,7 +1544,52 @@
       }
     },
     "title": "हेल्पडेस्क",
-    "myTickets": "मेरे टिकट",
+    "myTickets": {
+      "title": "मेरे टिकट",
+      "subtitle": "अपने हेल्पडेस्क टिकट ट्रैक करें और नई अनुरोध करें।",
+      "raiseTicket": "टिकट बनाएं",
+      "newTicket": "नया हेल्पडेस्क टिकट",
+      "category": "श्रेणी",
+      "priorityLabel": "प्राथमिकता",
+      "subject": "विषय",
+      "subjectPlaceholder": "आपकी समस्या का संक्षिप्त सारांश",
+      "description": "विवरण",
+      "descriptionPlaceholder": "अपनी समस्या का विस्तार से वर्णन करें...",
+      "cancel": "रद्द करें",
+      "submitting": "भेजा जा रहा है...",
+      "submit": "टिकट भेजें",
+      "tabAll": "सभी",
+      "noTickets": "अभी तक कोई टिकट नहीं",
+      "noTicketsHint": "अपना पहला हेल्पडेस्क अनुरोध भेजने के लिए \"टिकट बनाएं\" पर क्लिक करें।",
+      "assigned": "सौंपा गया: {{name}}",
+      "pageOf": "पृष्ठ {{page}} / {{total_pages}} (कुल {{total}})",
+      "previous": "पिछला",
+      "next": "अगला",
+      "cat": {
+        "leave": "अवकाश",
+        "payroll": "वेतन",
+        "benefits": "लाभ",
+        "it": "आईटी",
+        "facilities": "सुविधाएं",
+        "onboarding": "ऑनबोर्डिंग",
+        "policy": "नीति",
+        "general": "सामान्य"
+      },
+      "priority": {
+        "low": "कम",
+        "medium": "मध्यम",
+        "high": "उच्च",
+        "urgent": "अत्यावश्यक"
+      },
+      "status": {
+        "open": "खुला",
+        "in_progress": "प्रगति पर",
+        "awaiting_response": "प्रतिक्रिया प्रतीक्षित",
+        "resolved": "हल किया",
+        "closed": "बंद",
+        "reopened": "फिर से खोला"
+      }
+    },
     "allTickets": "सभी टिकट",
     "createTicket": "टिकट बनाएं",
     "knowledgeBase": "ज्ञान आधार",

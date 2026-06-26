@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -33,6 +34,7 @@ const CATEGORIES = [
 const PRIORITIES = ["low", "medium", "high", "urgent"];
 
 export default function MyTicketsPage() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -88,16 +90,16 @@ export default function MyTicketsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Tickets</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("helpdesk.myTickets.title")}</h1>
           <p className="text-gray-500 mt-1">
-            Track your helpdesk tickets and raise new requests.
+            {t("helpdesk.myTickets.subtitle")}
           </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" /> Raise a Ticket
+          <Plus className="h-4 w-4" /> {t("helpdesk.myTickets.raiseTicket")}
         </button>
       </div>
 
@@ -106,7 +108,7 @@ export default function MyTicketsPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              New Helpdesk Ticket
+              {t("helpdesk.myTickets.newTicket")}
             </h2>
             <button
               onClick={() => setShowForm(false)}
@@ -119,7 +121,7 @@ export default function MyTicketsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                  {t("helpdesk.myTickets.category")}
                 </label>
                 <select
                   value={formCategory}
@@ -128,14 +130,14 @@ export default function MyTicketsPage() {
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
-                      {c.charAt(0).toUpperCase() + c.slice(1)}
+                      {t(`helpdesk.myTickets.cat.${c}`, { defaultValue: c })}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Priority
+                  {t("helpdesk.myTickets.priorityLabel")}
                 </label>
                 <select
                   value={formPriority}
@@ -144,7 +146,7 @@ export default function MyTicketsPage() {
                 >
                   {PRIORITIES.map((p) => (
                     <option key={p} value={p}>
-                      {p.charAt(0).toUpperCase() + p.slice(1)}
+                      {t(`helpdesk.myTickets.priority.${p}`, { defaultValue: p })}
                     </option>
                   ))}
                 </select>
@@ -153,27 +155,27 @@ export default function MyTicketsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Subject
+                {t("helpdesk.myTickets.subject")}
               </label>
               <input
                 type="text"
                 value={formSubject}
                 onChange={(e) => setFormSubject(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Brief summary of your issue"
+                placeholder={t("helpdesk.myTickets.subjectPlaceholder")}
                 required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                {t("helpdesk.myTickets.description")}
               </label>
               <textarea
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[120px]"
-                placeholder="Describe your issue in detail..."
+                placeholder={t("helpdesk.myTickets.descriptionPlaceholder")}
                 required
               />
             </div>
@@ -184,7 +186,7 @@ export default function MyTicketsPage() {
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("helpdesk.myTickets.cancel")}
               </button>
               <button
                 type="submit"
@@ -192,7 +194,7 @@ export default function MyTicketsPage() {
                 className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <TicketCheck className="h-4 w-4" />
-                {createTicket.isPending ? "Submitting..." : "Submit Ticket"}
+                {createTicket.isPending ? t("helpdesk.myTickets.submitting") : t("helpdesk.myTickets.submit")}
               </button>
             </div>
           </form>
@@ -207,19 +209,19 @@ export default function MyTicketsPage() {
             !statusFilter ? "bg-brand-50 text-brand-700" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
-          All
+          {t("helpdesk.myTickets.tabAll")}
         </button>
         {["open", "in_progress", "resolved", "closed"].map((s) => (
           <button
             key={s}
             onClick={() => { setStatusFilter(s); setPage(1); }}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s
                 ? "bg-brand-50 text-brand-700"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            {s.replace("_", " ")}
+            {t(`helpdesk.myTickets.status.${s}`)}
           </button>
         ))}
       </div>
@@ -248,51 +250,51 @@ export default function MyTicketsPage() {
         ) : tickets.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
             <TicketCheck className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-lg font-medium text-gray-500 mb-1">No tickets yet</p>
+            <p className="text-lg font-medium text-gray-500 mb-1">{t("helpdesk.myTickets.noTickets")}</p>
             <p className="text-sm">
-              Click "Raise a Ticket" to submit your first helpdesk request.
+              {t("helpdesk.myTickets.noTicketsHint")}
             </p>
           </div>
         ) : (
-          tickets.map((t: any) => (
+          tickets.map((ticket: any) => (
             <Link
-              key={t.id}
-              to={`/helpdesk/tickets/${t.id}`}
+              key={ticket.id}
+              to={`/helpdesk/tickets/${ticket.id}`}
               className="block bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-gray-400 font-mono">#{t.id}</span>
+                    <span className="text-xs text-gray-400 font-mono">#{ticket.id}</span>
                     <span
-                      className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
-                        PRIORITY_COLORS[t.priority] || ""
+                      className={`text-xs font-medium px-2 py-0.5 rounded ${
+                        PRIORITY_COLORS[ticket.priority] || ""
                       }`}
                     >
-                      {t.priority}
+                      {t(`helpdesk.myTickets.priority.${ticket.priority}`, { defaultValue: ticket.priority })}
                     </span>
                     <span
                       className={`text-xs font-medium px-2 py-0.5 rounded ${
-                        STATUS_COLORS[t.status] || ""
+                        STATUS_COLORS[ticket.status] || ""
                       }`}
                     >
-                      {t.status.replace(/_/g, " ")}
+                      {t(`helpdesk.myTickets.status.${ticket.status}`, { defaultValue: ticket.status.replace(/_/g, " ") })}
                     </span>
                   </div>
                   <h3 className="text-sm font-semibold text-gray-900 truncate">
-                    {t.subject}
+                    {ticket.subject}
                   </h3>
                   <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                    {t.description}
+                    {ticket.description}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-xs text-gray-400">
-                    {new Date(t.created_at).toLocaleDateString()}
+                    {new Date(ticket.created_at).toLocaleDateString()}
                   </p>
-                  {t.assigned_to_name && (
+                  {ticket.assigned_to_name && (
                     <p className="text-xs text-gray-500 mt-1">
-                      Assigned: {t.assigned_to_name}
+                      {t("helpdesk.myTickets.assigned", { name: ticket.assigned_to_name })}
                     </p>
                   )}
                 </div>
@@ -306,7 +308,7 @@ export default function MyTicketsPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("helpdesk.myTickets.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -314,14 +316,14 @@ export default function MyTicketsPage() {
               disabled={page === 1}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
+              <ChevronLeft className="h-4 w-4" /> {t("helpdesk.myTickets.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next <ChevronRight className="h-4 w-4" />
+              {t("helpdesk.myTickets.next")} <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>

@@ -1544,7 +1544,52 @@
       }
     },
     "title": "Suporte",
-    "myTickets": "Meus chamados",
+    "myTickets": {
+      "title": "Meus Chamados",
+      "subtitle": "Acompanhe seus chamados de suporte e abra novas solicitações.",
+      "raiseTicket": "Abrir Chamado",
+      "newTicket": "Novo Chamado de Suporte",
+      "category": "Categoria",
+      "priorityLabel": "Prioridade",
+      "subject": "Assunto",
+      "subjectPlaceholder": "Resumo breve do seu problema",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Descreva seu problema em detalhes...",
+      "cancel": "Cancelar",
+      "submitting": "Enviando...",
+      "submit": "Enviar Chamado",
+      "tabAll": "Todos",
+      "noTickets": "Nenhum chamado ainda",
+      "noTicketsHint": "Clique em \"Abrir Chamado\" para enviar sua primeira solicitação de suporte.",
+      "assigned": "Atribuído: {{name}}",
+      "pageOf": "Página {{page}} de {{total_pages}} ({{total}} no total)",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "cat": {
+        "leave": "Licença",
+        "payroll": "Folha de Pagamento",
+        "benefits": "Benefícios",
+        "it": "TI",
+        "facilities": "Instalações",
+        "onboarding": "Integração",
+        "policy": "Política",
+        "general": "Geral"
+      },
+      "priority": {
+        "low": "Baixa",
+        "medium": "Média",
+        "high": "Alta",
+        "urgent": "Urgente"
+      },
+      "status": {
+        "open": "Aberto",
+        "in_progress": "Em Andamento",
+        "awaiting_response": "Aguardando Resposta",
+        "resolved": "Resolvido",
+        "closed": "Fechado",
+        "reopened": "Reaberto"
+      }
+    },
     "allTickets": "Todos os chamados",
     "createTicket": "Criar chamado",
     "knowledgeBase": "Base de conhecimento",

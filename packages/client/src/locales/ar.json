@@ -1544,7 +1544,52 @@
       }
     },
     "title": "مكتب المساعدة",
-    "myTickets": "تذاكري",
+    "myTickets": {
+      "title": "تذاكري",
+      "subtitle": "تابع تذاكر مكتب المساعدة الخاصة بك وأنشئ طلبات جديدة.",
+      "raiseTicket": "إنشاء تذكرة",
+      "newTicket": "تذكرة مكتب مساعدة جديدة",
+      "category": "الفئة",
+      "priorityLabel": "الأولوية",
+      "subject": "الموضوع",
+      "subjectPlaceholder": "ملخص موجز لمشكلتك",
+      "description": "الوصف",
+      "descriptionPlaceholder": "صف مشكلتك بالتفصيل...",
+      "cancel": "إلغاء",
+      "submitting": "جارٍ الإرسال...",
+      "submit": "إرسال التذكرة",
+      "tabAll": "الكل",
+      "noTickets": "لا توجد تذاكر بعد",
+      "noTicketsHint": "انقر على \"إنشاء تذكرة\" لإرسال أول طلب لمكتب المساعدة.",
+      "assigned": "معيّن إلى: {{name}}",
+      "pageOf": "الصفحة {{page}} من {{total_pages}} (الإجمالي {{total}})",
+      "previous": "السابق",
+      "next": "التالي",
+      "cat": {
+        "leave": "إجازة",
+        "payroll": "الرواتب",
+        "benefits": "المزايا",
+        "it": "تقنية المعلومات",
+        "facilities": "المرافق",
+        "onboarding": "التهيئة",
+        "policy": "السياسة",
+        "general": "عام"
+      },
+      "priority": {
+        "low": "منخفضة",
+        "medium": "متوسطة",
+        "high": "عالية",
+        "urgent": "عاجلة"
+      },
+      "status": {
+        "open": "مفتوح",
+        "in_progress": "قيد التنفيذ",
+        "awaiting_response": "بانتظار الرد",
+        "resolved": "تم الحل",
+        "closed": "مغلق",
+        "reopened": "أعيد فتحه"
+      }
+    },
     "allTickets": "جميع التذاكر",
     "createTicket": "إنشاء تذكرة",
     "knowledgeBase": "قاعدة المعرفة",

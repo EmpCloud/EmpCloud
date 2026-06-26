@@ -1547,7 +1547,52 @@
       }
     },
     "title": "Helpdesk",
-    "myTickets": "My Tickets",
+    "myTickets": {
+      "title": "My Tickets",
+      "subtitle": "Track your helpdesk tickets and raise new requests.",
+      "raiseTicket": "Raise a Ticket",
+      "newTicket": "New Helpdesk Ticket",
+      "category": "Category",
+      "priorityLabel": "Priority",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief summary of your issue",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your issue in detail...",
+      "cancel": "Cancel",
+      "submitting": "Submitting...",
+      "submit": "Submit Ticket",
+      "tabAll": "All",
+      "noTickets": "No tickets yet",
+      "noTicketsHint": "Click \"Raise a Ticket\" to submit your first helpdesk request.",
+      "assigned": "Assigned: {{name}}",
+      "pageOf": "Page {{page}} of {{total_pages}} ({{total}} total)",
+      "previous": "Previous",
+      "next": "Next",
+      "cat": {
+        "leave": "Leave",
+        "payroll": "Payroll",
+        "benefits": "Benefits",
+        "it": "IT",
+        "facilities": "Facilities",
+        "onboarding": "Onboarding",
+        "policy": "Policy",
+        "general": "General"
+      },
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "status": {
+        "open": "Open",
+        "in_progress": "In Progress",
+        "awaiting_response": "Awaiting Response",
+        "resolved": "Resolved",
+        "closed": "Closed",
+        "reopened": "Reopened"
+      }
+    },
     "allTickets": "All Tickets",
     "createTicket": "Create Ticket",
     "knowledgeBase": "Knowledge Base",
