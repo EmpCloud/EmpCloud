@@ -2050,6 +2050,7 @@
     "empty": "Aucun employé trouvé. Ajoutez des employés pour voir l'organigramme.",
     "zoomIn": "Zoomer",
     "zoomOut": "Dézoomer",
-    "fullscreen": "Plein écran"
+    "fullscreen": "Plein écran",
+    "panHint": "Faites défiler pour zoomer · Glissez pour déplacer"
   }
 }

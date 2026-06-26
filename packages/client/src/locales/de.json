@@ -2050,6 +2050,7 @@
     "empty": "Keine Mitarbeiter gefunden. Fügen Sie Mitarbeiter hinzu, um das Organigramm zu sehen.",
     "zoomIn": "Vergrößern",
     "zoomOut": "Verkleinern",
-    "fullscreen": "Vollbild umschalten"
+    "fullscreen": "Vollbild umschalten",
+    "panHint": "Scrollen zum Zoomen · Ziehen zum Verschieben"
   }
 }

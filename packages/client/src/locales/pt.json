@@ -2050,6 +2050,7 @@
     "empty": "Nenhum funcionário encontrado. Adicione funcionários para ver o organograma.",
     "zoomIn": "Aumentar zoom",
     "zoomOut": "Diminuir zoom",
-    "fullscreen": "Alternar tela cheia"
+    "fullscreen": "Alternar tela cheia",
+    "panHint": "Role para ampliar · Arraste para mover"
   }
 }

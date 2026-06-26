@@ -2050,6 +2050,7 @@
     "empty": "No se encontraron empleados. Agrega empleados para ver el organigrama.",
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",
-    "fullscreen": "Pantalla completa"
+    "fullscreen": "Pantalla completa",
+    "panHint": "Desplázate para hacer zoom · Arrastra para mover"
   }
 }

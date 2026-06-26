@@ -2055,6 +2055,7 @@
     "empty": "No employees found. Add employees to see the org chart.",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
-    "fullscreen": "Toggle fullscreen"
+    "fullscreen": "Toggle fullscreen",
+    "panHint": "Scroll to zoom · Drag to pan"
   }
 }

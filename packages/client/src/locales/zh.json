@@ -2050,6 +2050,7 @@
     "empty": "未找到员工。添加员工以查看组织结构图。",
     "zoomIn": "放大",
     "zoomOut": "缩小",
-    "fullscreen": "切换全屏"
+    "fullscreen": "切换全屏",
+    "panHint": "滚动缩放 · 拖动平移"
   }
 }

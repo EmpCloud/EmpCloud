@@ -814,7 +814,7 @@ export default function OrgChartPage() {
 
             {/* Hint text */}
             <div className="absolute bottom-3 left-3 z-20 text-[11px] text-gray-400 select-none pointer-events-none">
-              Scroll to zoom &middot; Drag to pan
+              {t("orgChart.panHint")}
             </div>
 
             {/* Transformable content layer */}
