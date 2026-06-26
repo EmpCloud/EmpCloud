@@ -2032,5 +2032,8 @@
       "publishing": "公開中...",
       "publish": "投稿を公開"
     }
+  },
+  "orgChart": {
+    "title": "組織図"
   }
 }

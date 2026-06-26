@@ -2032,5 +2032,8 @@
       "publishing": "Publication...",
       "publish": "Publier"
     }
+  },
+  "orgChart": {
+    "title": "Organigramme"
   }
 }

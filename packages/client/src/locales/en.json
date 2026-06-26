@@ -2037,5 +2037,8 @@
       "publishing": "Publishing...",
       "publish": "Publish Post"
     }
+  },
+  "orgChart": {
+    "title": "Organization Chart"
   }
 }

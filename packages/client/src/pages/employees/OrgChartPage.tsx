@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -296,6 +297,7 @@ function MobileTreeNode({
 /*  Main page — pannable / zoomable viewport                          */
 /* ------------------------------------------------------------------ */
 export default function OrgChartPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data, isLoading } = useQuery({
     queryKey: ["org-chart"],
@@ -616,7 +618,7 @@ export default function OrgChartPage() {
               <Network className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Organization Chart</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t("orgChart.title")}</h1>
               <p className="mt-0.5 text-sm text-gray-500">
                 Visualize reporting structure across your organization.
               </p>
