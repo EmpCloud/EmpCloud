@@ -373,7 +373,10 @@
     "feed": "Feed",
     "moduleAccess": "Module Access",
     "wellnessCheckIn": "Daily Check-in",
-    "changePassword": "Change Password"
+    "changePassword": "Change Password",
+    "viewAttendance": "View Attendance",
+    "attendanceGrid": "Attendance Grid",
+    "attendanceSettings": "Attendance Settings"
   },
   "common": {
     "save": "Save",
@@ -1229,6 +1232,59 @@
         "approved": "approved",
         "rejected": "rejected"
       }
+    },
+    "grid": {
+      "subtitle": "Date-wise attendance for the whole month. Double-click any cell to change the status.",
+      "export": "Export",
+      "exporting": "Exporting...",
+      "exportTooltip": "Download the visible grid (with active filters) as an Excel file",
+      "searchEmployee": "Search employee",
+      "searchPlaceholder": "Name or employee code",
+      "department": "Department",
+      "allDepartments": "All departments",
+      "location": "Location",
+      "allLocations": "All locations",
+      "employeeCount": "{{shown}} of {{total}} employees",
+      "clearFilters": "Clear filters",
+      "employee": "Employee",
+      "noEmployees": "No employees in this org.",
+      "noMatch": "No employees match the current filters.",
+      "totalRow": "Total {{code}} — {{label}}",
+      "tip": "Tip: double-click any cell to mark P / A / H / L / HPL / WOT / HOT. WO and HO are computed automatically from the org calendar; pick a value to override or \"—\" to revert. A worker with both check-in and check-out in a day is classified by hours worked vs shift length: below 25% of shift → A (Absent), 25–50% → H (Half day), 50%+ → P (Present). A past day where the worker checked in but never checked out shows as M (Missed check-out) so HR can review and override before payroll.",
+      "savedToast": "Saved {{code}} for {{date}}",
+      "saveFailed": "Failed to save attendance",
+      "leaveAppliedToast": "Leave applied for {{name}} on {{date}}",
+      "legend": {
+        "present": "Present",
+        "absent": "Absent",
+        "halfDay": "Half day",
+        "onLeave": "On leave",
+        "hpl": "½ Present + ½ Leave",
+        "weekOff": "Week off",
+        "holiday": "Holiday",
+        "wot": "Week-off OT (worked)",
+        "hot": "Holiday OT (worked)",
+        "missed": "Missed check-out"
+      },
+      "editor": {
+        "close": "Close",
+        "existingLeave": "Existing leave on this date",
+        "halfPm": "½ PM",
+        "halfAm": "½ AM",
+        "halfDayShort": "half day",
+        "setStatus": "Set status",
+        "applyLeave": "Apply leave",
+        "loadingTypes": "Loading types…",
+        "noLeaveTypes": "No active leave types in the org.",
+        "noBalance": "No balance left for {{name}}",
+        "applyOneDay": "Apply 1 day of {{name}}",
+        "left": "{{count}} left",
+        "hplShort": "½P + ½L",
+        "weekOffOt": "Week-off OT",
+        "holidayOt": "Holiday OT",
+        "reset": "Reset"
+      },
+      "applyLeaveFailed": "Failed to apply leave"
     }
   },
   "manager": {

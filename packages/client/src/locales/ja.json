@@ -373,7 +373,10 @@
     "moduleAccess": "モジュールアクセス",
     "wellnessCheckIn": "毎日のチェックイン",
     "messages": "メッセージ",
-    "changePassword": "パスワードの変更"
+    "changePassword": "パスワードの変更",
+    "viewAttendance": "勤怠を表示",
+    "attendanceGrid": "勤怠グリッド",
+    "attendanceSettings": "勤怠設定"
   },
   "common": {
     "save": "保存",
@@ -1226,6 +1229,59 @@
         "approved": "承認済み",
         "rejected": "却下"
       }
+    },
+    "grid": {
+      "subtitle": "月全体の日付別勤怠。セルをダブルクリックしてステータスを変更できます。",
+      "export": "エクスポート",
+      "exporting": "エクスポート中...",
+      "exportTooltip": "表示中のグリッド（適用中のフィルター付き）をExcelファイルとしてダウンロード",
+      "searchEmployee": "従業員を検索",
+      "searchPlaceholder": "氏名または従業員コード",
+      "department": "部署",
+      "allDepartments": "すべての部署",
+      "location": "勤務地",
+      "allLocations": "すべての勤務地",
+      "employeeCount": "{{total}}人中{{shown}}人の従業員",
+      "clearFilters": "フィルターをクリア",
+      "employee": "従業員",
+      "noEmployees": "この組織に従業員がいません。",
+      "noMatch": "現在のフィルターに一致する従業員はいません。",
+      "totalRow": "合計 {{code}} — {{label}}",
+      "tip": "ヒント: セルをダブルクリックして P / A / H / L / HPL / WOT / HOT をマークします。WOとHOは組織カレンダーから自動計算されます。上書きする値を選ぶか「—」で元に戻します。同日に出勤と退勤の両方がある従業員は、勤務時間とシフト長の比率で分類されます: シフトの25%未満 → A（欠勤）、25–50% → H（半休）、50%以上 → P（出勤）。出勤したが退勤しなかった過去の日は M（退勤打刻漏れ）と表示され、給与計算前に人事が確認・修正できます。",
+      "savedToast": "{{date}}に{{code}}を保存しました",
+      "saveFailed": "勤怠の保存に失敗しました",
+      "leaveAppliedToast": "{{date}}に{{name}}の休暇を適用しました",
+      "legend": {
+        "present": "出勤",
+        "absent": "欠勤",
+        "halfDay": "半休",
+        "onLeave": "休暇中",
+        "hpl": "½出勤 + ½休暇",
+        "weekOff": "週休",
+        "holiday": "祝日",
+        "wot": "週休残業（勤務）",
+        "hot": "祝日残業（勤務）",
+        "missed": "退勤打刻漏れ"
+      },
+      "editor": {
+        "close": "閉じる",
+        "existingLeave": "この日付の既存の休暇",
+        "halfPm": "½午後",
+        "halfAm": "½午前",
+        "halfDayShort": "半休",
+        "setStatus": "ステータスを設定",
+        "applyLeave": "休暇を適用",
+        "loadingTypes": "種類を読み込み中…",
+        "noLeaveTypes": "組織に有効な休暇種類がありません。",
+        "noBalance": "{{name}}の残高がありません",
+        "applyOneDay": "{{name}}を1日適用",
+        "left": "残り{{count}}",
+        "hplShort": "½出+½休",
+        "weekOffOt": "週休残業",
+        "holidayOt": "祝日残業",
+        "reset": "リセット"
+      },
+      "applyLeaveFailed": "休暇の適用に失敗しました"
     }
   },
   "manager": {

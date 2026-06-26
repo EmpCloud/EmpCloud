@@ -361,8 +361,8 @@
     "platformSettings": "Configuración de plataforma",
     "people": "Personas",
     "attendanceDashboard": "Panel",
-    "shiftSettings": "Configuración de turnos",
-    "shiftSchedule": "Planificación de turnos",
+    "shiftSettings": "Configuración de Turnos",
+    "shiftSchedule": "Horario de Turnos",
     "regularizations": "Regularizaciones",
     "leaveManagement": "Licencias",
     "holidays": "Festivos",
@@ -373,7 +373,10 @@
     "moduleAccess": "Acceso a módulos",
     "wellnessCheckIn": "Check-in diario",
     "messages": "Mensajes",
-    "changePassword": "Cambiar Contraseña"
+    "changePassword": "Cambiar Contraseña",
+    "viewAttendance": "Ver Asistencia",
+    "attendanceGrid": "Cuadrícula de Asistencia",
+    "attendanceSettings": "Configuración de Asistencia"
   },
   "common": {
     "save": "Guardar",
@@ -1226,6 +1229,59 @@
         "approved": "aprobada",
         "rejected": "rechazada"
       }
+    },
+    "grid": {
+      "subtitle": "Asistencia por fecha de todo el mes. Haz doble clic en cualquier celda para cambiar el estado.",
+      "export": "Exportar",
+      "exporting": "Exportando...",
+      "exportTooltip": "Descargar la cuadrícula visible (con los filtros activos) como archivo Excel",
+      "searchEmployee": "Buscar empleado",
+      "searchPlaceholder": "Nombre o código de empleado",
+      "department": "Departamento",
+      "allDepartments": "Todos los departamentos",
+      "location": "Ubicación",
+      "allLocations": "Todas las ubicaciones",
+      "employeeCount": "{{shown}} de {{total}} empleados",
+      "clearFilters": "Borrar filtros",
+      "employee": "Empleado",
+      "noEmployees": "No hay empleados en esta organización.",
+      "noMatch": "Ningún empleado coincide con los filtros actuales.",
+      "totalRow": "Total {{code}} — {{label}}",
+      "tip": "Sugerencia: haz doble clic en cualquier celda para marcar P / A / H / L / HPL / WOT / HOT. WO y HO se calculan automáticamente desde el calendario de la organización; elige un valor para anular o \"—\" para revertir. Un trabajador con entrada y salida el mismo día se clasifica por horas trabajadas frente a la duración del turno: por debajo del 25% del turno → A (Ausente), 25–50% → H (Medio día), 50%+ → P (Presente). Un día pasado en el que el trabajador fichó la entrada pero nunca la salida aparece como M (Salida no registrada) para que RR. HH. pueda revisar y anular antes de la nómina.",
+      "savedToast": "{{code}} guardado para {{date}}",
+      "saveFailed": "No se pudo guardar la asistencia",
+      "leaveAppliedToast": "Permiso aplicado a {{name}} el {{date}}",
+      "legend": {
+        "present": "Presente",
+        "absent": "Ausente",
+        "halfDay": "Medio día",
+        "onLeave": "De permiso",
+        "hpl": "½ Presente + ½ Permiso",
+        "weekOff": "Descanso",
+        "holiday": "Festivo",
+        "wot": "HE en descanso (trabajado)",
+        "hot": "HE en festivo (trabajado)",
+        "missed": "Salida no registrada"
+      },
+      "editor": {
+        "close": "Cerrar",
+        "existingLeave": "Permiso existente en esta fecha",
+        "halfPm": "½ tarde",
+        "halfAm": "½ mañana",
+        "halfDayShort": "medio día",
+        "setStatus": "Establecer estado",
+        "applyLeave": "Aplicar permiso",
+        "loadingTypes": "Cargando tipos…",
+        "noLeaveTypes": "No hay tipos de permiso activos en la organización.",
+        "noBalance": "Sin saldo restante para {{name}}",
+        "applyOneDay": "Aplicar 1 día de {{name}}",
+        "left": "{{count}} restante(s)",
+        "hplShort": "½P + ½L",
+        "weekOffOt": "HE descanso",
+        "holidayOt": "HE festivo",
+        "reset": "Restablecer"
+      },
+      "applyLeaveFailed": "No se pudo aplicar el permiso"
     }
   },
   "manager": {

@@ -362,7 +362,7 @@
     "people": "人员",
     "attendanceDashboard": "仪表板",
     "shiftSettings": "班次设置",
-    "shiftSchedule": "班次安排",
+    "shiftSchedule": "班次排程",
     "regularizations": "补签",
     "leaveManagement": "请假",
     "holidays": "节假日",
@@ -373,7 +373,10 @@
     "moduleAccess": "模块访问",
     "wellnessCheckIn": "每日打卡",
     "messages": "消息",
-    "changePassword": "修改密码"
+    "changePassword": "修改密码",
+    "viewAttendance": "查看考勤",
+    "attendanceGrid": "考勤网格",
+    "attendanceSettings": "考勤设置"
   },
   "common": {
     "save": "保存",
@@ -1226,6 +1229,59 @@
         "approved": "已批准",
         "rejected": "已拒绝"
       }
+    },
+    "grid": {
+      "subtitle": "整月的按日期考勤。双击任意单元格可更改状态。",
+      "export": "导出",
+      "exporting": "导出中...",
+      "exportTooltip": "将可见网格（含已应用的筛选）下载为 Excel 文件",
+      "searchEmployee": "搜索员工",
+      "searchPlaceholder": "姓名或员工编号",
+      "department": "部门",
+      "allDepartments": "所有部门",
+      "location": "地点",
+      "allLocations": "所有地点",
+      "employeeCount": "{{total}} 名员工中的 {{shown}} 名",
+      "clearFilters": "清除筛选",
+      "employee": "员工",
+      "noEmployees": "该组织没有员工。",
+      "noMatch": "没有员工符合当前筛选条件。",
+      "totalRow": "合计 {{code}} — {{label}}",
+      "tip": "提示：双击任意单元格以标记 P / A / H / L / HPL / WOT / HOT。WO 和 HO 根据组织日历自动计算；选择一个值进行覆盖，或选\"—\"恢复。同一天既有签到又有签退的员工按工时与班次时长之比分类：低于班次的 25% → A（缺勤），25–50% → H（半天），50%+ → P（出勤）。过去某天员工签到但从未签退则显示为 M（漏签退），以便人力资源在发薪前审核和覆盖。",
+      "savedToast": "已为 {{date}} 保存 {{code}}",
+      "saveFailed": "保存考勤失败",
+      "leaveAppliedToast": "已于 {{date}} 为 {{name}} 申请请假",
+      "legend": {
+        "present": "出勤",
+        "absent": "缺勤",
+        "halfDay": "半天",
+        "onLeave": "请假",
+        "hpl": "½ 出勤 + ½ 请假",
+        "weekOff": "周休",
+        "holiday": "假日",
+        "wot": "周休加班（已工作）",
+        "hot": "假日加班（已工作）",
+        "missed": "漏签退"
+      },
+      "editor": {
+        "close": "关闭",
+        "existingLeave": "此日期已有请假",
+        "halfPm": "½ 下午",
+        "halfAm": "½ 上午",
+        "halfDayShort": "半天",
+        "setStatus": "设置状态",
+        "applyLeave": "申请请假",
+        "loadingTypes": "正在加载类型…",
+        "noLeaveTypes": "组织中没有可用的请假类型。",
+        "noBalance": "{{name}} 没有剩余余额",
+        "applyOneDay": "申请 1 天 {{name}}",
+        "left": "剩余 {{count}}",
+        "hplShort": "½出+½假",
+        "weekOffOt": "周休加班",
+        "holidayOt": "假日加班",
+        "reset": "重置"
+      },
+      "applyLeaveFailed": "申请请假失败"
     }
   },
   "manager": {

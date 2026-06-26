@@ -361,8 +361,8 @@
     "platformSettings": "Paramètres de la plateforme",
     "people": "Personnes",
     "attendanceDashboard": "Tableau de bord",
-    "shiftSettings": "Paramètres des horaires",
-    "shiftSchedule": "Planning des horaires",
+    "shiftSettings": "Paramètres des postes",
+    "shiftSchedule": "Planning des postes",
     "regularizations": "Régularisations",
     "leaveManagement": "Congés",
     "holidays": "Jours fériés",
@@ -373,7 +373,10 @@
     "moduleAccess": "Accès aux modules",
     "wellnessCheckIn": "Check-in quotidien",
     "messages": "Messages",
-    "changePassword": "Changer le mot de passe"
+    "changePassword": "Changer le mot de passe",
+    "viewAttendance": "Voir la présence",
+    "attendanceGrid": "Grille de présence",
+    "attendanceSettings": "Paramètres de présence"
   },
   "common": {
     "save": "Enregistrer",
@@ -1226,6 +1229,59 @@
         "approved": "approuvée",
         "rejected": "rejetée"
       }
+    },
+    "grid": {
+      "subtitle": "Présence par date pour tout le mois. Double-cliquez sur une cellule pour changer le statut.",
+      "export": "Exporter",
+      "exporting": "Exportation...",
+      "exportTooltip": "Télécharger la grille visible (avec les filtres actifs) au format Excel",
+      "searchEmployee": "Rechercher un employé",
+      "searchPlaceholder": "Nom ou code employé",
+      "department": "Service",
+      "allDepartments": "Tous les services",
+      "location": "Lieu",
+      "allLocations": "Tous les lieux",
+      "employeeCount": "{{shown}} sur {{total}} employés",
+      "clearFilters": "Effacer les filtres",
+      "employee": "Employé",
+      "noEmployees": "Aucun employé dans cette organisation.",
+      "noMatch": "Aucun employé ne correspond aux filtres actuels.",
+      "totalRow": "Total {{code}} — {{label}}",
+      "tip": "Astuce : double-cliquez sur une cellule pour marquer P / A / H / L / HPL / WOT / HOT. WO et HO sont calculés automatiquement à partir du calendrier de l'organisation ; choisissez une valeur pour remplacer ou « — » pour annuler. Un travailleur avec une entrée et une sortie le même jour est classé selon les heures travaillées par rapport à la durée du poste : moins de 25 % du poste → A (Absent), 25–50 % → H (Demi-journée), 50 %+ → P (Présent). Un jour passé où le travailleur a pointé l'arrivée mais jamais le départ apparaît comme M (Sortie manquée) pour que les RH puissent vérifier et corriger avant la paie.",
+      "savedToast": "{{code}} enregistré pour {{date}}",
+      "saveFailed": "Échec de l'enregistrement de la présence",
+      "leaveAppliedToast": "Congé appliqué à {{name}} le {{date}}",
+      "legend": {
+        "present": "Présent",
+        "absent": "Absent",
+        "halfDay": "Demi-journée",
+        "onLeave": "En congé",
+        "hpl": "½ Présent + ½ Congé",
+        "weekOff": "Repos",
+        "holiday": "Jour férié",
+        "wot": "HS repos (travaillé)",
+        "hot": "HS férié (travaillé)",
+        "missed": "Sortie manquée"
+      },
+      "editor": {
+        "close": "Fermer",
+        "existingLeave": "Congé existant à cette date",
+        "halfPm": "½ après-midi",
+        "halfAm": "½ matin",
+        "halfDayShort": "demi-journée",
+        "setStatus": "Définir le statut",
+        "applyLeave": "Appliquer un congé",
+        "loadingTypes": "Chargement des types…",
+        "noLeaveTypes": "Aucun type de congé actif dans l'organisation.",
+        "noBalance": "Aucun solde restant pour {{name}}",
+        "applyOneDay": "Appliquer 1 jour de {{name}}",
+        "left": "{{count}} restant(s)",
+        "hplShort": "½P + ½C",
+        "weekOffOt": "HS repos",
+        "holidayOt": "HS férié",
+        "reset": "Réinitialiser"
+      },
+      "applyLeaveFailed": "Échec de l'application du congé"
     }
   },
   "manager": {

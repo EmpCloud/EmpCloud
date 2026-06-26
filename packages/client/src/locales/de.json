@@ -362,7 +362,7 @@
     "people": "Mitarbeiter",
     "attendanceDashboard": "Dashboard",
     "shiftSettings": "Schichteinstellungen",
-    "shiftSchedule": "Schichtplanung",
+    "shiftSchedule": "Schichtplan",
     "regularizations": "Regularisierungen",
     "leaveManagement": "Urlaub",
     "holidays": "Feiertage",
@@ -373,7 +373,10 @@
     "moduleAccess": "Modulzugriff",
     "wellnessCheckIn": "Tägliches Check-in",
     "messages": "Nachrichten",
-    "changePassword": "Passwort ändern"
+    "changePassword": "Passwort ändern",
+    "viewAttendance": "Anwesenheit ansehen",
+    "attendanceGrid": "Anwesenheitsraster",
+    "attendanceSettings": "Anwesenheitseinstellungen"
   },
   "common": {
     "save": "Speichern",
@@ -1226,6 +1229,59 @@
         "approved": "genehmigt",
         "rejected": "abgelehnt"
       }
+    },
+    "grid": {
+      "subtitle": "Anwesenheit nach Datum für den ganzen Monat. Doppelklicken Sie auf eine Zelle, um den Status zu ändern.",
+      "export": "Exportieren",
+      "exporting": "Wird exportiert...",
+      "exportTooltip": "Sichtbares Raster (mit aktiven Filtern) als Excel-Datei herunterladen",
+      "searchEmployee": "Mitarbeiter suchen",
+      "searchPlaceholder": "Name oder Mitarbeitercode",
+      "department": "Abteilung",
+      "allDepartments": "Alle Abteilungen",
+      "location": "Standort",
+      "allLocations": "Alle Standorte",
+      "employeeCount": "{{shown}} von {{total}} Mitarbeitern",
+      "clearFilters": "Filter löschen",
+      "employee": "Mitarbeiter",
+      "noEmployees": "Keine Mitarbeiter in dieser Organisation.",
+      "noMatch": "Kein Mitarbeiter entspricht den aktuellen Filtern.",
+      "totalRow": "Gesamt {{code}} — {{label}}",
+      "tip": "Tipp: Doppelklicken Sie auf eine Zelle, um P / A / H / L / HPL / WOT / HOT zu markieren. WO und HO werden automatisch aus dem Organisationskalender berechnet; wählen Sie einen Wert zum Überschreiben oder „—“ zum Zurücksetzen. Ein Mitarbeiter mit Ein- und Ausstempeln an einem Tag wird nach gearbeiteten Stunden vs. Schichtlänge klassifiziert: unter 25 % der Schicht → A (Abwesend), 25–50 % → H (Halber Tag), 50 %+ → P (Anwesend). Ein vergangener Tag, an dem der Mitarbeiter eingestempelt, aber nie ausgestempelt hat, erscheint als M (Ausstempeln verpasst), damit die Personalabteilung vor der Lohnabrechnung prüfen und korrigieren kann.",
+      "savedToast": "{{code}} für {{date}} gespeichert",
+      "saveFailed": "Anwesenheit konnte nicht gespeichert werden",
+      "leaveAppliedToast": "Urlaub für {{name}} am {{date}} eingetragen",
+      "legend": {
+        "present": "Anwesend",
+        "absent": "Abwesend",
+        "halfDay": "Halber Tag",
+        "onLeave": "Im Urlaub",
+        "hpl": "½ Anwesend + ½ Urlaub",
+        "weekOff": "Frei",
+        "holiday": "Feiertag",
+        "wot": "Überstd. frei (gearbeitet)",
+        "hot": "Überstd. Feiertag (gearbeitet)",
+        "missed": "Ausstempeln verpasst"
+      },
+      "editor": {
+        "close": "Schließen",
+        "existingLeave": "Vorhandener Urlaub an diesem Datum",
+        "halfPm": "½ Nachm.",
+        "halfAm": "½ Vorm.",
+        "halfDayShort": "halber Tag",
+        "setStatus": "Status festlegen",
+        "applyLeave": "Urlaub beantragen",
+        "loadingTypes": "Typen werden geladen…",
+        "noLeaveTypes": "Keine aktiven Urlaubsarten in der Organisation.",
+        "noBalance": "Kein Guthaben mehr für {{name}}",
+        "applyOneDay": "1 Tag {{name}} beantragen",
+        "left": "{{count}} übrig",
+        "hplShort": "½A + ½U",
+        "weekOffOt": "Überstd. frei",
+        "holidayOt": "Überstd. Feiertag",
+        "reset": "Zurücksetzen"
+      },
+      "applyLeaveFailed": "Urlaub konnte nicht beantragt werden"
     }
   },
   "manager": {

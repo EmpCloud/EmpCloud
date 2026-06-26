@@ -373,7 +373,10 @@
     "moduleAccess": "Acesso aos módulos",
     "wellnessCheckIn": "Check-in diário",
     "messages": "Mensagens",
-    "changePassword": "Alterar Senha"
+    "changePassword": "Alterar Senha",
+    "viewAttendance": "Ver Presença",
+    "attendanceGrid": "Grade de Presença",
+    "attendanceSettings": "Configurações de Presença"
   },
   "common": {
     "save": "Salvar",
@@ -1226,6 +1229,59 @@
         "approved": "aprovada",
         "rejected": "rejeitada"
       }
+    },
+    "grid": {
+      "subtitle": "Presença por data para o mês inteiro. Clique duas vezes em qualquer célula para alterar o status.",
+      "export": "Exportar",
+      "exporting": "Exportando...",
+      "exportTooltip": "Baixar a grade visível (com filtros ativos) como arquivo Excel",
+      "searchEmployee": "Buscar funcionário",
+      "searchPlaceholder": "Nome ou código do funcionário",
+      "department": "Departamento",
+      "allDepartments": "Todos os departamentos",
+      "location": "Local",
+      "allLocations": "Todos os locais",
+      "employeeCount": "{{shown}} de {{total}} funcionários",
+      "clearFilters": "Limpar filtros",
+      "employee": "Funcionário",
+      "noEmployees": "Nenhum funcionário nesta organização.",
+      "noMatch": "Nenhum funcionário corresponde aos filtros atuais.",
+      "totalRow": "Total {{code}} — {{label}}",
+      "tip": "Dica: clique duas vezes em qualquer célula para marcar P / A / H / L / HPL / WOT / HOT. WO e HO são calculados automaticamente a partir do calendário da organização; escolha um valor para substituir ou \"—\" para reverter. Um trabalhador com entrada e saída no mesmo dia é classificado por horas trabalhadas vs duração do turno: abaixo de 25% do turno → A (Ausente), 25–50% → H (Meio período), 50%+ → P (Presente). Um dia passado em que o trabalhador entrou mas nunca saiu aparece como M (Saída não registrada) para que o RH possa revisar e substituir antes da folha de pagamento.",
+      "savedToast": "{{code}} salvo para {{date}}",
+      "saveFailed": "Falha ao salvar a presença",
+      "leaveAppliedToast": "Licença aplicada para {{name}} em {{date}}",
+      "legend": {
+        "present": "Presente",
+        "absent": "Ausente",
+        "halfDay": "Meio período",
+        "onLeave": "De licença",
+        "hpl": "½ Presente + ½ Licença",
+        "weekOff": "Folga",
+        "holiday": "Feriado",
+        "wot": "HE em folga (trabalhado)",
+        "hot": "HE em feriado (trabalhado)",
+        "missed": "Saída não registrada"
+      },
+      "editor": {
+        "close": "Fechar",
+        "existingLeave": "Licença existente nesta data",
+        "halfPm": "½ tarde",
+        "halfAm": "½ manhã",
+        "halfDayShort": "meio período",
+        "setStatus": "Definir status",
+        "applyLeave": "Aplicar licença",
+        "loadingTypes": "Carregando tipos…",
+        "noLeaveTypes": "Nenhum tipo de licença ativo na organização.",
+        "noBalance": "Sem saldo restante para {{name}}",
+        "applyOneDay": "Aplicar 1 dia de {{name}}",
+        "left": "{{count}} restante(s)",
+        "hplShort": "½P + ½L",
+        "weekOffOt": "HE folga",
+        "holidayOt": "HE feriado",
+        "reset": "Redefinir"
+      },
+      "applyLeaveFailed": "Falha ao aplicar a licença"
     }
   },
   "manager": {
