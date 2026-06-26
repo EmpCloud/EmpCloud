@@ -2051,6 +2051,8 @@
     "zoomIn": "Acercar",
     "zoomOut": "Alejar",
     "fullscreen": "Pantalla completa",
-    "panHint": "Desplázate para hacer zoom · Arrastra para mover"
+    "panHint": "Desplázate para hacer zoom · Arrastra para mover",
+    "noDesignation": "Sin cargo",
+    "noMatches": "Sin resultados."
   }
 }

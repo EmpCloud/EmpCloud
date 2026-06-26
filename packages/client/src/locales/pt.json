@@ -2051,6 +2051,8 @@
     "zoomIn": "Aumentar zoom",
     "zoomOut": "Diminuir zoom",
     "fullscreen": "Alternar tela cheia",
-    "panHint": "Role para ampliar · Arraste para mover"
+    "panHint": "Role para ampliar · Arraste para mover",
+    "noDesignation": "Sem cargo",
+    "noMatches": "Nenhum resultado."
   }
 }

@@ -2051,6 +2051,8 @@
     "zoomIn": "拡大",
     "zoomOut": "縮小",
     "fullscreen": "全画面表示の切り替え",
-    "panHint": "スクロールでズーム・ドラッグで移動"
+    "panHint": "スクロールでズーム・ドラッグで移動",
+    "noDesignation": "役職なし",
+    "noMatches": "一致なし。"
   }
 }

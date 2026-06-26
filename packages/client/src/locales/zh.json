@@ -2051,6 +2051,8 @@
     "zoomIn": "放大",
     "zoomOut": "缩小",
     "fullscreen": "切换全屏",
-    "panHint": "滚动缩放 · 拖动平移"
+    "panHint": "滚动缩放 · 拖动平移",
+    "noDesignation": "无职位",
+    "noMatches": "无匹配项。"
   }
 }

@@ -2056,6 +2056,8 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "fullscreen": "Toggle fullscreen",
-    "panHint": "Scroll to zoom · Drag to pan"
+    "panHint": "Scroll to zoom · Drag to pan",
+    "noDesignation": "No designation",
+    "noMatches": "No matches."
   }
 }

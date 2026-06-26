@@ -82,6 +82,7 @@ function NodeCard({
   isHighlighted?: boolean;
   hasChildren?: boolean;
 }) {
+  const { t } = useTranslation();
   const stripGradient = deptGradient(node.department);
   // #1650 — Photo loading is delegated to EmployeeAvatar, which fetches
   // the photo as a blob via the authenticated API endpoint and falls back
@@ -130,7 +131,7 @@ function NodeCard({
               {node.name}
             </p>
             <p className="mt-0.5 truncate text-[11px] font-medium text-gray-600">
-              {node.designation || "No designation"}
+              {node.designation || t("orgChart.noDesignation")}
             </p>
             {node.department && (
               <span className="mt-1 inline-block truncate rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
@@ -238,6 +239,7 @@ function MobileTreeNode({
   node: OrgChartNode;
   level?: number;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(level < 2);
   const navigate = useNavigate();
   const hasChildren = node.children.length > 0;
@@ -271,7 +273,7 @@ function MobileTreeNode({
               {node.name}
             </p>
             <p className="text-xs text-gray-500">
-              {node.designation || "No designation"}
+              {node.designation || t("orgChart.noDesignation")}
               {node.department ? ` - ${node.department}` : ""}
             </p>
           </div>
@@ -710,7 +712,7 @@ export default function OrgChartPage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-900">{p.name}</p>
                       <p className="truncate text-xs text-gray-500">
-                        {p.designation || "No designation"}
+                        {p.designation || t("orgChart.noDesignation")}
                         {p.department ? ` · ${p.department}` : ""}
                       </p>
                     </div>
@@ -967,8 +969,9 @@ function PersonList({
   people: OrgChartNode[];
   onNavigate: (id: number) => void;
 }) {
+  const { t } = useTranslation();
   if (people.length === 0) {
-    return <p className="px-4 py-8 text-center text-sm text-gray-400">No matches.</p>;
+    return <p className="px-4 py-8 text-center text-sm text-gray-400">{t("orgChart.noMatches")}</p>;
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -985,7 +988,7 @@ function PersonList({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-gray-900">{p.name}</p>
               <p className="truncate text-xs text-gray-500">
-                {p.designation || "No designation"}
+                {p.designation || t("orgChart.noDesignation")}
                 {p.department ? ` · ${p.department}` : ""}
               </p>
             </div>
