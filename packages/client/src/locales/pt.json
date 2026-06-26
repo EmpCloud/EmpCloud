@@ -458,7 +458,8 @@
       "documents": "Documentos",
       "announcements": "Avisos",
       "policies": "Políticas"
-    }
+    },
+    "opensInNewTab": "abre em uma nova aba"
   },
   "plans": {
     "basic": "Básico",

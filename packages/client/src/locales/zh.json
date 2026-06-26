@@ -458,7 +458,8 @@
       "documents": "文档",
       "announcements": "公告",
       "policies": "政策"
-    }
+    },
+    "opensInNewTab": "在新标签页中打开"
   },
   "plans": {
     "basic": "基础版",
