@@ -112,6 +112,14 @@
         "completed": "Abgeschlossen",
         "cancelled": "Abgesagt"
       }
+    },
+    "my": {
+      "title": "Meine Veranstaltungen",
+      "subtitle": "Veranstaltungen, für die Sie zugesagt haben.",
+      "loading": "Ihre Veranstaltungen werden geladen...",
+      "empty": "Sie haben noch für keine Veranstaltung zugesagt.",
+      "browse": "Veranstaltungen durchsuchen",
+      "cancelRsvp": "Zusage zurückziehen"
     }
   },
   "surveys": {

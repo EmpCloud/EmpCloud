@@ -112,6 +112,14 @@
         "completed": "Completed",
         "cancelled": "Cancelled"
       }
+    },
+    "my": {
+      "title": "My Events",
+      "subtitle": "Events you have RSVPd to attend.",
+      "loading": "Loading your events...",
+      "empty": "You haven't RSVPd to any events yet.",
+      "browse": "Browse Events",
+      "cancelRsvp": "Cancel RSVP"
     }
   },
   "surveys": {

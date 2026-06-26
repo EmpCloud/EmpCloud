@@ -112,6 +112,14 @@
         "completed": "已完成",
         "cancelled": "已取消"
       }
+    },
+    "my": {
+      "title": "我的活动",
+      "subtitle": "您已确认参加的活动。",
+      "loading": "正在加载您的活动...",
+      "empty": "您还没有确认参加任何活动。",
+      "browse": "浏览活动",
+      "cancelRsvp": "取消参加"
     }
   },
   "surveys": {

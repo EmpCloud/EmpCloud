@@ -112,6 +112,14 @@
         "completed": "Completado",
         "cancelled": "Cancelado"
       }
+    },
+    "my": {
+      "title": "Mis Eventos",
+      "subtitle": "Eventos a los que has confirmado asistencia.",
+      "loading": "Cargando tus eventos...",
+      "empty": "Aún no has confirmado asistencia a ningún evento.",
+      "browse": "Explorar Eventos",
+      "cancelRsvp": "Cancelar Asistencia"
     }
   },
   "surveys": {

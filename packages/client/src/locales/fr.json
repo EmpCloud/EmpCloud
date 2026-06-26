@@ -112,6 +112,14 @@
         "completed": "Terminé",
         "cancelled": "Annulé"
       }
+    },
+    "my": {
+      "title": "Mes Événements",
+      "subtitle": "Événements auxquels vous avez confirmé votre participation.",
+      "loading": "Chargement de vos événements...",
+      "empty": "Vous n'avez encore confirmé votre participation à aucun événement.",
+      "browse": "Parcourir les événements",
+      "cancelRsvp": "Annuler la participation"
     }
   },
   "surveys": {
