@@ -2045,6 +2045,7 @@
     "searchPlaceholder": "氏名、役職、または部署で検索...",
     "clearSearch": "検索をクリア",
     "downloadPng": "PNGとしてダウンロード",
-    "downloadPdf": "PDFとしてダウンロード（A3横）"
+    "downloadPdf": "PDFとしてダウンロード（A3横）",
+    "loading": "組織図を読み込み中..."
   }
 }

@@ -2045,6 +2045,7 @@
     "searchPlaceholder": "البحث بالاسم أو المسمى أو القسم...",
     "clearSearch": "مسح البحث",
     "downloadPng": "تنزيل كملف PNG",
-    "downloadPdf": "تنزيل كملف PDF (A3 أفقي)"
+    "downloadPdf": "تنزيل كملف PDF (A3 أفقي)",
+    "loading": "جارٍ تحميل المخطط التنظيمي..."
   }
 }

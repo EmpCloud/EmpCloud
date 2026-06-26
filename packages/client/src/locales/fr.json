@@ -2045,6 +2045,7 @@
     "searchPlaceholder": "Rechercher par nom, fonction ou service...",
     "clearSearch": "Effacer la recherche",
     "downloadPng": "Télécharger en PNG",
-    "downloadPdf": "Télécharger en PDF (A3 paysage)"
+    "downloadPdf": "Télécharger en PDF (A3 paysage)",
+    "loading": "Chargement de l'organigramme..."
   }
 }

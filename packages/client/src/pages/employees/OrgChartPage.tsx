@@ -757,7 +757,7 @@ export default function OrgChartPage() {
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center text-gray-400">
-          Loading org chart...
+          {t("orgChart.loading")}
         </div>
       ) : nodes.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-gray-400">
