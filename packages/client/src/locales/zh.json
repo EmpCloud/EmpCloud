@@ -2035,6 +2035,8 @@
   },
   "orgChart": {
     "title": "组织结构图",
-    "subtitle": "可视化整个组织的汇报结构。"
+    "subtitle": "可视化整个组织的汇报结构。",
+    "people": "人员",
+    "viewAllPeople": "查看所有人员"
   }
 }

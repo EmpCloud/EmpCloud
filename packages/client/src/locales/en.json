@@ -2040,6 +2040,8 @@
   },
   "orgChart": {
     "title": "Organization Chart",
-    "subtitle": "Visualize reporting structure across your organization."
+    "subtitle": "Visualize reporting structure across your organization.",
+    "people": "People",
+    "viewAllPeople": "View all people"
   }
 }

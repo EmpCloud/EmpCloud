@@ -2035,6 +2035,8 @@
   },
   "orgChart": {
     "title": "組織図",
-    "subtitle": "組織全体の報告体制を可視化します。"
+    "subtitle": "組織全体の報告体制を可視化します。",
+    "people": "人数",
+    "viewAllPeople": "全員を表示"
   }
 }

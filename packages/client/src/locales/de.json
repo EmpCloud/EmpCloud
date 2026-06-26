@@ -2035,6 +2035,8 @@
   },
   "orgChart": {
     "title": "Organigramm",
-    "subtitle": "Visualisieren Sie die Berichtsstruktur Ihrer gesamten Organisation."
+    "subtitle": "Visualisieren Sie die Berichtsstruktur Ihrer gesamten Organisation.",
+    "people": "Personen",
+    "viewAllPeople": "Alle Personen anzeigen"
   }
 }

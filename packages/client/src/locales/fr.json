@@ -2035,6 +2035,8 @@
   },
   "orgChart": {
     "title": "Organigramme",
-    "subtitle": "Visualisez la structure hiérarchique de toute votre organisation."
+    "subtitle": "Visualisez la structure hiérarchique de toute votre organisation.",
+    "people": "Personnes",
+    "viewAllPeople": "Voir toutes les personnes"
   }
 }
