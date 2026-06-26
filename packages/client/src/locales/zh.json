@@ -2047,6 +2047,9 @@
     "downloadPng": "下载为 PNG",
     "downloadPdf": "下载为 PDF（A3 横向）",
     "loading": "正在加载组织结构图...",
-    "empty": "未找到员工。添加员工以查看组织结构图。"
+    "empty": "未找到员工。添加员工以查看组织结构图。",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "fullscreen": "切换全屏"
   }
 }

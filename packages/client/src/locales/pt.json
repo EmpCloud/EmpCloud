@@ -2047,6 +2047,9 @@
     "downloadPng": "Baixar como PNG",
     "downloadPdf": "Baixar como PDF (A3 paisagem)",
     "loading": "Carregando organograma...",
-    "empty": "Nenhum funcionário encontrado. Adicione funcionários para ver o organograma."
+    "empty": "Nenhum funcionário encontrado. Adicione funcionários para ver o organograma.",
+    "zoomIn": "Aumentar zoom",
+    "zoomOut": "Diminuir zoom",
+    "fullscreen": "Alternar tela cheia"
   }
 }

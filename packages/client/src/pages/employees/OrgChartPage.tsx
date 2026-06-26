@@ -787,7 +787,7 @@ export default function OrgChartPage() {
                   setScale((s) => Math.min(2.5, s + 0.15))
                 }
                 className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600"
-                title="Zoom in"
+                title={t("orgChart.zoomIn")}
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -799,14 +799,14 @@ export default function OrgChartPage() {
                   setScale((s) => Math.max(0.15, s - 0.15))
                 }
                 className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600"
-                title="Zoom out"
+                title={t("orgChart.zoomOut")}
               >
                 <Minus className="h-4 w-4" />
               </button>
               <button
                 onClick={toggleFullscreen}
                 className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600 mt-1"
-                title="Toggle fullscreen"
+                title={t("orgChart.fullscreen")}
               >
                 <Maximize2 className="h-4 w-4" />
               </button>
