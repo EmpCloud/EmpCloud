@@ -2091,6 +2091,11 @@
       "dashboard": "Manual punch from the web dashboard",
       "biometric": "Face / fingerprint / QR via biometric devices",
       "app": "EmpCloud Android / iOS application"
-    }
+    },
+    "enableGeofencing": "Enable geofencing for the mobile app",
+    "enableGeofencingDesc": "Tells the EmpCloud mobile app to validate the user's location against your geofences before allowing a punch. The dashboard and biometric devices ignore this setting. Manage geofences below.",
+    "updated": "Attendance settings updated",
+    "updateError": "Could not update attendance settings",
+    "atLeastOneChannel": "At least one channel must remain enabled"
   }
 }

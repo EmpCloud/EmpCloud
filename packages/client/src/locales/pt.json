@@ -2086,6 +2086,11 @@
       "dashboard": "Marcação manual pelo painel web",
       "biometric": "Rosto / digital / QR via dispositivos biométricos",
       "app": "Aplicativo EmpCloud Android / iOS"
-    }
+    },
+    "enableGeofencing": "Ativar geocerca para o app móvel",
+    "enableGeofencingDesc": "Diz ao app móvel EmpCloud para validar a localização do usuário em relação às suas geocercas antes de permitir uma marcação. O painel e os dispositivos biométricos ignoram essa configuração. Gerencie as geocercas abaixo.",
+    "updated": "Configurações de presença atualizadas",
+    "updateError": "Não foi possível atualizar as configurações de presença",
+    "atLeastOneChannel": "Pelo menos um canal deve permanecer ativado"
   }
 }

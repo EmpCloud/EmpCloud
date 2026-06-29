@@ -2086,6 +2086,11 @@
       "dashboard": "Fichaje manual desde el panel web",
       "biometric": "Rostro / huella / QR mediante dispositivos biométricos",
       "app": "Aplicación EmpCloud Android / iOS"
-    }
+    },
+    "enableGeofencing": "Activar geocercas para la app móvil",
+    "enableGeofencingDesc": "Indica a la app móvil EmpCloud que valide la ubicación del usuario con tus geocercas antes de permitir un fichaje. El panel y los dispositivos biométricos ignoran esta opción. Gestiona las geocercas abajo.",
+    "updated": "Configuración de asistencia actualizada",
+    "updateError": "No se pudo actualizar la configuración de asistencia",
+    "atLeastOneChannel": "Al menos un canal debe permanecer activado"
   }
 }

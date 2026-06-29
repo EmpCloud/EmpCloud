@@ -101,12 +101,12 @@ export default function AttendanceSettingsPage() {
       api.put("/attendance/settings", patch).then((r) => r.data.data as OrgSettings),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-settings"] });
-      showToast("success", "Attendance settings updated");
+      showToast("success", t("attendanceSettings.updated"));
     },
     onError: (err: any) => {
       showToast(
         "error",
-        err?.response?.data?.error?.message ?? "Could not update attendance settings",
+        err?.response?.data?.error?.message ?? t("attendanceSettings.updateError"),
       );
     },
   });
@@ -117,7 +117,7 @@ export default function AttendanceSettingsPage() {
       ? current.filter((c) => c !== channel)
       : [...current, channel];
     if (next.length === 0) {
-      showToast("error", "At least one channel must remain enabled");
+      showToast("error", t("attendanceSettings.atLeastOneChannel"));
       return;
     }
     updateSettings.mutate({ allowed_channels: next });
@@ -193,12 +193,10 @@ export default function AttendanceSettingsPage() {
             <div>
               <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-gray-500" />
-                Enable geofencing for the mobile app
+                {t("attendanceSettings.enableGeofencing")}
               </div>
               <div className="text-xs text-gray-500 mt-0.5">
-                Tells the EmpCloud mobile app to validate the user's location against your
-                geofences before allowing a punch. The dashboard and biometric devices ignore this
-                setting. Manage geofences below.
+                {t("attendanceSettings.enableGeofencingDesc")}
               </div>
             </div>
           </label>

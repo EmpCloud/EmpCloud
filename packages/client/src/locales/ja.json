@@ -2086,6 +2086,11 @@
       "dashboard": "ウェブダッシュボードからの手動打刻",
       "biometric": "生体認証デバイスによる顔／指紋／QR",
       "app": "EmpCloud Android／iOS アプリケーション"
-    }
+    },
+    "enableGeofencing": "モバイルアプリのジオフェンシングを有効化",
+    "enableGeofencingDesc": "打刻を許可する前に、EmpCloud モバイルアプリにユーザーの位置をジオフェンスと照合させます。ダッシュボードと生体認証デバイスはこの設定を無視します。下でジオフェンスを管理してください。",
+    "updated": "勤怠設定を更新しました",
+    "updateError": "勤怠設定を更新できませんでした",
+    "atLeastOneChannel": "少なくとも1つのチャネルを有効にしておく必要があります"
   }
 }

@@ -2086,6 +2086,11 @@
       "dashboard": "通过网页仪表板手动打卡",
       "biometric": "通过生物识别设备进行人脸/指纹/二维码",
       "app": "EmpCloud Android / iOS 应用"
-    }
+    },
+    "enableGeofencing": "为移动应用启用地理围栏",
+    "enableGeofencingDesc": "指示 EmpCloud 移动应用在允许打卡前根据您的地理围栏验证用户位置。仪表板和生物识别设备会忽略此设置。请在下方管理地理围栏。",
+    "updated": "考勤设置已更新",
+    "updateError": "无法更新考勤设置",
+    "atLeastOneChannel": "至少必须保留一个启用的渠道"
   }
 }
