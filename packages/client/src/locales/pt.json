@@ -2081,6 +2081,12 @@
     "description": "Descrição",
     "optional": "Opcional",
     "mandatoryHoliday": "Feriado obrigatório",
-    "mandatoryNote": "— escritório fechado; funcionários presentes são marcados automaticamente como Hora Extra em Feriado"
+    "mandatoryNote": "— escritório fechado; funcionários presentes são marcados automaticamente como Hora Extra em Feriado",
+    "cancel": "Cancelar",
+    "adding": "Adicionando...",
+    "addError": "Falha ao adicionar feriado.",
+    "loading": "Carregando feriados...",
+    "empty": "Nenhum feriado listado ainda.",
+    "emptyHint": "Clique em \"Adicionar Feriado\" para começar."
   }
 }

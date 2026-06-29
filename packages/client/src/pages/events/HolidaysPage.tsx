@@ -120,7 +120,7 @@ export default function HolidaysPage() {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || "Failed to add holiday.");
+      setAddError(err?.response?.data?.error?.message || t("holidays.addError"));
     },
   });
 
@@ -274,14 +274,14 @@ export default function HolidaysPage() {
               }}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t("holidays.cancel")}
             </button>
             <button
               type="submit"
               disabled={createHoliday.isPending}
               className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              {createHoliday.isPending ? "Adding..." : "Add Holiday"}
+              {createHoliday.isPending ? t("holidays.adding") : t("holidays.addHoliday")}
             </button>
           </div>
           {addError && <p className="text-sm text-red-600 mt-2">{addError}</p>}
@@ -291,12 +291,12 @@ export default function HolidaysPage() {
       {/* Holiday List */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {isLoading ? (
-          <div className="px-6 py-8 text-center text-gray-400">Loading holidays...</div>
+          <div className="px-6 py-8 text-center text-gray-400">{t("holidays.loading")}</div>
         ) : sortedHolidays.length === 0 ? (
           <div className="px-6 py-12 text-center text-gray-400">
             <PartyPopper className="h-10 w-10 mx-auto mb-3 text-gray-300" />
-            <p>No holidays listed yet.</p>
-            {isHR && <p className="text-sm mt-1">Click "Add Holiday" to get started.</p>}
+            <p>{t("holidays.empty")}</p>
+            {isHR && <p className="text-sm mt-1">{t("holidays.emptyHint")}</p>}
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">

@@ -2081,6 +2081,12 @@
     "description": "Descripción",
     "optional": "Opcional",
     "mandatoryHoliday": "Festivo obligatorio",
-    "mandatoryNote": "— oficina cerrada; los empleados presentes se marcan automáticamente como Horas Extra en Festivo"
+    "mandatoryNote": "— oficina cerrada; los empleados presentes se marcan automáticamente como Horas Extra en Festivo",
+    "cancel": "Cancelar",
+    "adding": "Agregando...",
+    "addError": "No se pudo agregar el festivo.",
+    "loading": "Cargando festivos...",
+    "empty": "Aún no hay festivos en la lista.",
+    "emptyHint": "Haz clic en \"Agregar Festivo\" para empezar."
   }
 }

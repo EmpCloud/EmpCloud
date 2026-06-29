@@ -2086,6 +2086,12 @@
     "description": "Description",
     "optional": "Optional",
     "mandatoryHoliday": "Mandatory holiday",
-    "mandatoryNote": "— office closed; present employees auto-marked as Holiday OT"
+    "mandatoryNote": "— office closed; present employees auto-marked as Holiday OT",
+    "cancel": "Cancel",
+    "adding": "Adding...",
+    "addError": "Failed to add holiday.",
+    "loading": "Loading holidays...",
+    "empty": "No holidays listed yet.",
+    "emptyHint": "Click \"Add Holiday\" to get started."
   }
 }

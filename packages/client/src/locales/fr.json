@@ -2081,6 +2081,12 @@
     "description": "Description",
     "optional": "Facultatif",
     "mandatoryHoliday": "Jour férié obligatoire",
-    "mandatoryNote": "— bureau fermé ; les employés présents sont automatiquement marqués comme heures supplémentaires de jour férié"
+    "mandatoryNote": "— bureau fermé ; les employés présents sont automatiquement marqués comme heures supplémentaires de jour férié",
+    "cancel": "Annuler",
+    "adding": "Ajout...",
+    "addError": "Échec de l'ajout du jour férié.",
+    "loading": "Chargement des jours fériés...",
+    "empty": "Aucun jour férié répertorié pour l'instant.",
+    "emptyHint": "Cliquez sur « Ajouter un jour férié » pour commencer."
   }
 }

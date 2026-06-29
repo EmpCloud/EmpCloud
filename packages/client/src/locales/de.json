@@ -2081,6 +2081,12 @@
     "description": "Beschreibung",
     "optional": "Optional",
     "mandatoryHoliday": "Pflichtfeiertag",
-    "mandatoryNote": "— Büro geschlossen; anwesende Mitarbeiter werden automatisch als Feiertags-Überstunden markiert"
+    "mandatoryNote": "— Büro geschlossen; anwesende Mitarbeiter werden automatisch als Feiertags-Überstunden markiert",
+    "cancel": "Abbrechen",
+    "adding": "Wird hinzugefügt...",
+    "addError": "Feiertag konnte nicht hinzugefügt werden.",
+    "loading": "Feiertage werden geladen...",
+    "empty": "Noch keine Feiertage aufgeführt.",
+    "emptyHint": "Klicken Sie auf \"Feiertag hinzufügen\", um zu beginnen."
   }
 }

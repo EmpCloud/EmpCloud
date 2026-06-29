@@ -2081,6 +2081,12 @@
     "description": "描述",
     "optional": "可选",
     "mandatoryHoliday": "强制节假日",
-    "mandatoryNote": "— 办公室关闭；出勤员工自动标记为节假日加班"
+    "mandatoryNote": "— 办公室关闭；出勤员工自动标记为节假日加班",
+    "cancel": "取消",
+    "adding": "正在添加...",
+    "addError": "添加节假日失败。",
+    "loading": "正在加载节假日...",
+    "empty": "尚无节假日列出。",
+    "emptyHint": "点击“添加节假日”开始。"
   }
 }
