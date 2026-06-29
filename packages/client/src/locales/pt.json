@@ -2109,6 +2109,13 @@
     "livenessOffHint": "As verificações de vivacidade estão desativadas — a captura facial é aceita como está.",
     "livenessSaved": "Configurações de vivacidade salvas.",
     "errSaveLiveness": "Falha ao salvar as configurações de vivacidade",
-    "save": "Salvar"
+    "save": "Salvar",
+    "sensitivityLevel": "Nível de Sensibilidade",
+    "levelLow": "Baixo",
+    "levelModerate": "Moderado",
+    "levelHigh": "Alto",
+    "levelLowDesc": "Tolerante — mais tentativas bem-sucedidas; menos proteção antifraude.",
+    "levelModerateDesc": "Equilibrado (recomendado) — detecta fraudes óbvias.",
+    "levelHighDesc": "Rigoroso — ideal para quiosques compartilhados; rejeita sinais mais sutis."
   }
 }

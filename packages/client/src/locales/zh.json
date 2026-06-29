@@ -2109,6 +2109,13 @@
     "livenessOffHint": "活体检查已关闭 — 人脸采集按原样接受。",
     "livenessSaved": "活体设置已保存。",
     "errSaveLiveness": "保存活体设置失败",
-    "save": "保存"
+    "save": "保存",
+    "sensitivityLevel": "灵敏度级别",
+    "levelLow": "低",
+    "levelModerate": "中",
+    "levelHigh": "高",
+    "levelLowDesc": "宽松 — 更多重试成功；防伪保护较弱。",
+    "levelModerateDesc": "均衡（推荐）— 可捕获明显的伪造。",
+    "levelHighDesc": "严格 — 最适合共享自助终端；对更细微的信号也予以拒绝。"
   }
 }

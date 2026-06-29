@@ -2109,6 +2109,13 @@
     "livenessOffHint": "Lebenderkennungsprüfungen sind aus — die Gesichtserfassung wird unverändert akzeptiert.",
     "livenessSaved": "Lebenderkennungseinstellungen gespeichert.",
     "errSaveLiveness": "Lebenderkennungseinstellungen konnten nicht gespeichert werden",
-    "save": "Speichern"
+    "save": "Speichern",
+    "sensitivityLevel": "Empfindlichkeitsstufe",
+    "levelLow": "Niedrig",
+    "levelModerate": "Mittel",
+    "levelHigh": "Hoch",
+    "levelLowDesc": "Nachsichtig — mehr erfolgreiche Wiederholungen; weniger Anti-Spoofing-Schutz.",
+    "levelModerateDesc": "Ausgewogen (empfohlen) — erkennt offensichtliche Fälschungen.",
+    "levelHighDesc": "Streng — am besten für gemeinsam genutzte Kioske; lehnt bei subtileren Signalen ab."
   }
 }

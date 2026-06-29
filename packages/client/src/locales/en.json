@@ -2114,6 +2114,13 @@
     "livenessOffHint": "Liveness checks are off — face capture is accepted as-is.",
     "livenessSaved": "Liveness settings saved.",
     "errSaveLiveness": "Failed to save liveness settings",
-    "save": "Save"
+    "save": "Save",
+    "sensitivityLevel": "Sensitivity Level",
+    "levelLow": "Low",
+    "levelModerate": "Moderate",
+    "levelHigh": "High",
+    "levelLowDesc": "Lenient — more retries succeed; less anti-spoof protection.",
+    "levelModerateDesc": "Balanced (recommended) — catches obvious spoofs.",
+    "levelHighDesc": "Strict — best for shared kiosks; rejects on subtler signals."
   }
 }

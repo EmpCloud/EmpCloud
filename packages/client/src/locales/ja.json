@@ -2109,6 +2109,13 @@
     "livenessOffHint": "ライブネスチェックはオフです — 顔キャプチャはそのまま受け入れられます。",
     "livenessSaved": "ライブネス設定を保存しました。",
     "errSaveLiveness": "ライブネス設定の保存に失敗しました",
-    "save": "保存"
+    "save": "保存",
+    "sensitivityLevel": "感度レベル",
+    "levelLow": "低",
+    "levelModerate": "中",
+    "levelHigh": "高",
+    "levelLowDesc": "寛容 — 再試行が成功しやすい。なりすまし対策は弱め。",
+    "levelModerateDesc": "バランス型（推奨）— 明らかななりすましを検出。",
+    "levelHighDesc": "厳格 — 共有キオスクに最適。より微妙な兆候でも拒否。"
   }
 }

@@ -414,10 +414,10 @@ function LivenessSettingsCard() {
 // the label name to jump straight to it. Values map: 0=low, 1=moderate,
 // 2=high. The track is colour-graded green→amber→red so the
 // "consequence" is visible without reading the label.
-const LIVENESS_LEVELS: Array<{ value: LivenessLevel; label: string; description: string; cls: string }> = [
-  { value: "low", label: "Low", description: "Lenient — more retries succeed; less anti-spoof protection.", cls: "text-green-700" },
-  { value: "moderate", label: "Moderate", description: "Balanced (recommended) — catches obvious spoofs.", cls: "text-amber-700" },
-  { value: "high", label: "High", description: "Strict — best for shared kiosks; rejects on subtler signals.", cls: "text-red-700" },
+const LIVENESS_LEVELS: Array<{ value: LivenessLevel; labelKey: string; descKey: string; cls: string }> = [
+  { value: "low", labelKey: "kioskPin.levelLow", descKey: "kioskPin.levelLowDesc", cls: "text-green-700" },
+  { value: "moderate", labelKey: "kioskPin.levelModerate", descKey: "kioskPin.levelModerateDesc", cls: "text-amber-700" },
+  { value: "high", labelKey: "kioskPin.levelHigh", descKey: "kioskPin.levelHighDesc", cls: "text-red-700" },
 ];
 function LivenessLevelSlider({
   level,
@@ -428,17 +428,18 @@ function LivenessLevelSlider({
   onChange: (v: LivenessLevel) => void;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   const idx = Math.max(0, LIVENESS_LEVELS.findIndex((l) => l.value === level));
   const current = LIVENESS_LEVELS[idx] || LIVENESS_LEVELS[1];
   return (
     <div className="mt-3 rounded-lg border border-gray-200 bg-white px-4 py-4">
       <div className="flex items-baseline justify-between">
         <label className="block text-sm font-medium text-gray-900" htmlFor="liveness-level-slider">
-          Sensitivity Level
+          {t("kioskPin.sensitivityLevel")}
         </label>
-        <span className={`text-sm font-semibold ${current.cls}`}>{current.label}</span>
+        <span className={`text-sm font-semibold ${current.cls}`}>{t(current.labelKey)}</span>
       </div>
-      <p className="mt-1 text-xs text-gray-500">{current.description}</p>
+      <p className="mt-1 text-xs text-gray-500">{t(current.descKey)}</p>
 
       <div className="mt-4">
         <input
@@ -467,7 +468,7 @@ function LivenessLevelSlider({
                 i === idx ? `font-semibold ${l.cls}` : "text-gray-400 hover:text-gray-600"
               }`}
             >
-              {l.label}
+              {t(l.labelKey)}
             </button>
           ))}
         </div>

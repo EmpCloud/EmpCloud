@@ -2109,6 +2109,13 @@
     "livenessOffHint": "Las verificaciones de vivacidad están desactivadas — la captura facial se acepta tal cual.",
     "livenessSaved": "Configuración de vivacidad guardada.",
     "errSaveLiveness": "No se pudo guardar la configuración de vivacidad",
-    "save": "Guardar"
+    "save": "Guardar",
+    "sensitivityLevel": "Nivel de Sensibilidad",
+    "levelLow": "Bajo",
+    "levelModerate": "Moderado",
+    "levelHigh": "Alto",
+    "levelLowDesc": "Permisivo — más reintentos exitosos; menos protección antisuplantación.",
+    "levelModerateDesc": "Equilibrado (recomendado) — detecta suplantaciones evidentes.",
+    "levelHighDesc": "Estricto — ideal para quioscos compartidos; rechaza señales más sutiles."
   }
 }

@@ -2109,6 +2109,13 @@
     "livenessOffHint": "Les vérifications du vivant sont désactivées — la capture du visage est acceptée telle quelle.",
     "livenessSaved": "Paramètres de détection du vivant enregistrés.",
     "errSaveLiveness": "Échec de l'enregistrement des paramètres de détection du vivant",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "sensitivityLevel": "Niveau de sensibilité",
+    "levelLow": "Faible",
+    "levelModerate": "Modéré",
+    "levelHigh": "Élevé",
+    "levelLowDesc": "Indulgent — plus de tentatives réussies ; moins de protection anti-usurpation.",
+    "levelModerateDesc": "Équilibré (recommandé) — détecte les usurpations évidentes.",
+    "levelHighDesc": "Strict — idéal pour les bornes partagées ; rejette les signaux plus subtils."
   }
 }
