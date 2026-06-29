@@ -2106,6 +2106,9 @@
     "livenessDesc": "在颁发登录令牌前，对每次自助终端的人脸采集运行防伪检查（眨眼/微动检测）。默认关闭；当您的设备和光照支持可靠检测后再开启。",
     "enableLiveness": "启用活体检测",
     "livenessOnHint": "活体检查正在自助终端身份验证中运行。",
-    "livenessOffHint": "活体检查已关闭 — 人脸采集按原样接受。"
+    "livenessOffHint": "活体检查已关闭 — 人脸采集按原样接受。",
+    "livenessSaved": "活体设置已保存。",
+    "errSaveLiveness": "保存活体设置失败",
+    "save": "保存"
   }
 }

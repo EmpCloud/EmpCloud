@@ -2106,6 +2106,9 @@
     "livenessDesc": "Execute uma verificação antifraude em cada captura facial do quiosque (detecção de piscadas / micromovimentos) antes de emitir o token de login. Desativado por padrão; ative quando seus dispositivos e iluminação permitirem detecção confiável.",
     "enableLiveness": "Ativar Vivacidade",
     "livenessOnHint": "As verificações de vivacidade ESTÃO ativas na autenticação do quiosque.",
-    "livenessOffHint": "As verificações de vivacidade estão desativadas — a captura facial é aceita como está."
+    "livenessOffHint": "As verificações de vivacidade estão desativadas — a captura facial é aceita como está.",
+    "livenessSaved": "Configurações de vivacidade salvas.",
+    "errSaveLiveness": "Falha ao salvar as configurações de vivacidade",
+    "save": "Salvar"
   }
 }

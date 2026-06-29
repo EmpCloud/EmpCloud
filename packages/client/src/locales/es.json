@@ -2106,6 +2106,9 @@
     "livenessDesc": "Ejecuta una verificación antisuplantación en cada captura facial del quiosco (detección de parpadeo / micromovimientos) antes de emitir el token de inicio de sesión. Desactivado por defecto; actívalo cuando tus dispositivos e iluminación permitan una detección fiable.",
     "enableLiveness": "Activar Vivacidad",
     "livenessOnHint": "Las verificaciones de vivacidad SÍ se ejecutan en la autenticación del quiosco.",
-    "livenessOffHint": "Las verificaciones de vivacidad están desactivadas — la captura facial se acepta tal cual."
+    "livenessOffHint": "Las verificaciones de vivacidad están desactivadas — la captura facial se acepta tal cual.",
+    "livenessSaved": "Configuración de vivacidad guardada.",
+    "errSaveLiveness": "No se pudo guardar la configuración de vivacidad",
+    "save": "Guardar"
   }
 }

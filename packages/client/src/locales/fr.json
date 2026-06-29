@@ -2106,6 +2106,9 @@
     "livenessDesc": "Exécutez une vérification anti-usurpation sur chaque capture du visage à la borne (détection de clignement / micro-mouvements) avant d'émettre le jeton de connexion. Désactivé par défaut ; activez-le lorsque vos appareils et votre éclairage permettent une détection fiable.",
     "enableLiveness": "Activer la détection du vivant",
     "livenessOnHint": "Les vérifications du vivant SONT actives lors de l'authentification à la borne.",
-    "livenessOffHint": "Les vérifications du vivant sont désactivées — la capture du visage est acceptée telle quelle."
+    "livenessOffHint": "Les vérifications du vivant sont désactivées — la capture du visage est acceptée telle quelle.",
+    "livenessSaved": "Paramètres de détection du vivant enregistrés.",
+    "errSaveLiveness": "Échec de l'enregistrement des paramètres de détection du vivant",
+    "save": "Enregistrer"
   }
 }

@@ -2106,6 +2106,9 @@
     "livenessDesc": "Führen Sie bei jeder Gesichtserfassung am Kiosk eine Anti-Spoofing-Prüfung durch (Blinzeln-/Mikrobewegungserkennung), bevor das Anmelde-Token ausgestellt wird. Standardmäßig aus; aktivieren Sie sie, sobald Ihre Geräte und Beleuchtung eine zuverlässige Erkennung unterstützen.",
     "enableLiveness": "Lebenderkennung aktivieren",
     "livenessOnHint": "Lebenderkennungsprüfungen sind bei der Kiosk-Authentifizierung AKTIV.",
-    "livenessOffHint": "Lebenderkennungsprüfungen sind aus — die Gesichtserfassung wird unverändert akzeptiert."
+    "livenessOffHint": "Lebenderkennungsprüfungen sind aus — die Gesichtserfassung wird unverändert akzeptiert.",
+    "livenessSaved": "Lebenderkennungseinstellungen gespeichert.",
+    "errSaveLiveness": "Lebenderkennungseinstellungen konnten nicht gespeichert werden",
+    "save": "Speichern"
   }
 }

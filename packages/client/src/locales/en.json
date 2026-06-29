@@ -2111,6 +2111,9 @@
     "livenessDesc": "Run an anti-spoof check on each kiosk face capture (blink / micro-movement detection) before issuing the sign-in token. Defaults to off; turn on once your devices and lighting support reliable detection.",
     "enableLiveness": "Enable Liveness",
     "livenessOnHint": "Liveness checks ARE running on kiosk auth.",
-    "livenessOffHint": "Liveness checks are off — face capture is accepted as-is."
+    "livenessOffHint": "Liveness checks are off — face capture is accepted as-is.",
+    "livenessSaved": "Liveness settings saved.",
+    "errSaveLiveness": "Failed to save liveness settings",
+    "save": "Save"
   }
 }

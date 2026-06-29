@@ -313,7 +313,7 @@ function LivenessSettingsCard() {
         // restores the previous sensitivity choice.
         level,
       });
-      if (data.code !== 200) throw new Error(data.message || "Failed to save liveness settings");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errSaveLiveness"));
       return data.data;
     },
     onSuccess: (data) => {
@@ -326,7 +326,7 @@ function LivenessSettingsCard() {
       qc.invalidateQueries({ queryKey: ["biometric-liveness-settings"] });
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || err?.message || "Failed to save liveness settings");
+      setError(err?.response?.data?.message || err?.message || t("kioskPin.errSaveLiveness"));
     },
   });
 
@@ -390,7 +390,7 @@ function LivenessSettingsCard() {
       )}
       {saved && (
         <div className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-          Liveness settings saved.
+          {t("kioskPin.livenessSaved")}
         </div>
       )}
 
@@ -402,7 +402,7 @@ function LivenessSettingsCard() {
           className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          Save
+          {t("kioskPin.save")}
         </button>
       </div>
     </div>
