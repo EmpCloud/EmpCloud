@@ -1663,6 +1663,7 @@
     "headcountPlans": {
       "title": "Headcount Plans",
       "subtitle": "Plan and track workforce growth across departments.",
+      "searchPlaceholder": "Search by plan title or fiscal year...",
       "newPlan": "New Plan",
       "createTitle": "Create Headcount Plan",
       "planTitleLabel": "Title",
