@@ -2095,6 +2095,12 @@
     "cancel": "Abbrechen",
     "enable": "Aktivieren",
     "updatePin": "PIN aktualisieren",
-    "disable": "Deaktivieren"
+    "disable": "Deaktivieren",
+    "errSixDigits": "Die PIN muss genau 6 Ziffern haben",
+    "errMismatch": "Die PINs stimmen nicht überein",
+    "errGeneric": "Etwas ist schiefgelaufen",
+    "errEnable": "Biometrie konnte nicht aktiviert werden",
+    "errDisable": "Biometrie konnte nicht deaktiviert werden",
+    "errUpdate": "PIN konnte nicht aktualisiert werden"
   }
 }

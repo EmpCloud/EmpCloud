@@ -2095,6 +2095,12 @@
     "cancel": "रद्द करें",
     "enable": "सक्षम करें",
     "updatePin": "PIN अपडेट करें",
-    "disable": "अक्षम करें"
+    "disable": "अक्षम करें",
+    "errSixDigits": "PIN ठीक 6 अंकों का होना चाहिए",
+    "errMismatch": "PIN मेल नहीं खाते",
+    "errGeneric": "कुछ गलत हो गया",
+    "errEnable": "बायोमेट्रिक सक्षम करने में विफल",
+    "errDisable": "बायोमेट्रिक अक्षम करने में विफल",
+    "errUpdate": "PIN अपडेट करने में विफल"
   }
 }

@@ -2095,6 +2095,12 @@
     "cancel": "取消",
     "enable": "启用",
     "updatePin": "更新 PIN",
-    "disable": "禁用"
+    "disable": "禁用",
+    "errSixDigits": "PIN 必须恰好为 6 位数字",
+    "errMismatch": "PIN 不匹配",
+    "errGeneric": "出现了问题",
+    "errEnable": "启用生物识别失败",
+    "errDisable": "禁用生物识别失败",
+    "errUpdate": "更新 PIN 失败"
   }
 }

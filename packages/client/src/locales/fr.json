@@ -2095,6 +2095,12 @@
     "cancel": "Annuler",
     "enable": "Activer",
     "updatePin": "Mettre à jour le code PIN",
-    "disable": "Désactiver"
+    "disable": "Désactiver",
+    "errSixDigits": "Le code PIN doit comporter exactement 6 chiffres",
+    "errMismatch": "Les codes PIN ne correspondent pas",
+    "errGeneric": "Une erreur s'est produite",
+    "errEnable": "Échec de l'activation de la biométrie",
+    "errDisable": "Échec de la désactivation de la biométrie",
+    "errUpdate": "Échec de la mise à jour du code PIN"
   }
 }

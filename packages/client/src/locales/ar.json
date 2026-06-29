@@ -2095,6 +2095,12 @@
     "cancel": "إلغاء",
     "enable": "تفعيل",
     "updatePin": "تحديث رمز PIN",
-    "disable": "تعطيل"
+    "disable": "تعطيل",
+    "errSixDigits": "يجب أن يتكوّن رمز PIN من 6 أرقام بالضبط",
+    "errMismatch": "رمزا PIN غير متطابقين",
+    "errGeneric": "حدث خطأ ما",
+    "errEnable": "فشل تفعيل القياسات الحيوية",
+    "errDisable": "فشل تعطيل القياسات الحيوية",
+    "errUpdate": "فشل تحديث رمز PIN"
   }
 }

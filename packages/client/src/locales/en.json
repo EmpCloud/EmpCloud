@@ -2100,6 +2100,12 @@
     "cancel": "Cancel",
     "enable": "Enable",
     "updatePin": "Update PIN",
-    "disable": "Disable"
+    "disable": "Disable",
+    "errSixDigits": "PIN must be exactly 6 digits",
+    "errMismatch": "PINs do not match",
+    "errGeneric": "Something went wrong",
+    "errEnable": "Failed to enable biometric",
+    "errDisable": "Failed to disable biometric",
+    "errUpdate": "Failed to update PIN"
   }
 }

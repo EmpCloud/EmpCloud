@@ -2095,6 +2095,12 @@
     "cancel": "キャンセル",
     "enable": "有効化",
     "updatePin": "PINを更新",
-    "disable": "無効化"
+    "disable": "無効化",
+    "errSixDigits": "PINは正確に6桁である必要があります",
+    "errMismatch": "PINが一致しません",
+    "errGeneric": "問題が発生しました",
+    "errEnable": "生体認証の有効化に失敗しました",
+    "errDisable": "生体認証の無効化に失敗しました",
+    "errUpdate": "PINの更新に失敗しました"
   }
 }

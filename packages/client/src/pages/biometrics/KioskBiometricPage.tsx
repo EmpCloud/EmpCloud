@@ -70,15 +70,15 @@ export default function KioskBiometricPage() {
       // For enable + change we require both fields to match. Disable just
       // takes the current PIN once (backend doesn't actually verify it on
       // disable today, but asking for it is the safer UX and forward-compat).
-      if (!isSixDigits(pin)) throw new Error("PIN must be exactly 6 digits");
-      if (mode !== "disable" && pin !== confirmPin) throw new Error("PINs do not match");
+      if (!isSixDigits(pin)) throw new Error(t("kioskPin.errSixDigits"));
+      if (mode !== "disable" && pin !== confirmPin) throw new Error(t("kioskPin.errMismatch"));
 
       if (mode === "enable") {
         const { data } = await v3.post<LegacyResponse>("/enable-biometric", {
           secretKey: pin,
           status: 1,
         });
-        if (data.code !== 200) throw new Error(data.message || "Failed to enable biometric");
+        if (data.code !== 200) throw new Error(data.message || t("kioskPin.errEnable"));
         return;
       }
       if (mode === "disable") {
@@ -86,21 +86,21 @@ export default function KioskBiometricPage() {
           secretKey: pin,
           status: 0,
         });
-        if (data.code !== 200) throw new Error(data.message || "Failed to disable biometric");
+        if (data.code !== 200) throw new Error(data.message || t("kioskPin.errDisable"));
         return;
       }
       // change
       const { data } = await v3.post<LegacyResponse>("/set-password", {
         secretKey: pin,
       });
-      if (data.code !== 200) throw new Error(data.message || "Failed to update PIN");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errUpdate"));
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["biometric-kiosk-status"] });
       reset();
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || err?.message || "Something went wrong");
+      setError(err?.response?.data?.message || err?.message || t("kioskPin.errGeneric"));
     },
   });
 
