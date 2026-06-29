@@ -2076,6 +2076,16 @@
     "subtitle": "Contrôlez comment les employés peuvent pointer et remplacez les règles pour des utilisateurs spécifiques sur une période.",
     "allowedChannels": "Canaux de pointage autorisés",
     "allowedChannelsDesc": "Les employés ne peuvent pointer que via les canaux que vous activez ici. Les remplacements par utilisateur ci-dessous peuvent accorder ou révoquer des canaux pour des personnes spécifiques.",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "channel": {
+      "dashboard": "Tableau de bord (web)",
+      "biometric": "Appareils biométriques",
+      "app": "Application mobile EmpCloud"
+    },
+    "channelDesc": {
+      "dashboard": "Pointage manuel depuis le tableau de bord web",
+      "biometric": "Visage / empreinte / QR via appareils biométriques",
+      "app": "Application EmpCloud Android / iOS"
+    }
   }
 }

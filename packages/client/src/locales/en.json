@@ -2081,6 +2081,16 @@
     "subtitle": "Control how employees can check in and out, and override the rules for individual users for a date range.",
     "allowedChannels": "Allowed check-in channels",
     "allowedChannelsDesc": "Employees can check in / out only via the channels you enable here. Per-user overrides below can grant or revoke channels for specific people.",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "channel": {
+      "dashboard": "Dashboard (web)",
+      "biometric": "Biometric devices",
+      "app": "EmpCloud mobile app"
+    },
+    "channelDesc": {
+      "dashboard": "Manual punch from the web dashboard",
+      "biometric": "Face / fingerprint / QR via biometric devices",
+      "app": "EmpCloud Android / iOS application"
+    }
   }
 }

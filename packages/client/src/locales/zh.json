@@ -2076,6 +2076,16 @@
     "subtitle": "控制员工的签到签退方式，并按日期范围覆盖特定用户的规则。",
     "allowedChannels": "允许的签到渠道",
     "allowedChannelsDesc": "员工只能通过您在此启用的渠道签到/签退。下方的按用户覆盖可为特定人员授予或撤销渠道。",
-    "loading": "加载中…"
+    "loading": "加载中…",
+    "channel": {
+      "dashboard": "仪表板（网页）",
+      "biometric": "生物识别设备",
+      "app": "EmpCloud 移动应用"
+    },
+    "channelDesc": {
+      "dashboard": "通过网页仪表板手动打卡",
+      "biometric": "通过生物识别设备进行人脸/指纹/二维码",
+      "app": "EmpCloud Android / iOS 应用"
+    }
   }
 }

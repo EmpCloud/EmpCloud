@@ -2076,6 +2076,16 @@
     "subtitle": "Controla cómo los empleados pueden registrar entrada y salida, y anula las reglas para usuarios individuales por un rango de fechas.",
     "allowedChannels": "Canales de registro permitidos",
     "allowedChannelsDesc": "Los empleados solo pueden registrar entrada/salida mediante los canales que habilites aquí. Las anulaciones por usuario a continuación pueden conceder o revocar canales para personas específicas.",
-    "loading": "Cargando…"
+    "loading": "Cargando…",
+    "channel": {
+      "dashboard": "Panel (web)",
+      "biometric": "Dispositivos biométricos",
+      "app": "App móvil EmpCloud"
+    },
+    "channelDesc": {
+      "dashboard": "Fichaje manual desde el panel web",
+      "biometric": "Rostro / huella / QR mediante dispositivos biométricos",
+      "app": "Aplicación EmpCloud Android / iOS"
+    }
   }
 }

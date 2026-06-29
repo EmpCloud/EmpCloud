@@ -2076,6 +2076,16 @@
     "subtitle": "Steuern Sie, wie Mitarbeiter ein- und ausstempeln, und überschreiben Sie die Regeln für einzelne Benutzer für einen Zeitraum.",
     "allowedChannels": "Erlaubte Check-in-Kanäle",
     "allowedChannelsDesc": "Mitarbeiter können nur über die hier aktivierten Kanäle ein-/ausstempeln. Die benutzerbezogenen Überschreibungen unten können Kanäle für bestimmte Personen gewähren oder entziehen.",
-    "loading": "Wird geladen…"
+    "loading": "Wird geladen…",
+    "channel": {
+      "dashboard": "Dashboard (Web)",
+      "biometric": "Biometrische Geräte",
+      "app": "EmpCloud-Mobil-App"
+    },
+    "channelDesc": {
+      "dashboard": "Manuelles Stempeln über das Web-Dashboard",
+      "biometric": "Gesicht / Fingerabdruck / QR über biometrische Geräte",
+      "app": "EmpCloud Android-/iOS-Anwendung"
+    }
   }
 }

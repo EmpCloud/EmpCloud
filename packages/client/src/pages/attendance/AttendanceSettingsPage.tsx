@@ -167,12 +167,12 @@ export default function AttendanceSettingsPage() {
                   />
                   <div>
                     <div className="text-sm font-medium text-gray-900">
-                      {CHANNEL_LABEL[channel]}
+                      {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
                     </div>
                     <div className="text-xs text-gray-500 mt-0.5">
-                      {channel === "dashboard" && "Manual punch from the web dashboard"}
-                      {channel === "biometric" && "Face / fingerprint / QR via biometric devices"}
-                      {channel === "app" && "EmpCloud Android / iOS application"}
+                      {channel === "dashboard" && t("attendanceSettings.channelDesc.dashboard")}
+                      {channel === "biometric" && t("attendanceSettings.channelDesc.biometric")}
+                      {channel === "app" && t("attendanceSettings.channelDesc.app")}
                     </div>
                   </div>
                 </label>
