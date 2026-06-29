@@ -147,6 +147,12 @@ export const adminNavItems: NavItem[] = [
     { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck, requiredPermissions: ["probation:view", "probation:manage", "employees:view_all", "employees:edit_all"] },
     { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
   ]},
+  { path: "/positions", label: "Positions", i18nKey: "nav.positions", icon: Briefcase, requiredPermissions: ["positions:view", "positions:manage"], children: [
+    { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
+    { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
+    { path: "/positions/vacancies", label: "Vacancies", i18nKey: "nav.vacancies", icon: Target },
+    { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "nav.headcountPlans", icon: ClipboardList },
+  ]},
   { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"], children: [
     // The "View Attendance" page (AttendanceDashboardPage) renders the
     // employee records grid. Visible to anyone with team-or-broader
@@ -226,25 +232,11 @@ export const adminNavItems: NavItem[] = [
   { path: "/audit", label: "Audit Log", i18nKey: "nav.audit", icon: History, requiredPermissions: ["audit:view", "audit:export"] },
 ];
 
-// Positions is now rendered as a single collapsible parent (mirroring
-// Attendance / Leave / Company), with its previous flat list moved
-// under `children`. The DashboardLayout still mounts this array via
-// NavSection, but NavSection treats a parent item with `children` as
-// an expandable submenu.
-export const positionNavItems: NavItem[] = [
-  {
-    path: "/positions",
-    label: "Positions",
-    i18nKey: "nav.positions",
-    icon: Briefcase,
-    children: [
-      { path: "/positions", label: "Dashboard", i18nKey: "nav.dashboard", icon: BarChart3 },
-      { path: "/positions/list", label: "All Positions", i18nKey: "nav.positions", icon: Briefcase },
-      { path: "/positions/vacancies", label: "Vacancies", i18nKey: "nav.vacancies", icon: Target },
-      { path: "/positions/headcount-plans", label: "Headcount Plans", i18nKey: "nav.headcountPlans", icon: ClipboardList },
-    ],
-  },
-];
+// Positions moved into adminNavItems under the "People & HR" section — it's a
+// workforce-planning function, not Administration, and now sits next to People
+// (gated by positions:view/manage). Kept as an empty export so any remaining
+// importer doesn't break.
+export const positionNavItems: NavItem[] = [];
 
 export const forumNavItems: NavItem[] = [
   { path: "/forum", label: "Forum", i18nKey: "nav.forum", icon: MessagesSquare },
