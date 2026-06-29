@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { NavItem } from "./navigation.config";
 import { AiBadge } from "@/components/AiBadge";
@@ -10,18 +10,6 @@ interface NavSectionProps {
   location: { pathname: string };
   t: (key: string) => string;
   activeClass?: string;
-  /** Live unread counts keyed by nav path (e.g. { "/messages": 3 }). */
-  unreadByPath?: Record<string, number>;
-}
-
-/** Small red count badge for a nav item (e.g. unread messages). */
-function CountBadge({ count }: { count: number }) {
-  if (count <= 0) return null;
-  return (
-    <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-semibold text-white">
-      {count > 99 ? "99+" : count}
-    </span>
-  );
 }
 
 function isItemActive(item: NavItem, pathname: string, allItems: NavItem[]): boolean {
@@ -35,34 +23,36 @@ function isItemActive(item: NavItem, pathname: string, allItems: NavItem[]): boo
     : isExact || (isPrefix && !hasMoreSpecificMatch);
 }
 
-export function NavSection({ label, items, location, t, activeClass = "bg-brand-50 text-brand-700", unreadByPath }: NavSectionProps) {
+export function NavSection({ label, items, location, t, activeClass = "bg-brand-50 text-brand-700" }: NavSectionProps) {
+  // Track the running section so a divider+label renders before the first
+  // surviving item of each new group (resilient to permission-filtered items).
+  let currentSection: string | undefined;
   return (
     <>
       {label && (
         <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{label}</div>
       )}
-      {items.map((item) =>
-        item.children ? (
-          <NestedNavItem
-            key={item.path}
-            item={item}
-            location={location}
-            t={t}
-            activeClass={activeClass}
-
-          />
-        ) : (
-          <NavLink
-            key={item.path}
-            item={item}
-            location={location}
-            t={t}
-            activeClass={activeClass}
-            allItems={items}
-            unread={unreadByPath?.[item.path] ?? 0}
-          />
-        )
-      )}
+      {items.map((item) => {
+        let header: string | null = null;
+        if (item.section && item.section !== currentSection) {
+          header = item.section;
+          currentSection = item.section;
+        }
+        return (
+          <Fragment key={item.path}>
+            {header && (
+              <div className="mx-3 mt-4 mb-1 border-t border-gray-100 pt-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                {header}
+              </div>
+            )}
+            {item.children ? (
+              <NestedNavItem item={item} location={location} t={t} activeClass={activeClass} />
+            ) : (
+              <NavLink item={item} location={location} t={t} activeClass={activeClass} allItems={items} />
+            )}
+          </Fragment>
+        );
+      })}
     </>
   );
 }
@@ -74,7 +64,6 @@ function NavLink({
   activeClass,
   allItems = [],
   indent = false,
-  unread = 0,
 }: {
   item: NavItem;
   location: { pathname: string };
@@ -82,7 +71,6 @@ function NavLink({
   activeClass: string;
   allItems?: NavItem[];
   indent?: boolean;
-  unread?: number;
 }) {
   const Icon = item.icon;
   const isActive = isItemActive(item, location.pathname, allItems);
@@ -104,7 +92,6 @@ function NavLink({
       <Icon className={`${indent ? "h-4 w-4" : "h-5 w-5"} flex-shrink-0`} />
       <span className="flex-1">{label}</span>
       {item.badge && <AiBadge label={item.badge} />}
-      <CountBadge count={unread} />
     </Link>
   );
 }
