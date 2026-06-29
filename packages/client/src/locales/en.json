@@ -2108,6 +2108,11 @@
     "searchEmployee": "Search by employee name or email…",
     "loadingOverrides": "Loading overrides…",
     "noOverridesMatch": "No overrides match your search.",
-    "noOverrides": "No per-user overrides configured."
+    "noOverrides": "No per-user overrides configured.",
+    "mRadius": "{{radius}} m radius",
+    "editGeofence": "Edit geofence",
+    "deleteGeofence": "Delete geofence",
+    "geofenceRemoved": "Geofence removed",
+    "removeGeofenceError": "Could not remove geofence"
   }
 }

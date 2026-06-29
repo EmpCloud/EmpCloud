@@ -2103,6 +2103,11 @@
     "searchEmployee": "Rechercher par nom ou e-mail de l'employé…",
     "loadingOverrides": "Chargement des remplacements…",
     "noOverridesMatch": "Aucun remplacement ne correspond à votre recherche.",
-    "noOverrides": "Aucun remplacement par utilisateur configuré."
+    "noOverrides": "Aucun remplacement par utilisateur configuré.",
+    "mRadius": "rayon de {{radius}} m",
+    "editGeofence": "Modifier le géorepère",
+    "deleteGeofence": "Supprimer le géorepère",
+    "geofenceRemoved": "Géorepère supprimé",
+    "removeGeofenceError": "Impossible de supprimer le géorepère"
   }
 }

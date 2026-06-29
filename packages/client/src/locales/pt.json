@@ -2103,6 +2103,11 @@
     "searchEmployee": "Pesquisar por nome ou e-mail do funcionário…",
     "loadingOverrides": "Carregando substituições…",
     "noOverridesMatch": "Nenhuma substituição corresponde à sua busca.",
-    "noOverrides": "Nenhuma substituição por usuário configurada."
+    "noOverrides": "Nenhuma substituição por usuário configurada.",
+    "mRadius": "raio de {{radius}} m",
+    "editGeofence": "Editar geocerca",
+    "deleteGeofence": "Excluir geocerca",
+    "geofenceRemoved": "Geocerca removida",
+    "removeGeofenceError": "Não foi possível remover a geocerca"
   }
 }

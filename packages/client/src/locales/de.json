@@ -2103,6 +2103,11 @@
     "searchEmployee": "Nach Mitarbeitername oder E-Mail suchen…",
     "loadingOverrides": "Überschreibungen werden geladen…",
     "noOverridesMatch": "Keine Überschreibungen entsprechen Ihrer Suche.",
-    "noOverrides": "Keine benutzerbezogenen Überschreibungen konfiguriert."
+    "noOverrides": "Keine benutzerbezogenen Überschreibungen konfiguriert.",
+    "mRadius": "{{radius}} m Radius",
+    "editGeofence": "Geofence bearbeiten",
+    "deleteGeofence": "Geofence löschen",
+    "geofenceRemoved": "Geofence entfernt",
+    "removeGeofenceError": "Geofence konnte nicht entfernt werden"
   }
 }

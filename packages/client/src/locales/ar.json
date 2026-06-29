@@ -2103,6 +2103,11 @@
     "searchEmployee": "البحث باسم الموظف أو البريد الإلكتروني…",
     "loadingOverrides": "جارٍ تحميل التجاوزات…",
     "noOverridesMatch": "لا توجد تجاوزات تطابق بحثك.",
-    "noOverrides": "لا توجد تجاوزات لكل مستخدم مُهيأة."
+    "noOverrides": "لا توجد تجاوزات لكل مستخدم مُهيأة.",
+    "mRadius": "نصف قطر {{radius}} م",
+    "editGeofence": "تعديل السياج الجغرافي",
+    "deleteGeofence": "حذف السياج الجغرافي",
+    "geofenceRemoved": "تمت إزالة السياج الجغرافي",
+    "removeGeofenceError": "تعذّرت إزالة السياج الجغرافي"
   }
 }

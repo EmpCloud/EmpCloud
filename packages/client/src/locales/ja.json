@@ -2103,6 +2103,11 @@
     "searchEmployee": "従業員名またはメールで検索…",
     "loadingOverrides": "上書きを読み込み中…",
     "noOverridesMatch": "検索に一致する上書きはありません。",
-    "noOverrides": "ユーザーごとの上書きが設定されていません。"
+    "noOverrides": "ユーザーごとの上書きが設定されていません。",
+    "mRadius": "半径 {{radius}} m",
+    "editGeofence": "ジオフェンスを編集",
+    "deleteGeofence": "ジオフェンスを削除",
+    "geofenceRemoved": "ジオフェンスを削除しました",
+    "removeGeofenceError": "ジオフェンスを削除できませんでした"
   }
 }

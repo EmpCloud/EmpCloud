@@ -2103,6 +2103,11 @@
     "searchEmployee": "Buscar por nombre o correo del empleado…",
     "loadingOverrides": "Cargando anulaciones…",
     "noOverridesMatch": "Ninguna anulación coincide con tu búsqueda.",
-    "noOverrides": "No hay anulaciones por usuario configuradas."
+    "noOverrides": "No hay anulaciones por usuario configuradas.",
+    "mRadius": "radio de {{radius}} m",
+    "editGeofence": "Editar geocerca",
+    "deleteGeofence": "Eliminar geocerca",
+    "geofenceRemoved": "Geocerca eliminada",
+    "removeGeofenceError": "No se pudo eliminar la geocerca"
   }
 }

@@ -231,11 +231,11 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
     mutationFn: (id: number) => api.delete(`/attendance/geo-fences/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-geo-fences"] });
-      showToast("success", "Geofence removed");
+      showToast("success", t("attendanceSettings.geofenceRemoved"));
       setPendingDelete(null);
     },
     onError: (err: any) =>
-      showToast("error", err?.response?.data?.error?.message ?? "Could not remove geofence"),
+      showToast("error", err?.response?.data?.error?.message ?? t("attendanceSettings.removeGeofenceError")),
   });
 
   return (
@@ -280,21 +280,21 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
                 <div className="text-sm font-medium text-gray-900 truncate">{f.name}</div>
                 <div className="text-xs text-gray-500 mt-0.5">
                   {Number(f.latitude).toFixed(6)}, {Number(f.longitude).toFixed(6)} ·{" "}
-                  {f.radius_meters} m radius
+                  {t("attendanceSettings.mRadius", { radius: f.radius_meters })}
                 </div>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setEditing(f)}
                   className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded"
-                  aria-label="Edit geofence"
+                  aria-label={t("attendanceSettings.editGeofence")}
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setPendingDelete(f)}
                   className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
-                  aria-label="Delete geofence"
+                  aria-label={t("attendanceSettings.deleteGeofence")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

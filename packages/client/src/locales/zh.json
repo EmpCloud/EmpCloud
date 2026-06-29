@@ -2103,6 +2103,11 @@
     "searchEmployee": "按员工姓名或邮箱搜索…",
     "loadingOverrides": "正在加载覆盖…",
     "noOverridesMatch": "没有与您的搜索匹配的覆盖。",
-    "noOverrides": "未配置按用户覆盖。"
+    "noOverrides": "未配置按用户覆盖。",
+    "mRadius": "半径 {{radius}} 米",
+    "editGeofence": "编辑地理围栏",
+    "deleteGeofence": "删除地理围栏",
+    "geofenceRemoved": "已删除地理围栏",
+    "removeGeofenceError": "无法删除地理围栏"
   }
 }
