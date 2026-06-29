@@ -2160,6 +2160,13 @@
     "searchNameEmail": "Rechercher par nom ou e-mail…",
     "noMatches": "Aucune correspondance",
     "allowedChannelsShort": "Canaux autorisés",
-    "inheritOrgDefault": "Hériter du paramètre par défaut de l'org."
+    "inheritOrgDefault": "Hériter du paramètre par défaut de l'org.",
+    "geoModeInherit": "Hériter des géorepères de l'org.",
+    "geoModeOff": "Désactiver le géorepérage pour cet utilisateur",
+    "geoModeCustom": "Restreindre à un seul géorepère",
+    "geoModeInheritDesc": "L'utilisateur voit tous les géorepères actifs de l'org. dans l'application mobile.",
+    "geoModeOffDesc": "L'application mobile reçoit une liste de géorepères vide.",
+    "geoModeCustomDesc": "L'utilisateur ne peut pointer que depuis l'emplacement choisi.",
+    "selectGeofence": "Sélectionnez un géorepère…"
   }
 }

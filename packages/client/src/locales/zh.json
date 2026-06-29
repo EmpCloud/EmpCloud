@@ -2160,6 +2160,13 @@
     "searchNameEmail": "按姓名或邮箱搜索…",
     "noMatches": "无匹配",
     "allowedChannelsShort": "允许的渠道",
-    "inheritOrgDefault": "继承组织默认设置"
+    "inheritOrgDefault": "继承组织默认设置",
+    "geoModeInherit": "继承组织地理围栏",
+    "geoModeOff": "为该用户禁用地理围栏",
+    "geoModeCustom": "限制为单个地理围栏",
+    "geoModeInheritDesc": "用户在移动应用中可看到所有组织活动的地理围栏。",
+    "geoModeOffDesc": "移动应用接收一个空的地理围栏列表。",
+    "geoModeCustomDesc": "用户只能从所选位置签到。",
+    "selectGeofence": "选择一个地理围栏…"
   }
 }

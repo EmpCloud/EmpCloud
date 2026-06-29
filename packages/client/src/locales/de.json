@@ -2160,6 +2160,13 @@
     "searchNameEmail": "Nach Name oder E-Mail suchen…",
     "noMatches": "Keine Treffer",
     "allowedChannelsShort": "Erlaubte Kanäle",
-    "inheritOrgDefault": "Org.-Standard erben"
+    "inheritOrgDefault": "Org.-Standard erben",
+    "geoModeInherit": "Org.-Geofences erben",
+    "geoModeOff": "Geofencing für diesen Benutzer deaktivieren",
+    "geoModeCustom": "Auf ein einzelnes Geofence beschränken",
+    "geoModeInheritDesc": "Der Benutzer sieht alle org.-aktiven Geofences in der mobilen App.",
+    "geoModeOffDesc": "Die mobile App erhält eine leere Geofence-Liste.",
+    "geoModeCustomDesc": "Der Benutzer kann nur vom gewählten Standort einstempeln.",
+    "selectGeofence": "Geofence auswählen…"
   }
 }

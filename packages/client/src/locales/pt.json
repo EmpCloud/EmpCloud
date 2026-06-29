@@ -2160,6 +2160,13 @@
     "searchNameEmail": "Pesquisar por nome ou e-mail…",
     "noMatches": "Nenhuma correspondência",
     "allowedChannelsShort": "Canais permitidos",
-    "inheritOrgDefault": "Herdar padrão da organização"
+    "inheritOrgDefault": "Herdar padrão da organização",
+    "geoModeInherit": "Herdar geocercas da organização",
+    "geoModeOff": "Desativar geocerca para este usuário",
+    "geoModeCustom": "Restringir a uma única geocerca",
+    "geoModeInheritDesc": "O usuário vê todas as geocercas ativas da organização no app móvel.",
+    "geoModeOffDesc": "O app móvel recebe uma lista de geocercas vazia.",
+    "geoModeCustomDesc": "O usuário só pode registrar entrada no local escolhido.",
+    "selectGeofence": "Selecione uma geocerca…"
   }
 }

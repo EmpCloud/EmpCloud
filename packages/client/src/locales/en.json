@@ -2165,6 +2165,13 @@
     "searchNameEmail": "Search by name or email…",
     "noMatches": "No matches",
     "allowedChannelsShort": "Allowed channels",
-    "inheritOrgDefault": "Inherit org default"
+    "inheritOrgDefault": "Inherit org default",
+    "geoModeInherit": "Inherit org geofences",
+    "geoModeOff": "Disable geofencing for this user",
+    "geoModeCustom": "Restrict to a single geofence",
+    "geoModeInheritDesc": "User sees all org-active geofences in the mobile app.",
+    "geoModeOffDesc": "Mobile app receives an empty geofence list.",
+    "geoModeCustomDesc": "User can only check in from the chosen location.",
+    "selectGeofence": "Select a geofence…"
   }
 }

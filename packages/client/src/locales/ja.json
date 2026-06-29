@@ -2160,6 +2160,13 @@
     "searchNameEmail": "名前またはメールで検索…",
     "noMatches": "一致なし",
     "allowedChannelsShort": "許可されたチャネル",
-    "inheritOrgDefault": "組織の既定を継承"
+    "inheritOrgDefault": "組織の既定を継承",
+    "geoModeInherit": "組織のジオフェンスを継承",
+    "geoModeOff": "このユーザーのジオフェンシングを無効化",
+    "geoModeCustom": "単一のジオフェンスに制限",
+    "geoModeInheritDesc": "ユーザーはモバイルアプリで組織のアクティブなジオフェンスをすべて表示します。",
+    "geoModeOffDesc": "モバイルアプリは空のジオフェンスリストを受け取ります。",
+    "geoModeCustomDesc": "ユーザーは選択した場所からのみチェックインできます。",
+    "selectGeofence": "ジオフェンスを選択…"
   }
 }

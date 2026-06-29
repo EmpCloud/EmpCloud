@@ -1092,14 +1092,14 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                   />
                   <div>
                     <div className="text-sm text-gray-900">
-                      {mode === "inherit" && "Inherit org geofences"}
-                      {mode === "off" && "Disable geofencing for this user"}
-                      {mode === "custom" && "Restrict to a single geofence"}
+                      {mode === "inherit" && t("attendanceSettings.geoModeInherit")}
+                      {mode === "off" && t("attendanceSettings.geoModeOff")}
+                      {mode === "custom" && t("attendanceSettings.geoModeCustom")}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {mode === "inherit" && "User sees all org-active geofences in the mobile app."}
-                      {mode === "off" && "Mobile app receives an empty geofence list."}
-                      {mode === "custom" && "User can only check in from the chosen location."}
+                      {mode === "inherit" && t("attendanceSettings.geoModeInheritDesc")}
+                      {mode === "off" && t("attendanceSettings.geoModeOffDesc")}
+                      {mode === "custom" && t("attendanceSettings.geoModeCustomDesc")}
                     </div>
                   </div>
                 </label>
@@ -1111,7 +1111,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                 onChange={(e) => setCustomFenceId(e.target.value ? Number(e.target.value) : null)}
                 className="mt-3 w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               >
-                <option value="">Select a geofence…</option>
+                <option value="">{t("attendanceSettings.selectGeofence")}</option>
                 {geofences.map((f) => (
                   <option key={f.id} value={f.id}>
                     {f.name} ({f.radius_meters} m)
