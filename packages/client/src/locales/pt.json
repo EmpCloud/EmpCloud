@@ -2120,6 +2120,15 @@
     "mapHint": "Clique em qualquer lugar do mapa ou arraste o pino para definir a localização. O círculo sombreado mostra o raio atual.",
     "geofenceCreated": "Geocerca criada",
     "geofenceUpdated": "Geocerca atualizada",
-    "saveGeofenceError": "Não foi possível salvar a geocerca"
+    "saveGeofenceError": "Não foi possível salvar a geocerca",
+    "latitudeLabel": "Latitude",
+    "longitudeLabel": "Longitude",
+    "radiusLabel": "Raio (metros)",
+    "radiusHint": "O app móvel considera o usuário \"dentro\" se estiver dentro desta distância das coordenadas.",
+    "errNameRequired": "O nome é obrigatório",
+    "errLatitude": "A latitude deve estar entre -90 e 90",
+    "errLongitude": "A longitude deve estar entre -180 e 180",
+    "errRadius": "O raio deve estar entre 10 e 50000 metros",
+    "saveChanges": "Salvar alterações"
   }
 }

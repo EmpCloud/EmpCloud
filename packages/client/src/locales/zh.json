@@ -2120,6 +2120,15 @@
     "mapHint": "点击地图上任意位置或拖动图钉以设置位置。阴影圆圈表示当前半径。",
     "geofenceCreated": "已创建地理围栏",
     "geofenceUpdated": "已更新地理围栏",
-    "saveGeofenceError": "无法保存地理围栏"
+    "saveGeofenceError": "无法保存地理围栏",
+    "latitudeLabel": "纬度",
+    "longitudeLabel": "经度",
+    "radiusLabel": "半径（米）",
+    "radiusHint": "如果用户在坐标的此距离范围内，移动应用会视其为“在内”。",
+    "errNameRequired": "名称为必填项",
+    "errLatitude": "纬度必须介于 -90 和 90 之间",
+    "errLongitude": "经度必须介于 -180 和 180 之间",
+    "errRadius": "半径必须介于 10 和 50000 米之间",
+    "saveChanges": "保存更改"
   }
 }

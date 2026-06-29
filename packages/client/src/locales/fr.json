@@ -2120,6 +2120,15 @@
     "mapHint": "Cliquez n'importe où sur la carte ou faites glisser l'épingle pour définir l'emplacement. Le cercle ombré indique le rayon actuel.",
     "geofenceCreated": "Géorepère créé",
     "geofenceUpdated": "Géorepère mis à jour",
-    "saveGeofenceError": "Impossible d'enregistrer le géorepère"
+    "saveGeofenceError": "Impossible d'enregistrer le géorepère",
+    "latitudeLabel": "Latitude",
+    "longitudeLabel": "Longitude",
+    "radiusLabel": "Rayon (mètres)",
+    "radiusHint": "L'application mobile considère l'utilisateur comme \"à l'intérieur\" s'il se trouve à cette distance des coordonnées.",
+    "errNameRequired": "Le nom est requis",
+    "errLatitude": "La latitude doit être comprise entre -90 et 90",
+    "errLongitude": "La longitude doit être comprise entre -180 et 180",
+    "errRadius": "Le rayon doit être compris entre 10 et 50000 mètres",
+    "saveChanges": "Enregistrer les modifications"
   }
 }

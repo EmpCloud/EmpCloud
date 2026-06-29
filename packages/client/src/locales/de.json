@@ -2120,6 +2120,15 @@
     "mapHint": "Klicken Sie auf eine beliebige Stelle der Karte oder ziehen Sie die Markierung, um den Standort festzulegen. Der schattierte Kreis zeigt den aktuellen Radius.",
     "geofenceCreated": "Geofence erstellt",
     "geofenceUpdated": "Geofence aktualisiert",
-    "saveGeofenceError": "Geofence konnte nicht gespeichert werden"
+    "saveGeofenceError": "Geofence konnte nicht gespeichert werden",
+    "latitudeLabel": "Breitengrad",
+    "longitudeLabel": "Längengrad",
+    "radiusLabel": "Radius (Meter)",
+    "radiusHint": "Die mobile App betrachtet den Benutzer als \"innerhalb\", wenn er sich innerhalb dieser Entfernung von den Koordinaten befindet.",
+    "errNameRequired": "Name ist erforderlich",
+    "errLatitude": "Der Breitengrad muss zwischen -90 und 90 liegen",
+    "errLongitude": "Der Längengrad muss zwischen -180 und 180 liegen",
+    "errRadius": "Der Radius muss zwischen 10 und 50000 Metern liegen",
+    "saveChanges": "Änderungen speichern"
   }
 }

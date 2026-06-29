@@ -2125,6 +2125,15 @@
     "mapHint": "Click anywhere on the map or drag the pin to set the location. The shaded circle shows the current radius.",
     "geofenceCreated": "Geofence created",
     "geofenceUpdated": "Geofence updated",
-    "saveGeofenceError": "Could not save geofence"
+    "saveGeofenceError": "Could not save geofence",
+    "latitudeLabel": "Latitude",
+    "longitudeLabel": "Longitude",
+    "radiusLabel": "Radius (metres)",
+    "radiusHint": "Mobile app considers the user \"inside\" if they're within this distance of the coordinates.",
+    "errNameRequired": "Name is required",
+    "errLatitude": "Latitude must be between -90 and 90",
+    "errLongitude": "Longitude must be between -180 and 180",
+    "errRadius": "Radius must be between 10 and 50000 metres",
+    "saveChanges": "Save changes"
   }
 }

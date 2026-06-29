@@ -2120,6 +2120,15 @@
     "mapHint": "Haz clic en cualquier parte del mapa o arrastra el marcador para establecer la ubicación. El círculo sombreado muestra el radio actual.",
     "geofenceCreated": "Geocerca creada",
     "geofenceUpdated": "Geocerca actualizada",
-    "saveGeofenceError": "No se pudo guardar la geocerca"
+    "saveGeofenceError": "No se pudo guardar la geocerca",
+    "latitudeLabel": "Latitud",
+    "longitudeLabel": "Longitud",
+    "radiusLabel": "Radio (metros)",
+    "radiusHint": "La app móvil considera al usuario \"dentro\" si está dentro de esta distancia de las coordenadas.",
+    "errNameRequired": "El nombre es obligatorio",
+    "errLatitude": "La latitud debe estar entre -90 y 90",
+    "errLongitude": "La longitud debe estar entre -180 y 180",
+    "errRadius": "El radio debe estar entre 10 y 50000 metros",
+    "saveChanges": "Guardar cambios"
   }
 }

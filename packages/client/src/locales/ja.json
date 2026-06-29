@@ -2120,6 +2120,15 @@
     "mapHint": "地図上の任意の場所をクリックするか、ピンをドラッグして場所を設定します。網掛けの円は現在の半径を示します。",
     "geofenceCreated": "ジオフェンスを作成しました",
     "geofenceUpdated": "ジオフェンスを更新しました",
-    "saveGeofenceError": "ジオフェンスを保存できませんでした"
+    "saveGeofenceError": "ジオフェンスを保存できませんでした",
+    "latitudeLabel": "緯度",
+    "longitudeLabel": "経度",
+    "radiusLabel": "半径（メートル）",
+    "radiusHint": "モバイルアプリは、座標からこの距離以内にいる場合にユーザーを「内側」とみなします。",
+    "errNameRequired": "名前は必須です",
+    "errLatitude": "緯度は -90 から 90 の間である必要があります",
+    "errLongitude": "経度は -180 から 180 の間である必要があります",
+    "errRadius": "半径は 10 から 50000 メートルの間である必要があります",
+    "saveChanges": "変更を保存"
   }
 }
