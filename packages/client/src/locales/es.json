@@ -2096,6 +2096,13 @@
     "addGeofence": "Agregar geocerca",
     "geofencesDesc_one": "{{count}} ubicación activa. La app móvil recibe esta lista mediante <code>GET /me/policy</code> y valida el GPS del usuario localmente.",
     "geofencesDesc_other": "{{count}} ubicaciones activas. La app móvil recibe esta lista mediante <code>GET /me/policy</code> y valida el GPS del usuario localmente.",
-    "noGeofences": "No hay geocercas configuradas. Haz clic en <strong>Agregar geocerca</strong> para crear una."
+    "noGeofences": "No hay geocercas configuradas. Haz clic en <strong>Agregar geocerca</strong> para crear una.",
+    "overrides": "Anulaciones por usuario",
+    "overridesDesc": "Anula las reglas de toda la organización para un empleado específico por un rango de fechas. Cuando pase la fecha de fin, el empleado vuelve automáticamente al valor predeterminado de la organización.",
+    "newOverride": "Nueva anulación",
+    "searchEmployee": "Buscar por nombre o correo del empleado…",
+    "loadingOverrides": "Cargando anulaciones…",
+    "noOverridesMatch": "Ninguna anulación coincide con tu búsqueda.",
+    "noOverrides": "No hay anulaciones por usuario configuradas."
   }
 }

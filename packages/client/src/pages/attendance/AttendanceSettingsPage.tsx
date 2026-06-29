@@ -592,6 +592,7 @@ interface OverrideRow extends UserOverride {
 }
 
 function OverridesSection({ geofences }: { geofences: Geofence[] }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<OverrideRow | null>(null);
@@ -681,17 +682,16 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
     <section className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Per-user overrides</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("attendanceSettings.overrides")}</h2>
           <p className="text-sm text-gray-500">
-            Override the org-wide rules for a specific employee for a date range. When the
-            end-date passes, the employee falls back to the org default automatically.
+            {t("attendanceSettings.overridesDesc")}
           </p>
         </div>
         <button
           onClick={() => setCreating(true)}
           className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3 py-2 rounded-lg shrink-0"
         >
-          <Plus className="h-4 w-4" /> New override
+          <Plus className="h-4 w-4" /> {t("attendanceSettings.newOverride")}
         </button>
       </div>
 
@@ -700,18 +700,18 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by employee name or email…"
+          placeholder={t("attendanceSettings.searchEmployee")}
           className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
         />
       </div>
 
       {overridesQ.isLoading || directoryQ.isLoading ? (
         <div className="text-sm text-gray-500 flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading overrides…
+          <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loadingOverrides")}
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-sm text-gray-500 italic py-6 text-center border border-dashed border-gray-200 rounded-lg">
-          {search ? "No overrides match your search." : "No per-user overrides configured."}
+          {search ? t("attendanceSettings.noOverridesMatch") : t("attendanceSettings.noOverrides")}
         </div>
       ) : (
         <div className="overflow-x-auto">

@@ -2096,6 +2096,13 @@
     "addGeofence": "Adicionar geocerca",
     "geofencesDesc_one": "{{count}} local ativo. O app móvel recebe esta lista via <code>GET /me/policy</code> e valida o GPS do usuário localmente.",
     "geofencesDesc_other": "{{count}} locais ativos. O app móvel recebe esta lista via <code>GET /me/policy</code> e valida o GPS do usuário localmente.",
-    "noGeofences": "Nenhuma geocerca configurada. Clique em <strong>Adicionar geocerca</strong> para criar uma."
+    "noGeofences": "Nenhuma geocerca configurada. Clique em <strong>Adicionar geocerca</strong> para criar uma.",
+    "overrides": "Substituições por usuário",
+    "overridesDesc": "Substitua as regras de toda a organização para um funcionário específico por um período. Quando a data final passar, o funcionário volta automaticamente ao padrão da organização.",
+    "newOverride": "Nova substituição",
+    "searchEmployee": "Pesquisar por nome ou e-mail do funcionário…",
+    "loadingOverrides": "Carregando substituições…",
+    "noOverridesMatch": "Nenhuma substituição corresponde à sua busca.",
+    "noOverrides": "Nenhuma substituição por usuário configurada."
   }
 }

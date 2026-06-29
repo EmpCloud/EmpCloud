@@ -2096,6 +2096,13 @@
     "addGeofence": "添加地理围栏",
     "geofencesDesc_one": "{{count}} 个活动地点。移动应用通过 <code>GET /me/policy</code> 接收此列表并在本地验证用户的 GPS。",
     "geofencesDesc_other": "{{count}} 个活动地点。移动应用通过 <code>GET /me/policy</code> 接收此列表并在本地验证用户的 GPS。",
-    "noGeofences": "未配置地理围栏。点击<strong>添加地理围栏</strong>以创建。"
+    "noGeofences": "未配置地理围栏。点击<strong>添加地理围栏</strong>以创建。",
+    "overrides": "按用户覆盖",
+    "overridesDesc": "为特定员工在某个日期范围内覆盖组织级规则。结束日期过后，该员工将自动恢复为组织默认设置。",
+    "newOverride": "新建覆盖",
+    "searchEmployee": "按员工姓名或邮箱搜索…",
+    "loadingOverrides": "正在加载覆盖…",
+    "noOverridesMatch": "没有与您的搜索匹配的覆盖。",
+    "noOverrides": "未配置按用户覆盖。"
   }
 }

@@ -2101,6 +2101,13 @@
     "addGeofence": "Add geofence",
     "geofencesDesc_one": "{{count}} active location. The mobile app receives this list via <code>GET /me/policy</code> and validates the user's GPS locally.",
     "geofencesDesc_other": "{{count}} active locations. The mobile app receives this list via <code>GET /me/policy</code> and validates the user's GPS locally.",
-    "noGeofences": "No geofences configured. Click <strong>Add geofence</strong> to create one."
+    "noGeofences": "No geofences configured. Click <strong>Add geofence</strong> to create one.",
+    "overrides": "Per-user overrides",
+    "overridesDesc": "Override the org-wide rules for a specific employee for a date range. When the end-date passes, the employee falls back to the org default automatically.",
+    "newOverride": "New override",
+    "searchEmployee": "Search by employee name or email…",
+    "loadingOverrides": "Loading overrides…",
+    "noOverridesMatch": "No overrides match your search.",
+    "noOverrides": "No per-user overrides configured."
   }
 }

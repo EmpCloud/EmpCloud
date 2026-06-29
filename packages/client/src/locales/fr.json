@@ -2096,6 +2096,13 @@
     "addGeofence": "Ajouter un géorepère",
     "geofencesDesc_one": "{{count}} emplacement actif. L'application mobile reçoit cette liste via <code>GET /me/policy</code> et valide le GPS de l'utilisateur localement.",
     "geofencesDesc_other": "{{count}} emplacements actifs. L'application mobile reçoit cette liste via <code>GET /me/policy</code> et valide le GPS de l'utilisateur localement.",
-    "noGeofences": "Aucun géorepère configuré. Cliquez sur <strong>Ajouter un géorepère</strong> pour en créer un."
+    "noGeofences": "Aucun géorepère configuré. Cliquez sur <strong>Ajouter un géorepère</strong> pour en créer un.",
+    "overrides": "Remplacements par utilisateur",
+    "overridesDesc": "Remplacez les règles de toute l'organisation pour un employé spécifique sur une période. À l'expiration de la date de fin, l'employé revient automatiquement au paramètre par défaut de l'organisation.",
+    "newOverride": "Nouveau remplacement",
+    "searchEmployee": "Rechercher par nom ou e-mail de l'employé…",
+    "loadingOverrides": "Chargement des remplacements…",
+    "noOverridesMatch": "Aucun remplacement ne correspond à votre recherche.",
+    "noOverrides": "Aucun remplacement par utilisateur configuré."
   }
 }

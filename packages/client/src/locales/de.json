@@ -2096,6 +2096,13 @@
     "addGeofence": "Geofence hinzufügen",
     "geofencesDesc_one": "{{count}} aktiver Standort. Die mobile App erhält diese Liste über <code>GET /me/policy</code> und validiert das GPS des Benutzers lokal.",
     "geofencesDesc_other": "{{count}} aktive Standorte. Die mobile App erhält diese Liste über <code>GET /me/policy</code> und validiert das GPS des Benutzers lokal.",
-    "noGeofences": "Keine Geofences konfiguriert. Klicken Sie auf <strong>Geofence hinzufügen</strong>, um eines zu erstellen."
+    "noGeofences": "Keine Geofences konfiguriert. Klicken Sie auf <strong>Geofence hinzufügen</strong>, um eines zu erstellen.",
+    "overrides": "Benutzerbezogene Überschreibungen",
+    "overridesDesc": "Überschreiben Sie die organisationsweiten Regeln für einen bestimmten Mitarbeiter für einen Zeitraum. Nach Ablauf des Enddatums fällt der Mitarbeiter automatisch auf den Organisationsstandard zurück.",
+    "newOverride": "Neue Überschreibung",
+    "searchEmployee": "Nach Mitarbeitername oder E-Mail suchen…",
+    "loadingOverrides": "Überschreibungen werden geladen…",
+    "noOverridesMatch": "Keine Überschreibungen entsprechen Ihrer Suche.",
+    "noOverrides": "Keine benutzerbezogenen Überschreibungen konfiguriert."
   }
 }
