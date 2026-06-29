@@ -2070,5 +2070,16 @@
     "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
     "personCount_one": "{{count}} Person",
     "personCount_other": "{{count}} Personen"
+  },
+  "kioskPin": {
+    "backToBiometrics": "Zurück zur Biometrie",
+    "title": "Biometrischer Kiosk-Zugang",
+    "subtitle": "Verwalten Sie Ihre persönliche 6-stellige PIN, mit der Sie sich an biometrischen Kiosk-Geräten anmelden.",
+    "status": "Status",
+    "loading": "Wird geladen…",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "statusOnHint": "Sie können sich an jedem Kiosk mit Ihrer E-Mail und 6-stelligen PIN anmelden.",
+    "statusOffHint": "Legen Sie eine 6-stellige PIN fest, um die biometrische Kiosk-Anmeldung zu aktivieren."
   }
 }

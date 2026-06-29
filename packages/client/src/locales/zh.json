@@ -2070,5 +2070,16 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "kioskPin": {
+    "backToBiometrics": "返回生物识别",
+    "title": "生物识别自助终端访问",
+    "subtitle": "管理您用于在生物识别自助终端设备上登录的个人 6 位 PIN。",
+    "status": "状态",
+    "loading": "加载中…",
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "statusOnHint": "您可以使用您的邮箱和 6 位 PIN 在任何自助终端登录。",
+    "statusOffHint": "设置 6 位 PIN 以启用生物识别自助终端登录。"
   }
 }

@@ -2070,5 +2070,16 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "kioskPin": {
+    "backToBiometrics": "Retour à la biométrie",
+    "title": "Accès au kiosque biométrique",
+    "subtitle": "Gérez votre code PIN personnel à 6 chiffres utilisé pour vous connecter aux bornes biométriques.",
+    "status": "Statut",
+    "loading": "Chargement…",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "statusOnHint": "Vous pouvez vous connecter à n'importe quelle borne avec votre e-mail et votre code PIN à 6 chiffres.",
+    "statusOffHint": "Définissez un code PIN à 6 chiffres pour activer la connexion au kiosque biométrique."
   }
 }

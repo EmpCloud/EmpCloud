@@ -7,6 +7,7 @@
 // /api/v1/biometrics/* HR endpoints, which manage org-wide devices).
 // =============================================================================
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Fingerprint, ShieldCheck, ShieldOff, KeyRound, ArrowLeft, Loader2, Link2, Trash2, Plus, Building2, Eye } from "lucide-react";
@@ -38,6 +39,7 @@ function isSixDigits(s: string): boolean {
 }
 
 export default function KioskBiometricPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const v3 = useV3Biometric();
@@ -109,13 +111,13 @@ export default function KioskBiometricPage() {
         onClick={() => navigate("/biometrics")}
         className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to Biometrics
+        <ArrowLeft className="h-4 w-4" /> {t("kioskPin.backToBiometrics")}
       </button>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Biometric Kiosk Access</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("kioskPin.title")}</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Manage your personal 6-digit PIN used to sign in at biometric kiosk devices.
+          {t("kioskPin.subtitle")}
         </p>
       </div>
 
@@ -130,14 +132,14 @@ export default function KioskBiometricPage() {
             <Fingerprint className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-500">Status</p>
+            <p className="text-sm font-medium text-gray-500">{t("kioskPin.status")}</p>
             <p className="text-lg font-semibold text-gray-900">
-              {isLoading ? "Loading…" : status ? "Enabled" : "Disabled"}
+              {isLoading ? t("kioskPin.loading") : status ? t("kioskPin.enabled") : t("kioskPin.disabled")}
             </p>
             <p className="mt-1 text-xs text-gray-500">
               {status
-                ? "You can sign in at any kiosk using your email and 6-digit PIN."
-                : "Set a 6-digit PIN to enable biometric kiosk sign-in."}
+                ? t("kioskPin.statusOnHint")
+                : t("kioskPin.statusOffHint")}
             </p>
           </div>
         </div>

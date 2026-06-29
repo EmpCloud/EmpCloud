@@ -2075,5 +2075,16 @@
     "exportFailed": "Export failed. Please try again.",
     "personCount_one": "{{count}} person",
     "personCount_other": "{{count}} people"
+  },
+  "kioskPin": {
+    "backToBiometrics": "Back to Biometrics",
+    "title": "Biometric Kiosk Access",
+    "subtitle": "Manage your personal 6-digit PIN used to sign in at biometric kiosk devices.",
+    "status": "Status",
+    "loading": "Loading…",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "statusOnHint": "You can sign in at any kiosk using your email and 6-digit PIN.",
+    "statusOffHint": "Set a 6-digit PIN to enable biometric kiosk sign-in."
   }
 }

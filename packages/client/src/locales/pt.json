@@ -2070,5 +2070,16 @@
     "exportFailed": "Falha na exportação. Tente novamente.",
     "personCount_one": "{{count}} pessoa",
     "personCount_other": "{{count}} pessoas"
+  },
+  "kioskPin": {
+    "backToBiometrics": "Voltar para Biometria",
+    "title": "Acesso ao Quiosque Biométrico",
+    "subtitle": "Gerencie seu PIN pessoal de 6 dígitos usado para fazer login em dispositivos de quiosque biométrico.",
+    "status": "Status",
+    "loading": "Carregando…",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "statusOnHint": "Você pode fazer login em qualquer quiosque usando seu e-mail e PIN de 6 dígitos.",
+    "statusOffHint": "Defina um PIN de 6 dígitos para ativar o login no quiosque biométrico."
   }
 }
