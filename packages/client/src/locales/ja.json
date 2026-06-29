@@ -2139,6 +2139,13 @@
     "inheritOrg": "組織を継承",
     "disabledForUser": "このユーザーは無効",
     "only": "のみ:",
-    "open": "無期限"
+    "open": "無期限",
+    "editOverride": "上書きを編集",
+    "deleteOverride": "上書きを削除",
+    "overrideRemoved": "上書きを削除しました",
+    "removeOverrideError": "上書きを削除できませんでした",
+    "removeOverrideTitle": "ユーザーごとの上書きを削除しますか？",
+    "removeOverrideDesc": "{{name}} の上書きが削除されます。すぐに組織の既定に戻ります。",
+    "thisUser": "このユーザー"
   }
 }

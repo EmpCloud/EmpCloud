@@ -2139,6 +2139,13 @@
     "inheritOrg": "Org. erben",
     "disabledForUser": "für diesen Benutzer deaktiviert",
     "only": "nur:",
-    "open": "offen"
+    "open": "offen",
+    "editOverride": "Überschreibung bearbeiten",
+    "deleteOverride": "Überschreibung löschen",
+    "overrideRemoved": "Überschreibung entfernt",
+    "removeOverrideError": "Überschreibung konnte nicht entfernt werden",
+    "removeOverrideTitle": "Benutzerbezogene Überschreibung entfernen?",
+    "removeOverrideDesc": "Die Überschreibung von {{name}} wird entfernt. Er/Sie fällt sofort auf den Organisationsstandard zurück.",
+    "thisUser": "Dieser Benutzer"
   }
 }

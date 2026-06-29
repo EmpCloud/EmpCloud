@@ -2139,6 +2139,13 @@
     "inheritOrg": "继承组织",
     "disabledForUser": "对该用户已禁用",
     "only": "仅:",
-    "open": "无期限"
+    "open": "无期限",
+    "editOverride": "编辑覆盖",
+    "deleteOverride": "删除覆盖",
+    "overrideRemoved": "已删除覆盖",
+    "removeOverrideError": "无法删除覆盖",
+    "removeOverrideTitle": "删除按用户覆盖？",
+    "removeOverrideDesc": "将删除 {{name}} 的覆盖。该用户将立即恢复为组织默认设置。",
+    "thisUser": "该用户"
   }
 }

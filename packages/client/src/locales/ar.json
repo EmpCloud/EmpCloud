@@ -2139,6 +2139,13 @@
     "inheritOrg": "وراثة من المؤسسة",
     "disabledForUser": "معطّل لهذا المستخدم",
     "only": "فقط:",
-    "open": "مفتوح"
+    "open": "مفتوح",
+    "editOverride": "تعديل التجاوز",
+    "deleteOverride": "حذف التجاوز",
+    "overrideRemoved": "تمت إزالة التجاوز",
+    "removeOverrideError": "تعذّرت إزالة التجاوز",
+    "removeOverrideTitle": "إزالة التجاوز لكل مستخدم؟",
+    "removeOverrideDesc": "ستتم إزالة تجاوز {{name}}. سيعود فورًا إلى الإعداد الافتراضي للمؤسسة.",
+    "thisUser": "هذا المستخدم"
   }
 }

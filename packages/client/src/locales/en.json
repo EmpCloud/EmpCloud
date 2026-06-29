@@ -2144,6 +2144,13 @@
     "inheritOrg": "inherit org",
     "disabledForUser": "disabled for this user",
     "only": "only:",
-    "open": "open"
+    "open": "open",
+    "editOverride": "Edit override",
+    "deleteOverride": "Delete override",
+    "overrideRemoved": "Override removed",
+    "removeOverrideError": "Could not remove override",
+    "removeOverrideTitle": "Remove per-user override?",
+    "removeOverrideDesc": "{{name}}'s override will be removed. They will fall back to the org default immediately.",
+    "thisUser": "This user"
   }
 }

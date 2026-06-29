@@ -2139,6 +2139,13 @@
     "inheritOrg": "herdar da organização",
     "disabledForUser": "desativado para este usuário",
     "only": "apenas:",
-    "open": "em aberto"
+    "open": "em aberto",
+    "editOverride": "Editar substituição",
+    "deleteOverride": "Excluir substituição",
+    "overrideRemoved": "Substituição removida",
+    "removeOverrideError": "Não foi possível remover a substituição",
+    "removeOverrideTitle": "Remover substituição por usuário?",
+    "removeOverrideDesc": "A substituição de {{name}} será removida. Ele(a) voltará imediatamente ao padrão da organização.",
+    "thisUser": "Este usuário"
   }
 }

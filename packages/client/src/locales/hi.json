@@ -2139,6 +2139,13 @@
     "inheritOrg": "संगठन से विरासत",
     "disabledForUser": "इस उपयोगकर्ता के लिए अक्षम",
     "only": "केवल:",
-    "open": "खुला"
+    "open": "खुला",
+    "editOverride": "ओवरराइड संपादित करें",
+    "deleteOverride": "ओवरराइड हटाएं",
+    "overrideRemoved": "ओवरराइड हटा दिया गया",
+    "removeOverrideError": "ओवरराइड हटाया नहीं जा सका",
+    "removeOverrideTitle": "प्रति-उपयोगकर्ता ओवरराइड हटाएं?",
+    "removeOverrideDesc": "{{name}} का ओवरराइड हटा दिया जाएगा। वे तुरंत संगठन डिफ़ॉल्ट पर लौट आएंगे।",
+    "thisUser": "यह उपयोगकर्ता"
   }
 }

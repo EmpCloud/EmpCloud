@@ -2139,6 +2139,13 @@
     "inheritOrg": "heredar de la org.",
     "disabledForUser": "desactivado para este usuario",
     "only": "solo:",
-    "open": "abierto"
+    "open": "abierto",
+    "editOverride": "Editar anulación",
+    "deleteOverride": "Eliminar anulación",
+    "overrideRemoved": "Anulación eliminada",
+    "removeOverrideError": "No se pudo eliminar la anulación",
+    "removeOverrideTitle": "¿Eliminar anulación por usuario?",
+    "removeOverrideDesc": "Se eliminará la anulación de {{name}}. Volverá de inmediato al valor predeterminado de la organización.",
+    "thisUser": "Este usuario"
   }
 }

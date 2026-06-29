@@ -660,11 +660,11 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
     mutationFn: (id: number) => api.delete(`/attendance/overrides/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-overrides-all"] });
-      showToast("success", "Override removed");
+      showToast("success", t("attendanceSettings.overrideRemoved"));
       setPendingDelete(null);
     },
     onError: (err: any) =>
-      showToast("error", err?.response?.data?.error?.message ?? "Could not remove override"),
+      showToast("error", err?.response?.data?.error?.message ?? t("attendanceSettings.removeOverrideError")),
   });
 
   const filtered = useMemo(() => {
@@ -781,14 +781,14 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                       <button
                         onClick={() => setEditing(row)}
                         className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded"
-                        aria-label="Edit override"
+                        aria-label={t("attendanceSettings.editOverride")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setPendingDelete(row)}
                         className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
-                        aria-label="Delete override"
+                        aria-label={t("attendanceSettings.deleteOverride")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -830,14 +830,14 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
 
       <ConfirmDialog
         open={pendingDelete !== null}
-        title="Remove per-user override?"
+        title={t("attendanceSettings.removeOverrideTitle")}
         description={
           pendingDelete
-            ? `${pendingDelete.user?.first_name ?? "This user"}'s override will be removed. They will fall back to the org default immediately.`
+            ? t("attendanceSettings.removeOverrideDesc", { name: pendingDelete.user?.first_name ?? t("attendanceSettings.thisUser") })
             : ""
         }
-        confirmText="Remove"
-        cancelText="Cancel"
+        confirmText={t("attendanceSettings.remove")}
+        cancelText={t("attendanceSettings.cancel")}
         variant="danger"
         loading={removeOverride.isPending}
         onConfirm={() => {
