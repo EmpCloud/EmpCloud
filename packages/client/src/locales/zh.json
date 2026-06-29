@@ -2108,6 +2108,11 @@
     "editGeofence": "编辑地理围栏",
     "deleteGeofence": "删除地理围栏",
     "geofenceRemoved": "已删除地理围栏",
-    "removeGeofenceError": "无法删除地理围栏"
+    "removeGeofenceError": "无法删除地理围栏",
+    "removeGeofenceTitle": "删除地理围栏？",
+    "removeGeofenceDesc": "将删除“{{name}}”。任何固定到它的按用户覆盖将恢复为继承组织默认设置。",
+    "remove": "删除",
+    "cancel": "取消",
+    "close": "关闭"
   }
 }

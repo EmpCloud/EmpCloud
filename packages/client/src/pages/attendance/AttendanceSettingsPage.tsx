@@ -328,14 +328,14 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
 
       <ConfirmDialog
         open={pendingDelete !== null}
-        title="Remove geofence?"
+        title={t("attendanceSettings.removeGeofenceTitle")}
         description={
           pendingDelete
-            ? `"${pendingDelete.name}" will be deleted. Any per-user overrides pinned to it will fall back to inheriting org defaults.`
+            ? t("attendanceSettings.removeGeofenceDesc", { name: pendingDelete.name })
             : ""
         }
-        confirmText="Remove"
-        cancelText="Cancel"
+        confirmText={t("attendanceSettings.remove")}
+        cancelText={t("attendanceSettings.cancel")}
         variant="danger"
         loading={removeFence.isPending}
         onConfirm={() => {
@@ -355,6 +355,7 @@ interface GeofenceModalProps {
 }
 
 function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState(existing?.name ?? "");
   const [latitude, setLatitude] = useState<string>(
     existing ? String(existing.latitude) : "",
@@ -426,12 +427,12 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
           <h3 className="text-lg font-semibold text-gray-900">
-            {mode === "create" ? "Add geofence" : "Edit geofence"}
+            {mode === "create" ? t("attendanceSettings.addGeofence") : t("attendanceSettings.editGeofence")}
           </h3>
           <button
             onClick={onClose}
             className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"
-            aria-label="Close"
+            aria-label={t("attendanceSettings.close")}
           >
             <X className="h-5 w-5" />
           </button>

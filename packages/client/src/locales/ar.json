@@ -2108,6 +2108,11 @@
     "editGeofence": "تعديل السياج الجغرافي",
     "deleteGeofence": "حذف السياج الجغرافي",
     "geofenceRemoved": "تمت إزالة السياج الجغرافي",
-    "removeGeofenceError": "تعذّرت إزالة السياج الجغرافي"
+    "removeGeofenceError": "تعذّرت إزالة السياج الجغرافي",
+    "removeGeofenceTitle": "إزالة السياج الجغرافي؟",
+    "removeGeofenceDesc": "سيتم حذف \"{{name}}\". أي تجاوزات لكل مستخدم مرتبطة به ستعود إلى وراثة إعدادات المؤسسة الافتراضية.",
+    "remove": "إزالة",
+    "cancel": "إلغاء",
+    "close": "إغلاق"
   }
 }

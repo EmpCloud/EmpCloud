@@ -2108,6 +2108,11 @@
     "editGeofence": "जियोफेंस संपादित करें",
     "deleteGeofence": "जियोफेंस हटाएं",
     "geofenceRemoved": "जियोफेंस हटा दिया गया",
-    "removeGeofenceError": "जियोफेंस हटाया नहीं जा सका"
+    "removeGeofenceError": "जियोफेंस हटाया नहीं जा सका",
+    "removeGeofenceTitle": "जियोफेंस हटाएं?",
+    "removeGeofenceDesc": "\"{{name}}\" हटा दिया जाएगा। इससे जुड़े किसी भी प्रति-उपयोगकर्ता ओवरराइड संगठन डिफ़ॉल्ट पर लौट आएंगे।",
+    "remove": "हटाएं",
+    "cancel": "रद्द करें",
+    "close": "बंद करें"
   }
 }

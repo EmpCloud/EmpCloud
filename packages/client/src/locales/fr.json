@@ -2108,6 +2108,11 @@
     "editGeofence": "Modifier le géorepère",
     "deleteGeofence": "Supprimer le géorepère",
     "geofenceRemoved": "Géorepère supprimé",
-    "removeGeofenceError": "Impossible de supprimer le géorepère"
+    "removeGeofenceError": "Impossible de supprimer le géorepère",
+    "removeGeofenceTitle": "Supprimer le géorepère ?",
+    "removeGeofenceDesc": "\"{{name}}\" sera supprimé. Tout remplacement par utilisateur qui y est rattaché reviendra à hériter des paramètres par défaut de l'organisation.",
+    "remove": "Supprimer",
+    "cancel": "Annuler",
+    "close": "Fermer"
   }
 }

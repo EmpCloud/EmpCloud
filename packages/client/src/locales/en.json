@@ -2113,6 +2113,11 @@
     "editGeofence": "Edit geofence",
     "deleteGeofence": "Delete geofence",
     "geofenceRemoved": "Geofence removed",
-    "removeGeofenceError": "Could not remove geofence"
+    "removeGeofenceError": "Could not remove geofence",
+    "removeGeofenceTitle": "Remove geofence?",
+    "removeGeofenceDesc": "\"{{name}}\" will be deleted. Any per-user overrides pinned to it will fall back to inheriting org defaults.",
+    "remove": "Remove",
+    "cancel": "Cancel",
+    "close": "Close"
   }
 }

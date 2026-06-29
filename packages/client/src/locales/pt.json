@@ -2108,6 +2108,11 @@
     "editGeofence": "Editar geocerca",
     "deleteGeofence": "Excluir geocerca",
     "geofenceRemoved": "Geocerca removida",
-    "removeGeofenceError": "Não foi possível remover a geocerca"
+    "removeGeofenceError": "Não foi possível remover a geocerca",
+    "removeGeofenceTitle": "Remover geocerca?",
+    "removeGeofenceDesc": "\"{{name}}\" será excluída. Quaisquer substituições por usuário vinculadas a ela voltarão a herdar os padrões da organização.",
+    "remove": "Remover",
+    "cancel": "Cancelar",
+    "close": "Fechar"
   }
 }

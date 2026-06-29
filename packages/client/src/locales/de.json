@@ -2108,6 +2108,11 @@
     "editGeofence": "Geofence bearbeiten",
     "deleteGeofence": "Geofence löschen",
     "geofenceRemoved": "Geofence entfernt",
-    "removeGeofenceError": "Geofence konnte nicht entfernt werden"
+    "removeGeofenceError": "Geofence konnte nicht entfernt werden",
+    "removeGeofenceTitle": "Geofence entfernen?",
+    "removeGeofenceDesc": "\"{{name}}\" wird gelöscht. Alle daran gebundenen benutzerbezogenen Überschreibungen erben wieder die Organisationsstandards.",
+    "remove": "Entfernen",
+    "cancel": "Abbrechen",
+    "close": "Schließen"
   }
 }

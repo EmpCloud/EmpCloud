@@ -2108,6 +2108,11 @@
     "editGeofence": "ジオフェンスを編集",
     "deleteGeofence": "ジオフェンスを削除",
     "geofenceRemoved": "ジオフェンスを削除しました",
-    "removeGeofenceError": "ジオフェンスを削除できませんでした"
+    "removeGeofenceError": "ジオフェンスを削除できませんでした",
+    "removeGeofenceTitle": "ジオフェンスを削除しますか？",
+    "removeGeofenceDesc": "「{{name}}」が削除されます。これに紐づくユーザーごとの上書きは組織の既定の継承に戻ります。",
+    "remove": "削除",
+    "cancel": "キャンセル",
+    "close": "閉じる"
   }
 }
