@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { NavItem } from "./navigation.config";
 import { AiBadge } from "@/components/AiBadge";
@@ -24,32 +24,35 @@ function isItemActive(item: NavItem, pathname: string, allItems: NavItem[]): boo
 }
 
 export function NavSection({ label, items, location, t, activeClass = "bg-brand-50 text-brand-700" }: NavSectionProps) {
+  // Track the running section so a divider+label renders before the first
+  // surviving item of each new group (resilient to permission-filtered items).
+  let currentSection: string | undefined;
   return (
     <>
       {label && (
         <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{label}</div>
       )}
-      {items.map((item) =>
-        item.children ? (
-          <NestedNavItem
-            key={item.path}
-            item={item}
-            location={location}
-            t={t}
-            activeClass={activeClass}
-
-          />
-        ) : (
-          <NavLink
-            key={item.path}
-            item={item}
-            location={location}
-            t={t}
-            activeClass={activeClass}
-            allItems={items}
-          />
-        )
-      )}
+      {items.map((item) => {
+        let header: string | null = null;
+        if (item.section && item.section !== currentSection) {
+          header = item.section;
+          currentSection = item.section;
+        }
+        return (
+          <Fragment key={item.path}>
+            {header && (
+              <div className="mx-3 mt-4 mb-1 border-t border-gray-100 pt-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                {header}
+              </div>
+            )}
+            {item.children ? (
+              <NestedNavItem item={item} location={location} t={t} activeClass={activeClass} />
+            ) : (
+              <NavLink item={item} location={location} t={t} activeClass={activeClass} allItems={items} />
+            )}
+          </Fragment>
+        );
+      })}
     </>
   );
 }
