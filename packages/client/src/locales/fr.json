@@ -2121,6 +2121,12 @@
     "linkedOrgsDesc": "Partagez votre kiosque biométrique avec les employés d'organisations sœurs. Ajoutez un e-mail d'administrateur de chaque organisation liée — après leur prochaine connexion à la borne, les employés de toutes les organisations liées peuvent pointer sur le même appareil. La paie de chaque entreprise reste distincte.",
     "noOrgsLinked": "Aucune organisation liée pour l'instant.",
     "userGone": "L'utilisateur n'existe plus — supprimez cette entrée",
-    "organizationN": "Organisation n° {{id}}"
+    "organizationN": "Organisation n° {{id}}",
+    "unlink": "Dissocier",
+    "unlinkAria": "Dissocier {{email}}",
+    "errEnterEmail": "Saisissez un e-mail à lier",
+    "linkOrganization": "Lier l'organisation",
+    "errAddOrg": "Échec de l'ajout de l'organisation liée",
+    "errRemoveOrg": "Échec de la suppression de l'organisation liée"
   }
 }

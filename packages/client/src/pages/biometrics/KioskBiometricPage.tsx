@@ -508,7 +508,7 @@ function LinkedOrganizationsCard() {
   const addMutation = useMutation({
     mutationFn: async (email: string) => {
       const { data } = await v3.post<LegacyResponse>("/linked-organizations", { email });
-      if (data.code !== 200) throw new Error(data.message || "Failed to add linked organization");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errAddOrg"));
     },
     onSuccess: () => {
       setNewEmail("");
@@ -516,14 +516,14 @@ function LinkedOrganizationsCard() {
       qc.invalidateQueries({ queryKey: ["biometric-linked-orgs"] });
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || err?.message || "Failed to add linked organization");
+      setError(err?.response?.data?.message || err?.message || t("kioskPin.errAddOrg"));
     },
   });
 
   const removeMutation = useMutation({
     mutationFn: async (email: string) => {
       const { data } = await v3.delete<LegacyResponse>(`/linked-organizations/${encodeURIComponent(email)}`);
-      if (data.code !== 200) throw new Error(data.message || "Failed to remove linked organization");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errRemoveOrg"));
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["biometric-linked-orgs"] }),
   });
@@ -574,8 +574,8 @@ function LinkedOrganizationsCard() {
                 onClick={() => removeMutation.mutate(row.email)}
                 disabled={removeMutation.isPending}
                 className="text-gray-400 hover:text-red-600 p-1 rounded disabled:opacity-50"
-                aria-label={`Unlink ${row.email}`}
-                title="Unlink"
+                aria-label={t("kioskPin.unlinkAria", { email: row.email })}
+                title={t("kioskPin.unlink")}
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -591,7 +591,7 @@ function LinkedOrganizationsCard() {
           e.preventDefault();
           setError(null);
           if (!newEmail.trim()) {
-            setError("Enter an email to link");
+            setError(t("kioskPin.errEnterEmail"));
             return;
           }
           addMutation.mutate(newEmail.trim());
@@ -610,7 +610,7 @@ function LinkedOrganizationsCard() {
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {addMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          Link organization
+          {t("kioskPin.linkOrganization")}
         </button>
       </form>
       {error && (

@@ -2121,6 +2121,12 @@
     "linkedOrgsDesc": "生体認証キオスクを姉妹組織の従業員と共有します。各連携組織の管理者メールを追加すると、次回のキオスクログイン後、すべての連携組織の従業員が同じ端末で打刻できます。各社の給与は別々に保たれます。",
     "noOrgsLinked": "まだ連携された組織はありません。",
     "userGone": "ユーザーは存在しません — このエントリを削除してください",
-    "organizationN": "組織 #{{id}}"
+    "organizationN": "組織 #{{id}}",
+    "unlink": "連携解除",
+    "unlinkAria": "{{email}} の連携を解除",
+    "errEnterEmail": "連携するメールアドレスを入力してください",
+    "linkOrganization": "組織を連携",
+    "errAddOrg": "連携組織の追加に失敗しました",
+    "errRemoveOrg": "連携組織の削除に失敗しました"
   }
 }

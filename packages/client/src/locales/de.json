@@ -2121,6 +2121,12 @@
     "linkedOrgsDesc": "Teilen Sie Ihren biometrischen Kiosk mit Mitarbeitern von Schwesterorganisationen. Fügen Sie eine Admin-E-Mail jeder verknüpften Organisation hinzu — nach deren nächster Kiosk-Anmeldung können Mitarbeiter aller verknüpften Organisationen am selben Gerät ein-/ausstempeln. Die Lohnabrechnung jedes Unternehmens bleibt getrennt.",
     "noOrgsLinked": "Noch keine Organisationen verknüpft.",
     "userGone": "Benutzer existiert nicht mehr — diesen Eintrag entfernen",
-    "organizationN": "Organisation #{{id}}"
+    "organizationN": "Organisation #{{id}}",
+    "unlink": "Trennen",
+    "unlinkAria": "{{email}} trennen",
+    "errEnterEmail": "Geben Sie eine E-Mail zum Verknüpfen ein",
+    "linkOrganization": "Organisation verknüpfen",
+    "errAddOrg": "Verknüpfte Organisation konnte nicht hinzugefügt werden",
+    "errRemoveOrg": "Verknüpfte Organisation konnte nicht entfernt werden"
   }
 }

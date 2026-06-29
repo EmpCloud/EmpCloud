@@ -2121,6 +2121,12 @@
     "linkedOrgsDesc": "Comparte tu quiosco biométrico con empleados de organizaciones hermanas. Agrega un correo de administrador de cada organización vinculada — tras su próximo inicio de sesión en el quiosco, los empleados de todas las organizaciones vinculadas podrán fichar en el mismo dispositivo. La nómina de cada empresa se mantiene separada.",
     "noOrgsLinked": "Aún no hay organizaciones vinculadas.",
     "userGone": "El usuario ya no existe — elimina esta entrada",
-    "organizationN": "Organización n.º {{id}}"
+    "organizationN": "Organización n.º {{id}}",
+    "unlink": "Desvincular",
+    "unlinkAria": "Desvincular {{email}}",
+    "errEnterEmail": "Introduce un correo para vincular",
+    "linkOrganization": "Vincular organización",
+    "errAddOrg": "No se pudo agregar la organización vinculada",
+    "errRemoveOrg": "No se pudo eliminar la organización vinculada"
   }
 }

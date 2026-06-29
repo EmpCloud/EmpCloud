@@ -2126,6 +2126,12 @@
     "linkedOrgsDesc": "Share your biometric kiosk with employees from sister organizations. Add an admin email from each linked org — after their next kiosk login, employees from all linked orgs can punch in/out on the same device. Each company’s payroll stays separate.",
     "noOrgsLinked": "No organizations linked yet.",
     "userGone": "User no longer exists — remove this entry",
-    "organizationN": "Organization #{{id}}"
+    "organizationN": "Organization #{{id}}",
+    "unlink": "Unlink",
+    "unlinkAria": "Unlink {{email}}",
+    "errEnterEmail": "Enter an email to link",
+    "linkOrganization": "Link organization",
+    "errAddOrg": "Failed to add linked organization",
+    "errRemoveOrg": "Failed to remove linked organization"
   }
 }

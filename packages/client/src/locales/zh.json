@@ -2121,6 +2121,12 @@
     "linkedOrgsDesc": "与姊妹组织的员工共享您的生物识别自助终端。为每个关联组织添加一个管理员邮箱 — 在他们下次自助终端登录后，所有关联组织的员工都可在同一台设备上打卡。各公司的薪资保持独立。",
     "noOrgsLinked": "尚未关联任何组织。",
     "userGone": "用户已不存在 — 请删除此条目",
-    "organizationN": "组织 #{{id}}"
+    "organizationN": "组织 #{{id}}",
+    "unlink": "取消关联",
+    "unlinkAria": "取消关联 {{email}}",
+    "errEnterEmail": "输入要关联的邮箱",
+    "linkOrganization": "关联组织",
+    "errAddOrg": "添加关联组织失败",
+    "errRemoveOrg": "移除关联组织失败"
   }
 }
