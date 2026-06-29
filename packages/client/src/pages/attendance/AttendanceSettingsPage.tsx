@@ -14,7 +14,7 @@
 // =============================================================================
 
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Loader2,
@@ -218,6 +218,7 @@ export default function AttendanceSettingsPage() {
 // ===========================================================================
 
 function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isLoading: boolean }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Geofence | null>(null);
   const [creating, setCreating] = useState(false);
@@ -241,28 +242,31 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
     <section className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Geofences</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("attendanceSettings.geofences")}</h2>
           <p className="text-sm text-gray-500">
-            {geofences.length} active location{geofences.length === 1 ? "" : "s"}. The mobile app
-            receives this list via <code>GET /me/policy</code> and validates the user's GPS
-            locally.
+            <Trans
+              i18nKey="attendanceSettings.geofencesDesc"
+              count={geofences.length}
+              values={{ count: geofences.length }}
+              components={{ code: <code /> }}
+            />
           </p>
         </div>
         <button
           onClick={() => setCreating(true)}
           className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3 py-2 rounded-lg shrink-0"
         >
-          <Plus className="h-4 w-4" /> Add geofence
+          <Plus className="h-4 w-4" /> {t("attendanceSettings.addGeofence")}
         </button>
       </div>
 
       {isLoading ? (
         <div className="text-sm text-gray-500 flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+          <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
         </div>
       ) : geofences.length === 0 ? (
         <div className="text-sm text-gray-500 italic py-6 text-center border border-dashed border-gray-200 rounded-lg">
-          No geofences configured. Click <strong>Add geofence</strong> to create one.
+          <Trans i18nKey="attendanceSettings.noGeofences" components={{ strong: <strong /> }} />
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">

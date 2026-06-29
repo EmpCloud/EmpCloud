@@ -2091,6 +2091,11 @@
     "enableGeofencingDesc": "Diz ao app móvel EmpCloud para validar a localização do usuário em relação às suas geocercas antes de permitir uma marcação. O painel e os dispositivos biométricos ignoram essa configuração. Gerencie as geocercas abaixo.",
     "updated": "Configurações de presença atualizadas",
     "updateError": "Não foi possível atualizar as configurações de presença",
-    "atLeastOneChannel": "Pelo menos um canal deve permanecer ativado"
+    "atLeastOneChannel": "Pelo menos um canal deve permanecer ativado",
+    "geofences": "Geocercas",
+    "addGeofence": "Adicionar geocerca",
+    "geofencesDesc_one": "{{count}} local ativo. O app móvel recebe esta lista via <code>GET /me/policy</code> e valida o GPS do usuário localmente.",
+    "geofencesDesc_other": "{{count}} locais ativos. O app móvel recebe esta lista via <code>GET /me/policy</code> e valida o GPS do usuário localmente.",
+    "noGeofences": "Nenhuma geocerca configurada. Clique em <strong>Adicionar geocerca</strong> para criar uma."
   }
 }

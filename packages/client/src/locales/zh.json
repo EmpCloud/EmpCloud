@@ -2091,6 +2091,11 @@
     "enableGeofencingDesc": "指示 EmpCloud 移动应用在允许打卡前根据您的地理围栏验证用户位置。仪表板和生物识别设备会忽略此设置。请在下方管理地理围栏。",
     "updated": "考勤设置已更新",
     "updateError": "无法更新考勤设置",
-    "atLeastOneChannel": "至少必须保留一个启用的渠道"
+    "atLeastOneChannel": "至少必须保留一个启用的渠道",
+    "geofences": "地理围栏",
+    "addGeofence": "添加地理围栏",
+    "geofencesDesc_one": "{{count}} 个活动地点。移动应用通过 <code>GET /me/policy</code> 接收此列表并在本地验证用户的 GPS。",
+    "geofencesDesc_other": "{{count}} 个活动地点。移动应用通过 <code>GET /me/policy</code> 接收此列表并在本地验证用户的 GPS。",
+    "noGeofences": "未配置地理围栏。点击<strong>添加地理围栏</strong>以创建。"
   }
 }

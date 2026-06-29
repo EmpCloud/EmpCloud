@@ -2091,6 +2091,11 @@
     "enableGeofencingDesc": "Weist die EmpCloud-Mobil-App an, den Standort des Benutzers anhand Ihrer Geofences zu prüfen, bevor ein Stempeln erlaubt wird. Dashboard und biometrische Geräte ignorieren diese Einstellung. Verwalten Sie Geofences unten.",
     "updated": "Anwesenheitseinstellungen aktualisiert",
     "updateError": "Anwesenheitseinstellungen konnten nicht aktualisiert werden",
-    "atLeastOneChannel": "Mindestens ein Kanal muss aktiviert bleiben"
+    "atLeastOneChannel": "Mindestens ein Kanal muss aktiviert bleiben",
+    "geofences": "Geofences",
+    "addGeofence": "Geofence hinzufügen",
+    "geofencesDesc_one": "{{count}} aktiver Standort. Die mobile App erhält diese Liste über <code>GET /me/policy</code> und validiert das GPS des Benutzers lokal.",
+    "geofencesDesc_other": "{{count}} aktive Standorte. Die mobile App erhält diese Liste über <code>GET /me/policy</code> und validiert das GPS des Benutzers lokal.",
+    "noGeofences": "Keine Geofences konfiguriert. Klicken Sie auf <strong>Geofence hinzufügen</strong>, um eines zu erstellen."
   }
 }

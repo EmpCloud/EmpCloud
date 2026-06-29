@@ -2091,6 +2091,11 @@
     "enableGeofencingDesc": "打刻を許可する前に、EmpCloud モバイルアプリにユーザーの位置をジオフェンスと照合させます。ダッシュボードと生体認証デバイスはこの設定を無視します。下でジオフェンスを管理してください。",
     "updated": "勤怠設定を更新しました",
     "updateError": "勤怠設定を更新できませんでした",
-    "atLeastOneChannel": "少なくとも1つのチャネルを有効にしておく必要があります"
+    "atLeastOneChannel": "少なくとも1つのチャネルを有効にしておく必要があります",
+    "geofences": "ジオフェンス",
+    "addGeofence": "ジオフェンスを追加",
+    "geofencesDesc_one": "アクティブな場所{{count}}件。モバイルアプリは<code>GET /me/policy</code>でこのリストを受け取り、ユーザーのGPSをローカルで検証します。",
+    "geofencesDesc_other": "アクティブな場所{{count}}件。モバイルアプリは<code>GET /me/policy</code>でこのリストを受け取り、ユーザーのGPSをローカルで検証します。",
+    "noGeofences": "ジオフェンスが設定されていません。<strong>ジオフェンスを追加</strong>をクリックして作成してください。"
   }
 }

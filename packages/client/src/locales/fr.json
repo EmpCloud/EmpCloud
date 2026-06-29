@@ -2091,6 +2091,11 @@
     "enableGeofencingDesc": "Indique à l'application mobile EmpCloud de valider la position de l'utilisateur par rapport à vos géorepères avant d'autoriser un pointage. Le tableau de bord et les appareils biométriques ignorent ce paramètre. Gérez les géorepères ci-dessous.",
     "updated": "Paramètres de présence mis à jour",
     "updateError": "Impossible de mettre à jour les paramètres de présence",
-    "atLeastOneChannel": "Au moins un canal doit rester activé"
+    "atLeastOneChannel": "Au moins un canal doit rester activé",
+    "geofences": "Géorepères",
+    "addGeofence": "Ajouter un géorepère",
+    "geofencesDesc_one": "{{count}} emplacement actif. L'application mobile reçoit cette liste via <code>GET /me/policy</code> et valide le GPS de l'utilisateur localement.",
+    "geofencesDesc_other": "{{count}} emplacements actifs. L'application mobile reçoit cette liste via <code>GET /me/policy</code> et valide le GPS de l'utilisateur localement.",
+    "noGeofences": "Aucun géorepère configuré. Cliquez sur <strong>Ajouter un géorepère</strong> pour en créer un."
   }
 }

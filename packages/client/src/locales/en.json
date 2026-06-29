@@ -2096,6 +2096,11 @@
     "enableGeofencingDesc": "Tells the EmpCloud mobile app to validate the user's location against your geofences before allowing a punch. The dashboard and biometric devices ignore this setting. Manage geofences below.",
     "updated": "Attendance settings updated",
     "updateError": "Could not update attendance settings",
-    "atLeastOneChannel": "At least one channel must remain enabled"
+    "atLeastOneChannel": "At least one channel must remain enabled",
+    "geofences": "Geofences",
+    "addGeofence": "Add geofence",
+    "geofencesDesc_one": "{{count}} active location. The mobile app receives this list via <code>GET /me/policy</code> and validates the user's GPS locally.",
+    "geofencesDesc_other": "{{count}} active locations. The mobile app receives this list via <code>GET /me/policy</code> and validates the user's GPS locally.",
+    "noGeofences": "No geofences configured. Click <strong>Add geofence</strong> to create one."
   }
 }
