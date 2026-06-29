@@ -2158,6 +2158,8 @@
     "editOverrideTitle": "تعديل تجاوز الحضور",
     "change": "تغيير",
     "searchNameEmail": "البحث بالاسم أو البريد الإلكتروني…",
-    "noMatches": "لا توجد نتائج"
+    "noMatches": "لا توجد نتائج",
+    "allowedChannelsShort": "القنوات المسموح بها",
+    "inheritOrgDefault": "وراثة الافتراضي للمؤسسة"
   }
 }

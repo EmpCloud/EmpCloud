@@ -2163,6 +2163,8 @@
     "editOverrideTitle": "Edit attendance override",
     "change": "Change",
     "searchNameEmail": "Search by name or email…",
-    "noMatches": "No matches"
+    "noMatches": "No matches",
+    "allowedChannelsShort": "Allowed channels",
+    "inheritOrgDefault": "Inherit org default"
   }
 }

@@ -2158,6 +2158,8 @@
     "editOverrideTitle": "उपस्थिति ओवरराइड संपादित करें",
     "change": "बदलें",
     "searchNameEmail": "नाम या ईमेल से खोजें…",
-    "noMatches": "कोई मिलान नहीं"
+    "noMatches": "कोई मिलान नहीं",
+    "allowedChannelsShort": "अनुमत चैनल",
+    "inheritOrgDefault": "संगठन डिफ़ॉल्ट विरासत में लें"
   }
 }

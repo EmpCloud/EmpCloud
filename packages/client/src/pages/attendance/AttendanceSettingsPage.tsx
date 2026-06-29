@@ -1027,7 +1027,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                 <div className="text-sm font-medium text-gray-900">
                   {existing!.user
                     ? `${existing!.user!.first_name} ${existing!.user!.last_name}`
-                    : `User #${existing!.user_id}`}
+                    : t("attendanceSettings.userN", { id: existing!.user_id })}
                 </div>
                 {existing!.user && (
                   <div className="text-xs text-gray-500">{existing!.user!.email}</div>
@@ -1039,7 +1039,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Channels */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">Allowed channels</label>
+              <label className="block text-sm font-medium text-gray-700">{t("attendanceSettings.allowedChannelsShort")}</label>
               <label className="text-xs text-gray-600 inline-flex items-center gap-1">
                 <input
                   type="checkbox"
@@ -1047,7 +1047,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                   onChange={(e) => setInheritChannels(e.target.checked)}
                   className="h-3.5 w-3.5"
                 />
-                Inherit org default
+                {t("attendanceSettings.inheritOrgDefault")}
               </label>
             </div>
             <div className={`grid sm:grid-cols-3 gap-2 ${inheritChannels ? "opacity-50 pointer-events-none" : ""}`}>
@@ -1070,7 +1070,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                     }}
                     className="h-4 w-4"
                   />
-                  {CHANNEL_LABEL[c]}
+                  {t(`attendanceSettings.channel.${c}`, { defaultValue: CHANNEL_LABEL[c] })}
                 </label>
               ))}
             </div>
@@ -1078,7 +1078,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
 
           {/* Geofence mode */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Geofence</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t("attendanceSettings.colGeofence")}</label>
             <div className="space-y-2">
               {(["inherit", "off", "custom"] as const).map((mode) => (
                 <label key={mode} className="flex items-start gap-2 cursor-pointer">

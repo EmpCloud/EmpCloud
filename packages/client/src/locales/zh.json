@@ -2158,6 +2158,8 @@
     "editOverrideTitle": "编辑考勤覆盖",
     "change": "更改",
     "searchNameEmail": "按姓名或邮箱搜索…",
-    "noMatches": "无匹配"
+    "noMatches": "无匹配",
+    "allowedChannelsShort": "允许的渠道",
+    "inheritOrgDefault": "继承组织默认设置"
   }
 }

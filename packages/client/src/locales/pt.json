@@ -2158,6 +2158,8 @@
     "editOverrideTitle": "Editar substituição de presença",
     "change": "Alterar",
     "searchNameEmail": "Pesquisar por nome ou e-mail…",
-    "noMatches": "Nenhuma correspondência"
+    "noMatches": "Nenhuma correspondência",
+    "allowedChannelsShort": "Canais permitidos",
+    "inheritOrgDefault": "Herdar padrão da organização"
   }
 }
