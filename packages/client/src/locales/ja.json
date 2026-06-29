@@ -2113,6 +2113,13 @@
     "removeGeofenceDesc": "「{{name}}」が削除されます。これに紐づくユーザーごとの上書きは組織の既定の継承に戻ります。",
     "remove": "削除",
     "cancel": "キャンセル",
-    "close": "閉じる"
+    "close": "閉じる",
+    "nameLabel": "名前",
+    "namePlaceholder": "本社 バンガロール",
+    "locationLabel": "場所",
+    "mapHint": "地図上の任意の場所をクリックするか、ピンをドラッグして場所を設定します。網掛けの円は現在の半径を示します。",
+    "geofenceCreated": "ジオフェンスを作成しました",
+    "geofenceUpdated": "ジオフェンスを更新しました",
+    "saveGeofenceError": "ジオフェンスを保存できませんでした"
   }
 }

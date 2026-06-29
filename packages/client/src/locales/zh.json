@@ -2113,6 +2113,13 @@
     "removeGeofenceDesc": "将删除“{{name}}”。任何固定到它的按用户覆盖将恢复为继承组织默认设置。",
     "remove": "删除",
     "cancel": "取消",
-    "close": "关闭"
+    "close": "关闭",
+    "nameLabel": "名称",
+    "namePlaceholder": "班加罗尔总部",
+    "locationLabel": "位置",
+    "mapHint": "点击地图上任意位置或拖动图钉以设置位置。阴影圆圈表示当前半径。",
+    "geofenceCreated": "已创建地理围栏",
+    "geofenceUpdated": "已更新地理围栏",
+    "saveGeofenceError": "无法保存地理围栏"
   }
 }

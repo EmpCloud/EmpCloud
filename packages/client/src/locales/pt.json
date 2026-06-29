@@ -2113,6 +2113,13 @@
     "removeGeofenceDesc": "\"{{name}}\" será excluída. Quaisquer substituições por usuário vinculadas a ela voltarão a herdar os padrões da organização.",
     "remove": "Remover",
     "cancel": "Cancelar",
-    "close": "Fechar"
+    "close": "Fechar",
+    "nameLabel": "Nome",
+    "namePlaceholder": "Sede Bangalore",
+    "locationLabel": "Localização",
+    "mapHint": "Clique em qualquer lugar do mapa ou arraste o pino para definir a localização. O círculo sombreado mostra o raio atual.",
+    "geofenceCreated": "Geocerca criada",
+    "geofenceUpdated": "Geocerca atualizada",
+    "saveGeofenceError": "Não foi possível salvar a geocerca"
   }
 }

@@ -2118,6 +2118,13 @@
     "removeGeofenceDesc": "\"{{name}}\" will be deleted. Any per-user overrides pinned to it will fall back to inheriting org defaults.",
     "remove": "Remove",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "nameLabel": "Name",
+    "namePlaceholder": "HQ Bangalore",
+    "locationLabel": "Location",
+    "mapHint": "Click anywhere on the map or drag the pin to set the location. The shaded circle shows the current radius.",
+    "geofenceCreated": "Geofence created",
+    "geofenceUpdated": "Geofence updated",
+    "saveGeofenceError": "Could not save geofence"
   }
 }

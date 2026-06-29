@@ -2113,6 +2113,13 @@
     "removeGeofenceDesc": "\"{{name}}\" wird gelöscht. Alle daran gebundenen benutzerbezogenen Überschreibungen erben wieder die Organisationsstandards.",
     "remove": "Entfernen",
     "cancel": "Abbrechen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "nameLabel": "Name",
+    "namePlaceholder": "Zentrale Bangalore",
+    "locationLabel": "Standort",
+    "mapHint": "Klicken Sie auf eine beliebige Stelle der Karte oder ziehen Sie die Markierung, um den Standort festzulegen. Der schattierte Kreis zeigt den aktuellen Radius.",
+    "geofenceCreated": "Geofence erstellt",
+    "geofenceUpdated": "Geofence aktualisiert",
+    "saveGeofenceError": "Geofence konnte nicht gespeichert werden"
   }
 }

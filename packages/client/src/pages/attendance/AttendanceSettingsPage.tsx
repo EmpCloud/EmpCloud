@@ -392,11 +392,11 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
       return api.put(`/attendance/geo-fences/${existing!.id}`, payload).then((r) => r.data.data);
     },
     onSuccess: () => {
-      showToast("success", mode === "create" ? "Geofence created" : "Geofence updated");
+      showToast("success", mode === "create" ? t("attendanceSettings.geofenceCreated") : t("attendanceSettings.geofenceUpdated"));
       onSaved();
     },
     onError: (err: any) =>
-      showToast("error", err?.response?.data?.error?.message ?? "Could not save geofence"),
+      showToast("error", err?.response?.data?.error?.message ?? t("attendanceSettings.saveGeofenceError")),
   });
 
   const submit = () => {
@@ -440,7 +440,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.nameLabel")}</label>
             <input
               type="text"
               value={name}
@@ -448,7 +448,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 setName(e.target.value);
                 if (errors.name) setErrors((p) => ({ ...p, name: undefined }));
               }}
-              placeholder="HQ Bangalore"
+              placeholder={t("attendanceSettings.namePlaceholder")}
               maxLength={100}
               aria-invalid={!!errors.name}
               className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
@@ -465,7 +465,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
           {/* Map picker — click anywhere or drag the marker to set the
               coordinates. Circle overlay shows the current radius. */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.locationLabel")}</label>
             <GeofenceMapPicker
               latitude={latitude === "" || Number.isNaN(Number(latitude)) ? null : Number(latitude)}
               longitude={
@@ -480,8 +480,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               }}
             />
             <p className="text-xs text-gray-500 mt-1">
-              Click anywhere on the map or drag the pin to set the location. The shaded circle
-              shows the current radius.
+              {t("attendanceSettings.mapHint")}
             </p>
           </div>
 

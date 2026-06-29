@@ -2113,6 +2113,13 @@
     "removeGeofenceDesc": "\"{{name}}\" sera supprimé. Tout remplacement par utilisateur qui y est rattaché reviendra à hériter des paramètres par défaut de l'organisation.",
     "remove": "Supprimer",
     "cancel": "Annuler",
-    "close": "Fermer"
+    "close": "Fermer",
+    "nameLabel": "Nom",
+    "namePlaceholder": "Siège Bangalore",
+    "locationLabel": "Emplacement",
+    "mapHint": "Cliquez n'importe où sur la carte ou faites glisser l'épingle pour définir l'emplacement. Le cercle ombré indique le rayon actuel.",
+    "geofenceCreated": "Géorepère créé",
+    "geofenceUpdated": "Géorepère mis à jour",
+    "saveGeofenceError": "Impossible d'enregistrer le géorepère"
   }
 }
