@@ -2070,5 +2070,11 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "holidays": {
+    "title": "Jours fériés",
+    "subtitle": "Consultez les jours fériés et les jours de congé de l'entreprise.",
+    "addHoliday": "Ajouter un jour férié",
+    "holidayName": "Nom du jour férié *"
   }
 }

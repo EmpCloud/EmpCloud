@@ -2070,5 +2070,11 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "holidays": {
+    "title": "节假日",
+    "subtitle": "查看公司的节假日和休息日。",
+    "addHoliday": "添加节假日",
+    "holidayName": "节假日名称 *"
   }
 }

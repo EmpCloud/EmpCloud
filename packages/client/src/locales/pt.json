@@ -2070,5 +2070,11 @@
     "exportFailed": "Falha na exportação. Tente novamente.",
     "personCount_one": "{{count}} pessoa",
     "personCount_other": "{{count}} pessoas"
+  },
+  "holidays": {
+    "title": "Feriados",
+    "subtitle": "Veja os feriados e folgas da empresa.",
+    "addHoliday": "Adicionar Feriado",
+    "holidayName": "Nome do Feriado *"
   }
 }

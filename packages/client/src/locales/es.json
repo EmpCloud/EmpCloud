@@ -2070,5 +2070,11 @@
     "exportFailed": "La exportación falló. Inténtalo de nuevo.",
     "personCount_one": "{{count}} persona",
     "personCount_other": "{{count}} personas"
+  },
+  "holidays": {
+    "title": "Festivos",
+    "subtitle": "Consulta los festivos y días libres de la empresa.",
+    "addHoliday": "Agregar Festivo",
+    "holidayName": "Nombre del Festivo *"
   }
 }

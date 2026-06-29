@@ -2070,5 +2070,11 @@
     "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
     "personCount_one": "{{count}} Person",
     "personCount_other": "{{count}} Personen"
+  },
+  "holidays": {
+    "title": "Feiertage",
+    "subtitle": "Sehen Sie sich die Feiertage und freien Tage des Unternehmens an.",
+    "addHoliday": "Feiertag hinzufügen",
+    "holidayName": "Name des Feiertags *"
   }
 }

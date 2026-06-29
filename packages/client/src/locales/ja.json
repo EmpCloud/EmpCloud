@@ -2070,5 +2070,11 @@
     "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
     "personCount_one": "{{count}}人",
     "personCount_other": "{{count}}人"
+  },
+  "holidays": {
+    "title": "祝日",
+    "subtitle": "会社の祝日と休業日を表示します。",
+    "addHoliday": "祝日を追加",
+    "holidayName": "祝日名 *"
   }
 }

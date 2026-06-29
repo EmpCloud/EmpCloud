@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -24,13 +25,7 @@ interface Holiday {
 // can render a clean badge instead of leaking the raw bracket notation
 // to the user (#1637). Returns the cleaned description (tag removed) and
 // the formatted type label.
-const TYPE_LABELS: Record<string, string> = {
-  regional: "Regional",
-  optional: "Optional",
-  public: "Public",
-  national: "National",
-  religious: "Religious",
-};
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
 const TYPE_BADGE: Record<string, string> = {
   regional: "bg-blue-100 text-blue-700",
   optional: "bg-amber-100 text-amber-700",
@@ -39,7 +34,7 @@ const TYPE_BADGE: Record<string, string> = {
   religious: "bg-purple-100 text-purple-700",
 };
 
-function parseHolidayType(description: string | null): {
+function parseHolidayType(description: string | null, t: TFn): {
   type: string | null;
   label: string | null;
   description: string;
@@ -51,12 +46,15 @@ function parseHolidayType(description: string | null): {
   const cleaned = description.replace(match[0], "").trim();
   return {
     type: raw,
-    label: TYPE_LABELS[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1),
+    label: t(`holidays.type.${raw}`, {
+      defaultValue: raw.charAt(0).toUpperCase() + raw.slice(1),
+    }),
     description: cleaned,
   };
 }
 
 export default function HolidaysPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const isHR = user ? HR_ROLES.includes(user.role) : false;
@@ -186,15 +184,15 @@ export default function HolidaysPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Holidays</h1>
-          <p className="text-gray-500 mt-1">View company holidays and days off.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("holidays.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("holidays.subtitle")}</p>
         </div>
         {isHR && (
           <button
             onClick={() => setShowAdd(!showAdd)}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Holiday
+            <Plus className="h-4 w-4" /> {t("holidays.addHoliday")}
           </button>
         )}
       </div>
@@ -202,10 +200,10 @@ export default function HolidaysPage() {
       {/* Add Holiday Form */}
       {showAdd && isHR && (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Holiday</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("holidays.addHoliday")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Holiday Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.holidayName")}</label>
               <input
                 type="text"
                 value={form.title}
@@ -315,7 +313,7 @@ export default function HolidaysPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold text-gray-900">{h.title}</p>
                       {(() => {
-                        const parsed = parseHolidayType(h.description);
+                        const parsed = parseHolidayType(h.description, t);
                         if (!parsed.label || !parsed.type) return null;
                         return (
                           <span
@@ -335,7 +333,7 @@ export default function HolidaysPage() {
                       )}
                     </p>
                     {(() => {
-                      const cleaned = parseHolidayType(h.description).description;
+                      const cleaned = parseHolidayType(h.description, t).description;
                       return cleaned ? (
                         <p className="text-xs text-gray-400 mt-0.5">{cleaned}</p>
                       ) : null;

@@ -2070,5 +2070,11 @@
     "exportFailed": "निर्यात विफल। कृपया पुनः प्रयास करें।",
     "personCount_one": "{{count}} व्यक्ति",
     "personCount_other": "{{count}} लोग"
+  },
+  "holidays": {
+    "title": "छुट्टियां",
+    "subtitle": "कंपनी की छुट्टियां और अवकाश देखें।",
+    "addHoliday": "छुट्टी जोड़ें",
+    "holidayName": "छुट्टी का नाम *"
   }
 }
