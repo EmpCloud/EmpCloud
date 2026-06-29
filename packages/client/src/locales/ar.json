@@ -2134,6 +2134,11 @@
     "colChannels": "القنوات",
     "colGeofence": "السياج الجغرافي",
     "colWindow": "الفترة",
-    "colNote": "ملاحظة"
+    "colNote": "ملاحظة",
+    "userN": "المستخدم رقم {{id}}",
+    "inheritOrg": "وراثة من المؤسسة",
+    "disabledForUser": "معطّل لهذا المستخدم",
+    "only": "فقط:",
+    "open": "مفتوح"
   }
 }

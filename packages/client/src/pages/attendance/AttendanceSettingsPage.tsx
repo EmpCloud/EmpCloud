@@ -732,7 +732,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                     <div className="font-medium text-gray-900">
                       {row.user
                         ? `${row.user.first_name} ${row.user.last_name}`
-                        : `User #${row.user_id}`}
+                        : t("attendanceSettings.userN", { id: row.user_id })}
                     </div>
                     {row.user && (
                       <div className="text-xs text-gray-500">{row.user.email}</div>
@@ -740,7 +740,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                   </td>
                   <td className="px-3 py-3">
                     {row.allowed_channels === null ? (
-                      <span className="text-xs text-gray-500 italic">inherit org</span>
+                      <span className="text-xs text-gray-500 italic">{t("attendanceSettings.inheritOrg")}</span>
                     ) : (
                       <div className="flex flex-wrap gap-1">
                         {row.allowed_channels.map((c) => (
@@ -757,21 +757,21 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                   </td>
                   <td className="px-3 py-3 text-gray-700 text-xs">
                     {row.geofence_mode === "inherit" && (
-                      <span className="text-gray-500 italic">inherit org</span>
+                      <span className="text-gray-500 italic">{t("attendanceSettings.inheritOrg")}</span>
                     )}
                     {row.geofence_mode === "off" && (
-                      <span className="text-amber-700">disabled for this user</span>
+                      <span className="text-amber-700">{t("attendanceSettings.disabledForUser")}</span>
                     )}
                     {row.geofence_mode === "custom" && (
                       <span>
-                        only:{" "}
+                        {t("attendanceSettings.only")}{" "}
                         {geofences.find((f) => f.id === row.custom_geofence_id)?.name ??
                           `#${row.custom_geofence_id}`}
                       </span>
                     )}
                   </td>
                   <td className="px-3 py-3 text-gray-700 whitespace-nowrap">
-                    {row.start_date} → {row.end_date ?? <span className="text-gray-400">open</span>}
+                    {row.start_date} → {row.end_date ?? <span className="text-gray-400">{t("attendanceSettings.open")}</span>}
                   </td>
                   <td className="px-3 py-3 text-gray-600 max-w-xs truncate" title={row.note ?? ""}>
                     {row.note ?? ""}

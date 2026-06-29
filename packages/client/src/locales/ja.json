@@ -2134,6 +2134,11 @@
     "colChannels": "チャネル",
     "colGeofence": "ジオフェンス",
     "colWindow": "期間",
-    "colNote": "メモ"
+    "colNote": "メモ",
+    "userN": "ユーザー #{{id}}",
+    "inheritOrg": "組織を継承",
+    "disabledForUser": "このユーザーは無効",
+    "only": "のみ:",
+    "open": "無期限"
   }
 }

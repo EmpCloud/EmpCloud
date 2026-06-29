@@ -2134,6 +2134,11 @@
     "colChannels": "चैनल",
     "colGeofence": "जियोफेंस",
     "colWindow": "अवधि",
-    "colNote": "नोट"
+    "colNote": "नोट",
+    "userN": "उपयोगकर्ता #{{id}}",
+    "inheritOrg": "संगठन से विरासत",
+    "disabledForUser": "इस उपयोगकर्ता के लिए अक्षम",
+    "only": "केवल:",
+    "open": "खुला"
   }
 }

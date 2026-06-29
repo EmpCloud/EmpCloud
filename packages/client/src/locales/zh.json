@@ -2134,6 +2134,11 @@
     "colChannels": "渠道",
     "colGeofence": "地理围栏",
     "colWindow": "时间段",
-    "colNote": "备注"
+    "colNote": "备注",
+    "userN": "用户 #{{id}}",
+    "inheritOrg": "继承组织",
+    "disabledForUser": "对该用户已禁用",
+    "only": "仅:",
+    "open": "无期限"
   }
 }

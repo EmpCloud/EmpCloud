@@ -2134,6 +2134,11 @@
     "colChannels": "Kanäle",
     "colGeofence": "Geofence",
     "colWindow": "Zeitraum",
-    "colNote": "Notiz"
+    "colNote": "Notiz",
+    "userN": "Benutzer #{{id}}",
+    "inheritOrg": "Org. erben",
+    "disabledForUser": "für diesen Benutzer deaktiviert",
+    "only": "nur:",
+    "open": "offen"
   }
 }

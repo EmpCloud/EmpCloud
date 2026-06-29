@@ -2134,6 +2134,11 @@
     "colChannels": "Canais",
     "colGeofence": "Geocerca",
     "colWindow": "Período",
-    "colNote": "Observação"
+    "colNote": "Observação",
+    "userN": "Usuário nº {{id}}",
+    "inheritOrg": "herdar da organização",
+    "disabledForUser": "desativado para este usuário",
+    "only": "apenas:",
+    "open": "em aberto"
   }
 }

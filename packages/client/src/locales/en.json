@@ -2139,6 +2139,11 @@
     "colChannels": "Channels",
     "colGeofence": "Geofence",
     "colWindow": "Window",
-    "colNote": "Note"
+    "colNote": "Note",
+    "userN": "User #{{id}}",
+    "inheritOrg": "inherit org",
+    "disabledForUser": "disabled for this user",
+    "only": "only:",
+    "open": "open"
   }
 }
