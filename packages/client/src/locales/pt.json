@@ -2101,6 +2101,11 @@
     "errGeneric": "Algo deu errado",
     "errEnable": "Falha ao ativar a biometria",
     "errDisable": "Falha ao desativar a biometria",
-    "errUpdate": "Falha ao atualizar o PIN"
+    "errUpdate": "Falha ao atualizar o PIN",
+    "livenessTitle": "Detecção de Vivacidade",
+    "livenessDesc": "Execute uma verificação antifraude em cada captura facial do quiosque (detecção de piscadas / micromovimentos) antes de emitir o token de login. Desativado por padrão; ative quando seus dispositivos e iluminação permitirem detecção confiável.",
+    "enableLiveness": "Ativar Vivacidade",
+    "livenessOnHint": "As verificações de vivacidade ESTÃO ativas na autenticação do quiosque.",
+    "livenessOffHint": "As verificações de vivacidade estão desativadas — a captura facial é aceita como está."
   }
 }

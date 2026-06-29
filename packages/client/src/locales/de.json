@@ -2101,6 +2101,11 @@
     "errGeneric": "Etwas ist schiefgelaufen",
     "errEnable": "Biometrie konnte nicht aktiviert werden",
     "errDisable": "Biometrie konnte nicht deaktiviert werden",
-    "errUpdate": "PIN konnte nicht aktualisiert werden"
+    "errUpdate": "PIN konnte nicht aktualisiert werden",
+    "livenessTitle": "Lebenderkennung",
+    "livenessDesc": "Führen Sie bei jeder Gesichtserfassung am Kiosk eine Anti-Spoofing-Prüfung durch (Blinzeln-/Mikrobewegungserkennung), bevor das Anmelde-Token ausgestellt wird. Standardmäßig aus; aktivieren Sie sie, sobald Ihre Geräte und Beleuchtung eine zuverlässige Erkennung unterstützen.",
+    "enableLiveness": "Lebenderkennung aktivieren",
+    "livenessOnHint": "Lebenderkennungsprüfungen sind bei der Kiosk-Authentifizierung AKTIV.",
+    "livenessOffHint": "Lebenderkennungsprüfungen sind aus — die Gesichtserfassung wird unverändert akzeptiert."
   }
 }

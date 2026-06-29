@@ -2106,6 +2106,11 @@
     "errGeneric": "Something went wrong",
     "errEnable": "Failed to enable biometric",
     "errDisable": "Failed to disable biometric",
-    "errUpdate": "Failed to update PIN"
+    "errUpdate": "Failed to update PIN",
+    "livenessTitle": "Liveness Detection",
+    "livenessDesc": "Run an anti-spoof check on each kiosk face capture (blink / micro-movement detection) before issuing the sign-in token. Defaults to off; turn on once your devices and lighting support reliable detection.",
+    "enableLiveness": "Enable Liveness",
+    "livenessOnHint": "Liveness checks ARE running on kiosk auth.",
+    "livenessOffHint": "Liveness checks are off — face capture is accepted as-is."
   }
 }

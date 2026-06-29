@@ -282,6 +282,7 @@ function normaliseLevel(input: unknown): LivenessLevel {
 }
 
 function LivenessSettingsCard() {
+  const { t } = useTranslation();
   const v3 = useV3Biometric();
   const qc = useQueryClient();
   const [enabled, setEnabled] = useState(false);
@@ -339,11 +340,9 @@ function LivenessSettingsCard() {
           <Eye className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h2 className="text-base font-semibold text-gray-900">Liveness Detection</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("kioskPin.livenessTitle")}</h2>
           <p className="mt-1 text-xs text-gray-500">
-            Run an anti-spoof check on each kiosk face capture (blink / micro-movement
-            detection) before issuing the sign-in token. Defaults to off; turn on once
-            your devices and lighting support reliable detection.
+            {t("kioskPin.livenessDesc")}
           </p>
         </div>
       </div>
@@ -351,9 +350,9 @@ function LivenessSettingsCard() {
       {/* Enable toggle */}
       <div className="mt-5 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
         <div>
-          <p className="text-sm font-medium text-gray-900">Enable Liveness</p>
+          <p className="text-sm font-medium text-gray-900">{t("kioskPin.enableLiveness")}</p>
           <p className="text-xs text-gray-500">
-            {isLoading ? "Loading…" : enabled ? "Liveness checks ARE running on kiosk auth." : "Liveness checks are off — face capture is accepted as-is."}
+            {isLoading ? t("kioskPin.loading") : enabled ? t("kioskPin.livenessOnHint") : t("kioskPin.livenessOffHint")}
           </p>
         </div>
         <label className="inline-flex cursor-pointer items-center">

@@ -2101,6 +2101,11 @@
     "errGeneric": "Une erreur s'est produite",
     "errEnable": "Échec de l'activation de la biométrie",
     "errDisable": "Échec de la désactivation de la biométrie",
-    "errUpdate": "Échec de la mise à jour du code PIN"
+    "errUpdate": "Échec de la mise à jour du code PIN",
+    "livenessTitle": "Détection du vivant",
+    "livenessDesc": "Exécutez une vérification anti-usurpation sur chaque capture du visage à la borne (détection de clignement / micro-mouvements) avant d'émettre le jeton de connexion. Désactivé par défaut ; activez-le lorsque vos appareils et votre éclairage permettent une détection fiable.",
+    "enableLiveness": "Activer la détection du vivant",
+    "livenessOnHint": "Les vérifications du vivant SONT actives lors de l'authentification à la borne.",
+    "livenessOffHint": "Les vérifications du vivant sont désactivées — la capture du visage est acceptée telle quelle."
   }
 }

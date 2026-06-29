@@ -2101,6 +2101,11 @@
     "errGeneric": "Algo salió mal",
     "errEnable": "No se pudo activar la biometría",
     "errDisable": "No se pudo desactivar la biometría",
-    "errUpdate": "No se pudo actualizar el PIN"
+    "errUpdate": "No se pudo actualizar el PIN",
+    "livenessTitle": "Detección de Vivacidad",
+    "livenessDesc": "Ejecuta una verificación antisuplantación en cada captura facial del quiosco (detección de parpadeo / micromovimientos) antes de emitir el token de inicio de sesión. Desactivado por defecto; actívalo cuando tus dispositivos e iluminación permitan una detección fiable.",
+    "enableLiveness": "Activar Vivacidad",
+    "livenessOnHint": "Las verificaciones de vivacidad SÍ se ejecutan en la autenticación del quiosco.",
+    "livenessOffHint": "Las verificaciones de vivacidad están desactivadas — la captura facial se acepta tal cual."
   }
 }
