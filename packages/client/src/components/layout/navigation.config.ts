@@ -61,6 +61,14 @@ export type NavItem = {
   badge?: string;
   children?: NavItem[];
   /**
+   * Visual group this item starts. NavSection renders a small divider + label
+   * before the first (surviving, after permission filtering) item whose
+   * `section` differs from the previous one — so the sidebar reads as grouped
+   * sections (e.g. "People & HR", "Communication", "Administration") instead of
+   * one flat list. Optional; items without it inherit the running section.
+   */
+  section?: string;
+  /**
    * RBAC v1 — if set, the item is only visible to users whose effective
    * permissions intersect with this list (OR semantics). Items without
    * this field are visible to everyone. Used to surface admin-side nav
@@ -70,20 +78,29 @@ export type NavItem = {
   requiredPermissions?: string[];
 };
 
-// Items visible to ALL users (including employees)
+// Items visible to ALL users (including employees).
+// Ordered by usage flow: Overview & personal → Daily HR → Communication →
+// Company & services → Account.
 export const employeeNavItems: NavItem[] = [
+  // — Overview & personal —
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
   { path: "/my-profile", label: "My Profile", i18nKey: "nav.myProfile", icon: Contact },
-  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI", requiredPermissions: ["chatbot:use"] },
-  { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare },
   { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
-  { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock },
+
+  // — Daily HR —
+  { path: "/attendance/my", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, section: "Attendance & Leave" },
   { path: "/leave", label: "Leave & Time Off", i18nKey: "nav.leave", icon: CalendarDays, children: [
     { path: "/leave", label: "Leave", i18nKey: "nav.leaveManagement", icon: CalendarDays },
     { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift },
     { path: "/holidays", label: "Holidays", i18nKey: "nav.holidays", icon: PartyPopper },
   ]},
-  { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, children: [
+
+  // — Communication —
+  { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare, section: "Communication" },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, section: "Communication", badge: "AI", requiredPermissions: ["chatbot:use"] },
+
+  // — Company & services —
+  { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, section: "Workplace & Community", children: [
     { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
     { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone, requiredPermissions: ["announcements:view", "announcements:create", "announcements:manage"] },
     { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
@@ -109,8 +126,9 @@ export const employeeNavItems: NavItem[] = [
     { path: "/whistleblowing/submit", label: "Submit Report", i18nKey: "nav.submitReport", icon: ShieldAlert },
     { path: "/whistleblowing/track", label: "Track Report", i18nKey: "nav.trackReport", icon: Search },
   ]},
-  // Self-service password change — visible to every signed-in user.
-  { path: "/change-password", label: "Change Password", i18nKey: "nav.changePassword", icon: KeyRound },
+
+  // — Account —
+  { path: "/change-password", label: "Change Password", i18nKey: "nav.changePassword", icon: KeyRound, section: "Account" },
 ];
 
 // Items visible only to HR Admin, Org Admin, Super Admin — by default. With
@@ -118,21 +136,17 @@ export const employeeNavItems: NavItem[] = [
 // permissions (via custom roles). Items without `requiredPermissions` stay
 // HR-only when injected into the employee sidebar.
 export const adminNavItems: NavItem[] = [
+  // — Overview & personal —
   { path: "/", label: "Dashboard", i18nKey: "nav.dashboard", icon: LayoutDashboard },
   { path: "/self-service", label: "Self Service", i18nKey: "nav.selfService", icon: UserCircle },
-  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package, requiredPermissions: ["modules_access:view", "modules_access:manage", "subscriptions:view"], children: [
-    { path: "/modules", label: "Marketplace", i18nKey: "nav.modules", icon: Package, requiredPermissions: ["subscriptions:view", "subscriptions:add_module"] },
-    { path: "/modules/access", label: "Module Access", i18nKey: "nav.moduleAccess", icon: Shield, requiredPermissions: ["modules_access:view", "modules_access:manage"] },
-  ]},
-  { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt, requiredPermissions: ["billing:view", "billing:manage"] },
-  { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, requiredPermissions: ["employees:view_all", "employees:edit_all", "employees:invite"], children: [
+  { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
+
+  // — Core HR —
+  { path: "/employees", label: "People", i18nKey: "nav.people", icon: Users, section: "People & HR", requiredPermissions: ["employees:view_all", "employees:edit_all", "employees:invite"], children: [
     { path: "/employees", label: "Employees", i18nKey: "nav.employees", icon: Contact, requiredPermissions: ["employees:view_all"] },
     { path: "/employees/probation", label: "Probation", i18nKey: "nav.probation", icon: UserCheck, requiredPermissions: ["probation:view", "probation:manage", "employees:view_all", "employees:edit_all"] },
     { path: "/org-chart", label: "Org Chart", i18nKey: "nav.orgChart", icon: Network, requiredPermissions: ["org_chart:view", "org_chart:edit"] },
   ]},
-  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, badge: "AI", requiredPermissions: ["chatbot:use"] },
-  { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare },
-  { path: "/manager", label: "My Team", i18nKey: "nav.myTeam", icon: UsersRound },
   { path: "/attendance", label: "Attendance", i18nKey: "nav.attendance", icon: Clock, requiredPermissions: ["attendance:view_team", "attendance:view_all", "attendance:approve_regularization_team", "attendance:approve_regularization_all", "attendance:manage"], children: [
     // The "View Attendance" page (AttendanceDashboardPage) renders the
     // employee records grid. Visible to anyone with team-or-broader
@@ -156,7 +170,13 @@ export const adminNavItems: NavItem[] = [
     { path: "/leave/comp-off", label: "Comp-Off", i18nKey: "nav.compOff", icon: Gift, requiredPermissions: ["leave:view_all", "leave:approve"] },
     { path: "/holidays", label: "Holidays", i18nKey: "nav.holidays", icon: PartyPopper },
   ]},
-  { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, children: [
+
+  // — Communication —
+  { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare, section: "Communication" },
+  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, section: "Communication", badge: "AI", requiredPermissions: ["chatbot:use"] },
+
+  // — Company & services —
+  { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, section: "Workplace & Community", children: [
     { path: "/documents", label: "Documents", i18nKey: "nav.documents", icon: FileText },
     { path: "/announcements", label: "Announcements", i18nKey: "nav.announcements", icon: Megaphone, requiredPermissions: ["announcements:view", "announcements:create", "announcements:manage"] },
     { path: "/policies", label: "Policies", i18nKey: "nav.policies", icon: BookOpen },
@@ -193,6 +213,13 @@ export const adminNavItems: NavItem[] = [
     { path: "/whistleblowing/dashboard", label: "Whistleblowing Dashboard", i18nKey: "nav.whistleblowingDashboard", icon: BarChart3 },
     { path: "/whistleblowing/reports", label: "All Reports", i18nKey: "nav.allReports", icon: ClipboardList },
   ]},
+
+  // — Administration —
+  { path: "/modules", label: "Modules", i18nKey: "nav.modules", icon: Package, section: "Administration", requiredPermissions: ["modules_access:view", "modules_access:manage", "subscriptions:view"], children: [
+    { path: "/modules", label: "Marketplace", i18nKey: "nav.modules", icon: Package, requiredPermissions: ["subscriptions:view", "subscriptions:add_module"] },
+    { path: "/modules/access", label: "Module Access", i18nKey: "nav.moduleAccess", icon: Shield, requiredPermissions: ["modules_access:view", "modules_access:manage"] },
+  ]},
+  { path: "/billing", label: "Billing", i18nKey: "nav.billing", icon: Receipt, requiredPermissions: ["billing:view", "billing:manage"] },
   { path: "/settings", label: "Settings", i18nKey: "nav.settings", icon: Settings, requiredPermissions: ["org_settings:view", "org_settings:manage"] },
   { path: "/custom-fields", label: "Custom Fields", i18nKey: "nav.customFields", icon: SlidersHorizontal, requiredPermissions: ["custom_fields:view", "custom_fields:manage"] },
   { path: "/roles", label: "Roles & Permissions", i18nKey: "nav.rolesPermissions", icon: Shield, requiredPermissions: ["roles:view", "roles:manage"] },
