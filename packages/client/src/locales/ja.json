@@ -2075,6 +2075,12 @@
     "title": "祝日",
     "subtitle": "会社の祝日と休業日を表示します。",
     "addHoliday": "祝日を追加",
-    "holidayName": "祝日名 *"
+    "holidayName": "祝日名 *",
+    "date": "日付 *",
+    "endDate": "終了日（任意、複数日の場合）",
+    "description": "説明",
+    "optional": "任意",
+    "mandatoryHoliday": "必須の祝日",
+    "mandatoryNote": "— オフィス休業。出勤した従業員は自動的に祝日残業として記録されます"
   }
 }

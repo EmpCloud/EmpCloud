@@ -2075,6 +2075,12 @@
     "title": "节假日",
     "subtitle": "查看公司的节假日和休息日。",
     "addHoliday": "添加节假日",
-    "holidayName": "节假日名称 *"
+    "holidayName": "节假日名称 *",
+    "date": "日期 *",
+    "endDate": "结束日期（可选，多天用）",
+    "description": "描述",
+    "optional": "可选",
+    "mandatoryHoliday": "强制节假日",
+    "mandatoryNote": "— 办公室关闭；出勤员工自动标记为节假日加班"
   }
 }

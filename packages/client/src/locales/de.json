@@ -2075,6 +2075,12 @@
     "title": "Feiertage",
     "subtitle": "Sehen Sie sich die Feiertage und freien Tage des Unternehmens an.",
     "addHoliday": "Feiertag hinzufügen",
-    "holidayName": "Name des Feiertags *"
+    "holidayName": "Name des Feiertags *",
+    "date": "Datum *",
+    "endDate": "Enddatum (optional, für mehrtägige)",
+    "description": "Beschreibung",
+    "optional": "Optional",
+    "mandatoryHoliday": "Pflichtfeiertag",
+    "mandatoryNote": "— Büro geschlossen; anwesende Mitarbeiter werden automatisch als Feiertags-Überstunden markiert"
   }
 }

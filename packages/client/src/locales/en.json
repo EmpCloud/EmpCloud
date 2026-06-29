@@ -2080,6 +2080,12 @@
     "title": "Holidays",
     "subtitle": "View company holidays and days off.",
     "addHoliday": "Add Holiday",
-    "holidayName": "Holiday Name *"
+    "holidayName": "Holiday Name *",
+    "date": "Date *",
+    "endDate": "End Date (optional, for multi-day)",
+    "description": "Description",
+    "optional": "Optional",
+    "mandatoryHoliday": "Mandatory holiday",
+    "mandatoryNote": "— office closed; present employees auto-marked as Holiday OT"
   }
 }

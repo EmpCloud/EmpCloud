@@ -2075,6 +2075,12 @@
     "title": "Festivos",
     "subtitle": "Consulta los festivos y días libres de la empresa.",
     "addHoliday": "Agregar Festivo",
-    "holidayName": "Nombre del Festivo *"
+    "holidayName": "Nombre del Festivo *",
+    "date": "Fecha *",
+    "endDate": "Fecha de Fin (opcional, para varios días)",
+    "description": "Descripción",
+    "optional": "Opcional",
+    "mandatoryHoliday": "Festivo obligatorio",
+    "mandatoryNote": "— oficina cerrada; los empleados presentes se marcan automáticamente como Horas Extra en Festivo"
   }
 }

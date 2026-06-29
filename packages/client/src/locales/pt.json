@@ -2075,6 +2075,12 @@
     "title": "Feriados",
     "subtitle": "Veja os feriados e folgas da empresa.",
     "addHoliday": "Adicionar Feriado",
-    "holidayName": "Nome do Feriado *"
+    "holidayName": "Nome do Feriado *",
+    "date": "Data *",
+    "endDate": "Data Final (opcional, para vários dias)",
+    "description": "Descrição",
+    "optional": "Opcional",
+    "mandatoryHoliday": "Feriado obrigatório",
+    "mandatoryNote": "— escritório fechado; funcionários presentes são marcados automaticamente como Hora Extra em Feriado"
   }
 }

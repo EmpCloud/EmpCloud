@@ -213,7 +213,7 @@ export default function HolidaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.date")}</label>
               <input
                 type="date"
                 value={form.start_date}
@@ -223,7 +223,7 @@ export default function HolidaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date (optional, for multi-day)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.endDate")}</label>
               <input
                 type="date"
                 value={form.end_date}
@@ -232,13 +232,13 @@ export default function HolidaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.description")}</label>
               <input
                 type="text"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Optional"
+                placeholder={t("holidays.optional")}
               />
             </div>
           </div>
@@ -257,9 +257,9 @@ export default function HolidaysPage() {
                 className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
               />
               <span>
-                <span className="font-medium">Mandatory holiday</span>
+                <span className="font-medium">{t("holidays.mandatoryHoliday")}</span>
                 <span className="text-gray-500 ml-1">
-                  &mdash; office closed; present employees auto-marked as Holiday OT
+                  {t("holidays.mandatoryNote")}
                 </span>
               </span>
             </label>
