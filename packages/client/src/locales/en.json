@@ -2172,6 +2172,13 @@
     "geoModeInheritDesc": "User sees all org-active geofences in the mobile app.",
     "geoModeOffDesc": "Mobile app receives an empty geofence list.",
     "geoModeCustomDesc": "User can only check in from the chosen location.",
-    "selectGeofence": "Select a geofence…"
+    "selectGeofence": "Select a geofence…",
+    "startDate": "Start date",
+    "startDateLocked": "Start date can't be edited after creation.",
+    "endDate": "End date",
+    "optional": "(optional)",
+    "endDateHint": "Leave blank for an open-ended override.",
+    "notePlaceholder": "e.g. WFH for 2 weeks, on-site project, leave coverage…",
+    "createOverride": "Create override"
   }
 }

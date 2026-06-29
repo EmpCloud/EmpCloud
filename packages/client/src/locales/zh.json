@@ -2167,6 +2167,13 @@
     "geoModeInheritDesc": "用户在移动应用中可看到所有组织活动的地理围栏。",
     "geoModeOffDesc": "移动应用接收一个空的地理围栏列表。",
     "geoModeCustomDesc": "用户只能从所选位置签到。",
-    "selectGeofence": "选择一个地理围栏…"
+    "selectGeofence": "选择一个地理围栏…",
+    "startDate": "开始日期",
+    "startDateLocked": "创建后无法编辑开始日期。",
+    "endDate": "结束日期",
+    "optional": "（可选）",
+    "endDateHint": "留空表示无期限覆盖。",
+    "notePlaceholder": "例如 在家办公2周、现场项目、休假代班…",
+    "createOverride": "创建覆盖"
   }
 }

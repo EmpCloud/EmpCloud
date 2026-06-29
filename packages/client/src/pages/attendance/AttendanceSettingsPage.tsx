@@ -1124,7 +1124,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Dates */}
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.startDate")}</label>
               <input
                 type="date"
                 value={startDate}
@@ -1134,13 +1134,13 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               />
               {mode === "edit" && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Start date can't be edited after creation.
+                  {t("attendanceSettings.startDateLocked")}
                 </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                End date <span className="text-gray-400 font-normal">(optional)</span>
+                {t("attendanceSettings.endDate")} <span className="text-gray-400 font-normal">{t("attendanceSettings.optional")}</span>
               </label>
               <input
                 type="date"
@@ -1150,7 +1150,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Leave blank for an open-ended override.
+                {t("attendanceSettings.endDateHint")}
               </p>
             </div>
           </div>
@@ -1158,14 +1158,14 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Note */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Note <span className="text-gray-400 font-normal">(optional)</span>
+              {t("attendanceSettings.colNote")} <span className="text-gray-400 font-normal">{t("attendanceSettings.optional")}</span>
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               maxLength={255}
-              placeholder="e.g. WFH for 2 weeks, on-site project, leave coverage…"
+              placeholder={t("attendanceSettings.notePlaceholder")}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             />
           </div>
@@ -1176,7 +1176,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
             onClick={onClose}
             className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
           >
-            Cancel
+            {t("attendanceSettings.cancel")}
           </button>
           <button
             onClick={submit}
@@ -1184,7 +1184,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
             className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
           >
             {save.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-            {mode === "create" ? "Create override" : "Save changes"}
+            {mode === "create" ? t("attendanceSettings.createOverride") : t("attendanceSettings.saveChanges")}
           </button>
         </div>
       </div>

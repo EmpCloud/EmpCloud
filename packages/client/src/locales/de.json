@@ -2167,6 +2167,13 @@
     "geoModeInheritDesc": "Der Benutzer sieht alle org.-aktiven Geofences in der mobilen App.",
     "geoModeOffDesc": "Die mobile App erhält eine leere Geofence-Liste.",
     "geoModeCustomDesc": "Der Benutzer kann nur vom gewählten Standort einstempeln.",
-    "selectGeofence": "Geofence auswählen…"
+    "selectGeofence": "Geofence auswählen…",
+    "startDate": "Startdatum",
+    "startDateLocked": "Das Startdatum kann nach der Erstellung nicht bearbeitet werden.",
+    "endDate": "Enddatum",
+    "optional": "(optional)",
+    "endDateHint": "Leer lassen für eine unbefristete Überschreibung.",
+    "notePlaceholder": "z. B. 2 Wochen Homeoffice, Vor-Ort-Projekt, Urlaubsvertretung…",
+    "createOverride": "Überschreibung erstellen"
   }
 }

@@ -2167,6 +2167,13 @@
     "geoModeInheritDesc": "O usuário vê todas as geocercas ativas da organização no app móvel.",
     "geoModeOffDesc": "O app móvel recebe uma lista de geocercas vazia.",
     "geoModeCustomDesc": "O usuário só pode registrar entrada no local escolhido.",
-    "selectGeofence": "Selecione uma geocerca…"
+    "selectGeofence": "Selecione uma geocerca…",
+    "startDate": "Data de início",
+    "startDateLocked": "A data de início não pode ser editada após a criação.",
+    "endDate": "Data de término",
+    "optional": "(opcional)",
+    "endDateHint": "Deixe em branco para uma substituição sem prazo.",
+    "notePlaceholder": "ex.: home office por 2 semanas, projeto presencial, cobertura de licença…",
+    "createOverride": "Criar substituição"
   }
 }

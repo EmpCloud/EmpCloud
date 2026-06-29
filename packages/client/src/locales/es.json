@@ -2167,6 +2167,13 @@
     "geoModeInheritDesc": "El usuario ve todas las geocercas activas de la org. en la app móvil.",
     "geoModeOffDesc": "La app móvil recibe una lista de geocercas vacía.",
     "geoModeCustomDesc": "El usuario solo puede fichar desde la ubicación elegida.",
-    "selectGeofence": "Selecciona una geocerca…"
+    "selectGeofence": "Selecciona una geocerca…",
+    "startDate": "Fecha de inicio",
+    "startDateLocked": "La fecha de inicio no se puede editar después de la creación.",
+    "endDate": "Fecha de fin",
+    "optional": "(opcional)",
+    "endDateHint": "Déjalo en blanco para una anulación sin fecha de fin.",
+    "notePlaceholder": "p. ej. teletrabajo 2 semanas, proyecto presencial, cobertura de licencia…",
+    "createOverride": "Crear anulación"
   }
 }

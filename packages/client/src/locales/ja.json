@@ -2167,6 +2167,13 @@
     "geoModeInheritDesc": "ユーザーはモバイルアプリで組織のアクティブなジオフェンスをすべて表示します。",
     "geoModeOffDesc": "モバイルアプリは空のジオフェンスリストを受け取ります。",
     "geoModeCustomDesc": "ユーザーは選択した場所からのみチェックインできます。",
-    "selectGeofence": "ジオフェンスを選択…"
+    "selectGeofence": "ジオフェンスを選択…",
+    "startDate": "開始日",
+    "startDateLocked": "開始日は作成後に編集できません。",
+    "endDate": "終了日",
+    "optional": "（任意）",
+    "endDateHint": "無期限の上書きにする場合は空欄のままにします。",
+    "notePlaceholder": "例: 2週間の在宅勤務、現場プロジェクト、休暇カバーなど…",
+    "createOverride": "上書きを作成"
   }
 }

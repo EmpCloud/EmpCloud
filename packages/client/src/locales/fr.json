@@ -2167,6 +2167,13 @@
     "geoModeInheritDesc": "L'utilisateur voit tous les géorepères actifs de l'org. dans l'application mobile.",
     "geoModeOffDesc": "L'application mobile reçoit une liste de géorepères vide.",
     "geoModeCustomDesc": "L'utilisateur ne peut pointer que depuis l'emplacement choisi.",
-    "selectGeofence": "Sélectionnez un géorepère…"
+    "selectGeofence": "Sélectionnez un géorepère…",
+    "startDate": "Date de début",
+    "startDateLocked": "La date de début ne peut pas être modifiée après la création.",
+    "endDate": "Date de fin",
+    "optional": "(facultatif)",
+    "endDateHint": "Laissez vide pour un remplacement sans date de fin.",
+    "notePlaceholder": "ex. télétravail 2 semaines, projet sur site, remplacement de congé…",
+    "createOverride": "Créer le remplacement"
   }
 }
