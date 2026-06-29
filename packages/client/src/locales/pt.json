@@ -2153,6 +2153,11 @@
     "errPickEmployee": "Selecione um funcionário primeiro",
     "errPickChannel": "Selecione pelo menos um canal ou mude para \"herdar da organização\"",
     "errPickGeofence": "Selecione uma geocerca para o modo personalizado",
-    "errEndBeforeStart": "A data final não pode ser anterior à data inicial"
+    "errEndBeforeStart": "A data final não pode ser anterior à data inicial",
+    "newOverrideTitle": "Nova substituição de presença",
+    "editOverrideTitle": "Editar substituição de presença",
+    "change": "Alterar",
+    "searchNameEmail": "Pesquisar por nome ou e-mail…",
+    "noMatches": "Nenhuma correspondência"
   }
 }

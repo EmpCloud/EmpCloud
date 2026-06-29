@@ -2153,6 +2153,11 @@
     "errPickEmployee": "先に従業員を選択してください",
     "errPickChannel": "少なくとも1つのチャネルを選択するか、「組織を継承」に切り替えてください",
     "errPickGeofence": "カスタムモード用のジオフェンスを選択してください",
-    "errEndBeforeStart": "終了日は開始日より前にできません"
+    "errEndBeforeStart": "終了日は開始日より前にできません",
+    "newOverrideTitle": "新規勤怠上書き",
+    "editOverrideTitle": "勤怠上書きを編集",
+    "change": "変更",
+    "searchNameEmail": "名前またはメールで検索…",
+    "noMatches": "一致なし"
   }
 }

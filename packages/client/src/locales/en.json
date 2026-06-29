@@ -2158,6 +2158,11 @@
     "errPickEmployee": "Pick an employee first",
     "errPickChannel": "Pick at least one channel or switch to 'inherit org'",
     "errPickGeofence": "Pick a geofence for the custom mode",
-    "errEndBeforeStart": "End date cannot be before start date"
+    "errEndBeforeStart": "End date cannot be before start date",
+    "newOverrideTitle": "New attendance override",
+    "editOverrideTitle": "Edit attendance override",
+    "change": "Change",
+    "searchNameEmail": "Search by name or email…",
+    "noMatches": "No matches"
   }
 }

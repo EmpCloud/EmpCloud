@@ -952,12 +952,12 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
           <h3 className="text-lg font-semibold text-gray-900">
-            {mode === "create" ? "New attendance override" : "Edit attendance override"}
+            {mode === "create" ? t("attendanceSettings.newOverrideTitle") : t("attendanceSettings.editOverrideTitle")}
           </h3>
           <button
             onClick={onClose}
             className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"
-            aria-label="Close"
+            aria-label={t("attendanceSettings.close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -967,7 +967,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Employee picker (create mode only) */}
           {mode === "create" ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.colEmployee")}</label>
               {selectedUser ? (
                 <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50">
                   <div>
@@ -983,7 +983,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                     }}
                     className="text-xs text-brand-600 hover:underline"
                   >
-                    Change
+                    {t("attendanceSettings.change")}
                   </button>
                 </div>
               ) : (
@@ -993,13 +993,13 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                     <input
                       value={userSearch}
                       onChange={(e) => setUserSearch(e.target.value)}
-                      placeholder="Search by name or email…"
+                      placeholder={t("attendanceSettings.searchNameEmail")}
                       className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                     />
                   </div>
                   <div className="mt-2 border border-gray-200 rounded-lg divide-y divide-gray-100 max-h-48 overflow-y-auto">
                     {filteredDirectory.length === 0 && (
-                      <div className="px-3 py-2 text-xs text-gray-500">No matches</div>
+                      <div className="px-3 py-2 text-xs text-gray-500">{t("attendanceSettings.noMatches")}</div>
                     )}
                     {filteredDirectory.map((emp) => (
                       <button
@@ -1022,7 +1022,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.colEmployee")}</label>
               <div className="p-3 border border-gray-200 rounded-lg bg-gray-50">
                 <div className="text-sm font-medium text-gray-900">
                   {existing!.user

@@ -2153,6 +2153,11 @@
     "errPickEmployee": "请先选择一名员工",
     "errPickChannel": "请至少选择一个渠道，或切换为“继承组织”",
     "errPickGeofence": "为自定义模式选择一个地理围栏",
-    "errEndBeforeStart": "结束日期不能早于开始日期"
+    "errEndBeforeStart": "结束日期不能早于开始日期",
+    "newOverrideTitle": "新建考勤覆盖",
+    "editOverrideTitle": "编辑考勤覆盖",
+    "change": "更改",
+    "searchNameEmail": "按姓名或邮箱搜索…",
+    "noMatches": "无匹配"
   }
 }

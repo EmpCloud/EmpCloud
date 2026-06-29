@@ -2153,6 +2153,11 @@
     "errPickEmployee": "Wählen Sie zuerst einen Mitarbeiter aus",
     "errPickChannel": "Wählen Sie mindestens einen Kanal oder wechseln Sie zu \"Org. erben\"",
     "errPickGeofence": "Wählen Sie ein Geofence für den benutzerdefinierten Modus",
-    "errEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen"
+    "errEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen",
+    "newOverrideTitle": "Neue Anwesenheitsüberschreibung",
+    "editOverrideTitle": "Anwesenheitsüberschreibung bearbeiten",
+    "change": "Ändern",
+    "searchNameEmail": "Nach Name oder E-Mail suchen…",
+    "noMatches": "Keine Treffer"
   }
 }

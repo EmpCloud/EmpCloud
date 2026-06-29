@@ -2153,6 +2153,11 @@
     "errPickEmployee": "Primero selecciona un empleado",
     "errPickChannel": "Selecciona al menos un canal o cambia a \"heredar de la org.\"",
     "errPickGeofence": "Selecciona una geocerca para el modo personalizado",
-    "errEndBeforeStart": "La fecha de fin no puede ser anterior a la de inicio"
+    "errEndBeforeStart": "La fecha de fin no puede ser anterior a la de inicio",
+    "newOverrideTitle": "Nueva anulación de asistencia",
+    "editOverrideTitle": "Editar anulación de asistencia",
+    "change": "Cambiar",
+    "searchNameEmail": "Buscar por nombre o correo…",
+    "noMatches": "Sin coincidencias"
   }
 }
