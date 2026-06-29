@@ -2146,6 +2146,13 @@
     "removeOverrideError": "上書きを削除できませんでした",
     "removeOverrideTitle": "ユーザーごとの上書きを削除しますか？",
     "removeOverrideDesc": "{{name}} の上書きが削除されます。すぐに組織の既定に戻ります。",
-    "thisUser": "このユーザー"
+    "thisUser": "このユーザー",
+    "overrideCreated": "上書きを作成しました",
+    "overrideUpdated": "上書きを更新しました",
+    "saveOverrideError": "上書きを保存できませんでした",
+    "errPickEmployee": "先に従業員を選択してください",
+    "errPickChannel": "少なくとも1つのチャネルを選択するか、「組織を継承」に切り替えてください",
+    "errPickGeofence": "カスタムモード用のジオフェンスを選択してください",
+    "errEndBeforeStart": "終了日は開始日より前にできません"
   }
 }

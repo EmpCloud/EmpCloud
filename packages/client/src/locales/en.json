@@ -2151,6 +2151,13 @@
     "removeOverrideError": "Could not remove override",
     "removeOverrideTitle": "Remove per-user override?",
     "removeOverrideDesc": "{{name}}'s override will be removed. They will fall back to the org default immediately.",
-    "thisUser": "This user"
+    "thisUser": "This user",
+    "overrideCreated": "Override created",
+    "overrideUpdated": "Override updated",
+    "saveOverrideError": "Could not save override",
+    "errPickEmployee": "Pick an employee first",
+    "errPickChannel": "Pick at least one channel or switch to 'inherit org'",
+    "errPickGeofence": "Pick a geofence for the custom mode",
+    "errEndBeforeStart": "End date cannot be before start date"
   }
 }

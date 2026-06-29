@@ -2146,6 +2146,13 @@
     "removeOverrideError": "Überschreibung konnte nicht entfernt werden",
     "removeOverrideTitle": "Benutzerbezogene Überschreibung entfernen?",
     "removeOverrideDesc": "Die Überschreibung von {{name}} wird entfernt. Er/Sie fällt sofort auf den Organisationsstandard zurück.",
-    "thisUser": "Dieser Benutzer"
+    "thisUser": "Dieser Benutzer",
+    "overrideCreated": "Überschreibung erstellt",
+    "overrideUpdated": "Überschreibung aktualisiert",
+    "saveOverrideError": "Überschreibung konnte nicht gespeichert werden",
+    "errPickEmployee": "Wählen Sie zuerst einen Mitarbeiter aus",
+    "errPickChannel": "Wählen Sie mindestens einen Kanal oder wechseln Sie zu \"Org. erben\"",
+    "errPickGeofence": "Wählen Sie ein Geofence für den benutzerdefinierten Modus",
+    "errEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen"
   }
 }

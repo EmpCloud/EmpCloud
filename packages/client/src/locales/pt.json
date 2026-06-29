@@ -2146,6 +2146,13 @@
     "removeOverrideError": "Não foi possível remover a substituição",
     "removeOverrideTitle": "Remover substituição por usuário?",
     "removeOverrideDesc": "A substituição de {{name}} será removida. Ele(a) voltará imediatamente ao padrão da organização.",
-    "thisUser": "Este usuário"
+    "thisUser": "Este usuário",
+    "overrideCreated": "Substituição criada",
+    "overrideUpdated": "Substituição atualizada",
+    "saveOverrideError": "Não foi possível salvar a substituição",
+    "errPickEmployee": "Selecione um funcionário primeiro",
+    "errPickChannel": "Selecione pelo menos um canal ou mude para \"herdar da organização\"",
+    "errPickGeofence": "Selecione uma geocerca para o modo personalizado",
+    "errEndBeforeStart": "A data final não pode ser anterior à data inicial"
   }
 }

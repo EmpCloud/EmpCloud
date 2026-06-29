@@ -2146,6 +2146,13 @@
     "removeOverrideError": "Impossible de supprimer le remplacement",
     "removeOverrideTitle": "Supprimer le remplacement par utilisateur ?",
     "removeOverrideDesc": "Le remplacement de {{name}} sera supprimé. Il/elle reviendra immédiatement au paramètre par défaut de l'organisation.",
-    "thisUser": "Cet utilisateur"
+    "thisUser": "Cet utilisateur",
+    "overrideCreated": "Remplacement créé",
+    "overrideUpdated": "Remplacement mis à jour",
+    "saveOverrideError": "Impossible d'enregistrer le remplacement",
+    "errPickEmployee": "Sélectionnez d'abord un employé",
+    "errPickChannel": "Sélectionnez au moins un canal ou passez à « hériter de l'org. »",
+    "errPickGeofence": "Sélectionnez un géorepère pour le mode personnalisé",
+    "errEndBeforeStart": "La date de fin ne peut pas être antérieure à la date de début"
   }
 }

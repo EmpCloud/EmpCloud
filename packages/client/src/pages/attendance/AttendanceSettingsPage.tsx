@@ -863,6 +863,7 @@ interface OverrideModalProps {
 }
 
 function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved }: OverrideModalProps) {
+  const { t } = useTranslation();
   const today = new Date().toISOString().slice(0, 10);
 
   const [userId, setUserId] = useState<number | null>(existing?.user_id ?? null);
@@ -913,28 +914,28 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
       return api.put(`/attendance/overrides/${existing!.id}`, payload).then((r) => r.data.data);
     },
     onSuccess: () => {
-      showToast("success", mode === "create" ? "Override created" : "Override updated");
+      showToast("success", mode === "create" ? t("attendanceSettings.overrideCreated") : t("attendanceSettings.overrideUpdated"));
       onSaved();
     },
     onError: (err: any) =>
-      showToast("error", err?.response?.data?.error?.message ?? "Could not save override"),
+      showToast("error", err?.response?.data?.error?.message ?? t("attendanceSettings.saveOverrideError")),
   });
 
   const submit = () => {
     if (mode === "create" && !userId) {
-      showToast("error", "Pick an employee first");
+      showToast("error", t("attendanceSettings.errPickEmployee"));
       return;
     }
     if (!inheritChannels && channels.length === 0) {
-      showToast("error", "Pick at least one channel or switch to 'inherit org'");
+      showToast("error", t("attendanceSettings.errPickChannel"));
       return;
     }
     if (geofenceMode === "custom" && !customFenceId) {
-      showToast("error", "Pick a geofence for the custom mode");
+      showToast("error", t("attendanceSettings.errPickGeofence"));
       return;
     }
     if (endDate && endDate < startDate) {
-      showToast("error", "End date cannot be before start date");
+      showToast("error", t("attendanceSettings.errEndBeforeStart"));
       return;
     }
     save.mutate();

@@ -2146,6 +2146,13 @@
     "removeOverrideError": "无法删除覆盖",
     "removeOverrideTitle": "删除按用户覆盖？",
     "removeOverrideDesc": "将删除 {{name}} 的覆盖。该用户将立即恢复为组织默认设置。",
-    "thisUser": "该用户"
+    "thisUser": "该用户",
+    "overrideCreated": "已创建覆盖",
+    "overrideUpdated": "已更新覆盖",
+    "saveOverrideError": "无法保存覆盖",
+    "errPickEmployee": "请先选择一名员工",
+    "errPickChannel": "请至少选择一个渠道，或切换为“继承组织”",
+    "errPickGeofence": "为自定义模式选择一个地理围栏",
+    "errEndBeforeStart": "结束日期不能早于开始日期"
   }
 }

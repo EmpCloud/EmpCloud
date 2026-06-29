@@ -2146,6 +2146,13 @@
     "removeOverrideError": "تعذّرت إزالة التجاوز",
     "removeOverrideTitle": "إزالة التجاوز لكل مستخدم؟",
     "removeOverrideDesc": "ستتم إزالة تجاوز {{name}}. سيعود فورًا إلى الإعداد الافتراضي للمؤسسة.",
-    "thisUser": "هذا المستخدم"
+    "thisUser": "هذا المستخدم",
+    "overrideCreated": "تم إنشاء التجاوز",
+    "overrideUpdated": "تم تحديث التجاوز",
+    "saveOverrideError": "تعذّر حفظ التجاوز",
+    "errPickEmployee": "اختر موظفًا أولاً",
+    "errPickChannel": "اختر قناة واحدة على الأقل أو بدّل إلى \"وراثة من المؤسسة\"",
+    "errPickGeofence": "اختر سياجًا جغرافيًا للوضع المخصص",
+    "errEndBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء"
   }
 }
