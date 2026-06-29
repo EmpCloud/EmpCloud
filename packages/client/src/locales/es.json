@@ -2087,6 +2087,22 @@
     "addError": "No se pudo agregar el festivo.",
     "loading": "Cargando festivos...",
     "empty": "Aún no hay festivos en la lista.",
-    "emptyHint": "Haz clic en \"Agregar Festivo\" para empezar."
+    "emptyHint": "Haz clic en \"Agregar Festivo\" para empezar.",
+    "past": "Pasado",
+    "mandatory": "Obligatorio",
+    "optionalBadge": "Opcional",
+    "mandatoryTooltip": "Festivo obligatorio — los empleados presentes se marcan automáticamente como HOT. Haz clic para hacerlo opcional.",
+    "optionalTooltip": "Festivo opcional — los empleados presentes permanecen como P. Haz clic para hacerlo obligatorio.",
+    "deleteHoliday": "Eliminar festivo",
+    "deleteConfirm": "¿Eliminar festivo?",
+    "deleteConfirmNamed": "¿Eliminar el festivo \"{{title}}\"?",
+    "delete": "Eliminar",
+    "type": {
+      "regional": "Regional",
+      "optional": "Opcional",
+      "public": "Público",
+      "national": "Nacional",
+      "religious": "Religioso"
+    }
   }
 }

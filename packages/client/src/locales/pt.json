@@ -2087,6 +2087,22 @@
     "addError": "Falha ao adicionar feriado.",
     "loading": "Carregando feriados...",
     "empty": "Nenhum feriado listado ainda.",
-    "emptyHint": "Clique em \"Adicionar Feriado\" para começar."
+    "emptyHint": "Clique em \"Adicionar Feriado\" para começar.",
+    "past": "Passado",
+    "mandatory": "Obrigatório",
+    "optionalBadge": "Opcional",
+    "mandatoryTooltip": "Feriado obrigatório — funcionários presentes marcados automaticamente como HOT. Clique para tornar opcional.",
+    "optionalTooltip": "Feriado opcional — funcionários presentes permanecem P. Clique para tornar obrigatório.",
+    "deleteHoliday": "Excluir feriado",
+    "deleteConfirm": "Excluir feriado?",
+    "deleteConfirmNamed": "Excluir o feriado \"{{title}}\"?",
+    "delete": "Excluir",
+    "type": {
+      "regional": "Regional",
+      "optional": "Opcional",
+      "public": "Público",
+      "national": "Nacional",
+      "religious": "Religioso"
+    }
   }
 }

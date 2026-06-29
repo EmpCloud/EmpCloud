@@ -2092,6 +2092,22 @@
     "addError": "Failed to add holiday.",
     "loading": "Loading holidays...",
     "empty": "No holidays listed yet.",
-    "emptyHint": "Click \"Add Holiday\" to get started."
+    "emptyHint": "Click \"Add Holiday\" to get started.",
+    "past": "Past",
+    "mandatory": "Mandatory",
+    "optionalBadge": "Optional",
+    "mandatoryTooltip": "Mandatory holiday — present employees auto-marked HOT. Click to make optional.",
+    "optionalTooltip": "Optional holiday — present employees stay P. Click to make mandatory.",
+    "deleteHoliday": "Delete holiday",
+    "deleteConfirm": "Delete holiday?",
+    "deleteConfirmNamed": "Delete holiday \"{{title}}\"?",
+    "delete": "Delete",
+    "type": {
+      "regional": "Regional",
+      "optional": "Optional",
+      "public": "Public",
+      "national": "National",
+      "religious": "Religious"
+    }
   }
 }

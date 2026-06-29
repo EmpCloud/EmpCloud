@@ -2087,6 +2087,22 @@
     "addError": "Échec de l'ajout du jour férié.",
     "loading": "Chargement des jours fériés...",
     "empty": "Aucun jour férié répertorié pour l'instant.",
-    "emptyHint": "Cliquez sur « Ajouter un jour férié » pour commencer."
+    "emptyHint": "Cliquez sur « Ajouter un jour férié » pour commencer.",
+    "past": "Passé",
+    "mandatory": "Obligatoire",
+    "optionalBadge": "Facultatif",
+    "mandatoryTooltip": "Jour férié obligatoire — les employés présents sont automatiquement marqués HOT. Cliquez pour rendre facultatif.",
+    "optionalTooltip": "Jour férié facultatif — les employés présents restent P. Cliquez pour rendre obligatoire.",
+    "deleteHoliday": "Supprimer le jour férié",
+    "deleteConfirm": "Supprimer le jour férié ?",
+    "deleteConfirmNamed": "Supprimer le jour férié « {{title}} » ?",
+    "delete": "Supprimer",
+    "type": {
+      "regional": "Régional",
+      "optional": "Facultatif",
+      "public": "Public",
+      "national": "National",
+      "religious": "Religieux"
+    }
   }
 }

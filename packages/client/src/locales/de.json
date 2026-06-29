@@ -2087,6 +2087,22 @@
     "addError": "Feiertag konnte nicht hinzugefügt werden.",
     "loading": "Feiertage werden geladen...",
     "empty": "Noch keine Feiertage aufgeführt.",
-    "emptyHint": "Klicken Sie auf \"Feiertag hinzufügen\", um zu beginnen."
+    "emptyHint": "Klicken Sie auf \"Feiertag hinzufügen\", um zu beginnen.",
+    "past": "Vergangen",
+    "mandatory": "Pflicht",
+    "optionalBadge": "Optional",
+    "mandatoryTooltip": "Pflichtfeiertag — anwesende Mitarbeiter werden automatisch als HOT markiert. Klicken, um optional zu machen.",
+    "optionalTooltip": "Optionaler Feiertag — anwesende Mitarbeiter bleiben P. Klicken, um zur Pflicht zu machen.",
+    "deleteHoliday": "Feiertag löschen",
+    "deleteConfirm": "Feiertag löschen?",
+    "deleteConfirmNamed": "Feiertag \"{{title}}\" löschen?",
+    "delete": "Löschen",
+    "type": {
+      "regional": "Regional",
+      "optional": "Optional",
+      "public": "Gesetzlich",
+      "national": "National",
+      "religious": "Religiös"
+    }
   }
 }

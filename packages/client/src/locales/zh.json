@@ -2087,6 +2087,22 @@
     "addError": "添加节假日失败。",
     "loading": "正在加载节假日...",
     "empty": "尚无节假日列出。",
-    "emptyHint": "点击“添加节假日”开始。"
+    "emptyHint": "点击“添加节假日”开始。",
+    "past": "已过",
+    "mandatory": "强制",
+    "optionalBadge": "可选",
+    "mandatoryTooltip": "强制节假日 — 出勤员工自动标记为 HOT。点击改为可选。",
+    "optionalTooltip": "可选节假日 — 出勤员工保持 P。点击改为强制。",
+    "deleteHoliday": "删除节假日",
+    "deleteConfirm": "删除节假日？",
+    "deleteConfirmNamed": "删除节假日“{{title}}”？",
+    "delete": "删除",
+    "type": {
+      "regional": "地区",
+      "optional": "可选",
+      "public": "公共",
+      "national": "国家",
+      "religious": "宗教"
+    }
   }
 }

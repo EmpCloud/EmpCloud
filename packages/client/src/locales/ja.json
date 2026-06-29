@@ -2087,6 +2087,22 @@
     "addError": "祝日の追加に失敗しました。",
     "loading": "祝日を読み込み中...",
     "empty": "まだ祝日が登録されていません。",
-    "emptyHint": "開始するには「祝日を追加」をクリックしてください。"
+    "emptyHint": "開始するには「祝日を追加」をクリックしてください。",
+    "past": "過去",
+    "mandatory": "必須",
+    "optionalBadge": "任意",
+    "mandatoryTooltip": "必須の祝日 — 出勤した従業員は自動的にHOTとして記録されます。任意にするにはクリック。",
+    "optionalTooltip": "任意の祝日 — 出勤した従業員はPのままです。必須にするにはクリック。",
+    "deleteHoliday": "祝日を削除",
+    "deleteConfirm": "祝日を削除しますか？",
+    "deleteConfirmNamed": "祝日「{{title}}」を削除しますか？",
+    "delete": "削除",
+    "type": {
+      "regional": "地域",
+      "optional": "任意",
+      "public": "公的",
+      "national": "国民",
+      "religious": "宗教"
+    }
   }
 }

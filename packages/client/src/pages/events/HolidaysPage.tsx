@@ -342,7 +342,7 @@ export default function HolidaysPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {isPast(h.start_date) && (
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Past</span>
+                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{t("holidays.past")}</span>
                   )}
                   {(() => {
                     const mandatory = !!Number(h.is_mandatory);
@@ -353,7 +353,7 @@ export default function HolidaysPage() {
                     const colorCls = mandatory
                       ? "bg-rose-50 text-rose-700 border-rose-200"
                       : "bg-amber-50 text-amber-700 border-amber-200";
-                    const label = mandatory ? "Mandatory" : "Optional";
+                    const label = mandatory ? t("holidays.mandatory") : t("holidays.optionalBadge");
                     if (!isHR) {
                       return <span className={`${baseCls} ${colorCls}`}>{label}</span>;
                     }
@@ -367,8 +367,8 @@ export default function HolidaysPage() {
                         className={`${baseCls} ${colorCls} hover:opacity-80 disabled:opacity-50 cursor-pointer`}
                         title={
                           mandatory
-                            ? "Mandatory holiday — present employees auto-marked HOT. Click to make optional."
-                            : "Optional holiday — present employees stay P. Click to make mandatory."
+                            ? t("holidays.mandatoryTooltip")
+                            : t("holidays.optionalTooltip")
                         }
                       >
                         {saving ? "..." : label}
@@ -379,7 +379,7 @@ export default function HolidaysPage() {
                     <button
                       onClick={() => setDeleteTarget({ id: h.id, title: h.title })}
                       className="text-gray-400 hover:text-red-500 p-1"
-                      title="Delete holiday"
+                      title={t("holidays.deleteHoliday")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -393,8 +393,8 @@ export default function HolidaysPage() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title={deleteTarget ? `Delete holiday "${deleteTarget.title}"?` : "Delete holiday?"}
-        confirmText="Delete"
+        title={deleteTarget ? t("holidays.deleteConfirmNamed", { title: deleteTarget.title }) : t("holidays.deleteConfirm")}
+        confirmText={t("holidays.delete")}
         variant="danger"
         loading={deleteHoliday.isPending}
         onConfirm={() => deleteTarget && deleteHoliday.mutate(deleteTarget.id)}
