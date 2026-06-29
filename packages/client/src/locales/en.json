@@ -2091,6 +2091,15 @@
     "disableBiometric": "Disable Biometric",
     "panelEnableTitle": "Set a 6-digit PIN",
     "panelChangeTitle": "Choose a new 6-digit PIN",
-    "panelDisableTitle": "Confirm with your current PIN"
+    "panelDisableTitle": "Confirm with your current PIN",
+    "panelDisableHint": "Type your existing 6-digit PIN to disable biometric kiosk sign-in.",
+    "panelSetHint": "Use exactly 6 digits. Avoid easy-to-guess sequences (e.g. 123456).",
+    "currentPin": "Current PIN",
+    "pin": "PIN",
+    "confirmPin": "Confirm PIN",
+    "cancel": "Cancel",
+    "enable": "Enable",
+    "updatePin": "Update PIN",
+    "disable": "Disable"
   }
 }

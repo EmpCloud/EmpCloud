@@ -2086,6 +2086,15 @@
     "disableBiometric": "Désactiver la biométrie",
     "panelEnableTitle": "Définir un code PIN à 6 chiffres",
     "panelChangeTitle": "Choisir un nouveau code PIN à 6 chiffres",
-    "panelDisableTitle": "Confirmez avec votre code PIN actuel"
+    "panelDisableTitle": "Confirmez avec votre code PIN actuel",
+    "panelDisableHint": "Saisissez votre code PIN à 6 chiffres existant pour désactiver la connexion au kiosque biométrique.",
+    "panelSetHint": "Utilisez exactement 6 chiffres. Évitez les séquences faciles à deviner (ex. 123456).",
+    "currentPin": "Code PIN actuel",
+    "pin": "Code PIN",
+    "confirmPin": "Confirmer le code PIN",
+    "cancel": "Annuler",
+    "enable": "Activer",
+    "updatePin": "Mettre à jour le code PIN",
+    "disable": "Désactiver"
   }
 }

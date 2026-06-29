@@ -210,8 +210,8 @@ export default function KioskBiometricPage() {
           </h2>
           <p className="mt-1 text-xs text-gray-500">
             {mode === "disable"
-              ? "Type your existing 6-digit PIN to disable biometric kiosk sign-in."
-              : "Use exactly 6 digits. Avoid easy-to-guess sequences (e.g. 123456)."}
+              ? t("kioskPin.panelDisableHint")
+              : t("kioskPin.panelSetHint")}
           </p>
 
           <form
@@ -222,10 +222,10 @@ export default function KioskBiometricPage() {
               submitMutation.mutate();
             }}
           >
-            <PinField label={mode === "disable" ? "Current PIN" : "PIN"} value={pin} onChange={setPin} autoFocus />
+            <PinField label={mode === "disable" ? t("kioskPin.currentPin") : t("kioskPin.pin")} value={pin} onChange={setPin} autoFocus />
             {mode !== "disable" && (
               <PinField
-                label="Confirm PIN"
+                label={t("kioskPin.confirmPin")}
                 value={confirmPin}
                 onChange={setConfirmPin}
               />
@@ -239,7 +239,7 @@ export default function KioskBiometricPage() {
                 onClick={reset}
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("kioskPin.cancel")}
               </button>
               <button
                 type="submit"
@@ -249,9 +249,9 @@ export default function KioskBiometricPage() {
                 }`}
               >
                 {submitMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                {mode === "enable" && "Enable"}
-                {mode === "change" && "Update PIN"}
-                {mode === "disable" && "Disable"}
+                {mode === "enable" && t("kioskPin.enable")}
+                {mode === "change" && t("kioskPin.updatePin")}
+                {mode === "disable" && t("kioskPin.disable")}
               </button>
             </div>
           </form>

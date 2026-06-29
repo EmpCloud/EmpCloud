@@ -2086,6 +2086,15 @@
     "disableBiometric": "禁用生物识别",
     "panelEnableTitle": "设置 6 位 PIN",
     "panelChangeTitle": "选择新的 6 位 PIN",
-    "panelDisableTitle": "使用您当前的 PIN 确认"
+    "panelDisableTitle": "使用您当前的 PIN 确认",
+    "panelDisableHint": "输入您现有的 6 位 PIN 以禁用生物识别自助终端登录。",
+    "panelSetHint": "请使用恰好 6 位数字。避免容易猜测的序列（例如 123456）。",
+    "currentPin": "当前 PIN",
+    "pin": "PIN",
+    "confirmPin": "确认 PIN",
+    "cancel": "取消",
+    "enable": "启用",
+    "updatePin": "更新 PIN",
+    "disable": "禁用"
   }
 }

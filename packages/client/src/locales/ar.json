@@ -2086,6 +2086,15 @@
     "disableBiometric": "تعطيل القياسات الحيوية",
     "panelEnableTitle": "عيّن رمز PIN مكوّنًا من 6 أرقام",
     "panelChangeTitle": "اختر رمز PIN جديدًا مكوّنًا من 6 أرقام",
-    "panelDisableTitle": "أكّد باستخدام رمز PIN الحالي"
+    "panelDisableTitle": "أكّد باستخدام رمز PIN الحالي",
+    "panelDisableHint": "اكتب رمز PIN الحالي المكوّن من 6 أرقام لتعطيل تسجيل الدخول في الكشك البيومتري.",
+    "panelSetHint": "استخدم 6 أرقام بالضبط. تجنّب التسلسلات سهلة التخمين (مثل 123456).",
+    "currentPin": "رمز PIN الحالي",
+    "pin": "رمز PIN",
+    "confirmPin": "تأكيد رمز PIN",
+    "cancel": "إلغاء",
+    "enable": "تفعيل",
+    "updatePin": "تحديث رمز PIN",
+    "disable": "تعطيل"
   }
 }

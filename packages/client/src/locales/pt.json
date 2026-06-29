@@ -2086,6 +2086,15 @@
     "disableBiometric": "Desativar Biometria",
     "panelEnableTitle": "Defina um PIN de 6 dígitos",
     "panelChangeTitle": "Escolha um novo PIN de 6 dígitos",
-    "panelDisableTitle": "Confirme com seu PIN atual"
+    "panelDisableTitle": "Confirme com seu PIN atual",
+    "panelDisableHint": "Digite seu PIN de 6 dígitos existente para desativar o login no quiosque biométrico.",
+    "panelSetHint": "Use exatamente 6 dígitos. Evite sequências fáceis de adivinhar (ex.: 123456).",
+    "currentPin": "PIN atual",
+    "pin": "PIN",
+    "confirmPin": "Confirmar PIN",
+    "cancel": "Cancelar",
+    "enable": "Ativar",
+    "updatePin": "Atualizar PIN",
+    "disable": "Desativar"
   }
 }

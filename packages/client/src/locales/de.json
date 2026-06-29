@@ -2086,6 +2086,15 @@
     "disableBiometric": "Biometrie deaktivieren",
     "panelEnableTitle": "6-stellige PIN festlegen",
     "panelChangeTitle": "Neue 6-stellige PIN wählen",
-    "panelDisableTitle": "Mit Ihrer aktuellen PIN bestätigen"
+    "panelDisableTitle": "Mit Ihrer aktuellen PIN bestätigen",
+    "panelDisableHint": "Geben Sie Ihre vorhandene 6-stellige PIN ein, um die biometrische Kiosk-Anmeldung zu deaktivieren.",
+    "panelSetHint": "Verwenden Sie genau 6 Ziffern. Vermeiden Sie leicht zu erratende Folgen (z. B. 123456).",
+    "currentPin": "Aktuelle PIN",
+    "pin": "PIN",
+    "confirmPin": "PIN bestätigen",
+    "cancel": "Abbrechen",
+    "enable": "Aktivieren",
+    "updatePin": "PIN aktualisieren",
+    "disable": "Deaktivieren"
   }
 }

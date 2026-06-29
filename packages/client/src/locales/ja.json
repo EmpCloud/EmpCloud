@@ -2086,6 +2086,15 @@
     "disableBiometric": "生体認証を無効化",
     "panelEnableTitle": "6桁のPINを設定",
     "panelChangeTitle": "新しい6桁のPINを選択",
-    "panelDisableTitle": "現在のPINで確認"
+    "panelDisableTitle": "現在のPINで確認",
+    "panelDisableHint": "生体認証キオスクのサインインを無効にするには、現在の6桁のPINを入力してください。",
+    "panelSetHint": "ちょうど6桁を使用してください。推測されやすい並び（例: 123456）は避けてください。",
+    "currentPin": "現在のPIN",
+    "pin": "PIN",
+    "confirmPin": "PINを確認",
+    "cancel": "キャンセル",
+    "enable": "有効化",
+    "updatePin": "PINを更新",
+    "disable": "無効化"
   }
 }

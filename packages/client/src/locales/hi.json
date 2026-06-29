@@ -2086,6 +2086,15 @@
     "disableBiometric": "बायोमेट्रिक अक्षम करें",
     "panelEnableTitle": "6-अंकीय PIN सेट करें",
     "panelChangeTitle": "नया 6-अंकीय PIN चुनें",
-    "panelDisableTitle": "अपने वर्तमान PIN से पुष्टि करें"
+    "panelDisableTitle": "अपने वर्तमान PIN से पुष्टि करें",
+    "panelDisableHint": "बायोमेट्रिक कियोस्क साइन-इन अक्षम करने के लिए अपना मौजूदा 6-अंकीय PIN टाइप करें।",
+    "panelSetHint": "ठीक 6 अंक उपयोग करें। आसानी से अनुमान लगाने योग्य क्रम से बचें (जैसे 123456)।",
+    "currentPin": "वर्तमान PIN",
+    "pin": "PIN",
+    "confirmPin": "PIN की पुष्टि करें",
+    "cancel": "रद्द करें",
+    "enable": "सक्षम करें",
+    "updatePin": "PIN अपडेट करें",
+    "disable": "अक्षम करें"
   }
 }
