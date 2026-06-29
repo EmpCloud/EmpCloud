@@ -2070,5 +2070,12 @@
     "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
     "personCount_one": "{{count}} Person",
     "personCount_other": "{{count}} Personen"
+  },
+  "attendanceSettings": {
+    "title": "Anwesenheitseinstellungen",
+    "subtitle": "Steuern Sie, wie Mitarbeiter ein- und ausstempeln, und überschreiben Sie die Regeln für einzelne Benutzer für einen Zeitraum.",
+    "allowedChannels": "Erlaubte Check-in-Kanäle",
+    "allowedChannelsDesc": "Mitarbeiter können nur über die hier aktivierten Kanäle ein-/ausstempeln. Die benutzerbezogenen Überschreibungen unten können Kanäle für bestimmte Personen gewähren oder entziehen.",
+    "loading": "Wird geladen…"
   }
 }

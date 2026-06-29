@@ -2070,5 +2070,12 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "attendanceSettings": {
+    "title": "Paramètres de présence",
+    "subtitle": "Contrôlez comment les employés peuvent pointer et remplacez les règles pour des utilisateurs spécifiques sur une période.",
+    "allowedChannels": "Canaux de pointage autorisés",
+    "allowedChannelsDesc": "Les employés ne peuvent pointer que via les canaux que vous activez ici. Les remplacements par utilisateur ci-dessous peuvent accorder ou révoquer des canaux pour des personnes spécifiques.",
+    "loading": "Chargement…"
   }
 }

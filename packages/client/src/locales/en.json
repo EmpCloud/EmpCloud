@@ -2075,5 +2075,12 @@
     "exportFailed": "Export failed. Please try again.",
     "personCount_one": "{{count}} person",
     "personCount_other": "{{count}} people"
+  },
+  "attendanceSettings": {
+    "title": "Attendance settings",
+    "subtitle": "Control how employees can check in and out, and override the rules for individual users for a date range.",
+    "allowedChannels": "Allowed check-in channels",
+    "allowedChannelsDesc": "Employees can check in / out only via the channels you enable here. Per-user overrides below can grant or revoke channels for specific people.",
+    "loading": "Loading…"
   }
 }

@@ -2070,5 +2070,12 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "attendanceSettings": {
+    "title": "考勤设置",
+    "subtitle": "控制员工的签到签退方式，并按日期范围覆盖特定用户的规则。",
+    "allowedChannels": "允许的签到渠道",
+    "allowedChannelsDesc": "员工只能通过您在此启用的渠道签到/签退。下方的按用户覆盖可为特定人员授予或撤销渠道。",
+    "loading": "加载中…"
   }
 }

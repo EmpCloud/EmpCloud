@@ -14,6 +14,7 @@
 // =============================================================================
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Loader2,
@@ -82,6 +83,7 @@ interface DirectoryEntry {
 // ---------------------------------------------------------------------------
 
 export default function AttendanceSettingsPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
 
   const settingsQ = useQuery({
@@ -125,25 +127,23 @@ export default function AttendanceSettingsPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <SettingsIcon className="h-6 w-6 text-brand-600" /> Attendance settings
+          <SettingsIcon className="h-6 w-6 text-brand-600" /> {t("attendanceSettings.title")}
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Control how employees can check in and out, and override the rules for individual users
-          for a date range.
+          {t("attendanceSettings.subtitle")}
         </p>
       </header>
 
       {/* Org-level settings */}
       <section className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">Allowed check-in channels</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">{t("attendanceSettings.allowedChannels")}</h2>
         <p className="text-sm text-gray-500 mb-4">
-          Employees can check in / out only via the channels you enable here. Per-user overrides
-          below can grant or revoke channels for specific people.
+          {t("attendanceSettings.allowedChannelsDesc")}
         </p>
 
         {settingsQ.isLoading ? (
           <div className="flex items-center gap-2 text-gray-500 text-sm">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+            <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
           </div>
         ) : (
           <div className="grid sm:grid-cols-3 gap-3">

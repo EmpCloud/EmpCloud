@@ -2070,5 +2070,12 @@
     "exportFailed": "Falha na exportação. Tente novamente.",
     "personCount_one": "{{count}} pessoa",
     "personCount_other": "{{count}} pessoas"
+  },
+  "attendanceSettings": {
+    "title": "Configurações de Presença",
+    "subtitle": "Controle como os funcionários podem registrar entrada e saída e substitua as regras para usuários individuais por um período.",
+    "allowedChannels": "Canais de registro permitidos",
+    "allowedChannelsDesc": "Os funcionários só podem registrar entrada/saída pelos canais que você habilitar aqui. As substituições por usuário abaixo podem conceder ou revogar canais para pessoas específicas.",
+    "loading": "Carregando…"
   }
 }

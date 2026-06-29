@@ -2070,5 +2070,12 @@
     "exportFailed": "La exportación falló. Inténtalo de nuevo.",
     "personCount_one": "{{count}} persona",
     "personCount_other": "{{count}} personas"
+  },
+  "attendanceSettings": {
+    "title": "Configuración de Asistencia",
+    "subtitle": "Controla cómo los empleados pueden registrar entrada y salida, y anula las reglas para usuarios individuales por un rango de fechas.",
+    "allowedChannels": "Canales de registro permitidos",
+    "allowedChannelsDesc": "Los empleados solo pueden registrar entrada/salida mediante los canales que habilites aquí. Las anulaciones por usuario a continuación pueden conceder o revocar canales para personas específicas.",
+    "loading": "Cargando…"
   }
 }
