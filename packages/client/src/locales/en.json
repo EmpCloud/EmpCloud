@@ -2085,6 +2085,12 @@
     "enabled": "Enabled",
     "disabled": "Disabled",
     "statusOnHint": "You can sign in at any kiosk using your email and 6-digit PIN.",
-    "statusOffHint": "Set a 6-digit PIN to enable biometric kiosk sign-in."
+    "statusOffHint": "Set a 6-digit PIN to enable biometric kiosk sign-in.",
+    "enableBiometric": "Enable Biometric",
+    "changePin": "Change PIN",
+    "disableBiometric": "Disable Biometric",
+    "panelEnableTitle": "Set a 6-digit PIN",
+    "panelChangeTitle": "Choose a new 6-digit PIN",
+    "panelDisableTitle": "Confirm with your current PIN"
   }
 }

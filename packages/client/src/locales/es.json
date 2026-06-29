@@ -2080,6 +2080,12 @@
     "enabled": "Activado",
     "disabled": "Desactivado",
     "statusOnHint": "Puedes iniciar sesión en cualquier quiosco usando tu correo y PIN de 6 dígitos.",
-    "statusOffHint": "Establece un PIN de 6 dígitos para activar el inicio de sesión en el quiosco biométrico."
+    "statusOffHint": "Establece un PIN de 6 dígitos para activar el inicio de sesión en el quiosco biométrico.",
+    "enableBiometric": "Activar Biometría",
+    "changePin": "Cambiar PIN",
+    "disableBiometric": "Desactivar Biometría",
+    "panelEnableTitle": "Establece un PIN de 6 dígitos",
+    "panelChangeTitle": "Elige un nuevo PIN de 6 dígitos",
+    "panelDisableTitle": "Confirma con tu PIN actual"
   }
 }

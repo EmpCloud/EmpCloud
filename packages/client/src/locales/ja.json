@@ -2080,6 +2080,12 @@
     "enabled": "有効",
     "disabled": "無効",
     "statusOnHint": "メールアドレスと6桁のPINを使って、どのキオスクでもサインインできます。",
-    "statusOffHint": "生体認証キオスクのサインインを有効にするには6桁のPINを設定してください。"
+    "statusOffHint": "生体認証キオスクのサインインを有効にするには6桁のPINを設定してください。",
+    "enableBiometric": "生体認証を有効化",
+    "changePin": "PINを変更",
+    "disableBiometric": "生体認証を無効化",
+    "panelEnableTitle": "6桁のPINを設定",
+    "panelChangeTitle": "新しい6桁のPINを選択",
+    "panelDisableTitle": "現在のPINで確認"
   }
 }

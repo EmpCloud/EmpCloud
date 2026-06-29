@@ -2080,6 +2080,12 @@
     "enabled": "Ativado",
     "disabled": "Desativado",
     "statusOnHint": "Você pode fazer login em qualquer quiosque usando seu e-mail e PIN de 6 dígitos.",
-    "statusOffHint": "Defina um PIN de 6 dígitos para ativar o login no quiosque biométrico."
+    "statusOffHint": "Defina um PIN de 6 dígitos para ativar o login no quiosque biométrico.",
+    "enableBiometric": "Ativar Biometria",
+    "changePin": "Alterar PIN",
+    "disableBiometric": "Desativar Biometria",
+    "panelEnableTitle": "Defina um PIN de 6 dígitos",
+    "panelChangeTitle": "Escolha um novo PIN de 6 dígitos",
+    "panelDisableTitle": "Confirme com seu PIN atual"
   }
 }

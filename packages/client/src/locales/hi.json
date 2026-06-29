@@ -2080,6 +2080,12 @@
     "enabled": "सक्षम",
     "disabled": "अक्षम",
     "statusOnHint": "आप अपने ईमेल और 6-अंकीय PIN का उपयोग करके किसी भी कियोस्क पर साइन इन कर सकते हैं।",
-    "statusOffHint": "बायोमेट्रिक कियोस्क साइन-इन सक्षम करने के लिए 6-अंकीय PIN सेट करें।"
+    "statusOffHint": "बायोमेट्रिक कियोस्क साइन-इन सक्षम करने के लिए 6-अंकीय PIN सेट करें।",
+    "enableBiometric": "बायोमेट्रिक सक्षम करें",
+    "changePin": "PIN बदलें",
+    "disableBiometric": "बायोमेट्रिक अक्षम करें",
+    "panelEnableTitle": "6-अंकीय PIN सेट करें",
+    "panelChangeTitle": "नया 6-अंकीय PIN चुनें",
+    "panelDisableTitle": "अपने वर्तमान PIN से पुष्टि करें"
   }
 }

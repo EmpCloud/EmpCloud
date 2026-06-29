@@ -2080,6 +2080,12 @@
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
     "statusOnHint": "Sie können sich an jedem Kiosk mit Ihrer E-Mail und 6-stelligen PIN anmelden.",
-    "statusOffHint": "Legen Sie eine 6-stellige PIN fest, um die biometrische Kiosk-Anmeldung zu aktivieren."
+    "statusOffHint": "Legen Sie eine 6-stellige PIN fest, um die biometrische Kiosk-Anmeldung zu aktivieren.",
+    "enableBiometric": "Biometrie aktivieren",
+    "changePin": "PIN ändern",
+    "disableBiometric": "Biometrie deaktivieren",
+    "panelEnableTitle": "6-stellige PIN festlegen",
+    "panelChangeTitle": "Neue 6-stellige PIN wählen",
+    "panelDisableTitle": "Mit Ihrer aktuellen PIN bestätigen"
   }
 }

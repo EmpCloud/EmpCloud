@@ -155,7 +155,7 @@ export default function KioskBiometricPage() {
               disabled={isLoading}
               className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
             >
-              <ShieldCheck className="h-4 w-4" /> Enable Biometric
+              <ShieldCheck className="h-4 w-4" /> {t("kioskPin.enableBiometric")}
             </button>
           )}
           {status && (
@@ -168,7 +168,7 @@ export default function KioskBiometricPage() {
                 }}
                 className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <KeyRound className="h-4 w-4" /> Change PIN
+                <KeyRound className="h-4 w-4" /> {t("kioskPin.changePin")}
               </button>
               <button
                 type="button"
@@ -178,7 +178,7 @@ export default function KioskBiometricPage() {
                 }}
                 className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
               >
-                <ShieldOff className="h-4 w-4" /> Disable Biometric
+                <ShieldOff className="h-4 w-4" /> {t("kioskPin.disableBiometric")}
               </button>
             </>
           )}
@@ -204,9 +204,9 @@ export default function KioskBiometricPage() {
       {mode && (
         <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900">
-            {mode === "enable" && "Set a 6-digit PIN"}
-            {mode === "change" && "Choose a new 6-digit PIN"}
-            {mode === "disable" && "Confirm with your current PIN"}
+            {mode === "enable" && t("kioskPin.panelEnableTitle")}
+            {mode === "change" && t("kioskPin.panelChangeTitle")}
+            {mode === "disable" && t("kioskPin.panelDisableTitle")}
           </h2>
           <p className="mt-1 text-xs text-gray-500">
             {mode === "disable"

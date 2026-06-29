@@ -2080,6 +2080,12 @@
     "enabled": "Activé",
     "disabled": "Désactivé",
     "statusOnHint": "Vous pouvez vous connecter à n'importe quelle borne avec votre e-mail et votre code PIN à 6 chiffres.",
-    "statusOffHint": "Définissez un code PIN à 6 chiffres pour activer la connexion au kiosque biométrique."
+    "statusOffHint": "Définissez un code PIN à 6 chiffres pour activer la connexion au kiosque biométrique.",
+    "enableBiometric": "Activer la biométrie",
+    "changePin": "Modifier le code PIN",
+    "disableBiometric": "Désactiver la biométrie",
+    "panelEnableTitle": "Définir un code PIN à 6 chiffres",
+    "panelChangeTitle": "Choisir un nouveau code PIN à 6 chiffres",
+    "panelDisableTitle": "Confirmez avec votre code PIN actuel"
   }
 }

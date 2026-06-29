@@ -2080,6 +2080,12 @@
     "enabled": "已启用",
     "disabled": "已禁用",
     "statusOnHint": "您可以使用您的邮箱和 6 位 PIN 在任何自助终端登录。",
-    "statusOffHint": "设置 6 位 PIN 以启用生物识别自助终端登录。"
+    "statusOffHint": "设置 6 位 PIN 以启用生物识别自助终端登录。",
+    "enableBiometric": "启用生物识别",
+    "changePin": "更改 PIN",
+    "disableBiometric": "禁用生物识别",
+    "panelEnableTitle": "设置 6 位 PIN",
+    "panelChangeTitle": "选择新的 6 位 PIN",
+    "panelDisableTitle": "使用您当前的 PIN 确认"
   }
 }
