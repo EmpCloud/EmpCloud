@@ -2129,6 +2129,11 @@
     "errLatitude": "Der Breitengrad muss zwischen -90 und 90 liegen",
     "errLongitude": "Der Längengrad muss zwischen -180 und 180 liegen",
     "errRadius": "Der Radius muss zwischen 10 und 50000 Metern liegen",
-    "saveChanges": "Änderungen speichern"
+    "saveChanges": "Änderungen speichern",
+    "colEmployee": "Mitarbeiter",
+    "colChannels": "Kanäle",
+    "colGeofence": "Geofence",
+    "colWindow": "Zeitraum",
+    "colNote": "Notiz"
   }
 }

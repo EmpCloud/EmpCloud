@@ -2129,6 +2129,11 @@
     "errLatitude": "يجب أن يكون خط العرض بين -90 و90",
     "errLongitude": "يجب أن يكون خط الطول بين -180 و180",
     "errRadius": "يجب أن يكون نصف القطر بين 10 و50000 متر",
-    "saveChanges": "حفظ التغييرات"
+    "saveChanges": "حفظ التغييرات",
+    "colEmployee": "الموظف",
+    "colChannels": "القنوات",
+    "colGeofence": "السياج الجغرافي",
+    "colWindow": "الفترة",
+    "colNote": "ملاحظة"
   }
 }

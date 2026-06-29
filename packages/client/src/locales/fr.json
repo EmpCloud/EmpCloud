@@ -2129,6 +2129,11 @@
     "errLatitude": "La latitude doit être comprise entre -90 et 90",
     "errLongitude": "La longitude doit être comprise entre -180 et 180",
     "errRadius": "Le rayon doit être compris entre 10 et 50000 mètres",
-    "saveChanges": "Enregistrer les modifications"
+    "saveChanges": "Enregistrer les modifications",
+    "colEmployee": "Employé",
+    "colChannels": "Canaux",
+    "colGeofence": "Géorepère",
+    "colWindow": "Période",
+    "colNote": "Note"
   }
 }

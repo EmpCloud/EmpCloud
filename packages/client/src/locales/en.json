@@ -2134,6 +2134,11 @@
     "errLatitude": "Latitude must be between -90 and 90",
     "errLongitude": "Longitude must be between -180 and 180",
     "errRadius": "Radius must be between 10 and 50000 metres",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "colEmployee": "Employee",
+    "colChannels": "Channels",
+    "colGeofence": "Geofence",
+    "colWindow": "Window",
+    "colNote": "Note"
   }
 }

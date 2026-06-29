@@ -2129,6 +2129,11 @@
     "errLatitude": "अक्षांश -90 और 90 के बीच होना चाहिए",
     "errLongitude": "देशांतर -180 और 180 के बीच होना चाहिए",
     "errRadius": "त्रिज्या 10 और 50000 मीटर के बीच होनी चाहिए",
-    "saveChanges": "परिवर्तन सहेजें"
+    "saveChanges": "परिवर्तन सहेजें",
+    "colEmployee": "कर्मचारी",
+    "colChannels": "चैनल",
+    "colGeofence": "जियोफेंस",
+    "colWindow": "अवधि",
+    "colNote": "नोट"
   }
 }

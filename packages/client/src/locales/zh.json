@@ -2129,6 +2129,11 @@
     "errLatitude": "纬度必须介于 -90 和 90 之间",
     "errLongitude": "经度必须介于 -180 和 180 之间",
     "errRadius": "半径必须介于 10 和 50000 米之间",
-    "saveChanges": "保存更改"
+    "saveChanges": "保存更改",
+    "colEmployee": "员工",
+    "colChannels": "渠道",
+    "colGeofence": "地理围栏",
+    "colWindow": "时间段",
+    "colNote": "备注"
   }
 }

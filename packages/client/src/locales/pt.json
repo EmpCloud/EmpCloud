@@ -2129,6 +2129,11 @@
     "errLatitude": "A latitude deve estar entre -90 e 90",
     "errLongitude": "A longitude deve estar entre -180 e 180",
     "errRadius": "O raio deve estar entre 10 e 50000 metros",
-    "saveChanges": "Salvar alterações"
+    "saveChanges": "Salvar alterações",
+    "colEmployee": "Funcionário",
+    "colChannels": "Canais",
+    "colGeofence": "Geocerca",
+    "colWindow": "Período",
+    "colNote": "Observação"
   }
 }

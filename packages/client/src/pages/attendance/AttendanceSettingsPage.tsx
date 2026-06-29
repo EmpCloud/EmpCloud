@@ -717,11 +717,11 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">
-                <th className="px-3 py-2">Employee</th>
-                <th className="px-3 py-2">Channels</th>
-                <th className="px-3 py-2">Geofence</th>
-                <th className="px-3 py-2">Window</th>
-                <th className="px-3 py-2">Note</th>
+                <th className="px-3 py-2">{t("attendanceSettings.colEmployee")}</th>
+                <th className="px-3 py-2">{t("attendanceSettings.colChannels")}</th>
+                <th className="px-3 py-2">{t("attendanceSettings.colGeofence")}</th>
+                <th className="px-3 py-2">{t("attendanceSettings.colWindow")}</th>
+                <th className="px-3 py-2">{t("attendanceSettings.colNote")}</th>
                 <th className="px-3 py-2 w-1" />
               </tr>
             </thead>

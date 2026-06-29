@@ -2129,6 +2129,11 @@
     "errLatitude": "La latitud debe estar entre -90 y 90",
     "errLongitude": "La longitud debe estar entre -180 y 180",
     "errRadius": "El radio debe estar entre 10 y 50000 metros",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Guardar cambios",
+    "colEmployee": "Empleado",
+    "colChannels": "Canales",
+    "colGeofence": "Geocerca",
+    "colWindow": "Período",
+    "colNote": "Nota"
   }
 }

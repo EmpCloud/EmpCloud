@@ -2129,6 +2129,11 @@
     "errLatitude": "緯度は -90 から 90 の間である必要があります",
     "errLongitude": "経度は -180 から 180 の間である必要があります",
     "errRadius": "半径は 10 から 50000 メートルの間である必要があります",
-    "saveChanges": "変更を保存"
+    "saveChanges": "変更を保存",
+    "colEmployee": "従業員",
+    "colChannels": "チャネル",
+    "colGeofence": "ジオフェンス",
+    "colWindow": "期間",
+    "colNote": "メモ"
   }
 }
