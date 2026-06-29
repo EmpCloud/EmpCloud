@@ -2116,6 +2116,11 @@
     "levelHigh": "Hoch",
     "levelLowDesc": "Nachsichtig — mehr erfolgreiche Wiederholungen; weniger Anti-Spoofing-Schutz.",
     "levelModerateDesc": "Ausgewogen (empfohlen) — erkennt offensichtliche Fälschungen.",
-    "levelHighDesc": "Streng — am besten für gemeinsam genutzte Kioske; lehnt bei subtileren Signalen ab."
+    "levelHighDesc": "Streng — am besten für gemeinsam genutzte Kioske; lehnt bei subtileren Signalen ab.",
+    "linkedOrgsTitle": "Verknüpfte Organisationen",
+    "linkedOrgsDesc": "Teilen Sie Ihren biometrischen Kiosk mit Mitarbeitern von Schwesterorganisationen. Fügen Sie eine Admin-E-Mail jeder verknüpften Organisation hinzu — nach deren nächster Kiosk-Anmeldung können Mitarbeiter aller verknüpften Organisationen am selben Gerät ein-/ausstempeln. Die Lohnabrechnung jedes Unternehmens bleibt getrennt.",
+    "noOrgsLinked": "Noch keine Organisationen verknüpft.",
+    "userGone": "Benutzer existiert nicht mehr — diesen Eintrag entfernen",
+    "organizationN": "Organisation #{{id}}"
   }
 }

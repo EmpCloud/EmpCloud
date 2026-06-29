@@ -2116,6 +2116,11 @@
     "levelHigh": "Élevé",
     "levelLowDesc": "Indulgent — plus de tentatives réussies ; moins de protection anti-usurpation.",
     "levelModerateDesc": "Équilibré (recommandé) — détecte les usurpations évidentes.",
-    "levelHighDesc": "Strict — idéal pour les bornes partagées ; rejette les signaux plus subtils."
+    "levelHighDesc": "Strict — idéal pour les bornes partagées ; rejette les signaux plus subtils.",
+    "linkedOrgsTitle": "Organisations liées",
+    "linkedOrgsDesc": "Partagez votre kiosque biométrique avec les employés d'organisations sœurs. Ajoutez un e-mail d'administrateur de chaque organisation liée — après leur prochaine connexion à la borne, les employés de toutes les organisations liées peuvent pointer sur le même appareil. La paie de chaque entreprise reste distincte.",
+    "noOrgsLinked": "Aucune organisation liée pour l'instant.",
+    "userGone": "L'utilisateur n'existe plus — supprimez cette entrée",
+    "organizationN": "Organisation n° {{id}}"
   }
 }

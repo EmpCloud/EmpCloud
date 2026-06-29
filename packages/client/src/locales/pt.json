@@ -2116,6 +2116,11 @@
     "levelHigh": "Alto",
     "levelLowDesc": "Tolerante — mais tentativas bem-sucedidas; menos proteção antifraude.",
     "levelModerateDesc": "Equilibrado (recomendado) — detecta fraudes óbvias.",
-    "levelHighDesc": "Rigoroso — ideal para quiosques compartilhados; rejeita sinais mais sutis."
+    "levelHighDesc": "Rigoroso — ideal para quiosques compartilhados; rejeita sinais mais sutis.",
+    "linkedOrgsTitle": "Organizações Vinculadas",
+    "linkedOrgsDesc": "Compartilhe seu quiosque biométrico com funcionários de organizações irmãs. Adicione um e-mail de administrador de cada organização vinculada — após o próximo login no quiosque, funcionários de todas as organizações vinculadas podem registrar entrada/saída no mesmo dispositivo. A folha de pagamento de cada empresa permanece separada.",
+    "noOrgsLinked": "Nenhuma organização vinculada ainda.",
+    "userGone": "O usuário não existe mais — remova esta entrada",
+    "organizationN": "Organização nº {{id}}"
   }
 }

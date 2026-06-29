@@ -2116,6 +2116,11 @@
     "levelHigh": "Alto",
     "levelLowDesc": "Permisivo — más reintentos exitosos; menos protección antisuplantación.",
     "levelModerateDesc": "Equilibrado (recomendado) — detecta suplantaciones evidentes.",
-    "levelHighDesc": "Estricto — ideal para quioscos compartidos; rechaza señales más sutiles."
+    "levelHighDesc": "Estricto — ideal para quioscos compartidos; rechaza señales más sutiles.",
+    "linkedOrgsTitle": "Organizaciones Vinculadas",
+    "linkedOrgsDesc": "Comparte tu quiosco biométrico con empleados de organizaciones hermanas. Agrega un correo de administrador de cada organización vinculada — tras su próximo inicio de sesión en el quiosco, los empleados de todas las organizaciones vinculadas podrán fichar en el mismo dispositivo. La nómina de cada empresa se mantiene separada.",
+    "noOrgsLinked": "Aún no hay organizaciones vinculadas.",
+    "userGone": "El usuario ya no existe — elimina esta entrada",
+    "organizationN": "Organización n.º {{id}}"
   }
 }

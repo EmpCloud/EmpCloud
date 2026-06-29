@@ -2121,6 +2121,11 @@
     "levelHigh": "High",
     "levelLowDesc": "Lenient — more retries succeed; less anti-spoof protection.",
     "levelModerateDesc": "Balanced (recommended) — catches obvious spoofs.",
-    "levelHighDesc": "Strict — best for shared kiosks; rejects on subtler signals."
+    "levelHighDesc": "Strict — best for shared kiosks; rejects on subtler signals.",
+    "linkedOrgsTitle": "Linked Organizations",
+    "linkedOrgsDesc": "Share your biometric kiosk with employees from sister organizations. Add an admin email from each linked org — after their next kiosk login, employees from all linked orgs can punch in/out on the same device. Each company’s payroll stays separate.",
+    "noOrgsLinked": "No organizations linked yet.",
+    "userGone": "User no longer exists — remove this entry",
+    "organizationN": "Organization #{{id}}"
   }
 }

@@ -491,6 +491,7 @@ interface LinkedOrgRow {
 }
 
 function LinkedOrganizationsCard() {
+  const { t } = useTranslation();
   const v3 = useV3Biometric();
   const qc = useQueryClient();
   const [newEmail, setNewEmail] = useState("");
@@ -534,12 +535,9 @@ function LinkedOrganizationsCard() {
           <Link2 className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h2 className="text-base font-semibold text-gray-900">Linked Organizations</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("kioskPin.linkedOrgsTitle")}</h2>
           <p className="mt-1 text-xs text-gray-500">
-            Share your biometric kiosk with employees from sister organizations.
-            Add an admin email from each linked org — after their next kiosk
-            login, employees from all linked orgs can punch in/out on the
-            same device. Each company&rsquo;s payroll stays separate.
+            {t("kioskPin.linkedOrgsDesc")}
           </p>
         </div>
       </div>
@@ -548,10 +546,10 @@ function LinkedOrganizationsCard() {
       <div className="mt-5 space-y-2">
         {isLoading ? (
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+            <Loader2 className="h-4 w-4 animate-spin" /> {t("kioskPin.loading")}
           </div>
         ) : linked.length === 0 ? (
-          <p className="text-sm text-gray-500">No organizations linked yet.</p>
+          <p className="text-sm text-gray-500">{t("kioskPin.noOrgsLinked")}</p>
         ) : (
           linked.map((row) => (
             <div
@@ -566,8 +564,8 @@ function LinkedOrganizationsCard() {
                     {row.organization_name
                       ? row.organization_name
                       : row.organization_id == null
-                        ? "User no longer exists — remove this entry"
-                        : `Organization #${row.organization_id}`}
+                        ? t("kioskPin.userGone")
+                        : t("kioskPin.organizationN", { id: row.organization_id })}
                   </p>
                 </div>
               </div>
