@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -24,13 +25,7 @@ interface Holiday {
 // can render a clean badge instead of leaking the raw bracket notation
 // to the user (#1637). Returns the cleaned description (tag removed) and
 // the formatted type label.
-const TYPE_LABELS: Record<string, string> = {
-  regional: "Regional",
-  optional: "Optional",
-  public: "Public",
-  national: "National",
-  religious: "Religious",
-};
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
 const TYPE_BADGE: Record<string, string> = {
   regional: "bg-blue-100 text-blue-700",
   optional: "bg-amber-100 text-amber-700",
@@ -39,7 +34,7 @@ const TYPE_BADGE: Record<string, string> = {
   religious: "bg-purple-100 text-purple-700",
 };
 
-function parseHolidayType(description: string | null): {
+function parseHolidayType(description: string | null, t: TFn): {
   type: string | null;
   label: string | null;
   description: string;
@@ -51,12 +46,15 @@ function parseHolidayType(description: string | null): {
   const cleaned = description.replace(match[0], "").trim();
   return {
     type: raw,
-    label: TYPE_LABELS[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1),
+    label: t(`holidays.type.${raw}`, {
+      defaultValue: raw.charAt(0).toUpperCase() + raw.slice(1),
+    }),
     description: cleaned,
   };
 }
 
 export default function HolidaysPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const isHR = user ? HR_ROLES.includes(user.role) : false;
@@ -122,7 +120,7 @@ export default function HolidaysPage() {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || "Failed to add holiday.");
+      setAddError(err?.response?.data?.error?.message || t("holidays.addError"));
     },
   });
 
@@ -186,15 +184,15 @@ export default function HolidaysPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Holidays</h1>
-          <p className="text-gray-500 mt-1">View company holidays and days off.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("holidays.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("holidays.subtitle")}</p>
         </div>
         {isHR && (
           <button
             onClick={() => setShowAdd(!showAdd)}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Holiday
+            <Plus className="h-4 w-4" /> {t("holidays.addHoliday")}
           </button>
         )}
       </div>
@@ -202,10 +200,10 @@ export default function HolidaysPage() {
       {/* Add Holiday Form */}
       {showAdd && isHR && (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Holiday</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("holidays.addHoliday")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Holiday Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.holidayName")}</label>
               <input
                 type="text"
                 value={form.title}
@@ -215,7 +213,7 @@ export default function HolidaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.date")}</label>
               <input
                 type="date"
                 value={form.start_date}
@@ -225,7 +223,7 @@ export default function HolidaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date (optional, for multi-day)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.endDate")}</label>
               <input
                 type="date"
                 value={form.end_date}
@@ -234,13 +232,13 @@ export default function HolidaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.description")}</label>
               <input
                 type="text"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Optional"
+                placeholder={t("holidays.optional")}
               />
             </div>
           </div>
@@ -259,9 +257,9 @@ export default function HolidaysPage() {
                 className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
               />
               <span>
-                <span className="font-medium">Mandatory holiday</span>
+                <span className="font-medium">{t("holidays.mandatoryHoliday")}</span>
                 <span className="text-gray-500 ml-1">
-                  &mdash; office closed; present employees auto-marked as Holiday OT
+                  {t("holidays.mandatoryNote")}
                 </span>
               </span>
             </label>
@@ -276,14 +274,14 @@ export default function HolidaysPage() {
               }}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t("holidays.cancel")}
             </button>
             <button
               type="submit"
               disabled={createHoliday.isPending}
               className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              {createHoliday.isPending ? "Adding..." : "Add Holiday"}
+              {createHoliday.isPending ? t("holidays.adding") : t("holidays.addHoliday")}
             </button>
           </div>
           {addError && <p className="text-sm text-red-600 mt-2">{addError}</p>}
@@ -293,12 +291,12 @@ export default function HolidaysPage() {
       {/* Holiday List */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {isLoading ? (
-          <div className="px-6 py-8 text-center text-gray-400">Loading holidays...</div>
+          <div className="px-6 py-8 text-center text-gray-400">{t("holidays.loading")}</div>
         ) : sortedHolidays.length === 0 ? (
           <div className="px-6 py-12 text-center text-gray-400">
             <PartyPopper className="h-10 w-10 mx-auto mb-3 text-gray-300" />
-            <p>No holidays listed yet.</p>
-            {isHR && <p className="text-sm mt-1">Click "Add Holiday" to get started.</p>}
+            <p>{t("holidays.empty")}</p>
+            {isHR && <p className="text-sm mt-1">{t("holidays.emptyHint")}</p>}
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
@@ -315,7 +313,7 @@ export default function HolidaysPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold text-gray-900">{h.title}</p>
                       {(() => {
-                        const parsed = parseHolidayType(h.description);
+                        const parsed = parseHolidayType(h.description, t);
                         if (!parsed.label || !parsed.type) return null;
                         return (
                           <span
@@ -335,7 +333,7 @@ export default function HolidaysPage() {
                       )}
                     </p>
                     {(() => {
-                      const cleaned = parseHolidayType(h.description).description;
+                      const cleaned = parseHolidayType(h.description, t).description;
                       return cleaned ? (
                         <p className="text-xs text-gray-400 mt-0.5">{cleaned}</p>
                       ) : null;
@@ -344,7 +342,7 @@ export default function HolidaysPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {isPast(h.start_date) && (
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Past</span>
+                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{t("holidays.past")}</span>
                   )}
                   {(() => {
                     const mandatory = !!Number(h.is_mandatory);
@@ -355,7 +353,7 @@ export default function HolidaysPage() {
                     const colorCls = mandatory
                       ? "bg-rose-50 text-rose-700 border-rose-200"
                       : "bg-amber-50 text-amber-700 border-amber-200";
-                    const label = mandatory ? "Mandatory" : "Optional";
+                    const label = mandatory ? t("holidays.mandatory") : t("holidays.optionalBadge");
                     if (!isHR) {
                       return <span className={`${baseCls} ${colorCls}`}>{label}</span>;
                     }
@@ -369,8 +367,8 @@ export default function HolidaysPage() {
                         className={`${baseCls} ${colorCls} hover:opacity-80 disabled:opacity-50 cursor-pointer`}
                         title={
                           mandatory
-                            ? "Mandatory holiday — present employees auto-marked HOT. Click to make optional."
-                            : "Optional holiday — present employees stay P. Click to make mandatory."
+                            ? t("holidays.mandatoryTooltip")
+                            : t("holidays.optionalTooltip")
                         }
                       >
                         {saving ? "..." : label}
@@ -381,7 +379,7 @@ export default function HolidaysPage() {
                     <button
                       onClick={() => setDeleteTarget({ id: h.id, title: h.title })}
                       className="text-gray-400 hover:text-red-500 p-1"
-                      title="Delete holiday"
+                      title={t("holidays.deleteHoliday")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -395,8 +393,8 @@ export default function HolidaysPage() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title={deleteTarget ? `Delete holiday "${deleteTarget.title}"?` : "Delete holiday?"}
-        confirmText="Delete"
+        title={deleteTarget ? t("holidays.deleteConfirmNamed", { title: deleteTarget.title }) : t("holidays.deleteConfirm")}
+        confirmText={t("holidays.delete")}
         variant="danger"
         loading={deleteHoliday.isPending}
         onConfirm={() => deleteTarget && deleteHoliday.mutate(deleteTarget.id)}
