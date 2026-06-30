@@ -81,6 +81,7 @@ router.get("/headcount-plans", authenticate, requirePermission("positions:view",
       fiscal_year: query.fiscal_year,
       status: query.status,
       department_id: query.department_id,
+      quarter: query.quarter,
       search: query.search,
     });
     sendPaginated(res, result.plans, result.total, query.page, query.per_page);
