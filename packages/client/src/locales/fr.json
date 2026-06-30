@@ -2538,5 +2538,62 @@
       "damaged": "Endommagé",
       "updated": "Mis à jour"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "Chargement du tableau de bord du service d'assistance...",
+    "title": "Tableau de bord du service d'assistance",
+    "subtitle": "Aperçu des tickets du service d'assistance RH et des performances SLA.",
+    "viewAllTickets": "Voir tous les tickets",
+    "stat": {
+      "totalOpen": "Tickets ouverts",
+      "inProgress": "En cours",
+      "overdue": "En retard (SLA dépassé)",
+      "resolvedToday": "Résolus aujourd'hui"
+    },
+    "slaCompliance": {
+      "heading": "Respect des SLA",
+      "caption": "Tickets résolus dans les délais SLA"
+    },
+    "avgResolution": {
+      "heading": "Temps de résolution moyen",
+      "unit": "heures"
+    },
+    "satisfaction": {
+      "heading": "Niveau de satisfaction",
+      "notAvailable": "N/D",
+      "ratingCount_one": "{{count}} évaluation",
+      "ratingCount_other": "{{count}} évaluations"
+    },
+    "categoryBreakdown": {
+      "heading": "Tickets par catégorie"
+    },
+    "recentTickets": {
+      "heading": "Tickets récents"
+    },
+    "noTicketsYet": "Aucun ticket pour le moment",
+    "category": {
+      "leave": "Congés",
+      "payroll": "Paie",
+      "benefits": "Avantages sociaux",
+      "it": "Informatique",
+      "facilities": "Locaux",
+      "onboarding": "Intégration",
+      "policy": "Règlement",
+      "general": "Général"
+    },
+    "priority": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Ouvert",
+      "in_progress": "En cours",
+      "awaiting_response": "En attente de réponse",
+      "resolved": "Résolu",
+      "closed": "Fermé",
+      "reopened": "Rouvert"
+    }
   }
 }

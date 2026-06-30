@@ -2538,5 +2538,66 @@
       "damaged": "تالف",
       "updated": "تم التحديث"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "جارٍ تحميل لوحة مكتب المساعدة...",
+    "title": "لوحة مكتب المساعدة",
+    "subtitle": "نظرة عامة على تذاكر مكتب الموارد البشرية وأداء اتفاقية مستوى الخدمة (SLA).",
+    "viewAllTickets": "عرض كل التذاكر",
+    "stat": {
+      "totalOpen": "إجمالي المفتوحة",
+      "inProgress": "قيد المعالجة",
+      "overdue": "متأخرة (خرق SLA)",
+      "resolvedToday": "تم حلها اليوم"
+    },
+    "slaCompliance": {
+      "heading": "الالتزام بـ SLA",
+      "caption": "التذاكر التي تم حلها ضمن SLA"
+    },
+    "avgResolution": {
+      "heading": "متوسط وقت الحل",
+      "unit": "ساعة"
+    },
+    "satisfaction": {
+      "heading": "تقييم الرضا",
+      "notAvailable": "غير متاح",
+      "ratingCount_zero": "{{count}} تقييم",
+      "ratingCount_one": "{{count}} تقييم",
+      "ratingCount_two": "{{count}} تقييمان",
+      "ratingCount_few": "{{count}} تقييمات",
+      "ratingCount_many": "{{count}} تقييمًا",
+      "ratingCount_other": "{{count}} تقييم"
+    },
+    "categoryBreakdown": {
+      "heading": "التذاكر حسب الفئة"
+    },
+    "recentTickets": {
+      "heading": "أحدث التذاكر"
+    },
+    "noTicketsYet": "لا توجد تذاكر بعد",
+    "category": {
+      "leave": "إجازة",
+      "payroll": "كشوف الرواتب",
+      "benefits": "المزايا",
+      "it": "IT",
+      "facilities": "المرافق",
+      "onboarding": "الإعداد والتعيين",
+      "policy": "السياسات",
+      "general": "عام"
+    },
+    "priority": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "urgent": "عاجلة"
+    },
+    "status": {
+      "open": "مفتوحة",
+      "in_progress": "قيد المعالجة",
+      "awaiting_response": "بانتظار الرد",
+      "resolved": "تم الحل",
+      "closed": "مغلقة",
+      "reopened": "أُعيد فتحها"
+    }
   }
 }

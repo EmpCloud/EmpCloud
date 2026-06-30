@@ -2538,5 +2538,62 @@
       "damaged": "क्षतिग्रस्त",
       "updated": "अपडेट किया गया"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "हेल्पडेस्क डैशबोर्ड लोड हो रहा है...",
+    "title": "हेल्पडेस्क डैशबोर्ड",
+    "subtitle": "HR हेल्पडेस्क टिकट और SLA प्रदर्शन का अवलोकन।",
+    "viewAllTickets": "सभी टिकट देखें",
+    "stat": {
+      "totalOpen": "कुल खुले",
+      "inProgress": "प्रगति पर",
+      "overdue": "अतिदेय (SLA उल्लंघित)",
+      "resolvedToday": "आज हल किए गए"
+    },
+    "slaCompliance": {
+      "heading": "SLA अनुपालन",
+      "caption": "SLA के भीतर हल किए गए टिकट"
+    },
+    "avgResolution": {
+      "heading": "औसत समाधान समय",
+      "unit": "घंटे"
+    },
+    "satisfaction": {
+      "heading": "संतुष्टि रेटिंग",
+      "notAvailable": "लागू नहीं",
+      "ratingCount_one": "{{count}} रेटिंग",
+      "ratingCount_other": "{{count}} रेटिंग"
+    },
+    "categoryBreakdown": {
+      "heading": "श्रेणी अनुसार टिकट"
+    },
+    "recentTickets": {
+      "heading": "हाल के टिकट"
+    },
+    "noTicketsYet": "अभी तक कोई टिकट नहीं",
+    "category": {
+      "leave": "अवकाश",
+      "payroll": "पेरोल",
+      "benefits": "लाभ",
+      "it": "IT",
+      "facilities": "सुविधाएँ",
+      "onboarding": "ऑनबोर्डिंग",
+      "policy": "नीति",
+      "general": "सामान्य"
+    },
+    "priority": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "urgent": "अत्यावश्यक"
+    },
+    "status": {
+      "open": "खुला",
+      "in_progress": "प्रगति पर",
+      "awaiting_response": "प्रतिक्रिया की प्रतीक्षा में",
+      "resolved": "हल किया गया",
+      "closed": "बंद",
+      "reopened": "पुनः खोला गया"
+    }
   }
 }

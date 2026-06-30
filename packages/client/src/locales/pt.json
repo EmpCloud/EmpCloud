@@ -2538,5 +2538,62 @@
       "damaged": "Danificado",
       "updated": "Atualizado"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "A carregar painel do suporte...",
+    "title": "Painel do Suporte",
+    "subtitle": "Visão geral dos tickets de suporte de RH e do desempenho de SLA.",
+    "viewAllTickets": "Ver todos os tickets",
+    "stat": {
+      "totalOpen": "Total em aberto",
+      "inProgress": "Em andamento",
+      "overdue": "Atrasados (SLA incumprido)",
+      "resolvedToday": "Resolvidos hoje"
+    },
+    "slaCompliance": {
+      "heading": "Conformidade com SLA",
+      "caption": "Tickets resolvidos dentro do SLA"
+    },
+    "avgResolution": {
+      "heading": "Tempo médio de resolução",
+      "unit": "horas"
+    },
+    "satisfaction": {
+      "heading": "Índice de satisfação",
+      "notAvailable": "N/D",
+      "ratingCount_one": "{{count}} avaliação",
+      "ratingCount_other": "{{count}} avaliações"
+    },
+    "categoryBreakdown": {
+      "heading": "Tickets por categoria"
+    },
+    "recentTickets": {
+      "heading": "Tickets recentes"
+    },
+    "noTicketsYet": "Ainda sem tickets",
+    "category": {
+      "leave": "Ausências",
+      "payroll": "Folha de pagamento",
+      "benefits": "Benefícios",
+      "it": "TI",
+      "facilities": "Instalações",
+      "onboarding": "Integração",
+      "policy": "Políticas",
+      "general": "Geral"
+    },
+    "priority": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Aberto",
+      "in_progress": "Em andamento",
+      "awaiting_response": "A aguardar resposta",
+      "resolved": "Resolvido",
+      "closed": "Fechado",
+      "reopened": "Reaberto"
+    }
   }
 }

@@ -2538,5 +2538,62 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "Helpdesk-Dashboard wird geladen ...",
+    "title": "Helpdesk-Dashboard",
+    "subtitle": "Überblick über HR-Helpdesk-Tickets und SLA-Leistung.",
+    "viewAllTickets": "Alle Tickets anzeigen",
+    "stat": {
+      "totalOpen": "Offen gesamt",
+      "inProgress": "In Bearbeitung",
+      "overdue": "Überfällig (SLA verletzt)",
+      "resolvedToday": "Heute gelöst"
+    },
+    "slaCompliance": {
+      "heading": "SLA-Einhaltung",
+      "caption": "Innerhalb des SLA gelöste Tickets"
+    },
+    "avgResolution": {
+      "heading": "Durchschnittliche Lösungszeit",
+      "unit": "Stunden"
+    },
+    "satisfaction": {
+      "heading": "Zufriedenheitsbewertung",
+      "notAvailable": "k. A.",
+      "ratingCount_one": "{{count}} Bewertung",
+      "ratingCount_other": "{{count}} Bewertungen"
+    },
+    "categoryBreakdown": {
+      "heading": "Tickets nach Kategorie"
+    },
+    "recentTickets": {
+      "heading": "Aktuelle Tickets"
+    },
+    "noTicketsYet": "Noch keine Tickets",
+    "category": {
+      "leave": "Urlaub",
+      "payroll": "Lohnabrechnung",
+      "benefits": "Leistungen",
+      "it": "IT",
+      "facilities": "Gebäudemanagement",
+      "onboarding": "Onboarding",
+      "policy": "Richtlinie",
+      "general": "Allgemein"
+    },
+    "priority": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    },
+    "status": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "awaiting_response": "Wartet auf Antwort",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen",
+      "reopened": "Wieder geöffnet"
+    }
   }
 }
