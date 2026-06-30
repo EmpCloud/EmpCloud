@@ -2327,5 +2327,39 @@
     "linkOrganization": "关联组织",
     "errAddOrg": "添加关联组织失败",
     "errRemoveOrg": "移除关联组织失败"
+  },
+  "holidays": {
+    "title": "节假日",
+    "subtitle": "查看公司的节假日和休息日。",
+    "addHoliday": "添加节假日",
+    "holidayName": "节假日名称 *",
+    "date": "日期 *",
+    "endDate": "结束日期（可选，多天用）",
+    "description": "描述",
+    "optional": "可选",
+    "mandatoryHoliday": "强制节假日",
+    "mandatoryNote": "— 办公室关闭；出勤员工自动标记为节假日加班",
+    "cancel": "取消",
+    "adding": "正在添加...",
+    "addError": "添加节假日失败。",
+    "loading": "正在加载节假日...",
+    "empty": "尚无节假日列出。",
+    "emptyHint": "点击“添加节假日”开始。",
+    "past": "已过",
+    "mandatory": "强制",
+    "optionalBadge": "可选",
+    "mandatoryTooltip": "强制节假日 — 出勤员工自动标记为 HOT。点击改为可选。",
+    "optionalTooltip": "可选节假日 — 出勤员工保持 P。点击改为强制。",
+    "deleteHoliday": "删除节假日",
+    "deleteConfirm": "删除节假日？",
+    "deleteConfirmNamed": "删除节假日“{{title}}”？",
+    "delete": "删除",
+    "type": {
+      "regional": "地区",
+      "optional": "可选",
+      "public": "公共",
+      "national": "国家",
+      "religious": "宗教"
+    }
   }
 }

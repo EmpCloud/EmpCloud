@@ -2333,5 +2333,39 @@
     "linkOrganization": "Link organization",
     "errAddOrg": "Failed to add linked organization",
     "errRemoveOrg": "Failed to remove linked organization"
+  },
+  "holidays": {
+    "title": "Holidays",
+    "subtitle": "View company holidays and days off.",
+    "addHoliday": "Add Holiday",
+    "holidayName": "Holiday Name *",
+    "date": "Date *",
+    "endDate": "End Date (optional, for multi-day)",
+    "description": "Description",
+    "optional": "Optional",
+    "mandatoryHoliday": "Mandatory holiday",
+    "mandatoryNote": "— office closed; present employees auto-marked as Holiday OT",
+    "cancel": "Cancel",
+    "adding": "Adding...",
+    "addError": "Failed to add holiday.",
+    "loading": "Loading holidays...",
+    "empty": "No holidays listed yet.",
+    "emptyHint": "Click \"Add Holiday\" to get started.",
+    "past": "Past",
+    "mandatory": "Mandatory",
+    "optionalBadge": "Optional",
+    "mandatoryTooltip": "Mandatory holiday — present employees auto-marked HOT. Click to make optional.",
+    "optionalTooltip": "Optional holiday — present employees stay P. Click to make mandatory.",
+    "deleteHoliday": "Delete holiday",
+    "deleteConfirm": "Delete holiday?",
+    "deleteConfirmNamed": "Delete holiday \"{{title}}\"?",
+    "delete": "Delete",
+    "type": {
+      "regional": "Regional",
+      "optional": "Optional",
+      "public": "Public",
+      "national": "National",
+      "religious": "Religious"
+    }
   }
 }

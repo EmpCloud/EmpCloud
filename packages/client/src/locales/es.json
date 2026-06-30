@@ -2327,5 +2327,39 @@
     "linkOrganization": "Vincular organización",
     "errAddOrg": "No se pudo agregar la organización vinculada",
     "errRemoveOrg": "No se pudo eliminar la organización vinculada"
+  },
+  "holidays": {
+    "title": "Festivos",
+    "subtitle": "Consulta los festivos y días libres de la empresa.",
+    "addHoliday": "Agregar Festivo",
+    "holidayName": "Nombre del Festivo *",
+    "date": "Fecha *",
+    "endDate": "Fecha de Fin (opcional, para varios días)",
+    "description": "Descripción",
+    "optional": "Opcional",
+    "mandatoryHoliday": "Festivo obligatorio",
+    "mandatoryNote": "— oficina cerrada; los empleados presentes se marcan automáticamente como Horas Extra en Festivo",
+    "cancel": "Cancelar",
+    "adding": "Agregando...",
+    "addError": "No se pudo agregar el festivo.",
+    "loading": "Cargando festivos...",
+    "empty": "Aún no hay festivos en la lista.",
+    "emptyHint": "Haz clic en \"Agregar Festivo\" para empezar.",
+    "past": "Pasado",
+    "mandatory": "Obligatorio",
+    "optionalBadge": "Opcional",
+    "mandatoryTooltip": "Festivo obligatorio — los empleados presentes se marcan automáticamente como HOT. Haz clic para hacerlo opcional.",
+    "optionalTooltip": "Festivo opcional — los empleados presentes permanecen como P. Haz clic para hacerlo obligatorio.",
+    "deleteHoliday": "Eliminar festivo",
+    "deleteConfirm": "¿Eliminar festivo?",
+    "deleteConfirmNamed": "¿Eliminar el festivo \"{{title}}\"?",
+    "delete": "Eliminar",
+    "type": {
+      "regional": "Regional",
+      "optional": "Opcional",
+      "public": "Público",
+      "national": "Nacional",
+      "religious": "Religioso"
+    }
   }
 }

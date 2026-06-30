@@ -2327,5 +2327,39 @@
     "linkOrganization": "Organisation verknüpfen",
     "errAddOrg": "Verknüpfte Organisation konnte nicht hinzugefügt werden",
     "errRemoveOrg": "Verknüpfte Organisation konnte nicht entfernt werden"
+  },
+  "holidays": {
+    "title": "Feiertage",
+    "subtitle": "Sehen Sie sich die Feiertage und freien Tage des Unternehmens an.",
+    "addHoliday": "Feiertag hinzufügen",
+    "holidayName": "Name des Feiertags *",
+    "date": "Datum *",
+    "endDate": "Enddatum (optional, für mehrtägige)",
+    "description": "Beschreibung",
+    "optional": "Optional",
+    "mandatoryHoliday": "Pflichtfeiertag",
+    "mandatoryNote": "— Büro geschlossen; anwesende Mitarbeiter werden automatisch als Feiertags-Überstunden markiert",
+    "cancel": "Abbrechen",
+    "adding": "Wird hinzugefügt...",
+    "addError": "Feiertag konnte nicht hinzugefügt werden.",
+    "loading": "Feiertage werden geladen...",
+    "empty": "Noch keine Feiertage aufgeführt.",
+    "emptyHint": "Klicken Sie auf \"Feiertag hinzufügen\", um zu beginnen.",
+    "past": "Vergangen",
+    "mandatory": "Pflicht",
+    "optionalBadge": "Optional",
+    "mandatoryTooltip": "Pflichtfeiertag — anwesende Mitarbeiter werden automatisch als HOT markiert. Klicken, um optional zu machen.",
+    "optionalTooltip": "Optionaler Feiertag — anwesende Mitarbeiter bleiben P. Klicken, um zur Pflicht zu machen.",
+    "deleteHoliday": "Feiertag löschen",
+    "deleteConfirm": "Feiertag löschen?",
+    "deleteConfirmNamed": "Feiertag \"{{title}}\" löschen?",
+    "delete": "Löschen",
+    "type": {
+      "regional": "Regional",
+      "optional": "Optional",
+      "public": "Gesetzlich",
+      "national": "National",
+      "religious": "Religiös"
+    }
   }
 }
