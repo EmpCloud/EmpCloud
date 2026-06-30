@@ -485,6 +485,7 @@ export async function listHeadcountPlans(
     fiscal_year?: string;
     status?: string;
     department_id?: number;
+    search?: string;
   }
 ) {
   const db = getDB();
@@ -502,6 +503,13 @@ export async function listHeadcountPlans(
   }
   if (params?.department_id) {
     query = query.where({ "headcount_plans.department_id": params.department_id });
+  }
+  if (params?.search) {
+    const s = `%${params.search}%`;
+    query = query.where(function () {
+      this.where("headcount_plans.title", "like", s)
+        .orWhere("headcount_plans.fiscal_year", "like", s);
+    });
   }
 
   const [{ count }] = await query.clone().count("* as count");
