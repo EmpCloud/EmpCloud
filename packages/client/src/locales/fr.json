@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "Pas du tout probable",
     "extremelyLikely": "Extrêmement probable",
     "textPlaceholder": "Saisissez votre réponse ici..."
+  },
+  "assetDashboard": {
+    "loading": "Chargement du tableau de bord des actifs...",
+    "title": "Tableau de bord des actifs",
+    "subtitle": "Aperçu du matériel informatique et des actifs",
+    "viewAllAssets": "Voir tous les actifs",
+    "totalAssets": "Total des actifs",
+    "available": "Disponibles",
+    "assigned": "Attribués",
+    "inRepair": "En réparation",
+    "lostDamaged": "Perdus / Endommagés",
+    "retired": "Réformés",
+    "unaccounted_one": "{{count}} actif avec un statut non reconnu — les totaux ne concordent pas. Ouvrez la liste des actifs pour voir les lignes.",
+    "unaccounted_other": "{{count}} actifs avec un statut non reconnu — les totaux ne concordent pas. Ouvrez la liste des actifs pour voir les lignes.",
+    "viewAll": "Voir tout",
+    "warrantiesExpiring": "Garanties expirant bientôt ({{count}})",
+    "expires": "Expire le {{date}}",
+    "byCategory": "Par catégorie",
+    "noAssets": "Aucun actif pour l'instant",
+    "topAssignees": "Principaux attributaires",
+    "assetsCount_one": "{{count}} actif",
+    "assetsCount_other": "{{count}} actifs",
+    "noAssignments": "Aucune attribution pour l'instant",
+    "recentActivity": "Activité récente",
+    "noActivity": "Aucune activité récente",
+    "action": {
+      "created": "Créé",
+      "assigned": "Attribué",
+      "returned": "Retourné",
+      "sent_to_repair": "Envoyé en réparation",
+      "repaired": "Réparé",
+      "retired": "Réformé",
+      "lost": "Perdu",
+      "found": "Retrouvé",
+      "damaged": "Endommagé",
+      "updated": "Mis à jour"
+    }
   }
 }

@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "बिल्कुल भी संभावना नहीं",
     "extremelyLikely": "अत्यधिक संभावना",
     "textPlaceholder": "अपना उत्तर यहां लिखें..."
+  },
+  "assetDashboard": {
+    "loading": "संपत्ति डैशबोर्ड लोड हो रहा है...",
+    "title": "संपत्ति डैशबोर्ड",
+    "subtitle": "आईटी उपकरण और संपत्ति अवलोकन",
+    "viewAllAssets": "सभी संपत्तियां देखें",
+    "totalAssets": "कुल संपत्तियां",
+    "available": "उपलब्ध",
+    "assigned": "आवंटित",
+    "inRepair": "मरम्मत में",
+    "lostDamaged": "खोया / क्षतिग्रस्त",
+    "retired": "सेवानिवृत्त",
+    "unaccounted_one": "{{count}} संपत्ति की स्थिति अपरिचित है — कुल मेल नहीं खाते। पंक्तियां देखने के लिए संपत्ति सूची खोलें।",
+    "unaccounted_other": "{{count}} संपत्तियों की स्थिति अपरिचित है — कुल मेल नहीं खाते। पंक्तियां देखने के लिए संपत्ति सूची खोलें।",
+    "viewAll": "सभी देखें",
+    "warrantiesExpiring": "जल्द समाप्त होने वाली वारंटी ({{count}})",
+    "expires": "समाप्ति {{date}}",
+    "byCategory": "श्रेणी के अनुसार",
+    "noAssets": "अभी तक कोई संपत्ति नहीं",
+    "topAssignees": "शीर्ष आवंटिती",
+    "assetsCount_one": "{{count}} संपत्ति",
+    "assetsCount_other": "{{count}} संपत्तियां",
+    "noAssignments": "अभी तक कोई आवंटन नहीं",
+    "recentActivity": "हाल की गतिविधि",
+    "noActivity": "कोई हाल की गतिविधि नहीं",
+    "action": {
+      "created": "बनाया गया",
+      "assigned": "आवंटित",
+      "returned": "लौटाया गया",
+      "sent_to_repair": "मरम्मत के लिए भेजा गया",
+      "repaired": "मरम्मत की गई",
+      "retired": "सेवानिवृत्त",
+      "lost": "खोया",
+      "found": "मिल गया",
+      "damaged": "क्षतिग्रस्त",
+      "updated": "अपडेट किया गया"
+    }
   }
 }

@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "Nada probable",
     "extremelyLikely": "Extremadamente probable",
     "textPlaceholder": "Escribe tu respuesta aquí..."
+  },
+  "assetDashboard": {
+    "loading": "Cargando panel de activos...",
+    "title": "Panel de Activos",
+    "subtitle": "Resumen de equipos de TI y activos",
+    "viewAllAssets": "Ver Todos los Activos",
+    "totalAssets": "Total de Activos",
+    "available": "Disponibles",
+    "assigned": "Asignados",
+    "inRepair": "En Reparación",
+    "lostDamaged": "Perdidos / Dañados",
+    "retired": "Retirados",
+    "unaccounted_one": "{{count}} activo con un estado no reconocido — los totales no cuadran. Abre la lista de activos para ver las filas.",
+    "unaccounted_other": "{{count}} activos con un estado no reconocido — los totales no cuadran. Abre la lista de activos para ver las filas.",
+    "viewAll": "Ver todo",
+    "warrantiesExpiring": "Garantías por Vencer Pronto ({{count}})",
+    "expires": "Vence el {{date}}",
+    "byCategory": "Por Categoría",
+    "noAssets": "Aún no hay activos",
+    "topAssignees": "Principales Asignados",
+    "assetsCount_one": "{{count}} activo",
+    "assetsCount_other": "{{count}} activos",
+    "noAssignments": "Aún no hay asignaciones",
+    "recentActivity": "Actividad Reciente",
+    "noActivity": "No hay actividad reciente",
+    "action": {
+      "created": "Creado",
+      "assigned": "Asignado",
+      "returned": "Devuelto",
+      "sent_to_repair": "Enviado a reparación",
+      "repaired": "Reparado",
+      "retired": "Retirado",
+      "lost": "Perdido",
+      "found": "Encontrado",
+      "damaged": "Dañado",
+      "updated": "Actualizado"
+    }
   }
 }

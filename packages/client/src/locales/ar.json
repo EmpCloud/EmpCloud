@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "غير محتمل إطلاقًا",
     "extremelyLikely": "محتمل للغاية",
     "textPlaceholder": "اكتب إجابتك هنا..."
+  },
+  "assetDashboard": {
+    "loading": "جارٍ تحميل لوحة تحكم الأصول...",
+    "title": "لوحة تحكم الأصول",
+    "subtitle": "نظرة عامة على معدات تقنية المعلومات والأصول",
+    "viewAllAssets": "عرض جميع الأصول",
+    "totalAssets": "إجمالي الأصول",
+    "available": "متاح",
+    "assigned": "مُخصّص",
+    "inRepair": "قيد الإصلاح",
+    "lostDamaged": "مفقود / تالف",
+    "retired": "مُتقاعد",
+    "unaccounted_one": "أصل واحد ({{count}}) بحالة غير معروفة — الإجماليات غير متطابقة. افتح قائمة الأصول لرؤية الصفوف.",
+    "unaccounted_other": "{{count}} أصول بحالة غير معروفة — الإجماليات غير متطابقة. افتح قائمة الأصول لرؤية الصفوف.",
+    "viewAll": "عرض الكل",
+    "warrantiesExpiring": "ضمانات على وشك الانتهاء ({{count}})",
+    "expires": "ينتهي في {{date}}",
+    "byCategory": "حسب الفئة",
+    "noAssets": "لا توجد أصول بعد",
+    "topAssignees": "أبرز المُخصّص لهم",
+    "assetsCount_one": "{{count}} أصل",
+    "assetsCount_other": "{{count}} أصول",
+    "noAssignments": "لا توجد تخصيصات بعد",
+    "recentActivity": "النشاط الأخير",
+    "noActivity": "لا يوجد نشاط حديث",
+    "action": {
+      "created": "تم الإنشاء",
+      "assigned": "تم التخصيص",
+      "returned": "تمت الإعادة",
+      "sent_to_repair": "أُرسل للإصلاح",
+      "repaired": "تم الإصلاح",
+      "retired": "تم التقاعد",
+      "lost": "مفقود",
+      "found": "تم العثور عليه",
+      "damaged": "تالف",
+      "updated": "تم التحديث"
+    }
   }
 }

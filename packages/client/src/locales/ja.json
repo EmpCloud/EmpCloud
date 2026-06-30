@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "まったく思わない",
     "extremelyLikely": "非常にそう思う",
     "textPlaceholder": "ここに回答を入力してください..."
+  },
+  "assetDashboard": {
+    "loading": "資産ダッシュボードを読み込み中...",
+    "title": "資産ダッシュボード",
+    "subtitle": "IT機器および資産の概要",
+    "viewAllAssets": "すべての資産を表示",
+    "totalAssets": "資産総数",
+    "available": "利用可能",
+    "assigned": "割り当て済み",
+    "inRepair": "修理中",
+    "lostDamaged": "紛失／破損",
+    "retired": "廃棄済み",
+    "unaccounted_one": "認識されないステータスの資産が{{count}}件あります — 合計が一致しません。資産リストを開いて行を確認してください。",
+    "unaccounted_other": "認識されないステータスの資産が{{count}}件あります — 合計が一致しません。資産リストを開いて行を確認してください。",
+    "viewAll": "すべて表示",
+    "warrantiesExpiring": "まもなく期限切れの保証（{{count}}）",
+    "expires": "期限: {{date}}",
+    "byCategory": "カテゴリ別",
+    "noAssets": "まだ資産がありません",
+    "topAssignees": "上位の割り当て先",
+    "assetsCount_one": "{{count}} 件の資産",
+    "assetsCount_other": "{{count}} 件の資産",
+    "noAssignments": "まだ割り当てがありません",
+    "recentActivity": "最近のアクティビティ",
+    "noActivity": "最近のアクティビティはありません",
+    "action": {
+      "created": "作成",
+      "assigned": "割り当て",
+      "returned": "返却",
+      "sent_to_repair": "修理に送付",
+      "repaired": "修理済み",
+      "retired": "廃棄",
+      "lost": "紛失",
+      "found": "発見",
+      "damaged": "破損",
+      "updated": "更新"
+    }
   }
 }

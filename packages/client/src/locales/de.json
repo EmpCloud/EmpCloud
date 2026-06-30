@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "Überhaupt nicht wahrscheinlich",
     "extremelyLikely": "Äußerst wahrscheinlich",
     "textPlaceholder": "Geben Sie hier Ihre Antwort ein..."
+  },
+  "assetDashboard": {
+    "loading": "Asset-Dashboard wird geladen...",
+    "title": "Asset-Dashboard",
+    "subtitle": "Übersicht über IT-Ausstattung und Assets",
+    "viewAllAssets": "Alle Assets anzeigen",
+    "totalAssets": "Assets gesamt",
+    "available": "Verfügbar",
+    "assigned": "Zugewiesen",
+    "inRepair": "In Reparatur",
+    "lostDamaged": "Verloren / Beschädigt",
+    "retired": "Ausgemustert",
+    "unaccounted_one": "{{count}} Asset mit einem unbekannten Status — die Summen stimmen nicht überein. Öffnen Sie die Asset-Liste, um die Zeilen zu sehen.",
+    "unaccounted_other": "{{count}} Assets mit einem unbekannten Status — die Summen stimmen nicht überein. Öffnen Sie die Asset-Liste, um die Zeilen zu sehen.",
+    "viewAll": "Alle anzeigen",
+    "warrantiesExpiring": "Bald ablaufende Garantien ({{count}})",
+    "expires": "Läuft ab am {{date}}",
+    "byCategory": "Nach Kategorie",
+    "noAssets": "Noch keine Assets",
+    "topAssignees": "Top-Zugewiesene",
+    "assetsCount_one": "{{count}} Asset",
+    "assetsCount_other": "{{count}} Assets",
+    "noAssignments": "Noch keine Zuweisungen",
+    "recentActivity": "Letzte Aktivität",
+    "noActivity": "Keine aktuelle Aktivität",
+    "action": {
+      "created": "Erstellt",
+      "assigned": "Zugewiesen",
+      "returned": "Zurückgegeben",
+      "sent_to_repair": "Zur Reparatur gesendet",
+      "repaired": "Repariert",
+      "retired": "Ausgemustert",
+      "lost": "Verloren",
+      "found": "Gefunden",
+      "damaged": "Beschädigt",
+      "updated": "Aktualisiert"
+    }
   }
 }

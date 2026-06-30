@@ -2507,5 +2507,42 @@
     "notAtAllLikely": "Not at all likely",
     "extremelyLikely": "Extremely likely",
     "textPlaceholder": "Type your answer here..."
+  },
+  "assetDashboard": {
+    "loading": "Loading asset dashboard...",
+    "title": "Asset Dashboard",
+    "subtitle": "IT equipment and asset overview",
+    "viewAllAssets": "View All Assets",
+    "totalAssets": "Total Assets",
+    "available": "Available",
+    "assigned": "Assigned",
+    "inRepair": "In Repair",
+    "lostDamaged": "Lost / Damaged",
+    "retired": "Retired",
+    "unaccounted_one": "{{count}} asset with an unrecognised status — totals don't reconcile. Open the asset list to see the rows.",
+    "unaccounted_other": "{{count}} assets with an unrecognised status — totals don't reconcile. Open the asset list to see the rows.",
+    "viewAll": "View all",
+    "warrantiesExpiring": "Warranties Expiring Soon ({{count}})",
+    "expires": "Expires {{date}}",
+    "byCategory": "By Category",
+    "noAssets": "No assets yet",
+    "topAssignees": "Top Assignees",
+    "assetsCount_one": "{{count}} asset",
+    "assetsCount_other": "{{count}} assets",
+    "noAssignments": "No assignments yet",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity",
+    "action": {
+      "created": "Created",
+      "assigned": "Assigned",
+      "returned": "Returned",
+      "sent_to_repair": "Sent to repair",
+      "repaired": "Repaired",
+      "retired": "Retired",
+      "lost": "Lost",
+      "found": "Found",
+      "damaged": "Damaged",
+      "updated": "Updated"
+    }
   }
 }

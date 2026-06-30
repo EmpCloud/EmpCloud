@@ -2501,5 +2501,42 @@
     "notAtAllLikely": "完全不可能",
     "extremelyLikely": "非常可能",
     "textPlaceholder": "在此输入您的答案..."
+  },
+  "assetDashboard": {
+    "loading": "正在加载资产仪表板...",
+    "title": "资产仪表板",
+    "subtitle": "IT 设备和资产概览",
+    "viewAllAssets": "查看所有资产",
+    "totalAssets": "资产总数",
+    "available": "可用",
+    "assigned": "已分配",
+    "inRepair": "维修中",
+    "lostDamaged": "丢失 / 损坏",
+    "retired": "已报废",
+    "unaccounted_one": "{{count}} 项资产的状态无法识别 — 总数无法对账。请打开资产列表查看这些行。",
+    "unaccounted_other": "{{count}} 项资产的状态无法识别 — 总数无法对账。请打开资产列表查看这些行。",
+    "viewAll": "查看全部",
+    "warrantiesExpiring": "即将到期的保修（{{count}}）",
+    "expires": "到期 {{date}}",
+    "byCategory": "按类别",
+    "noAssets": "暂无资产",
+    "topAssignees": "主要领用人",
+    "assetsCount_one": "{{count}} 项资产",
+    "assetsCount_other": "{{count}} 项资产",
+    "noAssignments": "暂无分配",
+    "recentActivity": "最近活动",
+    "noActivity": "暂无最近活动",
+    "action": {
+      "created": "已创建",
+      "assigned": "已分配",
+      "returned": "已归还",
+      "sent_to_repair": "已送修",
+      "repaired": "已修复",
+      "retired": "已报废",
+      "lost": "丢失",
+      "found": "已找到",
+      "damaged": "已损坏",
+      "updated": "已更新"
+    }
   }
 }
