@@ -2538,5 +2538,155 @@
       "damaged": "已损坏",
       "updated": "已更新"
     }
+  },
+  "assetDetail": {
+    "loading": "正在加载资产详情……",
+    "status": {
+      "available": "可用",
+      "assigned": "已分配",
+      "in_repair": "维修中",
+      "retired": "已停用",
+      "lost": "已丢失",
+      "damaged": "已损坏"
+    },
+    "condition": {
+      "new": "全新",
+      "good": "良好",
+      "fair": "一般",
+      "poor": "较差"
+    },
+    "action": {
+      "created": "已创建",
+      "assigned": "已分配",
+      "returned": "已归还",
+      "sent_to_repair": "已送修",
+      "repaired": "已维修",
+      "retired": "已停用",
+      "lost": "已丢失",
+      "found": "已找回",
+      "damaged": "已损坏",
+      "updated": "已更新"
+    },
+    "actions": {
+      "edit": "编辑",
+      "assign": "分配",
+      "return": "归还",
+      "sendForRepair": "送修",
+      "repairComplete": "维修完成",
+      "retire": "停用",
+      "reportLost": "报告丢失",
+      "markFound": "标记为找回"
+    },
+    "info": {
+      "title": "资产信息",
+      "assetTag": "资产标签",
+      "category": "类别",
+      "uncategorized": "未分类",
+      "serialNumber": "序列号",
+      "brand": "品牌",
+      "model": "型号",
+      "location": "位置",
+      "purchaseDate": "购买日期",
+      "purchaseCost": "购买成本",
+      "warrantyExpiry": "保修到期",
+      "expired": "（已过期）",
+      "description": "描述",
+      "notes": "备注"
+    },
+    "assignment": {
+      "title": "当前分配",
+      "assignedTo": "分配给",
+      "assignedAt": "分配时间",
+      "assignedBy": "分配人"
+    },
+    "history": {
+      "title": "历史记录",
+      "toUser": "至：{{name}}",
+      "fromUser": "来自：{{name}}",
+      "empty": "暂无历史记录",
+      "deleteEntry": "删除历史记录"
+    },
+    "assignModal": {
+      "title": "分配资产",
+      "assignToLabel": "分配给",
+      "selectEmployee": "选择员工",
+      "notesLabel": "备注",
+      "submitting": "正在分配……",
+      "submit": "分配"
+    },
+    "common": {
+      "cancel": "取消"
+    },
+    "returnModal": {
+      "title": "归还资产",
+      "conditionLabel": "归还时状况",
+      "notesLabel": "备注",
+      "submitting": "正在归还……",
+      "submit": "归还资产"
+    },
+    "confirm": {
+      "retire": {
+        "title": "确定停用此资产？",
+        "body": "停用资产会将其移出有效库存。过往分配记录将予以保留，但该资产将无法再被分配。",
+        "confirmLabel": "停用资产"
+      },
+      "lost": {
+        "title": "将资产报告为丢失？",
+        "body": "此操作会将该资产标记为丢失并记入审计历史。日后可在资产详情页将其标记为找回。",
+        "confirmLabel": "报告为丢失"
+      },
+      "found": {
+        "title": "将资产标记为找回？",
+        "body": "此操作会将该资产以可用状态归还有效库存，以便重新分配。",
+        "confirmLabel": "标记为找回"
+      },
+      "repairStart": {
+        "title": "将资产送修？",
+        "bodyAssigned": "此操作会取消该资产的分配并将其转入“维修中”。当前持有人将记入历史记录。",
+        "bodyUnassigned": "此操作会将该资产转入“维修中”。在维修完成前将无法分配。",
+        "confirmLabel": "送修"
+      },
+      "repairComplete": {
+        "title": "将维修标记为完成？",
+        "body": "此操作会将该资产以可用状态归还有效库存，以便重新分配。",
+        "confirmLabel": "标记为已维修"
+      },
+      "working": "处理中……"
+    },
+    "editModal": {
+      "title": "编辑资产",
+      "nameLabel": "名称",
+      "categoryLabel": "类别",
+      "serialNumberLabel": "序列号",
+      "brandLabel": "品牌",
+      "modelLabel": "型号",
+      "conditionLabel": "状况",
+      "purchaseDateLabel": "购买日期",
+      "purchaseCostLabel": "购买成本",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "金额以派萨为单位。",
+      "warrantyExpiryLabel": "保修到期",
+      "locationLabel": "位置",
+      "descriptionLabel": "描述",
+      "notesLabel": "备注",
+      "saving": "正在保存……",
+      "save": "保存更改"
+    },
+    "historyDelete": {
+      "title": "删除此历史记录？",
+      "body": "此操作仅删除这一条日志记录。资产的当前状态保持不变——过往分配或操作不会被撤销。",
+      "deleting": "正在删除……",
+      "confirm": "删除记录"
+    },
+    "errors": {
+      "updateFailed": "更新资产失败",
+      "deleteHistoryFailed": "删除历史记录失败",
+      "warrantyBeforePurchase": "保修到期日期不能早于购买日期。",
+      "retireFailed": "停用资产失败",
+      "reportLostFailed": "报告资产丢失失败",
+      "markFoundFailed": "标记资产为找回失败",
+      "sendToRepairFailed": "送修资产失败",
+      "completeRepairFailed": "完成维修失败"
+    }
   }
 }

@@ -2538,5 +2538,155 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "assetDetail": {
+    "loading": "Asset-Details werden geladen ...",
+    "status": {
+      "available": "Verfügbar",
+      "assigned": "Zugewiesen",
+      "in_repair": "In Reparatur",
+      "retired": "Ausgemustert",
+      "lost": "Verloren",
+      "damaged": "Beschädigt"
+    },
+    "condition": {
+      "new": "Neu",
+      "good": "Gut",
+      "fair": "Akzeptabel",
+      "poor": "Schlecht"
+    },
+    "action": {
+      "created": "Erstellt",
+      "assigned": "Zugewiesen",
+      "returned": "Zurückgegeben",
+      "sent_to_repair": "Zur Reparatur gegeben",
+      "repaired": "Repariert",
+      "retired": "Ausgemustert",
+      "lost": "Verloren",
+      "found": "Gefunden",
+      "damaged": "Beschädigt",
+      "updated": "Aktualisiert"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "assign": "Zuweisen",
+      "return": "Zurückgeben",
+      "sendForRepair": "Zur Reparatur senden",
+      "repairComplete": "Reparatur abgeschlossen",
+      "retire": "Ausmustern",
+      "reportLost": "Als verloren melden",
+      "markFound": "Als gefunden markieren"
+    },
+    "info": {
+      "title": "Asset-Informationen",
+      "assetTag": "Asset-Kennzeichen",
+      "category": "Kategorie",
+      "uncategorized": "Ohne Kategorie",
+      "serialNumber": "Seriennummer",
+      "brand": "Marke",
+      "model": "Modell",
+      "location": "Standort",
+      "purchaseDate": "Kaufdatum",
+      "purchaseCost": "Anschaffungskosten",
+      "warrantyExpiry": "Garantieablauf",
+      "expired": "(Abgelaufen)",
+      "description": "Beschreibung",
+      "notes": "Notizen"
+    },
+    "assignment": {
+      "title": "Aktuell zugewiesen",
+      "assignedTo": "Zugewiesen an",
+      "assignedAt": "Zugewiesen am",
+      "assignedBy": "Zugewiesen von"
+    },
+    "history": {
+      "title": "Verlauf",
+      "toUser": "An: {{name}}",
+      "fromUser": "Von: {{name}}",
+      "empty": "Keine Verlaufseinträge",
+      "deleteEntry": "Verlaufseintrag löschen"
+    },
+    "assignModal": {
+      "title": "Asset zuweisen",
+      "assignToLabel": "Zuweisen an",
+      "selectEmployee": "Mitarbeiter auswählen",
+      "notesLabel": "Notizen",
+      "submitting": "Wird zugewiesen ...",
+      "submit": "Zuweisen"
+    },
+    "common": {
+      "cancel": "Abbrechen"
+    },
+    "returnModal": {
+      "title": "Asset zurückgeben",
+      "conditionLabel": "Zustand bei Rückgabe",
+      "notesLabel": "Notizen",
+      "submitting": "Wird zurückgegeben ...",
+      "submit": "Asset zurückgeben"
+    },
+    "confirm": {
+      "retire": {
+        "title": "Dieses Asset ausmustern?",
+        "body": "Beim Ausmustern wird das Asset aus dem aktiven Bestand entfernt. Frühere Zuweisungen bleiben erfasst, das Asset kann jedoch nicht mehr zugewiesen werden.",
+        "confirmLabel": "Asset ausmustern"
+      },
+      "lost": {
+        "title": "Asset als verloren melden?",
+        "body": "Dadurch wird das Asset als verloren markiert und im Audit-Verlauf erfasst. Es kann später auf der Asset-Detailseite als gefunden markiert werden.",
+        "confirmLabel": "Als verloren melden"
+      },
+      "found": {
+        "title": "Asset als gefunden markieren?",
+        "body": "Dadurch wird das Asset als verfügbar in den aktiven Bestand zurückgeführt und kann erneut zugewiesen werden.",
+        "confirmLabel": "Als gefunden markieren"
+      },
+      "repairStart": {
+        "title": "Asset zur Reparatur senden?",
+        "bodyAssigned": "Dadurch wird die Zuweisung des Assets aufgehoben und es in den Status 'In Reparatur' versetzt. Der aktuelle Besitzer bleibt im Verlauf erfasst.",
+        "bodyUnassigned": "Dadurch wird das Asset in den Status 'In Reparatur' versetzt. Es kann erst nach Abschluss der Reparatur wieder zugewiesen werden.",
+        "confirmLabel": "Zur Reparatur senden"
+      },
+      "repairComplete": {
+        "title": "Reparatur als abgeschlossen markieren?",
+        "body": "Dadurch wird das Asset als verfügbar in den aktiven Bestand zurückgeführt und kann erneut zugewiesen werden.",
+        "confirmLabel": "Als repariert markieren"
+      },
+      "working": "Wird ausgeführt ..."
+    },
+    "editModal": {
+      "title": "Asset bearbeiten",
+      "nameLabel": "Name",
+      "categoryLabel": "Kategorie",
+      "serialNumberLabel": "Seriennummer",
+      "brandLabel": "Marke",
+      "modelLabel": "Modell",
+      "conditionLabel": "Zustand",
+      "purchaseDateLabel": "Kaufdatum",
+      "purchaseCostLabel": "Anschaffungskosten",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "Betrag in Paise.",
+      "warrantyExpiryLabel": "Garantieablauf",
+      "locationLabel": "Standort",
+      "descriptionLabel": "Beschreibung",
+      "notesLabel": "Notizen",
+      "saving": "Wird gespeichert ...",
+      "save": "Änderungen speichern"
+    },
+    "historyDelete": {
+      "title": "Verlaufseintrag löschen?",
+      "body": "Dadurch wird nur diese Protokollzeile entfernt. Der aktuelle Status des Assets bleibt unverändert – frühere Zuweisungen oder Aktionen werden nicht rückgängig gemacht.",
+      "deleting": "Wird gelöscht ...",
+      "confirm": "Eintrag löschen"
+    },
+    "errors": {
+      "updateFailed": "Asset konnte nicht aktualisiert werden",
+      "deleteHistoryFailed": "Verlaufseintrag konnte nicht gelöscht werden",
+      "warrantyBeforePurchase": "Der Garantieablauf darf nicht vor dem Kaufdatum liegen.",
+      "retireFailed": "Asset konnte nicht ausgemustert werden",
+      "reportLostFailed": "Asset konnte nicht als verloren gemeldet werden",
+      "markFoundFailed": "Asset konnte nicht als gefunden markiert werden",
+      "sendToRepairFailed": "Asset konnte nicht zur Reparatur gesendet werden",
+      "completeRepairFailed": "Reparatur konnte nicht abgeschlossen werden"
+    }
   }
 }

@@ -2538,5 +2538,155 @@
       "damaged": "تالف",
       "updated": "تم التحديث"
     }
+  },
+  "assetDetail": {
+    "loading": "جارٍ تحميل تفاصيل الأصل...",
+    "status": {
+      "available": "متاح",
+      "assigned": "مُسنَد",
+      "in_repair": "قيد الإصلاح",
+      "retired": "مسحوب من الخدمة",
+      "lost": "مفقود",
+      "damaged": "تالف"
+    },
+    "condition": {
+      "new": "جديد",
+      "good": "جيد",
+      "fair": "مقبول",
+      "poor": "رديء"
+    },
+    "action": {
+      "created": "تم الإنشاء",
+      "assigned": "تم الإسناد",
+      "returned": "تمت الإعادة",
+      "sent_to_repair": "أُرسِل للإصلاح",
+      "repaired": "تم الإصلاح",
+      "retired": "تم السحب من الخدمة",
+      "lost": "فُقِد",
+      "found": "تم العثور عليه",
+      "damaged": "تلف",
+      "updated": "تم التحديث"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "assign": "إسناد",
+      "return": "إعادة",
+      "sendForRepair": "إرسال للإصلاح",
+      "repairComplete": "اكتمل الإصلاح",
+      "retire": "سحب من الخدمة",
+      "reportLost": "الإبلاغ عن فقدان",
+      "markFound": "تحديد كمعثور عليه"
+    },
+    "info": {
+      "title": "معلومات الأصل",
+      "assetTag": "وسم الأصل",
+      "category": "الفئة",
+      "uncategorized": "غير مُصنَّف",
+      "serialNumber": "الرقم التسلسلي",
+      "brand": "العلامة التجارية",
+      "model": "الطراز",
+      "location": "الموقع",
+      "purchaseDate": "تاريخ الشراء",
+      "purchaseCost": "تكلفة الشراء",
+      "warrantyExpiry": "انتهاء الضمان",
+      "expired": "(منتهٍ)",
+      "description": "الوصف",
+      "notes": "ملاحظات"
+    },
+    "assignment": {
+      "title": "مُسنَد حاليًا",
+      "assignedTo": "مُسنَد إلى",
+      "assignedAt": "تاريخ الإسناد",
+      "assignedBy": "أُسنِد بواسطة"
+    },
+    "history": {
+      "title": "السجل",
+      "toUser": "إلى: {{name}}",
+      "fromUser": "من: {{name}}",
+      "empty": "لا توجد إدخالات في السجل",
+      "deleteEntry": "حذف إدخال السجل"
+    },
+    "assignModal": {
+      "title": "إسناد الأصل",
+      "assignToLabel": "إسناد إلى",
+      "selectEmployee": "اختر موظفًا",
+      "notesLabel": "ملاحظات",
+      "submitting": "جارٍ الإسناد...",
+      "submit": "إسناد"
+    },
+    "common": {
+      "cancel": "إلغاء"
+    },
+    "returnModal": {
+      "title": "إعادة الأصل",
+      "conditionLabel": "الحالة عند الإعادة",
+      "notesLabel": "ملاحظات",
+      "submitting": "جارٍ الإعادة...",
+      "submit": "إعادة الأصل"
+    },
+    "confirm": {
+      "retire": {
+        "title": "سحب هذا الأصل من الخدمة؟",
+        "body": "سحب الأصل من الخدمة يُخرجه من المخزون النشط. تبقى الإسنادات السابقة مُسجَّلة لكن لا يمكن إسناد الأصل بعد ذلك.",
+        "confirmLabel": "سحب من الخدمة"
+      },
+      "lost": {
+        "title": "الإبلاغ عن الأصل كمفقود؟",
+        "body": "سيؤدي ذلك إلى تحديد الأصل كمفقود وتسجيله في سجل التدقيق. يمكنك تحديده كمعثور عليه لاحقًا من صفحة تفاصيل الأصل.",
+        "confirmLabel": "الإبلاغ كمفقود"
+      },
+      "found": {
+        "title": "تحديد الأصل كمعثور عليه؟",
+        "body": "سيؤدي ذلك إلى إعادة الأصل إلى المخزون النشط كمتاح، بحيث يمكن إعادة إسناده.",
+        "confirmLabel": "تحديد كمعثور عليه"
+      },
+      "repairStart": {
+        "title": "إرسال الأصل للإصلاح؟",
+        "bodyAssigned": "سيؤدي ذلك إلى إلغاء إسناد الأصل ونقله إلى 'قيد الإصلاح'. يبقى الحائز الحالي مُسجَّلًا في السجل.",
+        "bodyUnassigned": "سيؤدي ذلك إلى نقل الأصل إلى 'قيد الإصلاح'. لن يكون قابلًا للإسناد حتى يكتمل الإصلاح.",
+        "confirmLabel": "إرسال للإصلاح"
+      },
+      "repairComplete": {
+        "title": "تحديد الإصلاح كمكتمل؟",
+        "body": "سيؤدي ذلك إلى إعادة الأصل إلى المخزون النشط كمتاح، بحيث يمكن إعادة إسناده.",
+        "confirmLabel": "تحديد كمُصلَح"
+      },
+      "working": "جارٍ العمل..."
+    },
+    "editModal": {
+      "title": "تعديل الأصل",
+      "nameLabel": "الاسم",
+      "categoryLabel": "الفئة",
+      "serialNumberLabel": "الرقم التسلسلي",
+      "brandLabel": "العلامة التجارية",
+      "modelLabel": "الطراز",
+      "conditionLabel": "الحالة",
+      "purchaseDateLabel": "تاريخ الشراء",
+      "purchaseCostLabel": "تكلفة الشراء",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "المبلغ بالبيزة.",
+      "warrantyExpiryLabel": "انتهاء الضمان",
+      "locationLabel": "الموقع",
+      "descriptionLabel": "الوصف",
+      "notesLabel": "ملاحظات",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ التغييرات"
+    },
+    "historyDelete": {
+      "title": "حذف إدخال السجل؟",
+      "body": "يؤدي ذلك إلى إزالة صف السجل هذا فقط. تبقى الحالة الحالية للأصل دون تغيير — لا يتم التراجع عن الإسنادات أو الإجراءات السابقة.",
+      "deleting": "جارٍ الحذف...",
+      "confirm": "حذف الإدخال"
+    },
+    "errors": {
+      "updateFailed": "فشل تحديث الأصل",
+      "deleteHistoryFailed": "فشل حذف إدخال السجل",
+      "warrantyBeforePurchase": "لا يمكن أن يكون انتهاء الضمان قبل تاريخ الشراء.",
+      "retireFailed": "فشل سحب الأصل من الخدمة",
+      "reportLostFailed": "فشل الإبلاغ عن الأصل كمفقود",
+      "markFoundFailed": "فشل تحديد الأصل كمعثور عليه",
+      "sendToRepairFailed": "فشل إرسال الأصل للإصلاح",
+      "completeRepairFailed": "فشل إكمال الإصلاح"
+    }
   }
 }

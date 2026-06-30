@@ -2538,5 +2538,155 @@
       "damaged": "Danificado",
       "updated": "Atualizado"
     }
+  },
+  "assetDetail": {
+    "loading": "A carregar detalhes do ativo...",
+    "status": {
+      "available": "Disponível",
+      "assigned": "Atribuído",
+      "in_repair": "Em reparação",
+      "retired": "Desativado",
+      "lost": "Perdido",
+      "damaged": "Danificado"
+    },
+    "condition": {
+      "new": "Novo",
+      "good": "Bom",
+      "fair": "Razoável",
+      "poor": "Mau"
+    },
+    "action": {
+      "created": "Criado",
+      "assigned": "Atribuído",
+      "returned": "Devolvido",
+      "sent_to_repair": "Enviado para reparação",
+      "repaired": "Reparado",
+      "retired": "Desativado",
+      "lost": "Perdido",
+      "found": "Encontrado",
+      "damaged": "Danificado",
+      "updated": "Atualizado"
+    },
+    "actions": {
+      "edit": "Editar",
+      "assign": "Atribuir",
+      "return": "Devolver",
+      "sendForRepair": "Enviar para reparação",
+      "repairComplete": "Reparação concluída",
+      "retire": "Desativar",
+      "reportLost": "Reportar perda",
+      "markFound": "Marcar como encontrado"
+    },
+    "info": {
+      "title": "Informações do ativo",
+      "assetTag": "Etiqueta do ativo",
+      "category": "Categoria",
+      "uncategorized": "Sem categoria",
+      "serialNumber": "Número de série",
+      "brand": "Marca",
+      "model": "Modelo",
+      "location": "Localização",
+      "purchaseDate": "Data de compra",
+      "purchaseCost": "Custo de compra",
+      "warrantyExpiry": "Validade da garantia",
+      "expired": "(Expirada)",
+      "description": "Descrição",
+      "notes": "Notas"
+    },
+    "assignment": {
+      "title": "Atualmente atribuído",
+      "assignedTo": "Atribuído a",
+      "assignedAt": "Atribuído em",
+      "assignedBy": "Atribuído por"
+    },
+    "history": {
+      "title": "Histórico",
+      "toUser": "Para: {{name}}",
+      "fromUser": "De: {{name}}",
+      "empty": "Sem entradas no histórico",
+      "deleteEntry": "Eliminar entrada do histórico"
+    },
+    "assignModal": {
+      "title": "Atribuir ativo",
+      "assignToLabel": "Atribuir a",
+      "selectEmployee": "Selecionar colaborador",
+      "notesLabel": "Notas",
+      "submitting": "A atribuir...",
+      "submit": "Atribuir"
+    },
+    "common": {
+      "cancel": "Cancelar"
+    },
+    "returnModal": {
+      "title": "Devolver ativo",
+      "conditionLabel": "Estado na devolução",
+      "notesLabel": "Notas",
+      "submitting": "A devolver...",
+      "submit": "Devolver ativo"
+    },
+    "confirm": {
+      "retire": {
+        "title": "Desativar este ativo?",
+        "body": "Desativar um ativo retira-o do inventário ativo. As atribuições anteriores permanecem registadas, mas o ativo já não pode ser atribuído.",
+        "confirmLabel": "Desativar ativo"
+      },
+      "lost": {
+        "title": "Reportar ativo como perdido?",
+        "body": "Isto irá marcar o ativo como perdido e registá-lo no histórico de auditoria. Pode marcá-lo como encontrado mais tarde a partir da página de detalhes do ativo.",
+        "confirmLabel": "Reportar como perdido"
+      },
+      "found": {
+        "title": "Marcar ativo como encontrado?",
+        "body": "Isto irá repor o ativo no inventário ativo como disponível, para que possa ser reatribuído.",
+        "confirmLabel": "Marcar como encontrado"
+      },
+      "repairStart": {
+        "title": "Enviar ativo para reparação?",
+        "bodyAssigned": "Isto irá anular a atribuição do ativo e movê-lo para 'Em reparação'. O detentor atual permanece registado no histórico.",
+        "bodyUnassigned": "Isto irá mover o ativo para 'Em reparação'. Não poderá ser atribuído até a reparação estar concluída.",
+        "confirmLabel": "Enviar para reparação"
+      },
+      "repairComplete": {
+        "title": "Marcar reparação como concluída?",
+        "body": "Isto irá repor o ativo no inventário ativo como disponível, para que possa ser reatribuído.",
+        "confirmLabel": "Marcar como reparado"
+      },
+      "working": "A processar..."
+    },
+    "editModal": {
+      "title": "Editar ativo",
+      "nameLabel": "Nome",
+      "categoryLabel": "Categoria",
+      "serialNumberLabel": "Número de série",
+      "brandLabel": "Marca",
+      "modelLabel": "Modelo",
+      "conditionLabel": "Estado",
+      "purchaseDateLabel": "Data de compra",
+      "purchaseCostLabel": "Custo de compra",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "Montante em paise.",
+      "warrantyExpiryLabel": "Validade da garantia",
+      "locationLabel": "Localização",
+      "descriptionLabel": "Descrição",
+      "notesLabel": "Notas",
+      "saving": "A guardar...",
+      "save": "Guardar alterações"
+    },
+    "historyDelete": {
+      "title": "Eliminar entrada do histórico?",
+      "body": "Isto remove apenas esta linha de registo. O estado atual do ativo permanece inalterado — as atribuições ou ações anteriores não são revertidas.",
+      "deleting": "A eliminar...",
+      "confirm": "Eliminar entrada"
+    },
+    "errors": {
+      "updateFailed": "Falha ao atualizar o ativo",
+      "deleteHistoryFailed": "Falha ao eliminar a entrada do histórico",
+      "warrantyBeforePurchase": "A validade da garantia não pode ser anterior à data de compra.",
+      "retireFailed": "Falha ao desativar o ativo",
+      "reportLostFailed": "Falha ao reportar o ativo como perdido",
+      "markFoundFailed": "Falha ao marcar o ativo como encontrado",
+      "sendToRepairFailed": "Falha ao enviar o ativo para reparação",
+      "completeRepairFailed": "Falha ao concluir a reparação"
+    }
   }
 }

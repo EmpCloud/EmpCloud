@@ -2538,5 +2538,155 @@
       "damaged": "Dañado",
       "updated": "Actualizado"
     }
+  },
+  "assetDetail": {
+    "loading": "Cargando detalles del activo...",
+    "status": {
+      "available": "Disponible",
+      "assigned": "Asignado",
+      "in_repair": "En reparación",
+      "retired": "Retirado",
+      "lost": "Perdido",
+      "damaged": "Dañado"
+    },
+    "condition": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "fair": "Regular",
+      "poor": "Malo"
+    },
+    "action": {
+      "created": "Creado",
+      "assigned": "Asignado",
+      "returned": "Devuelto",
+      "sent_to_repair": "Enviado a reparación",
+      "repaired": "Reparado",
+      "retired": "Retirado",
+      "lost": "Perdido",
+      "found": "Encontrado",
+      "damaged": "Dañado",
+      "updated": "Actualizado"
+    },
+    "actions": {
+      "edit": "Editar",
+      "assign": "Asignar",
+      "return": "Devolver",
+      "sendForRepair": "Enviar a reparación",
+      "repairComplete": "Reparación completada",
+      "retire": "Retirar",
+      "reportLost": "Reportar perdido",
+      "markFound": "Marcar como encontrado"
+    },
+    "info": {
+      "title": "Información del activo",
+      "assetTag": "Etiqueta del activo",
+      "category": "Categoría",
+      "uncategorized": "Sin categoría",
+      "serialNumber": "Número de serie",
+      "brand": "Marca",
+      "model": "Modelo",
+      "location": "Ubicación",
+      "purchaseDate": "Fecha de compra",
+      "purchaseCost": "Costo de compra",
+      "warrantyExpiry": "Vencimiento de garantía",
+      "expired": "(Vencida)",
+      "description": "Descripción",
+      "notes": "Notas"
+    },
+    "assignment": {
+      "title": "Asignado actualmente",
+      "assignedTo": "Asignado a",
+      "assignedAt": "Fecha de asignación",
+      "assignedBy": "Asignado por"
+    },
+    "history": {
+      "title": "Historial",
+      "toUser": "A: {{name}}",
+      "fromUser": "De: {{name}}",
+      "empty": "Sin entradas en el historial",
+      "deleteEntry": "Eliminar entrada del historial"
+    },
+    "assignModal": {
+      "title": "Asignar activo",
+      "assignToLabel": "Asignar a",
+      "selectEmployee": "Seleccionar empleado",
+      "notesLabel": "Notas",
+      "submitting": "Asignando...",
+      "submit": "Asignar"
+    },
+    "common": {
+      "cancel": "Cancelar"
+    },
+    "returnModal": {
+      "title": "Devolver activo",
+      "conditionLabel": "Estado al devolver",
+      "notesLabel": "Notas",
+      "submitting": "Devolviendo...",
+      "submit": "Devolver activo"
+    },
+    "confirm": {
+      "retire": {
+        "title": "¿Retirar este activo?",
+        "body": "Retirar un activo lo saca del inventario activo. Las asignaciones anteriores quedan registradas, pero el activo ya no se puede asignar.",
+        "confirmLabel": "Retirar activo"
+      },
+      "lost": {
+        "title": "¿Reportar el activo como perdido?",
+        "body": "Esto marcará el activo como perdido y lo registrará en el historial de auditoría. Podrás marcarlo como encontrado más tarde desde la página de detalles del activo.",
+        "confirmLabel": "Reportar como perdido"
+      },
+      "found": {
+        "title": "¿Marcar el activo como encontrado?",
+        "body": "Esto devolverá el activo al inventario activo como disponible, para que pueda reasignarse.",
+        "confirmLabel": "Marcar como encontrado"
+      },
+      "repairStart": {
+        "title": "¿Enviar el activo a reparación?",
+        "bodyAssigned": "Esto desasignará el activo y lo cambiará a 'En reparación'. El titular actual queda registrado en el historial.",
+        "bodyUnassigned": "Esto cambiará el activo a 'En reparación'. No podrá asignarse hasta que se complete la reparación.",
+        "confirmLabel": "Enviar a reparación"
+      },
+      "repairComplete": {
+        "title": "¿Marcar la reparación como completada?",
+        "body": "Esto devolverá el activo al inventario activo como disponible, para que pueda reasignarse.",
+        "confirmLabel": "Marcar como reparado"
+      },
+      "working": "Procesando..."
+    },
+    "editModal": {
+      "title": "Editar activo",
+      "nameLabel": "Nombre",
+      "categoryLabel": "Categoría",
+      "serialNumberLabel": "Número de serie",
+      "brandLabel": "Marca",
+      "modelLabel": "Modelo",
+      "conditionLabel": "Estado",
+      "purchaseDateLabel": "Fecha de compra",
+      "purchaseCostLabel": "Costo de compra",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "Importe en paise.",
+      "warrantyExpiryLabel": "Vencimiento de garantía",
+      "locationLabel": "Ubicación",
+      "descriptionLabel": "Descripción",
+      "notesLabel": "Notas",
+      "saving": "Guardando...",
+      "save": "Guardar cambios"
+    },
+    "historyDelete": {
+      "title": "¿Eliminar entrada del historial?",
+      "body": "Esto elimina solo esta fila del registro. El estado actual del activo no cambia: las asignaciones o acciones anteriores no se revierten.",
+      "deleting": "Eliminando...",
+      "confirm": "Eliminar entrada"
+    },
+    "errors": {
+      "updateFailed": "No se pudo actualizar el activo",
+      "deleteHistoryFailed": "No se pudo eliminar la entrada del historial",
+      "warrantyBeforePurchase": "El vencimiento de la garantía no puede ser anterior a la fecha de compra.",
+      "retireFailed": "No se pudo retirar el activo",
+      "reportLostFailed": "No se pudo reportar el activo como perdido",
+      "markFoundFailed": "No se pudo marcar el activo como encontrado",
+      "sendToRepairFailed": "No se pudo enviar el activo a reparación",
+      "completeRepairFailed": "No se pudo completar la reparación"
+    }
   }
 }
