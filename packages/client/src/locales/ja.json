@@ -2070,5 +2070,11 @@
     "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
     "personCount_one": "{{count}}人",
     "personCount_other": "{{count}}人"
+  },
+  "surveyDashboard": {
+    "loading": "ダッシュボードを読み込み中...",
+    "title": "アンケートダッシュボード",
+    "subtitle": "従業員アンケート、エンゲージメント、eNPSの概要。",
+    "createSurvey": "アンケートを作成"
   }
 }

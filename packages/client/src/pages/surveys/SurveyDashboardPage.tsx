@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { BarChart3, ClipboardList, Users, TrendingUp, Clock, CheckCircle, FileEdit } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -67,6 +68,7 @@ const TYPE_BADGE: Record<string, string> = {
 };
 
 export default function SurveyDashboardPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["survey-dashboard"],
     queryFn: () => api.get("/surveys/dashboard").then((r) => r.data.data),
@@ -75,7 +77,7 @@ export default function SurveyDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-gray-400">Loading dashboard...</div>
+        <div className="text-gray-400">{t("surveyDashboard.loading")}</div>
       </div>
     );
   }
@@ -86,14 +88,14 @@ export default function SurveyDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Survey Dashboard</h1>
-          <p className="text-gray-500 mt-1">Overview of employee surveys, engagement, and eNPS.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("surveyDashboard.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("surveyDashboard.subtitle")}</p>
         </div>
         <Link
           to="/surveys/builder"
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <ClipboardList className="h-4 w-4" /> Create Survey
+          <ClipboardList className="h-4 w-4" /> {t("surveyDashboard.createSurvey")}
         </Link>
       </div>
 

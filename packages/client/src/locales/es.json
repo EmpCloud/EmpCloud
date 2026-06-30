@@ -2070,5 +2070,11 @@
     "exportFailed": "La exportación falló. Inténtalo de nuevo.",
     "personCount_one": "{{count}} persona",
     "personCount_other": "{{count}} personas"
+  },
+  "surveyDashboard": {
+    "loading": "Cargando panel...",
+    "title": "Panel de Encuestas",
+    "subtitle": "Resumen de encuestas de empleados, compromiso y eNPS.",
+    "createSurvey": "Crear Encuesta"
   }
 }

@@ -2075,5 +2075,11 @@
     "exportFailed": "Export failed. Please try again.",
     "personCount_one": "{{count}} person",
     "personCount_other": "{{count}} people"
+  },
+  "surveyDashboard": {
+    "loading": "Loading dashboard...",
+    "title": "Survey Dashboard",
+    "subtitle": "Overview of employee surveys, engagement, and eNPS.",
+    "createSurvey": "Create Survey"
   }
 }

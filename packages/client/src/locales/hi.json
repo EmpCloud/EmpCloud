@@ -2070,5 +2070,11 @@
     "exportFailed": "निर्यात विफल। कृपया पुनः प्रयास करें।",
     "personCount_one": "{{count}} व्यक्ति",
     "personCount_other": "{{count}} लोग"
+  },
+  "surveyDashboard": {
+    "loading": "डैशबोर्ड लोड हो रहा है...",
+    "title": "सर्वेक्षण डैशबोर्ड",
+    "subtitle": "कर्मचारी सर्वेक्षण, सहभागिता और eNPS का अवलोकन।",
+    "createSurvey": "सर्वेक्षण बनाएं"
   }
 }

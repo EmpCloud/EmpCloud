@@ -2070,5 +2070,11 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "surveyDashboard": {
+    "loading": "正在加载仪表板...",
+    "title": "调查仪表板",
+    "subtitle": "员工调查、敬业度和 eNPS 概览。",
+    "createSurvey": "创建调查"
   }
 }

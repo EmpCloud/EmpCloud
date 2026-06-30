@@ -2070,5 +2070,11 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "surveyDashboard": {
+    "loading": "Chargement du tableau de bord...",
+    "title": "Tableau de bord des enquêtes",
+    "subtitle": "Aperçu des enquêtes auprès des employés, de l'engagement et de l'eNPS.",
+    "createSurvey": "Créer une enquête"
   }
 }

@@ -2070,5 +2070,11 @@
     "exportFailed": "فشل التصدير. يرجى المحاولة مرة أخرى.",
     "personCount_one": "{{count}} شخص",
     "personCount_other": "{{count}} أشخاص"
+  },
+  "surveyDashboard": {
+    "loading": "جارٍ تحميل لوحة التحكم...",
+    "title": "لوحة تحكم الاستطلاعات",
+    "subtitle": "نظرة عامة على استطلاعات الموظفين والمشاركة وeNPS.",
+    "createSurvey": "إنشاء استطلاع"
   }
 }

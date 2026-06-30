@@ -2070,5 +2070,11 @@
     "exportFailed": "Falha na exportação. Tente novamente.",
     "personCount_one": "{{count}} pessoa",
     "personCount_other": "{{count}} pessoas"
+  },
+  "surveyDashboard": {
+    "loading": "Carregando painel...",
+    "title": "Painel de Pesquisas",
+    "subtitle": "Visão geral das pesquisas, engajamento e eNPS dos funcionários.",
+    "createSurvey": "Criar Pesquisa"
   }
 }
