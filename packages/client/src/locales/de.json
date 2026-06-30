@@ -2086,6 +2086,12 @@
     "unaccounted_other": "{{count}} Assets mit einem unbekannten Status — die Summen stimmen nicht überein. Öffnen Sie die Asset-Liste, um die Zeilen zu sehen.",
     "viewAll": "Alle anzeigen",
     "warrantiesExpiring": "Bald ablaufende Garantien ({{count}})",
-    "expires": "Läuft ab am {{date}}"
+    "expires": "Läuft ab am {{date}}",
+    "byCategory": "Nach Kategorie",
+    "noAssets": "Noch keine Assets",
+    "topAssignees": "Top-Zugewiesene",
+    "assetsCount_one": "{{count}} Asset",
+    "assetsCount_other": "{{count}} Assets",
+    "noAssignments": "Noch keine Zuweisungen"
   }
 }

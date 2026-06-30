@@ -2086,6 +2086,12 @@
     "unaccounted_other": "{{count}} 项资产的状态无法识别 — 总数无法对账。请打开资产列表查看这些行。",
     "viewAll": "查看全部",
     "warrantiesExpiring": "即将到期的保修（{{count}}）",
-    "expires": "到期 {{date}}"
+    "expires": "到期 {{date}}",
+    "byCategory": "按类别",
+    "noAssets": "暂无资产",
+    "topAssignees": "主要领用人",
+    "assetsCount_one": "{{count}} 项资产",
+    "assetsCount_other": "{{count}} 项资产",
+    "noAssignments": "暂无分配"
   }
 }

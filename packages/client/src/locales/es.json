@@ -2086,6 +2086,12 @@
     "unaccounted_other": "{{count}} activos con un estado no reconocido — los totales no cuadran. Abre la lista de activos para ver las filas.",
     "viewAll": "Ver todo",
     "warrantiesExpiring": "Garantías por Vencer Pronto ({{count}})",
-    "expires": "Vence el {{date}}"
+    "expires": "Vence el {{date}}",
+    "byCategory": "Por Categoría",
+    "noAssets": "Aún no hay activos",
+    "topAssignees": "Principales Asignados",
+    "assetsCount_one": "{{count}} activo",
+    "assetsCount_other": "{{count}} activos",
+    "noAssignments": "Aún no hay asignaciones"
   }
 }

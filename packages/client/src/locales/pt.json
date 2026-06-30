@@ -2086,6 +2086,12 @@
     "unaccounted_other": "{{count}} ativos com status não reconhecido — os totais não batem. Abra a lista de ativos para ver as linhas.",
     "viewAll": "Ver tudo",
     "warrantiesExpiring": "Garantias Expirando em Breve ({{count}})",
-    "expires": "Expira em {{date}}"
+    "expires": "Expira em {{date}}",
+    "byCategory": "Por Categoria",
+    "noAssets": "Nenhum ativo ainda",
+    "topAssignees": "Principais Responsáveis",
+    "assetsCount_one": "{{count}} ativo",
+    "assetsCount_other": "{{count}} ativos",
+    "noAssignments": "Nenhuma atribuição ainda"
   }
 }

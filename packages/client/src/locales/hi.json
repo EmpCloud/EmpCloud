@@ -2086,6 +2086,12 @@
     "unaccounted_other": "{{count}} संपत्तियों की स्थिति अपरिचित है — कुल मेल नहीं खाते। पंक्तियां देखने के लिए संपत्ति सूची खोलें।",
     "viewAll": "सभी देखें",
     "warrantiesExpiring": "जल्द समाप्त होने वाली वारंटी ({{count}})",
-    "expires": "समाप्ति {{date}}"
+    "expires": "समाप्ति {{date}}",
+    "byCategory": "श्रेणी के अनुसार",
+    "noAssets": "अभी तक कोई संपत्ति नहीं",
+    "topAssignees": "शीर्ष आवंटिती",
+    "assetsCount_one": "{{count}} संपत्ति",
+    "assetsCount_other": "{{count}} संपत्तियां",
+    "noAssignments": "अभी तक कोई आवंटन नहीं"
   }
 }

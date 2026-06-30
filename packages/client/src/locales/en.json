@@ -2091,6 +2091,12 @@
     "unaccounted_other": "{{count}} assets with an unrecognised status — totals don't reconcile. Open the asset list to see the rows.",
     "viewAll": "View all",
     "warrantiesExpiring": "Warranties Expiring Soon ({{count}})",
-    "expires": "Expires {{date}}"
+    "expires": "Expires {{date}}",
+    "byCategory": "By Category",
+    "noAssets": "No assets yet",
+    "topAssignees": "Top Assignees",
+    "assetsCount_one": "{{count}} asset",
+    "assetsCount_other": "{{count}} assets",
+    "noAssignments": "No assignments yet"
   }
 }

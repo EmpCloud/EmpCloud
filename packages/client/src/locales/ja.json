@@ -2086,6 +2086,12 @@
     "unaccounted_other": "認識されないステータスの資産が{{count}}件あります — 合計が一致しません。資産リストを開いて行を確認してください。",
     "viewAll": "すべて表示",
     "warrantiesExpiring": "まもなく期限切れの保証（{{count}}）",
-    "expires": "期限: {{date}}"
+    "expires": "期限: {{date}}",
+    "byCategory": "カテゴリ別",
+    "noAssets": "まだ資産がありません",
+    "topAssignees": "上位の割り当て先",
+    "assetsCount_one": "{{count}} 件の資産",
+    "assetsCount_other": "{{count}} 件の資産",
+    "noAssignments": "まだ割り当てがありません"
   }
 }

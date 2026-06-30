@@ -169,7 +169,7 @@ export default function AssetDashboardPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">By Category</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("assetDashboard.byCategory")}</h2>
           </div>
           {stats.category_breakdown && stats.category_breakdown.length > 0 ? (
             <div className="space-y-3">
@@ -192,7 +192,7 @@ export default function AssetDashboardPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No assets yet</p>
+            <p className="text-sm text-gray-400">{t("assetDashboard.noAssets")}</p>
           )}
         </div>
 
@@ -200,7 +200,7 @@ export default function AssetDashboardPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <UserCheck className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Top Assignees</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("assetDashboard.topAssignees")}</h2>
           </div>
           {stats.top_assignees && stats.top_assignees.length > 0 ? (
             <div className="space-y-3">
@@ -216,12 +216,12 @@ export default function AssetDashboardPage() {
                     </div>
                     <span className="text-sm text-gray-700">{assignee.name}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">{assignee.count} assets</span>
+                  <span className="text-sm font-medium text-gray-900">{t("assetDashboard.assetsCount", { count: assignee.count })}</span>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No assignments yet</p>
+            <p className="text-sm text-gray-400">{t("assetDashboard.noAssignments")}</p>
           )}
         </div>
       </div>
