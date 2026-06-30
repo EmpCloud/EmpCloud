@@ -2070,5 +2070,20 @@
     "exportFailed": "فشل التصدير. يرجى المحاولة مرة أخرى.",
     "personCount_one": "{{count}} شخص",
     "personCount_other": "{{count}} أشخاص"
+  },
+  "kb": {
+    "title": "قاعدة المعرفة",
+    "subtitle": "اعثر على إجابات للأسئلة الشائعة وسياسات الموارد البشرية.",
+    "newArticle": "مقال جديد",
+    "category": {
+      "leave": "الإجازات",
+      "payroll": "الرواتب",
+      "benefits": "المزايا",
+      "it": "تقنية المعلومات",
+      "facilities": "المرافق",
+      "onboarding": "الإعداد",
+      "policy": "السياسة",
+      "general": "عام"
+    }
   }
 }

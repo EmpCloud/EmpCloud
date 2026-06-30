@@ -2070,5 +2070,20 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "kb": {
+    "title": "知识库",
+    "subtitle": "查找常见问题和人力资源政策的答案。",
+    "newArticle": "新建文章",
+    "category": {
+      "leave": "休假",
+      "payroll": "薪资",
+      "benefits": "福利",
+      "it": "IT",
+      "facilities": "设施",
+      "onboarding": "入职",
+      "policy": "政策",
+      "general": "常规"
+    }
   }
 }

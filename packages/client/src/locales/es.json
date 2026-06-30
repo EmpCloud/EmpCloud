@@ -2070,5 +2070,20 @@
     "exportFailed": "La exportación falló. Inténtalo de nuevo.",
     "personCount_one": "{{count}} persona",
     "personCount_other": "{{count}} personas"
+  },
+  "kb": {
+    "title": "Base de Conocimiento",
+    "subtitle": "Encuentra respuestas a preguntas frecuentes y políticas de RR. HH.",
+    "newArticle": "Nuevo Artículo",
+    "category": {
+      "leave": "Permisos",
+      "payroll": "Nómina",
+      "benefits": "Beneficios",
+      "it": "TI",
+      "facilities": "Instalaciones",
+      "onboarding": "Incorporación",
+      "policy": "Política",
+      "general": "General"
+    }
   }
 }

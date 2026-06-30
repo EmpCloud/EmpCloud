@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -25,14 +26,19 @@ const CATEGORIES = [
   "leave", "payroll", "benefits", "it", "facilities", "onboarding", "policy", "general",
 ];
 
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
 // Display labels override the default Tailwind `capitalize` rendering for
 // values that aren't title-cased — "it" → "IT" because it's an acronym
-// (#1646).
+// (#1646). Translations live under kb.category.*; the English capitalised
+// value (or "IT") is the defaultValue so an unknown category still renders.
 const CATEGORY_LABELS: Record<string, string> = {
   it: "IT",
 };
-function categoryLabel(c: string): string {
-  return CATEGORY_LABELS[c] ?? c.charAt(0).toUpperCase() + c.slice(1);
+function categoryLabel(c: string, t: TFn): string {
+  return t(`kb.category.${c}`, {
+    defaultValue: CATEGORY_LABELS[c] ?? c.charAt(0).toUpperCase() + c.slice(1),
+  });
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -47,6 +53,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function KnowledgeBasePage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
   const queryClient = useQueryClient();
@@ -235,7 +242,7 @@ export default function KnowledgeBasePage() {
                 CATEGORY_COLORS[selectedArticle.category] || "bg-gray-100 text-gray-600"
               }`}
             >
-              {categoryLabel(selectedArticle.category)}
+              {categoryLabel(selectedArticle.category, t)}
             </span>
             {Boolean(selectedArticle.is_featured) && (
               <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded">
@@ -321,9 +328,9 @@ export default function KnowledgeBasePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Knowledge Base</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("kb.title")}</h1>
           <p className="text-gray-500 mt-1">
-            Find answers to common questions and HR policies.
+            {t("kb.subtitle")}
           </p>
         </div>
         {isHR && (
@@ -339,7 +346,7 @@ export default function KnowledgeBasePage() {
             }}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> New Article
+            <Plus className="h-4 w-4" /> {t("kb.newArticle")}
           </button>
         )}
       </div>
@@ -385,7 +392,7 @@ export default function KnowledgeBasePage() {
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
-                      {categoryLabel(c)}
+                      {categoryLabel(c, t)}
                     </option>
                   ))}
                 </select>
@@ -509,7 +516,7 @@ export default function KnowledgeBasePage() {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              {categoryLabel(c)}
+              {categoryLabel(c, t)}
             </button>
           ))}
         </div>
@@ -581,7 +588,7 @@ export default function KnowledgeBasePage() {
                     CATEGORY_COLORS[a.category] || "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {categoryLabel(a.category)}
+                  {categoryLabel(a.category, t)}
                 </span>
                 {Boolean(a.is_featured) && (
                   <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />

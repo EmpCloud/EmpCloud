@@ -2070,5 +2070,20 @@
     "exportFailed": "Falha na exportação. Tente novamente.",
     "personCount_one": "{{count}} pessoa",
     "personCount_other": "{{count}} pessoas"
+  },
+  "kb": {
+    "title": "Base de Conhecimento",
+    "subtitle": "Encontre respostas para perguntas comuns e políticas de RH.",
+    "newArticle": "Novo Artigo",
+    "category": {
+      "leave": "Licenças",
+      "payroll": "Folha de Pagamento",
+      "benefits": "Benefícios",
+      "it": "TI",
+      "facilities": "Instalações",
+      "onboarding": "Integração",
+      "policy": "Política",
+      "general": "Geral"
+    }
   }
 }

@@ -2075,5 +2075,20 @@
     "exportFailed": "Export failed. Please try again.",
     "personCount_one": "{{count}} person",
     "personCount_other": "{{count}} people"
+  },
+  "kb": {
+    "title": "Knowledge Base",
+    "subtitle": "Find answers to common questions and HR policies.",
+    "newArticle": "New Article",
+    "category": {
+      "leave": "Leave",
+      "payroll": "Payroll",
+      "benefits": "Benefits",
+      "it": "IT",
+      "facilities": "Facilities",
+      "onboarding": "Onboarding",
+      "policy": "Policy",
+      "general": "General"
+    }
   }
 }

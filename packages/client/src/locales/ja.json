@@ -2070,5 +2070,20 @@
     "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
     "personCount_one": "{{count}}人",
     "personCount_other": "{{count}}人"
+  },
+  "kb": {
+    "title": "ナレッジベース",
+    "subtitle": "よくある質問や人事ポリシーの答えを見つけましょう。",
+    "newArticle": "新規記事",
+    "category": {
+      "leave": "休暇",
+      "payroll": "給与",
+      "benefits": "福利厚生",
+      "it": "IT",
+      "facilities": "施設",
+      "onboarding": "オンボーディング",
+      "policy": "ポリシー",
+      "general": "一般"
+    }
   }
 }

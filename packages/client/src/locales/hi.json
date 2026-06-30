@@ -2070,5 +2070,20 @@
     "exportFailed": "निर्यात विफल। कृपया पुनः प्रयास करें।",
     "personCount_one": "{{count}} व्यक्ति",
     "personCount_other": "{{count}} लोग"
+  },
+  "kb": {
+    "title": "ज्ञान आधार",
+    "subtitle": "सामान्य प्रश्नों और मानव संसाधन नीतियों के उत्तर खोजें।",
+    "newArticle": "नया लेख",
+    "category": {
+      "leave": "अवकाश",
+      "payroll": "वेतन",
+      "benefits": "लाभ",
+      "it": "आईटी",
+      "facilities": "सुविधाएं",
+      "onboarding": "ऑनबोर्डिंग",
+      "policy": "नीति",
+      "general": "सामान्य"
+    }
   }
 }

@@ -2070,5 +2070,20 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "kb": {
+    "title": "Base de connaissances",
+    "subtitle": "Trouvez des réponses aux questions courantes et aux politiques RH.",
+    "newArticle": "Nouvel article",
+    "category": {
+      "leave": "Congés",
+      "payroll": "Paie",
+      "benefits": "Avantages",
+      "it": "Informatique",
+      "facilities": "Installations",
+      "onboarding": "Intégration",
+      "policy": "Politique",
+      "general": "Général"
+    }
   }
 }

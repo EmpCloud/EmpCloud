@@ -2070,5 +2070,20 @@
     "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
     "personCount_one": "{{count}} Person",
     "personCount_other": "{{count}} Personen"
+  },
+  "kb": {
+    "title": "Wissensdatenbank",
+    "subtitle": "Finden Sie Antworten auf häufige Fragen und HR-Richtlinien.",
+    "newArticle": "Neuer Artikel",
+    "category": {
+      "leave": "Urlaub",
+      "payroll": "Lohnabrechnung",
+      "benefits": "Leistungen",
+      "it": "IT",
+      "facilities": "Einrichtungen",
+      "onboarding": "Onboarding",
+      "policy": "Richtlinie",
+      "general": "Allgemein"
+    }
   }
 }
