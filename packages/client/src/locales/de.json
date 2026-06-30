@@ -2555,6 +2555,15 @@
       "city": "Stadt",
       "timezone": "Zeitzone",
       "language": "Sprache"
-    }
+    },
+    "errEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein (z. B. user@example.com).",
+    "errCity": "Die Stadt darf nur Buchstaben, Leerzeichen und Bindestriche enthalten.",
+    "errState": "Das Bundesland darf nur Buchstaben, Leerzeichen und Bindestriche enthalten.",
+    "editCompanyInfo": "Unternehmensinformationen bearbeiten",
+    "selectTimezone": "Zeitzone auswählen",
+    "selectCountry": "Land auswählen",
+    "cancel": "Abbrechen",
+    "saveChanges": "Änderungen speichern",
+    "updateError": "Aktualisierung fehlgeschlagen. Bitte erneut versuchen."
   }
 }

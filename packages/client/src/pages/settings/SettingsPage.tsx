@@ -136,6 +136,7 @@ export default function SettingsPage() {
 // ---------------------------------------------------------------------------
 
 function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [form, setForm] = useState({
     name: org?.name || "",
@@ -164,13 +165,13 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
     e.preventDefault();
     const errors: Record<string, string> = {};
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = "Please enter a valid email address (e.g., user@example.com).";
+      errors.email = t("orgSettings.errEmail");
     }
     if (form.city && !NAME_ONLY_RE.test(form.city)) {
-      errors.city = "City must only contain letters, spaces, and hyphens.";
+      errors.city = t("orgSettings.errCity");
     }
     if (form.state && !NAME_ONLY_RE.test(form.state)) {
-      errors.state = "State must only contain letters, spaces, and hyphens.";
+      errors.state = t("orgSettings.errState");
     }
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -181,15 +182,15 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
   };
 
   const fields: [string, keyof typeof form][] = [
-    ["Name", "name"],
-    ["Legal Name", "legal_name"],
-    ["Email", "email"],
-    ["Phone", "contact_number"],
-    ["Country", "country"],
-    ["State", "state"],
-    ["City", "city"],
-    ["Timezone", "timezone"],
-    ["Language", "language"],
+    ["name", "name"],
+    ["legalName", "legal_name"],
+    ["email", "email"],
+    ["phone", "contact_number"],
+    ["country", "country"],
+    ["state", "state"],
+    ["city", "city"],
+    ["timezone", "timezone"],
+    ["language", "language"],
   ];
 
   return (
@@ -197,7 +198,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Building2 className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">Edit Company Information</h2>
+          <h2 className="font-semibold text-gray-900">{t("orgSettings.editCompanyInfo")}</h2>
         </div>
         <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
           <X className="h-5 w-5" />
@@ -206,14 +207,14 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {fields.map(([label, key]) => (
           <div key={key}>
-            <label className="block text-xs text-gray-500 mb-1">{label}</label>
+            <label className="block text-xs text-gray-500 mb-1">{t(`orgSettings.field.${label}`)}</label>
             {key === "timezone" ? (
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
               >
-                <option value="">Select timezone</option>
+                <option value="">{t("orgSettings.selectTimezone")}</option>
                 {TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>{tz}</option>
                 ))}
@@ -224,7 +225,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
               >
-                <option value="">Select country</option>
+                <option value="">{t("orgSettings.selectCountry")}</option>
                 {COUNTRIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -256,18 +257,18 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
           onClick={onClose}
           className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
         >
-          Cancel
+          {t("orgSettings.cancel")}
         </button>
         <button
           type="submit"
           disabled={updateOrg.isPending}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
-          <Save className="h-4 w-4" /> Save Changes
+          <Save className="h-4 w-4" /> {t("orgSettings.saveChanges")}
         </button>
       </div>
       {updateOrg.isError && (
-        <p className="mt-3 text-sm text-red-600">Failed to update. Please try again.</p>
+        <p className="mt-3 text-sm text-red-600">{t("orgSettings.updateError")}</p>
       )}
     </form>
   );

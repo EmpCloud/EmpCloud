@@ -2555,6 +2555,15 @@
       "city": "市区町村",
       "timezone": "タイムゾーン",
       "language": "言語"
-    }
+    },
+    "errEmail": "有効なメールアドレスを入力してください（例: user@example.com）。",
+    "errCity": "市区町村には文字、スペース、ハイフンのみを使用できます。",
+    "errState": "州には文字、スペース、ハイフンのみを使用できます。",
+    "editCompanyInfo": "会社情報を編集",
+    "selectTimezone": "タイムゾーンを選択",
+    "selectCountry": "国を選択",
+    "cancel": "キャンセル",
+    "saveChanges": "変更を保存",
+    "updateError": "更新に失敗しました。もう一度お試しください。"
   }
 }

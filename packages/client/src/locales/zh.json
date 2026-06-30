@@ -2555,6 +2555,15 @@
       "city": "城市",
       "timezone": "时区",
       "language": "语言"
-    }
+    },
+    "errEmail": "请输入有效的电子邮件地址（例如 user@example.com）。",
+    "errCity": "城市只能包含字母、空格和连字符。",
+    "errState": "省/州只能包含字母、空格和连字符。",
+    "editCompanyInfo": "编辑公司信息",
+    "selectTimezone": "选择时区",
+    "selectCountry": "选择国家",
+    "cancel": "取消",
+    "saveChanges": "保存更改",
+    "updateError": "更新失败。请重试。"
   }
 }

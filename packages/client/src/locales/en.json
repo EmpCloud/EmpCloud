@@ -2561,6 +2561,15 @@
       "city": "City",
       "timezone": "Timezone",
       "language": "Language"
-    }
+    },
+    "errEmail": "Please enter a valid email address (e.g., user@example.com).",
+    "errCity": "City must only contain letters, spaces, and hyphens.",
+    "errState": "State must only contain letters, spaces, and hyphens.",
+    "editCompanyInfo": "Edit Company Information",
+    "selectTimezone": "Select timezone",
+    "selectCountry": "Select country",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "updateError": "Failed to update. Please try again."
   }
 }

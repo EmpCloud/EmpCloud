@@ -2555,6 +2555,15 @@
       "city": "Cidade",
       "timezone": "Fuso Horário",
       "language": "Idioma"
-    }
+    },
+    "errEmail": "Insira um endereço de e-mail válido (ex.: user@example.com).",
+    "errCity": "A cidade deve conter apenas letras, espaços e hifens.",
+    "errState": "O estado deve conter apenas letras, espaços e hifens.",
+    "editCompanyInfo": "Editar Informações da Empresa",
+    "selectTimezone": "Selecionar fuso horário",
+    "selectCountry": "Selecionar país",
+    "cancel": "Cancelar",
+    "saveChanges": "Salvar Alterações",
+    "updateError": "Falha ao atualizar. Tente novamente."
   }
 }

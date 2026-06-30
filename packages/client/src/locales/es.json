@@ -2555,6 +2555,15 @@
       "city": "Ciudad",
       "timezone": "Zona Horaria",
       "language": "Idioma"
-    }
+    },
+    "errEmail": "Introduce una dirección de correo válida (p. ej., user@example.com).",
+    "errCity": "La ciudad solo puede contener letras, espacios y guiones.",
+    "errState": "El estado solo puede contener letras, espacios y guiones.",
+    "editCompanyInfo": "Editar Información de la Empresa",
+    "selectTimezone": "Seleccionar zona horaria",
+    "selectCountry": "Seleccionar país",
+    "cancel": "Cancelar",
+    "saveChanges": "Guardar Cambios",
+    "updateError": "No se pudo actualizar. Inténtalo de nuevo."
   }
 }
