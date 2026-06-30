@@ -2087,6 +2087,15 @@
       "custom": "कस्टम",
       "onboarding": "ऑनबोर्डिंग",
       "exit_survey": "एग्ज़िट सर्वे"
-    }
+    },
+    "completed": "पूर्ण",
+    "completedBadge": "पूर्ण",
+    "responseHistory": "प्रतिक्रिया इतिहास",
+    "colSurvey": "सर्वेक्षण",
+    "colType": "प्रकार",
+    "colSubmitted": "सबमिट किया गया",
+    "colAnonymous": "गुमनाम",
+    "yes": "हां",
+    "no": "नहीं"
   }
 }

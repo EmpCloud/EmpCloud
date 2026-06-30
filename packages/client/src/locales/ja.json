@@ -2087,6 +2087,15 @@
       "custom": "カスタム",
       "onboarding": "オンボーディング",
       "exit_survey": "退職アンケート"
-    }
+    },
+    "completed": "完了",
+    "completedBadge": "完了",
+    "responseHistory": "回答履歴",
+    "colSurvey": "アンケート",
+    "colType": "種類",
+    "colSubmitted": "送信日",
+    "colAnonymous": "匿名",
+    "yes": "はい",
+    "no": "いいえ"
   }
 }

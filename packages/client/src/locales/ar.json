@@ -2087,6 +2087,15 @@
       "custom": "مخصص",
       "onboarding": "الإعداد",
       "exit_survey": "استطلاع المغادرة"
-    }
+    },
+    "completed": "المكتملة",
+    "completedBadge": "مكتمل",
+    "responseHistory": "سجل الردود",
+    "colSurvey": "الاستطلاع",
+    "colType": "النوع",
+    "colSubmitted": "تاريخ الإرسال",
+    "colAnonymous": "مجهول",
+    "yes": "نعم",
+    "no": "لا"
   }
 }

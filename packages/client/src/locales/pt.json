@@ -2087,6 +2087,15 @@
       "custom": "Personalizada",
       "onboarding": "Integração",
       "exit_survey": "Pesquisa de Desligamento"
-    }
+    },
+    "completed": "Concluídas",
+    "completedBadge": "Concluída",
+    "responseHistory": "Histórico de Respostas",
+    "colSurvey": "Pesquisa",
+    "colType": "Tipo",
+    "colSubmitted": "Enviada em",
+    "colAnonymous": "Anônima",
+    "yes": "Sim",
+    "no": "Não"
   }
 }

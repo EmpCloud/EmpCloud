@@ -2092,6 +2092,15 @@
       "custom": "Custom",
       "onboarding": "Onboarding",
       "exit_survey": "Exit Survey"
-    }
+    },
+    "completed": "Completed",
+    "completedBadge": "Completed",
+    "responseHistory": "Response History",
+    "colSurvey": "Survey",
+    "colType": "Type",
+    "colSubmitted": "Submitted",
+    "colAnonymous": "Anonymous",
+    "yes": "Yes",
+    "no": "No"
   }
 }

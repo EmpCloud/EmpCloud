@@ -129,17 +129,17 @@ export default function SurveyRespondPage() {
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            Completed
+            {t("surveyRespond.completed")}
           </h2>
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             {completedSurveys.map((s: any) => (
               <div key={s.id} className="flex items-center justify-between px-6 py-4 border-b border-gray-50 last:border-0">
                 <div>
                   <p className="font-medium text-gray-700">{s.title}</p>
-                  <p className="text-xs text-gray-400">{s.type}</p>
+                  <p className="text-xs text-gray-400">{surveyTypeLabel(s.type, t)}</p>
                 </div>
                 <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
-                  <CheckCircle className="h-3.5 w-3.5" /> Completed
+                  <CheckCircle className="h-3.5 w-3.5" /> {t("surveyRespond.completedBadge")}
                 </span>
               </div>
             ))}
@@ -150,27 +150,27 @@ export default function SurveyRespondPage() {
       {/* My Past Responses */}
       {myResponses && myResponses.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Response History</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("surveyRespond.responseHistory")}</h2>
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Survey</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Submitted</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Anonymous</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colSurvey")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colType")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colSubmitted")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colAnonymous")}</th>
                 </tr>
               </thead>
               <tbody>
                 {myResponses.map((r: any) => (
                   <tr key={r.response_id} className="border-b border-gray-50">
                     <td className="px-6 py-3 text-gray-700">{r.title}</td>
-                    <td className="px-6 py-3 text-gray-500 capitalize">{r.type}</td>
+                    <td className="px-6 py-3 text-gray-500">{surveyTypeLabel(r.type, t)}</td>
                     <td className="px-6 py-3 text-gray-400">
                       {new Date(r.submitted_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-3 text-gray-500">
-                      {r.is_anonymous ? "Yes" : "No"}
+                      {r.is_anonymous ? t("surveyRespond.yes") : t("surveyRespond.no")}
                     </td>
                   </tr>
                 ))}

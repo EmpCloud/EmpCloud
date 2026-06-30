@@ -2087,6 +2087,15 @@
       "custom": "自定义",
       "onboarding": "入职",
       "exit_survey": "离职调查"
-    }
+    },
+    "completed": "已完成",
+    "completedBadge": "已完成",
+    "responseHistory": "回复历史",
+    "colSurvey": "调查",
+    "colType": "类型",
+    "colSubmitted": "提交时间",
+    "colAnonymous": "匿名",
+    "yes": "是",
+    "no": "否"
   }
 }

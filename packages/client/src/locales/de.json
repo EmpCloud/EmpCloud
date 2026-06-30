@@ -2087,6 +2087,15 @@
       "custom": "Benutzerdefiniert",
       "onboarding": "Onboarding",
       "exit_survey": "Austrittsumfrage"
-    }
+    },
+    "completed": "Abgeschlossen",
+    "completedBadge": "Abgeschlossen",
+    "responseHistory": "Antwortverlauf",
+    "colSurvey": "Umfrage",
+    "colType": "Typ",
+    "colSubmitted": "Eingereicht",
+    "colAnonymous": "Anonym",
+    "yes": "Ja",
+    "no": "Nein"
   }
 }

@@ -2087,6 +2087,15 @@
       "custom": "Personnalisée",
       "onboarding": "Intégration",
       "exit_survey": "Enquête de départ"
-    }
+    },
+    "completed": "Terminées",
+    "completedBadge": "Terminée",
+    "responseHistory": "Historique des réponses",
+    "colSurvey": "Enquête",
+    "colType": "Type",
+    "colSubmitted": "Soumise le",
+    "colAnonymous": "Anonyme",
+    "yes": "Oui",
+    "no": "Non"
   }
 }
