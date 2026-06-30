@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText, X } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText, X, Search } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 import { showToast } from "@/components/ui/Toast";
@@ -12,6 +12,7 @@ export default function HeadcountPlanPage() {
     t(`positions.headcountPlans.${k}`, opts ?? {});
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
   // #1548 — Detail modal: plans are clickable and open this full-detail view
@@ -28,14 +29,15 @@ export default function HeadcountPlanPage() {
   const deptList = departments || [];
 
   const { data, isLoading } = useQuery({
-    queryKey: ["headcount-plans", { page, status: statusFilter }],
+    queryKey: ["headcount-plans", { page, status: statusFilter, search }],
     queryFn: () =>
       api
         .get("/positions/headcount-plans", {
           params: {
             page,
-            per_page: 20,
+            per_page: 10,
             ...(statusFilter ? { status: statusFilter } : {}),
+            ...(search ? { search } : {}),
           },
         })
         .then((r) => r.data),
@@ -290,7 +292,17 @@ export default function HeadcountPlanPage() {
       )}
 
       {/* Filters */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            placeholder={tx("searchPlaceholder") as string}
+          />
+        </div>
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
