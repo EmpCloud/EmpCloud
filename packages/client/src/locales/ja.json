@@ -2592,6 +2592,13 @@
     "deactivateNamed": "フィールド「{{name}}」を無効化しますか？",
     "deactivate": "フィールドを無効化しますか？",
     "deactivateDesc": "既存の値は保持されます。",
-    "deactivateBtn": "無効化"
+    "deactivateBtn": "無効化",
+    "previewFieldName": "フィールド名",
+    "previewEnter": "{{name}} を入力",
+    "previewValue": "値",
+    "previewSelect": "{{name}} を選択...",
+    "previewOption": "選択肢",
+    "noOptionsDefined": "選択肢が定義されていません",
+    "previewCheckbox": "チェックボックス"
   }
 }

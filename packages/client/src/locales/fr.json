@@ -2592,6 +2592,13 @@
     "deactivateNamed": "Désactiver le champ « {{name}} » ?",
     "deactivate": "Désactiver le champ ?",
     "deactivateDesc": "Les valeurs existantes seront conservées.",
-    "deactivateBtn": "Désactiver"
+    "deactivateBtn": "Désactiver",
+    "previewFieldName": "Nom du champ",
+    "previewEnter": "Saisir {{name}}",
+    "previewValue": "une valeur",
+    "previewSelect": "Sélectionner {{name}}...",
+    "previewOption": "une option",
+    "noOptionsDefined": "Aucune option définie",
+    "previewCheckbox": "Case à cocher"
   }
 }

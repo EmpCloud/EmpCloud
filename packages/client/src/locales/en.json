@@ -2598,6 +2598,13 @@
     "deactivateNamed": "Deactivate field \"{{name}}\"?",
     "deactivate": "Deactivate field?",
     "deactivateDesc": "Existing values will be preserved.",
-    "deactivateBtn": "Deactivate"
+    "deactivateBtn": "Deactivate",
+    "previewFieldName": "Field Name",
+    "previewEnter": "Enter {{name}}",
+    "previewValue": "value",
+    "previewSelect": "Select {{name}}...",
+    "previewOption": "option",
+    "noOptionsDefined": "No options defined",
+    "previewCheckbox": "Checkbox"
   }
 }

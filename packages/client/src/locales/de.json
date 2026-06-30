@@ -2592,6 +2592,13 @@
     "deactivateNamed": "Feld \"{{name}}\" deaktivieren?",
     "deactivate": "Feld deaktivieren?",
     "deactivateDesc": "Vorhandene Werte bleiben erhalten.",
-    "deactivateBtn": "Deaktivieren"
+    "deactivateBtn": "Deaktivieren",
+    "previewFieldName": "Feldname",
+    "previewEnter": "{{name}} eingeben",
+    "previewValue": "Wert",
+    "previewSelect": "{{name}} auswählen...",
+    "previewOption": "Option",
+    "noOptionsDefined": "Keine Optionen definiert",
+    "previewCheckbox": "Kontrollkästchen"
   }
 }

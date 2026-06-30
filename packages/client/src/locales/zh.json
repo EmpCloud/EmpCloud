@@ -2592,6 +2592,13 @@
     "deactivateNamed": "停用字段“{{name}}”？",
     "deactivate": "停用字段？",
     "deactivateDesc": "现有值将被保留。",
-    "deactivateBtn": "停用"
+    "deactivateBtn": "停用",
+    "previewFieldName": "字段名称",
+    "previewEnter": "输入{{name}}",
+    "previewValue": "值",
+    "previewSelect": "选择{{name}}...",
+    "previewOption": "选项",
+    "noOptionsDefined": "未定义选项",
+    "previewCheckbox": "复选框"
   }
 }

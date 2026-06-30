@@ -780,13 +780,15 @@ export default function CustomFieldsSettingsPage() {
 // ---------------------------------------------------------------------------
 
 function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
+  const { t } = useTranslation();
   const commonClass =
     "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white";
+  const fieldName = form.field_name || t("customFields.previewFieldName");
 
   return (
     <div className="max-w-md">
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        {form.field_name || "Field Name"}
+        {fieldName}
         {form.is_required && <span className="text-red-500 ml-1">*</span>}
       </label>
 
@@ -804,13 +806,13 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
               ? "url"
               : "text"
           }
-          placeholder={form.placeholder || `Enter ${form.field_name || "value"}`}
+          placeholder={form.placeholder || t("customFields.previewEnter", { name: form.field_name || t("customFields.previewValue") })}
           className={commonClass}
           disabled
         />
       ) : form.field_type === "textarea" ? (
         <textarea
-          placeholder={form.placeholder || `Enter ${form.field_name || "value"}`}
+          placeholder={form.placeholder || t("customFields.previewEnter", { name: form.field_name || t("customFields.previewValue") })}
           rows={3}
           className={commonClass}
           disabled
@@ -828,7 +830,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
         <input type="datetime-local" className={commonClass} disabled />
       ) : form.field_type === "dropdown" ? (
         <select className={commonClass} disabled>
-          <option>Select {form.field_name || "option"}...</option>
+          <option>{t("customFields.previewSelect", { name: form.field_name || t("customFields.previewOption") })}</option>
           {form.options.map((opt, i) => (
             <option key={i}>{opt}</option>
           ))}
@@ -845,7 +847,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
               </span>
             ))
           ) : (
-            <span className="text-sm text-gray-400">No options defined</span>
+            <span className="text-sm text-gray-400">{t("customFields.noOptionsDefined")}</span>
           )}
         </div>
       ) : form.field_type === "checkbox" ? (
@@ -855,7 +857,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
             className="rounded border-gray-300"
             disabled
           />
-          {form.field_name || "Checkbox"}
+          {form.field_name || t("customFields.previewCheckbox")}
         </label>
       ) : form.field_type === "file" ? (
         <input type="file" className={commonClass} disabled />

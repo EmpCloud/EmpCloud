@@ -2592,6 +2592,13 @@
     "deactivateNamed": "إلغاء تفعيل الحقل \"{{name}}\"؟",
     "deactivate": "إلغاء تفعيل الحقل؟",
     "deactivateDesc": "سيتم الاحتفاظ بالقيم الموجودة.",
-    "deactivateBtn": "إلغاء التفعيل"
+    "deactivateBtn": "إلغاء التفعيل",
+    "previewFieldName": "اسم الحقل",
+    "previewEnter": "أدخل {{name}}",
+    "previewValue": "قيمة",
+    "previewSelect": "اختر {{name}}...",
+    "previewOption": "خيار",
+    "noOptionsDefined": "لا توجد خيارات مُعرّفة",
+    "previewCheckbox": "مربع اختيار"
   }
 }

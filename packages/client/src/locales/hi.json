@@ -2592,6 +2592,13 @@
     "deactivateNamed": "फ़ील्ड \"{{name}}\" निष्क्रिय करें?",
     "deactivate": "फ़ील्ड निष्क्रिय करें?",
     "deactivateDesc": "मौजूदा मान सुरक्षित रहेंगे।",
-    "deactivateBtn": "निष्क्रिय करें"
+    "deactivateBtn": "निष्क्रिय करें",
+    "previewFieldName": "फ़ील्ड नाम",
+    "previewEnter": "{{name}} दर्ज करें",
+    "previewValue": "मान",
+    "previewSelect": "{{name}} चुनें...",
+    "previewOption": "विकल्प",
+    "noOptionsDefined": "कोई विकल्प परिभाषित नहीं",
+    "previewCheckbox": "चेकबॉक्स"
   }
 }

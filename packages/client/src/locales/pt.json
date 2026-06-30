@@ -2592,6 +2592,13 @@
     "deactivateNamed": "Desativar o campo \"{{name}}\"?",
     "deactivate": "Desativar campo?",
     "deactivateDesc": "Os valores existentes serão preservados.",
-    "deactivateBtn": "Desativar"
+    "deactivateBtn": "Desativar",
+    "previewFieldName": "Nome do Campo",
+    "previewEnter": "Insira {{name}}",
+    "previewValue": "valor",
+    "previewSelect": "Selecionar {{name}}...",
+    "previewOption": "opção",
+    "noOptionsDefined": "Nenhuma opção definida",
+    "previewCheckbox": "Caixa de Seleção"
   }
 }
