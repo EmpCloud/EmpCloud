@@ -187,6 +187,7 @@ router.get("/", authenticate, requirePermission("positions:view", "positions:man
       status: query.status,
       employment_type: query.employment_type,
       search: query.search,
+      is_critical: query.is_critical,
     });
     sendPaginated(res, result.positions, result.total, query.page, query.per_page);
   } catch (err) { next(err); }
