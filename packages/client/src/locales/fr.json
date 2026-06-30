@@ -2602,6 +2602,27 @@
     "bulletBothSystems": "<strong>Fonctionne dans les deux systèmes.</strong> Le même jeton s'authentifie auprès des API EmpCloud et des API du module Paie — aucune connexion ni échange de jeton distinct nécessaire.",
     "bulletPermissions": "<strong>Hérite de vos autorisations.</strong> Une clé ne peut faire que ce que l'administrateur qui l'a créée peut faire. Elle reflète toujours le rôle actuel de cet administrateur — changez le rôle et l'accès de la clé change aussi.",
     "bulletShownOnce": "<strong>Affichée une seule fois.</strong> La clé complète est affichée une seule fois à la création. Conservez-la en lieu sûr (un gestionnaire de secrets) — nous n'en gardons qu'une copie hachée et ne pouvons plus l'afficher.",
-    "bulletRevocable": "<strong>Révocable et expirable.</strong> Définissez une expiration facultative ou révoquez une clé à tout moment. Les clés révoquées ou expirées cessent de fonctionner immédiatement, partout. Traitez une clé comme un mot de passe — quiconque la possède peut agir avec vos autorisations."
+    "bulletRevocable": "<strong>Révocable et expirable.</strong> Définissez une expiration facultative ou révoquez une clé à tout moment. Les clés révoquées ou expirées cessent de fonctionner immédiatement, partout. Traitez une clé comme un mot de passe — quiconque la possède peut agir avec vos autorisations.",
+    "copyNow": "Copiez cette clé maintenant — elle ne sera plus affichée.",
+    "copied": "Copiée",
+    "copy": "Copier",
+    "dismiss": "Ignorer",
+    "useAsBearer": "Utilisez-la comme jeton Bearer dans l'en-tête Authorization :",
+    "keyName": "Nom de la clé",
+    "keyNamePlaceholder": "ex. Export des présences",
+    "expiresInDays": "Expire dans (jours)",
+    "never": "Jamais",
+    "generating": "Génération…",
+    "generateKey": "Générer la clé",
+    "cancel": "Annuler",
+    "loadingKeys": "Chargement des clés…",
+    "noKeys": "Aucune clé API pour l'instant.",
+    "colName": "Nom",
+    "colKey": "Clé",
+    "colStatus": "Statut",
+    "colLastUsed": "Dernière utilisation",
+    "colExpires": "Expire",
+    "colCreated": "Créée",
+    "revoke": "Révoquer"
   }
 }

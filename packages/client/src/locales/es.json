@@ -2602,6 +2602,27 @@
     "bulletBothSystems": "<strong>Funciona en ambos sistemas.</strong> El mismo token autentica en las API de EmpCloud y en las API del módulo de Nómina — sin inicio de sesión ni intercambio de token aparte.",
     "bulletPermissions": "<strong>Hereda tus permisos.</strong> Una clave solo puede hacer lo que puede hacer el administrador que la creó. Siempre refleja el rol actual de ese administrador — cambia el rol y el acceso de la clave cambia con él.",
     "bulletShownOnce": "<strong>Se muestra solo una vez.</strong> La clave completa se muestra una sola vez al crearla. Guárdala en un lugar seguro (un gestor de secretos) — solo conservamos una copia con hash y no podemos volver a mostrarla.",
-    "bulletRevocable": "<strong>Revocable y con caducidad.</strong> Establece una caducidad opcional o revoca una clave en cualquier momento. Las claves revocadas o caducadas dejan de funcionar de inmediato, en todas partes. Trata una clave como una contraseña — cualquiera que la tenga puede actuar con tus permisos."
+    "bulletRevocable": "<strong>Revocable y con caducidad.</strong> Establece una caducidad opcional o revoca una clave en cualquier momento. Las claves revocadas o caducadas dejan de funcionar de inmediato, en todas partes. Trata una clave como una contraseña — cualquiera que la tenga puede actuar con tus permisos.",
+    "copyNow": "Copia esta clave ahora — no se volverá a mostrar.",
+    "copied": "Copiada",
+    "copy": "Copiar",
+    "dismiss": "Descartar",
+    "useAsBearer": "Úsala como un token Bearer en el encabezado Authorization:",
+    "keyName": "Nombre de la clave",
+    "keyNamePlaceholder": "p. ej. Exportación de asistencia",
+    "expiresInDays": "Caduca en (días)",
+    "never": "Nunca",
+    "generating": "Generando…",
+    "generateKey": "Generar clave",
+    "cancel": "Cancelar",
+    "loadingKeys": "Cargando claves…",
+    "noKeys": "Aún no hay claves de API.",
+    "colName": "Nombre",
+    "colKey": "Clave",
+    "colStatus": "Estado",
+    "colLastUsed": "Último uso",
+    "colExpires": "Caduca",
+    "colCreated": "Creada",
+    "revoke": "Revocar"
   }
 }

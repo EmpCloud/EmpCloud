@@ -2608,6 +2608,27 @@
     "bulletBothSystems": "<strong>Works in both systems.</strong> The same token authenticates against EmpCloud APIs and the Payroll module APIs — no separate login or token exchange needed.",
     "bulletPermissions": "<strong>Inherits your permissions.</strong> A key can only do what the admin who created it can do. It always reflects that admin's current role — change the role and the key's access changes with it.",
     "bulletShownOnce": "<strong>Shown only once.</strong> The full key is displayed a single time at creation. Store it somewhere safe (a secrets manager) — we keep only a hashed copy and can't show it again.",
-    "bulletRevocable": "<strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a password — anyone who has it can act with your permissions."
+    "bulletRevocable": "<strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a password — anyone who has it can act with your permissions.",
+    "copyNow": "Copy this key now — it won't be shown again.",
+    "copied": "Copied",
+    "copy": "Copy",
+    "dismiss": "Dismiss",
+    "useAsBearer": "Use it as a Bearer token in the Authorization header:",
+    "keyName": "Key name",
+    "keyNamePlaceholder": "e.g. Attendance export",
+    "expiresInDays": "Expires in (days)",
+    "never": "Never",
+    "generating": "Generating…",
+    "generateKey": "Generate key",
+    "cancel": "Cancel",
+    "loadingKeys": "Loading keys…",
+    "noKeys": "No API keys yet.",
+    "colName": "Name",
+    "colKey": "Key",
+    "colStatus": "Status",
+    "colLastUsed": "Last used",
+    "colExpires": "Expires",
+    "colCreated": "Created",
+    "revoke": "Revoke"
   }
 }

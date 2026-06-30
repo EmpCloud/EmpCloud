@@ -2602,6 +2602,27 @@
     "bulletBothSystems": "<strong>Funciona em ambos os sistemas.</strong> O mesmo token autentica nas APIs do EmpCloud e nas APIs do módulo de Folha de Pagamento — sem login separado ou troca de token.",
     "bulletPermissions": "<strong>Herda suas permissões.</strong> Uma chave só pode fazer o que o administrador que a criou pode fazer. Ela sempre reflete a função atual desse administrador — altere a função e o acesso da chave muda junto.",
     "bulletShownOnce": "<strong>Exibida apenas uma vez.</strong> A chave completa é exibida uma única vez na criação. Guarde-a em local seguro (um gerenciador de segredos) — mantemos apenas uma cópia com hash e não podemos exibi-la novamente.",
-    "bulletRevocable": "<strong>Revogável e com expiração.</strong> Defina uma expiração opcional ou revogue uma chave a qualquer momento. Chaves revogadas ou expiradas param de funcionar imediatamente, em todos os lugares. Trate uma chave como uma senha — qualquer pessoa que a tenha pode agir com suas permissões."
+    "bulletRevocable": "<strong>Revogável e com expiração.</strong> Defina uma expiração opcional ou revogue uma chave a qualquer momento. Chaves revogadas ou expiradas param de funcionar imediatamente, em todos os lugares. Trate uma chave como uma senha — qualquer pessoa que a tenha pode agir com suas permissões.",
+    "copyNow": "Copie esta chave agora — ela não será exibida novamente.",
+    "copied": "Copiada",
+    "copy": "Copiar",
+    "dismiss": "Dispensar",
+    "useAsBearer": "Use-a como um token Bearer no cabeçalho Authorization:",
+    "keyName": "Nome da chave",
+    "keyNamePlaceholder": "ex.: Exportação de presença",
+    "expiresInDays": "Expira em (dias)",
+    "never": "Nunca",
+    "generating": "Gerando…",
+    "generateKey": "Gerar chave",
+    "cancel": "Cancelar",
+    "loadingKeys": "Carregando chaves…",
+    "noKeys": "Nenhuma chave de API ainda.",
+    "colName": "Nome",
+    "colKey": "Chave",
+    "colStatus": "Status",
+    "colLastUsed": "Último uso",
+    "colExpires": "Expira",
+    "colCreated": "Criada",
+    "revoke": "Revogar"
   }
 }

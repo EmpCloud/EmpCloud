@@ -170,7 +170,7 @@ export default function ApiKeysCard() {
           <div className="flex items-start gap-2 mb-2 text-amber-800">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
             <p className="text-sm font-medium">
-              Copy this key now — it won't be shown again.
+              {t("apiKeys.copyNow")}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -182,19 +182,19 @@ export default function ApiKeysCard() {
               className="flex items-center gap-1.5 rounded-md bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700"
             >
               {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              {copied ? "Copied" : "Copy"}
+              {copied ? t("apiKeys.copied") : t("apiKeys.copy")}
             </button>
             <button
               onClick={() => setNewKey(null)}
               className="rounded-md p-2 text-amber-700 hover:bg-amber-100"
-              aria-label="Dismiss"
+              aria-label={t("apiKeys.dismiss")}
             >
               <X className="h-4 w-4" />
             </button>
           </div>
           {/* Ready-to-use Bearer header so the user knows exactly how to send it */}
           <p className="mt-3 mb-1 text-xs font-medium text-amber-800">
-            Use it as a Bearer token in the Authorization header:
+            {t("apiKeys.useAsBearer")}
           </p>
           <code className="block break-all rounded bg-white border border-amber-200 px-3 py-2 text-[12px] text-gray-700">
             Authorization: Bearer {newKey}
@@ -207,21 +207,21 @@ export default function ApiKeysCard() {
         <form onSubmit={handleCreate} className="mb-4 rounded-lg border border-gray-200 p-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="block text-xs text-gray-500 mb-1">Key name</label>
+              <label className="block text-xs text-gray-500 mb-1">{t("apiKeys.keyName")}</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Attendance export"
+                placeholder={t("apiKeys.keyNamePlaceholder")}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
                 autoFocus
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Expires in (days)</label>
+              <label className="block text-xs text-gray-500 mb-1">{t("apiKeys.expiresInDays")}</label>
               <input
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="Never"
+                placeholder={t("apiKeys.never")}
                 inputMode="numeric"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
               />
@@ -233,7 +233,7 @@ export default function ApiKeysCard() {
               disabled={!name.trim() || createKey.isPending}
               className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
             >
-              {createKey.isPending ? "Generating…" : "Generate key"}
+              {createKey.isPending ? t("apiKeys.generating") : t("apiKeys.generateKey")}
             </button>
             <button
               type="button"
@@ -244,7 +244,7 @@ export default function ApiKeysCard() {
               }}
               className="rounded-md px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
             >
-              Cancel
+              {t("apiKeys.cancel")}
             </button>
           </div>
         </form>
@@ -252,20 +252,20 @@ export default function ApiKeysCard() {
 
       {/* Key list */}
       {isLoading ? (
-        <p className="text-sm text-gray-400">Loading keys…</p>
+        <p className="text-sm text-gray-400">{t("apiKeys.loadingKeys")}</p>
       ) : !keys || keys.length === 0 ? (
-        <p className="text-sm text-gray-400">No API keys yet.</p>
+        <p className="text-sm text-gray-400">{t("apiKeys.noKeys")}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-gray-500 border-b border-gray-200">
-                <th className="py-2 pr-4 font-medium">Name</th>
-                <th className="py-2 pr-4 font-medium">Key</th>
-                <th className="py-2 pr-4 font-medium">Status</th>
-                <th className="py-2 pr-4 font-medium">Last used</th>
-                <th className="py-2 pr-4 font-medium">Expires</th>
-                <th className="py-2 pr-4 font-medium">Created</th>
+                <th className="py-2 pr-4 font-medium">{t("apiKeys.colName")}</th>
+                <th className="py-2 pr-4 font-medium">{t("apiKeys.colKey")}</th>
+                <th className="py-2 pr-4 font-medium">{t("apiKeys.colStatus")}</th>
+                <th className="py-2 pr-4 font-medium">{t("apiKeys.colLastUsed")}</th>
+                <th className="py-2 pr-4 font-medium">{t("apiKeys.colExpires")}</th>
+                <th className="py-2 pr-4 font-medium">{t("apiKeys.colCreated")}</th>
                 <th className="py-2 font-medium"></th>
               </tr>
             </thead>
@@ -285,7 +285,7 @@ export default function ApiKeysCard() {
                     </td>
                     <td className="py-2.5 pr-4 text-gray-500">{fmtDate(k.last_used_at)}</td>
                     <td className="py-2.5 pr-4 text-gray-500">
-                      {k.expires_at ? fmtDate(k.expires_at) : "Never"}
+                      {k.expires_at ? fmtDate(k.expires_at) : t("apiKeys.never")}
                     </td>
                     <td className="py-2.5 pr-4 text-gray-500">{fmtDate(k.created_at)}</td>
                     <td className="py-2.5 text-right">
@@ -294,7 +294,7 @@ export default function ApiKeysCard() {
                           onClick={() => handleRevoke(k)}
                           className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
                         >
-                          <Trash2 className="h-3.5 w-3.5" /> Revoke
+                          <Trash2 className="h-3.5 w-3.5" /> {t("apiKeys.revoke")}
                         </button>
                       )}
                     </td>

@@ -2602,6 +2602,27 @@
     "bulletBothSystems": "<strong>両方のシステムで機能します。</strong> 同じトークンでEmpCloud APIとPayrollモジュールAPIの両方に認証できます — 別途のログインやトークン交換は不要です。",
     "bulletPermissions": "<strong>あなたの権限を継承します。</strong> キーは、作成した管理者ができることしかできません。常にその管理者の現在のロールを反映します — ロールを変更するとキーのアクセスも変わります。",
     "bulletShownOnce": "<strong>表示は一度だけ。</strong> 完全なキーは作成時に一度だけ表示されます。安全な場所（シークレットマネージャー）に保管してください — 当社はハッシュ化されたコピーのみを保持し、再表示できません。",
-    "bulletRevocable": "<strong>取り消し・有効期限の設定が可能。</strong> 任意の有効期限を設定するか、いつでもキーを取り消せます。取り消されたキーや期限切れのキーは、どこでも直ちに動作しなくなります。キーはパスワードと同じように扱ってください — 所持する誰もがあなたの権限で操作できます。"
+    "bulletRevocable": "<strong>取り消し・有効期限の設定が可能。</strong> 任意の有効期限を設定するか、いつでもキーを取り消せます。取り消されたキーや期限切れのキーは、どこでも直ちに動作しなくなります。キーはパスワードと同じように扱ってください — 所持する誰もがあなたの権限で操作できます。",
+    "copyNow": "このキーを今すぐコピーしてください — 再表示されません。",
+    "copied": "コピー済み",
+    "copy": "コピー",
+    "dismiss": "閉じる",
+    "useAsBearer": "Authorizationヘッダーで Bearer トークンとして使用してください:",
+    "keyName": "キー名",
+    "keyNamePlaceholder": "例: 勤怠エクスポート",
+    "expiresInDays": "有効期限（日数）",
+    "never": "なし",
+    "generating": "生成中…",
+    "generateKey": "キーを生成",
+    "cancel": "キャンセル",
+    "loadingKeys": "キーを読み込み中…",
+    "noKeys": "まだAPIキーがありません。",
+    "colName": "名前",
+    "colKey": "キー",
+    "colStatus": "ステータス",
+    "colLastUsed": "最終使用",
+    "colExpires": "有効期限",
+    "colCreated": "作成日",
+    "revoke": "取り消す"
   }
 }

@@ -2602,6 +2602,27 @@
     "bulletBothSystems": "<strong>在两个系统中均可使用。</strong> 同一个令牌可对 EmpCloud API 和薪资模块 API 进行身份验证 — 无需单独登录或交换令牌。",
     "bulletPermissions": "<strong>继承您的权限。</strong> 密钥只能执行创建它的管理员所能执行的操作。它始终反映该管理员的当前角色 — 更改角色，密钥的访问权限也随之改变。",
     "bulletShownOnce": "<strong>仅显示一次。</strong> 完整密钥仅在创建时显示一次。请将其妥善存储（密钥管理器）— 我们只保留经过哈希处理的副本，无法再次显示。",
-    "bulletRevocable": "<strong>可撤销且可设置有效期。</strong> 设置可选的有效期，或随时撤销密钥。已撤销或已过期的密钥会在各处立即停止工作。请像对待密码一样对待密钥 — 任何持有它的人都能以您的权限进行操作。"
+    "bulletRevocable": "<strong>可撤销且可设置有效期。</strong> 设置可选的有效期，或随时撤销密钥。已撤销或已过期的密钥会在各处立即停止工作。请像对待密码一样对待密钥 — 任何持有它的人都能以您的权限进行操作。",
+    "copyNow": "立即复制此密钥 — 它不会再次显示。",
+    "copied": "已复制",
+    "copy": "复制",
+    "dismiss": "关闭",
+    "useAsBearer": "在 Authorization 标头中将其用作 Bearer 令牌:",
+    "keyName": "密钥名称",
+    "keyNamePlaceholder": "例如 考勤导出",
+    "expiresInDays": "有效期（天）",
+    "never": "永不",
+    "generating": "正在生成…",
+    "generateKey": "生成密钥",
+    "cancel": "取消",
+    "loadingKeys": "正在加载密钥…",
+    "noKeys": "暂无 API 密钥。",
+    "colName": "名称",
+    "colKey": "密钥",
+    "colStatus": "状态",
+    "colLastUsed": "最近使用",
+    "colExpires": "到期",
+    "colCreated": "创建时间",
+    "revoke": "撤销"
   }
 }
