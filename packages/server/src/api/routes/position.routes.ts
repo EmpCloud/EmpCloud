@@ -184,6 +184,7 @@ router.get("/", authenticate, requirePermission("positions:view", "positions:man
       page: query.page,
       perPage: query.per_page,
       department_id: query.department_id,
+      location_id: query.location_id,
       status: query.status,
       employment_type: query.employment_type,
       search: query.search,

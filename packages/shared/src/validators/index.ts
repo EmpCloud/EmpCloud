@@ -1219,6 +1219,7 @@ export const assignPositionSchema = z.object({
 
 export const positionQuerySchema = paginationSchema.extend({
   department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
   status: positionStatusEnum.optional(),
   employment_type: positionEmploymentTypeEnum.optional(),
   search: z.string().optional(),
