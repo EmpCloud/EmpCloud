@@ -2573,6 +2573,16 @@
     "save": "Enregistrer",
     "addDeptError": "Échec de l'ajout du service.",
     "renameDeptError": "Échec du renommage du service.",
-    "deleteDeptError": "Échec de la suppression du service."
+    "deleteDeptError": "Échec de la suppression du service.",
+    "locations": "Lieux ({{count}})",
+    "timezoneRequired": "Le fuseau horaire est requis.",
+    "locationName": "Nom du lieu",
+    "selectTimezoneRequired": "Sélectionner le fuseau horaire *",
+    "noTimezone": "Aucun fuseau horaire",
+    "editLocation": "Modifier le lieu",
+    "deleteLocation": "Supprimer le lieu",
+    "addLocError": "Échec de l'ajout du lieu.",
+    "updateLocError": "Échec de la mise à jour du lieu.",
+    "deleteLocError": "Échec de la suppression du lieu."
   }
 }

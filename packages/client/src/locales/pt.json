@@ -2573,6 +2573,16 @@
     "save": "Salvar",
     "addDeptError": "Falha ao adicionar departamento.",
     "renameDeptError": "Falha ao renomear departamento.",
-    "deleteDeptError": "Falha ao excluir departamento."
+    "deleteDeptError": "Falha ao excluir departamento.",
+    "locations": "Locais ({{count}})",
+    "timezoneRequired": "O fuso horário é obrigatório.",
+    "locationName": "Nome do local",
+    "selectTimezoneRequired": "Selecionar fuso horário *",
+    "noTimezone": "Sem fuso horário",
+    "editLocation": "Editar local",
+    "deleteLocation": "Excluir local",
+    "addLocError": "Falha ao adicionar local.",
+    "updateLocError": "Falha ao atualizar local.",
+    "deleteLocError": "Falha ao excluir local."
   }
 }

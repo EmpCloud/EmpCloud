@@ -473,6 +473,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
 // ---------------------------------------------------------------------------
 
 function LocationsCard({ locations }: { locations: any[] }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [locForm, setLocForm] = useState({ name: "", timezone: "" });
@@ -493,7 +494,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || "Failed to add location.");
+      setAddError(err?.response?.data?.error?.message || t("orgSettings.addLocError"));
     },
   });
 
@@ -512,7 +513,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setEditError("");
     },
     onError: (err: any) => {
-      setEditError(err?.response?.data?.error?.message || "Failed to update location.");
+      setEditError(err?.response?.data?.error?.message || t("orgSettings.updateLocError"));
     },
   });
 
@@ -524,7 +525,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setDeleteError("");
     },
     onError: (err: any) => {
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete location.");
+      setDeleteError(err?.response?.data?.error?.message || t("orgSettings.deleteLocError"));
     },
   });
 
@@ -550,13 +551,13 @@ function LocationsCard({ locations }: { locations: any[] }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <MapPin className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">Locations ({locations.length})</h2>
+          <h2 className="font-semibold text-gray-900">{t("orgSettings.locations", { count: locations.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
         >
-          <Plus className="h-3.5 w-3.5" /> Add
+          <Plus className="h-3.5 w-3.5" /> {t("orgSettings.add")}
         </button>
       </div>
       {showAdd && (
@@ -569,7 +570,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             const timezone = locForm.timezone.trim();
             if (!name) return;
             if (!timezone) {
-              setAddError("Timezone is required.");
+              setAddError(t("orgSettings.timezoneRequired"));
               return;
             }
             addLoc.mutate({ name, timezone });
@@ -580,7 +581,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             type="text"
             value={locForm.name}
             onChange={(e) => { setLocForm({ ...locForm, name: e.target.value }); setAddError(""); }}
-            placeholder="Location name"
+            placeholder={t("orgSettings.locationName")}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             required
           />
@@ -591,7 +592,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             required
             aria-required="true"
           >
-            <option value="">Select timezone *</option>
+            <option value="">{t("orgSettings.selectTimezoneRequired")}</option>
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
             ))}
@@ -629,7 +630,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                     setEditError("");
                   }}
                   autoFocus
-                  placeholder="Location name"
+                  placeholder={t("orgSettings.locationName")}
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
                   required
                 />
@@ -638,7 +639,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   onChange={(e) => setEditForm({ ...editForm, timezone: e.target.value })}
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm bg-white"
                 >
-                  <option value="">No timezone</option>
+                  <option value="">{t("orgSettings.noTimezone")}</option>
                   {TIMEZONES.map((tz) => (
                     <option key={tz} value={tz}>
                       {tz}
@@ -670,7 +671,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   <button
                     onClick={() => startEdit(l)}
                     className="text-gray-400 hover:text-brand-600"
-                    title="Edit location"
+                    title={t("orgSettings.editLocation")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -680,7 +681,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                       deleteLoc.mutate(l.id);
                     }}
                     className="text-gray-400 hover:text-red-500"
-                    title="Delete location"
+                    title={t("orgSettings.deleteLocation")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

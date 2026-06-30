@@ -2573,6 +2573,16 @@
     "save": "حفظ",
     "addDeptError": "فشل إضافة القسم.",
     "renameDeptError": "فشل إعادة تسمية القسم.",
-    "deleteDeptError": "فشل حذف القسم."
+    "deleteDeptError": "فشل حذف القسم.",
+    "locations": "المواقع ({{count}})",
+    "timezoneRequired": "المنطقة الزمنية مطلوبة.",
+    "locationName": "اسم الموقع",
+    "selectTimezoneRequired": "اختر المنطقة الزمنية *",
+    "noTimezone": "بدون منطقة زمنية",
+    "editLocation": "تعديل الموقع",
+    "deleteLocation": "حذف الموقع",
+    "addLocError": "فشل إضافة الموقع.",
+    "updateLocError": "فشل تحديث الموقع.",
+    "deleteLocError": "فشل حذف الموقع."
   }
 }

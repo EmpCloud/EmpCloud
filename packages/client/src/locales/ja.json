@@ -2573,6 +2573,16 @@
     "save": "保存",
     "addDeptError": "部門の追加に失敗しました。",
     "renameDeptError": "部門名の変更に失敗しました。",
-    "deleteDeptError": "部門の削除に失敗しました。"
+    "deleteDeptError": "部門の削除に失敗しました。",
+    "locations": "拠点（{{count}}）",
+    "timezoneRequired": "タイムゾーンは必須です。",
+    "locationName": "拠点名",
+    "selectTimezoneRequired": "タイムゾーンを選択 *",
+    "noTimezone": "タイムゾーンなし",
+    "editLocation": "拠点を編集",
+    "deleteLocation": "拠点を削除",
+    "addLocError": "拠点の追加に失敗しました。",
+    "updateLocError": "拠点の更新に失敗しました。",
+    "deleteLocError": "拠点の削除に失敗しました。"
   }
 }

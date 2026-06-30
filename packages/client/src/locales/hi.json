@@ -2573,6 +2573,16 @@
     "save": "सहेजें",
     "addDeptError": "विभाग जोड़ने में विफल।",
     "renameDeptError": "विभाग का नाम बदलने में विफल।",
-    "deleteDeptError": "विभाग हटाने में विफल।"
+    "deleteDeptError": "विभाग हटाने में विफल।",
+    "locations": "स्थान ({{count}})",
+    "timezoneRequired": "समय क्षेत्र आवश्यक है।",
+    "locationName": "स्थान का नाम",
+    "selectTimezoneRequired": "समय क्षेत्र चुनें *",
+    "noTimezone": "कोई समय क्षेत्र नहीं",
+    "editLocation": "स्थान संपादित करें",
+    "deleteLocation": "स्थान हटाएं",
+    "addLocError": "स्थान जोड़ने में विफल।",
+    "updateLocError": "स्थान अपडेट करने में विफल।",
+    "deleteLocError": "स्थान हटाने में विफल।"
   }
 }

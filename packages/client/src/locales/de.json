@@ -2573,6 +2573,16 @@
     "save": "Speichern",
     "addDeptError": "Abteilung konnte nicht hinzugefügt werden.",
     "renameDeptError": "Abteilung konnte nicht umbenannt werden.",
-    "deleteDeptError": "Abteilung konnte nicht gelöscht werden."
+    "deleteDeptError": "Abteilung konnte nicht gelöscht werden.",
+    "locations": "Standorte ({{count}})",
+    "timezoneRequired": "Die Zeitzone ist erforderlich.",
+    "locationName": "Standortname",
+    "selectTimezoneRequired": "Zeitzone auswählen *",
+    "noTimezone": "Keine Zeitzone",
+    "editLocation": "Standort bearbeiten",
+    "deleteLocation": "Standort löschen",
+    "addLocError": "Standort konnte nicht hinzugefügt werden.",
+    "updateLocError": "Standort konnte nicht aktualisiert werden.",
+    "deleteLocError": "Standort konnte nicht gelöscht werden."
   }
 }

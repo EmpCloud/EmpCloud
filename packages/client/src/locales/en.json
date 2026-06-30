@@ -2579,6 +2579,16 @@
     "save": "Save",
     "addDeptError": "Failed to add department.",
     "renameDeptError": "Failed to rename department.",
-    "deleteDeptError": "Failed to delete department."
+    "deleteDeptError": "Failed to delete department.",
+    "locations": "Locations ({{count}})",
+    "timezoneRequired": "Timezone is required.",
+    "locationName": "Location name",
+    "selectTimezoneRequired": "Select timezone *",
+    "noTimezone": "No timezone",
+    "editLocation": "Edit location",
+    "deleteLocation": "Delete location",
+    "addLocError": "Failed to add location.",
+    "updateLocError": "Failed to update location.",
+    "deleteLocError": "Failed to delete location."
   }
 }

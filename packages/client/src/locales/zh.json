@@ -2573,6 +2573,16 @@
     "save": "保存",
     "addDeptError": "添加部门失败。",
     "renameDeptError": "重命名部门失败。",
-    "deleteDeptError": "删除部门失败。"
+    "deleteDeptError": "删除部门失败。",
+    "locations": "地点（{{count}}）",
+    "timezoneRequired": "时区为必填项。",
+    "locationName": "地点名称",
+    "selectTimezoneRequired": "选择时区 *",
+    "noTimezone": "无时区",
+    "editLocation": "编辑地点",
+    "deleteLocation": "删除地点",
+    "addLocError": "添加地点失败。",
+    "updateLocError": "更新地点失败。",
+    "deleteLocError": "删除地点失败。"
   }
 }

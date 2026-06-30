@@ -2573,6 +2573,16 @@
     "save": "Guardar",
     "addDeptError": "No se pudo agregar el departamento.",
     "renameDeptError": "No se pudo renombrar el departamento.",
-    "deleteDeptError": "No se pudo eliminar el departamento."
+    "deleteDeptError": "No se pudo eliminar el departamento.",
+    "locations": "Ubicaciones ({{count}})",
+    "timezoneRequired": "La zona horaria es obligatoria.",
+    "locationName": "Nombre de la ubicación",
+    "selectTimezoneRequired": "Seleccionar zona horaria *",
+    "noTimezone": "Sin zona horaria",
+    "editLocation": "Editar ubicación",
+    "deleteLocation": "Eliminar ubicación",
+    "addLocError": "No se pudo agregar la ubicación.",
+    "updateLocError": "No se pudo actualizar la ubicación.",
+    "deleteLocError": "No se pudo eliminar la ubicación."
   }
 }
