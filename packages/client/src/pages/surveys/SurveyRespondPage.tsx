@@ -1,9 +1,18 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { ClipboardList, CheckCircle, Clock, Send } from "lucide-react";
 
+// Survey type badge label — translated under surveyRespond.type.*, with the
+// raw value (e.g. an unknown future type) as the defaultValue fallback.
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+function surveyTypeLabel(type: string, t: TFn): string {
+  return t(`surveyRespond.type.${type}`, { defaultValue: type });
+}
+
 export default function SurveyRespondPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
 
@@ -38,15 +47,15 @@ export default function SurveyRespondPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Surveys</h1>
-        <p className="text-gray-500 mt-1">Complete active surveys and view your past responses.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("surveyRespond.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("surveyRespond.subtitle")}</p>
       </div>
 
       {/* Pending Surveys */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Clock className="h-5 w-5 text-orange-500" />
-          Pending Surveys
+          {t("surveyRespond.pending")}
           {pendingSurveys.length > 0 && (
             <span className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-0.5 rounded-full">
               {pendingSurveys.length}
@@ -70,8 +79,8 @@ export default function SurveyRespondPage() {
         ) : pendingSurveys.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <ClipboardList className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-500 mb-1">No active surveys</p>
-            <p className="text-sm text-gray-400">Check back later for new surveys to complete.</p>
+            <p className="text-lg font-medium text-gray-500 mb-1">{t("surveyRespond.noActive")}</p>
+            <p className="text-sm text-gray-400">{t("surveyRespond.noActiveHint")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -86,10 +95,10 @@ export default function SurveyRespondPage() {
                         s.type === "engagement" ? "bg-teal-100 text-teal-700" :
                         "bg-gray-100 text-gray-700"
                       }`}>
-                        {s.type}
+                        {surveyTypeLabel(s.type, t)}
                       </span>
                       {s.is_anonymous && (
-                        <span className="text-xs text-gray-400">Anonymous</span>
+                        <span className="text-xs text-gray-400">{t("surveyRespond.anonymous")}</span>
                       )}
                     </div>
                     <h3 className="font-semibold text-gray-900">{s.title}</h3>
@@ -98,7 +107,7 @@ export default function SurveyRespondPage() {
                     )}
                     {s.end_date && (
                       <p className="text-xs text-gray-400 mt-2">
-                        Due by {new Date(s.end_date).toLocaleDateString()}
+                        {t("surveyRespond.dueBy", { date: new Date(s.end_date).toLocaleDateString() })}
                       </p>
                     )}
                   </div>
@@ -107,7 +116,7 @@ export default function SurveyRespondPage() {
                   onClick={() => setSelectedSurveyId(s.id)}
                   className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
                 >
-                  <Send className="h-4 w-4" /> Take Survey
+                  <Send className="h-4 w-4" /> {t("surveyRespond.takeSurvey")}
                 </button>
               </div>
             ))}
@@ -120,17 +129,17 @@ export default function SurveyRespondPage() {
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            Completed
+            {t("surveyRespond.completed")}
           </h2>
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             {completedSurveys.map((s: any) => (
               <div key={s.id} className="flex items-center justify-between px-6 py-4 border-b border-gray-50 last:border-0">
                 <div>
                   <p className="font-medium text-gray-700">{s.title}</p>
-                  <p className="text-xs text-gray-400">{s.type}</p>
+                  <p className="text-xs text-gray-400">{surveyTypeLabel(s.type, t)}</p>
                 </div>
                 <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
-                  <CheckCircle className="h-3.5 w-3.5" /> Completed
+                  <CheckCircle className="h-3.5 w-3.5" /> {t("surveyRespond.completedBadge")}
                 </span>
               </div>
             ))}
@@ -141,27 +150,27 @@ export default function SurveyRespondPage() {
       {/* My Past Responses */}
       {myResponses && myResponses.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Response History</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("surveyRespond.responseHistory")}</h2>
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Survey</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Submitted</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Anonymous</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colSurvey")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colType")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colSubmitted")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colAnonymous")}</th>
                 </tr>
               </thead>
               <tbody>
                 {myResponses.map((r: any) => (
                   <tr key={r.response_id} className="border-b border-gray-50">
                     <td className="px-6 py-3 text-gray-700">{r.title}</td>
-                    <td className="px-6 py-3 text-gray-500 capitalize">{r.type}</td>
+                    <td className="px-6 py-3 text-gray-500">{surveyTypeLabel(r.type, t)}</td>
                     <td className="px-6 py-3 text-gray-400">
                       {new Date(r.submitted_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-3 text-gray-500">
-                      {r.is_anonymous ? "Yes" : "No"}
+                      {r.is_anonymous ? t("surveyRespond.yes") : t("surveyRespond.no")}
                     </td>
                   </tr>
                 ))}
@@ -187,6 +196,7 @@ function SurveyFillForm({
   onBack: () => void;
   onSubmitted: () => void;
 }) {
+  const { t } = useTranslation();
   const [answers, setAnswers] = useState<Record<number, { rating_value?: number | null; text_value?: string | null }>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -219,7 +229,7 @@ function SurveyFillForm({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-gray-400">Loading survey...</div>
+        <div className="text-gray-400">{t("surveyRespond.loadingSurvey")}</div>
       </div>
     );
   }
@@ -228,8 +238,8 @@ function SurveyFillForm({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Thank you!</h2>
-        <p className="text-gray-500">Your response has been submitted successfully.</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">{t("surveyRespond.thankYou")}</h2>
+        <p className="text-gray-500">{t("surveyRespond.submittedSuccess")}</p>
       </div>
     );
   }
@@ -244,7 +254,7 @@ function SurveyFillForm({
         onClick={onBack}
         className="text-sm text-brand-600 hover:underline mb-4"
       >
-        &larr; Back to surveys
+        &larr; {t("surveyRespond.backToSurveys")}
       </button>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -254,10 +264,10 @@ function SurveyFillForm({
             survey.type === "pulse" ? "bg-purple-100 text-purple-700" :
             "bg-gray-100 text-gray-700"
           }`}>
-            {survey.type}
+            {surveyTypeLabel(survey.type, t)}
           </span>
           {survey.is_anonymous && (
-            <span className="text-xs text-gray-400">Your responses are anonymous</span>
+            <span className="text-xs text-gray-400">{t("surveyRespond.responsesAnonymous")}</span>
           )}
         </div>
         <h1 className="text-xl font-bold text-gray-900">{survey.title}</h1>
@@ -294,20 +304,20 @@ function SurveyFillForm({
           onClick={onBack}
           className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
         >
-          Cancel
+          {t("surveyRespond.cancel")}
         </button>
         <button
           onClick={handleSubmit}
           disabled={submitMutation.isPending}
           className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
-          <Send className="h-4 w-4" /> Submit Response
+          <Send className="h-4 w-4" /> {t("surveyRespond.submitResponse")}
         </button>
       </div>
 
       {submitMutation.isError && (
         <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
-          {(submitMutation.error as any)?.response?.data?.error?.message || "Failed to submit response. Please try again."}
+          {(submitMutation.error as any)?.response?.data?.error?.message || t("surveyRespond.submitError")}
         </div>
       )}
     </div>
@@ -327,6 +337,7 @@ function QuestionInput({
   value: { rating_value?: number | null; text_value?: string | null } | undefined;
   onChange: (val: { rating_value?: number | null; text_value?: string | null }) => void;
 }) {
+  const { t } = useTranslation();
   const { question_type } = question;
 
   if (question_type === "rating_1_5") {
@@ -392,8 +403,8 @@ function QuestionInput({
           })}
         </div>
         <div className="flex justify-between text-xs text-gray-400 mt-1.5 px-1">
-          <span>Not at all likely</span>
-          <span>Extremely likely</span>
+          <span>{t("surveyRespond.notAtAllLikely")}</span>
+          <span>{t("surveyRespond.extremelyLikely")}</span>
         </div>
       </div>
     );
@@ -410,7 +421,7 @@ function QuestionInput({
               : "border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-300"
           }`}
         >
-          Yes
+          {t("surveyRespond.yes")}
         </button>
         <button
           onClick={() => onChange({ text_value: "no" })}
@@ -420,7 +431,7 @@ function QuestionInput({
               : "border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-300"
           }`}
         >
-          No
+          {t("surveyRespond.no")}
         </button>
       </div>
     );
@@ -453,7 +464,7 @@ function QuestionInput({
         value={value?.text_value || ""}
         onChange={(e) => onChange({ text_value: e.target.value })}
         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px]"
-        placeholder="Type your answer here..."
+        placeholder={t("surveyRespond.textPlaceholder")}
       />
     );
   }
