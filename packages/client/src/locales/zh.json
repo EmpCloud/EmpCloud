@@ -2070,5 +2070,12 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "surveyRespond": {
+    "title": "调查",
+    "subtitle": "完成进行中的调查并查看您过往的回复。",
+    "pending": "待完成的调查",
+    "noActive": "暂无进行中的调查",
+    "noActiveHint": "请稍后再来查看新的待完成调查。"
   }
 }

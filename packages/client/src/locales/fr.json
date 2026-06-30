@@ -2070,5 +2070,12 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "surveyRespond": {
+    "title": "Enquêtes",
+    "subtitle": "Complétez les enquêtes actives et consultez vos réponses précédentes.",
+    "pending": "Enquêtes en attente",
+    "noActive": "Aucune enquête active",
+    "noActiveHint": "Revenez plus tard pour de nouvelles enquêtes à compléter."
   }
 }

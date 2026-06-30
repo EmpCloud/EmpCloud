@@ -2070,5 +2070,12 @@
     "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
     "personCount_one": "{{count}} Person",
     "personCount_other": "{{count}} Personen"
+  },
+  "surveyRespond": {
+    "title": "Umfragen",
+    "subtitle": "Schließen Sie aktive Umfragen ab und sehen Sie sich Ihre früheren Antworten an.",
+    "pending": "Ausstehende Umfragen",
+    "noActive": "Keine aktiven Umfragen",
+    "noActiveHint": "Schauen Sie später wieder vorbei für neue Umfragen."
   }
 }

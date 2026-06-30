@@ -1,9 +1,18 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { ClipboardList, CheckCircle, Clock, Send } from "lucide-react";
 
+// Survey type badge label — translated under surveyRespond.type.*, with the
+// raw value (e.g. an unknown future type) as the defaultValue fallback.
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+function surveyTypeLabel(type: string, t: TFn): string {
+  return t(`surveyRespond.type.${type}`, { defaultValue: type });
+}
+
 export default function SurveyRespondPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
 
@@ -38,15 +47,15 @@ export default function SurveyRespondPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Surveys</h1>
-        <p className="text-gray-500 mt-1">Complete active surveys and view your past responses.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("surveyRespond.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("surveyRespond.subtitle")}</p>
       </div>
 
       {/* Pending Surveys */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Clock className="h-5 w-5 text-orange-500" />
-          Pending Surveys
+          {t("surveyRespond.pending")}
           {pendingSurveys.length > 0 && (
             <span className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-0.5 rounded-full">
               {pendingSurveys.length}
@@ -70,8 +79,8 @@ export default function SurveyRespondPage() {
         ) : pendingSurveys.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <ClipboardList className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-500 mb-1">No active surveys</p>
-            <p className="text-sm text-gray-400">Check back later for new surveys to complete.</p>
+            <p className="text-lg font-medium text-gray-500 mb-1">{t("surveyRespond.noActive")}</p>
+            <p className="text-sm text-gray-400">{t("surveyRespond.noActiveHint")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

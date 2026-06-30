@@ -2070,5 +2070,12 @@
     "exportFailed": "Falha na exportação. Tente novamente.",
     "personCount_one": "{{count}} pessoa",
     "personCount_other": "{{count}} pessoas"
+  },
+  "surveyRespond": {
+    "title": "Pesquisas",
+    "subtitle": "Responda às pesquisas ativas e veja suas respostas anteriores.",
+    "pending": "Pesquisas Pendentes",
+    "noActive": "Nenhuma pesquisa ativa",
+    "noActiveHint": "Volte mais tarde para novas pesquisas a responder."
   }
 }

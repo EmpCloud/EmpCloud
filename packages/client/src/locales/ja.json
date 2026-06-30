@@ -2070,5 +2070,12 @@
     "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
     "personCount_one": "{{count}}人",
     "personCount_other": "{{count}}人"
+  },
+  "surveyRespond": {
+    "title": "アンケート",
+    "subtitle": "実施中のアンケートに回答し、過去の回答を確認できます。",
+    "pending": "未回答のアンケート",
+    "noActive": "実施中のアンケートはありません",
+    "noActiveHint": "新しいアンケートは後でご確認ください。"
   }
 }

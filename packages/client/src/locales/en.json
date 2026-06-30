@@ -2075,5 +2075,12 @@
     "exportFailed": "Export failed. Please try again.",
     "personCount_one": "{{count}} person",
     "personCount_other": "{{count}} people"
+  },
+  "surveyRespond": {
+    "title": "Surveys",
+    "subtitle": "Complete active surveys and view your past responses.",
+    "pending": "Pending Surveys",
+    "noActive": "No active surveys",
+    "noActiveHint": "Check back later for new surveys to complete."
   }
 }

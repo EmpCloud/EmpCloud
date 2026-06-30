@@ -2070,5 +2070,12 @@
     "exportFailed": "La exportación falló. Inténtalo de nuevo.",
     "personCount_one": "{{count}} persona",
     "personCount_other": "{{count}} personas"
+  },
+  "surveyRespond": {
+    "title": "Encuestas",
+    "subtitle": "Completa las encuestas activas y consulta tus respuestas anteriores.",
+    "pending": "Encuestas Pendientes",
+    "noActive": "No hay encuestas activas",
+    "noActiveHint": "Vuelve más tarde para completar nuevas encuestas."
   }
 }
