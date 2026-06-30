@@ -2113,6 +2113,18 @@
     "updating": "अपडेट हो रहा है...",
     "updateArticle": "लेख अपडेट करें",
     "publishing": "प्रकाशित हो रहा है...",
-    "publishArticle": "लेख प्रकाशित करें"
+    "publishArticle": "लेख प्रकाशित करें",
+    "backToKb": "ज्ञान आधार पर वापस जाएं",
+    "edit": "संपादित करें",
+    "byAuthor": "{{author}} द्वारा",
+    "viewsCount_one": "{{count}} दृश्य",
+    "viewsCount_other": "{{count}} दृश्य",
+    "wasHelpful": "क्या यह लेख सहायक था?",
+    "ratedHelpful": "आपने इसे सहायक माना। आप अपना वोट कभी भी बदल सकते हैं।",
+    "ratedNotHelpful": "आपने इसे असहायक माना। आप अपना वोट कभी भी बदल सकते हैं।",
+    "yes": "हां",
+    "no": "नहीं",
+    "editArticleTooltip": "लेख संपादित करें",
+    "deleteArticleTooltip": "लेख हटाएं"
   }
 }

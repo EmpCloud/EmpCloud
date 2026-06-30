@@ -2118,6 +2118,18 @@
     "updating": "Updating...",
     "updateArticle": "Update Article",
     "publishing": "Publishing...",
-    "publishArticle": "Publish Article"
+    "publishArticle": "Publish Article",
+    "backToKb": "Back to Knowledge Base",
+    "edit": "Edit",
+    "byAuthor": "By {{author}}",
+    "viewsCount_one": "{{count}} view",
+    "viewsCount_other": "{{count}} views",
+    "wasHelpful": "Was this article helpful?",
+    "ratedHelpful": "You rated this helpful. You can change your vote anytime.",
+    "ratedNotHelpful": "You rated this not helpful. You can change your vote anytime.",
+    "yes": "Yes",
+    "no": "No",
+    "editArticleTooltip": "Edit article",
+    "deleteArticleTooltip": "Delete article"
   }
 }

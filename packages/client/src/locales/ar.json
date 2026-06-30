@@ -2113,6 +2113,18 @@
     "updating": "جارٍ التحديث...",
     "updateArticle": "تحديث المقال",
     "publishing": "جارٍ النشر...",
-    "publishArticle": "نشر المقال"
+    "publishArticle": "نشر المقال",
+    "backToKb": "العودة إلى قاعدة المعرفة",
+    "edit": "تعديل",
+    "byAuthor": "بواسطة {{author}}",
+    "viewsCount_one": "{{count}} مشاهدة",
+    "viewsCount_other": "{{count}} مشاهدة",
+    "wasHelpful": "هل كان هذا المقال مفيدًا؟",
+    "ratedHelpful": "قيّمته بأنه مفيد. يمكنك تغيير تصويتك في أي وقت.",
+    "ratedNotHelpful": "قيّمته بأنه غير مفيد. يمكنك تغيير تصويتك في أي وقت.",
+    "yes": "نعم",
+    "no": "لا",
+    "editArticleTooltip": "تعديل المقال",
+    "deleteArticleTooltip": "حذف المقال"
   }
 }

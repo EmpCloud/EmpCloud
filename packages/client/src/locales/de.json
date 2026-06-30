@@ -2113,6 +2113,18 @@
     "updating": "Wird aktualisiert...",
     "updateArticle": "Artikel aktualisieren",
     "publishing": "Wird veröffentlicht...",
-    "publishArticle": "Artikel veröffentlichen"
+    "publishArticle": "Artikel veröffentlichen",
+    "backToKb": "Zurück zur Wissensdatenbank",
+    "edit": "Bearbeiten",
+    "byAuthor": "Von {{author}}",
+    "viewsCount_one": "{{count}} Aufruf",
+    "viewsCount_other": "{{count}} Aufrufe",
+    "wasHelpful": "War dieser Artikel hilfreich?",
+    "ratedHelpful": "Sie haben dies als hilfreich bewertet. Sie können Ihre Stimme jederzeit ändern.",
+    "ratedNotHelpful": "Sie haben dies als nicht hilfreich bewertet. Sie können Ihre Stimme jederzeit ändern.",
+    "yes": "Ja",
+    "no": "Nein",
+    "editArticleTooltip": "Artikel bearbeiten",
+    "deleteArticleTooltip": "Artikel löschen"
   }
 }

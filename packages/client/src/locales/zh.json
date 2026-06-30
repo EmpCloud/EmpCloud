@@ -2113,6 +2113,18 @@
     "updating": "正在更新...",
     "updateArticle": "更新文章",
     "publishing": "正在发布...",
-    "publishArticle": "发布文章"
+    "publishArticle": "发布文章",
+    "backToKb": "返回知识库",
+    "edit": "编辑",
+    "byAuthor": "作者：{{author}}",
+    "viewsCount_one": "{{count}} 次浏览",
+    "viewsCount_other": "{{count}} 次浏览",
+    "wasHelpful": "这篇文章有帮助吗？",
+    "ratedHelpful": "您评价为有帮助。您可以随时更改投票。",
+    "ratedNotHelpful": "您评价为没有帮助。您可以随时更改投票。",
+    "yes": "是",
+    "no": "否",
+    "editArticleTooltip": "编辑文章",
+    "deleteArticleTooltip": "删除文章"
   }
 }

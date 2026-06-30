@@ -2113,6 +2113,18 @@
     "updating": "Atualizando...",
     "updateArticle": "Atualizar Artigo",
     "publishing": "Publicando...",
-    "publishArticle": "Publicar Artigo"
+    "publishArticle": "Publicar Artigo",
+    "backToKb": "Voltar para a Base de Conhecimento",
+    "edit": "Editar",
+    "byAuthor": "Por {{author}}",
+    "viewsCount_one": "{{count}} visualização",
+    "viewsCount_other": "{{count}} visualizações",
+    "wasHelpful": "Este artigo foi útil?",
+    "ratedHelpful": "Você avaliou como útil. Você pode alterar seu voto a qualquer momento.",
+    "ratedNotHelpful": "Você avaliou como não útil. Você pode alterar seu voto a qualquer momento.",
+    "yes": "Sim",
+    "no": "Não",
+    "editArticleTooltip": "Editar artigo",
+    "deleteArticleTooltip": "Excluir artigo"
   }
 }

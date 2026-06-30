@@ -212,7 +212,7 @@ export default function KnowledgeBasePage() {
             onClick={() => setSelectedArticle(null)}
             className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to Knowledge Base
+            <ArrowLeft className="h-4 w-4" /> {t("kb.backToKb")}
           </button>
           {isHR && (
             <div className="flex items-center gap-2">
@@ -220,7 +220,7 @@ export default function KnowledgeBasePage() {
                 onClick={() => startEdit(selectedArticle)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                <Pencil className="h-3.5 w-3.5" /> Edit
+                <Pencil className="h-3.5 w-3.5" /> {t("kb.edit")}
               </button>
               <button
                 onClick={() => {
@@ -229,7 +229,7 @@ export default function KnowledgeBasePage() {
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 hover:bg-red-50"
               >
-                <Trash2 className="h-3.5 w-3.5" /> Delete
+                <Trash2 className="h-3.5 w-3.5" /> {t("kb.delete")}
               </button>
             </div>
           )}
@@ -246,7 +246,7 @@ export default function KnowledgeBasePage() {
             </span>
             {Boolean(selectedArticle.is_featured) && (
               <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded">
-                <Star className="h-3 w-3" /> Featured
+                <Star className="h-3 w-3" /> {t("kb.featured")}
               </span>
             )}
           </div>
@@ -256,12 +256,12 @@ export default function KnowledgeBasePage() {
           </h1>
 
           <div className="flex items-center gap-4 text-xs text-gray-500 mb-6">
-            <span>By {selectedArticle.author_name}</span>
+            <span>{t("kb.byAuthor", { author: selectedArticle.author_name })}</span>
             <span>
               {new Date(selectedArticle.created_at).toLocaleDateString()}
             </span>
             <span className="flex items-center gap-1">
-              <Eye className="h-3 w-3" /> {selectedArticle.view_count} views
+              <Eye className="h-3 w-3" /> {t("kb.viewsCount", { count: selectedArticle.view_count })}
             </span>
           </div>
 
@@ -275,11 +275,11 @@ export default function KnowledgeBasePage() {
 
           <div className="border-t border-gray-200 pt-6">
             <p className="text-sm font-medium text-gray-700 mb-3">
-              Was this article helpful?
+              {t("kb.wasHelpful")}
             </p>
             {hasVoted && (
               <p className="text-xs text-gray-500 mb-2">
-                You rated this {currentVote ? "helpful" : "not helpful"}. You can change your vote anytime.
+                {currentVote ? t("kb.ratedHelpful") : t("kb.ratedNotHelpful")}
               </p>
             )}
             <div className="flex items-center gap-3">
@@ -297,7 +297,7 @@ export default function KnowledgeBasePage() {
                     : "border-green-200 text-green-700 hover:bg-green-50"
                 }`}
               >
-                <ThumbsUp className="h-4 w-4" /> Yes (
+                <ThumbsUp className="h-4 w-4" /> {t("kb.yes")} (
                 {selectedArticle.helpful_count})
               </button>
               <button
@@ -314,7 +314,7 @@ export default function KnowledgeBasePage() {
                     : "border-red-200 text-red-700 hover:bg-red-50"
                 }`}
               >
-                <ThumbsDown className="h-4 w-4" /> No (
+                <ThumbsDown className="h-4 w-4" /> {t("kb.no")} (
                 {selectedArticle.not_helpful_count})
               </button>
             </div>
@@ -564,7 +564,7 @@ export default function KnowledgeBasePage() {
                       startEdit(a);
                     }}
                     className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-                    title="Edit article"
+                    title={t("kb.editArticleTooltip")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -576,7 +576,7 @@ export default function KnowledgeBasePage() {
                       setDeleteError(null);
                     }}
                     className="p-1.5 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600"
-                    title="Delete article"
+                    title={t("kb.deleteArticleTooltip")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

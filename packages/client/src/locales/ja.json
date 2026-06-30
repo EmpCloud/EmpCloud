@@ -2113,6 +2113,18 @@
     "updating": "更新中...",
     "updateArticle": "記事を更新",
     "publishing": "公開中...",
-    "publishArticle": "記事を公開"
+    "publishArticle": "記事を公開",
+    "backToKb": "ナレッジベースに戻る",
+    "edit": "編集",
+    "byAuthor": "投稿者: {{author}}",
+    "viewsCount_one": "{{count}} 回閲覧",
+    "viewsCount_other": "{{count}} 回閲覧",
+    "wasHelpful": "この記事は役に立ちましたか？",
+    "ratedHelpful": "役に立ったと評価しました。投票はいつでも変更できます。",
+    "ratedNotHelpful": "役に立たなかったと評価しました。投票はいつでも変更できます。",
+    "yes": "はい",
+    "no": "いいえ",
+    "editArticleTooltip": "記事を編集",
+    "deleteArticleTooltip": "記事を削除"
   }
 }
