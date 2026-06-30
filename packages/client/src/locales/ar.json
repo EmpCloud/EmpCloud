@@ -2092,6 +2092,20 @@
     "topAssignees": "أبرز المُخصّص لهم",
     "assetsCount_one": "{{count}} أصل",
     "assetsCount_other": "{{count}} أصول",
-    "noAssignments": "لا توجد تخصيصات بعد"
+    "noAssignments": "لا توجد تخصيصات بعد",
+    "recentActivity": "النشاط الأخير",
+    "noActivity": "لا يوجد نشاط حديث",
+    "action": {
+      "created": "تم الإنشاء",
+      "assigned": "تم التخصيص",
+      "returned": "تمت الإعادة",
+      "sent_to_repair": "أُرسل للإصلاح",
+      "repaired": "تم الإصلاح",
+      "retired": "تم التقاعد",
+      "lost": "مفقود",
+      "found": "تم العثور عليه",
+      "damaged": "تالف",
+      "updated": "تم التحديث"
+    }
   }
 }

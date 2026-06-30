@@ -2097,6 +2097,20 @@
     "topAssignees": "Top Assignees",
     "assetsCount_one": "{{count}} asset",
     "assetsCount_other": "{{count}} assets",
-    "noAssignments": "No assignments yet"
+    "noAssignments": "No assignments yet",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity",
+    "action": {
+      "created": "Created",
+      "assigned": "Assigned",
+      "returned": "Returned",
+      "sent_to_repair": "Sent to repair",
+      "repaired": "Repaired",
+      "retired": "Retired",
+      "lost": "Lost",
+      "found": "Found",
+      "damaged": "Damaged",
+      "updated": "Updated"
+    }
   }
 }

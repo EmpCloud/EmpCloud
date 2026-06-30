@@ -2092,6 +2092,20 @@
     "topAssignees": "上位の割り当て先",
     "assetsCount_one": "{{count}} 件の資産",
     "assetsCount_other": "{{count}} 件の資産",
-    "noAssignments": "まだ割り当てがありません"
+    "noAssignments": "まだ割り当てがありません",
+    "recentActivity": "最近のアクティビティ",
+    "noActivity": "最近のアクティビティはありません",
+    "action": {
+      "created": "作成",
+      "assigned": "割り当て",
+      "returned": "返却",
+      "sent_to_repair": "修理に送付",
+      "repaired": "修理済み",
+      "retired": "廃棄",
+      "lost": "紛失",
+      "found": "発見",
+      "damaged": "破損",
+      "updated": "更新"
+    }
   }
 }

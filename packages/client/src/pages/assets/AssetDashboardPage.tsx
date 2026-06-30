@@ -230,7 +230,7 @@ export default function AssetDashboardPage() {
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Clock className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("assetDashboard.recentActivity")}</h2>
         </div>
         {stats.recent_activity && stats.recent_activity.length > 0 ? (
           <div className="space-y-3">
@@ -239,8 +239,8 @@ export default function AssetDashboardPage() {
                 key={activity.id}
                 className="flex items-start gap-3 text-sm border-b border-gray-50 pb-3 last:border-0"
               >
-                <div className={`mt-0.5 font-medium capitalize ${ACTION_COLORS[activity.action] || "text-gray-600"}`}>
-                  {activity.action}
+                <div className={`mt-0.5 font-medium ${ACTION_COLORS[activity.action] || "text-gray-600"}`}>
+                  {t(`assetDashboard.action.${activity.action}`, { defaultValue: activity.action })}
                 </div>
                 <div className="flex-1">
                   <Link
@@ -260,7 +260,7 @@ export default function AssetDashboardPage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-400">No recent activity</p>
+          <p className="text-sm text-gray-400">{t("assetDashboard.noActivity")}</p>
         )}
       </div>
     </div>

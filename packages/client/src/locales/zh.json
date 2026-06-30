@@ -2092,6 +2092,20 @@
     "topAssignees": "主要领用人",
     "assetsCount_one": "{{count}} 项资产",
     "assetsCount_other": "{{count}} 项资产",
-    "noAssignments": "暂无分配"
+    "noAssignments": "暂无分配",
+    "recentActivity": "最近活动",
+    "noActivity": "暂无最近活动",
+    "action": {
+      "created": "已创建",
+      "assigned": "已分配",
+      "returned": "已归还",
+      "sent_to_repair": "已送修",
+      "repaired": "已修复",
+      "retired": "已报废",
+      "lost": "丢失",
+      "found": "已找到",
+      "damaged": "已损坏",
+      "updated": "已更新"
+    }
   }
 }

@@ -2092,6 +2092,20 @@
     "topAssignees": "Top-Zugewiesene",
     "assetsCount_one": "{{count}} Asset",
     "assetsCount_other": "{{count}} Assets",
-    "noAssignments": "Noch keine Zuweisungen"
+    "noAssignments": "Noch keine Zuweisungen",
+    "recentActivity": "Letzte Aktivität",
+    "noActivity": "Keine aktuelle Aktivität",
+    "action": {
+      "created": "Erstellt",
+      "assigned": "Zugewiesen",
+      "returned": "Zurückgegeben",
+      "sent_to_repair": "Zur Reparatur gesendet",
+      "repaired": "Repariert",
+      "retired": "Ausgemustert",
+      "lost": "Verloren",
+      "found": "Gefunden",
+      "damaged": "Beschädigt",
+      "updated": "Aktualisiert"
+    }
   }
 }

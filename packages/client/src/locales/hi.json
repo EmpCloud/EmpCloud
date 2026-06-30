@@ -2092,6 +2092,20 @@
     "topAssignees": "शीर्ष आवंटिती",
     "assetsCount_one": "{{count}} संपत्ति",
     "assetsCount_other": "{{count}} संपत्तियां",
-    "noAssignments": "अभी तक कोई आवंटन नहीं"
+    "noAssignments": "अभी तक कोई आवंटन नहीं",
+    "recentActivity": "हाल की गतिविधि",
+    "noActivity": "कोई हाल की गतिविधि नहीं",
+    "action": {
+      "created": "बनाया गया",
+      "assigned": "आवंटित",
+      "returned": "लौटाया गया",
+      "sent_to_repair": "मरम्मत के लिए भेजा गया",
+      "repaired": "मरम्मत की गई",
+      "retired": "सेवानिवृत्त",
+      "lost": "खोया",
+      "found": "मिल गया",
+      "damaged": "क्षतिग्रस्त",
+      "updated": "अपडेट किया गया"
+    }
   }
 }
