@@ -2556,6 +2556,12 @@
     "preview": "पूर्वावलोकन",
     "hidePreview": "पूर्वावलोकन छिपाएं",
     "fieldName": "फ़ील्ड नाम *",
-    "fieldNamePlaceholder": "जैसे टी-शर्ट साइज़"
+    "fieldNamePlaceholder": "जैसे टी-शर्ट साइज़",
+    "section": "अनुभाग",
+    "placeholder": "प्लेसहोल्डर",
+    "defaultValue": "डिफ़ॉल्ट मान",
+    "validationRegex": "वैलिडेशन रेगेक्स",
+    "minValue": "न्यूनतम मान",
+    "maxValue": "अधिकतम मान"
   }
 }

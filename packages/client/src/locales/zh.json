@@ -2556,6 +2556,12 @@
     "preview": "预览",
     "hidePreview": "隐藏预览",
     "fieldName": "字段名称 *",
-    "fieldNamePlaceholder": "例如 T 恤尺码"
+    "fieldNamePlaceholder": "例如 T 恤尺码",
+    "section": "分区",
+    "placeholder": "占位符",
+    "defaultValue": "默认值",
+    "validationRegex": "验证正则",
+    "minValue": "最小值",
+    "maxValue": "最大值"
   }
 }

@@ -2556,6 +2556,12 @@
     "preview": "プレビュー",
     "hidePreview": "プレビューを非表示",
     "fieldName": "フィールド名 *",
-    "fieldNamePlaceholder": "例: Tシャツのサイズ"
+    "fieldNamePlaceholder": "例: Tシャツのサイズ",
+    "section": "セクション",
+    "placeholder": "プレースホルダー",
+    "defaultValue": "既定値",
+    "validationRegex": "検証用正規表現",
+    "minValue": "最小値",
+    "maxValue": "最大値"
   }
 }

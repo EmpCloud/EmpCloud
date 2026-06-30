@@ -2556,6 +2556,12 @@
     "preview": "Pré-visualizar",
     "hidePreview": "Ocultar Pré-visualização",
     "fieldName": "Nome do Campo *",
-    "fieldNamePlaceholder": "ex.: Tamanho da Camiseta"
+    "fieldNamePlaceholder": "ex.: Tamanho da Camiseta",
+    "section": "Seção",
+    "placeholder": "Texto de Exemplo",
+    "defaultValue": "Valor Padrão",
+    "validationRegex": "Regex de Validação",
+    "minValue": "Valor Mínimo",
+    "maxValue": "Valor Máximo"
   }
 }

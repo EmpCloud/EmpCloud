@@ -2562,6 +2562,12 @@
     "preview": "Preview",
     "hidePreview": "Hide Preview",
     "fieldName": "Field Name *",
-    "fieldNamePlaceholder": "e.g. T-Shirt Size"
+    "fieldNamePlaceholder": "e.g. T-Shirt Size",
+    "section": "Section",
+    "placeholder": "Placeholder",
+    "defaultValue": "Default Value",
+    "validationRegex": "Validation Regex",
+    "minValue": "Min Value",
+    "maxValue": "Max Value"
   }
 }

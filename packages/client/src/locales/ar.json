@@ -2556,6 +2556,12 @@
     "preview": "معاينة",
     "hidePreview": "إخفاء المعاينة",
     "fieldName": "اسم الحقل *",
-    "fieldNamePlaceholder": "مثل: مقاس التيشيرت"
+    "fieldNamePlaceholder": "مثل: مقاس التيشيرت",
+    "section": "القسم",
+    "placeholder": "نص توضيحي",
+    "defaultValue": "القيمة الافتراضية",
+    "validationRegex": "تعبير نمطي للتحقق",
+    "minValue": "الحد الأدنى",
+    "maxValue": "الحد الأقصى"
   }
 }

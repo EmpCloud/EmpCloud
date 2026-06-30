@@ -378,7 +378,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Section */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Section
+                  {t("customFields.section")}
                 </label>
                 <input
                   type="text"
@@ -386,7 +386,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, section: e.target.value })
                   }
-                  placeholder="Custom Fields"
+                  placeholder={t("customFields.title")}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
@@ -394,7 +394,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Placeholder */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Placeholder
+                  {t("customFields.placeholder")}
                 </label>
                 <input
                   type="text"
@@ -409,7 +409,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Default Value */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Default Value
+                  {t("customFields.defaultValue")}
                 </label>
                 <input
                   type="text"
@@ -424,7 +424,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Validation Regex */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Validation Regex
+                  {t("customFields.validationRegex")}
                 </label>
                 <input
                   type="text"
@@ -442,7 +442,7 @@ export default function CustomFieldsSettingsPage() {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Min Value
+                      {t("customFields.minValue")}
                     </label>
                     <input
                       type="number"
@@ -455,7 +455,7 @@ export default function CustomFieldsSettingsPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Max Value
+                      {t("customFields.maxValue")}
                     </label>
                     <input
                       type="number"

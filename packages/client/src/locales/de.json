@@ -2556,6 +2556,12 @@
     "preview": "Vorschau",
     "hidePreview": "Vorschau ausblenden",
     "fieldName": "Feldname *",
-    "fieldNamePlaceholder": "z. B. T-Shirt-Größe"
+    "fieldNamePlaceholder": "z. B. T-Shirt-Größe",
+    "section": "Abschnitt",
+    "placeholder": "Platzhalter",
+    "defaultValue": "Standardwert",
+    "validationRegex": "Validierungs-Regex",
+    "minValue": "Min.-Wert",
+    "maxValue": "Max.-Wert"
   }
 }

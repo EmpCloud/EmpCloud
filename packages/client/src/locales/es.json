@@ -2556,6 +2556,12 @@
     "preview": "Vista previa",
     "hidePreview": "Ocultar Vista previa",
     "fieldName": "Nombre del Campo *",
-    "fieldNamePlaceholder": "p. ej. Talla de Camiseta"
+    "fieldNamePlaceholder": "p. ej. Talla de Camiseta",
+    "section": "Sección",
+    "placeholder": "Marcador de Posición",
+    "defaultValue": "Valor Predeterminado",
+    "validationRegex": "Regex de Validación",
+    "minValue": "Valor Mínimo",
+    "maxValue": "Valor Máximo"
   }
 }

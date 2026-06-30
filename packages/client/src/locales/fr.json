@@ -2556,6 +2556,12 @@
     "preview": "Aperçu",
     "hidePreview": "Masquer l'aperçu",
     "fieldName": "Nom du champ *",
-    "fieldNamePlaceholder": "ex. Taille de t-shirt"
+    "fieldNamePlaceholder": "ex. Taille de t-shirt",
+    "section": "Section",
+    "placeholder": "Texte indicatif",
+    "defaultValue": "Valeur par défaut",
+    "validationRegex": "Regex de validation",
+    "minValue": "Valeur min.",
+    "maxValue": "Valeur max."
   }
 }
