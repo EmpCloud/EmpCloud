@@ -2538,5 +2538,264 @@
       "damaged": "破損",
       "updated": "更新"
     }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "個人情報",
+      "education": "学歴",
+      "experience": "職歴",
+      "dependents": "扶養家族",
+      "addresses": "住所",
+      "custom": "カスタム項目"
+    },
+    "invalidEmployee": {
+      "title": "無効な従業員",
+      "description": "URL内の従業員IDが見つからないか、無効です。",
+      "backLink": "従業員ディレクトリに戻る"
+    },
+    "accessDenied": {
+      "title": "アクセスが拒否されました",
+      "description": "このプロフィールを閲覧する権限がありません。",
+      "backLink": "ダッシュボードに戻る"
+    },
+    "loadingProfile": "プロフィールを読み込み中...",
+    "employeeNotFound": "従業員が見つかりません",
+    "backToDirectory": "ディレクトリに戻る",
+    "noDesignation": "役職なし",
+    "biometricPhotoTooltip": "写真は生体認証キオスクの登録で管理されます",
+    "biometricPhotoAlt": "生体認証の顔写真",
+    "profilePhotoAlt": "プロフィール",
+    "biometricPhotoHint": "生体認証登録の写真 — キオスクで管理されます。",
+    "removingPhoto": "削除中...",
+    "removePhoto": "写真を削除",
+    "empCodeLabel": "従業員コード: {{code}}",
+    "joinedLabel": "入社日: {{date}}",
+    "cancel": "キャンセル",
+    "editMyInfo": "自分の情報を編集",
+    "editProfile": "プロフィールを編集",
+    "removePhotoDialog": {
+      "title": "プロフィール写真を削除しますか？",
+      "description": "再びイニシャルが表示されます。",
+      "confirm": "写真を削除"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PANは英字5文字＋数字4桁＋英字1文字で入力してください（例: ABCDE1234F）",
+      "aadhaar": "Aadhaarは12桁で入力してください",
+      "uan": "UANは12桁で入力してください",
+      "passport": "パスポート番号は英字1文字＋数字7桁で入力してください（例: A1234567）"
+    },
+    "personal": {
+      "saveFailed": "保存に失敗しました",
+      "selfServiceNotice": "個人情報および緊急連絡先情報を編集できます。管理項目の更新は人事担当者にお問い合わせください。"
+    },
+    "field": {
+      "personalEmail": "個人メールアドレス",
+      "contactNumber": "連絡先電話番号",
+      "gender": "性別",
+      "dateOfBirth": "生年月日",
+      "bloodGroup": "血液型",
+      "maritalStatus": "婚姻状況",
+      "nationality": "国籍",
+      "aadharNumber": "Aadhar番号",
+      "panNumber": "PAN番号",
+      "uanNumber": "UAN番号",
+      "passportNumber": "パスポート番号",
+      "passportExpiry": "パスポート有効期限",
+      "visaStatus": "ビザステータス",
+      "visaExpiry": "ビザ有効期限",
+      "emergencyContact": "緊急連絡先",
+      "emergencyPhone": "緊急連絡先電話番号",
+      "emergencyRelation": "緊急連絡先との続柄",
+      "noticePeriodDays": "退職予告期間（日）",
+      "reportingManager": "直属の上司",
+      "department": "部署",
+      "shift": "シフト",
+      "designation": "役職",
+      "employeeCode": "従業員コード",
+      "probationStart": "試用期間開始日",
+      "probationEnd": "試用期間終了日",
+      "confirmationDate": "本採用日",
+      "customRoles": "カスタムロール",
+      "additionalManagers": "追加マネージャー"
+    },
+    "select": {
+      "placeholder": "選択"
+    },
+    "gender": {
+      "male": "男性",
+      "female": "女性",
+      "other": "その他"
+    },
+    "maritalStatus": {
+      "single": "未婚",
+      "married": "既婚",
+      "divorced": "離婚",
+      "widowed": "死別"
+    },
+    "placeholder": {
+      "aadhar": "12桁",
+      "pan": "ABCDE1234F",
+      "uan": "12桁",
+      "passport": "A1234567",
+      "designationSelfService": "変更は人事にお問い合わせください",
+      "designation": "例: シニアエンジニア",
+      "empCodeSelfService": "設定は人事にお問い合わせください",
+      "empCode": "例: EMP001"
+    },
+    "reportingManager": {
+      "none": "上司なし"
+    },
+    "department": {
+      "none": "部署なし"
+    },
+    "shift": {
+      "none": "シフトなし"
+    },
+    "saving": "保存中...",
+    "saveChanges": "変更を保存",
+    "additionalManagers": {
+      "loading": "読み込み中…",
+      "none": "追加マネージャーなし",
+      "userFallback": "ユーザー #{{id}}",
+      "selectedCount_one": "（{{count}}件選択中）",
+      "selectedCount_other": "（{{count}}件選択中）",
+      "helpText": "直属の上司と同じチーム範囲のアクセス権を持つ共同マネージャー。チーム範囲のすべての権限で適用されます。",
+      "removeAria": "{{name}}を削除",
+      "removeAriaFallback": "マネージャー",
+      "searchPlaceholder": "名前またはメールアドレスで検索…",
+      "addPlaceholder": "別のマネージャーを追加…",
+      "noMatches": "一致するユーザーがいません",
+      "allSelected": "対象ユーザーはすべて選択済みです",
+      "savingButton": "保存中…",
+      "saveButton": "追加マネージャーを保存",
+      "unsavedChanges": "未保存の変更",
+      "saved": "保存しました"
+    },
+    "apiError": {
+      "requestFailed": "リクエストに失敗しました"
+    },
+    "education": {
+      "add": "学歴を追加",
+      "edit": "学歴を編集",
+      "empty": "まだ学歴が登録されていません。",
+      "deleteDialog": {
+        "title": "この学歴を削除しますか？"
+      },
+      "field": {
+        "degree": "学位",
+        "institution": "学校名",
+        "fieldOfStudy": "専攻分野",
+        "grade": "成績",
+        "startYear": "開始年",
+        "endYear": "終了年"
+      },
+      "placeholder": {
+        "degree": "例: 学士（工学）",
+        "institution": "例: デリー工科大学"
+      },
+      "validation": {
+        "required": "学位と学校名は必須です",
+        "endYear": "終了年は開始年以降にしてください"
+      },
+      "fromYear": "{{year}}年から",
+      "gradeSuffix": "成績：{{grade}}"
+    },
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "experience": {
+      "add": "職歴を追加",
+      "edit": "職歴を編集",
+      "empty": "まだ職歴が登録されていません。",
+      "deleteDialog": {
+        "title": "この職歴を削除しますか？"
+      },
+      "field": {
+        "company": "会社名",
+        "designation": "役職",
+        "startDate": "開始日",
+        "endDate": "終了日",
+        "description": "職務内容"
+      },
+      "currentlyWorking": "現在在籍中",
+      "current": "現職",
+      "present": "現在",
+      "validation": {
+        "required": "会社名、役職、開始日は必須です"
+      }
+    },
+    "dependents": {
+      "add": "扶養家族を追加",
+      "edit": "扶養家族を編集",
+      "empty": "まだ扶養家族が登録されていません。",
+      "deleteDialog": {
+        "title": "この扶養家族を削除しますか？"
+      },
+      "field": {
+        "name": "氏名",
+        "relationship": "続柄",
+        "dateOfBirth": "生年月日",
+        "gender": "性別",
+        "nomineePercent": "受取人割合（%）"
+      },
+      "isNominee": "受取人",
+      "placeholder": {
+        "relationship": "例: 配偶者、子、親"
+      },
+      "validation": {
+        "required": "氏名と続柄は必須です"
+      },
+      "column": {
+        "name": "氏名",
+        "relationship": "続柄",
+        "dob": "生年月日",
+        "gender": "性別",
+        "nominee": "受取人",
+        "actions": "操作"
+      },
+      "nomineeYes": "はい",
+      "nomineeNo": "いいえ"
+    },
+    "addresses": {
+      "add": "住所を追加",
+      "edit": "住所を編集",
+      "empty": "まだ住所が登録されていません。",
+      "deleteDialog": {
+        "title": "この住所を削除しますか？"
+      },
+      "field": {
+        "type": "種類",
+        "country": "国",
+        "line1": "住所1",
+        "line2": "住所2",
+        "city": "市区町村",
+        "state": "都道府県・州",
+        "zipcode": "郵便番号"
+      },
+      "type": {
+        "current": "現住所",
+        "permanent": "恒久住所"
+      },
+      "validation": {
+        "required": "住所1、市区町村、都道府県・州、郵便番号は必須です"
+      }
+    },
+    "customFields": {
+      "loading": "カスタム項目を読み込み中...",
+      "emptyTitle": "従業員向けのカスタム項目はまだ定義されていません。",
+      "emptyHint": "人事管理者はカスタム項目設定ページからカスタム項目を作成できます。",
+      "heading": "カスタム項目",
+      "saveFailed": "カスタム項目の保存に失敗しました",
+      "defaultSection": "カスタム項目",
+      "display": {
+        "yes": "はい",
+        "no": "いいえ"
+      },
+      "selectPlaceholder": "選択...",
+      "filePlaceholder": "ファイル参照またはパス"
+    }
   }
 }

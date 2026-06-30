@@ -2538,5 +2538,264 @@
       "damaged": "क्षतिग्रस्त",
       "updated": "अपडेट किया गया"
     }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "व्यक्तिगत",
+      "education": "शिक्षा",
+      "experience": "अनुभव",
+      "dependents": "आश्रित",
+      "addresses": "पते",
+      "custom": "कस्टम फ़ील्ड"
+    },
+    "invalidEmployee": {
+      "title": "अमान्य कर्मचारी",
+      "description": "URL में कर्मचारी ID अनुपस्थित या अमान्य है।",
+      "backLink": "कर्मचारी निर्देशिका पर वापस जाएँ"
+    },
+    "accessDenied": {
+      "title": "पहुँच अस्वीकृत",
+      "description": "आपके पास यह प्रोफ़ाइल देखने की अनुमति नहीं है।",
+      "backLink": "डैशबोर्ड पर वापस जाएँ"
+    },
+    "loadingProfile": "प्रोफ़ाइल लोड हो रही है...",
+    "employeeNotFound": "कर्मचारी नहीं मिला",
+    "backToDirectory": "निर्देशिका पर वापस जाएँ",
+    "noDesignation": "कोई पदनाम नहीं",
+    "biometricPhotoTooltip": "फ़ोटो बायोमेट्रिक कियोस्क नामांकन के माध्यम से प्रबंधित होती है",
+    "biometricPhotoAlt": "बायोमेट्रिक चेहरा",
+    "profilePhotoAlt": "प्रोफ़ाइल",
+    "biometricPhotoHint": "बायोमेट्रिक नामांकन से फ़ोटो — कियोस्क के माध्यम से प्रबंधित।",
+    "removingPhoto": "हटाई जा रही है...",
+    "removePhoto": "फ़ोटो हटाएँ",
+    "empCodeLabel": "कर्मचारी कोड: {{code}}",
+    "joinedLabel": "ज्वाइन किया: {{date}}",
+    "cancel": "रद्द करें",
+    "editMyInfo": "मेरी जानकारी संपादित करें",
+    "editProfile": "प्रोफ़ाइल संपादित करें",
+    "removePhotoDialog": {
+      "title": "अपनी प्रोफ़ाइल फ़ोटो हटाएँ?",
+      "description": "आपको फिर से आद्याक्षर दिखेंगे।",
+      "confirm": "फ़ोटो हटाएँ"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PAN में 5 अक्षर + 4 अंक + 1 अक्षर होने चाहिए (उदा. ABCDE1234F)",
+      "aadhaar": "आधार 12 अंकों का होना चाहिए",
+      "uan": "UAN 12 अंकों का होना चाहिए",
+      "passport": "पासपोर्ट में 1 अक्षर + 7 अंक होने चाहिए (उदा. A1234567)"
+    },
+    "personal": {
+      "saveFailed": "सहेजने में विफल",
+      "selfServiceNotice": "आप अपनी व्यक्तिगत और आपातकालीन संपर्क जानकारी संपादित कर सकते हैं। प्रशासनिक फ़ील्ड अपडेट करने के लिए HR से संपर्क करें।"
+    },
+    "field": {
+      "personalEmail": "व्यक्तिगत ईमेल",
+      "contactNumber": "संपर्क नंबर",
+      "gender": "लिंग",
+      "dateOfBirth": "जन्म तिथि",
+      "bloodGroup": "रक्त समूह",
+      "maritalStatus": "वैवाहिक स्थिति",
+      "nationality": "राष्ट्रीयता",
+      "aadharNumber": "आधार नंबर",
+      "panNumber": "PAN नंबर",
+      "uanNumber": "UAN नंबर",
+      "passportNumber": "पासपोर्ट नंबर",
+      "passportExpiry": "पासपोर्ट समाप्ति",
+      "visaStatus": "वीज़ा स्थिति",
+      "visaExpiry": "वीज़ा समाप्ति",
+      "emergencyContact": "आपातकालीन संपर्क",
+      "emergencyPhone": "आपातकालीन फ़ोन",
+      "emergencyRelation": "आपातकालीन संबंध",
+      "noticePeriodDays": "नोटिस अवधि (दिन)",
+      "reportingManager": "रिपोर्टिंग मैनेजर",
+      "department": "विभाग",
+      "shift": "शिफ़्ट",
+      "designation": "पदनाम",
+      "employeeCode": "कर्मचारी कोड",
+      "probationStart": "परिवीक्षा प्रारंभ",
+      "probationEnd": "परिवीक्षा समाप्ति",
+      "confirmationDate": "पुष्टिकरण तिथि",
+      "customRoles": "कस्टम भूमिकाएँ",
+      "additionalManagers": "अतिरिक्त मैनेजर"
+    },
+    "select": {
+      "placeholder": "चुनें"
+    },
+    "gender": {
+      "male": "पुरुष",
+      "female": "महिला",
+      "other": "अन्य"
+    },
+    "maritalStatus": {
+      "single": "अविवाहित",
+      "married": "विवाहित",
+      "divorced": "तलाकशुदा",
+      "widowed": "विधवा/विधुर"
+    },
+    "placeholder": {
+      "aadhar": "12 अंक",
+      "pan": "ABCDE1234F",
+      "uan": "12 अंक",
+      "passport": "A1234567",
+      "designationSelfService": "बदलने के लिए HR से संपर्क करें",
+      "designation": "उदा. वरिष्ठ इंजीनियर",
+      "empCodeSelfService": "सेट करने के लिए HR से संपर्क करें",
+      "empCode": "उदा. EMP001"
+    },
+    "reportingManager": {
+      "none": "कोई मैनेजर नहीं"
+    },
+    "department": {
+      "none": "कोई विभाग नहीं"
+    },
+    "shift": {
+      "none": "कोई शिफ़्ट नहीं"
+    },
+    "saving": "सहेजा जा रहा है...",
+    "saveChanges": "परिवर्तन सहेजें",
+    "additionalManagers": {
+      "loading": "लोड हो रहा है…",
+      "none": "कोई अतिरिक्त मैनेजर नहीं",
+      "userFallback": "उपयोगकर्ता #{{id}}",
+      "selectedCount_one": "({{count}} चयनित)",
+      "selectedCount_other": "({{count}} चयनित)",
+      "helpText": "प्राथमिक रिपोर्टिंग मैनेजर के समान टीम-स्कोप पहुँच वाले सह-मैनेजर। हर टीम-स्कोप अनुमति में मान्य।",
+      "removeAria": "{{name}} को हटाएँ",
+      "removeAriaFallback": "मैनेजर",
+      "searchPlaceholder": "नाम या ईमेल से खोजें…",
+      "addPlaceholder": "एक और जोड़ें…",
+      "noMatches": "कोई मेल खाता उपयोगकर्ता नहीं",
+      "allSelected": "सभी पात्र उपयोगकर्ता पहले से चयनित हैं",
+      "savingButton": "सहेजा जा रहा है…",
+      "saveButton": "अतिरिक्त मैनेजर सहेजें",
+      "unsavedChanges": "असहेजे परिवर्तन",
+      "saved": "सहेजा गया"
+    },
+    "apiError": {
+      "requestFailed": "अनुरोध विफल"
+    },
+    "education": {
+      "add": "शिक्षा जोड़ें",
+      "edit": "शिक्षा संपादित करें",
+      "empty": "अभी तक कोई शिक्षा रिकॉर्ड नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह शिक्षा रिकॉर्ड हटाएँ?"
+      },
+      "field": {
+        "degree": "डिग्री",
+        "institution": "संस्थान",
+        "fieldOfStudy": "अध्ययन क्षेत्र",
+        "grade": "ग्रेड",
+        "startYear": "प्रारंभ वर्ष",
+        "endYear": "समाप्ति वर्ष"
+      },
+      "placeholder": {
+        "degree": "उदा. बी.टेक",
+        "institution": "उदा. IIT दिल्ली"
+      },
+      "validation": {
+        "required": "डिग्री और संस्थान आवश्यक हैं",
+        "endYear": "समाप्ति वर्ष प्रारंभ वर्ष को या उसके बाद होना चाहिए"
+      },
+      "fromYear": "{{year}} से",
+      "gradeSuffix": "ग्रेड: {{grade}}"
+    },
+    "save": "सहेजें",
+    "edit": "संपादित करें",
+    "delete": "हटाएँ",
+    "experience": {
+      "add": "अनुभव जोड़ें",
+      "edit": "अनुभव संपादित करें",
+      "empty": "अभी तक कोई कार्य अनुभव रिकॉर्ड नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह अनुभव रिकॉर्ड हटाएँ?"
+      },
+      "field": {
+        "company": "कंपनी",
+        "designation": "पदनाम",
+        "startDate": "प्रारंभ तिथि",
+        "endDate": "समाप्ति तिथि",
+        "description": "विवरण"
+      },
+      "currentlyWorking": "वर्तमान में यहाँ कार्यरत",
+      "current": "वर्तमान",
+      "present": "वर्तमान",
+      "validation": {
+        "required": "कंपनी, पदनाम और प्रारंभ तिथि आवश्यक हैं"
+      }
+    },
+    "dependents": {
+      "add": "आश्रित जोड़ें",
+      "edit": "आश्रित संपादित करें",
+      "empty": "अभी तक कोई आश्रित नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह आश्रित हटाएँ?"
+      },
+      "field": {
+        "name": "नाम",
+        "relationship": "संबंध",
+        "dateOfBirth": "जन्म तिथि",
+        "gender": "लिंग",
+        "nomineePercent": "नामिती %"
+      },
+      "isNominee": "नामिती है",
+      "placeholder": {
+        "relationship": "उदा. पति/पत्नी, संतान, माता-पिता"
+      },
+      "validation": {
+        "required": "नाम और संबंध आवश्यक हैं"
+      },
+      "column": {
+        "name": "नाम",
+        "relationship": "संबंध",
+        "dob": "जन्म तिथि",
+        "gender": "लिंग",
+        "nominee": "नामिती",
+        "actions": "क्रियाएँ"
+      },
+      "nomineeYes": "हाँ",
+      "nomineeNo": "नहीं"
+    },
+    "addresses": {
+      "add": "पता जोड़ें",
+      "edit": "पता संपादित करें",
+      "empty": "अभी तक कोई पता नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह पता हटाएँ?"
+      },
+      "field": {
+        "type": "प्रकार",
+        "country": "देश",
+        "line1": "पता पंक्ति 1",
+        "line2": "पता पंक्ति 2",
+        "city": "शहर",
+        "state": "राज्य",
+        "zipcode": "पिन कोड"
+      },
+      "type": {
+        "current": "वर्तमान",
+        "permanent": "स्थायी"
+      },
+      "validation": {
+        "required": "पता पंक्ति 1, शहर, राज्य और पिन कोड आवश्यक हैं"
+      }
+    },
+    "customFields": {
+      "loading": "कस्टम फ़ील्ड लोड हो रहे हैं...",
+      "emptyTitle": "अभी तक कर्मचारियों के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं किए गए हैं।",
+      "emptyHint": "HR प्रशासक कस्टम फ़ील्ड सेटिंग्स पृष्ठ से कस्टम फ़ील्ड बना सकते हैं।",
+      "heading": "कस्टम फ़ील्ड",
+      "saveFailed": "कस्टम फ़ील्ड सहेजने में विफल",
+      "defaultSection": "कस्टम फ़ील्ड",
+      "display": {
+        "yes": "हाँ",
+        "no": "नहीं"
+      },
+      "selectPlaceholder": "चुनें...",
+      "filePlaceholder": "फ़ाइल संदर्भ या पथ"
+    }
   }
 }

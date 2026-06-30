@@ -2538,5 +2538,264 @@
       "damaged": "Danificado",
       "updated": "Atualizado"
     }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "Pessoal",
+      "education": "Formação",
+      "experience": "Experiência",
+      "dependents": "Dependentes",
+      "addresses": "Endereços",
+      "custom": "Campos personalizados"
+    },
+    "invalidEmployee": {
+      "title": "Funcionário inválido",
+      "description": "O ID do funcionário na URL está ausente ou é inválido.",
+      "backLink": "Voltar ao diretório de funcionários"
+    },
+    "accessDenied": {
+      "title": "Acesso negado",
+      "description": "Você não tem permissão para ver este perfil.",
+      "backLink": "Voltar ao painel"
+    },
+    "loadingProfile": "Carregando perfil...",
+    "employeeNotFound": "Funcionário não encontrado",
+    "backToDirectory": "Voltar ao diretório",
+    "noDesignation": "Sem cargo",
+    "biometricPhotoTooltip": "A foto é gerenciada pelo cadastro no quiosque biométrico",
+    "biometricPhotoAlt": "Rosto biométrico",
+    "profilePhotoAlt": "Perfil",
+    "biometricPhotoHint": "Foto do cadastro biométrico — gerenciada pelo quiosque.",
+    "removingPhoto": "Removendo...",
+    "removePhoto": "Remover foto",
+    "empCodeLabel": "Código do funcionário: {{code}}",
+    "joinedLabel": "Admissão: {{date}}",
+    "cancel": "Cancelar",
+    "editMyInfo": "Editar minhas informações",
+    "editProfile": "Editar perfil",
+    "removePhotoDialog": {
+      "title": "Remover sua foto de perfil?",
+      "description": "Suas iniciais serão exibidas novamente.",
+      "confirm": "Remover foto"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "O PAN deve ter 5 letras + 4 dígitos + 1 letra (ex.: ABCDE1234F)",
+      "aadhaar": "O Aadhaar deve ter 12 dígitos",
+      "uan": "O UAN deve ter 12 dígitos",
+      "passport": "O passaporte deve ter 1 letra + 7 dígitos (ex.: A1234567)"
+    },
+    "personal": {
+      "saveFailed": "Falha ao salvar",
+      "selfServiceNotice": "Você pode editar suas informações pessoais e de contato de emergência. Entre em contato com o RH para atualizar campos administrativos."
+    },
+    "field": {
+      "personalEmail": "E-mail pessoal",
+      "contactNumber": "Telefone de contato",
+      "gender": "Gênero",
+      "dateOfBirth": "Data de nascimento",
+      "bloodGroup": "Tipo sanguíneo",
+      "maritalStatus": "Estado civil",
+      "nationality": "Nacionalidade",
+      "aadharNumber": "Número Aadhar",
+      "panNumber": "Número PAN",
+      "uanNumber": "Número UAN",
+      "passportNumber": "Número do passaporte",
+      "passportExpiry": "Validade do passaporte",
+      "visaStatus": "Status do visto",
+      "visaExpiry": "Validade do visto",
+      "emergencyContact": "Contato de emergência",
+      "emergencyPhone": "Telefone de emergência",
+      "emergencyRelation": "Parentesco de emergência",
+      "noticePeriodDays": "Aviso prévio (dias)",
+      "reportingManager": "Gestor responsável",
+      "department": "Departamento",
+      "shift": "Turno",
+      "designation": "Cargo",
+      "employeeCode": "Código do funcionário",
+      "probationStart": "Início da experiência",
+      "probationEnd": "Fim da experiência",
+      "confirmationDate": "Data de efetivação",
+      "customRoles": "Funções personalizadas",
+      "additionalManagers": "Gestores adicionais"
+    },
+    "select": {
+      "placeholder": "Selecionar"
+    },
+    "gender": {
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro"
+    },
+    "maritalStatus": {
+      "single": "Solteiro(a)",
+      "married": "Casado(a)",
+      "divorced": "Divorciado(a)",
+      "widowed": "Viúvo(a)"
+    },
+    "placeholder": {
+      "aadhar": "12 dígitos",
+      "pan": "ABCDE1234F",
+      "uan": "12 dígitos",
+      "passport": "A1234567",
+      "designationSelfService": "Entre em contato com o RH para alterar",
+      "designation": "ex.: Engenheiro Sênior",
+      "empCodeSelfService": "Entre em contato com o RH para definir",
+      "empCode": "ex.: EMP001"
+    },
+    "reportingManager": {
+      "none": "Sem gestor"
+    },
+    "department": {
+      "none": "Sem departamento"
+    },
+    "shift": {
+      "none": "Sem turno"
+    },
+    "saving": "Salvando...",
+    "saveChanges": "Salvar alterações",
+    "additionalManagers": {
+      "loading": "Carregando…",
+      "none": "Nenhum gestor adicional",
+      "userFallback": "Usuário nº {{id}}",
+      "selectedCount_one": "({{count}} selecionado)",
+      "selectedCount_other": "({{count}} selecionados)",
+      "helpText": "Cogestores com o mesmo acesso de escopo de equipe do gestor responsável principal. Respeitado por todas as permissões de escopo de equipe.",
+      "removeAria": "Remover {{name}}",
+      "removeAriaFallback": "gestor",
+      "searchPlaceholder": "Buscar por nome ou e-mail…",
+      "addPlaceholder": "Adicionar outro…",
+      "noMatches": "Nenhum usuário correspondente",
+      "allSelected": "Todos os usuários elegíveis já foram selecionados",
+      "savingButton": "Salvando…",
+      "saveButton": "Salvar gestores adicionais",
+      "unsavedChanges": "alterações não salvas",
+      "saved": "Salvo"
+    },
+    "apiError": {
+      "requestFailed": "Falha na solicitação"
+    },
+    "education": {
+      "add": "Adicionar formação",
+      "edit": "Editar formação",
+      "empty": "Nenhum registro de formação adicionado ainda.",
+      "deleteDialog": {
+        "title": "Excluir este registro de formação?"
+      },
+      "field": {
+        "degree": "Diploma",
+        "institution": "Instituição",
+        "fieldOfStudy": "Área de estudo",
+        "grade": "Nota",
+        "startYear": "Ano de início",
+        "endYear": "Ano de conclusão"
+      },
+      "placeholder": {
+        "degree": "ex.: B.Tech",
+        "institution": "ex.: IIT Delhi"
+      },
+      "validation": {
+        "required": "Diploma e Instituição são obrigatórios",
+        "endYear": "O ano de conclusão deve ser igual ou posterior ao ano de início"
+      },
+      "fromYear": "A partir de {{year}}",
+      "gradeSuffix": "Nota: {{grade}}"
+    },
+    "save": "Salvar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "experience": {
+      "add": "Adicionar experiência",
+      "edit": "Editar experiência",
+      "empty": "Nenhum registro de experiência profissional adicionado ainda.",
+      "deleteDialog": {
+        "title": "Excluir este registro de experiência?"
+      },
+      "field": {
+        "company": "Empresa",
+        "designation": "Cargo",
+        "startDate": "Data de início",
+        "endDate": "Data de término",
+        "description": "Descrição"
+      },
+      "currentlyWorking": "Trabalho aqui atualmente",
+      "current": "Atual",
+      "present": "Atual",
+      "validation": {
+        "required": "Empresa, Cargo e Data de início são obrigatórios"
+      }
+    },
+    "dependents": {
+      "add": "Adicionar dependente",
+      "edit": "Editar dependente",
+      "empty": "Nenhum dependente adicionado ainda.",
+      "deleteDialog": {
+        "title": "Excluir este dependente?"
+      },
+      "field": {
+        "name": "Nome",
+        "relationship": "Parentesco",
+        "dateOfBirth": "Data de nascimento",
+        "gender": "Gênero",
+        "nomineePercent": "% do beneficiário"
+      },
+      "isNominee": "É beneficiário",
+      "placeholder": {
+        "relationship": "ex.: Cônjuge, Filho(a), Pai/Mãe"
+      },
+      "validation": {
+        "required": "Nome e Parentesco são obrigatórios"
+      },
+      "column": {
+        "name": "Nome",
+        "relationship": "Parentesco",
+        "dob": "Nasc.",
+        "gender": "Gênero",
+        "nominee": "Beneficiário",
+        "actions": "Ações"
+      },
+      "nomineeYes": "Sim",
+      "nomineeNo": "Não"
+    },
+    "addresses": {
+      "add": "Adicionar endereço",
+      "edit": "Editar endereço",
+      "empty": "Nenhum endereço adicionado ainda.",
+      "deleteDialog": {
+        "title": "Excluir este endereço?"
+      },
+      "field": {
+        "type": "Tipo",
+        "country": "País",
+        "line1": "Endereço linha 1",
+        "line2": "Endereço linha 2",
+        "city": "Cidade",
+        "state": "Estado",
+        "zipcode": "CEP"
+      },
+      "type": {
+        "current": "Atual",
+        "permanent": "Permanente"
+      },
+      "validation": {
+        "required": "Endereço linha 1, Cidade, Estado e CEP são obrigatórios"
+      }
+    },
+    "customFields": {
+      "loading": "Carregando campos personalizados...",
+      "emptyTitle": "Nenhum campo personalizado foi definido para funcionários ainda.",
+      "emptyHint": "Os administradores de RH podem criar campos personalizados na página de configurações de Campos personalizados.",
+      "heading": "Campos personalizados",
+      "saveFailed": "Falha ao salvar campos personalizados",
+      "defaultSection": "Campos personalizados",
+      "display": {
+        "yes": "Sim",
+        "no": "Não"
+      },
+      "selectPlaceholder": "Selecionar...",
+      "filePlaceholder": "Referência ou caminho do arquivo"
+    }
   }
 }

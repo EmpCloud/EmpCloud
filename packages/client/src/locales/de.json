@@ -2538,5 +2538,264 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "Persönlich",
+      "education": "Ausbildung",
+      "experience": "Berufserfahrung",
+      "dependents": "Angehörige",
+      "addresses": "Adressen",
+      "custom": "Benutzerdefinierte Felder"
+    },
+    "invalidEmployee": {
+      "title": "Ungültiger Mitarbeiter",
+      "description": "Die Mitarbeiter-ID in der URL fehlt oder ist ungültig.",
+      "backLink": "Zurück zum Mitarbeiterverzeichnis"
+    },
+    "accessDenied": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, dieses Profil anzuzeigen.",
+      "backLink": "Zurück zum Dashboard"
+    },
+    "loadingProfile": "Profil wird geladen...",
+    "employeeNotFound": "Mitarbeiter nicht gefunden",
+    "backToDirectory": "Zurück zum Verzeichnis",
+    "noDesignation": "Keine Bezeichnung",
+    "biometricPhotoTooltip": "Das Foto wird über die biometrische Kiosk-Erfassung verwaltet",
+    "biometricPhotoAlt": "Biometrisches Gesicht",
+    "profilePhotoAlt": "Profil",
+    "biometricPhotoHint": "Foto aus der biometrischen Erfassung – wird über den Kiosk verwaltet.",
+    "removingPhoto": "Wird entfernt...",
+    "removePhoto": "Foto entfernen",
+    "empCodeLabel": "Mitarbeiter-Nr.: {{code}}",
+    "joinedLabel": "Eingetreten am: {{date}}",
+    "cancel": "Abbrechen",
+    "editMyInfo": "Meine Daten bearbeiten",
+    "editProfile": "Profil bearbeiten",
+    "removePhotoDialog": {
+      "title": "Ihr Profilfoto entfernen?",
+      "description": "Es werden wieder Ihre Initialen angezeigt.",
+      "confirm": "Foto entfernen"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PAN muss aus 5 Buchstaben + 4 Ziffern + 1 Buchstaben bestehen (z. B. ABCDE1234F)",
+      "aadhaar": "Aadhaar muss aus 12 Ziffern bestehen",
+      "uan": "UAN muss aus 12 Ziffern bestehen",
+      "passport": "Reisepass muss aus 1 Buchstaben + 7 Ziffern bestehen (z. B. A1234567)"
+    },
+    "personal": {
+      "saveFailed": "Speichern fehlgeschlagen",
+      "selfServiceNotice": "Sie können Ihre persönlichen Daten und Notfallkontakte bearbeiten. Wenden Sie sich an die Personalabteilung, um administrative Felder zu aktualisieren."
+    },
+    "field": {
+      "personalEmail": "Private E-Mail",
+      "contactNumber": "Telefonnummer",
+      "gender": "Geschlecht",
+      "dateOfBirth": "Geburtsdatum",
+      "bloodGroup": "Blutgruppe",
+      "maritalStatus": "Familienstand",
+      "nationality": "Staatsangehörigkeit",
+      "aadharNumber": "Aadhaar-Nummer",
+      "panNumber": "PAN-Nummer",
+      "uanNumber": "UAN-Nummer",
+      "passportNumber": "Reisepassnummer",
+      "passportExpiry": "Ablaufdatum des Reisepasses",
+      "visaStatus": "Visumstatus",
+      "visaExpiry": "Ablaufdatum des Visums",
+      "emergencyContact": "Notfallkontakt",
+      "emergencyPhone": "Notfalltelefon",
+      "emergencyRelation": "Beziehung zum Notfallkontakt",
+      "noticePeriodDays": "Kündigungsfrist (Tage)",
+      "reportingManager": "Vorgesetzter",
+      "department": "Abteilung",
+      "shift": "Schicht",
+      "designation": "Bezeichnung",
+      "employeeCode": "Mitarbeiternummer",
+      "probationStart": "Beginn der Probezeit",
+      "probationEnd": "Ende der Probezeit",
+      "confirmationDate": "Übernahmedatum",
+      "customRoles": "Benutzerdefinierte Rollen",
+      "additionalManagers": "Zusätzliche Vorgesetzte"
+    },
+    "select": {
+      "placeholder": "Auswählen"
+    },
+    "gender": {
+      "male": "Männlich",
+      "female": "Weiblich",
+      "other": "Divers"
+    },
+    "maritalStatus": {
+      "single": "Ledig",
+      "married": "Verheiratet",
+      "divorced": "Geschieden",
+      "widowed": "Verwitwet"
+    },
+    "placeholder": {
+      "aadhar": "12 Ziffern",
+      "pan": "ABCDE1234F",
+      "uan": "12 Ziffern",
+      "passport": "A1234567",
+      "designationSelfService": "Zum Ändern an die Personalabteilung wenden",
+      "designation": "z. B. Senior Engineer",
+      "empCodeSelfService": "Zum Festlegen an die Personalabteilung wenden",
+      "empCode": "z. B. EMP001"
+    },
+    "reportingManager": {
+      "none": "Kein Vorgesetzter"
+    },
+    "department": {
+      "none": "Keine Abteilung"
+    },
+    "shift": {
+      "none": "Keine Schicht"
+    },
+    "saving": "Wird gespeichert...",
+    "saveChanges": "Änderungen speichern",
+    "additionalManagers": {
+      "loading": "Wird geladen…",
+      "none": "Keine zusätzlichen Vorgesetzten",
+      "userFallback": "Benutzer #{{id}}",
+      "selectedCount_one": "({{count}} ausgewählt)",
+      "selectedCount_other": "({{count}} ausgewählt)",
+      "helpText": "Mitverantwortliche mit demselben teambezogenen Zugriff wie der primäre Vorgesetzte. Wird von jeder teambezogenen Berechtigung berücksichtigt.",
+      "removeAria": "{{name}} entfernen",
+      "removeAriaFallback": "Vorgesetzten",
+      "searchPlaceholder": "Nach Name oder E-Mail suchen…",
+      "addPlaceholder": "Weitere hinzufügen…",
+      "noMatches": "Keine passenden Benutzer",
+      "allSelected": "Alle berechtigten Benutzer bereits ausgewählt",
+      "savingButton": "Wird gespeichert…",
+      "saveButton": "Zusätzliche Vorgesetzte speichern",
+      "unsavedChanges": "nicht gespeicherte Änderungen",
+      "saved": "Gespeichert"
+    },
+    "apiError": {
+      "requestFailed": "Anfrage fehlgeschlagen"
+    },
+    "education": {
+      "add": "Ausbildung hinzufügen",
+      "edit": "Ausbildung bearbeiten",
+      "empty": "Noch keine Ausbildungseinträge hinzugefügt.",
+      "deleteDialog": {
+        "title": "Diesen Ausbildungseintrag löschen?"
+      },
+      "field": {
+        "degree": "Abschluss",
+        "institution": "Bildungseinrichtung",
+        "fieldOfStudy": "Studienfach",
+        "grade": "Note",
+        "startYear": "Anfangsjahr",
+        "endYear": "Abschlussjahr"
+      },
+      "placeholder": {
+        "degree": "z. B. B.Tech",
+        "institution": "z. B. IIT Delhi"
+      },
+      "validation": {
+        "required": "Abschluss und Bildungseinrichtung sind erforderlich",
+        "endYear": "Das Abschlussjahr muss im oder nach dem Anfangsjahr liegen"
+      },
+      "fromYear": "Seit {{year}}",
+      "gradeSuffix": "Note: {{grade}}"
+    },
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "experience": {
+      "add": "Berufserfahrung hinzufügen",
+      "edit": "Berufserfahrung bearbeiten",
+      "empty": "Noch keine Einträge zur Berufserfahrung hinzugefügt.",
+      "deleteDialog": {
+        "title": "Diesen Berufserfahrungseintrag löschen?"
+      },
+      "field": {
+        "company": "Unternehmen",
+        "designation": "Bezeichnung",
+        "startDate": "Startdatum",
+        "endDate": "Enddatum",
+        "description": "Beschreibung"
+      },
+      "currentlyWorking": "Derzeit hier tätig",
+      "current": "Aktuell",
+      "present": "Heute",
+      "validation": {
+        "required": "Unternehmen, Bezeichnung und Startdatum sind erforderlich"
+      }
+    },
+    "dependents": {
+      "add": "Angehörigen hinzufügen",
+      "edit": "Angehörigen bearbeiten",
+      "empty": "Noch keine Angehörigen hinzugefügt.",
+      "deleteDialog": {
+        "title": "Diesen Angehörigen löschen?"
+      },
+      "field": {
+        "name": "Name",
+        "relationship": "Beziehung",
+        "dateOfBirth": "Geburtsdatum",
+        "gender": "Geschlecht",
+        "nomineePercent": "Begünstigung %"
+      },
+      "isNominee": "Ist Begünstigter",
+      "placeholder": {
+        "relationship": "z. B. Ehepartner, Kind, Elternteil"
+      },
+      "validation": {
+        "required": "Name und Beziehung sind erforderlich"
+      },
+      "column": {
+        "name": "Name",
+        "relationship": "Beziehung",
+        "dob": "Geb.-Datum",
+        "gender": "Geschlecht",
+        "nominee": "Begünstigter",
+        "actions": "Aktionen"
+      },
+      "nomineeYes": "Ja",
+      "nomineeNo": "Nein"
+    },
+    "addresses": {
+      "add": "Adresse hinzufügen",
+      "edit": "Adresse bearbeiten",
+      "empty": "Noch keine Adressen hinzugefügt.",
+      "deleteDialog": {
+        "title": "Diese Adresse löschen?"
+      },
+      "field": {
+        "type": "Typ",
+        "country": "Land",
+        "line1": "Adresszeile 1",
+        "line2": "Adresszeile 2",
+        "city": "Stadt",
+        "state": "Bundesland",
+        "zipcode": "Postleitzahl"
+      },
+      "type": {
+        "current": "Aktuell",
+        "permanent": "Dauerhaft"
+      },
+      "validation": {
+        "required": "Adresszeile 1, Stadt, Bundesland und Postleitzahl sind erforderlich"
+      }
+    },
+    "customFields": {
+      "loading": "Benutzerdefinierte Felder werden geladen...",
+      "emptyTitle": "Es wurden noch keine benutzerdefinierten Felder für Mitarbeiter definiert.",
+      "emptyHint": "HR-Administratoren können benutzerdefinierte Felder auf der Einstellungsseite für benutzerdefinierte Felder erstellen.",
+      "heading": "Benutzerdefinierte Felder",
+      "saveFailed": "Speichern der benutzerdefinierten Felder fehlgeschlagen",
+      "defaultSection": "Benutzerdefinierte Felder",
+      "display": {
+        "yes": "Ja",
+        "no": "Nein"
+      },
+      "selectPlaceholder": "Auswählen...",
+      "filePlaceholder": "Dateireferenz oder Pfad"
+    }
   }
 }

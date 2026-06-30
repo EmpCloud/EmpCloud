@@ -2538,5 +2538,264 @@
       "damaged": "تالف",
       "updated": "تم التحديث"
     }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "البيانات الشخصية",
+      "education": "التعليم",
+      "experience": "الخبرة",
+      "dependents": "المُعالون",
+      "addresses": "العناوين",
+      "custom": "حقول مخصصة"
+    },
+    "invalidEmployee": {
+      "title": "موظف غير صالح",
+      "description": "معرّف الموظف في الرابط مفقود أو غير صالح.",
+      "backLink": "العودة إلى دليل الموظفين"
+    },
+    "accessDenied": {
+      "title": "تم رفض الوصول",
+      "description": "ليس لديك إذن لعرض هذا الملف الشخصي.",
+      "backLink": "العودة إلى لوحة التحكم"
+    },
+    "loadingProfile": "جارٍ تحميل الملف الشخصي...",
+    "employeeNotFound": "لم يتم العثور على الموظف",
+    "backToDirectory": "العودة إلى الدليل",
+    "noDesignation": "لا يوجد مسمى وظيفي",
+    "biometricPhotoTooltip": "تُدار الصورة عبر تسجيل كشك البصمة",
+    "biometricPhotoAlt": "صورة بصمة الوجه",
+    "profilePhotoAlt": "الملف الشخصي",
+    "biometricPhotoHint": "صورة من تسجيل البصمة — تُدار عبر الكشك.",
+    "removingPhoto": "جارٍ الإزالة...",
+    "removePhoto": "إزالة الصورة",
+    "empCodeLabel": "رمز الموظف: {{code}}",
+    "joinedLabel": "تاريخ الالتحاق: {{date}}",
+    "cancel": "إلغاء",
+    "editMyInfo": "تعديل بياناتي",
+    "editProfile": "تعديل الملف الشخصي",
+    "removePhotoDialog": {
+      "title": "إزالة صورة ملفك الشخصي؟",
+      "description": "ستظهر الأحرف الأولى من اسمك مرة أخرى.",
+      "confirm": "إزالة الصورة"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "يجب أن يتكون رقم PAN من 5 أحرف + 4 أرقام + حرف واحد (مثال: ABCDE1234F)",
+      "aadhaar": "يجب أن يتكون رقم Aadhaar من 12 رقمًا",
+      "uan": "يجب أن يتكون رقم UAN من 12 رقمًا",
+      "passport": "يجب أن يتكون رقم جواز السفر من حرف واحد + 7 أرقام (مثال: A1234567)"
+    },
+    "personal": {
+      "saveFailed": "فشل الحفظ",
+      "selfServiceNotice": "يمكنك تعديل بياناتك الشخصية وبيانات الاتصال في حالات الطوارئ. تواصل مع الموارد البشرية لتحديث الحقول الإدارية."
+    },
+    "field": {
+      "personalEmail": "البريد الإلكتروني الشخصي",
+      "contactNumber": "رقم الاتصال",
+      "gender": "الجنس",
+      "dateOfBirth": "تاريخ الميلاد",
+      "bloodGroup": "فصيلة الدم",
+      "maritalStatus": "الحالة الاجتماعية",
+      "nationality": "الجنسية",
+      "aadharNumber": "رقم Aadhar",
+      "panNumber": "رقم PAN",
+      "uanNumber": "رقم UAN",
+      "passportNumber": "رقم جواز السفر",
+      "passportExpiry": "انتهاء صلاحية جواز السفر",
+      "visaStatus": "حالة التأشيرة",
+      "visaExpiry": "انتهاء صلاحية التأشيرة",
+      "emergencyContact": "جهة الاتصال في حالات الطوارئ",
+      "emergencyPhone": "هاتف الطوارئ",
+      "emergencyRelation": "صلة القرابة لجهة الطوارئ",
+      "noticePeriodDays": "فترة الإشعار (بالأيام)",
+      "reportingManager": "المدير المباشر",
+      "department": "القسم",
+      "shift": "الوردية",
+      "designation": "المسمى الوظيفي",
+      "employeeCode": "رمز الموظف",
+      "probationStart": "بداية فترة التجربة",
+      "probationEnd": "نهاية فترة التجربة",
+      "confirmationDate": "تاريخ التثبيت",
+      "customRoles": "أدوار مخصصة",
+      "additionalManagers": "مديرون إضافيون"
+    },
+    "select": {
+      "placeholder": "اختر"
+    },
+    "gender": {
+      "male": "ذكر",
+      "female": "أنثى",
+      "other": "آخر"
+    },
+    "maritalStatus": {
+      "single": "أعزب",
+      "married": "متزوج",
+      "divorced": "مطلّق",
+      "widowed": "أرمل"
+    },
+    "placeholder": {
+      "aadhar": "12 رقمًا",
+      "pan": "ABCDE1234F",
+      "uan": "12 رقمًا",
+      "passport": "A1234567",
+      "designationSelfService": "تواصل مع الموارد البشرية للتغيير",
+      "designation": "مثال: مهندس أول",
+      "empCodeSelfService": "تواصل مع الموارد البشرية للتعيين",
+      "empCode": "مثال: EMP001"
+    },
+    "reportingManager": {
+      "none": "لا يوجد مدير"
+    },
+    "department": {
+      "none": "لا يوجد قسم"
+    },
+    "shift": {
+      "none": "لا توجد وردية"
+    },
+    "saving": "جارٍ الحفظ...",
+    "saveChanges": "حفظ التغييرات",
+    "additionalManagers": {
+      "loading": "جارٍ التحميل…",
+      "none": "لا يوجد مديرون إضافيون",
+      "userFallback": "المستخدم رقم {{id}}",
+      "selectedCount_one": "(تم تحديد {{count}})",
+      "selectedCount_other": "(تم تحديد {{count}})",
+      "helpText": "مديرون مشاركون يتمتعون بنفس صلاحية الوصول على مستوى الفريق مثل المدير المباشر الأساسي. تُحترم صلاحياتهم في كل إذن على مستوى الفريق.",
+      "removeAria": "إزالة {{name}}",
+      "removeAriaFallback": "مدير",
+      "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني…",
+      "addPlaceholder": "إضافة آخر…",
+      "noMatches": "لا يوجد مستخدمون مطابقون",
+      "allSelected": "تم بالفعل تحديد جميع المستخدمين المؤهلين",
+      "savingButton": "جارٍ الحفظ…",
+      "saveButton": "حفظ المديرين الإضافيين",
+      "unsavedChanges": "تغييرات غير محفوظة",
+      "saved": "تم الحفظ"
+    },
+    "apiError": {
+      "requestFailed": "فشل الطلب"
+    },
+    "education": {
+      "add": "إضافة مؤهل تعليمي",
+      "edit": "تعديل المؤهل التعليمي",
+      "empty": "لم تتم إضافة أي سجلات تعليمية بعد.",
+      "deleteDialog": {
+        "title": "حذف هذا السجل التعليمي؟"
+      },
+      "field": {
+        "degree": "الدرجة العلمية",
+        "institution": "المؤسسة التعليمية",
+        "fieldOfStudy": "مجال الدراسة",
+        "grade": "التقدير",
+        "startYear": "سنة البداية",
+        "endYear": "سنة النهاية"
+      },
+      "placeholder": {
+        "degree": "مثال: بكالوريوس هندسة",
+        "institution": "مثال: جامعة الملك سعود"
+      },
+      "validation": {
+        "required": "الدرجة العلمية والمؤسسة التعليمية مطلوبتان",
+        "endYear": "يجب أن تكون سنة النهاية في سنة البداية أو بعدها"
+      },
+      "fromYear": "من {{year}}",
+      "gradeSuffix": "التقدير: {{grade}}"
+    },
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "experience": {
+      "add": "إضافة خبرة",
+      "edit": "تعديل الخبرة",
+      "empty": "لم تتم إضافة أي سجلات خبرة عملية بعد.",
+      "deleteDialog": {
+        "title": "حذف سجل الخبرة هذا؟"
+      },
+      "field": {
+        "company": "الشركة",
+        "designation": "المسمى الوظيفي",
+        "startDate": "تاريخ البداية",
+        "endDate": "تاريخ النهاية",
+        "description": "الوصف"
+      },
+      "currentlyWorking": "أعمل هنا حاليًا",
+      "current": "حالي",
+      "present": "حتى الآن",
+      "validation": {
+        "required": "الشركة والمسمى الوظيفي وتاريخ البداية مطلوبة"
+      }
+    },
+    "dependents": {
+      "add": "إضافة مُعال",
+      "edit": "تعديل المُعال",
+      "empty": "لم تتم إضافة أي مُعالين بعد.",
+      "deleteDialog": {
+        "title": "حذف هذا المُعال؟"
+      },
+      "field": {
+        "name": "الاسم",
+        "relationship": "صلة القرابة",
+        "dateOfBirth": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "nomineePercent": "نسبة المستفيد %"
+      },
+      "isNominee": "مستفيد",
+      "placeholder": {
+        "relationship": "مثال: زوج/زوجة، ابن، أحد الوالدين"
+      },
+      "validation": {
+        "required": "الاسم وصلة القرابة مطلوبان"
+      },
+      "column": {
+        "name": "الاسم",
+        "relationship": "صلة القرابة",
+        "dob": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "nominee": "المستفيد",
+        "actions": "الإجراءات"
+      },
+      "nomineeYes": "نعم",
+      "nomineeNo": "لا"
+    },
+    "addresses": {
+      "add": "إضافة عنوان",
+      "edit": "تعديل العنوان",
+      "empty": "لم تتم إضافة أي عناوين بعد.",
+      "deleteDialog": {
+        "title": "حذف هذا العنوان؟"
+      },
+      "field": {
+        "type": "النوع",
+        "country": "الدولة",
+        "line1": "العنوان السطر 1",
+        "line2": "العنوان السطر 2",
+        "city": "المدينة",
+        "state": "المحافظة",
+        "zipcode": "الرمز البريدي"
+      },
+      "type": {
+        "current": "الحالي",
+        "permanent": "الدائم"
+      },
+      "validation": {
+        "required": "العنوان السطر 1 والمدينة والمحافظة والرمز البريدي مطلوبة"
+      }
+    },
+    "customFields": {
+      "loading": "جارٍ تحميل الحقول المخصصة...",
+      "emptyTitle": "لم يتم تعريف أي حقول مخصصة للموظفين بعد.",
+      "emptyHint": "يمكن لمسؤولي الموارد البشرية إنشاء حقول مخصصة من صفحة إعدادات الحقول المخصصة.",
+      "heading": "حقول مخصصة",
+      "saveFailed": "فشل حفظ الحقول المخصصة",
+      "defaultSection": "حقول مخصصة",
+      "display": {
+        "yes": "نعم",
+        "no": "لا"
+      },
+      "selectPlaceholder": "اختر...",
+      "filePlaceholder": "مرجع الملف أو المسار"
+    }
   }
 }

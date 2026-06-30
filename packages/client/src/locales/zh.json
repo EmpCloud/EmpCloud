@@ -2538,5 +2538,264 @@
       "damaged": "已损坏",
       "updated": "已更新"
     }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "个人信息",
+      "education": "教育经历",
+      "experience": "工作经历",
+      "dependents": "受抚养人",
+      "addresses": "地址",
+      "custom": "自定义字段"
+    },
+    "invalidEmployee": {
+      "title": "无效员工",
+      "description": "URL 中的员工 ID 缺失或无效。",
+      "backLink": "返回员工目录"
+    },
+    "accessDenied": {
+      "title": "访问被拒绝",
+      "description": "您无权查看此档案。",
+      "backLink": "返回仪表盘"
+    },
+    "loadingProfile": "正在加载档案……",
+    "employeeNotFound": "未找到员工",
+    "backToDirectory": "返回目录",
+    "noDesignation": "无职位",
+    "biometricPhotoTooltip": "照片通过生物识别终端录入管理",
+    "biometricPhotoAlt": "生物识别人脸",
+    "profilePhotoAlt": "档案",
+    "biometricPhotoHint": "照片来自生物识别录入——通过终端管理。",
+    "removingPhoto": "正在移除……",
+    "removePhoto": "移除照片",
+    "empCodeLabel": "员工编号：{{code}}",
+    "joinedLabel": "入职日期：{{date}}",
+    "cancel": "取消",
+    "editMyInfo": "编辑我的信息",
+    "editProfile": "编辑档案",
+    "removePhotoDialog": {
+      "title": "移除您的档案照片？",
+      "description": "将重新显示姓名首字母。",
+      "confirm": "移除照片"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PAN 必须为 5 个字母 + 4 个数字 + 1 个字母（例如 ABCDE1234F）",
+      "aadhaar": "Aadhaar 必须为 12 位数字",
+      "uan": "UAN 必须为 12 位数字",
+      "passport": "护照号必须为 1 个字母 + 7 个数字（例如 A1234567）"
+    },
+    "personal": {
+      "saveFailed": "保存失败",
+      "selfServiceNotice": "您可以编辑个人信息和紧急联系人信息。如需更新管理字段，请联系人力资源部。"
+    },
+    "field": {
+      "personalEmail": "个人邮箱",
+      "contactNumber": "联系电话",
+      "gender": "性别",
+      "dateOfBirth": "出生日期",
+      "bloodGroup": "血型",
+      "maritalStatus": "婚姻状况",
+      "nationality": "国籍",
+      "aadharNumber": "Aadhar 号码",
+      "panNumber": "PAN 号码",
+      "uanNumber": "UAN 号码",
+      "passportNumber": "护照号码",
+      "passportExpiry": "护照有效期",
+      "visaStatus": "签证状态",
+      "visaExpiry": "签证有效期",
+      "emergencyContact": "紧急联系人",
+      "emergencyPhone": "紧急联系电话",
+      "emergencyRelation": "紧急联系人关系",
+      "noticePeriodDays": "通知期（天）",
+      "reportingManager": "汇报经理",
+      "department": "部门",
+      "shift": "班次",
+      "designation": "职位",
+      "employeeCode": "员工编号",
+      "probationStart": "试用期开始",
+      "probationEnd": "试用期结束",
+      "confirmationDate": "转正日期",
+      "customRoles": "自定义角色",
+      "additionalManagers": "其他经理"
+    },
+    "select": {
+      "placeholder": "请选择"
+    },
+    "gender": {
+      "male": "男",
+      "female": "女",
+      "other": "其他"
+    },
+    "maritalStatus": {
+      "single": "未婚",
+      "married": "已婚",
+      "divorced": "离异",
+      "widowed": "丧偶"
+    },
+    "placeholder": {
+      "aadhar": "12 位数字",
+      "pan": "ABCDE1234F",
+      "uan": "12 位数字",
+      "passport": "A1234567",
+      "designationSelfService": "如需更改请联系人力资源部",
+      "designation": "例如：高级工程师",
+      "empCodeSelfService": "如需设置请联系人力资源部",
+      "empCode": "例如：EMP001"
+    },
+    "reportingManager": {
+      "none": "无经理"
+    },
+    "department": {
+      "none": "无部门"
+    },
+    "shift": {
+      "none": "无班次"
+    },
+    "saving": "正在保存……",
+    "saveChanges": "保存更改",
+    "additionalManagers": {
+      "loading": "正在加载……",
+      "none": "无其他经理",
+      "userFallback": "用户 #{{id}}",
+      "selectedCount_one": "（已选择 {{count}} 个）",
+      "selectedCount_other": "（已选择 {{count}} 个）",
+      "helpText": "与主汇报经理拥有相同团队范围访问权限的协同经理。每项团队范围的权限均予以认可。",
+      "removeAria": "移除 {{name}}",
+      "removeAriaFallback": "经理",
+      "searchPlaceholder": "按姓名或邮箱搜索……",
+      "addPlaceholder": "添加另一位……",
+      "noMatches": "无匹配用户",
+      "allSelected": "所有符合条件的用户均已选择",
+      "savingButton": "正在保存……",
+      "saveButton": "保存其他经理",
+      "unsavedChanges": "未保存的更改",
+      "saved": "已保存"
+    },
+    "apiError": {
+      "requestFailed": "请求失败"
+    },
+    "education": {
+      "add": "添加教育经历",
+      "edit": "编辑教育经历",
+      "empty": "尚未添加教育记录。",
+      "deleteDialog": {
+        "title": "删除此教育记录？"
+      },
+      "field": {
+        "degree": "学位",
+        "institution": "院校",
+        "fieldOfStudy": "专业",
+        "grade": "成绩",
+        "startYear": "起始年份",
+        "endYear": "结束年份"
+      },
+      "placeholder": {
+        "degree": "例如：工学学士",
+        "institution": "例如：印度理工学院德里分校"
+      },
+      "validation": {
+        "required": "学位和院校为必填项",
+        "endYear": "结束年份必须不早于起始年份"
+      },
+      "fromYear": "自 {{year}} 年起",
+      "gradeSuffix": "成绩：{{grade}}"
+    },
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "experience": {
+      "add": "添加工作经历",
+      "edit": "编辑工作经历",
+      "empty": "尚未添加工作经历记录。",
+      "deleteDialog": {
+        "title": "删除此工作经历记录？"
+      },
+      "field": {
+        "company": "公司",
+        "designation": "职位",
+        "startDate": "开始日期",
+        "endDate": "结束日期",
+        "description": "描述"
+      },
+      "currentlyWorking": "目前在职",
+      "current": "当前",
+      "present": "至今",
+      "validation": {
+        "required": "公司、职位和开始日期为必填项"
+      }
+    },
+    "dependents": {
+      "add": "添加受抚养人",
+      "edit": "编辑受抚养人",
+      "empty": "尚未添加受抚养人。",
+      "deleteDialog": {
+        "title": "删除此受抚养人？"
+      },
+      "field": {
+        "name": "姓名",
+        "relationship": "关系",
+        "dateOfBirth": "出生日期",
+        "gender": "性别",
+        "nomineePercent": "受益人比例 %"
+      },
+      "isNominee": "是否为受益人",
+      "placeholder": {
+        "relationship": "例如：配偶、子女、父母"
+      },
+      "validation": {
+        "required": "姓名和关系为必填项"
+      },
+      "column": {
+        "name": "姓名",
+        "relationship": "关系",
+        "dob": "出生日期",
+        "gender": "性别",
+        "nominee": "受益人",
+        "actions": "操作"
+      },
+      "nomineeYes": "是",
+      "nomineeNo": "否"
+    },
+    "addresses": {
+      "add": "添加地址",
+      "edit": "编辑地址",
+      "empty": "尚未添加地址。",
+      "deleteDialog": {
+        "title": "删除此地址？"
+      },
+      "field": {
+        "type": "类型",
+        "country": "国家/地区",
+        "line1": "地址行 1",
+        "line2": "地址行 2",
+        "city": "城市",
+        "state": "省/州",
+        "zipcode": "邮政编码"
+      },
+      "type": {
+        "current": "现居",
+        "permanent": "永久"
+      },
+      "validation": {
+        "required": "地址行 1、城市、省/州和邮政编码为必填项"
+      }
+    },
+    "customFields": {
+      "loading": "正在加载自定义字段……",
+      "emptyTitle": "尚未为员工定义任何自定义字段。",
+      "emptyHint": "人力资源管理员可在自定义字段设置页面创建自定义字段。",
+      "heading": "自定义字段",
+      "saveFailed": "保存自定义字段失败",
+      "defaultSection": "自定义字段",
+      "display": {
+        "yes": "是",
+        "no": "否"
+      },
+      "selectPlaceholder": "请选择……",
+      "filePlaceholder": "文件引用或路径"
+    }
   }
 }
