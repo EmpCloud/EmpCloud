@@ -2093,6 +2093,28 @@
     "closed": "終了",
     "organization": "組織",
     "totalEmployees": "従業員総数",
-    "surveysConducted": "実施したアンケート"
+    "surveysConducted": "実施したアンケート",
+    "recentSurveys": "最近のアンケート",
+    "viewAll": "すべて表示",
+    "colTitle": "タイトル",
+    "colType": "種類",
+    "colStatus": "ステータス",
+    "colResponses": "回答",
+    "colCreated": "作成日",
+    "empty": "まだアンケートがありません。最初のアンケートを作成して始めましょう。",
+    "status": {
+      "draft": "下書き",
+      "active": "実施中",
+      "closed": "終了",
+      "archived": "アーカイブ済み"
+    },
+    "type": {
+      "pulse": "パルス",
+      "enps": "eNPS",
+      "engagement": "エンゲージメント",
+      "custom": "カスタム",
+      "onboarding": "オンボーディング",
+      "exit_survey": "退職アンケート"
+    }
   }
 }

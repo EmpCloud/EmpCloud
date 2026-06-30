@@ -2093,6 +2093,28 @@
     "closed": "Geschlossen",
     "organization": "Organisation",
     "totalEmployees": "Mitarbeiter gesamt",
-    "surveysConducted": "Durchgeführte Umfragen"
+    "surveysConducted": "Durchgeführte Umfragen",
+    "recentSurveys": "Aktuelle Umfragen",
+    "viewAll": "Alle anzeigen",
+    "colTitle": "Titel",
+    "colType": "Typ",
+    "colStatus": "Status",
+    "colResponses": "Antworten",
+    "colCreated": "Erstellt",
+    "empty": "Noch keine Umfragen. Erstellen Sie Ihre erste Umfrage, um zu beginnen.",
+    "status": {
+      "draft": "Entwurf",
+      "active": "Aktiv",
+      "closed": "Geschlossen",
+      "archived": "Archiviert"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Benutzerdefiniert",
+      "onboarding": "Onboarding",
+      "exit_survey": "Austrittsumfrage"
+    }
   }
 }

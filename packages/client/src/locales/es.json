@@ -2093,6 +2093,28 @@
     "closed": "Cerradas",
     "organization": "Organización",
     "totalEmployees": "Total de Empleados",
-    "surveysConducted": "Encuestas Realizadas"
+    "surveysConducted": "Encuestas Realizadas",
+    "recentSurveys": "Encuestas Recientes",
+    "viewAll": "Ver todo",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colStatus": "Estado",
+    "colResponses": "Respuestas",
+    "colCreated": "Creada",
+    "empty": "Aún no hay encuestas. Crea tu primera encuesta para empezar.",
+    "status": {
+      "draft": "Borrador",
+      "active": "Activa",
+      "closed": "Cerrada",
+      "archived": "Archivada"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Compromiso",
+      "custom": "Personalizada",
+      "onboarding": "Incorporación",
+      "exit_survey": "Encuesta de Salida"
+    }
   }
 }

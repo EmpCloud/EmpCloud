@@ -164,20 +164,20 @@ export default function SurveyDashboardPage() {
       {/* Recent Surveys Table */}
       <div className="bg-white rounded-xl border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-900">Recent Surveys</h3>
+          <h3 className="text-sm font-semibold text-gray-900">{t("surveyDashboard.recentSurveys")}</h3>
           <Link to="/surveys/list" className="text-xs text-brand-600 hover:underline">
-            View all
+            {t("surveyDashboard.viewAll")}
           </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Responses</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Created</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyDashboard.colTitle")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyDashboard.colType")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyDashboard.colStatus")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyDashboard.colResponses")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyDashboard.colCreated")}</th>
               </tr>
             </thead>
             <tbody>
@@ -190,12 +190,12 @@ export default function SurveyDashboardPage() {
                   </td>
                   <td className="px-6 py-3">
                     <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.custom}`}>
-                      {s.type}
+                      {t(`surveyDashboard.type.${s.type}`, { defaultValue: s.type })}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] || STATUS_BADGE.draft}`}>
-                      {s.status}
+                      {t(`surveyDashboard.status.${s.status}`, { defaultValue: s.status })}
                     </span>
                   </td>
                   <td className="px-6 py-3 text-gray-600">{s.response_count}</td>
@@ -207,7 +207,7 @@ export default function SurveyDashboardPage() {
               {(!d.recent_surveys || d.recent_surveys.length === 0) && (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
-                    No surveys yet. Create your first survey to get started.
+                    {t("surveyDashboard.empty")}
                   </td>
                 </tr>
               )}

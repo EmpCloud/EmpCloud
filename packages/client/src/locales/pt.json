@@ -2093,6 +2093,28 @@
     "closed": "Encerradas",
     "organization": "Organização",
     "totalEmployees": "Total de Funcionários",
-    "surveysConducted": "Pesquisas Realizadas"
+    "surveysConducted": "Pesquisas Realizadas",
+    "recentSurveys": "Pesquisas Recentes",
+    "viewAll": "Ver tudo",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colStatus": "Status",
+    "colResponses": "Respostas",
+    "colCreated": "Criada",
+    "empty": "Nenhuma pesquisa ainda. Crie sua primeira pesquisa para começar.",
+    "status": {
+      "draft": "Rascunho",
+      "active": "Ativa",
+      "closed": "Encerrada",
+      "archived": "Arquivada"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engajamento",
+      "custom": "Personalizada",
+      "onboarding": "Integração",
+      "exit_survey": "Pesquisa de Desligamento"
+    }
   }
 }

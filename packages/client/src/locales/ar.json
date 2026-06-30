@@ -2093,6 +2093,28 @@
     "closed": "مغلقة",
     "organization": "المؤسسة",
     "totalEmployees": "إجمالي الموظفين",
-    "surveysConducted": "الاستطلاعات المُجراة"
+    "surveysConducted": "الاستطلاعات المُجراة",
+    "recentSurveys": "الاستطلاعات الأخيرة",
+    "viewAll": "عرض الكل",
+    "colTitle": "العنوان",
+    "colType": "النوع",
+    "colStatus": "الحالة",
+    "colResponses": "الردود",
+    "colCreated": "تاريخ الإنشاء",
+    "empty": "لا توجد استطلاعات بعد. أنشئ أول استطلاع لك للبدء.",
+    "status": {
+      "draft": "مسودّة",
+      "active": "نشط",
+      "closed": "مغلق",
+      "archived": "مؤرشف"
+    },
+    "type": {
+      "pulse": "نبض",
+      "enps": "eNPS",
+      "engagement": "المشاركة",
+      "custom": "مخصص",
+      "onboarding": "الإعداد",
+      "exit_survey": "استطلاع المغادرة"
+    }
   }
 }

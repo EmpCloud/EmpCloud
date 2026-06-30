@@ -2098,6 +2098,28 @@
     "closed": "Closed",
     "organization": "Organization",
     "totalEmployees": "Total Employees",
-    "surveysConducted": "Surveys Conducted"
+    "surveysConducted": "Surveys Conducted",
+    "recentSurveys": "Recent Surveys",
+    "viewAll": "View all",
+    "colTitle": "Title",
+    "colType": "Type",
+    "colStatus": "Status",
+    "colResponses": "Responses",
+    "colCreated": "Created",
+    "empty": "No surveys yet. Create your first survey to get started.",
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "closed": "Closed",
+      "archived": "Archived"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Custom",
+      "onboarding": "Onboarding",
+      "exit_survey": "Exit Survey"
+    }
   }
 }

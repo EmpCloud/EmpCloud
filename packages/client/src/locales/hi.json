@@ -2093,6 +2093,28 @@
     "closed": "बंद",
     "organization": "संगठन",
     "totalEmployees": "कुल कर्मचारी",
-    "surveysConducted": "किए गए सर्वेक्षण"
+    "surveysConducted": "किए गए सर्वेक्षण",
+    "recentSurveys": "हाल के सर्वेक्षण",
+    "viewAll": "सभी देखें",
+    "colTitle": "शीर्षक",
+    "colType": "प्रकार",
+    "colStatus": "स्थिति",
+    "colResponses": "प्रतिक्रियाएं",
+    "colCreated": "बनाई गई",
+    "empty": "अभी तक कोई सर्वेक्षण नहीं। शुरू करने के लिए अपना पहला सर्वेक्षण बनाएं।",
+    "status": {
+      "draft": "ड्राफ्ट",
+      "active": "सक्रिय",
+      "closed": "बंद",
+      "archived": "संग्रहीत"
+    },
+    "type": {
+      "pulse": "पल्स",
+      "enps": "eNPS",
+      "engagement": "सहभागिता",
+      "custom": "कस्टम",
+      "onboarding": "ऑनबोर्डिंग",
+      "exit_survey": "एग्ज़िट सर्वे"
+    }
   }
 }
