@@ -1254,6 +1254,7 @@ export const headcountPlanQuerySchema = paginationSchema.extend({
   fiscal_year: z.string().optional(),
   status: headcountPlanStatusEnum.optional(),
   department_id: z.coerce.number().int().positive().optional(),
+  search: z.string().optional(),
 });
 
 export type CreatePositionInput = z.infer<typeof createPositionSchema>;

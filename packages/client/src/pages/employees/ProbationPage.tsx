@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { usePermissions } from "@/lib/use-permissions";
@@ -35,16 +36,18 @@ function getDaysColor(days: number): string {
   return "text-green-600 bg-green-50";
 }
 
-function getStatusBadge(status: string): { bg: string; text: string; label: string } {
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
+function getStatusBadge(status: string, t: TFn): { bg: string; text: string; label: string } {
   switch (status) {
     case "on_probation":
-      return { bg: "bg-blue-100", text: "text-blue-700", label: "On Probation" };
+      return { bg: "bg-blue-100", text: "text-blue-700", label: t("probation.status.onProbation") };
     case "confirmed":
-      return { bg: "bg-green-100", text: "text-green-700", label: "Confirmed" };
+      return { bg: "bg-green-100", text: "text-green-700", label: t("probation.status.confirmed") };
     case "extended":
-      return { bg: "bg-amber-100", text: "text-amber-700", label: "Extended" };
+      return { bg: "bg-amber-100", text: "text-amber-700", label: t("probation.status.extended") };
     case "terminated":
-      return { bg: "bg-red-100", text: "text-red-700", label: "Terminated" };
+      return { bg: "bg-red-100", text: "text-red-700", label: t("probation.status.terminated") };
     default:
       return { bg: "bg-gray-100", text: "text-gray-700", label: status };
   }
@@ -55,15 +58,15 @@ const TEMPLATE_KEY = "probation_confirmation";
 
 // Placeholders the admin can insert into the template. Mirrors the values the
 // server fills in at send time (see probation.service.ts buildProbationEmailVars).
-const PLACEHOLDERS: { token: string; label: string }[] = [
-  { token: "{{employee_name}}", label: "Employee name" },
-  { token: "{{first_name}}", label: "First name" },
-  { token: "{{designation}}", label: "Designation" },
-  { token: "{{confirmation_date}}", label: "Confirmation date" },
-  { token: "{{date_of_joining}}", label: "Join date" },
-  { token: "{{probation_end_date}}", label: "Probation end" },
-  { token: "{{manager_name}}", label: "Manager" },
-  { token: "{{company_name}}", label: "Company" },
+const PLACEHOLDERS: { token: string; labelKey: string }[] = [
+  { token: "{{employee_name}}", labelKey: "probation.placeholder.employeeName" },
+  { token: "{{first_name}}", labelKey: "probation.placeholder.firstName" },
+  { token: "{{designation}}", labelKey: "probation.placeholder.designation" },
+  { token: "{{confirmation_date}}", labelKey: "probation.placeholder.confirmationDate" },
+  { token: "{{date_of_joining}}", labelKey: "probation.placeholder.joinDate" },
+  { token: "{{probation_end_date}}", labelKey: "probation.placeholder.probationEnd" },
+  { token: "{{manager_name}}", labelKey: "probation.placeholder.manager" },
+  { token: "{{company_name}}", labelKey: "probation.placeholder.company" },
 ];
 
 // Sample values used only for the template editor's live preview.
@@ -100,6 +103,7 @@ function messagePreviewHtml(text: string): string {
 }
 
 export default function ProbationPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { has } = usePermissions();
   // Manage actions (confirm / extend) require probation:manage. Users with
@@ -141,11 +145,11 @@ export default function ProbationPage() {
 
   // Debounce the search box so we don't refetch on every keystroke.
   useEffect(() => {
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       setDebouncedSearch(search);
       setPage(1);
     }, 300);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [search]);
 
   // Dashboard stats (overall counts — not narrowed by the list filters)
@@ -214,7 +218,7 @@ export default function ProbationPage() {
         setEmailSubject(r.data.data.subject || "");
         setEmailBody(r.data.data.body || "");
       })
-      .catch(() => showToast("error", "Could not load the confirmation email."))
+      .catch(() => showToast("error", t("probation.toast.loadEmailFailed")))
       .finally(() => setLoadingEmail(false));
   }, [confirmModal]);
 
@@ -234,15 +238,15 @@ export default function ProbationPage() {
       queryClient.invalidateQueries({ queryKey: ["probation-upcoming"] });
       queryClient.invalidateQueries({ queryKey: ["probation-confirmed-this-month"] });
       if (sendEmailOn && data?.email_sent) {
-        showToast("success", "Probation confirmed — confirmation email sent.");
+        showToast("success", t("probation.toast.confirmedEmailSent"));
       } else if (sendEmailOn) {
-        showToast("success", "Probation confirmed. Email couldn't be sent (check mail settings).");
+        showToast("success", t("probation.toast.confirmedEmailFailed"));
       } else {
-        showToast("success", "Probation confirmed.");
+        showToast("success", t("probation.toast.confirmed"));
       }
       setConfirmModal(null);
     },
-    onError: () => showToast("error", "Could not confirm probation. Please try again."),
+    onError: () => showToast("error", t("probation.toast.confirmError")),
   });
 
   // Extend mutation
@@ -270,7 +274,7 @@ export default function ProbationPage() {
         setTplBody(r.data.data.body || "");
         setTplIsDefault(!!r.data.data.is_default);
       })
-      .catch(() => showToast("error", "Could not load the template."))
+      .catch(() => showToast("error", t("probation.toast.loadTemplateFailed")))
       .finally(() => setTplLoading(false));
   }
 
@@ -280,10 +284,10 @@ export default function ProbationPage() {
       .put(`/email-templates/${TEMPLATE_KEY}`, { subject: tplSubject, body: tplBody })
       .then((r) => {
         setTplIsDefault(!!r.data.data.is_default);
-        showToast("success", "Email template saved.");
+        showToast("success", t("probation.toast.templateSaved"));
         setTemplateOpen(false);
       })
-      .catch(() => showToast("error", "Could not save the template."))
+      .catch(() => showToast("error", t("probation.toast.saveTemplateFailed")))
       .finally(() => setTplSaving(false));
   }
 
@@ -311,28 +315,28 @@ export default function ProbationPage() {
     filter: typeof cardFilter;
   }> = [
     {
-      label: "On Probation",
+      label: t("probation.cardOnProbation"),
       value: dashboard?.on_probation ?? 0,
       icon: Clock,
       color: "bg-blue-50 text-blue-600",
       filter: "on_probation",
     },
     {
-      label: "Upcoming (30 days)",
+      label: t("probation.cardUpcoming"),
       value: dashboard?.upcoming_30_days ?? 0,
       icon: CalendarClock,
       color: "bg-amber-50 text-amber-600",
       filter: "upcoming_30",
     },
     {
-      label: "Confirmed This Month",
+      label: t("probation.cardConfirmedThisMonth"),
       value: dashboard?.confirmed_this_month ?? 0,
       icon: CheckCircle2,
       color: "bg-green-50 text-green-600",
       filter: "confirmed_this_month",
     },
     {
-      label: "Overdue",
+      label: t("probation.cardOverdue"),
       value: dashboard?.overdue ?? 0,
       icon: AlertTriangle,
       color: "bg-red-50 text-red-600",
@@ -357,9 +361,9 @@ export default function ProbationPage() {
             <Shield className="h-5 w-5 text-indigo-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Probation Tracking</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("probation.title")}</h1>
             <p className="text-gray-500 mt-0.5 text-sm">
-              Monitor and manage employee probation periods.
+              {t("probation.subtitle")}
             </p>
           </div>
         </div>
@@ -370,7 +374,7 @@ export default function ProbationPage() {
             className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shrink-0"
           >
             <Mail className="h-4 w-4" />
-            Customize Email Template
+            {t("probation.customizeEmail")}
           </button>
         )}
       </div>
@@ -403,13 +407,13 @@ export default function ProbationPage() {
       </div>
       {cardFilter !== "all" && (
         <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-          <span>Filtered by card.</span>
+          <span>{t("probation.filteredByCard")}</span>
           <button
             type="button"
             onClick={() => selectCard("all")}
             className="text-brand-600 hover:underline"
           >
-            Clear filter
+            {t("probation.clearFilter")}
           </button>
         </div>
       )}
@@ -420,7 +424,7 @@ export default function ProbationPage() {
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-5 w-5 text-amber-600" />
             <h2 className="font-semibold text-amber-900">
-              Upcoming Confirmations ({upcoming.length})
+              {t("probation.upcomingConfirmations", { count: upcoming.length })}
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -439,7 +443,7 @@ export default function ProbationPage() {
                     {emp.first_name} {emp.last_name}
                   </span>
                   <span className="text-xs text-amber-600 ml-2">
-                    {emp.days_remaining}d left
+                    {t("probation.daysLeft", { count: emp.days_remaining })}
                   </span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -457,7 +461,7 @@ export default function ProbationPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, code, or email…"
+            placeholder={t("probation.searchPlaceholder")}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
           />
         </div>
@@ -469,7 +473,7 @@ export default function ProbationPage() {
           }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
         >
-          <option value="">All Departments</option>
+          <option value="">{t("probation.allDepartments")}</option>
           {(departments || []).map((d: any) => (
             <option key={d.id} value={d.id}>
               {d.name}
@@ -484,7 +488,7 @@ export default function ProbationPage() {
           }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
         >
-          <option value="">All Locations</option>
+          <option value="">{t("probation.allLocations")}</option>
           {(locations || []).map((l: any) => (
             <option key={l.id} value={l.id}>
               {l.name}
@@ -497,8 +501,8 @@ export default function ProbationPage() {
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           {cardFilter === "confirmed_this_month"
-            ? "Confirmed This Month"
-            : "Employees on Probation"}
+            ? t("probation.cardConfirmedThisMonth")
+            : t("probation.employeesOnProbation")}
         </h2>
 
         {isLoading ? (
@@ -510,19 +514,19 @@ export default function ProbationPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Employee</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Department</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Location</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Join Date</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Probation Ends</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Days Remaining</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colEmployee")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colDepartment")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colLocation")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colJoinDate")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colProbationEnds")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colDaysRemaining")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("probation.colStatus")}</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-500">{t("probation.colActions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {employees.map((emp: any) => {
-                  const status = getStatusBadge(emp.probation_status);
+                  const status = getStatusBadge(emp.probation_status, t);
                   const daysColor = getDaysColor(Number(emp.days_remaining));
                   return (
                     <tr key={emp.id} className="border-b border-gray-100 hover:bg-gray-50/50">
@@ -556,8 +560,8 @@ export default function ProbationPage() {
                       <td className="py-3 px-4">
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${daysColor}`}>
                           {Number(emp.days_remaining) < 0
-                            ? `${Math.abs(emp.days_remaining)}d overdue`
-                            : `${emp.days_remaining}d`}
+                            ? t("probation.daysOverdue", { count: Math.abs(emp.days_remaining) })
+                            : t("probation.daysShort", { count: emp.days_remaining })}
                         </span>
                       </td>
                       <td className="py-3 px-4">
@@ -575,7 +579,7 @@ export default function ProbationPage() {
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                             >
                               <UserCheck className="h-3.5 w-3.5" />
-                              Confirm
+                              {t("probation.confirm")}
                             </button>
                             <button
                               onClick={() => {
@@ -586,7 +590,7 @@ export default function ProbationPage() {
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors"
                             >
                               <CalendarClock className="h-3.5 w-3.5" />
-                              Extend
+                              {t("probation.extend")}
                             </button>
                           </div>
                         )}
@@ -598,14 +602,14 @@ export default function ProbationPage() {
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-gray-400">
                       {hasActiveFilters
-                        ? "No employees match your filters."
+                        ? t("probation.emptyFiltered")
                         : cardFilter === "confirmed_this_month"
-                        ? "No employees confirmed this month."
+                        ? t("probation.emptyConfirmed")
                         : cardFilter === "overdue"
-                        ? "No overdue probations."
+                        ? t("probation.emptyOverdue")
                         : cardFilter === "upcoming_30"
-                        ? "No upcoming confirmations in the next 30 days."
-                        : "No employees currently on probation."}
+                        ? t("probation.emptyUpcoming")
+                        : t("probation.emptyDefault")}
                     </td>
                   </tr>
                 )}
@@ -616,7 +620,7 @@ export default function ProbationPage() {
         {meta && meta.total_pages > 1 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
             <p className="text-sm text-gray-500">
-              Page {meta.page} of {meta.total_pages} · {meta.total} total
+              {t("probation.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
@@ -624,14 +628,14 @@ export default function ProbationPage() {
                 disabled={page <= 1}
                 className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
               >
-                <ChevronLeft className="h-4 w-4" /> Previous
+                <ChevronLeft className="h-4 w-4" /> {t("probation.previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
                 className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
               >
-                Next <ChevronRight className="h-4 w-4" />
+                {t("probation.next")} <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -643,15 +647,13 @@ export default function ProbationPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Confirm Probation</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("probation.confirmModalTitle")}</h3>
               <button onClick={() => setConfirmModal(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Confirm probation for{" "}
-              <strong>{confirmModal.first_name} {confirmModal.last_name}</strong> and mark them as a
-              confirmed employee.
+              <Trans i18nKey="probation.confirmModalBody" values={{ name: `${confirmModal.first_name} ${confirmModal.last_name}` }} components={{ strong: <strong /> }} />
             </p>
 
             {/* Send-email toggle */}
@@ -664,11 +666,11 @@ export default function ProbationPage() {
                 className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
               />
               <span className="text-sm">
-                <span className="font-medium text-gray-900">Send confirmation email</span>
+                <span className="font-medium text-gray-900">{t("probation.sendConfirmationEmail")}</span>
                 <span className="block text-xs text-gray-500">
                   {confirmModal.email
-                    ? `Sends to ${confirmModal.email}`
-                    : "This employee has no email address on file."}
+                    ? t("probation.sendsTo", { email: confirmModal.email })
+                    : t("probation.noEmailOnFile")}
                 </span>
               </span>
             </label>
@@ -678,12 +680,12 @@ export default function ProbationPage() {
                 {loadingEmail ? (
                   <div className="flex items-center justify-center gap-2 text-sm text-gray-500 py-6">
                     <div className="h-4 w-4 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-                    Loading email…
+                    {t("probation.loadingEmail")}
                   </div>
                 ) : (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("probation.subject")}</label>
                       <input
                         value={emailSubject}
                         onChange={(e) => setEmailSubject(e.target.value)}
@@ -692,7 +694,7 @@ export default function ProbationPage() {
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="block text-sm font-medium text-gray-700">Message</label>
+                        <label className="block text-sm font-medium text-gray-700">{t("probation.message")}</label>
                         <button
                           type="button"
                           onClick={() => {
@@ -701,7 +703,7 @@ export default function ProbationPage() {
                           }}
                           className="text-xs text-brand-600 hover:underline"
                         >
-                          Edit default template
+                          {t("probation.editDefaultTemplate")}
                         </button>
                       </div>
                       <textarea
@@ -711,7 +713,7 @@ export default function ProbationPage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none resize-y"
                       />
                       <p className="text-xs text-gray-400 mt-1">
-                        You can edit this message for this employee before sending.
+                        {t("probation.editMessageHint")}
                       </p>
                     </div>
                   </>
@@ -724,7 +726,7 @@ export default function ProbationPage() {
                 onClick={() => setConfirmModal(null)}
                 className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Cancel
+                {t("probation.cancel")}
               </button>
               <button
                 onClick={() =>
@@ -744,10 +746,10 @@ export default function ProbationPage() {
                   <UserCheck className="h-3.5 w-3.5" />
                 )}
                 {confirmMut.isPending
-                  ? "Working…"
+                  ? t("probation.working")
                   : sendEmailOn && confirmModal.email
-                  ? "Send Email & Confirm"
-                  : "Confirm Only"}
+                  ? t("probation.sendEmailConfirm")
+                  : t("probation.confirmOnly")}
               </button>
             </div>
           </div>
@@ -759,7 +761,7 @@ export default function ProbationPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Extend Probation</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("probation.extendModalTitle")}</h3>
               <button
                 onClick={() => {
                   setExtendModal(null);
@@ -772,13 +774,12 @@ export default function ProbationPage() {
               </button>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Extend probation for{" "}
-              <strong>{extendModal.first_name} {extendModal.last_name}</strong>.
+              <Trans i18nKey="probation.extendModalBody" values={{ name: `${extendModal.first_name} ${extendModal.last_name}` }} components={{ strong: <strong /> }} />
             </p>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New End Date
+                  {t("probation.newEndDate")}
                 </label>
                 <input
                   type="date"
@@ -789,12 +790,12 @@ export default function ProbationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Reason
+                  {t("probation.reason")}
                 </label>
                 <textarea
                   value={extendReason}
                   onChange={(e) => setExtendReason(e.target.value)}
-                  placeholder="Why is the probation being extended?"
+                  placeholder={t("probation.reasonPlaceholder")}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none resize-none"
                 />
@@ -809,7 +810,7 @@ export default function ProbationPage() {
                 }}
                 className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Cancel
+                {t("probation.cancel")}
               </button>
               <button
                 onClick={() =>
@@ -822,7 +823,7 @@ export default function ProbationPage() {
                 disabled={!extendDate || !extendReason || extendMut.isPending}
                 className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors disabled:opacity-50"
               >
-                {extendMut.isPending ? "Extending..." : "Extend"}
+                {extendMut.isPending ? t("probation.extending") : t("probation.extend")}
               </button>
             </div>
           </div>
@@ -834,14 +835,14 @@ export default function ProbationPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-lg font-semibold text-gray-900">Probation Confirmation Email</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("probation.templateModalTitle")}</h3>
               <button onClick={() => setTemplateOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <p className="text-xs text-gray-500 mb-4">
-              Customize the email sent when an employee's probation is confirmed.
-              {tplIsDefault && " Currently using the built-in default."}
+              {t("probation.templateModalDesc")}
+              {tplIsDefault && " " + t("probation.usingDefault")}
             </p>
 
             {tplLoading ? (
@@ -851,27 +852,27 @@ export default function ProbationPage() {
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("probation.subject")}</label>
                   <input
                     value={tplSubject}
                     onChange={(e) => setTplSubject(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
-                    placeholder="e.g. Probation Confirmed — Welcome aboard, {{first_name}}!"
+                    placeholder={t("probation.subjectPlaceholder")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("probation.message")}</label>
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {PLACEHOLDERS.map((p) => (
                       <button
                         key={p.token}
                         type="button"
                         onClick={() => insertPlaceholder(p.token)}
-                        title={`Insert ${p.token}`}
+                        title={t("probation.insertToken", { token: p.token })}
                         className="px-2 py-1 text-xs font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-md border border-brand-100"
                       >
-                        + {p.label}
+                        + {t(p.labelKey)}
                       </button>
                     ))}
                   </div>
@@ -881,20 +882,20 @@ export default function ProbationPage() {
                     onChange={(e) => setTplBody(e.target.value)}
                     rows={11}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none resize-y font-mono"
-                    placeholder="Dear {{employee_name}}, ..."
+                    placeholder={t("probation.bodyPlaceholder")}
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    Insert placeholders with the buttons above. Leave a blank line between paragraphs.
+                    {t("probation.placeholderHint")}
                   </p>
                 </div>
 
                 {/* Live preview */}
                 <div>
-                  <p className="text-xs font-medium text-gray-500 mb-1">Preview (sample data)</p>
+                  <p className="text-xs font-medium text-gray-500 mb-1">{t("probation.previewLabel")}</p>
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <div className="bg-white rounded-md border border-gray-200 p-4">
                       <p className="text-sm font-semibold text-gray-900 mb-2 pb-2 border-b border-gray-100">
-                        {substituteVars(tplSubject, SAMPLE_VARS) || "(no subject)"}
+                        {substituteVars(tplSubject, SAMPLE_VARS) || t("probation.noSubject")}
                       </p>
                       <div
                         className="text-sm text-gray-700"
@@ -915,14 +916,14 @@ export default function ProbationPage() {
                 onClick={() => setTemplateOpen(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Cancel
+                {t("probation.cancel")}
               </button>
               <button
                 onClick={saveTemplate}
                 disabled={tplSaving || tplLoading || !tplSubject.trim() || !tplBody.trim()}
                 className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors disabled:opacity-50"
               >
-                {tplSaving ? "Saving…" : "Save Template"}
+                {tplSaving ? t("probation.saving") : t("probation.saveTemplate")}
               </button>
             </div>
           </div>
