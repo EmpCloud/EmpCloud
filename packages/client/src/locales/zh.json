@@ -2100,6 +2100,19 @@
     "cancel": "取消",
     "deleting": "正在删除...",
     "delete": "删除",
-    "deleteError": "删除文章失败"
+    "deleteError": "删除文章失败",
+    "editArticle": "编辑文章",
+    "newKbArticle": "新建知识库文章",
+    "titleLabel": "标题",
+    "titlePlaceholder": "文章标题",
+    "categoryLabel": "类别",
+    "published": "已发布",
+    "featured": "精选",
+    "contentLabel": "内容",
+    "contentPlaceholder": "撰写文章内容...",
+    "updating": "正在更新...",
+    "updateArticle": "更新文章",
+    "publishing": "正在发布...",
+    "publishArticle": "发布文章"
   }
 }

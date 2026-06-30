@@ -2100,6 +2100,19 @@
     "cancel": "Abbrechen",
     "deleting": "Wird gelöscht...",
     "delete": "Löschen",
-    "deleteError": "Artikel konnte nicht gelöscht werden"
+    "deleteError": "Artikel konnte nicht gelöscht werden",
+    "editArticle": "Artikel bearbeiten",
+    "newKbArticle": "Neuer Wissensdatenbank-Artikel",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Artikeltitel",
+    "categoryLabel": "Kategorie",
+    "published": "Veröffentlicht",
+    "featured": "Hervorgehoben",
+    "contentLabel": "Inhalt",
+    "contentPlaceholder": "Schreiben Sie den Artikelinhalt...",
+    "updating": "Wird aktualisiert...",
+    "updateArticle": "Artikel aktualisieren",
+    "publishing": "Wird veröffentlicht...",
+    "publishArticle": "Artikel veröffentlichen"
   }
 }

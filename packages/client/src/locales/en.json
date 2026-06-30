@@ -2105,6 +2105,19 @@
     "cancel": "Cancel",
     "deleting": "Deleting...",
     "delete": "Delete",
-    "deleteError": "Failed to delete article"
+    "deleteError": "Failed to delete article",
+    "editArticle": "Edit Article",
+    "newKbArticle": "New Knowledge Base Article",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Article title",
+    "categoryLabel": "Category",
+    "published": "Published",
+    "featured": "Featured",
+    "contentLabel": "Content",
+    "contentPlaceholder": "Write the article content...",
+    "updating": "Updating...",
+    "updateArticle": "Update Article",
+    "publishing": "Publishing...",
+    "publishArticle": "Publish Article"
   }
 }

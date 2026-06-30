@@ -2100,6 +2100,19 @@
     "cancel": "إلغاء",
     "deleting": "جارٍ الحذف...",
     "delete": "حذف",
-    "deleteError": "فشل حذف المقال"
+    "deleteError": "فشل حذف المقال",
+    "editArticle": "تعديل المقال",
+    "newKbArticle": "مقال جديد في قاعدة المعرفة",
+    "titleLabel": "العنوان",
+    "titlePlaceholder": "عنوان المقال",
+    "categoryLabel": "الفئة",
+    "published": "منشور",
+    "featured": "مميّز",
+    "contentLabel": "المحتوى",
+    "contentPlaceholder": "اكتب محتوى المقال...",
+    "updating": "جارٍ التحديث...",
+    "updateArticle": "تحديث المقال",
+    "publishing": "جارٍ النشر...",
+    "publishArticle": "نشر المقال"
   }
 }

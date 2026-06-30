@@ -2100,6 +2100,19 @@
     "cancel": "Cancelar",
     "deleting": "Excluindo...",
     "delete": "Excluir",
-    "deleteError": "Falha ao excluir o artigo"
+    "deleteError": "Falha ao excluir o artigo",
+    "editArticle": "Editar Artigo",
+    "newKbArticle": "Novo Artigo da Base de Conhecimento",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Título do artigo",
+    "categoryLabel": "Categoria",
+    "published": "Publicado",
+    "featured": "Destaque",
+    "contentLabel": "Conteúdo",
+    "contentPlaceholder": "Escreva o conteúdo do artigo...",
+    "updating": "Atualizando...",
+    "updateArticle": "Atualizar Artigo",
+    "publishing": "Publicando...",
+    "publishArticle": "Publicar Artigo"
   }
 }

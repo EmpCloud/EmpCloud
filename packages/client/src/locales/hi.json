@@ -2100,6 +2100,19 @@
     "cancel": "रद्द करें",
     "deleting": "हटाया जा रहा है...",
     "delete": "हटाएं",
-    "deleteError": "लेख हटाने में विफल"
+    "deleteError": "लेख हटाने में विफल",
+    "editArticle": "लेख संपादित करें",
+    "newKbArticle": "नया ज्ञान आधार लेख",
+    "titleLabel": "शीर्षक",
+    "titlePlaceholder": "लेख का शीर्षक",
+    "categoryLabel": "श्रेणी",
+    "published": "प्रकाशित",
+    "featured": "विशेष",
+    "contentLabel": "सामग्री",
+    "contentPlaceholder": "लेख की सामग्री लिखें...",
+    "updating": "अपडेट हो रहा है...",
+    "updateArticle": "लेख अपडेट करें",
+    "publishing": "प्रकाशित हो रहा है...",
+    "publishArticle": "लेख प्रकाशित करें"
   }
 }

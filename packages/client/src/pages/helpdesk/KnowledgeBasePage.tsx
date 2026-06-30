@@ -356,7 +356,7 @@ export default function KnowledgeBasePage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              {editingId ? "Edit Article" : "New Knowledge Base Article"}
+              {editingId ? t("kb.editArticle") : t("kb.newKbArticle")}
             </h2>
             <button
               onClick={() => { setShowForm(false); resetForm(); }}
@@ -368,14 +368,14 @@ export default function KnowledgeBasePage() {
           <form onSubmit={handleSubmitForm} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
+                {t("kb.titleLabel")}
               </label>
               <input
                 type="text"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Article title"
+                placeholder={t("kb.titlePlaceholder")}
                 required
               />
             </div>
@@ -383,7 +383,7 @@ export default function KnowledgeBasePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                  {t("kb.categoryLabel")}
                 </label>
                 <select
                   value={formCategory}
@@ -405,7 +405,7 @@ export default function KnowledgeBasePage() {
                     onChange={(e) => setFormPublished(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  Published
+                  {t("kb.published")}
                 </label>
                 <label className="flex items-center gap-2 text-sm text-gray-600">
                   <input
@@ -414,20 +414,20 @@ export default function KnowledgeBasePage() {
                     onChange={(e) => setFormFeatured(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  Featured
+                  {t("kb.featured")}
                 </label>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Content
+                {t("kb.contentLabel")}
               </label>
               <textarea
                 value={formContent}
                 onChange={(e) => setFormContent(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[200px]"
-                placeholder="Write the article content..."
+                placeholder={t("kb.contentPlaceholder")}
                 required
               />
             </div>
@@ -438,7 +438,7 @@ export default function KnowledgeBasePage() {
                 onClick={() => { setShowForm(false); resetForm(); }}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("kb.cancel")}
               </button>
               <button
                 type="submit"
@@ -453,11 +453,11 @@ export default function KnowledgeBasePage() {
                 <BookMarked className="h-4 w-4" />
                 {editingId
                   ? updateArticle.isPending
-                    ? "Updating..."
-                    : "Update Article"
+                    ? t("kb.updating")
+                    : t("kb.updateArticle")
                   : createArticle.isPending
-                    ? "Publishing..."
-                    : "Publish Article"}
+                    ? t("kb.publishing")
+                    : t("kb.publishArticle")}
               </button>
             </div>
           </form>

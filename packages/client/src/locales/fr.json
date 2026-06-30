@@ -2100,6 +2100,19 @@
     "cancel": "Annuler",
     "deleting": "Suppression...",
     "delete": "Supprimer",
-    "deleteError": "Échec de la suppression de l'article"
+    "deleteError": "Échec de la suppression de l'article",
+    "editArticle": "Modifier l'article",
+    "newKbArticle": "Nouvel article de la base de connaissances",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Titre de l'article",
+    "categoryLabel": "Catégorie",
+    "published": "Publié",
+    "featured": "En vedette",
+    "contentLabel": "Contenu",
+    "contentPlaceholder": "Rédigez le contenu de l'article...",
+    "updating": "Mise à jour...",
+    "updateArticle": "Mettre à jour l'article",
+    "publishing": "Publication...",
+    "publishArticle": "Publier l'article"
   }
 }

@@ -2100,6 +2100,19 @@
     "cancel": "Cancelar",
     "deleting": "Eliminando...",
     "delete": "Eliminar",
-    "deleteError": "No se pudo eliminar el artículo"
+    "deleteError": "No se pudo eliminar el artículo",
+    "editArticle": "Editar Artículo",
+    "newKbArticle": "Nuevo Artículo de la Base de Conocimiento",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Título del artículo",
+    "categoryLabel": "Categoría",
+    "published": "Publicado",
+    "featured": "Destacado",
+    "contentLabel": "Contenido",
+    "contentPlaceholder": "Escribe el contenido del artículo...",
+    "updating": "Actualizando...",
+    "updateArticle": "Actualizar Artículo",
+    "publishing": "Publicando...",
+    "publishArticle": "Publicar Artículo"
   }
 }

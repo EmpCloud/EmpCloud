@@ -2100,6 +2100,19 @@
     "cancel": "キャンセル",
     "deleting": "削除中...",
     "delete": "削除",
-    "deleteError": "記事の削除に失敗しました"
+    "deleteError": "記事の削除に失敗しました",
+    "editArticle": "記事を編集",
+    "newKbArticle": "新規ナレッジベース記事",
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "記事のタイトル",
+    "categoryLabel": "カテゴリ",
+    "published": "公開済み",
+    "featured": "注目",
+    "contentLabel": "本文",
+    "contentPlaceholder": "記事の本文を書いてください...",
+    "updating": "更新中...",
+    "updateArticle": "記事を更新",
+    "publishing": "公開中...",
+    "publishArticle": "記事を公開"
   }
 }
