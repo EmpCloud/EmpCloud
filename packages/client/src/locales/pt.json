@@ -2550,7 +2550,21 @@
       "project": "Projeto",
       "document": "Documento"
     },
-    "fieldType": "Tipo de Campo *",
+    "fieldType": {
+      "text": "Texto",
+      "textarea": "Área de Texto",
+      "number": "Número",
+      "decimal": "Decimal",
+      "date": "Data",
+      "datetime": "Data e Hora",
+      "dropdown": "Lista Suspensa",
+      "multi_select": "Seleção Múltipla",
+      "checkbox": "Caixa de Seleção",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "url": "URL",
+      "file": "Arquivo"
+    },
     "editField": "Editar Campo",
     "newField": "Novo Campo",
     "preview": "Pré-visualizar",
@@ -2599,6 +2613,7 @@
     "previewSelect": "Selecionar {{name}}...",
     "previewOption": "opção",
     "noOptionsDefined": "Nenhuma opção definida",
-    "previewCheckbox": "Caixa de Seleção"
+    "previewCheckbox": "Caixa de Seleção",
+    "fieldTypeField": "Tipo de Campo *"
   }
 }

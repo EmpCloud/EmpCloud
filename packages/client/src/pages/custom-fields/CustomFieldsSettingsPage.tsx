@@ -358,7 +358,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Field Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("customFields.fieldType")}
+                  {t("customFields.fieldTypeField")}
                 </label>
                 <select
                   value={form.field_type}

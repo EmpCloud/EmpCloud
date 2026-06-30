@@ -2550,7 +2550,21 @@
       "project": "परियोजना",
       "document": "दस्तावेज़"
     },
-    "fieldType": "फ़ील्ड प्रकार *",
+    "fieldType": {
+      "text": "टेक्स्ट",
+      "textarea": "टेक्स्ट क्षेत्र",
+      "number": "संख्या",
+      "decimal": "दशमलव",
+      "date": "तिथि",
+      "datetime": "तिथि और समय",
+      "dropdown": "ड्रॉपडाउन",
+      "multi_select": "बहु चयन",
+      "checkbox": "चेकबॉक्स",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "url": "URL",
+      "file": "फ़ाइल"
+    },
     "editField": "फ़ील्ड संपादित करें",
     "newField": "नया फ़ील्ड",
     "preview": "पूर्वावलोकन",
@@ -2599,6 +2613,7 @@
     "previewSelect": "{{name}} चुनें...",
     "previewOption": "विकल्प",
     "noOptionsDefined": "कोई विकल्प परिभाषित नहीं",
-    "previewCheckbox": "चेकबॉक्स"
+    "previewCheckbox": "चेकबॉक्स",
+    "fieldTypeField": "फ़ील्ड प्रकार *"
   }
 }

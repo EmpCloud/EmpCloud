@@ -2550,7 +2550,21 @@
       "project": "Projekt",
       "document": "Dokument"
     },
-    "fieldType": "Feldtyp *",
+    "fieldType": {
+      "text": "Text",
+      "textarea": "Textbereich",
+      "number": "Zahl",
+      "decimal": "Dezimalzahl",
+      "date": "Datum",
+      "datetime": "Datum und Uhrzeit",
+      "dropdown": "Dropdown",
+      "multi_select": "Mehrfachauswahl",
+      "checkbox": "Kontrollkästchen",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "url": "URL",
+      "file": "Datei"
+    },
     "editField": "Feld bearbeiten",
     "newField": "Neues Feld",
     "preview": "Vorschau",
@@ -2599,6 +2613,7 @@
     "previewSelect": "{{name}} auswählen...",
     "previewOption": "Option",
     "noOptionsDefined": "Keine Optionen definiert",
-    "previewCheckbox": "Kontrollkästchen"
+    "previewCheckbox": "Kontrollkästchen",
+    "fieldTypeField": "Feldtyp *"
   }
 }

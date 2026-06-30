@@ -2550,7 +2550,21 @@
       "project": "المشروع",
       "document": "المستند"
     },
-    "fieldType": "نوع الحقل *",
+    "fieldType": {
+      "text": "نص",
+      "textarea": "منطقة نص",
+      "number": "رقم",
+      "decimal": "عدد عشري",
+      "date": "تاريخ",
+      "datetime": "التاريخ والوقت",
+      "dropdown": "قائمة منسدلة",
+      "multi_select": "اختيار متعدد",
+      "checkbox": "مربع اختيار",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "url": "رابط",
+      "file": "ملف"
+    },
     "editField": "تعديل الحقل",
     "newField": "حقل جديد",
     "preview": "معاينة",
@@ -2599,6 +2613,7 @@
     "previewSelect": "اختر {{name}}...",
     "previewOption": "خيار",
     "noOptionsDefined": "لا توجد خيارات مُعرّفة",
-    "previewCheckbox": "مربع اختيار"
+    "previewCheckbox": "مربع اختيار",
+    "fieldTypeField": "نوع الحقل *"
   }
 }
