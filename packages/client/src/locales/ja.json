@@ -2538,5 +2538,32 @@
       "damaged": "破損",
       "updated": "更新"
     }
+  },
+  "customFields": {
+    "title": "カスタムフィールド",
+    "subtitle": "従業員、部門、その他のエンティティ用のカスタムデータフィールドを定義します",
+    "addField": "フィールドを追加",
+    "entity": {
+      "employee": "従業員",
+      "department": "部門",
+      "location": "場所",
+      "project": "プロジェクト",
+      "document": "ドキュメント"
+    },
+    "fieldType": {
+      "text": "テキスト",
+      "textarea": "テキストエリア",
+      "number": "数値",
+      "decimal": "小数",
+      "date": "日付",
+      "datetime": "日時",
+      "dropdown": "ドロップダウン",
+      "multi_select": "複数選択",
+      "checkbox": "チェックボックス",
+      "email": "メール",
+      "phone": "電話",
+      "url": "URL",
+      "file": "ファイル"
+    }
   }
 }

@@ -2538,5 +2538,32 @@
       "damaged": "Endommagé",
       "updated": "Mis à jour"
     }
+  },
+  "customFields": {
+    "title": "Champs personnalisés",
+    "subtitle": "Définissez des champs de données personnalisés pour les employés, les services et d'autres entités",
+    "addField": "Ajouter un champ",
+    "entity": {
+      "employee": "Employé",
+      "department": "Service",
+      "location": "Lieu",
+      "project": "Projet",
+      "document": "Document"
+    },
+    "fieldType": {
+      "text": "Texte",
+      "textarea": "Zone de texte",
+      "number": "Nombre",
+      "decimal": "Décimal",
+      "date": "Date",
+      "datetime": "Date et heure",
+      "dropdown": "Liste déroulante",
+      "multi_select": "Sélection multiple",
+      "checkbox": "Case à cocher",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "url": "URL",
+      "file": "Fichier"
+    }
   }
 }

@@ -2538,5 +2538,32 @@
       "damaged": "क्षतिग्रस्त",
       "updated": "अपडेट किया गया"
     }
+  },
+  "customFields": {
+    "title": "कस्टम फ़ील्ड",
+    "subtitle": "कर्मचारियों, विभागों और अन्य इकाइयों के लिए कस्टम डेटा फ़ील्ड परिभाषित करें",
+    "addField": "फ़ील्ड जोड़ें",
+    "entity": {
+      "employee": "कर्मचारी",
+      "department": "विभाग",
+      "location": "स्थान",
+      "project": "परियोजना",
+      "document": "दस्तावेज़"
+    },
+    "fieldType": {
+      "text": "टेक्स्ट",
+      "textarea": "टेक्स्ट क्षेत्र",
+      "number": "संख्या",
+      "decimal": "दशमलव",
+      "date": "तिथि",
+      "datetime": "तिथि और समय",
+      "dropdown": "ड्रॉपडाउन",
+      "multi_select": "बहु चयन",
+      "checkbox": "चेकबॉक्स",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "url": "URL",
+      "file": "फ़ाइल"
+    }
   }
 }

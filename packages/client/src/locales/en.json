@@ -2544,5 +2544,32 @@
       "damaged": "Damaged",
       "updated": "Updated"
     }
+  },
+  "customFields": {
+    "title": "Custom Fields",
+    "subtitle": "Define custom data fields for employees, departments, and other entities",
+    "addField": "Add Field",
+    "entity": {
+      "employee": "Employee",
+      "department": "Department",
+      "location": "Location",
+      "project": "Project",
+      "document": "Document"
+    },
+    "fieldType": {
+      "text": "Text",
+      "textarea": "Text Area",
+      "number": "Number",
+      "decimal": "Decimal",
+      "date": "Date",
+      "datetime": "Date & Time",
+      "dropdown": "Dropdown",
+      "multi_select": "Multi Select",
+      "checkbox": "Checkbox",
+      "email": "Email",
+      "phone": "Phone",
+      "url": "URL",
+      "file": "File"
+    }
   }
 }

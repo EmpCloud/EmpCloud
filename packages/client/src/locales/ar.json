@@ -2538,5 +2538,32 @@
       "damaged": "تالف",
       "updated": "تم التحديث"
     }
+  },
+  "customFields": {
+    "title": "الحقول المخصصة",
+    "subtitle": "حدّد حقول بيانات مخصصة للموظفين والأقسام والكيانات الأخرى",
+    "addField": "إضافة حقل",
+    "entity": {
+      "employee": "الموظف",
+      "department": "القسم",
+      "location": "الموقع",
+      "project": "المشروع",
+      "document": "المستند"
+    },
+    "fieldType": {
+      "text": "نص",
+      "textarea": "منطقة نص",
+      "number": "رقم",
+      "decimal": "عدد عشري",
+      "date": "تاريخ",
+      "datetime": "التاريخ والوقت",
+      "dropdown": "قائمة منسدلة",
+      "multi_select": "اختيار متعدد",
+      "checkbox": "مربع اختيار",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "url": "رابط",
+      "file": "ملف"
+    }
   }
 }

@@ -2538,5 +2538,32 @@
       "damaged": "Danificado",
       "updated": "Atualizado"
     }
+  },
+  "customFields": {
+    "title": "Campos Personalizados",
+    "subtitle": "Defina campos de dados personalizados para funcionários, departamentos e outras entidades",
+    "addField": "Adicionar Campo",
+    "entity": {
+      "employee": "Funcionário",
+      "department": "Departamento",
+      "location": "Local",
+      "project": "Projeto",
+      "document": "Documento"
+    },
+    "fieldType": {
+      "text": "Texto",
+      "textarea": "Área de Texto",
+      "number": "Número",
+      "decimal": "Decimal",
+      "date": "Data",
+      "datetime": "Data e Hora",
+      "dropdown": "Lista Suspensa",
+      "multi_select": "Seleção Múltipla",
+      "checkbox": "Caixa de Seleção",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "url": "URL",
+      "file": "Arquivo"
+    }
   }
 }

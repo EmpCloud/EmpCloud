@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
@@ -13,6 +14,10 @@ import {
 import api from "@/api/client";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
+// Labels resolved at render via t() under customFields.entity.* and
+// customFields.fieldType.*, with the English value as the defaultValue.
 const ENTITY_TYPES = [
   { key: "employee", label: "Employee" },
   { key: "department", label: "Department" },
@@ -20,6 +25,10 @@ const ENTITY_TYPES = [
   { key: "project", label: "Project" },
   { key: "document", label: "Document" },
 ] as const;
+function entityLabel(key: string, t: TFn): string {
+  const fallback = ENTITY_TYPES.find((e) => e.key === key)?.label ?? key;
+  return t(`customFields.entity.${key}`, { defaultValue: fallback });
+}
 
 const FIELD_TYPES = [
   { value: "text", label: "Text" },
@@ -36,6 +45,10 @@ const FIELD_TYPES = [
   { value: "url", label: "URL" },
   { value: "file", label: "File" },
 ] as const;
+function fieldTypeLabel(value: string, t: TFn): string {
+  const fallback = FIELD_TYPES.find((f) => f.value === value)?.label ?? value;
+  return t(`customFields.fieldType.${value}`, { defaultValue: fallback });
+}
 
 type FieldDefinition = {
   id: number;
@@ -73,6 +86,7 @@ const INITIAL_FORM = {
 };
 
 export default function CustomFieldsSettingsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("employee");
   const [showForm, setShowForm] = useState(false);
@@ -254,9 +268,9 @@ export default function CustomFieldsSettingsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Custom Fields</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("customFields.title")}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Define custom data fields for employees, departments, and other entities
+            {t("customFields.subtitle")}
           </p>
         </div>
         {!showForm && (
@@ -268,7 +282,7 @@ export default function CustomFieldsSettingsPage() {
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Add Field
+            {t("customFields.addField")}
           </button>
         )}
       </div>
@@ -276,7 +290,7 @@ export default function CustomFieldsSettingsPage() {
       {/* Entity Type Tabs */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-4">
-          {ENTITY_TYPES.map(({ key, label }) => (
+          {ENTITY_TYPES.map(({ key }) => (
             <button
               key={key}
               onClick={() => {
@@ -289,7 +303,7 @@ export default function CustomFieldsSettingsPage() {
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              {label}
+              {entityLabel(key, t)}
             </button>
           ))}
         </nav>
@@ -353,9 +367,9 @@ export default function CustomFieldsSettingsPage() {
                   }
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  {FIELD_TYPES.map(({ value, label }) => (
+                  {FIELD_TYPES.map(({ value }) => (
                     <option key={value} value={value}>
-                      {label}
+                      {fieldTypeLabel(value, t)}
                     </option>
                   ))}
                 </select>

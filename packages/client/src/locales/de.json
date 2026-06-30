@@ -2538,5 +2538,32 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "customFields": {
+    "title": "Benutzerdefinierte Felder",
+    "subtitle": "Definieren Sie benutzerdefinierte Datenfelder für Mitarbeiter, Abteilungen und andere Entitäten",
+    "addField": "Feld hinzufügen",
+    "entity": {
+      "employee": "Mitarbeiter",
+      "department": "Abteilung",
+      "location": "Standort",
+      "project": "Projekt",
+      "document": "Dokument"
+    },
+    "fieldType": {
+      "text": "Text",
+      "textarea": "Textbereich",
+      "number": "Zahl",
+      "decimal": "Dezimalzahl",
+      "date": "Datum",
+      "datetime": "Datum und Uhrzeit",
+      "dropdown": "Dropdown",
+      "multi_select": "Mehrfachauswahl",
+      "checkbox": "Kontrollkästchen",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "url": "URL",
+      "file": "Datei"
+    }
   }
 }
