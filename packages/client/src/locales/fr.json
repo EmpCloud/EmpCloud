@@ -2596,6 +2596,12 @@
     "copyError": "Copie impossible — sélectionnez et copiez manuellement",
     "revokeConfirm": "Révoquer « {{name}} » ? Toute intégration l'utilisant cessera de fonctionner immédiatement.",
     "revoked": "Clé API révoquée",
-    "revokeError": "Échec de la révocation de la clé"
+    "revokeError": "Échec de la révocation de la clé",
+    "howToTitle": "Comment utiliser votre clé API",
+    "howToIntro": "La clé générée est un <strong>jeton Bearer</strong>. Envoyez-la dans l'en-tête <code>Authorization</code> à chaque requête API — exactement comme un jeton de session connectée :",
+    "bulletBothSystems": "<strong>Fonctionne dans les deux systèmes.</strong> Le même jeton s'authentifie auprès des API EmpCloud et des API du module Paie — aucune connexion ni échange de jeton distinct nécessaire.",
+    "bulletPermissions": "<strong>Hérite de vos autorisations.</strong> Une clé ne peut faire que ce que l'administrateur qui l'a créée peut faire. Elle reflète toujours le rôle actuel de cet administrateur — changez le rôle et l'accès de la clé change aussi.",
+    "bulletShownOnce": "<strong>Affichée une seule fois.</strong> La clé complète est affichée une seule fois à la création. Conservez-la en lieu sûr (un gestionnaire de secrets) — nous n'en gardons qu'une copie hachée et ne pouvons plus l'afficher.",
+    "bulletRevocable": "<strong>Révocable et expirable.</strong> Définissez une expiration facultative ou révoquez une clé à tout moment. Les clés révoquées ou expirées cessent de fonctionner immédiatement, partout. Traitez une clé comme un mot de passe — quiconque la possède peut agir avec vos autorisations."
   }
 }

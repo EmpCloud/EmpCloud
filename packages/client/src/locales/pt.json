@@ -2596,6 +2596,12 @@
     "copyError": "Não foi possível copiar — selecione e copie manualmente",
     "revokeConfirm": "Revogar \"{{name}}\"? Qualquer integração que a use deixará de funcionar imediatamente.",
     "revoked": "Chave de API revogada",
-    "revokeError": "Falha ao revogar a chave"
+    "revokeError": "Falha ao revogar a chave",
+    "howToTitle": "Como usar sua chave de API",
+    "howToIntro": "A chave gerada é um <strong>token Bearer</strong>. Envie-a no cabeçalho <code>Authorization</code> em cada requisição da API — exatamente como um token de sessão autenticada:",
+    "bulletBothSystems": "<strong>Funciona em ambos os sistemas.</strong> O mesmo token autentica nas APIs do EmpCloud e nas APIs do módulo de Folha de Pagamento — sem login separado ou troca de token.",
+    "bulletPermissions": "<strong>Herda suas permissões.</strong> Uma chave só pode fazer o que o administrador que a criou pode fazer. Ela sempre reflete a função atual desse administrador — altere a função e o acesso da chave muda junto.",
+    "bulletShownOnce": "<strong>Exibida apenas uma vez.</strong> A chave completa é exibida uma única vez na criação. Guarde-a em local seguro (um gerenciador de segredos) — mantemos apenas uma cópia com hash e não podemos exibi-la novamente.",
+    "bulletRevocable": "<strong>Revogável e com expiração.</strong> Defina uma expiração opcional ou revogue uma chave a qualquer momento. Chaves revogadas ou expiradas param de funcionar imediatamente, em todos os lugares. Trate uma chave como uma senha — qualquer pessoa que a tenha pode agir com suas permissões."
   }
 }

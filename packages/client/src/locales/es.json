@@ -2596,6 +2596,12 @@
     "copyError": "No se pudo copiar — selecciona y copia manualmente",
     "revokeConfirm": "¿Revocar \"{{name}}\"? Cualquier integración que la use dejará de funcionar de inmediato.",
     "revoked": "Clave de API revocada",
-    "revokeError": "No se pudo revocar la clave"
+    "revokeError": "No se pudo revocar la clave",
+    "howToTitle": "Cómo usar tu clave de API",
+    "howToIntro": "La clave generada es un <strong>token Bearer</strong>. Envíala en el encabezado <code>Authorization</code> en cada solicitud de API — exactamente como un token de sesión iniciada:",
+    "bulletBothSystems": "<strong>Funciona en ambos sistemas.</strong> El mismo token autentica en las API de EmpCloud y en las API del módulo de Nómina — sin inicio de sesión ni intercambio de token aparte.",
+    "bulletPermissions": "<strong>Hereda tus permisos.</strong> Una clave solo puede hacer lo que puede hacer el administrador que la creó. Siempre refleja el rol actual de ese administrador — cambia el rol y el acceso de la clave cambia con él.",
+    "bulletShownOnce": "<strong>Se muestra solo una vez.</strong> La clave completa se muestra una sola vez al crearla. Guárdala en un lugar seguro (un gestor de secretos) — solo conservamos una copia con hash y no podemos volver a mostrarla.",
+    "bulletRevocable": "<strong>Revocable y con caducidad.</strong> Establece una caducidad opcional o revoca una clave en cualquier momento. Las claves revocadas o caducadas dejan de funcionar de inmediato, en todas partes. Trata una clave como una contraseña — cualquiera que la tenga puede actuar con tus permisos."
   }
 }

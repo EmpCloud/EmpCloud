@@ -2596,6 +2596,12 @@
     "copyError": "Kopieren nicht möglich — manuell auswählen und kopieren",
     "revokeConfirm": "\"{{name}}\" widerrufen? Jede Integration, die ihn verwendet, funktioniert sofort nicht mehr.",
     "revoked": "API-Schlüssel widerrufen",
-    "revokeError": "Schlüssel konnte nicht widerrufen werden"
+    "revokeError": "Schlüssel konnte nicht widerrufen werden",
+    "howToTitle": "So verwenden Sie Ihren API-Schlüssel",
+    "howToIntro": "Der generierte Schlüssel ist ein <strong>Bearer-Token</strong>. Senden Sie ihn bei jeder API-Anfrage im <code>Authorization</code>-Header — genau wie ein angemeldetes Sitzungstoken:",
+    "bulletBothSystems": "<strong>Funktioniert in beiden Systemen.</strong> Derselbe Token authentifiziert sich bei den EmpCloud-APIs und den Payroll-Modul-APIs — keine separate Anmeldung oder Token-Austausch nötig.",
+    "bulletPermissions": "<strong>Erbt Ihre Berechtigungen.</strong> Ein Schlüssel kann nur das tun, was der Admin tun kann, der ihn erstellt hat. Er spiegelt immer die aktuelle Rolle dieses Admins wider — ändern Sie die Rolle, ändert sich auch der Zugriff des Schlüssels.",
+    "bulletShownOnce": "<strong>Nur einmal angezeigt.</strong> Der vollständige Schlüssel wird bei der Erstellung einmalig angezeigt. Bewahren Sie ihn sicher auf (in einem Secrets-Manager) — wir speichern nur eine gehashte Kopie und können ihn nicht erneut anzeigen.",
+    "bulletRevocable": "<strong>Widerruflich & ablaufbar.</strong> Legen Sie ein optionales Ablaufdatum fest oder widerrufen Sie einen Schlüssel jederzeit. Widerrufene oder abgelaufene Schlüssel funktionieren überall sofort nicht mehr. Behandeln Sie einen Schlüssel wie ein Passwort — wer ihn hat, kann mit Ihren Berechtigungen handeln."
   }
 }

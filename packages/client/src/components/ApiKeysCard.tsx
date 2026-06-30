@@ -118,15 +118,17 @@ export default function ApiKeysCard() {
       <div className="mb-5 rounded-lg border border-brand-100 bg-brand-50/60 p-4">
         <div className="flex items-center gap-2 mb-3 text-brand-700">
           <Info className="h-4 w-4 shrink-0" />
-          <p className="text-sm font-semibold">How to use your API key</p>
+          <p className="text-sm font-semibold">{t("apiKeys.howToTitle")}</p>
         </div>
 
         <p className="text-sm text-gray-600 mb-3">
-          The generated key is a <strong>Bearer token</strong>. Send it in the{" "}
-          <code className="rounded bg-white border border-gray-200 px-1 py-0.5 text-[12px]">
-            Authorization
-          </code>{" "}
-          header on every API request — exactly like a logged-in session token:
+          <Trans
+            i18nKey="apiKeys.howToIntro"
+            components={{
+              strong: <strong />,
+              code: <code className="rounded bg-white border border-gray-200 px-1 py-0.5 text-[12px]" />,
+            }}
+          />
         </p>
 
         <pre className="overflow-x-auto rounded-md bg-gray-900 px-3 py-2.5 text-[12px] leading-relaxed text-gray-100">
@@ -138,32 +140,25 @@ export default function ApiKeysCard() {
           <li className="flex items-start gap-2">
             <Boxes className="h-4 w-4 mt-0.5 shrink-0 text-brand-600" />
             <span>
-              <strong>Works in both systems.</strong> The same token authenticates against EmpCloud
-              APIs and the Payroll module APIs — no separate login or token exchange needed.
+              <Trans i18nKey="apiKeys.bulletBothSystems" components={{ strong: <strong /> }} />
             </span>
           </li>
           <li className="flex items-start gap-2">
             <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0 text-brand-600" />
             <span>
-              <strong>Inherits your permissions.</strong> A key can only do what the admin who
-              created it can do. It always reflects that admin's current role — change the role and
-              the key's access changes with it.
+              <Trans i18nKey="apiKeys.bulletPermissions" components={{ strong: <strong /> }} />
             </span>
           </li>
           <li className="flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
             <span>
-              <strong>Shown only once.</strong> The full key is displayed a single time at creation.
-              Store it somewhere safe (a secrets manager) — we keep only a hashed copy and can't
-              show it again.
+              <Trans i18nKey="apiKeys.bulletShownOnce" components={{ strong: <strong /> }} />
             </span>
           </li>
           <li className="flex items-start gap-2">
             <Clock className="h-4 w-4 mt-0.5 shrink-0 text-brand-600" />
             <span>
-              <strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any
-              time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a
-              password — anyone who has it can act with your permissions.
+              <Trans i18nKey="apiKeys.bulletRevocable" components={{ strong: <strong /> }} />
             </span>
           </li>
         </ul>
