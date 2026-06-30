@@ -2076,6 +2076,17 @@
     "subtitle": "Schließen Sie aktive Umfragen ab und sehen Sie sich Ihre früheren Antworten an.",
     "pending": "Ausstehende Umfragen",
     "noActive": "Keine aktiven Umfragen",
-    "noActiveHint": "Schauen Sie später wieder vorbei für neue Umfragen."
+    "noActiveHint": "Schauen Sie später wieder vorbei für neue Umfragen.",
+    "anonymous": "Anonym",
+    "dueBy": "Fällig bis {{date}}",
+    "takeSurvey": "Umfrage starten",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Benutzerdefiniert",
+      "onboarding": "Onboarding",
+      "exit_survey": "Austrittsumfrage"
+    }
   }
 }

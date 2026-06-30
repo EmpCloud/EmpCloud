@@ -2076,6 +2076,17 @@
     "subtitle": "Completa las encuestas activas y consulta tus respuestas anteriores.",
     "pending": "Encuestas Pendientes",
     "noActive": "No hay encuestas activas",
-    "noActiveHint": "Vuelve más tarde para completar nuevas encuestas."
+    "noActiveHint": "Vuelve más tarde para completar nuevas encuestas.",
+    "anonymous": "Anónimo",
+    "dueBy": "Fecha límite {{date}}",
+    "takeSurvey": "Responder Encuesta",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Compromiso",
+      "custom": "Personalizada",
+      "onboarding": "Incorporación",
+      "exit_survey": "Encuesta de Salida"
+    }
   }
 }

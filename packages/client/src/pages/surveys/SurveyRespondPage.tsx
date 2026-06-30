@@ -95,10 +95,10 @@ export default function SurveyRespondPage() {
                         s.type === "engagement" ? "bg-teal-100 text-teal-700" :
                         "bg-gray-100 text-gray-700"
                       }`}>
-                        {s.type}
+                        {surveyTypeLabel(s.type, t)}
                       </span>
                       {s.is_anonymous && (
-                        <span className="text-xs text-gray-400">Anonymous</span>
+                        <span className="text-xs text-gray-400">{t("surveyRespond.anonymous")}</span>
                       )}
                     </div>
                     <h3 className="font-semibold text-gray-900">{s.title}</h3>
@@ -107,7 +107,7 @@ export default function SurveyRespondPage() {
                     )}
                     {s.end_date && (
                       <p className="text-xs text-gray-400 mt-2">
-                        Due by {new Date(s.end_date).toLocaleDateString()}
+                        {t("surveyRespond.dueBy", { date: new Date(s.end_date).toLocaleDateString() })}
                       </p>
                     )}
                   </div>
@@ -116,7 +116,7 @@ export default function SurveyRespondPage() {
                   onClick={() => setSelectedSurveyId(s.id)}
                   className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
                 >
-                  <Send className="h-4 w-4" /> Take Survey
+                  <Send className="h-4 w-4" /> {t("surveyRespond.takeSurvey")}
                 </button>
               </div>
             ))}

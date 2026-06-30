@@ -2076,6 +2076,17 @@
     "subtitle": "実施中のアンケートに回答し、過去の回答を確認できます。",
     "pending": "未回答のアンケート",
     "noActive": "実施中のアンケートはありません",
-    "noActiveHint": "新しいアンケートは後でご確認ください。"
+    "noActiveHint": "新しいアンケートは後でご確認ください。",
+    "anonymous": "匿名",
+    "dueBy": "期限: {{date}}",
+    "takeSurvey": "アンケートに回答",
+    "type": {
+      "pulse": "パルス",
+      "enps": "eNPS",
+      "engagement": "エンゲージメント",
+      "custom": "カスタム",
+      "onboarding": "オンボーディング",
+      "exit_survey": "退職アンケート"
+    }
   }
 }

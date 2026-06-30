@@ -2076,6 +2076,17 @@
     "subtitle": "Responda às pesquisas ativas e veja suas respostas anteriores.",
     "pending": "Pesquisas Pendentes",
     "noActive": "Nenhuma pesquisa ativa",
-    "noActiveHint": "Volte mais tarde para novas pesquisas a responder."
+    "noActiveHint": "Volte mais tarde para novas pesquisas a responder.",
+    "anonymous": "Anônimo",
+    "dueBy": "Prazo até {{date}}",
+    "takeSurvey": "Responder Pesquisa",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engajamento",
+      "custom": "Personalizada",
+      "onboarding": "Integração",
+      "exit_survey": "Pesquisa de Desligamento"
+    }
   }
 }

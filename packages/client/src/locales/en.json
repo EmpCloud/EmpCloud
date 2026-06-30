@@ -2081,6 +2081,17 @@
     "subtitle": "Complete active surveys and view your past responses.",
     "pending": "Pending Surveys",
     "noActive": "No active surveys",
-    "noActiveHint": "Check back later for new surveys to complete."
+    "noActiveHint": "Check back later for new surveys to complete.",
+    "anonymous": "Anonymous",
+    "dueBy": "Due by {{date}}",
+    "takeSurvey": "Take Survey",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Custom",
+      "onboarding": "Onboarding",
+      "exit_survey": "Exit Survey"
+    }
   }
 }
