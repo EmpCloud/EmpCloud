@@ -2538,5 +2538,32 @@
       "damaged": "Endommagé",
       "updated": "Mis à jour"
     }
+  },
+  "submitFeedback": {
+    "title": "Envoyer un retour",
+    "successHeading": "Retour envoyé",
+    "successMessage": "Votre retour a été envoyé de façon anonyme. Votre identité n'est ni conservée ni visible par qui que ce soit. Vous pouvez suivre l'état de votre retour depuis la page « Mes retours ».",
+    "submitAnother": "Envoyer un autre retour",
+    "bannerTitle": "Votre retour est totalement anonyme",
+    "bannerBody": "Votre identité est hachée et ne peut pas être reliée à vous. Les RH verront le contenu du retour, mais jamais votre nom ni votre adresse e-mail.",
+    "categoryLabel": "Catégorie",
+    "subjectLabel": "Objet",
+    "messageLabel": "Message",
+    "subjectPlaceholder": "Bref résumé de votre retour",
+    "messagePlaceholder": "Décrivez votre retour en détail...",
+    "markUrgent": "Marquer comme urgent",
+    "submitAnon": "Envoyer anonymement",
+    "submitting": "Envoi en cours...",
+    "submitError": "Échec de l'envoi du retour. Veuillez réessayer.",
+    "category": {
+      "workplace": "Environnement de travail",
+      "management": "Management",
+      "process": "Processus",
+      "culture": "Culture",
+      "harassment": "Harcèlement",
+      "safety": "Sécurité",
+      "suggestion": "Suggestion",
+      "other": "Autre"
+    }
   }
 }
