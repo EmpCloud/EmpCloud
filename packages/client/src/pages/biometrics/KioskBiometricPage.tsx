@@ -7,6 +7,7 @@
 // /api/v1/biometrics/* HR endpoints, which manage org-wide devices).
 // =============================================================================
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Fingerprint, ShieldCheck, ShieldOff, KeyRound, ArrowLeft, Loader2, Link2, Trash2, Plus, Building2, Eye } from "lucide-react";
@@ -38,6 +39,7 @@ function isSixDigits(s: string): boolean {
 }
 
 export default function KioskBiometricPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const v3 = useV3Biometric();
@@ -68,15 +70,15 @@ export default function KioskBiometricPage() {
       // For enable + change we require both fields to match. Disable just
       // takes the current PIN once (backend doesn't actually verify it on
       // disable today, but asking for it is the safer UX and forward-compat).
-      if (!isSixDigits(pin)) throw new Error("PIN must be exactly 6 digits");
-      if (mode !== "disable" && pin !== confirmPin) throw new Error("PINs do not match");
+      if (!isSixDigits(pin)) throw new Error(t("kioskPin.errSixDigits"));
+      if (mode !== "disable" && pin !== confirmPin) throw new Error(t("kioskPin.errMismatch"));
 
       if (mode === "enable") {
         const { data } = await v3.post<LegacyResponse>("/enable-biometric", {
           secretKey: pin,
           status: 1,
         });
-        if (data.code !== 200) throw new Error(data.message || "Failed to enable biometric");
+        if (data.code !== 200) throw new Error(data.message || t("kioskPin.errEnable"));
         return;
       }
       if (mode === "disable") {
@@ -84,21 +86,21 @@ export default function KioskBiometricPage() {
           secretKey: pin,
           status: 0,
         });
-        if (data.code !== 200) throw new Error(data.message || "Failed to disable biometric");
+        if (data.code !== 200) throw new Error(data.message || t("kioskPin.errDisable"));
         return;
       }
       // change
       const { data } = await v3.post<LegacyResponse>("/set-password", {
         secretKey: pin,
       });
-      if (data.code !== 200) throw new Error(data.message || "Failed to update PIN");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errUpdate"));
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["biometric-kiosk-status"] });
       reset();
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || err?.message || "Something went wrong");
+      setError(err?.response?.data?.message || err?.message || t("kioskPin.errGeneric"));
     },
   });
 
@@ -109,13 +111,13 @@ export default function KioskBiometricPage() {
         onClick={() => navigate("/biometrics")}
         className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to Biometrics
+        <ArrowLeft className="h-4 w-4" /> {t("kioskPin.backToBiometrics")}
       </button>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Biometric Kiosk Access</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("kioskPin.title")}</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Manage your personal 6-digit PIN used to sign in at biometric kiosk devices.
+          {t("kioskPin.subtitle")}
         </p>
       </div>
 
@@ -130,14 +132,14 @@ export default function KioskBiometricPage() {
             <Fingerprint className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-500">Status</p>
+            <p className="text-sm font-medium text-gray-500">{t("kioskPin.status")}</p>
             <p className="text-lg font-semibold text-gray-900">
-              {isLoading ? "Loading…" : status ? "Enabled" : "Disabled"}
+              {isLoading ? t("kioskPin.loading") : status ? t("kioskPin.enabled") : t("kioskPin.disabled")}
             </p>
             <p className="mt-1 text-xs text-gray-500">
               {status
-                ? "You can sign in at any kiosk using your email and 6-digit PIN."
-                : "Set a 6-digit PIN to enable biometric kiosk sign-in."}
+                ? t("kioskPin.statusOnHint")
+                : t("kioskPin.statusOffHint")}
             </p>
           </div>
         </div>
@@ -153,7 +155,7 @@ export default function KioskBiometricPage() {
               disabled={isLoading}
               className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
             >
-              <ShieldCheck className="h-4 w-4" /> Enable Biometric
+              <ShieldCheck className="h-4 w-4" /> {t("kioskPin.enableBiometric")}
             </button>
           )}
           {status && (
@@ -166,7 +168,7 @@ export default function KioskBiometricPage() {
                 }}
                 className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <KeyRound className="h-4 w-4" /> Change PIN
+                <KeyRound className="h-4 w-4" /> {t("kioskPin.changePin")}
               </button>
               <button
                 type="button"
@@ -176,7 +178,7 @@ export default function KioskBiometricPage() {
                 }}
                 className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
               >
-                <ShieldOff className="h-4 w-4" /> Disable Biometric
+                <ShieldOff className="h-4 w-4" /> {t("kioskPin.disableBiometric")}
               </button>
             </>
           )}
@@ -202,14 +204,14 @@ export default function KioskBiometricPage() {
       {mode && (
         <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900">
-            {mode === "enable" && "Set a 6-digit PIN"}
-            {mode === "change" && "Choose a new 6-digit PIN"}
-            {mode === "disable" && "Confirm with your current PIN"}
+            {mode === "enable" && t("kioskPin.panelEnableTitle")}
+            {mode === "change" && t("kioskPin.panelChangeTitle")}
+            {mode === "disable" && t("kioskPin.panelDisableTitle")}
           </h2>
           <p className="mt-1 text-xs text-gray-500">
             {mode === "disable"
-              ? "Type your existing 6-digit PIN to disable biometric kiosk sign-in."
-              : "Use exactly 6 digits. Avoid easy-to-guess sequences (e.g. 123456)."}
+              ? t("kioskPin.panelDisableHint")
+              : t("kioskPin.panelSetHint")}
           </p>
 
           <form
@@ -220,10 +222,10 @@ export default function KioskBiometricPage() {
               submitMutation.mutate();
             }}
           >
-            <PinField label={mode === "disable" ? "Current PIN" : "PIN"} value={pin} onChange={setPin} autoFocus />
+            <PinField label={mode === "disable" ? t("kioskPin.currentPin") : t("kioskPin.pin")} value={pin} onChange={setPin} autoFocus />
             {mode !== "disable" && (
               <PinField
-                label="Confirm PIN"
+                label={t("kioskPin.confirmPin")}
                 value={confirmPin}
                 onChange={setConfirmPin}
               />
@@ -237,7 +239,7 @@ export default function KioskBiometricPage() {
                 onClick={reset}
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("kioskPin.cancel")}
               </button>
               <button
                 type="submit"
@@ -247,9 +249,9 @@ export default function KioskBiometricPage() {
                 }`}
               >
                 {submitMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                {mode === "enable" && "Enable"}
-                {mode === "change" && "Update PIN"}
-                {mode === "disable" && "Disable"}
+                {mode === "enable" && t("kioskPin.enable")}
+                {mode === "change" && t("kioskPin.updatePin")}
+                {mode === "disable" && t("kioskPin.disable")}
               </button>
             </div>
           </form>
@@ -280,6 +282,7 @@ function normaliseLevel(input: unknown): LivenessLevel {
 }
 
 function LivenessSettingsCard() {
+  const { t } = useTranslation();
   const v3 = useV3Biometric();
   const qc = useQueryClient();
   const [enabled, setEnabled] = useState(false);
@@ -310,7 +313,7 @@ function LivenessSettingsCard() {
         // restores the previous sensitivity choice.
         level,
       });
-      if (data.code !== 200) throw new Error(data.message || "Failed to save liveness settings");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errSaveLiveness"));
       return data.data;
     },
     onSuccess: (data) => {
@@ -323,7 +326,7 @@ function LivenessSettingsCard() {
       qc.invalidateQueries({ queryKey: ["biometric-liveness-settings"] });
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || err?.message || "Failed to save liveness settings");
+      setError(err?.response?.data?.message || err?.message || t("kioskPin.errSaveLiveness"));
     },
   });
 
@@ -337,11 +340,9 @@ function LivenessSettingsCard() {
           <Eye className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h2 className="text-base font-semibold text-gray-900">Liveness Detection</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("kioskPin.livenessTitle")}</h2>
           <p className="mt-1 text-xs text-gray-500">
-            Run an anti-spoof check on each kiosk face capture (blink / micro-movement
-            detection) before issuing the sign-in token. Defaults to off; turn on once
-            your devices and lighting support reliable detection.
+            {t("kioskPin.livenessDesc")}
           </p>
         </div>
       </div>
@@ -349,9 +350,9 @@ function LivenessSettingsCard() {
       {/* Enable toggle */}
       <div className="mt-5 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
         <div>
-          <p className="text-sm font-medium text-gray-900">Enable Liveness</p>
+          <p className="text-sm font-medium text-gray-900">{t("kioskPin.enableLiveness")}</p>
           <p className="text-xs text-gray-500">
-            {isLoading ? "Loading…" : enabled ? "Liveness checks ARE running on kiosk auth." : "Liveness checks are off — face capture is accepted as-is."}
+            {isLoading ? t("kioskPin.loading") : enabled ? t("kioskPin.livenessOnHint") : t("kioskPin.livenessOffHint")}
           </p>
         </div>
         <label className="inline-flex cursor-pointer items-center">
@@ -389,7 +390,7 @@ function LivenessSettingsCard() {
       )}
       {saved && (
         <div className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-          Liveness settings saved.
+          {t("kioskPin.livenessSaved")}
         </div>
       )}
 
@@ -401,7 +402,7 @@ function LivenessSettingsCard() {
           className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          Save
+          {t("kioskPin.save")}
         </button>
       </div>
     </div>
@@ -413,10 +414,10 @@ function LivenessSettingsCard() {
 // the label name to jump straight to it. Values map: 0=low, 1=moderate,
 // 2=high. The track is colour-graded green→amber→red so the
 // "consequence" is visible without reading the label.
-const LIVENESS_LEVELS: Array<{ value: LivenessLevel; label: string; description: string; cls: string }> = [
-  { value: "low", label: "Low", description: "Lenient — more retries succeed; less anti-spoof protection.", cls: "text-green-700" },
-  { value: "moderate", label: "Moderate", description: "Balanced (recommended) — catches obvious spoofs.", cls: "text-amber-700" },
-  { value: "high", label: "High", description: "Strict — best for shared kiosks; rejects on subtler signals.", cls: "text-red-700" },
+const LIVENESS_LEVELS: Array<{ value: LivenessLevel; labelKey: string; descKey: string; cls: string }> = [
+  { value: "low", labelKey: "kioskPin.levelLow", descKey: "kioskPin.levelLowDesc", cls: "text-green-700" },
+  { value: "moderate", labelKey: "kioskPin.levelModerate", descKey: "kioskPin.levelModerateDesc", cls: "text-amber-700" },
+  { value: "high", labelKey: "kioskPin.levelHigh", descKey: "kioskPin.levelHighDesc", cls: "text-red-700" },
 ];
 function LivenessLevelSlider({
   level,
@@ -427,17 +428,18 @@ function LivenessLevelSlider({
   onChange: (v: LivenessLevel) => void;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   const idx = Math.max(0, LIVENESS_LEVELS.findIndex((l) => l.value === level));
   const current = LIVENESS_LEVELS[idx] || LIVENESS_LEVELS[1];
   return (
     <div className="mt-3 rounded-lg border border-gray-200 bg-white px-4 py-4">
       <div className="flex items-baseline justify-between">
         <label className="block text-sm font-medium text-gray-900" htmlFor="liveness-level-slider">
-          Sensitivity Level
+          {t("kioskPin.sensitivityLevel")}
         </label>
-        <span className={`text-sm font-semibold ${current.cls}`}>{current.label}</span>
+        <span className={`text-sm font-semibold ${current.cls}`}>{t(current.labelKey)}</span>
       </div>
-      <p className="mt-1 text-xs text-gray-500">{current.description}</p>
+      <p className="mt-1 text-xs text-gray-500">{t(current.descKey)}</p>
 
       <div className="mt-4">
         <input
@@ -466,7 +468,7 @@ function LivenessLevelSlider({
                 i === idx ? `font-semibold ${l.cls}` : "text-gray-400 hover:text-gray-600"
               }`}
             >
-              {l.label}
+              {t(l.labelKey)}
             </button>
           ))}
         </div>
@@ -489,6 +491,7 @@ interface LinkedOrgRow {
 }
 
 function LinkedOrganizationsCard() {
+  const { t } = useTranslation();
   const v3 = useV3Biometric();
   const qc = useQueryClient();
   const [newEmail, setNewEmail] = useState("");
@@ -505,7 +508,7 @@ function LinkedOrganizationsCard() {
   const addMutation = useMutation({
     mutationFn: async (email: string) => {
       const { data } = await v3.post<LegacyResponse>("/linked-organizations", { email });
-      if (data.code !== 200) throw new Error(data.message || "Failed to add linked organization");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errAddOrg"));
     },
     onSuccess: () => {
       setNewEmail("");
@@ -513,14 +516,14 @@ function LinkedOrganizationsCard() {
       qc.invalidateQueries({ queryKey: ["biometric-linked-orgs"] });
     },
     onError: (err: any) => {
-      setError(err?.response?.data?.message || err?.message || "Failed to add linked organization");
+      setError(err?.response?.data?.message || err?.message || t("kioskPin.errAddOrg"));
     },
   });
 
   const removeMutation = useMutation({
     mutationFn: async (email: string) => {
       const { data } = await v3.delete<LegacyResponse>(`/linked-organizations/${encodeURIComponent(email)}`);
-      if (data.code !== 200) throw new Error(data.message || "Failed to remove linked organization");
+      if (data.code !== 200) throw new Error(data.message || t("kioskPin.errRemoveOrg"));
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["biometric-linked-orgs"] }),
   });
@@ -532,12 +535,9 @@ function LinkedOrganizationsCard() {
           <Link2 className="h-6 w-6" />
         </div>
         <div className="flex-1">
-          <h2 className="text-base font-semibold text-gray-900">Linked Organizations</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("kioskPin.linkedOrgsTitle")}</h2>
           <p className="mt-1 text-xs text-gray-500">
-            Share your biometric kiosk with employees from sister organizations.
-            Add an admin email from each linked org — after their next kiosk
-            login, employees from all linked orgs can punch in/out on the
-            same device. Each company&rsquo;s payroll stays separate.
+            {t("kioskPin.linkedOrgsDesc")}
           </p>
         </div>
       </div>
@@ -546,10 +546,10 @@ function LinkedOrganizationsCard() {
       <div className="mt-5 space-y-2">
         {isLoading ? (
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+            <Loader2 className="h-4 w-4 animate-spin" /> {t("kioskPin.loading")}
           </div>
         ) : linked.length === 0 ? (
-          <p className="text-sm text-gray-500">No organizations linked yet.</p>
+          <p className="text-sm text-gray-500">{t("kioskPin.noOrgsLinked")}</p>
         ) : (
           linked.map((row) => (
             <div
@@ -564,8 +564,8 @@ function LinkedOrganizationsCard() {
                     {row.organization_name
                       ? row.organization_name
                       : row.organization_id == null
-                        ? "User no longer exists — remove this entry"
-                        : `Organization #${row.organization_id}`}
+                        ? t("kioskPin.userGone")
+                        : t("kioskPin.organizationN", { id: row.organization_id })}
                   </p>
                 </div>
               </div>
@@ -574,8 +574,8 @@ function LinkedOrganizationsCard() {
                 onClick={() => removeMutation.mutate(row.email)}
                 disabled={removeMutation.isPending}
                 className="text-gray-400 hover:text-red-600 p-1 rounded disabled:opacity-50"
-                aria-label={`Unlink ${row.email}`}
-                title="Unlink"
+                aria-label={t("kioskPin.unlinkAria", { email: row.email })}
+                title={t("kioskPin.unlink")}
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -591,7 +591,7 @@ function LinkedOrganizationsCard() {
           e.preventDefault();
           setError(null);
           if (!newEmail.trim()) {
-            setError("Enter an email to link");
+            setError(t("kioskPin.errEnterEmail"));
             return;
           }
           addMutation.mutate(newEmail.trim());
@@ -610,7 +610,7 @@ function LinkedOrganizationsCard() {
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {addMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          Link organization
+          {t("kioskPin.linkOrganization")}
         </button>
       </form>
       {error && (
