@@ -2104,6 +2104,9 @@
     "responsesAnonymous": "Vos réponses sont anonymes",
     "cancel": "Annuler",
     "submitResponse": "Envoyer la réponse",
-    "submitError": "Échec de l'envoi de la réponse. Veuillez réessayer."
+    "submitError": "Échec de l'envoi de la réponse. Veuillez réessayer.",
+    "notAtAllLikely": "Pas du tout probable",
+    "extremelyLikely": "Extrêmement probable",
+    "textPlaceholder": "Saisissez votre réponse ici..."
   }
 }

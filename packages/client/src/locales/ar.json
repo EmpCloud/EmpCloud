@@ -2104,6 +2104,9 @@
     "responsesAnonymous": "ردودك مجهولة الهوية",
     "cancel": "إلغاء",
     "submitResponse": "إرسال الرد",
-    "submitError": "فشل إرسال الرد. يرجى المحاولة مرة أخرى."
+    "submitError": "فشل إرسال الرد. يرجى المحاولة مرة أخرى.",
+    "notAtAllLikely": "غير محتمل إطلاقًا",
+    "extremelyLikely": "محتمل للغاية",
+    "textPlaceholder": "اكتب إجابتك هنا..."
   }
 }

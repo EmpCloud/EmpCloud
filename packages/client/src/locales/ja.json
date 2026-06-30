@@ -2104,6 +2104,9 @@
     "responsesAnonymous": "あなたの回答は匿名です",
     "cancel": "キャンセル",
     "submitResponse": "回答を送信",
-    "submitError": "回答の送信に失敗しました。もう一度お試しください。"
+    "submitError": "回答の送信に失敗しました。もう一度お試しください。",
+    "notAtAllLikely": "まったく思わない",
+    "extremelyLikely": "非常にそう思う",
+    "textPlaceholder": "ここに回答を入力してください..."
   }
 }

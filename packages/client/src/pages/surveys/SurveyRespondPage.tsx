@@ -337,6 +337,7 @@ function QuestionInput({
   value: { rating_value?: number | null; text_value?: string | null } | undefined;
   onChange: (val: { rating_value?: number | null; text_value?: string | null }) => void;
 }) {
+  const { t } = useTranslation();
   const { question_type } = question;
 
   if (question_type === "rating_1_5") {
@@ -402,8 +403,8 @@ function QuestionInput({
           })}
         </div>
         <div className="flex justify-between text-xs text-gray-400 mt-1.5 px-1">
-          <span>Not at all likely</span>
-          <span>Extremely likely</span>
+          <span>{t("surveyRespond.notAtAllLikely")}</span>
+          <span>{t("surveyRespond.extremelyLikely")}</span>
         </div>
       </div>
     );
@@ -420,7 +421,7 @@ function QuestionInput({
               : "border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-300"
           }`}
         >
-          Yes
+          {t("surveyRespond.yes")}
         </button>
         <button
           onClick={() => onChange({ text_value: "no" })}
@@ -430,7 +431,7 @@ function QuestionInput({
               : "border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-300"
           }`}
         >
-          No
+          {t("surveyRespond.no")}
         </button>
       </div>
     );
@@ -463,7 +464,7 @@ function QuestionInput({
         value={value?.text_value || ""}
         onChange={(e) => onChange({ text_value: e.target.value })}
         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px]"
-        placeholder="Type your answer here..."
+        placeholder={t("surveyRespond.textPlaceholder")}
       />
     );
   }

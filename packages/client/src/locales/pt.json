@@ -2104,6 +2104,9 @@
     "responsesAnonymous": "Suas respostas são anônimas",
     "cancel": "Cancelar",
     "submitResponse": "Enviar Resposta",
-    "submitError": "Falha ao enviar a resposta. Tente novamente."
+    "submitError": "Falha ao enviar a resposta. Tente novamente.",
+    "notAtAllLikely": "Nada provável",
+    "extremelyLikely": "Extremamente provável",
+    "textPlaceholder": "Digite sua resposta aqui..."
   }
 }

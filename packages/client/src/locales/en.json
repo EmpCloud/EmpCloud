@@ -2109,6 +2109,9 @@
     "responsesAnonymous": "Your responses are anonymous",
     "cancel": "Cancel",
     "submitResponse": "Submit Response",
-    "submitError": "Failed to submit response. Please try again."
+    "submitError": "Failed to submit response. Please try again.",
+    "notAtAllLikely": "Not at all likely",
+    "extremelyLikely": "Extremely likely",
+    "textPlaceholder": "Type your answer here..."
   }
 }

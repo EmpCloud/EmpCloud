@@ -2104,6 +2104,9 @@
     "responsesAnonymous": "您的回复是匿名的",
     "cancel": "取消",
     "submitResponse": "提交回复",
-    "submitError": "提交回复失败。请重试。"
+    "submitError": "提交回复失败。请重试。",
+    "notAtAllLikely": "完全不可能",
+    "extremelyLikely": "非常可能",
+    "textPlaceholder": "在此输入您的答案..."
   }
 }
