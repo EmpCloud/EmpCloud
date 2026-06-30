@@ -2091,6 +2091,15 @@
     "loading": "Artikel werden geladen...",
     "noArticles": "Keine Artikel gefunden",
     "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff.",
-    "emptyHint": "Wissensdatenbank-Artikel werden hier angezeigt."
+    "emptyHint": "Wissensdatenbank-Artikel werden hier angezeigt.",
+    "pageOf": "Seite {{page}} von {{total_pages}} ({{total}} gesamt)",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "deleteTitle": "Artikel löschen?",
+    "deleteBody": "<strong>{{title}}</strong> löschen? Dadurch wird der Artikel zurückgezogen, sodass Mitarbeiter ihn nicht mehr sehen können.",
+    "cancel": "Abbrechen",
+    "deleting": "Wird gelöscht...",
+    "delete": "Löschen",
+    "deleteError": "Artikel konnte nicht gelöscht werden"
   }
 }

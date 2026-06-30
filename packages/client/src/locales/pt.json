@@ -2091,6 +2091,15 @@
     "loading": "Carregando artigos...",
     "noArticles": "Nenhum artigo encontrado",
     "tryDifferentSearch": "Tente um termo de pesquisa diferente.",
-    "emptyHint": "Os artigos da base de conhecimento aparecerão aqui."
+    "emptyHint": "Os artigos da base de conhecimento aparecerão aqui.",
+    "pageOf": "Página {{page}} de {{total_pages}} ({{total}} no total)",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "deleteTitle": "Excluir artigo?",
+    "deleteBody": "Excluir <strong>{{title}}</strong>? Isso despublica o artigo para que os funcionários não possam mais vê-lo.",
+    "cancel": "Cancelar",
+    "deleting": "Excluindo...",
+    "delete": "Excluir",
+    "deleteError": "Falha ao excluir o artigo"
   }
 }

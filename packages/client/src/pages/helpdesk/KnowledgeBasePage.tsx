@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -142,7 +142,7 @@ export default function KnowledgeBasePage() {
       setSelectedArticle(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete article"),
+      setDeleteError(err?.response?.data?.error?.message || t("kb.deleteError")),
   });
 
   const rateArticle = useMutation({
@@ -631,7 +631,7 @@ export default function KnowledgeBasePage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("kb.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -639,14 +639,14 @@ export default function KnowledgeBasePage() {
               disabled={page === 1}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
+              <ChevronLeft className="h-4 w-4" /> {t("kb.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next <ChevronRight className="h-4 w-4" />
+              {t("kb.next")} <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -668,11 +668,9 @@ export default function KnowledgeBasePage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete article?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("kb.deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
-                    This unpublishes the article so employees can no longer see it.
+                    <Trans i18nKey="kb.deleteBody" values={{ title: deleteTarget.title }} components={{ strong: <span className="font-medium text-gray-700" /> }} />
                   </p>
                 </div>
               </div>
@@ -689,7 +687,7 @@ export default function KnowledgeBasePage() {
                 disabled={deleteArticle.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("kb.cancel")}
               </button>
               <button
                 type="button"
@@ -699,10 +697,10 @@ export default function KnowledgeBasePage() {
               >
                 {deleteArticle.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("kb.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("kb.delete")
                 )}
               </button>
             </div>

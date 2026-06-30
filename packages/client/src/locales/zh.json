@@ -2091,6 +2091,15 @@
     "loading": "正在加载文章...",
     "noArticles": "未找到文章",
     "tryDifferentSearch": "请尝试其他搜索词。",
-    "emptyHint": "知识库文章将显示在此处。"
+    "emptyHint": "知识库文章将显示在此处。",
+    "pageOf": "第 {{page}} 页，共 {{total_pages}} 页（共 {{total}} 条）",
+    "previous": "上一页",
+    "next": "下一页",
+    "deleteTitle": "删除文章？",
+    "deleteBody": "删除 <strong>{{title}}</strong>？这将取消发布该文章，员工将无法再看到它。",
+    "cancel": "取消",
+    "deleting": "正在删除...",
+    "delete": "删除",
+    "deleteError": "删除文章失败"
   }
 }

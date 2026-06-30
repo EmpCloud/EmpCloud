@@ -2096,6 +2096,15 @@
     "loading": "Loading articles...",
     "noArticles": "No articles found",
     "tryDifferentSearch": "Try a different search term.",
-    "emptyHint": "Knowledge base articles will appear here."
+    "emptyHint": "Knowledge base articles will appear here.",
+    "pageOf": "Page {{page}} of {{total_pages}} ({{total}} total)",
+    "previous": "Previous",
+    "next": "Next",
+    "deleteTitle": "Delete article?",
+    "deleteBody": "Delete <strong>{{title}}</strong>? This unpublishes the article so employees can no longer see it.",
+    "cancel": "Cancel",
+    "deleting": "Deleting...",
+    "delete": "Delete",
+    "deleteError": "Failed to delete article"
   }
 }
