@@ -2562,6 +2562,19 @@
     "defaultValue": "既定値",
     "validationRegex": "検証用正規表現",
     "minValue": "最小値",
-    "maxValue": "最大値"
+    "maxValue": "最大値",
+    "helpText": "ヘルプテキスト",
+    "helpTextPlaceholder": "ユーザーに表示されるツールチップまたは説明",
+    "options": "選択肢",
+    "optionPlaceholder": "選択肢を入力して Enter キーを押してください",
+    "add": "追加",
+    "required": "必須",
+    "searchable": "検索可能",
+    "fieldPreview": "フィールドプレビュー",
+    "saveError": "フィールドの保存に失敗しました。もう一度お試しください。",
+    "saving": "保存中...",
+    "updateFieldBtn": "フィールドを更新",
+    "createField": "フィールドを作成",
+    "cancel": "キャンセル"
   }
 }

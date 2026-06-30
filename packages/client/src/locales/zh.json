@@ -2562,6 +2562,19 @@
     "defaultValue": "默认值",
     "validationRegex": "验证正则",
     "minValue": "最小值",
-    "maxValue": "最大值"
+    "maxValue": "最大值",
+    "helpText": "帮助文本",
+    "helpTextPlaceholder": "显示给用户的提示或说明",
+    "options": "选项",
+    "optionPlaceholder": "输入选项并按 Enter",
+    "add": "添加",
+    "required": "必填",
+    "searchable": "可搜索",
+    "fieldPreview": "字段预览",
+    "saveError": "保存字段失败。请重试。",
+    "saving": "正在保存...",
+    "updateFieldBtn": "更新字段",
+    "createField": "创建字段",
+    "cancel": "取消"
   }
 }

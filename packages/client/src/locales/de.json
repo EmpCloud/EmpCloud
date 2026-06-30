@@ -2562,6 +2562,19 @@
     "defaultValue": "Standardwert",
     "validationRegex": "Validierungs-Regex",
     "minValue": "Min.-Wert",
-    "maxValue": "Max.-Wert"
+    "maxValue": "Max.-Wert",
+    "helpText": "Hilfetext",
+    "helpTextPlaceholder": "Tooltip oder Beschreibung für Benutzer",
+    "options": "Optionen",
+    "optionPlaceholder": "Option eingeben und Enter drücken",
+    "add": "Hinzufügen",
+    "required": "Pflicht",
+    "searchable": "Durchsuchbar",
+    "fieldPreview": "Feldvorschau",
+    "saveError": "Feld konnte nicht gespeichert werden. Bitte erneut versuchen.",
+    "saving": "Wird gespeichert...",
+    "updateFieldBtn": "Feld aktualisieren",
+    "createField": "Feld erstellen",
+    "cancel": "Abbrechen"
   }
 }

@@ -2562,6 +2562,19 @@
     "defaultValue": "القيمة الافتراضية",
     "validationRegex": "تعبير نمطي للتحقق",
     "minValue": "الحد الأدنى",
-    "maxValue": "الحد الأقصى"
+    "maxValue": "الحد الأقصى",
+    "helpText": "نص المساعدة",
+    "helpTextPlaceholder": "تلميح أو وصف يظهر للمستخدمين",
+    "options": "الخيارات",
+    "optionPlaceholder": "اكتب الخيار واضغط Enter",
+    "add": "إضافة",
+    "required": "مطلوب",
+    "searchable": "قابل للبحث",
+    "fieldPreview": "معاينة الحقل",
+    "saveError": "فشل حفظ الحقل. يرجى المحاولة مرة أخرى.",
+    "saving": "جارٍ الحفظ...",
+    "updateFieldBtn": "تحديث الحقل",
+    "createField": "إنشاء حقل",
+    "cancel": "إلغاء"
   }
 }

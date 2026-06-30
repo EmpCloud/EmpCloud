@@ -2562,6 +2562,19 @@
     "defaultValue": "डिफ़ॉल्ट मान",
     "validationRegex": "वैलिडेशन रेगेक्स",
     "minValue": "न्यूनतम मान",
-    "maxValue": "अधिकतम मान"
+    "maxValue": "अधिकतम मान",
+    "helpText": "सहायता पाठ",
+    "helpTextPlaceholder": "उपयोगकर्ताओं को दिखाया जाने वाला टूलटिप या विवरण",
+    "options": "विकल्प",
+    "optionPlaceholder": "विकल्प टाइप करें और Enter दबाएं",
+    "add": "जोड़ें",
+    "required": "आवश्यक",
+    "searchable": "खोजने योग्य",
+    "fieldPreview": "फ़ील्ड पूर्वावलोकन",
+    "saveError": "फ़ील्ड सहेजने में विफल। कृपया पुनः प्रयास करें।",
+    "saving": "सहेजा जा रहा है...",
+    "updateFieldBtn": "फ़ील्ड अपडेट करें",
+    "createField": "फ़ील्ड बनाएं",
+    "cancel": "रद्द करें"
   }
 }

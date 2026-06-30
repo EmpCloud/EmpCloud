@@ -2562,6 +2562,19 @@
     "defaultValue": "Valor Padrão",
     "validationRegex": "Regex de Validação",
     "minValue": "Valor Mínimo",
-    "maxValue": "Valor Máximo"
+    "maxValue": "Valor Máximo",
+    "helpText": "Texto de Ajuda",
+    "helpTextPlaceholder": "Dica ou descrição mostrada aos usuários",
+    "options": "Opções",
+    "optionPlaceholder": "Digite a opção e pressione Enter",
+    "add": "Adicionar",
+    "required": "Obrigatório",
+    "searchable": "Pesquisável",
+    "fieldPreview": "Pré-visualização do Campo",
+    "saveError": "Falha ao salvar o campo. Tente novamente.",
+    "saving": "Salvando...",
+    "updateFieldBtn": "Atualizar Campo",
+    "createField": "Criar Campo",
+    "cancel": "Cancelar"
   }
 }

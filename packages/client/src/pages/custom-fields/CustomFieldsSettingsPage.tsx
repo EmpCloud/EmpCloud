@@ -473,7 +473,7 @@ export default function CustomFieldsSettingsPage() {
             {/* Help Text */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Help Text
+                {t("customFields.helpText")}
               </label>
               <textarea
                 value={form.help_text}
@@ -482,7 +482,7 @@ export default function CustomFieldsSettingsPage() {
                 }
                 rows={2}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder="Tooltip or description shown to users"
+                placeholder={t("customFields.helpTextPlaceholder")}
               />
             </div>
 
@@ -490,7 +490,7 @@ export default function CustomFieldsSettingsPage() {
             {needsOptions && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Options
+                  {t("customFields.options")}
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
@@ -503,7 +503,7 @@ export default function CustomFieldsSettingsPage() {
                         addOption();
                       }
                     }}
-                    placeholder="Type option and press Enter"
+                    placeholder={t("customFields.optionPlaceholder")}
                     className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <button
@@ -511,7 +511,7 @@ export default function CustomFieldsSettingsPage() {
                     onClick={addOption}
                     className="px-3 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200"
                   >
-                    Add
+                    {t("customFields.add")}
                   </button>
                 </div>
                 {form.options.length > 0 && (
@@ -547,7 +547,7 @@ export default function CustomFieldsSettingsPage() {
                   }
                   className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                 />
-                Required
+                {t("customFields.required")}
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700">
                 <input
@@ -558,7 +558,7 @@ export default function CustomFieldsSettingsPage() {
                   }
                   className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                 />
-                Searchable
+                {t("customFields.searchable")}
               </label>
             </div>
 
@@ -566,7 +566,7 @@ export default function CustomFieldsSettingsPage() {
             {showPreview && (
               <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                 <p className="text-xs font-medium text-gray-400 mb-2 uppercase">
-                  Field Preview
+                  {t("customFields.fieldPreview")}
                 </p>
                 <FieldPreview form={form} />
               </div>
@@ -584,7 +584,7 @@ export default function CustomFieldsSettingsPage() {
                 resp?.message
                 || err?.response?.data?.message
                 || err?.message
-                || "Failed to save field. Please try again.";
+                || t("customFields.saveError");
               return (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
                   <div className="font-medium">{message}</div>
@@ -610,15 +610,15 @@ export default function CustomFieldsSettingsPage() {
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
               >
                 {createMutation.isPending || updateMutation.isPending
-                  ? "Saving..."
-                  : editingId ? "Update Field" : "Create Field"}
+                  ? t("customFields.saving")
+                  : editingId ? t("customFields.updateFieldBtn") : t("customFields.createField")}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
                 className="text-gray-500 hover:text-gray-700 px-4 py-2 text-sm"
               >
-                Cancel
+                {t("customFields.cancel")}
               </button>
             </div>
           </form>

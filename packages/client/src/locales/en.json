@@ -2568,6 +2568,19 @@
     "defaultValue": "Default Value",
     "validationRegex": "Validation Regex",
     "minValue": "Min Value",
-    "maxValue": "Max Value"
+    "maxValue": "Max Value",
+    "helpText": "Help Text",
+    "helpTextPlaceholder": "Tooltip or description shown to users",
+    "options": "Options",
+    "optionPlaceholder": "Type option and press Enter",
+    "add": "Add",
+    "required": "Required",
+    "searchable": "Searchable",
+    "fieldPreview": "Field Preview",
+    "saveError": "Failed to save field. Please try again.",
+    "saving": "Saving...",
+    "updateFieldBtn": "Update Field",
+    "createField": "Create Field",
+    "cancel": "Cancel"
   }
 }
