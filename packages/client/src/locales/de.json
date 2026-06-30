@@ -2544,6 +2544,19 @@
     "subtitle": "Assets nach Typ organisieren",
     "addCategory": "Kategorie hinzufügen",
     "loading": "Kategorien werden geladen...",
-    "empty": "Noch keine Kategorien. Erstellen Sie die erste."
+    "empty": "Noch keine Kategorien. Erstellen Sie die erste.",
+    "colName": "Name",
+    "colDescription": "Beschreibung",
+    "colActions": "Aktionen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "editCategory": "Kategorie bearbeiten",
+    "newCategory": "Neue Kategorie",
+    "nameLabel": "Name *",
+    "namePlaceholder": "z. B. Laptop, Monitor, Telefon",
+    "descriptionLabel": "Beschreibung",
+    "cancel": "Abbrechen",
+    "update": "Aktualisieren",
+    "create": "Erstellen"
   }
 }

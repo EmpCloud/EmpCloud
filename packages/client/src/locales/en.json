@@ -2550,6 +2550,19 @@
     "subtitle": "Organize assets by type",
     "addCategory": "Add Category",
     "loading": "Loading categories...",
-    "empty": "No categories yet. Create your first one."
+    "empty": "No categories yet. Create your first one.",
+    "colName": "Name",
+    "colDescription": "Description",
+    "colActions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "editCategory": "Edit Category",
+    "newCategory": "New Category",
+    "nameLabel": "Name *",
+    "namePlaceholder": "e.g. Laptop, Monitor, Phone",
+    "descriptionLabel": "Description",
+    "cancel": "Cancel",
+    "update": "Update",
+    "create": "Create"
   }
 }

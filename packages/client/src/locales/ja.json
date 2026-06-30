@@ -2544,6 +2544,19 @@
     "subtitle": "資産をタイプ別に整理",
     "addCategory": "カテゴリを追加",
     "loading": "カテゴリを読み込み中...",
-    "empty": "まだカテゴリがありません。最初のカテゴリを作成してください。"
+    "empty": "まだカテゴリがありません。最初のカテゴリを作成してください。",
+    "colName": "名前",
+    "colDescription": "説明",
+    "colActions": "操作",
+    "edit": "編集",
+    "delete": "削除",
+    "editCategory": "カテゴリを編集",
+    "newCategory": "新規カテゴリ",
+    "nameLabel": "名前 *",
+    "namePlaceholder": "例: ノートPC、モニター、電話",
+    "descriptionLabel": "説明",
+    "cancel": "キャンセル",
+    "update": "更新",
+    "create": "作成"
   }
 }

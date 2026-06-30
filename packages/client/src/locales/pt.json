@@ -2544,6 +2544,19 @@
     "subtitle": "Organize os ativos por tipo",
     "addCategory": "Adicionar Categoria",
     "loading": "Carregando categorias...",
-    "empty": "Nenhuma categoria ainda. Crie a primeira."
+    "empty": "Nenhuma categoria ainda. Crie a primeira.",
+    "colName": "Nome",
+    "colDescription": "Descrição",
+    "colActions": "Ações",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "editCategory": "Editar Categoria",
+    "newCategory": "Nova Categoria",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "ex.: Notebook, Monitor, Telefone",
+    "descriptionLabel": "Descrição",
+    "cancel": "Cancelar",
+    "update": "Atualizar",
+    "create": "Criar"
   }
 }

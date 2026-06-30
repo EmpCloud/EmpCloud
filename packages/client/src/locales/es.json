@@ -2544,6 +2544,19 @@
     "subtitle": "Organiza los activos por tipo",
     "addCategory": "Agregar Categoría",
     "loading": "Cargando categorías...",
-    "empty": "Aún no hay categorías. Crea la primera."
+    "empty": "Aún no hay categorías. Crea la primera.",
+    "colName": "Nombre",
+    "colDescription": "Descripción",
+    "colActions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "editCategory": "Editar Categoría",
+    "newCategory": "Nueva Categoría",
+    "nameLabel": "Nombre *",
+    "namePlaceholder": "p. ej. Portátil, Monitor, Teléfono",
+    "descriptionLabel": "Descripción",
+    "cancel": "Cancelar",
+    "update": "Actualizar",
+    "create": "Crear"
   }
 }

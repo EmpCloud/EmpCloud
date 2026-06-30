@@ -110,9 +110,9 @@ export default function AssetCategoriesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Description</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-500">Actions</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assetCategories.colName")}</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assetCategories.colDescription")}</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-500">{t("assetCategories.colActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -125,7 +125,7 @@ export default function AssetCategoriesPage() {
                       <button
                         onClick={() => startEdit(cat)}
                         className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                        title="Edit"
+                        title={t("assetCategories.edit")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
@@ -135,7 +135,7 @@ export default function AssetCategoriesPage() {
                           setDeleteError(null);
                         }}
                         className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-600"
-                        title="Delete"
+                        title={t("assetCategories.delete")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -154,7 +154,7 @@ export default function AssetCategoriesPage() {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">
-                {editingId ? "Edit Category" : "New Category"}
+                {editingId ? t("assetCategories.editCategory") : t("assetCategories.newCategory")}
               </h2>
               <button onClick={resetForm} className="p-1 rounded hover:bg-gray-100">
                 <X className="h-5 w-5 text-gray-400" />
@@ -162,18 +162,18 @@ export default function AssetCategoriesPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetCategories.nameLabel")}</label>
                 <input
                   type="text"
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  placeholder="e.g. Laptop, Monitor, Phone"
+                  placeholder={t("assetCategories.namePlaceholder")}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetCategories.descriptionLabel")}</label>
                 <textarea
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
@@ -187,7 +187,7 @@ export default function AssetCategoriesPage() {
                   onClick={resetForm}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("assetCategories.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -195,7 +195,7 @@ export default function AssetCategoriesPage() {
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
                 >
                   <Check className="h-4 w-4" />
-                  {editingId ? "Update" : "Create"}
+                  {editingId ? t("assetCategories.update") : t("assetCategories.create")}
                 </button>
               </div>
             </form>
