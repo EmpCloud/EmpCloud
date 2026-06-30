@@ -2550,20 +2550,12 @@
       "project": "المشروع",
       "document": "المستند"
     },
-    "fieldType": {
-      "text": "نص",
-      "textarea": "منطقة نص",
-      "number": "رقم",
-      "decimal": "عدد عشري",
-      "date": "تاريخ",
-      "datetime": "التاريخ والوقت",
-      "dropdown": "قائمة منسدلة",
-      "multi_select": "اختيار متعدد",
-      "checkbox": "مربع اختيار",
-      "email": "البريد الإلكتروني",
-      "phone": "الهاتف",
-      "url": "رابط",
-      "file": "ملف"
-    }
+    "fieldType": "نوع الحقل *",
+    "editField": "تعديل الحقل",
+    "newField": "حقل جديد",
+    "preview": "معاينة",
+    "hidePreview": "إخفاء المعاينة",
+    "fieldName": "اسم الحقل *",
+    "fieldNamePlaceholder": "مثل: مقاس التيشيرت"
   }
 }

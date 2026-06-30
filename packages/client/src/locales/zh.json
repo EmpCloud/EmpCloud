@@ -2550,20 +2550,12 @@
       "project": "项目",
       "document": "文档"
     },
-    "fieldType": {
-      "text": "文本",
-      "textarea": "文本区域",
-      "number": "数字",
-      "decimal": "小数",
-      "date": "日期",
-      "datetime": "日期和时间",
-      "dropdown": "下拉菜单",
-      "multi_select": "多选",
-      "checkbox": "复选框",
-      "email": "邮箱",
-      "phone": "电话",
-      "url": "网址",
-      "file": "文件"
-    }
+    "fieldType": "字段类型 *",
+    "editField": "编辑字段",
+    "newField": "新建字段",
+    "preview": "预览",
+    "hidePreview": "隐藏预览",
+    "fieldName": "字段名称 *",
+    "fieldNamePlaceholder": "例如 T 恤尺码"
   }
 }

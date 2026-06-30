@@ -2556,20 +2556,12 @@
       "project": "Project",
       "document": "Document"
     },
-    "fieldType": {
-      "text": "Text",
-      "textarea": "Text Area",
-      "number": "Number",
-      "decimal": "Decimal",
-      "date": "Date",
-      "datetime": "Date & Time",
-      "dropdown": "Dropdown",
-      "multi_select": "Multi Select",
-      "checkbox": "Checkbox",
-      "email": "Email",
-      "phone": "Phone",
-      "url": "URL",
-      "file": "File"
-    }
+    "fieldType": "Field Type *",
+    "editField": "Edit Field",
+    "newField": "New Field",
+    "preview": "Preview",
+    "hidePreview": "Hide Preview",
+    "fieldName": "Field Name *",
+    "fieldNamePlaceholder": "e.g. T-Shirt Size"
   }
 }

@@ -2550,20 +2550,12 @@
       "project": "プロジェクト",
       "document": "ドキュメント"
     },
-    "fieldType": {
-      "text": "テキスト",
-      "textarea": "テキストエリア",
-      "number": "数値",
-      "decimal": "小数",
-      "date": "日付",
-      "datetime": "日時",
-      "dropdown": "ドロップダウン",
-      "multi_select": "複数選択",
-      "checkbox": "チェックボックス",
-      "email": "メール",
-      "phone": "電話",
-      "url": "URL",
-      "file": "ファイル"
-    }
+    "fieldType": "フィールドの種類 *",
+    "editField": "フィールドを編集",
+    "newField": "新規フィールド",
+    "preview": "プレビュー",
+    "hidePreview": "プレビューを非表示",
+    "fieldName": "フィールド名 *",
+    "fieldNamePlaceholder": "例: Tシャツのサイズ"
   }
 }

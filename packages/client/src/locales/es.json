@@ -2550,20 +2550,12 @@
       "project": "Proyecto",
       "document": "Documento"
     },
-    "fieldType": {
-      "text": "Texto",
-      "textarea": "Área de Texto",
-      "number": "Número",
-      "decimal": "Decimal",
-      "date": "Fecha",
-      "datetime": "Fecha y Hora",
-      "dropdown": "Lista Desplegable",
-      "multi_select": "Selección Múltiple",
-      "checkbox": "Casilla de Verificación",
-      "email": "Correo electrónico",
-      "phone": "Teléfono",
-      "url": "URL",
-      "file": "Archivo"
-    }
+    "fieldType": "Tipo de Campo *",
+    "editField": "Editar Campo",
+    "newField": "Nuevo Campo",
+    "preview": "Vista previa",
+    "hidePreview": "Ocultar Vista previa",
+    "fieldName": "Nombre del Campo *",
+    "fieldNamePlaceholder": "p. ej. Talla de Camiseta"
   }
 }

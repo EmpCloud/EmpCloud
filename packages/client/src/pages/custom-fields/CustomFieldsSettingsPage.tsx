@@ -317,7 +317,7 @@ export default function CustomFieldsSettingsPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              {editingId ? "Edit Field" : "New Field"}
+              {editingId ? t("customFields.editField") : t("customFields.newField")}
             </h2>
             <div className="flex items-center gap-2">
               <button
@@ -325,7 +325,7 @@ export default function CustomFieldsSettingsPage() {
                 className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
               >
                 <Eye className="h-4 w-4" />
-                {showPreview ? "Hide Preview" : "Preview"}
+                {showPreview ? t("customFields.hidePreview") : t("customFields.preview")}
               </button>
               <button
                 onClick={resetForm}
@@ -341,7 +341,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Field Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Field Name *
+                  {t("customFields.fieldName")}
                 </label>
                 <input
                   type="text"
@@ -349,7 +349,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, field_name: e.target.value })
                   }
-                  placeholder="e.g. T-Shirt Size"
+                  placeholder={t("customFields.fieldNamePlaceholder")}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   required
                 />
@@ -358,7 +358,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Field Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Field Type *
+                  {t("customFields.fieldType")}
                 </label>
                 <select
                   value={form.field_type}

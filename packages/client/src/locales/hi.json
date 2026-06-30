@@ -2550,20 +2550,12 @@
       "project": "परियोजना",
       "document": "दस्तावेज़"
     },
-    "fieldType": {
-      "text": "टेक्स्ट",
-      "textarea": "टेक्स्ट क्षेत्र",
-      "number": "संख्या",
-      "decimal": "दशमलव",
-      "date": "तिथि",
-      "datetime": "तिथि और समय",
-      "dropdown": "ड्रॉपडाउन",
-      "multi_select": "बहु चयन",
-      "checkbox": "चेकबॉक्स",
-      "email": "ईमेल",
-      "phone": "फ़ोन",
-      "url": "URL",
-      "file": "फ़ाइल"
-    }
+    "fieldType": "फ़ील्ड प्रकार *",
+    "editField": "फ़ील्ड संपादित करें",
+    "newField": "नया फ़ील्ड",
+    "preview": "पूर्वावलोकन",
+    "hidePreview": "पूर्वावलोकन छिपाएं",
+    "fieldName": "फ़ील्ड नाम *",
+    "fieldNamePlaceholder": "जैसे टी-शर्ट साइज़"
   }
 }

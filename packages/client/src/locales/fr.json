@@ -2550,20 +2550,12 @@
       "project": "Projet",
       "document": "Document"
     },
-    "fieldType": {
-      "text": "Texte",
-      "textarea": "Zone de texte",
-      "number": "Nombre",
-      "decimal": "Décimal",
-      "date": "Date",
-      "datetime": "Date et heure",
-      "dropdown": "Liste déroulante",
-      "multi_select": "Sélection multiple",
-      "checkbox": "Case à cocher",
-      "email": "E-mail",
-      "phone": "Téléphone",
-      "url": "URL",
-      "file": "Fichier"
-    }
+    "fieldType": "Type de champ *",
+    "editField": "Modifier le champ",
+    "newField": "Nouveau champ",
+    "preview": "Aperçu",
+    "hidePreview": "Masquer l'aperçu",
+    "fieldName": "Nom du champ *",
+    "fieldNamePlaceholder": "ex. Taille de t-shirt"
   }
 }
