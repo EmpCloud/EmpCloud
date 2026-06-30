@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
@@ -55,18 +56,19 @@ const TIMEZONES = [
 ];
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const { data: org, isLoading } = useOrg();
   const { data: departments } = useDepartments();
   const { data: locations } = useLocations();
   const [editingOrg, setEditingOrg] = useState(false);
 
-  if (isLoading) return <div className="text-gray-500">Loading settings...</div>;
+  if (isLoading) return <div className="text-gray-500">{t("orgSettings.loading")}</div>;
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Organization Settings</h1>
-        <p className="text-gray-500 mt-1">Manage your company details, departments, and locations.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("orgSettings.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("orgSettings.subtitle")}</p>
       </div>
 
       {/* Organization info */}
@@ -77,29 +79,29 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-brand-600" />
-              <h2 className="font-semibold text-gray-900">Company Information</h2>
+              <h2 className="font-semibold text-gray-900">{t("orgSettings.companyInfo")}</h2>
             </div>
             <button
               onClick={() => setEditingOrg(true)}
               className="flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium"
             >
-              <Pencil className="h-3.5 w-3.5" /> Edit
+              <Pencil className="h-3.5 w-3.5" /> {t("orgSettings.edit")}
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              ["Name", org?.name],
-              ["Legal Name", org?.legal_name],
-              ["Email", org?.email],
-              ["Phone", org?.contact_number],
-              ["Country", org?.country],
-              ["State", org?.state],
-              ["City", org?.city],
-              ["Timezone", org?.timezone],
-              ["Language", org?.language],
-            ].map(([label, value]) => (
-              <div key={label as string}>
-                <p className="text-xs text-gray-500">{label}</p>
+              ["name", org?.name],
+              ["legalName", org?.legal_name],
+              ["email", org?.email],
+              ["phone", org?.contact_number],
+              ["country", org?.country],
+              ["state", org?.state],
+              ["city", org?.city],
+              ["timezone", org?.timezone],
+              ["language", org?.language],
+            ].map(([labelKey, value]) => (
+              <div key={labelKey as string}>
+                <p className="text-xs text-gray-500">{t(`orgSettings.field.${labelKey}`)}</p>
                 <p className="text-sm font-medium text-gray-900">{value || "\u2014"}</p>
               </div>
             ))}

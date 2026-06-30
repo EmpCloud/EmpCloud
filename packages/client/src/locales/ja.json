@@ -2538,5 +2538,23 @@
       "damaged": "破損",
       "updated": "更新"
     }
+  },
+  "orgSettings": {
+    "loading": "設定を読み込み中...",
+    "title": "組織設定",
+    "subtitle": "会社の詳細、部門、拠点を管理します。",
+    "companyInfo": "会社情報",
+    "edit": "編集",
+    "field": {
+      "name": "名前",
+      "legalName": "正式名称",
+      "email": "メール",
+      "phone": "電話",
+      "country": "国",
+      "state": "州",
+      "city": "市区町村",
+      "timezone": "タイムゾーン",
+      "language": "言語"
+    }
   }
 }

@@ -2538,5 +2538,23 @@
       "damaged": "已损坏",
       "updated": "已更新"
     }
+  },
+  "orgSettings": {
+    "loading": "正在加载设置...",
+    "title": "组织设置",
+    "subtitle": "管理您公司的详细信息、部门和地点。",
+    "companyInfo": "公司信息",
+    "edit": "编辑",
+    "field": {
+      "name": "名称",
+      "legalName": "法定名称",
+      "email": "邮箱",
+      "phone": "电话",
+      "country": "国家",
+      "state": "省/州",
+      "city": "城市",
+      "timezone": "时区",
+      "language": "语言"
+    }
   }
 }

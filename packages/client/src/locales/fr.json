@@ -2538,5 +2538,23 @@
       "damaged": "Endommagé",
       "updated": "Mis à jour"
     }
+  },
+  "orgSettings": {
+    "loading": "Chargement des paramètres...",
+    "title": "Paramètres de l'organisation",
+    "subtitle": "Gérez les détails, les services et les lieux de votre entreprise.",
+    "companyInfo": "Informations sur l'entreprise",
+    "edit": "Modifier",
+    "field": {
+      "name": "Nom",
+      "legalName": "Raison sociale",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "country": "Pays",
+      "state": "État/Région",
+      "city": "Ville",
+      "timezone": "Fuseau horaire",
+      "language": "Langue"
+    }
   }
 }

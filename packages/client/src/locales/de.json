@@ -2538,5 +2538,23 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "orgSettings": {
+    "loading": "Einstellungen werden geladen...",
+    "title": "Organisationseinstellungen",
+    "subtitle": "Verwalten Sie die Daten, Abteilungen und Standorte Ihres Unternehmens.",
+    "companyInfo": "Unternehmensinformationen",
+    "edit": "Bearbeiten",
+    "field": {
+      "name": "Name",
+      "legalName": "Rechtlicher Name",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "country": "Land",
+      "state": "Bundesland",
+      "city": "Stadt",
+      "timezone": "Zeitzone",
+      "language": "Sprache"
+    }
   }
 }

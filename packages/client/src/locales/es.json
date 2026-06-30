@@ -2538,5 +2538,23 @@
       "damaged": "Dañado",
       "updated": "Actualizado"
     }
+  },
+  "orgSettings": {
+    "loading": "Cargando configuración...",
+    "title": "Configuración de la Organización",
+    "subtitle": "Gestiona los datos, departamentos y ubicaciones de tu empresa.",
+    "companyInfo": "Información de la Empresa",
+    "edit": "Editar",
+    "field": {
+      "name": "Nombre",
+      "legalName": "Razón Social",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "country": "País",
+      "state": "Estado/Provincia",
+      "city": "Ciudad",
+      "timezone": "Zona Horaria",
+      "language": "Idioma"
+    }
   }
 }

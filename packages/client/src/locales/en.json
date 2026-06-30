@@ -2544,5 +2544,23 @@
       "damaged": "Damaged",
       "updated": "Updated"
     }
+  },
+  "orgSettings": {
+    "loading": "Loading settings...",
+    "title": "Organization Settings",
+    "subtitle": "Manage your company details, departments, and locations.",
+    "companyInfo": "Company Information",
+    "edit": "Edit",
+    "field": {
+      "name": "Name",
+      "legalName": "Legal Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "state": "State",
+      "city": "City",
+      "timezone": "Timezone",
+      "language": "Language"
+    }
   }
 }
