@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -25,14 +26,19 @@ const CATEGORIES = [
   "leave", "payroll", "benefits", "it", "facilities", "onboarding", "policy", "general",
 ];
 
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
 // Display labels override the default Tailwind `capitalize` rendering for
 // values that aren't title-cased — "it" → "IT" because it's an acronym
-// (#1646).
+// (#1646). Translations live under kb.category.*; the English capitalised
+// value (or "IT") is the defaultValue so an unknown category still renders.
 const CATEGORY_LABELS: Record<string, string> = {
   it: "IT",
 };
-function categoryLabel(c: string): string {
-  return CATEGORY_LABELS[c] ?? c.charAt(0).toUpperCase() + c.slice(1);
+function categoryLabel(c: string, t: TFn): string {
+  return t(`kb.category.${c}`, {
+    defaultValue: CATEGORY_LABELS[c] ?? c.charAt(0).toUpperCase() + c.slice(1),
+  });
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -47,6 +53,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function KnowledgeBasePage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
   const queryClient = useQueryClient();
@@ -135,7 +142,7 @@ export default function KnowledgeBasePage() {
       setSelectedArticle(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete article"),
+      setDeleteError(err?.response?.data?.error?.message || t("kb.deleteError")),
   });
 
   const rateArticle = useMutation({
@@ -205,7 +212,7 @@ export default function KnowledgeBasePage() {
             onClick={() => setSelectedArticle(null)}
             className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to Knowledge Base
+            <ArrowLeft className="h-4 w-4" /> {t("kb.backToKb")}
           </button>
           {isHR && (
             <div className="flex items-center gap-2">
@@ -213,7 +220,7 @@ export default function KnowledgeBasePage() {
                 onClick={() => startEdit(selectedArticle)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                <Pencil className="h-3.5 w-3.5" /> Edit
+                <Pencil className="h-3.5 w-3.5" /> {t("kb.edit")}
               </button>
               <button
                 onClick={() => {
@@ -222,7 +229,7 @@ export default function KnowledgeBasePage() {
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 hover:bg-red-50"
               >
-                <Trash2 className="h-3.5 w-3.5" /> Delete
+                <Trash2 className="h-3.5 w-3.5" /> {t("kb.delete")}
               </button>
             </div>
           )}
@@ -235,11 +242,11 @@ export default function KnowledgeBasePage() {
                 CATEGORY_COLORS[selectedArticle.category] || "bg-gray-100 text-gray-600"
               }`}
             >
-              {categoryLabel(selectedArticle.category)}
+              {categoryLabel(selectedArticle.category, t)}
             </span>
             {Boolean(selectedArticle.is_featured) && (
               <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded">
-                <Star className="h-3 w-3" /> Featured
+                <Star className="h-3 w-3" /> {t("kb.featured")}
               </span>
             )}
           </div>
@@ -249,12 +256,12 @@ export default function KnowledgeBasePage() {
           </h1>
 
           <div className="flex items-center gap-4 text-xs text-gray-500 mb-6">
-            <span>By {selectedArticle.author_name}</span>
+            <span>{t("kb.byAuthor", { author: selectedArticle.author_name })}</span>
             <span>
               {new Date(selectedArticle.created_at).toLocaleDateString()}
             </span>
             <span className="flex items-center gap-1">
-              <Eye className="h-3 w-3" /> {selectedArticle.view_count} views
+              <Eye className="h-3 w-3" /> {t("kb.viewsCount", { count: selectedArticle.view_count })}
             </span>
           </div>
 
@@ -268,11 +275,11 @@ export default function KnowledgeBasePage() {
 
           <div className="border-t border-gray-200 pt-6">
             <p className="text-sm font-medium text-gray-700 mb-3">
-              Was this article helpful?
+              {t("kb.wasHelpful")}
             </p>
             {hasVoted && (
               <p className="text-xs text-gray-500 mb-2">
-                You rated this {currentVote ? "helpful" : "not helpful"}. You can change your vote anytime.
+                {currentVote ? t("kb.ratedHelpful") : t("kb.ratedNotHelpful")}
               </p>
             )}
             <div className="flex items-center gap-3">
@@ -290,7 +297,7 @@ export default function KnowledgeBasePage() {
                     : "border-green-200 text-green-700 hover:bg-green-50"
                 }`}
               >
-                <ThumbsUp className="h-4 w-4" /> Yes (
+                <ThumbsUp className="h-4 w-4" /> {t("kb.yes")} (
                 {selectedArticle.helpful_count})
               </button>
               <button
@@ -307,7 +314,7 @@ export default function KnowledgeBasePage() {
                     : "border-red-200 text-red-700 hover:bg-red-50"
                 }`}
               >
-                <ThumbsDown className="h-4 w-4" /> No (
+                <ThumbsDown className="h-4 w-4" /> {t("kb.no")} (
                 {selectedArticle.not_helpful_count})
               </button>
             </div>
@@ -321,9 +328,9 @@ export default function KnowledgeBasePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Knowledge Base</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("kb.title")}</h1>
           <p className="text-gray-500 mt-1">
-            Find answers to common questions and HR policies.
+            {t("kb.subtitle")}
           </p>
         </div>
         {isHR && (
@@ -339,7 +346,7 @@ export default function KnowledgeBasePage() {
             }}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> New Article
+            <Plus className="h-4 w-4" /> {t("kb.newArticle")}
           </button>
         )}
       </div>
@@ -349,7 +356,7 @@ export default function KnowledgeBasePage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              {editingId ? "Edit Article" : "New Knowledge Base Article"}
+              {editingId ? t("kb.editArticle") : t("kb.newKbArticle")}
             </h2>
             <button
               onClick={() => { setShowForm(false); resetForm(); }}
@@ -361,14 +368,14 @@ export default function KnowledgeBasePage() {
           <form onSubmit={handleSubmitForm} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
+                {t("kb.titleLabel")}
               </label>
               <input
                 type="text"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Article title"
+                placeholder={t("kb.titlePlaceholder")}
                 required
               />
             </div>
@@ -376,7 +383,7 @@ export default function KnowledgeBasePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                  {t("kb.categoryLabel")}
                 </label>
                 <select
                   value={formCategory}
@@ -385,7 +392,7 @@ export default function KnowledgeBasePage() {
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
-                      {categoryLabel(c)}
+                      {categoryLabel(c, t)}
                     </option>
                   ))}
                 </select>
@@ -398,7 +405,7 @@ export default function KnowledgeBasePage() {
                     onChange={(e) => setFormPublished(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  Published
+                  {t("kb.published")}
                 </label>
                 <label className="flex items-center gap-2 text-sm text-gray-600">
                   <input
@@ -407,20 +414,20 @@ export default function KnowledgeBasePage() {
                     onChange={(e) => setFormFeatured(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  Featured
+                  {t("kb.featured")}
                 </label>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Content
+                {t("kb.contentLabel")}
               </label>
               <textarea
                 value={formContent}
                 onChange={(e) => setFormContent(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[200px]"
-                placeholder="Write the article content..."
+                placeholder={t("kb.contentPlaceholder")}
                 required
               />
             </div>
@@ -431,7 +438,7 @@ export default function KnowledgeBasePage() {
                 onClick={() => { setShowForm(false); resetForm(); }}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t("kb.cancel")}
               </button>
               <button
                 type="submit"
@@ -446,11 +453,11 @@ export default function KnowledgeBasePage() {
                 <BookMarked className="h-4 w-4" />
                 {editingId
                   ? updateArticle.isPending
-                    ? "Updating..."
-                    : "Update Article"
+                    ? t("kb.updating")
+                    : t("kb.updateArticle")
                   : createArticle.isPending
-                    ? "Publishing..."
-                    : "Publish Article"}
+                    ? t("kb.publishing")
+                    : t("kb.publishArticle")}
               </button>
             </div>
           </form>
@@ -470,7 +477,7 @@ export default function KnowledgeBasePage() {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search articles..."
+                placeholder={t("kb.searchPlaceholder")}
                 className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
             </div>
@@ -478,7 +485,7 @@ export default function KnowledgeBasePage() {
               type="submit"
               className="px-3 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700"
             >
-              Search
+              {t("kb.search")}
             </button>
           </form>
         </div>
@@ -494,7 +501,7 @@ export default function KnowledgeBasePage() {
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            All
+            {t("kb.all")}
           </button>
           {CATEGORIES.map((c) => (
             <button
@@ -509,7 +516,7 @@ export default function KnowledgeBasePage() {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              {categoryLabel(c)}
+              {categoryLabel(c, t)}
             </button>
           ))}
         </div>
@@ -518,18 +525,18 @@ export default function KnowledgeBasePage() {
       {/* Articles Grid */}
       {isLoading ? (
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-          Loading articles...
+          {t("kb.loading")}
         </div>
       ) : articles.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
           <BookMarked className="h-12 w-12 mx-auto mb-3 text-gray-300" />
           <p className="text-lg font-medium text-gray-500 mb-1">
-            No articles found
+            {t("kb.noArticles")}
           </p>
           <p className="text-sm">
             {search
-              ? "Try a different search term."
-              : "Knowledge base articles will appear here."}
+              ? t("kb.tryDifferentSearch")
+              : t("kb.emptyHint")}
           </p>
         </div>
       ) : (
@@ -557,7 +564,7 @@ export default function KnowledgeBasePage() {
                       startEdit(a);
                     }}
                     className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-                    title="Edit article"
+                    title={t("kb.editArticleTooltip")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -569,7 +576,7 @@ export default function KnowledgeBasePage() {
                       setDeleteError(null);
                     }}
                     className="p-1.5 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600"
-                    title="Delete article"
+                    title={t("kb.deleteArticleTooltip")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -581,7 +588,7 @@ export default function KnowledgeBasePage() {
                     CATEGORY_COLORS[a.category] || "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {categoryLabel(a.category)}
+                  {categoryLabel(a.category, t)}
                 </span>
                 {Boolean(a.is_featured) && (
                   <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
@@ -624,7 +631,7 @@ export default function KnowledgeBasePage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("kb.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
@@ -632,14 +639,14 @@ export default function KnowledgeBasePage() {
               disabled={page === 1}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
+              <ChevronLeft className="h-4 w-4" /> {t("kb.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next <ChevronRight className="h-4 w-4" />
+              {t("kb.next")} <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -661,11 +668,9 @@ export default function KnowledgeBasePage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete article?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("kb.deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
-                    This unpublishes the article so employees can no longer see it.
+                    <Trans i18nKey="kb.deleteBody" values={{ title: deleteTarget.title }} components={{ strong: <span className="font-medium text-gray-700" /> }} />
                   </p>
                 </div>
               </div>
@@ -682,7 +687,7 @@ export default function KnowledgeBasePage() {
                 disabled={deleteArticle.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("kb.cancel")}
               </button>
               <button
                 type="button"
@@ -692,10 +697,10 @@ export default function KnowledgeBasePage() {
               >
                 {deleteArticle.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("kb.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("kb.delete")
                 )}
               </button>
             </div>
