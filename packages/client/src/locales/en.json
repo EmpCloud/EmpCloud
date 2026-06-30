@@ -2367,5 +2367,51 @@
       "national": "National",
       "religious": "Religious"
     }
+  },
+  "surveyDashboard": {
+    "loading": "Loading dashboard...",
+    "title": "Survey Dashboard",
+    "subtitle": "Overview of employee surveys, engagement, and eNPS.",
+    "createSurvey": "Create Survey",
+    "activeSurveys": "Active Surveys",
+    "totalResponses": "Total Responses",
+    "avgResponseRate": "Avg Response Rate",
+    "totalSurveys": "Total Surveys",
+    "enpsScore": "eNPS Score",
+    "noEnps": "No eNPS surveys completed yet",
+    "enpsExcellent": "Excellent",
+    "enpsGood": "Good",
+    "enpsOkay": "Okay",
+    "enpsNeedsImprovement": "Needs Improvement",
+    "enpsRange": "Range: -100 to +100",
+    "statusBreakdown": "Survey Status Breakdown",
+    "drafts": "Drafts",
+    "active": "Active",
+    "closed": "Closed",
+    "organization": "Organization",
+    "totalEmployees": "Total Employees",
+    "surveysConducted": "Surveys Conducted",
+    "recentSurveys": "Recent Surveys",
+    "viewAll": "View all",
+    "colTitle": "Title",
+    "colType": "Type",
+    "colStatus": "Status",
+    "colResponses": "Responses",
+    "colCreated": "Created",
+    "empty": "No surveys yet. Create your first survey to get started.",
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "closed": "Closed",
+      "archived": "Archived"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Custom",
+      "onboarding": "Onboarding",
+      "exit_survey": "Exit Survey"
+    }
   }
 }

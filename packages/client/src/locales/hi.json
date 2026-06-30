@@ -2361,5 +2361,51 @@
       "national": "राष्ट्रीय",
       "religious": "धार्मिक"
     }
+  },
+  "surveyDashboard": {
+    "loading": "डैशबोर्ड लोड हो रहा है...",
+    "title": "सर्वेक्षण डैशबोर्ड",
+    "subtitle": "कर्मचारी सर्वेक्षण, सहभागिता और eNPS का अवलोकन।",
+    "createSurvey": "सर्वेक्षण बनाएं",
+    "activeSurveys": "सक्रिय सर्वेक्षण",
+    "totalResponses": "कुल प्रतिक्रियाएं",
+    "avgResponseRate": "औसत प्रतिक्रिया दर",
+    "totalSurveys": "कुल सर्वेक्षण",
+    "enpsScore": "eNPS स्कोर",
+    "noEnps": "अभी तक कोई eNPS सर्वेक्षण पूरा नहीं हुआ",
+    "enpsExcellent": "उत्कृष्ट",
+    "enpsGood": "अच्छा",
+    "enpsOkay": "ठीक-ठाक",
+    "enpsNeedsImprovement": "सुधार की आवश्यकता",
+    "enpsRange": "सीमा: -100 से +100",
+    "statusBreakdown": "सर्वेक्षण स्थिति विवरण",
+    "drafts": "ड्राफ्ट",
+    "active": "सक्रिय",
+    "closed": "बंद",
+    "organization": "संगठन",
+    "totalEmployees": "कुल कर्मचारी",
+    "surveysConducted": "किए गए सर्वेक्षण",
+    "recentSurveys": "हाल के सर्वेक्षण",
+    "viewAll": "सभी देखें",
+    "colTitle": "शीर्षक",
+    "colType": "प्रकार",
+    "colStatus": "स्थिति",
+    "colResponses": "प्रतिक्रियाएं",
+    "colCreated": "बनाई गई",
+    "empty": "अभी तक कोई सर्वेक्षण नहीं। शुरू करने के लिए अपना पहला सर्वेक्षण बनाएं।",
+    "status": {
+      "draft": "ड्राफ्ट",
+      "active": "सक्रिय",
+      "closed": "बंद",
+      "archived": "संग्रहीत"
+    },
+    "type": {
+      "pulse": "पल्स",
+      "enps": "eNPS",
+      "engagement": "सहभागिता",
+      "custom": "कस्टम",
+      "onboarding": "ऑनबोर्डिंग",
+      "exit_survey": "एग्ज़िट सर्वे"
+    }
   }
 }

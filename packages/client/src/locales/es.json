@@ -2361,5 +2361,51 @@
       "national": "Nacional",
       "religious": "Religioso"
     }
+  },
+  "surveyDashboard": {
+    "loading": "Cargando panel...",
+    "title": "Panel de Encuestas",
+    "subtitle": "Resumen de encuestas de empleados, compromiso y eNPS.",
+    "createSurvey": "Crear Encuesta",
+    "activeSurveys": "Encuestas Activas",
+    "totalResponses": "Respuestas Totales",
+    "avgResponseRate": "Tasa de Respuesta Promedio",
+    "totalSurveys": "Encuestas Totales",
+    "enpsScore": "Puntuación eNPS",
+    "noEnps": "Aún no se han completado encuestas eNPS",
+    "enpsExcellent": "Excelente",
+    "enpsGood": "Bueno",
+    "enpsOkay": "Aceptable",
+    "enpsNeedsImprovement": "Necesita Mejorar",
+    "enpsRange": "Rango: -100 a +100",
+    "statusBreakdown": "Desglose del Estado de Encuestas",
+    "drafts": "Borradores",
+    "active": "Activas",
+    "closed": "Cerradas",
+    "organization": "Organización",
+    "totalEmployees": "Total de Empleados",
+    "surveysConducted": "Encuestas Realizadas",
+    "recentSurveys": "Encuestas Recientes",
+    "viewAll": "Ver todo",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colStatus": "Estado",
+    "colResponses": "Respuestas",
+    "colCreated": "Creada",
+    "empty": "Aún no hay encuestas. Crea tu primera encuesta para empezar.",
+    "status": {
+      "draft": "Borrador",
+      "active": "Activa",
+      "closed": "Cerrada",
+      "archived": "Archivada"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Compromiso",
+      "custom": "Personalizada",
+      "onboarding": "Incorporación",
+      "exit_survey": "Encuesta de Salida"
+    }
   }
 }

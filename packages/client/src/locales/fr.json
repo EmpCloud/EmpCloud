@@ -2361,5 +2361,51 @@
       "national": "National",
       "religious": "Religieux"
     }
+  },
+  "surveyDashboard": {
+    "loading": "Chargement du tableau de bord...",
+    "title": "Tableau de bord des enquêtes",
+    "subtitle": "Aperçu des enquêtes auprès des employés, de l'engagement et de l'eNPS.",
+    "createSurvey": "Créer une enquête",
+    "activeSurveys": "Enquêtes actives",
+    "totalResponses": "Total des réponses",
+    "avgResponseRate": "Taux de réponse moyen",
+    "totalSurveys": "Total des enquêtes",
+    "enpsScore": "Score eNPS",
+    "noEnps": "Aucune enquête eNPS terminée pour l'instant",
+    "enpsExcellent": "Excellent",
+    "enpsGood": "Bon",
+    "enpsOkay": "Correct",
+    "enpsNeedsImprovement": "À améliorer",
+    "enpsRange": "Plage : -100 à +100",
+    "statusBreakdown": "Répartition des statuts d'enquête",
+    "drafts": "Brouillons",
+    "active": "Actives",
+    "closed": "Fermées",
+    "organization": "Organisation",
+    "totalEmployees": "Total des employés",
+    "surveysConducted": "Enquêtes réalisées",
+    "recentSurveys": "Enquêtes récentes",
+    "viewAll": "Voir tout",
+    "colTitle": "Titre",
+    "colType": "Type",
+    "colStatus": "Statut",
+    "colResponses": "Réponses",
+    "colCreated": "Créée",
+    "empty": "Aucune enquête pour l'instant. Créez votre première enquête pour commencer.",
+    "status": {
+      "draft": "Brouillon",
+      "active": "Active",
+      "closed": "Fermée",
+      "archived": "Archivée"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Personnalisée",
+      "onboarding": "Intégration",
+      "exit_survey": "Enquête de départ"
+    }
   }
 }

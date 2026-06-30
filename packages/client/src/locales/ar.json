@@ -2361,5 +2361,51 @@
       "national": "وطني",
       "religious": "ديني"
     }
+  },
+  "surveyDashboard": {
+    "loading": "جارٍ تحميل لوحة التحكم...",
+    "title": "لوحة تحكم الاستطلاعات",
+    "subtitle": "نظرة عامة على استطلاعات الموظفين والمشاركة وeNPS.",
+    "createSurvey": "إنشاء استطلاع",
+    "activeSurveys": "الاستطلاعات النشطة",
+    "totalResponses": "إجمالي الردود",
+    "avgResponseRate": "متوسط معدل الاستجابة",
+    "totalSurveys": "إجمالي الاستطلاعات",
+    "enpsScore": "درجة eNPS",
+    "noEnps": "لم تكتمل أي استطلاعات eNPS بعد",
+    "enpsExcellent": "ممتاز",
+    "enpsGood": "جيد",
+    "enpsOkay": "مقبول",
+    "enpsNeedsImprovement": "يحتاج إلى تحسين",
+    "enpsRange": "النطاق: -100 إلى +100",
+    "statusBreakdown": "تفصيل حالة الاستطلاعات",
+    "drafts": "المسودّات",
+    "active": "نشطة",
+    "closed": "مغلقة",
+    "organization": "المؤسسة",
+    "totalEmployees": "إجمالي الموظفين",
+    "surveysConducted": "الاستطلاعات المُجراة",
+    "recentSurveys": "الاستطلاعات الأخيرة",
+    "viewAll": "عرض الكل",
+    "colTitle": "العنوان",
+    "colType": "النوع",
+    "colStatus": "الحالة",
+    "colResponses": "الردود",
+    "colCreated": "تاريخ الإنشاء",
+    "empty": "لا توجد استطلاعات بعد. أنشئ أول استطلاع لك للبدء.",
+    "status": {
+      "draft": "مسودّة",
+      "active": "نشط",
+      "closed": "مغلق",
+      "archived": "مؤرشف"
+    },
+    "type": {
+      "pulse": "نبض",
+      "enps": "eNPS",
+      "engagement": "المشاركة",
+      "custom": "مخصص",
+      "onboarding": "الإعداد",
+      "exit_survey": "استطلاع المغادرة"
+    }
   }
 }

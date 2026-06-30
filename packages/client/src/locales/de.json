@@ -2361,5 +2361,51 @@
       "national": "National",
       "religious": "Religiös"
     }
+  },
+  "surveyDashboard": {
+    "loading": "Dashboard wird geladen...",
+    "title": "Umfrage-Dashboard",
+    "subtitle": "Überblick über Mitarbeiterumfragen, Engagement und eNPS.",
+    "createSurvey": "Umfrage erstellen",
+    "activeSurveys": "Aktive Umfragen",
+    "totalResponses": "Antworten gesamt",
+    "avgResponseRate": "Durchschn. Antwortrate",
+    "totalSurveys": "Umfragen gesamt",
+    "enpsScore": "eNPS-Wert",
+    "noEnps": "Noch keine eNPS-Umfragen abgeschlossen",
+    "enpsExcellent": "Ausgezeichnet",
+    "enpsGood": "Gut",
+    "enpsOkay": "In Ordnung",
+    "enpsNeedsImprovement": "Verbesserungsbedürftig",
+    "enpsRange": "Bereich: -100 bis +100",
+    "statusBreakdown": "Umfragestatus-Aufschlüsselung",
+    "drafts": "Entwürfe",
+    "active": "Aktiv",
+    "closed": "Geschlossen",
+    "organization": "Organisation",
+    "totalEmployees": "Mitarbeiter gesamt",
+    "surveysConducted": "Durchgeführte Umfragen",
+    "recentSurveys": "Aktuelle Umfragen",
+    "viewAll": "Alle anzeigen",
+    "colTitle": "Titel",
+    "colType": "Typ",
+    "colStatus": "Status",
+    "colResponses": "Antworten",
+    "colCreated": "Erstellt",
+    "empty": "Noch keine Umfragen. Erstellen Sie Ihre erste Umfrage, um zu beginnen.",
+    "status": {
+      "draft": "Entwurf",
+      "active": "Aktiv",
+      "closed": "Geschlossen",
+      "archived": "Archiviert"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Benutzerdefiniert",
+      "onboarding": "Onboarding",
+      "exit_survey": "Austrittsumfrage"
+    }
   }
 }

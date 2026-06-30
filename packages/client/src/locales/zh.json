@@ -2361,5 +2361,51 @@
       "national": "国家",
       "religious": "宗教"
     }
+  },
+  "surveyDashboard": {
+    "loading": "正在加载仪表板...",
+    "title": "调查仪表板",
+    "subtitle": "员工调查、敬业度和 eNPS 概览。",
+    "createSurvey": "创建调查",
+    "activeSurveys": "进行中的调查",
+    "totalResponses": "回复总数",
+    "avgResponseRate": "平均回复率",
+    "totalSurveys": "调查总数",
+    "enpsScore": "eNPS 分数",
+    "noEnps": "尚未完成任何 eNPS 调查",
+    "enpsExcellent": "优秀",
+    "enpsGood": "良好",
+    "enpsOkay": "一般",
+    "enpsNeedsImprovement": "需要改进",
+    "enpsRange": "范围：-100 到 +100",
+    "statusBreakdown": "调查状态明细",
+    "drafts": "草稿",
+    "active": "进行中",
+    "closed": "已关闭",
+    "organization": "组织",
+    "totalEmployees": "员工总数",
+    "surveysConducted": "已开展的调查",
+    "recentSurveys": "最近的调查",
+    "viewAll": "查看全部",
+    "colTitle": "标题",
+    "colType": "类型",
+    "colStatus": "状态",
+    "colResponses": "回复",
+    "colCreated": "创建时间",
+    "empty": "暂无调查。创建您的第一个调查以开始。",
+    "status": {
+      "draft": "草稿",
+      "active": "进行中",
+      "closed": "已关闭",
+      "archived": "已归档"
+    },
+    "type": {
+      "pulse": "脉搏",
+      "enps": "eNPS",
+      "engagement": "敬业度",
+      "custom": "自定义",
+      "onboarding": "入职",
+      "exit_survey": "离职调查"
+    }
   }
 }

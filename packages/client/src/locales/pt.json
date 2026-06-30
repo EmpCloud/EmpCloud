@@ -2361,5 +2361,51 @@
       "national": "Nacional",
       "religious": "Religioso"
     }
+  },
+  "surveyDashboard": {
+    "loading": "Carregando painel...",
+    "title": "Painel de Pesquisas",
+    "subtitle": "Visão geral das pesquisas, engajamento e eNPS dos funcionários.",
+    "createSurvey": "Criar Pesquisa",
+    "activeSurveys": "Pesquisas Ativas",
+    "totalResponses": "Total de Respostas",
+    "avgResponseRate": "Taxa Média de Resposta",
+    "totalSurveys": "Total de Pesquisas",
+    "enpsScore": "Pontuação eNPS",
+    "noEnps": "Nenhuma pesquisa eNPS concluída ainda",
+    "enpsExcellent": "Excelente",
+    "enpsGood": "Bom",
+    "enpsOkay": "Razoável",
+    "enpsNeedsImprovement": "Precisa Melhorar",
+    "enpsRange": "Intervalo: -100 a +100",
+    "statusBreakdown": "Detalhamento de Status das Pesquisas",
+    "drafts": "Rascunhos",
+    "active": "Ativas",
+    "closed": "Encerradas",
+    "organization": "Organização",
+    "totalEmployees": "Total de Funcionários",
+    "surveysConducted": "Pesquisas Realizadas",
+    "recentSurveys": "Pesquisas Recentes",
+    "viewAll": "Ver tudo",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colStatus": "Status",
+    "colResponses": "Respostas",
+    "colCreated": "Criada",
+    "empty": "Nenhuma pesquisa ainda. Crie sua primeira pesquisa para começar.",
+    "status": {
+      "draft": "Rascunho",
+      "active": "Ativa",
+      "closed": "Encerrada",
+      "archived": "Arquivada"
+    },
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engajamento",
+      "custom": "Personalizada",
+      "onboarding": "Integração",
+      "exit_survey": "Pesquisa de Desligamento"
+    }
   }
 }
