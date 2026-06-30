@@ -2080,6 +2080,10 @@
     "loading": "Loading dashboard...",
     "title": "Survey Dashboard",
     "subtitle": "Overview of employee surveys, engagement, and eNPS.",
-    "createSurvey": "Create Survey"
+    "createSurvey": "Create Survey",
+    "activeSurveys": "Active Surveys",
+    "totalResponses": "Total Responses",
+    "avgResponseRate": "Avg Response Rate",
+    "totalSurveys": "Total Surveys"
   }
 }

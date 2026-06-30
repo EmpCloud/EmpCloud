@@ -2075,6 +2075,10 @@
     "loading": "正在加载仪表板...",
     "title": "调查仪表板",
     "subtitle": "员工调查、敬业度和 eNPS 概览。",
-    "createSurvey": "创建调查"
+    "createSurvey": "创建调查",
+    "activeSurveys": "进行中的调查",
+    "totalResponses": "回复总数",
+    "avgResponseRate": "平均回复率",
+    "totalSurveys": "调查总数"
   }
 }

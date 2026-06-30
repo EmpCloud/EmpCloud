@@ -2075,6 +2075,10 @@
     "loading": "ダッシュボードを読み込み中...",
     "title": "アンケートダッシュボード",
     "subtitle": "従業員アンケート、エンゲージメント、eNPSの概要。",
-    "createSurvey": "アンケートを作成"
+    "createSurvey": "アンケートを作成",
+    "activeSurveys": "実施中のアンケート",
+    "totalResponses": "回答総数",
+    "avgResponseRate": "平均回答率",
+    "totalSurveys": "アンケート総数"
   }
 }

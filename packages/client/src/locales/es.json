@@ -2075,6 +2075,10 @@
     "loading": "Cargando panel...",
     "title": "Panel de Encuestas",
     "subtitle": "Resumen de encuestas de empleados, compromiso y eNPS.",
-    "createSurvey": "Crear Encuesta"
+    "createSurvey": "Crear Encuesta",
+    "activeSurveys": "Encuestas Activas",
+    "totalResponses": "Respuestas Totales",
+    "avgResponseRate": "Tasa de Respuesta Promedio",
+    "totalSurveys": "Encuestas Totales"
   }
 }

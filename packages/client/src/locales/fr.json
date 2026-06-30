@@ -2075,6 +2075,10 @@
     "loading": "Chargement du tableau de bord...",
     "title": "Tableau de bord des enquêtes",
     "subtitle": "Aperçu des enquêtes auprès des employés, de l'engagement et de l'eNPS.",
-    "createSurvey": "Créer une enquête"
+    "createSurvey": "Créer une enquête",
+    "activeSurveys": "Enquêtes actives",
+    "totalResponses": "Total des réponses",
+    "avgResponseRate": "Taux de réponse moyen",
+    "totalSurveys": "Total des enquêtes"
   }
 }

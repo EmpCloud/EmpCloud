@@ -2075,6 +2075,10 @@
     "loading": "Dashboard wird geladen...",
     "title": "Umfrage-Dashboard",
     "subtitle": "Überblick über Mitarbeiterumfragen, Engagement und eNPS.",
-    "createSurvey": "Umfrage erstellen"
+    "createSurvey": "Umfrage erstellen",
+    "activeSurveys": "Aktive Umfragen",
+    "totalResponses": "Antworten gesamt",
+    "avgResponseRate": "Durchschn. Antwortrate",
+    "totalSurveys": "Umfragen gesamt"
   }
 }
