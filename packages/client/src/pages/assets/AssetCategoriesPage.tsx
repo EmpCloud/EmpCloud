@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 export default function AssetCategoriesPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -82,26 +84,26 @@ export default function AssetCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Asset Categories</h1>
-          <p className="text-sm text-gray-500 mt-1">Organize assets by type</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("assetCategories.title")}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t("assetCategories.subtitle")}</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
         >
           <Plus className="h-4 w-4" />
-          Add Category
+          {t("assetCategories.addCategory")}
         </button>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="text-gray-400">Loading categories...</div>
+          <div className="text-gray-400">{t("assetCategories.loading")}</div>
         </div>
       ) : !categories || categories.length === 0 ? (
         <div className="text-center py-16">
           <FolderOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No categories yet. Create your first one.</p>
+          <p className="text-gray-500">{t("assetCategories.empty")}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">

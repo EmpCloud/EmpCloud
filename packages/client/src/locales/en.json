@@ -2544,5 +2544,12 @@
       "damaged": "Damaged",
       "updated": "Updated"
     }
+  },
+  "assetCategories": {
+    "title": "Asset Categories",
+    "subtitle": "Organize assets by type",
+    "addCategory": "Add Category",
+    "loading": "Loading categories...",
+    "empty": "No categories yet. Create your first one."
   }
 }

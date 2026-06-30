@@ -2538,5 +2538,12 @@
       "damaged": "已损坏",
       "updated": "已更新"
     }
+  },
+  "assetCategories": {
+    "title": "资产类别",
+    "subtitle": "按类型组织资产",
+    "addCategory": "添加类别",
+    "loading": "正在加载类别...",
+    "empty": "暂无类别。请创建第一个。"
   }
 }

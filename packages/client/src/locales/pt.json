@@ -2538,5 +2538,12 @@
       "damaged": "Danificado",
       "updated": "Atualizado"
     }
+  },
+  "assetCategories": {
+    "title": "Categorias de Ativos",
+    "subtitle": "Organize os ativos por tipo",
+    "addCategory": "Adicionar Categoria",
+    "loading": "Carregando categorias...",
+    "empty": "Nenhuma categoria ainda. Crie a primeira."
   }
 }

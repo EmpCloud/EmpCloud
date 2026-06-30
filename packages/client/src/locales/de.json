@@ -2538,5 +2538,12 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "assetCategories": {
+    "title": "Asset-Kategorien",
+    "subtitle": "Assets nach Typ organisieren",
+    "addCategory": "Kategorie hinzufügen",
+    "loading": "Kategorien werden geladen...",
+    "empty": "Noch keine Kategorien. Erstellen Sie die erste."
   }
 }
