@@ -2084,6 +2084,13 @@
       "onboarding": "Integração",
       "policy": "Política",
       "general": "Geral"
-    }
+    },
+    "searchPlaceholder": "Pesquisar artigos...",
+    "search": "Pesquisar",
+    "all": "Todos",
+    "loading": "Carregando artigos...",
+    "noArticles": "Nenhum artigo encontrado",
+    "tryDifferentSearch": "Tente um termo de pesquisa diferente.",
+    "emptyHint": "Os artigos da base de conhecimento aparecerão aqui."
   }
 }

@@ -2089,6 +2089,13 @@
       "onboarding": "Onboarding",
       "policy": "Policy",
       "general": "General"
-    }
+    },
+    "searchPlaceholder": "Search articles...",
+    "search": "Search",
+    "all": "All",
+    "loading": "Loading articles...",
+    "noArticles": "No articles found",
+    "tryDifferentSearch": "Try a different search term.",
+    "emptyHint": "Knowledge base articles will appear here."
   }
 }

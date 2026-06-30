@@ -2084,6 +2084,13 @@
       "onboarding": "ऑनबोर्डिंग",
       "policy": "नीति",
       "general": "सामान्य"
-    }
+    },
+    "searchPlaceholder": "लेख खोजें...",
+    "search": "खोजें",
+    "all": "सभी",
+    "loading": "लेख लोड हो रहे हैं...",
+    "noArticles": "कोई लेख नहीं मिला",
+    "tryDifferentSearch": "कोई अन्य खोज शब्द आज़माएं।",
+    "emptyHint": "ज्ञान आधार लेख यहां दिखाई देंगे।"
   }
 }

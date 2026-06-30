@@ -2084,6 +2084,13 @@
       "onboarding": "Onboarding",
       "policy": "Richtlinie",
       "general": "Allgemein"
-    }
+    },
+    "searchPlaceholder": "Artikel suchen...",
+    "search": "Suchen",
+    "all": "Alle",
+    "loading": "Artikel werden geladen...",
+    "noArticles": "Keine Artikel gefunden",
+    "tryDifferentSearch": "Versuchen Sie einen anderen Suchbegriff.",
+    "emptyHint": "Wissensdatenbank-Artikel werden hier angezeigt."
   }
 }

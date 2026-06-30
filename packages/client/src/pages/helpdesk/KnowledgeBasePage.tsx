@@ -477,7 +477,7 @@ export default function KnowledgeBasePage() {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search articles..."
+                placeholder={t("kb.searchPlaceholder")}
                 className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
             </div>
@@ -485,7 +485,7 @@ export default function KnowledgeBasePage() {
               type="submit"
               className="px-3 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700"
             >
-              Search
+              {t("kb.search")}
             </button>
           </form>
         </div>
@@ -501,7 +501,7 @@ export default function KnowledgeBasePage() {
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            All
+            {t("kb.all")}
           </button>
           {CATEGORIES.map((c) => (
             <button
@@ -525,18 +525,18 @@ export default function KnowledgeBasePage() {
       {/* Articles Grid */}
       {isLoading ? (
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-          Loading articles...
+          {t("kb.loading")}
         </div>
       ) : articles.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
           <BookMarked className="h-12 w-12 mx-auto mb-3 text-gray-300" />
           <p className="text-lg font-medium text-gray-500 mb-1">
-            No articles found
+            {t("kb.noArticles")}
           </p>
           <p className="text-sm">
             {search
-              ? "Try a different search term."
-              : "Knowledge base articles will appear here."}
+              ? t("kb.tryDifferentSearch")
+              : t("kb.emptyHint")}
           </p>
         </div>
       ) : (

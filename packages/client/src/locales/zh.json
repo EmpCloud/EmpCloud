@@ -2084,6 +2084,13 @@
       "onboarding": "入职",
       "policy": "政策",
       "general": "常规"
-    }
+    },
+    "searchPlaceholder": "搜索文章...",
+    "search": "搜索",
+    "all": "全部",
+    "loading": "正在加载文章...",
+    "noArticles": "未找到文章",
+    "tryDifferentSearch": "请尝试其他搜索词。",
+    "emptyHint": "知识库文章将显示在此处。"
   }
 }
