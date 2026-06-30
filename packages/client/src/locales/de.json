@@ -2557,6 +2557,11 @@
     "descriptionLabel": "Beschreibung",
     "cancel": "Abbrechen",
     "update": "Aktualisieren",
-    "create": "Erstellen"
+    "create": "Erstellen",
+    "deactivateError": "Kategorie konnte nicht deaktiviert werden",
+    "deactivateTitle": "Kategorie deaktivieren?",
+    "deactivateBody": "<strong>{{name}}</strong> deaktivieren? Vorhandene mit dieser Kategorie versehene Assets behalten die Markierung, aber bis zur Wiederherstellung können keine neuen Assets hier abgelegt werden.",
+    "deactivating": "Wird deaktiviert...",
+    "deactivate": "Deaktivieren"
   }
 }

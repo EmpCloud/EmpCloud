@@ -2557,6 +2557,11 @@
     "descriptionLabel": "الوصف",
     "cancel": "إلغاء",
     "update": "تحديث",
-    "create": "إنشاء"
+    "create": "إنشاء",
+    "deactivateError": "فشل إلغاء تفعيل الفئة",
+    "deactivateTitle": "إلغاء تفعيل الفئة؟",
+    "deactivateBody": "إلغاء تفعيل <strong>{{name}}</strong>؟ تحتفظ الأصول الموجودة الموسومة بهذه الفئة بالوسم، لكن لا يمكن وضع أصول جديدة هنا حتى استعادتها.",
+    "deactivating": "جارٍ إلغاء التفعيل...",
+    "deactivate": "إلغاء التفعيل"
   }
 }

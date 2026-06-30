@@ -53,7 +53,7 @@ export default function AssetCategoriesPage() {
       setDeleteError(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to deactivate category"),
+      setDeleteError(err?.response?.data?.error?.message || t("assetCategories.deactivateError")),
   });
 
   function resetForm() {
@@ -219,12 +219,13 @@ export default function AssetCategoriesPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Deactivate category?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("assetCategories.deactivateTitle")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Deactivate{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.name}</span>? Existing
-                    assets tagged with this category keep the tag, but no new assets can be placed
-                    here until it's restored.
+                    <Trans
+                      i18nKey="assetCategories.deactivateBody"
+                      values={{ name: deleteTarget.name }}
+                      components={{ strong: <span className="font-medium text-gray-700" /> }}
+                    />
                   </p>
                 </div>
               </div>
@@ -241,7 +242,7 @@ export default function AssetCategoriesPage() {
                 disabled={deleteCategory.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("assetCategories.cancel")}
               </button>
               <button
                 type="button"
@@ -251,10 +252,10 @@ export default function AssetCategoriesPage() {
               >
                 {deleteCategory.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deactivating...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("assetCategories.deactivating")}
                   </>
                 ) : (
-                  "Deactivate"
+                  t("assetCategories.deactivate")
                 )}
               </button>
             </div>

@@ -2557,6 +2557,11 @@
     "descriptionLabel": "説明",
     "cancel": "キャンセル",
     "update": "更新",
-    "create": "作成"
+    "create": "作成",
+    "deactivateError": "カテゴリの無効化に失敗しました",
+    "deactivateTitle": "カテゴリを無効化しますか？",
+    "deactivateBody": "<strong>{{name}}</strong> を無効化しますか？このカテゴリでタグ付けされた既存の資産はタグを保持しますが、復元されるまで新しい資産をここに配置できません。",
+    "deactivating": "無効化中...",
+    "deactivate": "無効化"
   }
 }

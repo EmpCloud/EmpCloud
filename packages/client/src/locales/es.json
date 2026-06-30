@@ -2557,6 +2557,11 @@
     "descriptionLabel": "Descripción",
     "cancel": "Cancelar",
     "update": "Actualizar",
-    "create": "Crear"
+    "create": "Crear",
+    "deactivateError": "No se pudo desactivar la categoría",
+    "deactivateTitle": "¿Desactivar categoría?",
+    "deactivateBody": "¿Desactivar <strong>{{name}}</strong>? Los activos existentes etiquetados con esta categoría conservan la etiqueta, pero no se pueden colocar nuevos activos aquí hasta que se restaure.",
+    "deactivating": "Desactivando...",
+    "deactivate": "Desactivar"
   }
 }

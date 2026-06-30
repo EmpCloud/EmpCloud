@@ -2563,6 +2563,11 @@
     "descriptionLabel": "Description",
     "cancel": "Cancel",
     "update": "Update",
-    "create": "Create"
+    "create": "Create",
+    "deactivateError": "Failed to deactivate category",
+    "deactivateTitle": "Deactivate category?",
+    "deactivateBody": "Deactivate <strong>{{name}}</strong>? Existing assets tagged with this category keep the tag, but no new assets can be placed here until it's restored.",
+    "deactivating": "Deactivating...",
+    "deactivate": "Deactivate"
   }
 }
