@@ -24,27 +24,35 @@ function StatCard({ label, value, icon: Icon, color, to }: { label: string; valu
 }
 
 function ENPSGauge({ score }: { score: number | null }) {
+  const { t } = useTranslation();
   if (score === null) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">eNPS Score</h3>
-        <p className="text-gray-400 text-sm">No eNPS surveys completed yet</p>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">{t("surveyDashboard.enpsScore")}</h3>
+        <p className="text-gray-400 text-sm">{t("surveyDashboard.noEnps")}</p>
       </div>
     );
   }
 
   const color = score >= 50 ? "text-green-600" : score >= 0 ? "text-yellow-600" : "text-red-600";
   const bgColor = score >= 50 ? "bg-green-50" : score >= 0 ? "bg-yellow-50" : "bg-red-50";
-  const label = score >= 50 ? "Excellent" : score >= 20 ? "Good" : score >= 0 ? "Okay" : "Needs Improvement";
+  const label =
+    score >= 50
+      ? t("surveyDashboard.enpsExcellent")
+      : score >= 20
+        ? t("surveyDashboard.enpsGood")
+        : score >= 0
+          ? t("surveyDashboard.enpsOkay")
+          : t("surveyDashboard.enpsNeedsImprovement");
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">eNPS Score</h3>
+      <h3 className="text-sm font-semibold text-gray-700 mb-4">{t("surveyDashboard.enpsScore")}</h3>
       <div className={`inline-flex items-center gap-3 px-4 py-3 rounded-lg ${bgColor}`}>
         <span className={`text-4xl font-bold ${color}`}>{score}</span>
         <div>
           <p className={`text-sm font-medium ${color}`}>{label}</p>
-          <p className="text-xs text-gray-500">Range: -100 to +100</p>
+          <p className="text-xs text-gray-500">{t("surveyDashboard.enpsRange")}</p>
         </div>
       </div>
     </div>

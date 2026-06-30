@@ -2079,6 +2079,13 @@
     "activeSurveys": "الاستطلاعات النشطة",
     "totalResponses": "إجمالي الردود",
     "avgResponseRate": "متوسط معدل الاستجابة",
-    "totalSurveys": "إجمالي الاستطلاعات"
+    "totalSurveys": "إجمالي الاستطلاعات",
+    "enpsScore": "درجة eNPS",
+    "noEnps": "لم تكتمل أي استطلاعات eNPS بعد",
+    "enpsExcellent": "ممتاز",
+    "enpsGood": "جيد",
+    "enpsOkay": "مقبول",
+    "enpsNeedsImprovement": "يحتاج إلى تحسين",
+    "enpsRange": "النطاق: -100 إلى +100"
   }
 }

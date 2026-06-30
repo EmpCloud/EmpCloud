@@ -2079,6 +2079,13 @@
     "activeSurveys": "実施中のアンケート",
     "totalResponses": "回答総数",
     "avgResponseRate": "平均回答率",
-    "totalSurveys": "アンケート総数"
+    "totalSurveys": "アンケート総数",
+    "enpsScore": "eNPSスコア",
+    "noEnps": "完了したeNPSアンケートはまだありません",
+    "enpsExcellent": "優秀",
+    "enpsGood": "良好",
+    "enpsOkay": "普通",
+    "enpsNeedsImprovement": "要改善",
+    "enpsRange": "範囲: -100 ～ +100"
   }
 }

@@ -2079,6 +2079,13 @@
     "activeSurveys": "Encuestas Activas",
     "totalResponses": "Respuestas Totales",
     "avgResponseRate": "Tasa de Respuesta Promedio",
-    "totalSurveys": "Encuestas Totales"
+    "totalSurveys": "Encuestas Totales",
+    "enpsScore": "Puntuación eNPS",
+    "noEnps": "Aún no se han completado encuestas eNPS",
+    "enpsExcellent": "Excelente",
+    "enpsGood": "Bueno",
+    "enpsOkay": "Aceptable",
+    "enpsNeedsImprovement": "Necesita Mejorar",
+    "enpsRange": "Rango: -100 a +100"
   }
 }

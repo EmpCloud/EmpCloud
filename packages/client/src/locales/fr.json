@@ -2079,6 +2079,13 @@
     "activeSurveys": "Enquêtes actives",
     "totalResponses": "Total des réponses",
     "avgResponseRate": "Taux de réponse moyen",
-    "totalSurveys": "Total des enquêtes"
+    "totalSurveys": "Total des enquêtes",
+    "enpsScore": "Score eNPS",
+    "noEnps": "Aucune enquête eNPS terminée pour l'instant",
+    "enpsExcellent": "Excellent",
+    "enpsGood": "Bon",
+    "enpsOkay": "Correct",
+    "enpsNeedsImprovement": "À améliorer",
+    "enpsRange": "Plage : -100 à +100"
   }
 }

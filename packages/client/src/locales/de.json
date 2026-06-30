@@ -2079,6 +2079,13 @@
     "activeSurveys": "Aktive Umfragen",
     "totalResponses": "Antworten gesamt",
     "avgResponseRate": "Durchschn. Antwortrate",
-    "totalSurveys": "Umfragen gesamt"
+    "totalSurveys": "Umfragen gesamt",
+    "enpsScore": "eNPS-Wert",
+    "noEnps": "Noch keine eNPS-Umfragen abgeschlossen",
+    "enpsExcellent": "Ausgezeichnet",
+    "enpsGood": "Gut",
+    "enpsOkay": "In Ordnung",
+    "enpsNeedsImprovement": "Verbesserungsbedürftig",
+    "enpsRange": "Bereich: -100 bis +100"
   }
 }

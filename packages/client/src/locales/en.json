@@ -2084,6 +2084,13 @@
     "activeSurveys": "Active Surveys",
     "totalResponses": "Total Responses",
     "avgResponseRate": "Avg Response Rate",
-    "totalSurveys": "Total Surveys"
+    "totalSurveys": "Total Surveys",
+    "enpsScore": "eNPS Score",
+    "noEnps": "No eNPS surveys completed yet",
+    "enpsExcellent": "Excellent",
+    "enpsGood": "Good",
+    "enpsOkay": "Okay",
+    "enpsNeedsImprovement": "Needs Improvement",
+    "enpsRange": "Range: -100 to +100"
   }
 }

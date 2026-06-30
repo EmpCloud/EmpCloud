@@ -2079,6 +2079,13 @@
     "activeSurveys": "सक्रिय सर्वेक्षण",
     "totalResponses": "कुल प्रतिक्रियाएं",
     "avgResponseRate": "औसत प्रतिक्रिया दर",
-    "totalSurveys": "कुल सर्वेक्षण"
+    "totalSurveys": "कुल सर्वेक्षण",
+    "enpsScore": "eNPS स्कोर",
+    "noEnps": "अभी तक कोई eNPS सर्वेक्षण पूरा नहीं हुआ",
+    "enpsExcellent": "उत्कृष्ट",
+    "enpsGood": "अच्छा",
+    "enpsOkay": "ठीक-ठाक",
+    "enpsNeedsImprovement": "सुधार की आवश्यकता",
+    "enpsRange": "सीमा: -100 से +100"
   }
 }

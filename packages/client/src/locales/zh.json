@@ -2079,6 +2079,13 @@
     "activeSurveys": "进行中的调查",
     "totalResponses": "回复总数",
     "avgResponseRate": "平均回复率",
-    "totalSurveys": "调查总数"
+    "totalSurveys": "调查总数",
+    "enpsScore": "eNPS 分数",
+    "noEnps": "尚未完成任何 eNPS 调查",
+    "enpsExcellent": "优秀",
+    "enpsGood": "良好",
+    "enpsOkay": "一般",
+    "enpsNeedsImprovement": "需要改进",
+    "enpsRange": "范围：-100 到 +100"
   }
 }
