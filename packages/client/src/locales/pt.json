@@ -2096,6 +2096,14 @@
     "colSubmitted": "Enviada em",
     "colAnonymous": "Anônima",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "loadingSurvey": "Carregando pesquisa...",
+    "thankYou": "Obrigado!",
+    "submittedSuccess": "Sua resposta foi enviada com sucesso.",
+    "backToSurveys": "Voltar para pesquisas",
+    "responsesAnonymous": "Suas respostas são anônimas",
+    "cancel": "Cancelar",
+    "submitResponse": "Enviar Resposta",
+    "submitError": "Falha ao enviar a resposta. Tente novamente."
   }
 }

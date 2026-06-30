@@ -2096,6 +2096,14 @@
     "colSubmitted": "تاريخ الإرسال",
     "colAnonymous": "مجهول",
     "yes": "نعم",
-    "no": "لا"
+    "no": "لا",
+    "loadingSurvey": "جارٍ تحميل الاستطلاع...",
+    "thankYou": "شكرًا لك!",
+    "submittedSuccess": "تم إرسال ردك بنجاح.",
+    "backToSurveys": "العودة إلى الاستطلاعات",
+    "responsesAnonymous": "ردودك مجهولة الهوية",
+    "cancel": "إلغاء",
+    "submitResponse": "إرسال الرد",
+    "submitError": "فشل إرسال الرد. يرجى المحاولة مرة أخرى."
   }
 }

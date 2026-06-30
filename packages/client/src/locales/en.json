@@ -2101,6 +2101,14 @@
     "colSubmitted": "Submitted",
     "colAnonymous": "Anonymous",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "loadingSurvey": "Loading survey...",
+    "thankYou": "Thank you!",
+    "submittedSuccess": "Your response has been submitted successfully.",
+    "backToSurveys": "Back to surveys",
+    "responsesAnonymous": "Your responses are anonymous",
+    "cancel": "Cancel",
+    "submitResponse": "Submit Response",
+    "submitError": "Failed to submit response. Please try again."
   }
 }

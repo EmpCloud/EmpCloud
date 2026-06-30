@@ -2096,6 +2096,14 @@
     "colSubmitted": "Soumise le",
     "colAnonymous": "Anonyme",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "loadingSurvey": "Chargement de l'enquête...",
+    "thankYou": "Merci !",
+    "submittedSuccess": "Votre réponse a été envoyée avec succès.",
+    "backToSurveys": "Retour aux enquêtes",
+    "responsesAnonymous": "Vos réponses sont anonymes",
+    "cancel": "Annuler",
+    "submitResponse": "Envoyer la réponse",
+    "submitError": "Échec de l'envoi de la réponse. Veuillez réessayer."
   }
 }

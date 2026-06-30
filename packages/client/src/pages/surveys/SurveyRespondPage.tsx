@@ -196,6 +196,7 @@ function SurveyFillForm({
   onBack: () => void;
   onSubmitted: () => void;
 }) {
+  const { t } = useTranslation();
   const [answers, setAnswers] = useState<Record<number, { rating_value?: number | null; text_value?: string | null }>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -228,7 +229,7 @@ function SurveyFillForm({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-gray-400">Loading survey...</div>
+        <div className="text-gray-400">{t("surveyRespond.loadingSurvey")}</div>
       </div>
     );
   }
@@ -237,8 +238,8 @@ function SurveyFillForm({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Thank you!</h2>
-        <p className="text-gray-500">Your response has been submitted successfully.</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">{t("surveyRespond.thankYou")}</h2>
+        <p className="text-gray-500">{t("surveyRespond.submittedSuccess")}</p>
       </div>
     );
   }
@@ -253,7 +254,7 @@ function SurveyFillForm({
         onClick={onBack}
         className="text-sm text-brand-600 hover:underline mb-4"
       >
-        &larr; Back to surveys
+        &larr; {t("surveyRespond.backToSurveys")}
       </button>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -263,10 +264,10 @@ function SurveyFillForm({
             survey.type === "pulse" ? "bg-purple-100 text-purple-700" :
             "bg-gray-100 text-gray-700"
           }`}>
-            {survey.type}
+            {surveyTypeLabel(survey.type, t)}
           </span>
           {survey.is_anonymous && (
-            <span className="text-xs text-gray-400">Your responses are anonymous</span>
+            <span className="text-xs text-gray-400">{t("surveyRespond.responsesAnonymous")}</span>
           )}
         </div>
         <h1 className="text-xl font-bold text-gray-900">{survey.title}</h1>
@@ -303,20 +304,20 @@ function SurveyFillForm({
           onClick={onBack}
           className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
         >
-          Cancel
+          {t("surveyRespond.cancel")}
         </button>
         <button
           onClick={handleSubmit}
           disabled={submitMutation.isPending}
           className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
-          <Send className="h-4 w-4" /> Submit Response
+          <Send className="h-4 w-4" /> {t("surveyRespond.submitResponse")}
         </button>
       </div>
 
       {submitMutation.isError && (
         <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
-          {(submitMutation.error as any)?.response?.data?.error?.message || "Failed to submit response. Please try again."}
+          {(submitMutation.error as any)?.response?.data?.error?.message || t("surveyRespond.submitError")}
         </div>
       )}
     </div>

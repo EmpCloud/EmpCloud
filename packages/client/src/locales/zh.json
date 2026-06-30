@@ -2096,6 +2096,14 @@
     "colSubmitted": "提交时间",
     "colAnonymous": "匿名",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "loadingSurvey": "正在加载调查...",
+    "thankYou": "谢谢！",
+    "submittedSuccess": "您的回复已成功提交。",
+    "backToSurveys": "返回调查",
+    "responsesAnonymous": "您的回复是匿名的",
+    "cancel": "取消",
+    "submitResponse": "提交回复",
+    "submitError": "提交回复失败。请重试。"
   }
 }

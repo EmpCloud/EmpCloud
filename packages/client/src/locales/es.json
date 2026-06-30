@@ -2096,6 +2096,14 @@
     "colSubmitted": "Enviada",
     "colAnonymous": "Anónima",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "loadingSurvey": "Cargando encuesta...",
+    "thankYou": "¡Gracias!",
+    "submittedSuccess": "Tu respuesta se ha enviado correctamente.",
+    "backToSurveys": "Volver a encuestas",
+    "responsesAnonymous": "Tus respuestas son anónimas",
+    "cancel": "Cancelar",
+    "submitResponse": "Enviar Respuesta",
+    "submitError": "No se pudo enviar la respuesta. Inténtalo de nuevo."
   }
 }
