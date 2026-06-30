@@ -2086,6 +2086,13 @@
     "enpsGood": "Gut",
     "enpsOkay": "In Ordnung",
     "enpsNeedsImprovement": "Verbesserungsbedürftig",
-    "enpsRange": "Bereich: -100 bis +100"
+    "enpsRange": "Bereich: -100 bis +100",
+    "statusBreakdown": "Umfragestatus-Aufschlüsselung",
+    "drafts": "Entwürfe",
+    "active": "Aktiv",
+    "closed": "Geschlossen",
+    "organization": "Organisation",
+    "totalEmployees": "Mitarbeiter gesamt",
+    "surveysConducted": "Durchgeführte Umfragen"
   }
 }

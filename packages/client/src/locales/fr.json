@@ -2086,6 +2086,13 @@
     "enpsGood": "Bon",
     "enpsOkay": "Correct",
     "enpsNeedsImprovement": "À améliorer",
-    "enpsRange": "Plage : -100 à +100"
+    "enpsRange": "Plage : -100 à +100",
+    "statusBreakdown": "Répartition des statuts d'enquête",
+    "drafts": "Brouillons",
+    "active": "Actives",
+    "closed": "Fermées",
+    "organization": "Organisation",
+    "totalEmployees": "Total des employés",
+    "surveysConducted": "Enquêtes réalisées"
   }
 }

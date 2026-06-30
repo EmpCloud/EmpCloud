@@ -2086,6 +2086,13 @@
     "enpsGood": "अच्छा",
     "enpsOkay": "ठीक-ठाक",
     "enpsNeedsImprovement": "सुधार की आवश्यकता",
-    "enpsRange": "सीमा: -100 से +100"
+    "enpsRange": "सीमा: -100 से +100",
+    "statusBreakdown": "सर्वेक्षण स्थिति विवरण",
+    "drafts": "ड्राफ्ट",
+    "active": "सक्रिय",
+    "closed": "बंद",
+    "organization": "संगठन",
+    "totalEmployees": "कुल कर्मचारी",
+    "surveysConducted": "किए गए सर्वेक्षण"
   }
 }

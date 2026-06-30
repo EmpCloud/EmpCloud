@@ -2086,6 +2086,13 @@
     "enpsGood": "良好",
     "enpsOkay": "一般",
     "enpsNeedsImprovement": "需要改进",
-    "enpsRange": "范围：-100 到 +100"
+    "enpsRange": "范围：-100 到 +100",
+    "statusBreakdown": "调查状态明细",
+    "drafts": "草稿",
+    "active": "进行中",
+    "closed": "已关闭",
+    "organization": "组织",
+    "totalEmployees": "员工总数",
+    "surveysConducted": "已开展的调查"
   }
 }

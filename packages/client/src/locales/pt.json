@@ -2086,6 +2086,13 @@
     "enpsGood": "Bom",
     "enpsOkay": "Razoável",
     "enpsNeedsImprovement": "Precisa Melhorar",
-    "enpsRange": "Intervalo: -100 a +100"
+    "enpsRange": "Intervalo: -100 a +100",
+    "statusBreakdown": "Detalhamento de Status das Pesquisas",
+    "drafts": "Rascunhos",
+    "active": "Ativas",
+    "closed": "Encerradas",
+    "organization": "Organização",
+    "totalEmployees": "Total de Funcionários",
+    "surveysConducted": "Pesquisas Realizadas"
   }
 }

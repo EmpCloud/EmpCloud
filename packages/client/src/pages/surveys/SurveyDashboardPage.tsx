@@ -124,37 +124,37 @@ export default function SurveyDashboardPage() {
           <ENPSGauge score={d.enps_score} />
         </div>
         <div className="lg:col-span-1 bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Survey Status Breakdown</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">{t("surveyDashboard.statusBreakdown")}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <FileEdit className="h-4 w-4 text-gray-400" /> Drafts
+                <FileEdit className="h-4 w-4 text-gray-400" /> {t("surveyDashboard.drafts")}
               </div>
               <span className="text-sm font-semibold text-gray-900">{d.draft_count ?? 0}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Clock className="h-4 w-4 text-green-500" /> Active
+                <Clock className="h-4 w-4 text-green-500" /> {t("surveyDashboard.active")}
               </div>
               <span className="text-sm font-semibold text-gray-900">{d.active_count ?? 0}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <CheckCircle className="h-4 w-4 text-blue-500" /> Closed
+                <CheckCircle className="h-4 w-4 text-blue-500" /> {t("surveyDashboard.closed")}
               </div>
               <span className="text-sm font-semibold text-gray-900">{d.closed_count ?? 0}</span>
             </div>
           </div>
         </div>
         <div className="lg:col-span-1 bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Organization</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">{t("surveyDashboard.organization")}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Total Employees</span>
+              <span className="text-sm text-gray-600">{t("surveyDashboard.totalEmployees")}</span>
               <span className="text-sm font-semibold text-gray-900">{d.user_count ?? 0}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Surveys Conducted</span>
+              <span className="text-sm text-gray-600">{t("surveyDashboard.surveysConducted")}</span>
               <span className="text-sm font-semibold text-gray-900">{d.total_count ?? 0}</span>
             </div>
           </div>

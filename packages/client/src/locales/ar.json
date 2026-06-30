@@ -2086,6 +2086,13 @@
     "enpsGood": "جيد",
     "enpsOkay": "مقبول",
     "enpsNeedsImprovement": "يحتاج إلى تحسين",
-    "enpsRange": "النطاق: -100 إلى +100"
+    "enpsRange": "النطاق: -100 إلى +100",
+    "statusBreakdown": "تفصيل حالة الاستطلاعات",
+    "drafts": "المسودّات",
+    "active": "نشطة",
+    "closed": "مغلقة",
+    "organization": "المؤسسة",
+    "totalEmployees": "إجمالي الموظفين",
+    "surveysConducted": "الاستطلاعات المُجراة"
   }
 }

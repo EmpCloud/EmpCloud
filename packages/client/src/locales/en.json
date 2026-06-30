@@ -2091,6 +2091,13 @@
     "enpsGood": "Good",
     "enpsOkay": "Okay",
     "enpsNeedsImprovement": "Needs Improvement",
-    "enpsRange": "Range: -100 to +100"
+    "enpsRange": "Range: -100 to +100",
+    "statusBreakdown": "Survey Status Breakdown",
+    "drafts": "Drafts",
+    "active": "Active",
+    "closed": "Closed",
+    "organization": "Organization",
+    "totalEmployees": "Total Employees",
+    "surveysConducted": "Surveys Conducted"
   }
 }

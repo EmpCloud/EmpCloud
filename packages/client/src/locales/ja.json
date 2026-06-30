@@ -2086,6 +2086,13 @@
     "enpsGood": "良好",
     "enpsOkay": "普通",
     "enpsNeedsImprovement": "要改善",
-    "enpsRange": "範囲: -100 ～ +100"
+    "enpsRange": "範囲: -100 ～ +100",
+    "statusBreakdown": "アンケートステータス内訳",
+    "drafts": "下書き",
+    "active": "実施中",
+    "closed": "終了",
+    "organization": "組織",
+    "totalEmployees": "従業員総数",
+    "surveysConducted": "実施したアンケート"
   }
 }
