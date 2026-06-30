@@ -2584,5 +2584,18 @@
     "addLocError": "Standort konnte nicht hinzugefügt werden.",
     "updateLocError": "Standort konnte nicht aktualisiert werden.",
     "deleteLocError": "Standort konnte nicht gelöscht werden."
+  },
+  "apiKeys": {
+    "title": "API-Schlüssel",
+    "newKey": "Neuer Schlüssel",
+    "description": "Erstellen Sie Schlüssel für den programmatischen Zugriff auf die EmpCloud-APIs. Ein Schlüssel funktioniert in EmpCloud und im Payroll-Modul und trägt die Berechtigungen des Admins, der ihn erstellt hat.",
+    "statusRevoked": "Widerrufen",
+    "statusExpired": "Abgelaufen",
+    "statusActive": "Aktiv",
+    "createError": "API-Schlüssel konnte nicht erstellt werden",
+    "copyError": "Kopieren nicht möglich — manuell auswählen und kopieren",
+    "revokeConfirm": "\"{{name}}\" widerrufen? Jede Integration, die ihn verwendet, funktioniert sofort nicht mehr.",
+    "revoked": "API-Schlüssel widerrufen",
+    "revokeError": "Schlüssel konnte nicht widerrufen werden"
   }
 }

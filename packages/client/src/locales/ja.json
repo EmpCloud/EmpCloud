@@ -2584,5 +2584,18 @@
     "addLocError": "拠点の追加に失敗しました。",
     "updateLocError": "拠点の更新に失敗しました。",
     "deleteLocError": "拠点の削除に失敗しました。"
+  },
+  "apiKeys": {
+    "title": "APIキー",
+    "newKey": "新規キー",
+    "description": "EmpCloud APIへのプログラムアクセス用のキーを生成します。1つのキーがEmpCloudとPayrollモジュールの両方で機能し、作成した管理者の権限を継承します。",
+    "statusRevoked": "取り消し済み",
+    "statusExpired": "期限切れ",
+    "statusActive": "有効",
+    "createError": "APIキーの作成に失敗しました",
+    "copyError": "コピーできませんでした — 選択して手動でコピーしてください",
+    "revokeConfirm": "「{{name}}」を取り消しますか？これを使用しているすべての連携が直ちに動作しなくなります。",
+    "revoked": "APIキーを取り消しました",
+    "revokeError": "キーの取り消しに失敗しました"
   }
 }

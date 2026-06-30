@@ -2584,5 +2584,18 @@
     "addLocError": "Échec de l'ajout du lieu.",
     "updateLocError": "Échec de la mise à jour du lieu.",
     "deleteLocError": "Échec de la suppression du lieu."
+  },
+  "apiKeys": {
+    "title": "Clés API",
+    "newKey": "Nouvelle clé",
+    "description": "Générez des clés pour un accès programmatique aux API EmpCloud. Une clé fonctionne dans tout EmpCloud et le module Paie, et porte les autorisations de l'administrateur qui l'a créée.",
+    "statusRevoked": "Révoquée",
+    "statusExpired": "Expirée",
+    "statusActive": "Active",
+    "createError": "Échec de la création de la clé API",
+    "copyError": "Copie impossible — sélectionnez et copiez manuellement",
+    "revokeConfirm": "Révoquer « {{name}} » ? Toute intégration l'utilisant cessera de fonctionner immédiatement.",
+    "revoked": "Clé API révoquée",
+    "revokeError": "Échec de la révocation de la clé"
   }
 }

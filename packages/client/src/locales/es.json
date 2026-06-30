@@ -2584,5 +2584,18 @@
     "addLocError": "No se pudo agregar la ubicación.",
     "updateLocError": "No se pudo actualizar la ubicación.",
     "deleteLocError": "No se pudo eliminar la ubicación."
+  },
+  "apiKeys": {
+    "title": "Claves de API",
+    "newKey": "Nueva Clave",
+    "description": "Genera claves para el acceso programático a las API de EmpCloud. Una clave funciona en todo EmpCloud y el módulo de Nómina, y lleva los permisos del administrador que la creó.",
+    "statusRevoked": "Revocada",
+    "statusExpired": "Expirada",
+    "statusActive": "Activa",
+    "createError": "No se pudo crear la clave de API",
+    "copyError": "No se pudo copiar — selecciona y copia manualmente",
+    "revokeConfirm": "¿Revocar \"{{name}}\"? Cualquier integración que la use dejará de funcionar de inmediato.",
+    "revoked": "Clave de API revocada",
+    "revokeError": "No se pudo revocar la clave"
   }
 }

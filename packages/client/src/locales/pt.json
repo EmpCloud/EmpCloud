@@ -2584,5 +2584,18 @@
     "addLocError": "Falha ao adicionar local.",
     "updateLocError": "Falha ao atualizar local.",
     "deleteLocError": "Falha ao excluir local."
+  },
+  "apiKeys": {
+    "title": "Chaves de API",
+    "newKey": "Nova Chave",
+    "description": "Gere chaves para acesso programático às APIs do EmpCloud. Uma chave funciona em todo o EmpCloud e no módulo de Folha de Pagamento, e carrega as permissões do administrador que a criou.",
+    "statusRevoked": "Revogada",
+    "statusExpired": "Expirada",
+    "statusActive": "Ativa",
+    "createError": "Falha ao criar a chave de API",
+    "copyError": "Não foi possível copiar — selecione e copie manualmente",
+    "revokeConfirm": "Revogar \"{{name}}\"? Qualquer integração que a use deixará de funcionar imediatamente.",
+    "revoked": "Chave de API revogada",
+    "revokeError": "Falha ao revogar a chave"
   }
 }

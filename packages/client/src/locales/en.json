@@ -2590,5 +2590,18 @@
     "addLocError": "Failed to add location.",
     "updateLocError": "Failed to update location.",
     "deleteLocError": "Failed to delete location."
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "newKey": "New Key",
+    "description": "Generate keys for programmatic access to the EmpCloud APIs. One key works across EmpCloud and the Payroll module, and carries the permissions of the admin who created it.",
+    "statusRevoked": "Revoked",
+    "statusExpired": "Expired",
+    "statusActive": "Active",
+    "createError": "Failed to create API key",
+    "copyError": "Couldn't copy — select and copy manually",
+    "revokeConfirm": "Revoke \"{{name}}\"? Any integration using it will stop working immediately.",
+    "revoked": "API key revoked",
+    "revokeError": "Failed to revoke key"
   }
 }

@@ -2584,5 +2584,18 @@
     "addLocError": "添加地点失败。",
     "updateLocError": "更新地点失败。",
     "deleteLocError": "删除地点失败。"
+  },
+  "apiKeys": {
+    "title": "API 密钥",
+    "newKey": "新建密钥",
+    "description": "生成用于以编程方式访问 EmpCloud API 的密钥。一个密钥可在 EmpCloud 和薪资模块中通用，并携带创建它的管理员的权限。",
+    "statusRevoked": "已撤销",
+    "statusExpired": "已过期",
+    "statusActive": "有效",
+    "createError": "创建 API 密钥失败",
+    "copyError": "无法复制 — 请手动选择并复制",
+    "revokeConfirm": "撤销“{{name}}”？任何使用它的集成将立即停止工作。",
+    "revoked": "API 密钥已撤销",
+    "revokeError": "撤销密钥失败"
   }
 }

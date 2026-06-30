@@ -2584,5 +2584,18 @@
     "addLocError": "فشل إضافة الموقع.",
     "updateLocError": "فشل تحديث الموقع.",
     "deleteLocError": "فشل حذف الموقع."
+  },
+  "apiKeys": {
+    "title": "مفاتيح API",
+    "newKey": "مفتاح جديد",
+    "description": "أنشئ مفاتيح للوصول البرمجي إلى واجهات EmpCloud البرمجية. يعمل المفتاح الواحد عبر EmpCloud ووحدة الرواتب، ويحمل صلاحيات المسؤول الذي أنشأه.",
+    "statusRevoked": "مُلغى",
+    "statusExpired": "منتهٍ",
+    "statusActive": "نشط",
+    "createError": "فشل إنشاء مفتاح API",
+    "copyError": "تعذّر النسخ — حدّد وانسخ يدويًا",
+    "revokeConfirm": "إلغاء \"{{name}}\"؟ أي تكامل يستخدمه سيتوقف عن العمل فورًا.",
+    "revoked": "تم إلغاء مفتاح API",
+    "revokeError": "فشل إلغاء المفتاح"
   }
 }

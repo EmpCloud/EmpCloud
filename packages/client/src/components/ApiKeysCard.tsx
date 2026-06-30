@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { useState } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import {
   KeyRound,
   Plus,
@@ -35,14 +36,16 @@ function fmtDate(v: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
 }
 
-function keyStatus(k: ApiKey): { label: string; cls: string } {
-  if (k.revoked_at) return { label: "Revoked", cls: "bg-gray-100 text-gray-500" };
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+function keyStatus(k: ApiKey, t: TFn): { label: string; cls: string } {
+  if (k.revoked_at) return { label: t("apiKeys.statusRevoked"), cls: "bg-gray-100 text-gray-500" };
   if (k.expires_at && new Date(k.expires_at).getTime() <= Date.now())
-    return { label: "Expired", cls: "bg-amber-100 text-amber-700" };
-  return { label: "Active", cls: "bg-green-100 text-green-700" };
+    return { label: t("apiKeys.statusExpired"), cls: "bg-amber-100 text-amber-700" };
+  return { label: t("apiKeys.statusActive"), cls: "bg-green-100 text-green-700" };
 }
 
 export default function ApiKeysCard() {
+  const { t } = useTranslation();
   const { data: keys, isLoading } = useApiKeys();
   const createKey = useCreateApiKey();
   const revokeKey = useRevokeApiKey();
@@ -66,7 +69,7 @@ export default function ApiKeysCard() {
           setExpiry("");
           setShowForm(false);
         },
-        onError: () => showToast("error", "Failed to create API key"),
+        onError: () => showToast("error", t("apiKeys.createError")),
       },
     );
   };
@@ -78,16 +81,16 @@ export default function ApiKeysCard() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      showToast("error", "Couldn't copy — select and copy manually");
+      showToast("error", t("apiKeys.copyError"));
     }
   };
 
   const handleRevoke = (k: ApiKey) => {
-    if (!confirm(`Revoke "${k.name}"? Any integration using it will stop working immediately.`))
+    if (!confirm(t("apiKeys.revokeConfirm", { name: k.name })))
       return;
     revokeKey.mutate(k.id, {
-      onSuccess: () => showToast("success", "API key revoked"),
-      onError: () => showToast("error", "Failed to revoke key"),
+      onSuccess: () => showToast("success", t("apiKeys.revoked")),
+      onError: () => showToast("error", t("apiKeys.revokeError")),
     });
   };
 
@@ -96,20 +99,19 @@ export default function ApiKeysCard() {
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
           <KeyRound className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">API Keys</h2>
+          <h2 className="font-semibold text-gray-900">{t("apiKeys.title")}</h2>
         </div>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium"
           >
-            <Plus className="h-3.5 w-3.5" /> New Key
+            <Plus className="h-3.5 w-3.5" /> {t("apiKeys.newKey")}
           </button>
         )}
       </div>
       <p className="text-sm text-gray-500 mb-4">
-        Generate keys for programmatic access to the EmpCloud APIs. One key works across EmpCloud
-        and the Payroll module, and carries the permissions of the admin who created it.
+        {t("apiKeys.description")}
       </p>
 
       {/* How it works — help the user understand what the key is and how to send it */}
@@ -274,7 +276,7 @@ export default function ApiKeysCard() {
             </thead>
             <tbody>
               {keys.map((k) => {
-                const st = keyStatus(k);
+                const st = keyStatus(k, t);
                 return (
                   <tr key={k.id} className="border-b border-gray-100 last:border-0">
                     <td className="py-2.5 pr-4 font-medium text-gray-900">{k.name}</td>
