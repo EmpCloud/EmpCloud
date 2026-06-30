@@ -2564,6 +2564,15 @@
     "selectCountry": "Land auswählen",
     "cancel": "Abbrechen",
     "saveChanges": "Änderungen speichern",
-    "updateError": "Aktualisierung fehlgeschlagen. Bitte erneut versuchen."
+    "updateError": "Aktualisierung fehlgeschlagen. Bitte erneut versuchen.",
+    "departments": "Abteilungen ({{count}})",
+    "add": "Hinzufügen",
+    "departmentName": "Abteilungsname",
+    "renameDepartment": "Abteilung umbenennen",
+    "deleteDepartment": "Abteilung löschen",
+    "save": "Speichern",
+    "addDeptError": "Abteilung konnte nicht hinzugefügt werden.",
+    "renameDeptError": "Abteilung konnte nicht umbenannt werden.",
+    "deleteDeptError": "Abteilung konnte nicht gelöscht werden."
   }
 }

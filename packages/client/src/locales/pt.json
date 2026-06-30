@@ -2564,6 +2564,15 @@
     "selectCountry": "Selecionar país",
     "cancel": "Cancelar",
     "saveChanges": "Salvar Alterações",
-    "updateError": "Falha ao atualizar. Tente novamente."
+    "updateError": "Falha ao atualizar. Tente novamente.",
+    "departments": "Departamentos ({{count}})",
+    "add": "Adicionar",
+    "departmentName": "Nome do departamento",
+    "renameDepartment": "Renomear departamento",
+    "deleteDepartment": "Excluir departamento",
+    "save": "Salvar",
+    "addDeptError": "Falha ao adicionar departamento.",
+    "renameDeptError": "Falha ao renomear departamento.",
+    "deleteDeptError": "Falha ao excluir departamento."
   }
 }

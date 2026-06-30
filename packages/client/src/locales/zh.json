@@ -2564,6 +2564,15 @@
     "selectCountry": "选择国家",
     "cancel": "取消",
     "saveChanges": "保存更改",
-    "updateError": "更新失败。请重试。"
+    "updateError": "更新失败。请重试。",
+    "departments": "部门（{{count}}）",
+    "add": "添加",
+    "departmentName": "部门名称",
+    "renameDepartment": "重命名部门",
+    "deleteDepartment": "删除部门",
+    "save": "保存",
+    "addDeptError": "添加部门失败。",
+    "renameDeptError": "重命名部门失败。",
+    "deleteDeptError": "删除部门失败。"
   }
 }

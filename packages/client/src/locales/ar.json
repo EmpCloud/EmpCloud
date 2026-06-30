@@ -2564,6 +2564,15 @@
     "selectCountry": "اختر البلد",
     "cancel": "إلغاء",
     "saveChanges": "حفظ التغييرات",
-    "updateError": "فشل التحديث. يرجى المحاولة مرة أخرى."
+    "updateError": "فشل التحديث. يرجى المحاولة مرة أخرى.",
+    "departments": "الأقسام ({{count}})",
+    "add": "إضافة",
+    "departmentName": "اسم القسم",
+    "renameDepartment": "إعادة تسمية القسم",
+    "deleteDepartment": "حذف القسم",
+    "save": "حفظ",
+    "addDeptError": "فشل إضافة القسم.",
+    "renameDeptError": "فشل إعادة تسمية القسم.",
+    "deleteDeptError": "فشل حذف القسم."
   }
 }

@@ -2564,6 +2564,15 @@
     "selectCountry": "Sélectionner le pays",
     "cancel": "Annuler",
     "saveChanges": "Enregistrer les modifications",
-    "updateError": "Échec de la mise à jour. Veuillez réessayer."
+    "updateError": "Échec de la mise à jour. Veuillez réessayer.",
+    "departments": "Services ({{count}})",
+    "add": "Ajouter",
+    "departmentName": "Nom du service",
+    "renameDepartment": "Renommer le service",
+    "deleteDepartment": "Supprimer le service",
+    "save": "Enregistrer",
+    "addDeptError": "Échec de l'ajout du service.",
+    "renameDeptError": "Échec du renommage du service.",
+    "deleteDeptError": "Échec de la suppression du service."
   }
 }

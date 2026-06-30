@@ -2564,6 +2564,15 @@
     "selectCountry": "国を選択",
     "cancel": "キャンセル",
     "saveChanges": "変更を保存",
-    "updateError": "更新に失敗しました。もう一度お試しください。"
+    "updateError": "更新に失敗しました。もう一度お試しください。",
+    "departments": "部門（{{count}}）",
+    "add": "追加",
+    "departmentName": "部門名",
+    "renameDepartment": "部門名を変更",
+    "deleteDepartment": "部門を削除",
+    "save": "保存",
+    "addDeptError": "部門の追加に失敗しました。",
+    "renameDeptError": "部門名の変更に失敗しました。",
+    "deleteDeptError": "部門の削除に失敗しました。"
   }
 }

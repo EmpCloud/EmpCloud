@@ -2570,6 +2570,15 @@
     "selectCountry": "Select country",
     "cancel": "Cancel",
     "saveChanges": "Save Changes",
-    "updateError": "Failed to update. Please try again."
+    "updateError": "Failed to update. Please try again.",
+    "departments": "Departments ({{count}})",
+    "add": "Add",
+    "departmentName": "Department name",
+    "renameDepartment": "Rename department",
+    "deleteDepartment": "Delete department",
+    "save": "Save",
+    "addDeptError": "Failed to add department.",
+    "renameDeptError": "Failed to rename department.",
+    "deleteDeptError": "Failed to delete department."
   }
 }

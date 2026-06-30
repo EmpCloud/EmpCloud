@@ -2564,6 +2564,15 @@
     "selectCountry": "Seleccionar país",
     "cancel": "Cancelar",
     "saveChanges": "Guardar Cambios",
-    "updateError": "No se pudo actualizar. Inténtalo de nuevo."
+    "updateError": "No se pudo actualizar. Inténtalo de nuevo.",
+    "departments": "Departamentos ({{count}})",
+    "add": "Agregar",
+    "departmentName": "Nombre del departamento",
+    "renameDepartment": "Renombrar departamento",
+    "deleteDepartment": "Eliminar departamento",
+    "save": "Guardar",
+    "addDeptError": "No se pudo agregar el departamento.",
+    "renameDeptError": "No se pudo renombrar el departamento.",
+    "deleteDeptError": "No se pudo eliminar el departamento."
   }
 }

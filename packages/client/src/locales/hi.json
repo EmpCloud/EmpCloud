@@ -2564,6 +2564,15 @@
     "selectCountry": "देश चुनें",
     "cancel": "रद्द करें",
     "saveChanges": "परिवर्तन सहेजें",
-    "updateError": "अपडेट करने में विफल। कृपया पुनः प्रयास करें।"
+    "updateError": "अपडेट करने में विफल। कृपया पुनः प्रयास करें।",
+    "departments": "विभाग ({{count}})",
+    "add": "जोड़ें",
+    "departmentName": "विभाग का नाम",
+    "renameDepartment": "विभाग का नाम बदलें",
+    "deleteDepartment": "विभाग हटाएं",
+    "save": "सहेजें",
+    "addDeptError": "विभाग जोड़ने में विफल।",
+    "renameDeptError": "विभाग का नाम बदलने में विफल।",
+    "deleteDeptError": "विभाग हटाने में विफल।"
   }
 }

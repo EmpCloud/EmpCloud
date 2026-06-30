@@ -279,6 +279,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
 // ---------------------------------------------------------------------------
 
 function DepartmentsCard({ departments }: { departments: any[] }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [newName, setNewName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -298,7 +299,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || "Failed to add department.");
+      setAddError(err?.response?.data?.error?.message || t("orgSettings.addDeptError"));
     },
   });
 
@@ -314,7 +315,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setEditError("");
     },
     onError: (err: any) => {
-      setEditError(err?.response?.data?.error?.message || "Failed to rename department.");
+      setEditError(err?.response?.data?.error?.message || t("orgSettings.renameDeptError"));
     },
   });
 
@@ -328,7 +329,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setDeleteError("");
     },
     onError: (err: any) => {
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete department.");
+      setDeleteError(err?.response?.data?.error?.message || t("orgSettings.deleteDeptError"));
     },
   });
 
@@ -354,13 +355,13 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Briefcase className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">Departments ({departments.length})</h2>
+          <h2 className="font-semibold text-gray-900">{t("orgSettings.departments", { count: departments.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
         >
-          <Plus className="h-3.5 w-3.5" /> Add
+          <Plus className="h-3.5 w-3.5" /> {t("orgSettings.add")}
         </button>
       </div>
       {showAdd && (
@@ -377,7 +378,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               type="text"
               value={newName}
               onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
-              placeholder="Department name"
+              placeholder={t("orgSettings.departmentName")}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
               required
             />
@@ -386,7 +387,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               disabled={addDept.isPending}
               className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              Add
+              {t("orgSettings.add")}
             </button>
           </form>
           {addError && <p className="text-xs text-red-500 mt-1">{addError}</p>}
@@ -421,7 +422,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   type="submit"
                   disabled={updateDept.isPending || !editName.trim()}
                   className="text-green-600 hover:text-green-700 disabled:opacity-50"
-                  title="Save"
+                  title={t("orgSettings.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
                 </button>
@@ -429,7 +430,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   type="button"
                   onClick={cancelEdit}
                   className="text-gray-400 hover:text-gray-600"
-                  title="Cancel"
+                  title={t("orgSettings.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -441,7 +442,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   <button
                     onClick={() => startEdit(d)}
                     className="text-gray-400 hover:text-brand-600"
-                    title="Rename department"
+                    title={t("orgSettings.renameDepartment")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -451,7 +452,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                       deleteDept.mutate(d.id);
                     }}
                     className="text-gray-400 hover:text-red-500"
-                    title="Delete department"
+                    title={t("orgSettings.deleteDepartment")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -648,7 +649,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   type="submit"
                   disabled={updateLoc.isPending || !editForm.name.trim()}
                   className="text-green-600 hover:text-green-700 disabled:opacity-50"
-                  title="Save"
+                  title={t("orgSettings.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
                 </button>
@@ -656,7 +657,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   type="button"
                   onClick={cancelEdit}
                   className="text-gray-400 hover:text-gray-600"
-                  title="Cancel"
+                  title={t("orgSettings.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
