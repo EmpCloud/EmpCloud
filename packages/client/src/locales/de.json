@@ -2081,6 +2081,11 @@
     "assigned": "Zugewiesen",
     "inRepair": "In Reparatur",
     "lostDamaged": "Verloren / Beschädigt",
-    "retired": "Ausgemustert"
+    "retired": "Ausgemustert",
+    "unaccounted_one": "{{count}} Asset mit einem unbekannten Status — die Summen stimmen nicht überein. Öffnen Sie die Asset-Liste, um die Zeilen zu sehen.",
+    "unaccounted_other": "{{count}} Assets mit einem unbekannten Status — die Summen stimmen nicht überein. Öffnen Sie die Asset-Liste, um die Zeilen zu sehen.",
+    "viewAll": "Alle anzeigen",
+    "warrantiesExpiring": "Bald ablaufende Garantien ({{count}})",
+    "expires": "Läuft ab am {{date}}"
   }
 }

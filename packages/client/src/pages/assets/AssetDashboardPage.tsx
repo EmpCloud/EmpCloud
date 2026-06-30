@@ -126,10 +126,9 @@ export default function AssetDashboardPage() {
       {unaccounted > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800 flex items-center justify-between">
           <span>
-            {unaccounted} asset{unaccounted === 1 ? "" : "s"} with an unrecognised status —
-            totals don&apos;t reconcile. Open the asset list to see the rows.
+            {t("assetDashboard.unaccounted", { count: unaccounted })}
           </span>
-          <Link to="/assets" className="font-medium underline hover:text-amber-900">View all</Link>
+          <Link to="/assets" className="font-medium underline hover:text-amber-900">{t("assetDashboard.viewAll")}</Link>
         </div>
       )}
 
@@ -139,7 +138,7 @@ export default function AssetDashboardPage() {
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-5 w-5 text-amber-600" />
             <h2 className="text-sm font-semibold text-amber-800">
-              Warranties Expiring Soon ({stats.expiring_warranties.length})
+              {t("assetDashboard.warrantiesExpiring", { count: stats.expiring_warranties.length })}
             </h2>
           </div>
           <div className="space-y-2">
@@ -157,7 +156,7 @@ export default function AssetDashboardPage() {
                   )}
                 </div>
                 <span className="text-amber-600">
-                  Expires {new Date(asset.warranty_expiry).toLocaleDateString()}
+                  {t("assetDashboard.expires", { date: new Date(asset.warranty_expiry).toLocaleDateString() })}
                 </span>
               </div>
             ))}

@@ -2081,6 +2081,11 @@
     "assigned": "Atribuídos",
     "inRepair": "Em Reparo",
     "lostDamaged": "Perdidos / Danificados",
-    "retired": "Aposentados"
+    "retired": "Aposentados",
+    "unaccounted_one": "{{count}} ativo com status não reconhecido — os totais não batem. Abra a lista de ativos para ver as linhas.",
+    "unaccounted_other": "{{count}} ativos com status não reconhecido — os totais não batem. Abra a lista de ativos para ver as linhas.",
+    "viewAll": "Ver tudo",
+    "warrantiesExpiring": "Garantias Expirando em Breve ({{count}})",
+    "expires": "Expira em {{date}}"
   }
 }

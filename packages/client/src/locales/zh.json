@@ -2081,6 +2081,11 @@
     "assigned": "已分配",
     "inRepair": "维修中",
     "lostDamaged": "丢失 / 损坏",
-    "retired": "已报废"
+    "retired": "已报废",
+    "unaccounted_one": "{{count}} 项资产的状态无法识别 — 总数无法对账。请打开资产列表查看这些行。",
+    "unaccounted_other": "{{count}} 项资产的状态无法识别 — 总数无法对账。请打开资产列表查看这些行。",
+    "viewAll": "查看全部",
+    "warrantiesExpiring": "即将到期的保修（{{count}}）",
+    "expires": "到期 {{date}}"
   }
 }

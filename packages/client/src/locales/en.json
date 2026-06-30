@@ -2086,6 +2086,11 @@
     "assigned": "Assigned",
     "inRepair": "In Repair",
     "lostDamaged": "Lost / Damaged",
-    "retired": "Retired"
+    "retired": "Retired",
+    "unaccounted_one": "{{count}} asset with an unrecognised status — totals don't reconcile. Open the asset list to see the rows.",
+    "unaccounted_other": "{{count}} assets with an unrecognised status — totals don't reconcile. Open the asset list to see the rows.",
+    "viewAll": "View all",
+    "warrantiesExpiring": "Warranties Expiring Soon ({{count}})",
+    "expires": "Expires {{date}}"
   }
 }

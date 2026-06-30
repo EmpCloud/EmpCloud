@@ -2081,6 +2081,11 @@
     "assigned": "割り当て済み",
     "inRepair": "修理中",
     "lostDamaged": "紛失／破損",
-    "retired": "廃棄済み"
+    "retired": "廃棄済み",
+    "unaccounted_one": "認識されないステータスの資産が{{count}}件あります — 合計が一致しません。資産リストを開いて行を確認してください。",
+    "unaccounted_other": "認識されないステータスの資産が{{count}}件あります — 合計が一致しません。資産リストを開いて行を確認してください。",
+    "viewAll": "すべて表示",
+    "warrantiesExpiring": "まもなく期限切れの保証（{{count}}）",
+    "expires": "期限: {{date}}"
   }
 }

@@ -2081,6 +2081,11 @@
     "assigned": "Asignados",
     "inRepair": "En Reparación",
     "lostDamaged": "Perdidos / Dañados",
-    "retired": "Retirados"
+    "retired": "Retirados",
+    "unaccounted_one": "{{count}} activo con un estado no reconocido — los totales no cuadran. Abre la lista de activos para ver las filas.",
+    "unaccounted_other": "{{count}} activos con un estado no reconocido — los totales no cuadran. Abre la lista de activos para ver las filas.",
+    "viewAll": "Ver todo",
+    "warrantiesExpiring": "Garantías por Vencer Pronto ({{count}})",
+    "expires": "Vence el {{date}}"
   }
 }
