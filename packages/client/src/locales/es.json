@@ -2070,5 +2070,17 @@
     "exportFailed": "La exportación falló. Inténtalo de nuevo.",
     "personCount_one": "{{count}} persona",
     "personCount_other": "{{count}} personas"
+  },
+  "assetDashboard": {
+    "loading": "Cargando panel de activos...",
+    "title": "Panel de Activos",
+    "subtitle": "Resumen de equipos de TI y activos",
+    "viewAllAssets": "Ver Todos los Activos",
+    "totalAssets": "Total de Activos",
+    "available": "Disponibles",
+    "assigned": "Asignados",
+    "inRepair": "En Reparación",
+    "lostDamaged": "Perdidos / Dañados",
+    "retired": "Retirados"
   }
 }

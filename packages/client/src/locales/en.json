@@ -2075,5 +2075,17 @@
     "exportFailed": "Export failed. Please try again.",
     "personCount_one": "{{count}} person",
     "personCount_other": "{{count}} people"
+  },
+  "assetDashboard": {
+    "loading": "Loading asset dashboard...",
+    "title": "Asset Dashboard",
+    "subtitle": "IT equipment and asset overview",
+    "viewAllAssets": "View All Assets",
+    "totalAssets": "Total Assets",
+    "available": "Available",
+    "assigned": "Assigned",
+    "inRepair": "In Repair",
+    "lostDamaged": "Lost / Damaged",
+    "retired": "Retired"
   }
 }

@@ -2070,5 +2070,17 @@
     "exportFailed": "فشل التصدير. يرجى المحاولة مرة أخرى.",
     "personCount_one": "{{count}} شخص",
     "personCount_other": "{{count}} أشخاص"
+  },
+  "assetDashboard": {
+    "loading": "جارٍ تحميل لوحة تحكم الأصول...",
+    "title": "لوحة تحكم الأصول",
+    "subtitle": "نظرة عامة على معدات تقنية المعلومات والأصول",
+    "viewAllAssets": "عرض جميع الأصول",
+    "totalAssets": "إجمالي الأصول",
+    "available": "متاح",
+    "assigned": "مُخصّص",
+    "inRepair": "قيد الإصلاح",
+    "lostDamaged": "مفقود / تالف",
+    "retired": "مُتقاعد"
   }
 }

@@ -2070,5 +2070,17 @@
     "exportFailed": "Échec de l'exportation. Veuillez réessayer.",
     "personCount_one": "{{count}} personne",
     "personCount_other": "{{count}} personnes"
+  },
+  "assetDashboard": {
+    "loading": "Chargement du tableau de bord des actifs...",
+    "title": "Tableau de bord des actifs",
+    "subtitle": "Aperçu du matériel informatique et des actifs",
+    "viewAllAssets": "Voir tous les actifs",
+    "totalAssets": "Total des actifs",
+    "available": "Disponibles",
+    "assigned": "Attribués",
+    "inRepair": "En réparation",
+    "lostDamaged": "Perdus / Endommagés",
+    "retired": "Réformés"
   }
 }

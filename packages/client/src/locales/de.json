@@ -2070,5 +2070,17 @@
     "exportFailed": "Export fehlgeschlagen. Bitte erneut versuchen.",
     "personCount_one": "{{count}} Person",
     "personCount_other": "{{count}} Personen"
+  },
+  "assetDashboard": {
+    "loading": "Asset-Dashboard wird geladen...",
+    "title": "Asset-Dashboard",
+    "subtitle": "Übersicht über IT-Ausstattung und Assets",
+    "viewAllAssets": "Alle Assets anzeigen",
+    "totalAssets": "Assets gesamt",
+    "available": "Verfügbar",
+    "assigned": "Zugewiesen",
+    "inRepair": "In Reparatur",
+    "lostDamaged": "Verloren / Beschädigt",
+    "retired": "Ausgemustert"
   }
 }

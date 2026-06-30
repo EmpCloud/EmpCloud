@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
@@ -34,12 +35,13 @@ function useDashboard() {
 }
 
 export default function AssetDashboardPage() {
+  const { t } = useTranslation();
   const { data: stats, isLoading } = useDashboard();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading asset dashboard...</div>
+        <div className="text-gray-400">{t("assetDashboard.loading")}</div>
       </div>
     );
   }
@@ -59,12 +61,12 @@ export default function AssetDashboardPage() {
   // explain the missing 30. A small "Unaccounted" badge below catches any
   // future status drift (e.g. a new enum value the UI doesn't know about yet).
   const statCards = [
-    { label: "Total Assets", value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50", to: "/assets" },
-    { label: "Available", value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets?status=available" },
-    { label: "Assigned", value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets?status=assigned" },
-    { label: "In Repair", value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets?status=in_repair" },
-    { label: "Lost / Damaged", value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets?status=lost" },
-    { label: "Retired", value: stats.retired || 0, icon: Archive, color: "text-gray-600 bg-gray-100", to: "/assets?status=retired" },
+    { label: t("assetDashboard.totalAssets"), value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50", to: "/assets" },
+    { label: t("assetDashboard.available"), value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets?status=available" },
+    { label: t("assetDashboard.assigned"), value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets?status=assigned" },
+    { label: t("assetDashboard.inRepair"), value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets?status=in_repair" },
+    { label: t("assetDashboard.lostDamaged"), value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets?status=lost" },
+    { label: t("assetDashboard.retired"), value: stats.retired || 0, icon: Archive, color: "text-gray-600 bg-gray-100", to: "/assets?status=retired" },
   ];
 
   const accounted =
@@ -80,14 +82,14 @@ export default function AssetDashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Asset Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">IT equipment and asset overview</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("assetDashboard.title")}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t("assetDashboard.subtitle")}</p>
         </div>
         <Link
           to="/assets"
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
         >
-          View All Assets
+          {t("assetDashboard.viewAllAssets")}
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>

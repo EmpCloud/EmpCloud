@@ -2070,5 +2070,17 @@
     "exportFailed": "エクスポートに失敗しました。もう一度お試しください。",
     "personCount_one": "{{count}}人",
     "personCount_other": "{{count}}人"
+  },
+  "assetDashboard": {
+    "loading": "資産ダッシュボードを読み込み中...",
+    "title": "資産ダッシュボード",
+    "subtitle": "IT機器および資産の概要",
+    "viewAllAssets": "すべての資産を表示",
+    "totalAssets": "資産総数",
+    "available": "利用可能",
+    "assigned": "割り当て済み",
+    "inRepair": "修理中",
+    "lostDamaged": "紛失／破損",
+    "retired": "廃棄済み"
   }
 }

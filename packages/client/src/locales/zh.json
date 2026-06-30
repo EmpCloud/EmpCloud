@@ -2070,5 +2070,17 @@
     "exportFailed": "导出失败。请重试。",
     "personCount_one": "{{count}} 人",
     "personCount_other": "{{count}} 人"
+  },
+  "assetDashboard": {
+    "loading": "正在加载资产仪表板...",
+    "title": "资产仪表板",
+    "subtitle": "IT 设备和资产概览",
+    "viewAllAssets": "查看所有资产",
+    "totalAssets": "资产总数",
+    "available": "可用",
+    "assigned": "已分配",
+    "inRepair": "维修中",
+    "lostDamaged": "丢失 / 损坏",
+    "retired": "已报废"
   }
 }
