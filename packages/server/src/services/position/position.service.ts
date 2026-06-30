@@ -421,12 +421,31 @@ export async function getPositionHierarchy(orgId: number) {
 // Get Vacancies (positions where filled < budget)
 // ---------------------------------------------------------------------------
 
-export async function getVacancies(orgId: number) {
+export async function getVacancies(
+  orgId: number,
+  params?: {
+    department_id?: number;
+    employment_type?: string;
+    is_critical?: boolean;
+  }
+) {
   const db = getDB();
 
-  const vacancies = await db("positions")
+  let query = db("positions")
     .where({ "positions.organization_id": orgId, "positions.status": "active" })
-    .whereRaw("positions.headcount_filled < positions.headcount_budget")
+    .whereRaw("positions.headcount_filled < positions.headcount_budget");
+
+  if (params?.department_id) {
+    query = query.where({ "positions.department_id": params.department_id });
+  }
+  if (params?.employment_type) {
+    query = query.where({ "positions.employment_type": params.employment_type });
+  }
+  if (params?.is_critical !== undefined) {
+    query = query.where({ "positions.is_critical": params.is_critical });
+  }
+
+  const vacancies = await query
     .select(
       "positions.*",
       "organization_departments.name as department_name",
