@@ -2575,6 +2575,23 @@
     "saving": "सहेजा जा रहा है...",
     "updateFieldBtn": "फ़ील्ड अपडेट करें",
     "createField": "फ़ील्ड बनाएं",
-    "cancel": "रद्द करें"
+    "cancel": "रद्द करें",
+    "loading": "फ़ील्ड लोड हो रहे हैं...",
+    "empty": "{{entity}} के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं है।",
+    "emptyHint": "अपना पहला कस्टम फ़ील्ड बनाने के लिए \"फ़ील्ड जोड़ें\" पर क्लिक करें।",
+    "colFieldName": "फ़ील्ड नाम",
+    "colKey": "कुंजी",
+    "colType": "प्रकार",
+    "colActions": "क्रियाएं",
+    "optionsCount_one": "({{count}} विकल्प)",
+    "optionsCount_other": "({{count}} विकल्प)",
+    "yes": "हां",
+    "no": "नहीं",
+    "editFieldAria": "फ़ील्ड संपादित करें",
+    "deleteFieldAria": "फ़ील्ड हटाएं",
+    "deactivateNamed": "फ़ील्ड \"{{name}}\" निष्क्रिय करें?",
+    "deactivate": "फ़ील्ड निष्क्रिय करें?",
+    "deactivateDesc": "मौजूदा मान सुरक्षित रहेंगे।",
+    "deactivateBtn": "निष्क्रिय करें"
   }
 }

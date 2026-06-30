@@ -2575,6 +2575,23 @@
     "saving": "正在保存...",
     "updateFieldBtn": "更新字段",
     "createField": "创建字段",
-    "cancel": "取消"
+    "cancel": "取消",
+    "loading": "正在加载字段...",
+    "empty": "未为 {{entity}} 定义自定义字段。",
+    "emptyHint": "点击“添加字段”创建您的第一个自定义字段。",
+    "colFieldName": "字段名称",
+    "colKey": "键",
+    "colType": "类型",
+    "colActions": "操作",
+    "optionsCount_one": "（{{count}} 个选项）",
+    "optionsCount_other": "（{{count}} 个选项）",
+    "yes": "是",
+    "no": "否",
+    "editFieldAria": "编辑字段",
+    "deleteFieldAria": "删除字段",
+    "deactivateNamed": "停用字段“{{name}}”？",
+    "deactivate": "停用字段？",
+    "deactivateDesc": "现有值将被保留。",
+    "deactivateBtn": "停用"
   }
 }

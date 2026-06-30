@@ -627,15 +627,14 @@ export default function CustomFieldsSettingsPage() {
 
       {/* Field Definitions List */}
       {isLoading ? (
-        <div className="text-center py-10 text-gray-400">Loading fields...</div>
+        <div className="text-center py-10 text-gray-400">{t("customFields.loading")}</div>
       ) : fields.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
           <p className="text-gray-400">
-            No custom fields defined for{" "}
-            {ENTITY_TYPES.find((t) => t.key === activeTab)?.label || activeTab}.
+            {t("customFields.empty", { entity: entityLabel(activeTab, t) })}
           </p>
           <p className="text-sm text-gray-400 mt-1">
-            Click "Add Field" to create your first custom field.
+            {t("customFields.emptyHint")}
           </p>
         </div>
       ) : (
@@ -655,22 +654,22 @@ export default function CustomFieldsSettingsPage() {
                   <tr>
                     <th className="w-10" />
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Field Name
+                      {t("customFields.colFieldName")}
                     </th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Key
+                      {t("customFields.colKey")}
                     </th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Type
+                      {t("customFields.colType")}
                     </th>
                     <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Required
+                      {t("customFields.required")}
                     </th>
                     <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Searchable
+                      {t("customFields.searchable")}
                     </th>
                     <th className="text-right text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Actions
+                      {t("customFields.colActions")}
                     </th>
                   </tr>
                 </thead>
@@ -709,44 +708,44 @@ export default function CustomFieldsSettingsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-medium">
-                          {field.field_type}
+                          {fieldTypeLabel(field.field_type, t)}
                         </span>
                         {field.options && field.options.length > 0 && (
                           <span className="text-xs text-gray-400 ml-1">
-                            ({field.options.length} options)
+                            {t("customFields.optionsCount", { count: field.options.length })}
                           </span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {field.is_required ? (
                           <span className="text-green-600 text-xs font-medium">
-                            Yes
+                            {t("customFields.yes")}
                           </span>
                         ) : (
-                          <span className="text-gray-300 text-xs">No</span>
+                          <span className="text-gray-300 text-xs">{t("customFields.no")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {field.is_searchable ? (
                           <span className="text-green-600 text-xs font-medium">
-                            Yes
+                            {t("customFields.yes")}
                           </span>
                         ) : (
-                          <span className="text-gray-300 text-xs">No</span>
+                          <span className="text-gray-300 text-xs">{t("customFields.no")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1 flex-shrink-0">
                           <button
                             onClick={() => startEdit(field)}
-                            aria-label="Edit field"
+                            aria-label={t("customFields.editFieldAria")}
                             className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => setDeleteFieldTarget({ id: field.id, field_name: field.field_name })}
-                            aria-label="Delete field"
+                            aria-label={t("customFields.deleteFieldAria")}
                             className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -764,9 +763,9 @@ export default function CustomFieldsSettingsPage() {
 
       <ConfirmDialog
         open={deleteFieldTarget !== null}
-        title={deleteFieldTarget ? `Deactivate field "${deleteFieldTarget.field_name}"?` : "Deactivate field?"}
-        description="Existing values will be preserved."
-        confirmText="Deactivate"
+        title={deleteFieldTarget ? t("customFields.deactivateNamed", { name: deleteFieldTarget.field_name }) : t("customFields.deactivate")}
+        description={t("customFields.deactivateDesc")}
+        confirmText={t("customFields.deactivateBtn")}
         variant="danger"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteFieldTarget && deleteMutation.mutate(deleteFieldTarget.id)}

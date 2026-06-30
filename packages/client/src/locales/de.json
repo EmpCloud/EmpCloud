@@ -2575,6 +2575,23 @@
     "saving": "Wird gespeichert...",
     "updateFieldBtn": "Feld aktualisieren",
     "createField": "Feld erstellen",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "loading": "Felder werden geladen...",
+    "empty": "Keine benutzerdefinierten Felder für {{entity}} definiert.",
+    "emptyHint": "Klicken Sie auf \"Feld hinzufügen\", um Ihr erstes benutzerdefiniertes Feld zu erstellen.",
+    "colFieldName": "Feldname",
+    "colKey": "Schlüssel",
+    "colType": "Typ",
+    "colActions": "Aktionen",
+    "optionsCount_one": "({{count}} Option)",
+    "optionsCount_other": "({{count}} Optionen)",
+    "yes": "Ja",
+    "no": "Nein",
+    "editFieldAria": "Feld bearbeiten",
+    "deleteFieldAria": "Feld löschen",
+    "deactivateNamed": "Feld \"{{name}}\" deaktivieren?",
+    "deactivate": "Feld deaktivieren?",
+    "deactivateDesc": "Vorhandene Werte bleiben erhalten.",
+    "deactivateBtn": "Deaktivieren"
   }
 }

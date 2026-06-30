@@ -2581,6 +2581,23 @@
     "saving": "Saving...",
     "updateFieldBtn": "Update Field",
     "createField": "Create Field",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "loading": "Loading fields...",
+    "empty": "No custom fields defined for {{entity}}.",
+    "emptyHint": "Click \"Add Field\" to create your first custom field.",
+    "colFieldName": "Field Name",
+    "colKey": "Key",
+    "colType": "Type",
+    "colActions": "Actions",
+    "optionsCount_one": "({{count}} option)",
+    "optionsCount_other": "({{count}} options)",
+    "yes": "Yes",
+    "no": "No",
+    "editFieldAria": "Edit field",
+    "deleteFieldAria": "Delete field",
+    "deactivateNamed": "Deactivate field \"{{name}}\"?",
+    "deactivate": "Deactivate field?",
+    "deactivateDesc": "Existing values will be preserved.",
+    "deactivateBtn": "Deactivate"
   }
 }

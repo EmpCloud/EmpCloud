@@ -2575,6 +2575,23 @@
     "saving": "Enregistrement...",
     "updateFieldBtn": "Mettre à jour le champ",
     "createField": "Créer le champ",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "loading": "Chargement des champs...",
+    "empty": "Aucun champ personnalisé défini pour {{entity}}.",
+    "emptyHint": "Cliquez sur « Ajouter un champ » pour créer votre premier champ personnalisé.",
+    "colFieldName": "Nom du champ",
+    "colKey": "Clé",
+    "colType": "Type",
+    "colActions": "Actions",
+    "optionsCount_one": "({{count}} option)",
+    "optionsCount_other": "({{count}} options)",
+    "yes": "Oui",
+    "no": "Non",
+    "editFieldAria": "Modifier le champ",
+    "deleteFieldAria": "Supprimer le champ",
+    "deactivateNamed": "Désactiver le champ « {{name}} » ?",
+    "deactivate": "Désactiver le champ ?",
+    "deactivateDesc": "Les valeurs existantes seront conservées.",
+    "deactivateBtn": "Désactiver"
   }
 }

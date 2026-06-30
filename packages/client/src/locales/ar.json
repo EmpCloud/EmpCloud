@@ -2575,6 +2575,23 @@
     "saving": "جارٍ الحفظ...",
     "updateFieldBtn": "تحديث الحقل",
     "createField": "إنشاء حقل",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "loading": "جارٍ تحميل الحقول...",
+    "empty": "لا توجد حقول مخصصة مُعرّفة لـ {{entity}}.",
+    "emptyHint": "انقر على \"إضافة حقل\" لإنشاء أول حقل مخصص لك.",
+    "colFieldName": "اسم الحقل",
+    "colKey": "المفتاح",
+    "colType": "النوع",
+    "colActions": "الإجراءات",
+    "optionsCount_one": "({{count}} خيار)",
+    "optionsCount_other": "({{count}} خيارات)",
+    "yes": "نعم",
+    "no": "لا",
+    "editFieldAria": "تعديل الحقل",
+    "deleteFieldAria": "حذف الحقل",
+    "deactivateNamed": "إلغاء تفعيل الحقل \"{{name}}\"؟",
+    "deactivate": "إلغاء تفعيل الحقل؟",
+    "deactivateDesc": "سيتم الاحتفاظ بالقيم الموجودة.",
+    "deactivateBtn": "إلغاء التفعيل"
   }
 }

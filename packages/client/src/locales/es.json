@@ -2575,6 +2575,23 @@
     "saving": "Guardando...",
     "updateFieldBtn": "Actualizar Campo",
     "createField": "Crear Campo",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "loading": "Cargando campos...",
+    "empty": "No hay campos personalizados definidos para {{entity}}.",
+    "emptyHint": "Haz clic en \"Agregar Campo\" para crear tu primer campo personalizado.",
+    "colFieldName": "Nombre del Campo",
+    "colKey": "Clave",
+    "colType": "Tipo",
+    "colActions": "Acciones",
+    "optionsCount_one": "({{count}} opción)",
+    "optionsCount_other": "({{count}} opciones)",
+    "yes": "Sí",
+    "no": "No",
+    "editFieldAria": "Editar campo",
+    "deleteFieldAria": "Eliminar campo",
+    "deactivateNamed": "¿Desactivar el campo \"{{name}}\"?",
+    "deactivate": "¿Desactivar campo?",
+    "deactivateDesc": "Los valores existentes se conservarán.",
+    "deactivateBtn": "Desactivar"
   }
 }
