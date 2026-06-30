@@ -2463,5 +2463,43 @@
     "no": "नहीं",
     "editArticleTooltip": "लेख संपादित करें",
     "deleteArticleTooltip": "लेख हटाएं"
+  },
+  "surveyRespond": {
+    "title": "सर्वेक्षण",
+    "subtitle": "सक्रिय सर्वेक्षण पूरे करें और अपनी पिछली प्रतिक्रियाएं देखें।",
+    "pending": "लंबित सर्वेक्षण",
+    "noActive": "कोई सक्रिय सर्वेक्षण नहीं",
+    "noActiveHint": "पूरा करने के लिए नए सर्वेक्षणों हेतु बाद में फिर देखें।",
+    "anonymous": "गुमनाम",
+    "dueBy": "नियत तिथि {{date}}",
+    "takeSurvey": "सर्वेक्षण लें",
+    "type": {
+      "pulse": "पल्स",
+      "enps": "eNPS",
+      "engagement": "सहभागिता",
+      "custom": "कस्टम",
+      "onboarding": "ऑनबोर्डिंग",
+      "exit_survey": "एग्ज़िट सर्वे"
+    },
+    "completed": "पूर्ण",
+    "completedBadge": "पूर्ण",
+    "responseHistory": "प्रतिक्रिया इतिहास",
+    "colSurvey": "सर्वेक्षण",
+    "colType": "प्रकार",
+    "colSubmitted": "सबमिट किया गया",
+    "colAnonymous": "गुमनाम",
+    "yes": "हां",
+    "no": "नहीं",
+    "loadingSurvey": "सर्वेक्षण लोड हो रहा है...",
+    "thankYou": "धन्यवाद!",
+    "submittedSuccess": "आपकी प्रतिक्रिया सफलतापूर्वक सबमिट कर दी गई है।",
+    "backToSurveys": "सर्वेक्षणों पर वापस जाएं",
+    "responsesAnonymous": "आपकी प्रतिक्रियाएं गुमनाम हैं",
+    "cancel": "रद्द करें",
+    "submitResponse": "प्रतिक्रिया सबमिट करें",
+    "submitError": "प्रतिक्रिया सबमिट करने में विफल। कृपया पुनः प्रयास करें।",
+    "notAtAllLikely": "बिल्कुल भी संभावना नहीं",
+    "extremelyLikely": "अत्यधिक संभावना",
+    "textPlaceholder": "अपना उत्तर यहां लिखें..."
   }
 }

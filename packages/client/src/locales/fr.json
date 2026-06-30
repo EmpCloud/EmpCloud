@@ -2463,5 +2463,43 @@
     "no": "Non",
     "editArticleTooltip": "Modifier l'article",
     "deleteArticleTooltip": "Supprimer l'article"
+  },
+  "surveyRespond": {
+    "title": "Enquêtes",
+    "subtitle": "Complétez les enquêtes actives et consultez vos réponses précédentes.",
+    "pending": "Enquêtes en attente",
+    "noActive": "Aucune enquête active",
+    "noActiveHint": "Revenez plus tard pour de nouvelles enquêtes à compléter.",
+    "anonymous": "Anonyme",
+    "dueBy": "À rendre avant le {{date}}",
+    "takeSurvey": "Répondre à l'enquête",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Personnalisée",
+      "onboarding": "Intégration",
+      "exit_survey": "Enquête de départ"
+    },
+    "completed": "Terminées",
+    "completedBadge": "Terminée",
+    "responseHistory": "Historique des réponses",
+    "colSurvey": "Enquête",
+    "colType": "Type",
+    "colSubmitted": "Soumise le",
+    "colAnonymous": "Anonyme",
+    "yes": "Oui",
+    "no": "Non",
+    "loadingSurvey": "Chargement de l'enquête...",
+    "thankYou": "Merci !",
+    "submittedSuccess": "Votre réponse a été envoyée avec succès.",
+    "backToSurveys": "Retour aux enquêtes",
+    "responsesAnonymous": "Vos réponses sont anonymes",
+    "cancel": "Annuler",
+    "submitResponse": "Envoyer la réponse",
+    "submitError": "Échec de l'envoi de la réponse. Veuillez réessayer.",
+    "notAtAllLikely": "Pas du tout probable",
+    "extremelyLikely": "Extrêmement probable",
+    "textPlaceholder": "Saisissez votre réponse ici..."
   }
 }

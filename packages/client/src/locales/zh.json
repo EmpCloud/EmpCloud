@@ -2463,5 +2463,43 @@
     "no": "否",
     "editArticleTooltip": "编辑文章",
     "deleteArticleTooltip": "删除文章"
+  },
+  "surveyRespond": {
+    "title": "调查",
+    "subtitle": "完成进行中的调查并查看您过往的回复。",
+    "pending": "待完成的调查",
+    "noActive": "暂无进行中的调查",
+    "noActiveHint": "请稍后再来查看新的待完成调查。",
+    "anonymous": "匿名",
+    "dueBy": "截止日期 {{date}}",
+    "takeSurvey": "参与调查",
+    "type": {
+      "pulse": "脉搏",
+      "enps": "eNPS",
+      "engagement": "敬业度",
+      "custom": "自定义",
+      "onboarding": "入职",
+      "exit_survey": "离职调查"
+    },
+    "completed": "已完成",
+    "completedBadge": "已完成",
+    "responseHistory": "回复历史",
+    "colSurvey": "调查",
+    "colType": "类型",
+    "colSubmitted": "提交时间",
+    "colAnonymous": "匿名",
+    "yes": "是",
+    "no": "否",
+    "loadingSurvey": "正在加载调查...",
+    "thankYou": "谢谢！",
+    "submittedSuccess": "您的回复已成功提交。",
+    "backToSurveys": "返回调查",
+    "responsesAnonymous": "您的回复是匿名的",
+    "cancel": "取消",
+    "submitResponse": "提交回复",
+    "submitError": "提交回复失败。请重试。",
+    "notAtAllLikely": "完全不可能",
+    "extremelyLikely": "非常可能",
+    "textPlaceholder": "在此输入您的答案..."
   }
 }

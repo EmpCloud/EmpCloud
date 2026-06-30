@@ -2469,5 +2469,43 @@
     "no": "No",
     "editArticleTooltip": "Edit article",
     "deleteArticleTooltip": "Delete article"
+  },
+  "surveyRespond": {
+    "title": "Surveys",
+    "subtitle": "Complete active surveys and view your past responses.",
+    "pending": "Pending Surveys",
+    "noActive": "No active surveys",
+    "noActiveHint": "Check back later for new surveys to complete.",
+    "anonymous": "Anonymous",
+    "dueBy": "Due by {{date}}",
+    "takeSurvey": "Take Survey",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Custom",
+      "onboarding": "Onboarding",
+      "exit_survey": "Exit Survey"
+    },
+    "completed": "Completed",
+    "completedBadge": "Completed",
+    "responseHistory": "Response History",
+    "colSurvey": "Survey",
+    "colType": "Type",
+    "colSubmitted": "Submitted",
+    "colAnonymous": "Anonymous",
+    "yes": "Yes",
+    "no": "No",
+    "loadingSurvey": "Loading survey...",
+    "thankYou": "Thank you!",
+    "submittedSuccess": "Your response has been submitted successfully.",
+    "backToSurveys": "Back to surveys",
+    "responsesAnonymous": "Your responses are anonymous",
+    "cancel": "Cancel",
+    "submitResponse": "Submit Response",
+    "submitError": "Failed to submit response. Please try again.",
+    "notAtAllLikely": "Not at all likely",
+    "extremelyLikely": "Extremely likely",
+    "textPlaceholder": "Type your answer here..."
   }
 }

@@ -2463,5 +2463,43 @@
     "no": "いいえ",
     "editArticleTooltip": "記事を編集",
     "deleteArticleTooltip": "記事を削除"
+  },
+  "surveyRespond": {
+    "title": "アンケート",
+    "subtitle": "実施中のアンケートに回答し、過去の回答を確認できます。",
+    "pending": "未回答のアンケート",
+    "noActive": "実施中のアンケートはありません",
+    "noActiveHint": "新しいアンケートは後でご確認ください。",
+    "anonymous": "匿名",
+    "dueBy": "期限: {{date}}",
+    "takeSurvey": "アンケートに回答",
+    "type": {
+      "pulse": "パルス",
+      "enps": "eNPS",
+      "engagement": "エンゲージメント",
+      "custom": "カスタム",
+      "onboarding": "オンボーディング",
+      "exit_survey": "退職アンケート"
+    },
+    "completed": "完了",
+    "completedBadge": "完了",
+    "responseHistory": "回答履歴",
+    "colSurvey": "アンケート",
+    "colType": "種類",
+    "colSubmitted": "送信日",
+    "colAnonymous": "匿名",
+    "yes": "はい",
+    "no": "いいえ",
+    "loadingSurvey": "アンケートを読み込み中...",
+    "thankYou": "ありがとうございました！",
+    "submittedSuccess": "回答が正常に送信されました。",
+    "backToSurveys": "アンケートに戻る",
+    "responsesAnonymous": "あなたの回答は匿名です",
+    "cancel": "キャンセル",
+    "submitResponse": "回答を送信",
+    "submitError": "回答の送信に失敗しました。もう一度お試しください。",
+    "notAtAllLikely": "まったく思わない",
+    "extremelyLikely": "非常にそう思う",
+    "textPlaceholder": "ここに回答を入力してください..."
   }
 }

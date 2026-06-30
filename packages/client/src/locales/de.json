@@ -2463,5 +2463,43 @@
     "no": "Nein",
     "editArticleTooltip": "Artikel bearbeiten",
     "deleteArticleTooltip": "Artikel löschen"
+  },
+  "surveyRespond": {
+    "title": "Umfragen",
+    "subtitle": "Schließen Sie aktive Umfragen ab und sehen Sie sich Ihre früheren Antworten an.",
+    "pending": "Ausstehende Umfragen",
+    "noActive": "Keine aktiven Umfragen",
+    "noActiveHint": "Schauen Sie später wieder vorbei für neue Umfragen.",
+    "anonymous": "Anonym",
+    "dueBy": "Fällig bis {{date}}",
+    "takeSurvey": "Umfrage starten",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engagement",
+      "custom": "Benutzerdefiniert",
+      "onboarding": "Onboarding",
+      "exit_survey": "Austrittsumfrage"
+    },
+    "completed": "Abgeschlossen",
+    "completedBadge": "Abgeschlossen",
+    "responseHistory": "Antwortverlauf",
+    "colSurvey": "Umfrage",
+    "colType": "Typ",
+    "colSubmitted": "Eingereicht",
+    "colAnonymous": "Anonym",
+    "yes": "Ja",
+    "no": "Nein",
+    "loadingSurvey": "Umfrage wird geladen...",
+    "thankYou": "Vielen Dank!",
+    "submittedSuccess": "Ihre Antwort wurde erfolgreich übermittelt.",
+    "backToSurveys": "Zurück zu den Umfragen",
+    "responsesAnonymous": "Ihre Antworten sind anonym",
+    "cancel": "Abbrechen",
+    "submitResponse": "Antwort absenden",
+    "submitError": "Antwort konnte nicht gesendet werden. Bitte erneut versuchen.",
+    "notAtAllLikely": "Überhaupt nicht wahrscheinlich",
+    "extremelyLikely": "Äußerst wahrscheinlich",
+    "textPlaceholder": "Geben Sie hier Ihre Antwort ein..."
   }
 }

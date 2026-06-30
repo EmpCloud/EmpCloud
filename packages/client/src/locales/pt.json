@@ -2463,5 +2463,43 @@
     "no": "Não",
     "editArticleTooltip": "Editar artigo",
     "deleteArticleTooltip": "Excluir artigo"
+  },
+  "surveyRespond": {
+    "title": "Pesquisas",
+    "subtitle": "Responda às pesquisas ativas e veja suas respostas anteriores.",
+    "pending": "Pesquisas Pendentes",
+    "noActive": "Nenhuma pesquisa ativa",
+    "noActiveHint": "Volte mais tarde para novas pesquisas a responder.",
+    "anonymous": "Anônimo",
+    "dueBy": "Prazo até {{date}}",
+    "takeSurvey": "Responder Pesquisa",
+    "type": {
+      "pulse": "Pulse",
+      "enps": "eNPS",
+      "engagement": "Engajamento",
+      "custom": "Personalizada",
+      "onboarding": "Integração",
+      "exit_survey": "Pesquisa de Desligamento"
+    },
+    "completed": "Concluídas",
+    "completedBadge": "Concluída",
+    "responseHistory": "Histórico de Respostas",
+    "colSurvey": "Pesquisa",
+    "colType": "Tipo",
+    "colSubmitted": "Enviada em",
+    "colAnonymous": "Anônima",
+    "yes": "Sim",
+    "no": "Não",
+    "loadingSurvey": "Carregando pesquisa...",
+    "thankYou": "Obrigado!",
+    "submittedSuccess": "Sua resposta foi enviada com sucesso.",
+    "backToSurveys": "Voltar para pesquisas",
+    "responsesAnonymous": "Suas respostas são anônimas",
+    "cancel": "Cancelar",
+    "submitResponse": "Enviar Resposta",
+    "submitError": "Falha ao enviar a resposta. Tente novamente.",
+    "notAtAllLikely": "Nada provável",
+    "extremelyLikely": "Extremamente provável",
+    "textPlaceholder": "Digite sua resposta aqui..."
   }
 }
