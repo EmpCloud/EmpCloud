@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "Aucun employé dans cette catégorie.",
       "lateBy": "Retard",
       "minSuffix": "min",
-      "close": "Fermer"
+      "close": "Fermer",
+      "dateLabel": "Date",
+      "noSearchResults": "Aucun employé ne correspond à votre recherche.",
+      "searchPlaceholder": "Rechercher par nom, e-mail ou service"
     },
     "export": {
       "title": "Exporter le rapport de présence",
@@ -1706,7 +1709,8 @@
       "previous": "Précédent",
       "next": "Suivant",
       "alertPlannedInvalid": "L'effectif planifié doit être supérieur ou égal à 0.",
-      "alertCurrentInvalid": "L'effectif actuel doit être supérieur ou égal à 0."
+      "alertCurrentInvalid": "L'effectif actuel doit être supérieur ou égal à 0.",
+      "searchPlaceholder": "Rechercher par titre de plan ou exercice fiscal..."
     },
     "vacancies": {
       "title": "Postes vacants",
@@ -1850,7 +1854,9 @@
       "announcement_created": "Annonce créée",
       "policy_created": "Politique créée",
       "policy_acknowledged": "Politique reconnue"
-    }
+    },
+    "noActionMatches": "Aucune action correspondante",
+    "searchActions": "Rechercher un type d'action..."
   },
   "employees": {
     "directory": {
