@@ -2701,5 +2701,30 @@
     "colExpires": "Expira",
     "colCreated": "Criada",
     "revoke": "Revogar"
+  },
+  "assetCategories": {
+    "title": "Categorias de Ativos",
+    "subtitle": "Organize os ativos por tipo",
+    "addCategory": "Adicionar Categoria",
+    "loading": "Carregando categorias...",
+    "empty": "Nenhuma categoria ainda. Crie a primeira.",
+    "colName": "Nome",
+    "colDescription": "Descrição",
+    "colActions": "Ações",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "editCategory": "Editar Categoria",
+    "newCategory": "Nova Categoria",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "ex.: Notebook, Monitor, Telefone",
+    "descriptionLabel": "Descrição",
+    "cancel": "Cancelar",
+    "update": "Atualizar",
+    "create": "Criar",
+    "deactivateError": "Falha ao desativar a categoria",
+    "deactivateTitle": "Desativar categoria?",
+    "deactivateBody": "Desativar <strong>{{name}}</strong>? Os ativos existentes marcados com esta categoria mantêm a marcação, mas nenhum novo ativo pode ser colocado aqui até que seja restaurada.",
+    "deactivating": "Desativando...",
+    "deactivate": "Desativar"
   }
 }

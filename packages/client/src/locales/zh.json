@@ -2701,5 +2701,30 @@
     "colExpires": "到期",
     "colCreated": "创建时间",
     "revoke": "撤销"
+  },
+  "assetCategories": {
+    "title": "资产类别",
+    "subtitle": "按类型组织资产",
+    "addCategory": "添加类别",
+    "loading": "正在加载类别...",
+    "empty": "暂无类别。请创建第一个。",
+    "colName": "名称",
+    "colDescription": "描述",
+    "colActions": "操作",
+    "edit": "编辑",
+    "delete": "删除",
+    "editCategory": "编辑类别",
+    "newCategory": "新建类别",
+    "nameLabel": "名称 *",
+    "namePlaceholder": "例如 笔记本电脑、显示器、手机",
+    "descriptionLabel": "描述",
+    "cancel": "取消",
+    "update": "更新",
+    "create": "创建",
+    "deactivateError": "停用类别失败",
+    "deactivateTitle": "停用类别？",
+    "deactivateBody": "停用 <strong>{{name}}</strong>？已用此类别标记的现有资产将保留标记，但在恢复之前无法将新资产放入此处。",
+    "deactivating": "正在停用...",
+    "deactivate": "停用"
   }
 }

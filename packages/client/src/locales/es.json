@@ -2701,5 +2701,30 @@
     "colExpires": "Caduca",
     "colCreated": "Creada",
     "revoke": "Revocar"
+  },
+  "assetCategories": {
+    "title": "Categorías de Activos",
+    "subtitle": "Organiza los activos por tipo",
+    "addCategory": "Agregar Categoría",
+    "loading": "Cargando categorías...",
+    "empty": "Aún no hay categorías. Crea la primera.",
+    "colName": "Nombre",
+    "colDescription": "Descripción",
+    "colActions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "editCategory": "Editar Categoría",
+    "newCategory": "Nueva Categoría",
+    "nameLabel": "Nombre *",
+    "namePlaceholder": "p. ej. Portátil, Monitor, Teléfono",
+    "descriptionLabel": "Descripción",
+    "cancel": "Cancelar",
+    "update": "Actualizar",
+    "create": "Crear",
+    "deactivateError": "No se pudo desactivar la categoría",
+    "deactivateTitle": "¿Desactivar categoría?",
+    "deactivateBody": "¿Desactivar <strong>{{name}}</strong>? Los activos existentes etiquetados con esta categoría conservan la etiqueta, pero no se pueden colocar nuevos activos aquí hasta que se restaure.",
+    "deactivating": "Desactivando...",
+    "deactivate": "Desactivar"
   }
 }

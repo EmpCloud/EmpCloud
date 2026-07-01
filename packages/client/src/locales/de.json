@@ -2701,5 +2701,30 @@
     "colExpires": "Läuft ab",
     "colCreated": "Erstellt",
     "revoke": "Widerrufen"
+  },
+  "assetCategories": {
+    "title": "Asset-Kategorien",
+    "subtitle": "Assets nach Typ organisieren",
+    "addCategory": "Kategorie hinzufügen",
+    "loading": "Kategorien werden geladen...",
+    "empty": "Noch keine Kategorien. Erstellen Sie die erste.",
+    "colName": "Name",
+    "colDescription": "Beschreibung",
+    "colActions": "Aktionen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "editCategory": "Kategorie bearbeiten",
+    "newCategory": "Neue Kategorie",
+    "nameLabel": "Name *",
+    "namePlaceholder": "z. B. Laptop, Monitor, Telefon",
+    "descriptionLabel": "Beschreibung",
+    "cancel": "Abbrechen",
+    "update": "Aktualisieren",
+    "create": "Erstellen",
+    "deactivateError": "Kategorie konnte nicht deaktiviert werden",
+    "deactivateTitle": "Kategorie deaktivieren?",
+    "deactivateBody": "<strong>{{name}}</strong> deaktivieren? Vorhandene mit dieser Kategorie versehene Assets behalten die Markierung, aber bis zur Wiederherstellung können keine neuen Assets hier abgelegt werden.",
+    "deactivating": "Wird deaktiviert...",
+    "deactivate": "Deaktivieren"
   }
 }

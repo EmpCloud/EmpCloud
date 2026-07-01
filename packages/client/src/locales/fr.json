@@ -2701,5 +2701,30 @@
     "colExpires": "Expire",
     "colCreated": "Créée",
     "revoke": "Révoquer"
+  },
+  "assetCategories": {
+    "title": "Catégories d'actifs",
+    "subtitle": "Organisez les actifs par type",
+    "addCategory": "Ajouter une catégorie",
+    "loading": "Chargement des catégories...",
+    "empty": "Aucune catégorie pour l'instant. Créez la première.",
+    "colName": "Nom",
+    "colDescription": "Description",
+    "colActions": "Actions",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "editCategory": "Modifier la catégorie",
+    "newCategory": "Nouvelle catégorie",
+    "nameLabel": "Nom *",
+    "namePlaceholder": "ex. Ordinateur portable, Écran, Téléphone",
+    "descriptionLabel": "Description",
+    "cancel": "Annuler",
+    "update": "Mettre à jour",
+    "create": "Créer",
+    "deactivateError": "Échec de la désactivation de la catégorie",
+    "deactivateTitle": "Désactiver la catégorie ?",
+    "deactivateBody": "Désactiver <strong>{{name}}</strong> ? Les actifs existants associés à cette catégorie conservent l'étiquette, mais aucun nouvel actif ne peut y être placé jusqu'à sa restauration.",
+    "deactivating": "Désactivation...",
+    "deactivate": "Désactiver"
   }
 }
