@@ -3813,5 +3813,280 @@
     "checkResults": {
       "heading": "जाँच परिणाम"
     }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "इवेंट डैशबोर्ड",
+      "subtitle": "कंपनी इवेंट प्रबंधित करें और उपस्थिति ट्रैक करें।",
+      "createEvent": "इवेंट बनाएं"
+    },
+    "stats": {
+      "upcomingEvents": "आगामी इवेंट",
+      "thisMonth": "इस महीने",
+      "totalRsvps": "कुल RSVP",
+      "eventTypes": "इवेंट प्रकार"
+    },
+    "typeBreakdown": {
+      "title": "इवेंट प्रकार विवरण"
+    },
+    "eventType": {
+      "meeting": "मीटिंग",
+      "training": "प्रशिक्षण",
+      "celebration": "उत्सव",
+      "team_building": "टीम बिल्डिंग",
+      "town_hall": "टाउन हॉल",
+      "holiday": "अवकाश",
+      "workshop": "वर्कशॉप",
+      "social": "सामाजिक",
+      "other": "अन्य"
+    },
+    "form": {
+      "title": "इवेंट बनाएं",
+      "fields": {
+        "title": "शीर्षक",
+        "description": "विवरण",
+        "eventType": "इवेंट प्रकार",
+        "allDay": "पूरे दिन का इवेंट",
+        "mandatory": "अनिवार्य",
+        "startDate": "आरंभ तिथि",
+        "endDate": "समाप्ति तिथि",
+        "location": "स्थान",
+        "virtualLink": "वर्चुअल लिंक",
+        "targetAudience": "लक्षित दर्शक",
+        "targetIds": "लक्षित ID (JSON)",
+        "maxAttendees": "अधिकतम उपस्थित लोग"
+      },
+      "placeholders": {
+        "title": "इवेंट शीर्षक",
+        "description": "इवेंट विवरण...",
+        "location": "कार्यालय, कक्ष 101, आदि",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "असीमित"
+      },
+      "targetType": {
+        "all": "सभी कर्मचारी",
+        "department": "विभाग",
+        "role": "भूमिका"
+      },
+      "errors": {
+        "endBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+      },
+      "cancel": "रद्द करें",
+      "submit": "इवेंट बनाएं"
+    },
+    "upcoming": {
+      "title": "आगामी इवेंट",
+      "viewAll": "सभी देखें",
+      "loading": "लोड हो रहा है...",
+      "empty": "कोई आगामी इवेंट नहीं। ऊपर एक बनाएं!",
+      "view": "देखें",
+      "cancel": "रद्द करें",
+      "deleteTitle": "इवेंट हटाएं",
+      "attending_one": "{{count}} उपस्थित",
+      "attending_other": "{{count}} उपस्थित"
+    },
+    "deleteModal": {
+      "title": "इवेंट हटाएं?",
+      "body": "{{name}} हटाएं? इससे इवेंट और उसके RSVP स्थायी रूप से हट जाएंगे। इसे पूर्ववत नहीं किया जा सकता।",
+      "cancel": "रद्द करें",
+      "confirm": "हटाएं",
+      "deleting": "हटाया जा रहा है...",
+      "error": "इवेंट हटाने में विफल"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "रेटिंग (1-5)",
+      "rating_1_10": "रेटिंग (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "हाँ / नहीं",
+      "multiple_choice": "बहुविकल्पीय",
+      "text": "मुक्त पाठ",
+      "scale": "स्केल"
+    },
+    "surveyType": {
+      "pulse": "पल्स सर्वेक्षण",
+      "enps": "eNPS सर्वेक्षण",
+      "engagement": "एंगेजमेंट सर्वेक्षण",
+      "custom": "कस्टम सर्वेक्षण",
+      "onboarding": "ऑनबोर्डिंग सर्वेक्षण",
+      "exit_survey": "एग्ज़िट सर्वेक्षण"
+    },
+    "header": {
+      "editTitle": "सर्वेक्षण संपादित करें",
+      "createTitle": "सर्वेक्षण बनाएँ",
+      "subtitle": "अपना सर्वेक्षण डिज़ाइन करें और प्रश्न जोड़ें।"
+    },
+    "details": {
+      "heading": "सर्वेक्षण विवरण",
+      "titleLabel": "शीर्षक *",
+      "titlePlaceholder": "उदा., Q1 2026 कर्मचारी पल्स सर्वेक्षण",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "सर्वेक्षण के उद्देश्य का संक्षिप्त विवरण...",
+      "typeLabel": "प्रकार",
+      "targetAudienceLabel": "लक्षित दर्शक",
+      "recurrenceLabel": "पुनरावृत्ति",
+      "startDateLabel": "आरंभ तिथि और समय",
+      "endDateLabel": "समाप्ति तिथि और समय",
+      "dateTimeHelper": "एक तिथि और दिन का समय चुनें।",
+      "anonymousLabel": "गुमनाम"
+    },
+    "target": {
+      "all": "सभी कर्मचारी",
+      "department": "विभाग अनुसार",
+      "role": "भूमिका अनुसार",
+      "custom": "कस्टम"
+    },
+    "recurrence": {
+      "none": "एक बार",
+      "weekly": "साप्ताहिक",
+      "monthly": "मासिक",
+      "quarterly": "त्रैमासिक"
+    },
+    "questions": {
+      "heading": "प्रश्न",
+      "addButton": "प्रश्न जोड़ें",
+      "moveUpTitle": "ऊपर ले जाएँ",
+      "removeTitle": "प्रश्न हटाएँ",
+      "textPlaceholder": "प्रश्न का पाठ दर्ज करें...",
+      "typeLabel": "प्रकार",
+      "requiredLabel": "आवश्यक",
+      "optionsLabel": "विकल्प (प्रति पंक्ति एक)",
+      "optionsPlaceholder": "विकल्प A\nविकल्प B\nविकल्प C",
+      "previewLabel": "पूर्वावलोकन"
+    },
+    "actions": {
+      "cancel": "रद्द करें",
+      "saveDraft": "ड्राफ़्ट के रूप में सहेजें",
+      "savePublish": "सहेजें और प्रकाशित करें"
+    },
+    "toast": {
+      "endBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+    },
+    "preview": {
+      "emptyHint": "पूर्वावलोकन देखने के लिए कोई प्रश्न लिखें",
+      "enpsNotLikely": "संभावना नहीं",
+      "enpsVeryLikely": "बहुत संभावना",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "optionA": "विकल्प A",
+      "optionB": "विकल्प B",
+      "optionC": "विकल्प C",
+      "textPlaceholder": "कर्मचारी यहाँ अपना उत्तर लिखेगा..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "मीटिंग",
+      "training": "प्रशिक्षण",
+      "celebration": "उत्सव",
+      "team_building": "टीम बिल्डिंग",
+      "town_hall": "टाउन हॉल",
+      "holiday": "अवकाश",
+      "workshop": "कार्यशाला",
+      "social": "सामाजिक",
+      "other": "अन्य"
+    },
+    "status": {
+      "upcoming": "आगामी",
+      "ongoing": "जारी",
+      "completed": "पूर्ण",
+      "cancelled": "रद्द"
+    },
+    "state": {
+      "loading": "इवेंट लोड हो रहा है...",
+      "notFound": "इवेंट नहीं मिला।"
+    },
+    "header": {
+      "backToEvents": "इवेंट्स पर वापस जाएं",
+      "delete": "हटाएं"
+    },
+    "badge": {
+      "mandatory": "अनिवार्य"
+    },
+    "details": {
+      "dateLabel": "तारीख",
+      "allDaySuffix": " (पूरे दिन)",
+      "dateRange": "{{date}} तक",
+      "locationLabel": "स्थान",
+      "virtualLabel": "वर्चुअल मीटिंग",
+      "joinOnline": "ऑनलाइन शामिल हों",
+      "attendeesLabel": "उपस्थित लोग",
+      "attendingCount_one": "{{count}} उपस्थित",
+      "attendingCount_other": "{{count}} उपस्थित",
+      "maybeSuffix_one": ", {{count}} शायद",
+      "maybeSuffix_other": ", {{count}} शायद",
+      "maxSuffix_one": " / {{count}} अधिकतम",
+      "maxSuffix_other": " / {{count}} अधिकतम"
+    },
+    "rsvp": {
+      "heading": "आपका RSVP",
+      "currently": "(वर्तमान में: {{status}})",
+      "attending": "उपस्थित",
+      "maybe": "शायद",
+      "decline": "अस्वीकार करें"
+    },
+    "delete": {
+      "title": "इवेंट हटाएं?",
+      "confirm": "{{name}} हटाएं? इससे इवेंट और उसके RSVP स्थायी रूप से हट जाएंगे। इसे पूर्ववत नहीं किया जा सकता।",
+      "error": "इवेंट हटाने में विफल",
+      "cancel": "रद्द करें",
+      "confirmButton": "हटाएं",
+      "deleting": "हटाया जा रहा है..."
+    },
+    "attendees": {
+      "attendingHeading_one": "उपस्थित ({{count}})",
+      "attendingHeading_other": "उपस्थित ({{count}})",
+      "maybeHeading_one": "शायद ({{count}})",
+      "maybeHeading_other": "शायद ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "परिणाम लोड हो रहे हैं...",
+    "notFound": "सर्वेक्षण नहीं मिला।",
+    "actions": {
+      "exportCsv": "CSV निर्यात करें"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "closed": "बंद",
+      "draft": "मसौदा"
+    },
+    "summary": {
+      "totalResponses": "कुल प्रतिक्रियाएँ",
+      "questions": "प्रश्न",
+      "enpsScore": "eNPS स्कोर"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "प्रति-प्रश्न परिणामों पर जाएँ",
+      "jumpToQuestionsBreakdown": "प्रश्नों के विवरण पर जाएँ",
+      "jumpToEnpsBreakdown": "eNPS विवरण पर जाएँ"
+    },
+    "enps": {
+      "breakdownTitle": "eNPS विवरण",
+      "promoters": "प्रमोटर (9-10)",
+      "passives": "निष्क्रिय (7-8)",
+      "detractors": "आलोचक (0-6)",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "औसत:",
+      "minMax": "(न्यूनतम: {{min}}, अधिकतम: {{max}})",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "answersMeta_one": "{{type}} | {{count}} उत्तर",
+      "answersMeta_other": "{{type}} | {{count}} उत्तर",
+      "responsesCount_one": "{{count}} प्रतिक्रिया",
+      "responsesCount_other": "{{count}} प्रतिक्रियाएँ"
+    },
+    "questionType": {
+      "rating_1_5": "रेटिंग 1-5",
+      "rating_1_10": "रेटिंग 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "स्केल",
+      "yes_no": "हाँ / नहीं",
+      "multiple_choice": "बहुविकल्पीय",
+      "text": "पाठ"
+    }
   }
 }

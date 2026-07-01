@@ -3969,5 +3969,312 @@
     "checkResults": {
       "heading": "نتائج الفحص"
     }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "لوحة الفعاليات",
+      "subtitle": "إدارة فعاليات الشركة وتتبّع الحضور.",
+      "createEvent": "إنشاء فعالية"
+    },
+    "stats": {
+      "upcomingEvents": "الفعاليات القادمة",
+      "thisMonth": "هذا الشهر",
+      "totalRsvps": "إجمالي التأكيدات",
+      "eventTypes": "أنواع الفعاليات"
+    },
+    "typeBreakdown": {
+      "title": "توزيع أنواع الفعاليات"
+    },
+    "eventType": {
+      "meeting": "اجتماع",
+      "training": "تدريب",
+      "celebration": "احتفال",
+      "team_building": "بناء الفريق",
+      "town_hall": "اجتماع عام",
+      "holiday": "عطلة",
+      "workshop": "ورشة عمل",
+      "social": "مناسبة اجتماعية",
+      "other": "أخرى"
+    },
+    "form": {
+      "title": "إنشاء فعالية",
+      "fields": {
+        "title": "العنوان",
+        "description": "الوصف",
+        "eventType": "نوع الفعالية",
+        "allDay": "فعالية طوال اليوم",
+        "mandatory": "إلزامية",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "location": "الموقع",
+        "virtualLink": "رابط افتراضي",
+        "targetAudience": "الجمهور المستهدف",
+        "targetIds": "معرّفات الهدف (JSON)",
+        "maxAttendees": "الحد الأقصى للحضور"
+      },
+      "placeholders": {
+        "title": "عنوان الفعالية",
+        "description": "وصف الفعالية...",
+        "location": "المكتب، غرفة 101، إلخ.",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "غير محدود"
+      },
+      "targetType": {
+        "all": "جميع الموظفين",
+        "department": "القسم",
+        "role": "الدور"
+      },
+      "errors": {
+        "endBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
+      },
+      "cancel": "إلغاء",
+      "submit": "إنشاء فعالية"
+    },
+    "upcoming": {
+      "title": "الفعاليات القادمة",
+      "viewAll": "عرض الكل",
+      "loading": "جارٍ التحميل...",
+      "empty": "لا توجد فعاليات قادمة. أنشئ واحدة بالأعلى!",
+      "view": "عرض",
+      "cancel": "إلغاء",
+      "deleteTitle": "حذف الفعالية",
+      "attending_zero": "لا يوجد مشاركون ({{count}})",
+      "attending_one": "مشارك واحد ({{count}})",
+      "attending_two": "مشاركان ({{count}})",
+      "attending_few": "{{count}} مشاركين",
+      "attending_many": "{{count}} مشاركًا",
+      "attending_other": "{{count}} مشارك"
+    },
+    "deleteModal": {
+      "title": "حذف الفعالية؟",
+      "body": "حذف {{name}}؟ سيؤدي هذا إلى إزالة الفعالية وتأكيدات الحضور الخاصة بها نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "confirm": "حذف",
+      "deleting": "جارٍ الحذف...",
+      "error": "فشل حذف الفعالية"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "تقييم (1-5)",
+      "rating_1_10": "تقييم (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "نعم / لا",
+      "multiple_choice": "اختيار من متعدد",
+      "text": "نص حر",
+      "scale": "مقياس"
+    },
+    "surveyType": {
+      "pulse": "استطلاع نبض",
+      "enps": "استطلاع eNPS",
+      "engagement": "استطلاع المشاركة",
+      "custom": "استطلاع مخصص",
+      "onboarding": "استطلاع الإعداد الوظيفي",
+      "exit_survey": "استطلاع مغادرة الخدمة"
+    },
+    "header": {
+      "editTitle": "تعديل الاستطلاع",
+      "createTitle": "إنشاء استطلاع",
+      "subtitle": "صمّم استطلاعك وأضف الأسئلة."
+    },
+    "details": {
+      "heading": "تفاصيل الاستطلاع",
+      "titleLabel": "العنوان *",
+      "titlePlaceholder": "مثال: استطلاع نبض الموظفين للربع الأول 2026",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "وصف موجز للغرض من الاستطلاع...",
+      "typeLabel": "النوع",
+      "targetAudienceLabel": "الجمهور المستهدف",
+      "recurrenceLabel": "التكرار",
+      "startDateLabel": "تاريخ ووقت البدء",
+      "endDateLabel": "تاريخ ووقت الانتهاء",
+      "dateTimeHelper": "اختر تاريخًا ووقتًا من اليوم.",
+      "anonymousLabel": "مجهول الهوية"
+    },
+    "target": {
+      "all": "جميع الموظفين",
+      "department": "حسب القسم",
+      "role": "حسب الدور",
+      "custom": "مخصص"
+    },
+    "recurrence": {
+      "none": "مرة واحدة",
+      "weekly": "أسبوعي",
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي"
+    },
+    "questions": {
+      "heading": "الأسئلة",
+      "addButton": "إضافة سؤال",
+      "moveUpTitle": "تحريك لأعلى",
+      "removeTitle": "إزالة السؤال",
+      "textPlaceholder": "أدخل نص السؤال...",
+      "typeLabel": "النوع",
+      "requiredLabel": "مطلوب",
+      "optionsLabel": "الخيارات (خيار واحد لكل سطر)",
+      "optionsPlaceholder": "الخيار A\nالخيار B\nالخيار C",
+      "previewLabel": "معاينة"
+    },
+    "actions": {
+      "cancel": "إلغاء",
+      "saveDraft": "حفظ كمسودة",
+      "savePublish": "حفظ ونشر"
+    },
+    "toast": {
+      "endBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
+    },
+    "preview": {
+      "emptyHint": "اكتب سؤالًا لرؤية المعاينة",
+      "enpsNotLikely": "غير مرجّح",
+      "enpsVeryLikely": "مرجّح جدًا",
+      "yes": "نعم",
+      "no": "لا",
+      "optionA": "الخيار A",
+      "optionB": "الخيار B",
+      "optionC": "الخيار C",
+      "textPlaceholder": "سيكتب الموظف إجابته هنا..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "اجتماع",
+      "training": "تدريب",
+      "celebration": "احتفال",
+      "team_building": "بناء الفريق",
+      "town_hall": "لقاء عام",
+      "holiday": "عطلة",
+      "workshop": "ورشة عمل",
+      "social": "مناسبة اجتماعية",
+      "other": "أخرى"
+    },
+    "status": {
+      "upcoming": "قادم",
+      "ongoing": "جارٍ",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "state": {
+      "loading": "جارٍ تحميل الفعالية...",
+      "notFound": "لم يتم العثور على الفعالية."
+    },
+    "header": {
+      "backToEvents": "العودة إلى الفعاليات",
+      "delete": "حذف"
+    },
+    "badge": {
+      "mandatory": "إلزامي"
+    },
+    "details": {
+      "dateLabel": "التاريخ",
+      "allDaySuffix": " (طوال اليوم)",
+      "dateRange": "إلى {{date}}",
+      "locationLabel": "الموقع",
+      "virtualLabel": "اجتماع افتراضي",
+      "joinOnline": "الانضمام عبر الإنترنت",
+      "attendeesLabel": "الحاضرون",
+      "attendingCount_zero": "{{count}} حاضرين",
+      "attendingCount_one": "{{count}} حاضرين",
+      "attendingCount_two": "{{count}} حاضرين",
+      "attendingCount_few": "{{count}} حاضرين",
+      "attendingCount_many": "{{count}} حاضرًا",
+      "attendingCount_other": "{{count}} حاضر",
+      "maybeSuffix_zero": "، {{count}} ربما",
+      "maybeSuffix_one": "، {{count}} ربما",
+      "maybeSuffix_two": "، {{count}} ربما",
+      "maybeSuffix_few": "، {{count}} ربما",
+      "maybeSuffix_many": "، {{count}} ربما",
+      "maybeSuffix_other": "، {{count}} ربما",
+      "maxSuffix_zero": " / {{count}} كحد أقصى",
+      "maxSuffix_one": " / {{count}} كحد أقصى",
+      "maxSuffix_two": " / {{count}} كحد أقصى",
+      "maxSuffix_few": " / {{count}} كحد أقصى",
+      "maxSuffix_many": " / {{count}} كحد أقصى",
+      "maxSuffix_other": " / {{count}} كحد أقصى"
+    },
+    "rsvp": {
+      "heading": "ردك على الدعوة",
+      "currently": "(حاليًا: {{status}})",
+      "attending": "سأحضر",
+      "maybe": "ربما",
+      "decline": "رفض"
+    },
+    "delete": {
+      "title": "حذف الفعالية؟",
+      "confirm": "حذف {{name}}؟ سيؤدي هذا إلى إزالة الفعالية وردود الحضور الخاصة بها نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+      "error": "فشل حذف الفعالية",
+      "cancel": "إلغاء",
+      "confirmButton": "حذف",
+      "deleting": "جارٍ الحذف..."
+    },
+    "attendees": {
+      "attendingHeading_zero": "الحاضرون ({{count}})",
+      "attendingHeading_one": "الحاضرون ({{count}})",
+      "attendingHeading_two": "الحاضرون ({{count}})",
+      "attendingHeading_few": "الحاضرون ({{count}})",
+      "attendingHeading_many": "الحاضرون ({{count}})",
+      "attendingHeading_other": "الحاضرون ({{count}})",
+      "maybeHeading_zero": "ربما ({{count}})",
+      "maybeHeading_one": "ربما ({{count}})",
+      "maybeHeading_two": "ربما ({{count}})",
+      "maybeHeading_few": "ربما ({{count}})",
+      "maybeHeading_many": "ربما ({{count}})",
+      "maybeHeading_other": "ربما ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "جارٍ تحميل النتائج...",
+    "notFound": "الاستطلاع غير موجود.",
+    "actions": {
+      "exportCsv": "تصدير CSV"
+    },
+    "status": {
+      "active": "نشط",
+      "closed": "مغلق",
+      "draft": "مسودة"
+    },
+    "summary": {
+      "totalResponses": "إجمالي الردود",
+      "questions": "الأسئلة",
+      "enpsScore": "درجة eNPS"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "الانتقال إلى النتائج حسب السؤال",
+      "jumpToQuestionsBreakdown": "الانتقال إلى تفصيل الأسئلة",
+      "jumpToEnpsBreakdown": "الانتقال إلى تفصيل eNPS"
+    },
+    "enps": {
+      "breakdownTitle": "تفصيل eNPS",
+      "promoters": "المروّجون (9-10)",
+      "passives": "المحايدون (7-8)",
+      "detractors": "المنتقدون (0-6)",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "المتوسط:",
+      "minMax": "(الأدنى: {{min}}، الأعلى: {{max}})",
+      "yes": "نعم",
+      "no": "لا",
+      "answersMeta_zero": "{{type}} | {{count}} إجابة",
+      "answersMeta_one": "{{type}} | {{count}} إجابة",
+      "answersMeta_two": "{{type}} | {{count}} إجابتان",
+      "answersMeta_few": "{{type}} | {{count}} إجابات",
+      "answersMeta_many": "{{type}} | {{count}} إجابة",
+      "answersMeta_other": "{{type}} | {{count}} إجابة",
+      "responsesCount_zero": "{{count}} رد",
+      "responsesCount_one": "{{count}} رد",
+      "responsesCount_two": "{{count}} ردّان",
+      "responsesCount_few": "{{count}} ردود",
+      "responsesCount_many": "{{count}} ردٍّ",
+      "responsesCount_other": "{{count}} رد"
+    },
+    "questionType": {
+      "rating_1_5": "تقييم 1-5",
+      "rating_1_10": "تقييم 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "مقياس",
+      "yes_no": "نعم / لا",
+      "multiple_choice": "اختيار متعدد",
+      "text": "نص"
+    }
   }
 }

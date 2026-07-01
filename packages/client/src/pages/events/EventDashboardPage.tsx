@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { Link } from "react-router-dom";
@@ -40,6 +41,7 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
 };
 
 export default function EventDashboardPage() {
+  const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
 
@@ -91,7 +93,7 @@ export default function EventDashboardPage() {
       setDeleteError(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete event"),
+      setDeleteError(err?.response?.data?.error?.message || t("eventDashboard.deleteModal.error")),
   });
 
   function resetForm() {
@@ -117,7 +119,7 @@ export default function EventDashboardPage() {
     setDateError("");
 
     if (endDate && startDate && new Date(endDate) < new Date(startDate)) {
-      setDateError("End date cannot be before start date.");
+      setDateError(t("eventDashboard.form.errors.endBeforeStart"));
       return;
     }
 
@@ -141,14 +143,14 @@ export default function EventDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Event Dashboard</h1>
-          <p className="text-gray-500 mt-1">Manage company events and track attendance.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("eventDashboard.header.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("eventDashboard.header.subtitle")}</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" /> Create Event
+          <Plus className="h-4 w-4" /> {t("eventDashboard.header.createEvent")}
         </button>
       </div>
 
@@ -156,10 +158,10 @@ export default function EventDashboardPage() {
       {!isLoading && dashboard && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {([
-            { label: "Upcoming Events", value: dashboard.upcoming_count, icon: Calendar, iconBg: "bg-blue-50", iconColor: "text-blue-600", href: "/events" },
-            { label: "This Month", value: dashboard.month_count, icon: CalendarDays, iconBg: "bg-green-50", iconColor: "text-green-600", href: "/events" },
-            { label: "Total RSVPs", value: dashboard.total_attendees, icon: Users, iconBg: "bg-purple-50", iconColor: "text-purple-600", href: "/events/my" },
-            { label: "Event Types", value: dashboard.type_breakdown?.length || 0, icon: TrendingUp, iconBg: "bg-amber-50", iconColor: "text-amber-600", anchorId: "type-breakdown" },
+            { label: t("eventDashboard.stats.upcomingEvents"), value: dashboard.upcoming_count, icon: Calendar, iconBg: "bg-blue-50", iconColor: "text-blue-600", href: "/events" },
+            { label: t("eventDashboard.stats.thisMonth"), value: dashboard.month_count, icon: CalendarDays, iconBg: "bg-green-50", iconColor: "text-green-600", href: "/events" },
+            { label: t("eventDashboard.stats.totalRsvps"), value: dashboard.total_attendees, icon: Users, iconBg: "bg-purple-50", iconColor: "text-purple-600", href: "/events/my" },
+            { label: t("eventDashboard.stats.eventTypes"), value: dashboard.type_breakdown?.length || 0, icon: TrendingUp, iconBg: "bg-amber-50", iconColor: "text-amber-600", anchorId: "type-breakdown" },
           ] as const).map((card) => {
             const Icon = card.icon;
             const content = (
@@ -201,18 +203,20 @@ export default function EventDashboardPage() {
       {/* Type Breakdown */}
       {dashboard?.type_breakdown?.length > 0 && (
         <div id="type-breakdown" className="bg-white rounded-xl border border-gray-200 p-6 mb-6 scroll-mt-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">Event Type Breakdown</h2>
+          <h2 className="text-sm font-semibold text-gray-700 mb-3">{t("eventDashboard.typeBreakdown.title")}</h2>
           <div className="flex flex-wrap gap-3">
-            {dashboard.type_breakdown.map((t: any) => (
+            {dashboard.type_breakdown.map((tb: any) => (
               <div
-                key={t.event_type}
+                key={tb.event_type}
                 className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg"
               >
                 <span className="text-sm font-medium text-gray-700">
-                  {EVENT_TYPE_LABELS[t.event_type] || t.event_type}
+                  {t(`eventDashboard.eventType.${tb.event_type}`, {
+                    defaultValue: EVENT_TYPE_LABELS[tb.event_type] || tb.event_type,
+                  })}
                 </span>
                 <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-semibold">
-                  {t.count}
+                  {tb.count}
                 </span>
               </div>
             ))}
@@ -223,33 +227,33 @@ export default function EventDashboardPage() {
       {/* Create Event Form */}
       {showForm && (
         <form onSubmit={handleCreate} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Create Event</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("eventDashboard.form.title")}</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.title")}</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Event title"
+                placeholder={t("eventDashboard.form.placeholders.title")}
                 required
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.description")}</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px]"
-                placeholder="Event description..."
+                placeholder={t("eventDashboard.form.placeholders.description")}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.eventType")}</label>
               <select
                 value={eventType}
                 onChange={(e) => {
@@ -259,8 +263,10 @@ export default function EventDashboardPage() {
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                {EVENT_TYPES.map((t) => (
-                  <option key={t} value={t}>{EVENT_TYPE_LABELS[t]}</option>
+                {EVENT_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {t(`eventDashboard.eventType.${type}`, { defaultValue: EVENT_TYPE_LABELS[type] })}
+                  </option>
                 ))}
               </select>
             </div>
@@ -273,7 +279,7 @@ export default function EventDashboardPage() {
                   onChange={(e) => setIsAllDay(e.target.checked)}
                   className="rounded border-gray-300"
                 />
-                All Day Event
+                {t("eventDashboard.form.fields.allDay")}
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input
@@ -282,12 +288,12 @@ export default function EventDashboardPage() {
                   onChange={(e) => setIsMandatory(e.target.checked)}
                   className="rounded border-gray-300"
                 />
-                Mandatory
+                {t("eventDashboard.form.fields.mandatory")}
               </label>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.startDate")}</label>
               <input
                 type="datetime-local"
                 value={startDate}
@@ -298,7 +304,7 @@ export default function EventDashboardPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.endDate")}</label>
               <input
                 type="datetime-local"
                 value={endDate}
@@ -309,7 +315,7 @@ export default function EventDashboardPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.location")}</label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <input
@@ -317,14 +323,14 @@ export default function EventDashboardPage() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  placeholder="Office, Room 101, etc."
+                  placeholder={t("eventDashboard.form.placeholders.location")}
                 />
               </div>
             </div>
 
             {eventType !== "holiday" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Virtual Link</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.virtualLink")}</label>
                 <div className="relative">
                   <Video className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                   <input
@@ -332,28 +338,28 @@ export default function EventDashboardPage() {
                     value={virtualLink}
                     onChange={(e) => setVirtualLink(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    placeholder="https://meet.google.com/..."
+                    placeholder={t("eventDashboard.form.placeholders.virtualLink")}
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.targetAudience")}</label>
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                <option value="all">All Employees</option>
-                <option value="department">Department</option>
-                <option value="role">Role</option>
+                <option value="all">{t("eventDashboard.form.targetType.all")}</option>
+                <option value="department">{t("eventDashboard.form.targetType.department")}</option>
+                <option value="role">{t("eventDashboard.form.targetType.role")}</option>
               </select>
             </div>
 
             {targetType !== "all" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Target IDs (JSON)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.targetIds")}</label>
                 <input
                   type="text"
                   value={targetIds}
@@ -365,7 +371,7 @@ export default function EventDashboardPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Attendees</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("eventDashboard.form.fields.maxAttendees")}</label>
               <div className="relative">
                 <Users className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <input
@@ -373,7 +379,7 @@ export default function EventDashboardPage() {
                   value={maxAttendees}
                   onChange={(e) => setMaxAttendees(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  placeholder="Unlimited"
+                  placeholder={t("eventDashboard.form.placeholders.maxAttendees")}
                   min="1"
                 />
               </div>
@@ -392,14 +398,14 @@ export default function EventDashboardPage() {
               onClick={resetForm}
               className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
             >
-              Cancel
+              {t("eventDashboard.form.cancel")}
             </button>
             <button
               type="submit"
               disabled={createMutation.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              <Calendar className="h-4 w-4" /> Create Event
+              <Calendar className="h-4 w-4" /> {t("eventDashboard.form.submit")}
             </button>
           </div>
         </form>
@@ -408,17 +414,17 @@ export default function EventDashboardPage() {
       {/* Upcoming Events */}
       <div className="bg-white rounded-xl border border-gray-200">
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-700">Upcoming Events</h2>
+          <h2 className="text-sm font-semibold text-gray-700">{t("eventDashboard.upcoming.title")}</h2>
           <Link to="/events" className="text-xs text-brand-600 hover:underline">
-            View All
+            {t("eventDashboard.upcoming.viewAll")}
           </Link>
         </div>
         <div className="divide-y divide-gray-100">
           {isLoading ? (
-            <div className="p-6 text-center text-gray-400 text-sm">Loading...</div>
+            <div className="p-6 text-center text-gray-400 text-sm">{t("eventDashboard.upcoming.loading")}</div>
           ) : !dashboard?.upcoming_events?.length ? (
             <div className="p-6 text-center text-gray-400 text-sm">
-              No upcoming events. Create one above!
+              {t("eventDashboard.upcoming.empty")}
             </div>
           ) : (
             dashboard.upcoming_events.map((event: any) => (
@@ -442,7 +448,7 @@ export default function EventDashboardPage() {
                     </span>
                     <span className="flex items-center gap-1">
                       <Users className="h-3 w-3" />
-                      {event.attending_count || 0} attending
+                      {t("eventDashboard.upcoming.attending", { count: event.attending_count || 0 })}
                     </span>
                   </div>
                 </div>
@@ -451,7 +457,7 @@ export default function EventDashboardPage() {
                     to={`/events/${event.id}`}
                     className="text-xs text-brand-600 hover:underline"
                   >
-                    View
+                    {t("eventDashboard.upcoming.view")}
                   </Link>
                   {event.status !== "cancelled" && (
                     <button
@@ -459,7 +465,7 @@ export default function EventDashboardPage() {
                       disabled={cancelMutation.isPending}
                       className="text-xs text-red-500 hover:underline disabled:opacity-50"
                     >
-                      Cancel
+                      {t("eventDashboard.upcoming.cancel")}
                     </button>
                   )}
                   <button
@@ -468,7 +474,7 @@ export default function EventDashboardPage() {
                       setDeleteError(null);
                     }}
                     className="text-xs text-gray-400 hover:text-red-600"
-                    title="Delete event"
+                    title={t("eventDashboard.upcoming.deleteTitle")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -495,11 +501,9 @@ export default function EventDashboardPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete event?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("eventDashboard.deleteModal.title")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.title}</span>?
-                    This permanently removes the event and its RSVPs. This cannot be undone.
+                    {t("eventDashboard.deleteModal.body", { name: deleteTarget.title })}
                   </p>
                 </div>
               </div>
@@ -516,7 +520,7 @@ export default function EventDashboardPage() {
                 disabled={deleteMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("eventDashboard.deleteModal.cancel")}
               </button>
               <button
                 type="button"
@@ -526,10 +530,10 @@ export default function EventDashboardPage() {
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("eventDashboard.deleteModal.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("eventDashboard.deleteModal.confirm")
                 )}
               </button>
             </div>

@@ -3819,5 +3819,280 @@
     "checkResults": {
       "heading": "Check Results"
     }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "Event Dashboard",
+      "subtitle": "Manage company events and track attendance.",
+      "createEvent": "Create Event"
+    },
+    "stats": {
+      "upcomingEvents": "Upcoming Events",
+      "thisMonth": "This Month",
+      "totalRsvps": "Total RSVPs",
+      "eventTypes": "Event Types"
+    },
+    "typeBreakdown": {
+      "title": "Event Type Breakdown"
+    },
+    "eventType": {
+      "meeting": "Meeting",
+      "training": "Training",
+      "celebration": "Celebration",
+      "team_building": "Team Building",
+      "town_hall": "Town Hall",
+      "holiday": "Holiday",
+      "workshop": "Workshop",
+      "social": "Social",
+      "other": "Other"
+    },
+    "form": {
+      "title": "Create Event",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "eventType": "Event Type",
+        "allDay": "All Day Event",
+        "mandatory": "Mandatory",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "location": "Location",
+        "virtualLink": "Virtual Link",
+        "targetAudience": "Target Audience",
+        "targetIds": "Target IDs (JSON)",
+        "maxAttendees": "Max Attendees"
+      },
+      "placeholders": {
+        "title": "Event title",
+        "description": "Event description...",
+        "location": "Office, Room 101, etc.",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "Unlimited"
+      },
+      "targetType": {
+        "all": "All Employees",
+        "department": "Department",
+        "role": "Role"
+      },
+      "errors": {
+        "endBeforeStart": "End date cannot be before start date."
+      },
+      "cancel": "Cancel",
+      "submit": "Create Event"
+    },
+    "upcoming": {
+      "title": "Upcoming Events",
+      "viewAll": "View All",
+      "loading": "Loading...",
+      "empty": "No upcoming events. Create one above!",
+      "view": "View",
+      "cancel": "Cancel",
+      "deleteTitle": "Delete event",
+      "attending_one": "{{count}} attending",
+      "attending_other": "{{count}} attending"
+    },
+    "deleteModal": {
+      "title": "Delete event?",
+      "body": "Delete {{name}}? This permanently removes the event and its RSVPs. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "error": "Failed to delete event"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "Rating (1-5)",
+      "rating_1_10": "Rating (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "Yes / No",
+      "multiple_choice": "Multiple Choice",
+      "text": "Free Text",
+      "scale": "Scale"
+    },
+    "surveyType": {
+      "pulse": "Pulse Survey",
+      "enps": "eNPS Survey",
+      "engagement": "Engagement Survey",
+      "custom": "Custom Survey",
+      "onboarding": "Onboarding Survey",
+      "exit_survey": "Exit Survey"
+    },
+    "header": {
+      "editTitle": "Edit Survey",
+      "createTitle": "Create Survey",
+      "subtitle": "Design your survey and add questions."
+    },
+    "details": {
+      "heading": "Survey Details",
+      "titleLabel": "Title *",
+      "titlePlaceholder": "e.g., Q1 2026 Employee Pulse Survey",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brief description of the survey purpose...",
+      "typeLabel": "Type",
+      "targetAudienceLabel": "Target Audience",
+      "recurrenceLabel": "Recurrence",
+      "startDateLabel": "Start Date & Time",
+      "endDateLabel": "End Date & Time",
+      "dateTimeHelper": "Pick a date and a time of day.",
+      "anonymousLabel": "Anonymous"
+    },
+    "target": {
+      "all": "All Employees",
+      "department": "By Department",
+      "role": "By Role",
+      "custom": "Custom"
+    },
+    "recurrence": {
+      "none": "One-time",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly"
+    },
+    "questions": {
+      "heading": "Questions",
+      "addButton": "Add Question",
+      "moveUpTitle": "Move up",
+      "removeTitle": "Remove question",
+      "textPlaceholder": "Enter question text...",
+      "typeLabel": "Type",
+      "requiredLabel": "Required",
+      "optionsLabel": "Options (one per line)",
+      "optionsPlaceholder": "Option A\nOption B\nOption C",
+      "previewLabel": "Preview"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "saveDraft": "Save as Draft",
+      "savePublish": "Save & Publish"
+    },
+    "toast": {
+      "endBeforeStart": "End date cannot be before the start date."
+    },
+    "preview": {
+      "emptyHint": "Type a question to see preview",
+      "enpsNotLikely": "Not likely",
+      "enpsVeryLikely": "Very likely",
+      "yes": "Yes",
+      "no": "No",
+      "optionA": "Option A",
+      "optionB": "Option B",
+      "optionC": "Option C",
+      "textPlaceholder": "Employee will type their answer here..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "Meeting",
+      "training": "Training",
+      "celebration": "Celebration",
+      "team_building": "Team Building",
+      "town_hall": "Town Hall",
+      "holiday": "Holiday",
+      "workshop": "Workshop",
+      "social": "Social",
+      "other": "Other"
+    },
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "state": {
+      "loading": "Loading event...",
+      "notFound": "Event not found."
+    },
+    "header": {
+      "backToEvents": "Back to Events",
+      "delete": "Delete"
+    },
+    "badge": {
+      "mandatory": "Mandatory"
+    },
+    "details": {
+      "dateLabel": "Date",
+      "allDaySuffix": " (All Day)",
+      "dateRange": "to {{date}}",
+      "locationLabel": "Location",
+      "virtualLabel": "Virtual Meeting",
+      "joinOnline": "Join Online",
+      "attendeesLabel": "Attendees",
+      "attendingCount_one": "{{count}} attending",
+      "attendingCount_other": "{{count}} attending",
+      "maybeSuffix_one": ", {{count}} maybe",
+      "maybeSuffix_other": ", {{count}} maybe",
+      "maxSuffix_one": " / {{count}} max",
+      "maxSuffix_other": " / {{count}} max"
+    },
+    "rsvp": {
+      "heading": "Your RSVP",
+      "currently": "(Currently: {{status}})",
+      "attending": "Attending",
+      "maybe": "Maybe",
+      "decline": "Decline"
+    },
+    "delete": {
+      "title": "Delete event?",
+      "confirm": "Delete {{name}}? This permanently removes the event and its RSVPs. This cannot be undone.",
+      "error": "Failed to delete event",
+      "cancel": "Cancel",
+      "confirmButton": "Delete",
+      "deleting": "Deleting..."
+    },
+    "attendees": {
+      "attendingHeading_one": "Attending ({{count}})",
+      "attendingHeading_other": "Attending ({{count}})",
+      "maybeHeading_one": "Maybe ({{count}})",
+      "maybeHeading_other": "Maybe ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "Loading results...",
+    "notFound": "Survey not found.",
+    "actions": {
+      "exportCsv": "Export CSV"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed",
+      "draft": "Draft"
+    },
+    "summary": {
+      "totalResponses": "Total Responses",
+      "questions": "Questions",
+      "enpsScore": "eNPS Score"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "Jump to per-question results",
+      "jumpToQuestionsBreakdown": "Jump to questions breakdown",
+      "jumpToEnpsBreakdown": "Jump to eNPS breakdown"
+    },
+    "enps": {
+      "breakdownTitle": "eNPS Breakdown",
+      "promoters": "Promoters (9-10)",
+      "passives": "Passives (7-8)",
+      "detractors": "Detractors (0-6)",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "Average:",
+      "minMax": "(min: {{min}}, max: {{max}})",
+      "yes": "Yes",
+      "no": "No",
+      "answersMeta_one": "{{type}} | {{count}} answer",
+      "answersMeta_other": "{{type}} | {{count}} answers",
+      "responsesCount_one": "{{count}} response",
+      "responsesCount_other": "{{count}} responses"
+    },
+    "questionType": {
+      "rating_1_5": "Rating 1-5",
+      "rating_1_10": "Rating 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "Scale",
+      "yes_no": "Yes / No",
+      "multiple_choice": "Multiple Choice",
+      "text": "Text"
+    }
   }
 }

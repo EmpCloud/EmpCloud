@@ -3813,5 +3813,280 @@
     "checkResults": {
       "heading": "检查结果"
     }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "活动看板",
+      "subtitle": "管理公司活动并跟踪出席情况。",
+      "createEvent": "创建活动"
+    },
+    "stats": {
+      "upcomingEvents": "即将举行的活动",
+      "thisMonth": "本月",
+      "totalRsvps": "报名总数",
+      "eventTypes": "活动类型"
+    },
+    "typeBreakdown": {
+      "title": "活动类型明细"
+    },
+    "eventType": {
+      "meeting": "会议",
+      "training": "培训",
+      "celebration": "庆祝活动",
+      "team_building": "团队建设",
+      "town_hall": "全员大会",
+      "holiday": "假日",
+      "workshop": "研讨会",
+      "social": "社交活动",
+      "other": "其他"
+    },
+    "form": {
+      "title": "创建活动",
+      "fields": {
+        "title": "标题",
+        "description": "描述",
+        "eventType": "活动类型",
+        "allDay": "全天活动",
+        "mandatory": "必须参加",
+        "startDate": "开始日期",
+        "endDate": "结束日期",
+        "location": "地点",
+        "virtualLink": "线上链接",
+        "targetAudience": "目标受众",
+        "targetIds": "目标 ID（JSON）",
+        "maxAttendees": "最多参加人数"
+      },
+      "placeholders": {
+        "title": "活动标题",
+        "description": "活动描述…",
+        "location": "办公室、101 室等",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "不限"
+      },
+      "targetType": {
+        "all": "全体员工",
+        "department": "部门",
+        "role": "角色"
+      },
+      "errors": {
+        "endBeforeStart": "结束日期不能早于开始日期。"
+      },
+      "cancel": "取消",
+      "submit": "创建活动"
+    },
+    "upcoming": {
+      "title": "即将举行的活动",
+      "viewAll": "查看全部",
+      "loading": "加载中…",
+      "empty": "暂无即将举行的活动。在上方创建一个吧！",
+      "view": "查看",
+      "cancel": "取消",
+      "deleteTitle": "删除活动",
+      "attending_one": "{{count}} 人参加",
+      "attending_other": "{{count}} 人参加"
+    },
+    "deleteModal": {
+      "title": "删除活动？",
+      "body": "删除 {{name}}？此操作将永久删除该活动及其回复，且无法撤销。",
+      "cancel": "取消",
+      "confirm": "删除",
+      "deleting": "删除中…",
+      "error": "删除活动失败"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "评分 (1-5)",
+      "rating_1_10": "评分 (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "是 / 否",
+      "multiple_choice": "多项选择",
+      "text": "自由文本",
+      "scale": "量表"
+    },
+    "surveyType": {
+      "pulse": "脉冲调查",
+      "enps": "eNPS 调查",
+      "engagement": "敬业度调查",
+      "custom": "自定义调查",
+      "onboarding": "入职调查",
+      "exit_survey": "离职调查"
+    },
+    "header": {
+      "editTitle": "编辑调查",
+      "createTitle": "创建调查",
+      "subtitle": "设计您的调查并添加问题。"
+    },
+    "details": {
+      "heading": "调查详情",
+      "titleLabel": "标题 *",
+      "titlePlaceholder": "例如：2026 年第一季度员工脉搏调查",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "简要描述调查目的……",
+      "typeLabel": "类型",
+      "targetAudienceLabel": "目标受众",
+      "recurrenceLabel": "重复频率",
+      "startDateLabel": "开始日期和时间",
+      "endDateLabel": "结束日期和时间",
+      "dateTimeHelper": "请选择日期和当天的时间。",
+      "anonymousLabel": "匿名"
+    },
+    "target": {
+      "all": "所有员工",
+      "department": "按部门",
+      "role": "按角色",
+      "custom": "自定义"
+    },
+    "recurrence": {
+      "none": "一次性",
+      "weekly": "每周",
+      "monthly": "每月",
+      "quarterly": "每季度"
+    },
+    "questions": {
+      "heading": "问题",
+      "addButton": "添加问题",
+      "moveUpTitle": "上移",
+      "removeTitle": "删除问题",
+      "textPlaceholder": "输入问题内容……",
+      "typeLabel": "类型",
+      "requiredLabel": "必填",
+      "optionsLabel": "选项（每行一个）",
+      "optionsPlaceholder": "选项 A\n选项 B\n选项 C",
+      "previewLabel": "预览"
+    },
+    "actions": {
+      "cancel": "取消",
+      "saveDraft": "保存为草稿",
+      "savePublish": "保存并发布"
+    },
+    "toast": {
+      "endBeforeStart": "结束日期不能早于开始日期。"
+    },
+    "preview": {
+      "emptyHint": "输入问题以查看预览",
+      "enpsNotLikely": "不太可能",
+      "enpsVeryLikely": "非常可能",
+      "yes": "是",
+      "no": "否",
+      "optionA": "选项 A",
+      "optionB": "选项 B",
+      "optionC": "选项 C",
+      "textPlaceholder": "员工将在此处输入答案……"
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "会议",
+      "training": "培训",
+      "celebration": "庆祝活动",
+      "team_building": "团队建设",
+      "town_hall": "全员大会",
+      "holiday": "假期",
+      "workshop": "研讨会",
+      "social": "社交活动",
+      "other": "其他"
+    },
+    "status": {
+      "upcoming": "即将开始",
+      "ongoing": "进行中",
+      "completed": "已完成",
+      "cancelled": "已取消"
+    },
+    "state": {
+      "loading": "正在加载活动...",
+      "notFound": "未找到活动。"
+    },
+    "header": {
+      "backToEvents": "返回活动列表",
+      "delete": "删除"
+    },
+    "badge": {
+      "mandatory": "必须参加"
+    },
+    "details": {
+      "dateLabel": "日期",
+      "allDaySuffix": "（全天）",
+      "dateRange": "至 {{date}}",
+      "locationLabel": "地点",
+      "virtualLabel": "线上会议",
+      "joinOnline": "在线加入",
+      "attendeesLabel": "参加人员",
+      "attendingCount_one": "{{count}} 人参加",
+      "attendingCount_other": "{{count}} 人参加",
+      "maybeSuffix_one": "，{{count}} 人待定",
+      "maybeSuffix_other": "，{{count}} 人待定",
+      "maxSuffix_one": " / 上限 {{count}} 人",
+      "maxSuffix_other": " / 上限 {{count}} 人"
+    },
+    "rsvp": {
+      "heading": "您的回复",
+      "currently": "（当前：{{status}}）",
+      "attending": "参加",
+      "maybe": "待定",
+      "decline": "婉拒"
+    },
+    "delete": {
+      "title": "删除活动？",
+      "confirm": "删除 {{name}}？此操作将永久删除该活动及其回复，且无法撤销。",
+      "error": "删除活动失败",
+      "cancel": "取消",
+      "confirmButton": "删除",
+      "deleting": "正在删除..."
+    },
+    "attendees": {
+      "attendingHeading_one": "参加（{{count}}）",
+      "attendingHeading_other": "参加（{{count}}）",
+      "maybeHeading_one": "待定（{{count}}）",
+      "maybeHeading_other": "待定（{{count}}）"
+    }
+  },
+  "surveyResults": {
+    "loading": "正在加载结果...",
+    "notFound": "未找到调查。",
+    "actions": {
+      "exportCsv": "导出 CSV"
+    },
+    "status": {
+      "active": "进行中",
+      "closed": "已关闭",
+      "draft": "草稿"
+    },
+    "summary": {
+      "totalResponses": "回复总数",
+      "questions": "问题数",
+      "enpsScore": "eNPS 得分"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "跳转到各题结果",
+      "jumpToQuestionsBreakdown": "跳转到问题明细",
+      "jumpToEnpsBreakdown": "跳转到 eNPS 明细"
+    },
+    "enps": {
+      "breakdownTitle": "eNPS 明细",
+      "promoters": "推荐者 (9-10)",
+      "passives": "中立者 (7-8)",
+      "detractors": "贬损者 (0-6)",
+      "inlineLabel": "eNPS："
+    },
+    "question": {
+      "average": "平均值：",
+      "minMax": "（最小值：{{min}}，最大值：{{max}}）",
+      "yes": "是",
+      "no": "否",
+      "answersMeta_one": "{{type}} | {{count}} 个回答",
+      "answersMeta_other": "{{type}} | {{count}} 个回答",
+      "responsesCount_one": "{{count}} 条回复",
+      "responsesCount_other": "{{count}} 条回复"
+    },
+    "questionType": {
+      "rating_1_5": "评分 1-5",
+      "rating_1_10": "评分 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "量表",
+      "yes_no": "是 / 否",
+      "multiple_choice": "多项选择",
+      "text": "文本"
+    }
   }
 }

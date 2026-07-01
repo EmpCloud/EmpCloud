@@ -3813,5 +3813,280 @@
     "checkResults": {
       "heading": "チェック結果"
     }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "イベントダッシュボード",
+      "subtitle": "社内イベントを管理し、参加状況を追跡します。",
+      "createEvent": "イベントを作成"
+    },
+    "stats": {
+      "upcomingEvents": "今後のイベント",
+      "thisMonth": "今月",
+      "totalRsvps": "参加回答数の合計",
+      "eventTypes": "イベントの種類"
+    },
+    "typeBreakdown": {
+      "title": "イベント種類別の内訳"
+    },
+    "eventType": {
+      "meeting": "会議",
+      "training": "研修",
+      "celebration": "祝賀会",
+      "team_building": "チームビルディング",
+      "town_hall": "タウンホール",
+      "holiday": "休日",
+      "workshop": "ワークショップ",
+      "social": "懇親会",
+      "other": "その他"
+    },
+    "form": {
+      "title": "イベントを作成",
+      "fields": {
+        "title": "タイトル",
+        "description": "説明",
+        "eventType": "イベントの種類",
+        "allDay": "終日イベント",
+        "mandatory": "必須",
+        "startDate": "開始日",
+        "endDate": "終了日",
+        "location": "場所",
+        "virtualLink": "オンラインリンク",
+        "targetAudience": "対象者",
+        "targetIds": "対象ID（JSON）",
+        "maxAttendees": "最大参加人数"
+      },
+      "placeholders": {
+        "title": "イベントのタイトル",
+        "description": "イベントの説明...",
+        "location": "オフィス、101号室など",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "無制限"
+      },
+      "targetType": {
+        "all": "全従業員",
+        "department": "部署",
+        "role": "役職"
+      },
+      "errors": {
+        "endBeforeStart": "終了日は開始日より前に設定できません。"
+      },
+      "cancel": "キャンセル",
+      "submit": "イベントを作成"
+    },
+    "upcoming": {
+      "title": "今後のイベント",
+      "viewAll": "すべて表示",
+      "loading": "読み込み中...",
+      "empty": "今後のイベントはありません。上から作成してください。",
+      "view": "表示",
+      "cancel": "キャンセル",
+      "deleteTitle": "イベントを削除",
+      "attending_one": "{{count}}人が参加",
+      "attending_other": "{{count}}人が参加"
+    },
+    "deleteModal": {
+      "title": "イベントを削除しますか？",
+      "body": "{{name}}を削除しますか？イベントとその参加回答が完全に削除されます。この操作は取り消せません。",
+      "cancel": "キャンセル",
+      "confirm": "削除",
+      "deleting": "削除中...",
+      "error": "イベントの削除に失敗しました"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "評価（1〜5）",
+      "rating_1_10": "評価（1〜10）",
+      "enps_0_10": "eNPS（0〜10）",
+      "yes_no": "はい／いいえ",
+      "multiple_choice": "複数選択",
+      "text": "自由記述",
+      "scale": "スケール"
+    },
+    "surveyType": {
+      "pulse": "パルスサーベイ",
+      "enps": "eNPSサーベイ",
+      "engagement": "エンゲージメントサーベイ",
+      "custom": "カスタムサーベイ",
+      "onboarding": "オンボーディングサーベイ",
+      "exit_survey": "退職者サーベイ"
+    },
+    "header": {
+      "editTitle": "サーベイを編集",
+      "createTitle": "サーベイを作成",
+      "subtitle": "サーベイを設計し、質問を追加します。"
+    },
+    "details": {
+      "heading": "サーベイの詳細",
+      "titleLabel": "タイトル *",
+      "titlePlaceholder": "例：2026年第1四半期 従業員パルスサーベイ",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "サーベイの目的の簡単な説明...",
+      "typeLabel": "種類",
+      "targetAudienceLabel": "対象者",
+      "recurrenceLabel": "繰り返し",
+      "startDateLabel": "開始日時",
+      "endDateLabel": "終了日時",
+      "dateTimeHelper": "日付と時刻を選択してください。",
+      "anonymousLabel": "匿名"
+    },
+    "target": {
+      "all": "全従業員",
+      "department": "部署別",
+      "role": "役職別",
+      "custom": "カスタム"
+    },
+    "recurrence": {
+      "none": "1回のみ",
+      "weekly": "毎週",
+      "monthly": "毎月",
+      "quarterly": "四半期ごと"
+    },
+    "questions": {
+      "heading": "質問",
+      "addButton": "質問を追加",
+      "moveUpTitle": "上へ移動",
+      "removeTitle": "質問を削除",
+      "textPlaceholder": "質問文を入力...",
+      "typeLabel": "種類",
+      "requiredLabel": "必須",
+      "optionsLabel": "選択肢（1行に1つ）",
+      "optionsPlaceholder": "選択肢A\n選択肢B\n選択肢C",
+      "previewLabel": "プレビュー"
+    },
+    "actions": {
+      "cancel": "キャンセル",
+      "saveDraft": "下書きとして保存",
+      "savePublish": "保存して公開"
+    },
+    "toast": {
+      "endBeforeStart": "終了日を開始日より前に設定することはできません。"
+    },
+    "preview": {
+      "emptyHint": "質問を入力するとプレビューが表示されます",
+      "enpsNotLikely": "全くそう思わない",
+      "enpsVeryLikely": "非常にそう思う",
+      "yes": "はい",
+      "no": "いいえ",
+      "optionA": "選択肢A",
+      "optionB": "選択肢B",
+      "optionC": "選択肢C",
+      "textPlaceholder": "従業員がここに回答を入力します..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "会議",
+      "training": "研修",
+      "celebration": "祝賀会",
+      "team_building": "チームビルディング",
+      "town_hall": "全体会議",
+      "holiday": "休日",
+      "workshop": "ワークショップ",
+      "social": "懇親会",
+      "other": "その他"
+    },
+    "status": {
+      "upcoming": "開催予定",
+      "ongoing": "開催中",
+      "completed": "終了",
+      "cancelled": "中止"
+    },
+    "state": {
+      "loading": "イベントを読み込み中...",
+      "notFound": "イベントが見つかりません。"
+    },
+    "header": {
+      "backToEvents": "イベント一覧に戻る",
+      "delete": "削除"
+    },
+    "badge": {
+      "mandatory": "必須"
+    },
+    "details": {
+      "dateLabel": "日付",
+      "allDaySuffix": "（終日）",
+      "dateRange": "{{date}} まで",
+      "locationLabel": "場所",
+      "virtualLabel": "オンライン会議",
+      "joinOnline": "オンラインで参加",
+      "attendeesLabel": "参加者",
+      "attendingCount_one": "{{count}}名が参加",
+      "attendingCount_other": "{{count}}名が参加",
+      "maybeSuffix_one": "、未定 {{count}}名",
+      "maybeSuffix_other": "、未定 {{count}}名",
+      "maxSuffix_one": " / 最大 {{count}}名",
+      "maxSuffix_other": " / 最大 {{count}}名"
+    },
+    "rsvp": {
+      "heading": "あなたの出欠",
+      "currently": "（現在: {{status}}）",
+      "attending": "参加",
+      "maybe": "未定",
+      "decline": "欠席"
+    },
+    "delete": {
+      "title": "イベントを削除しますか？",
+      "confirm": "{{name}} を削除しますか？イベントとその出欠情報が完全に削除されます。この操作は取り消せません。",
+      "error": "イベントの削除に失敗しました",
+      "cancel": "キャンセル",
+      "confirmButton": "削除",
+      "deleting": "削除中..."
+    },
+    "attendees": {
+      "attendingHeading_one": "参加 ({{count}})",
+      "attendingHeading_other": "参加 ({{count}})",
+      "maybeHeading_one": "未定 ({{count}})",
+      "maybeHeading_other": "未定 ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "結果を読み込んでいます...",
+    "notFound": "アンケートが見つかりません。",
+    "actions": {
+      "exportCsv": "CSVエクスポート"
+    },
+    "status": {
+      "active": "実施中",
+      "closed": "終了",
+      "draft": "下書き"
+    },
+    "summary": {
+      "totalResponses": "総回答数",
+      "questions": "設問数",
+      "enpsScore": "eNPSスコア"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "設問別の結果へ移動",
+      "jumpToQuestionsBreakdown": "設問の内訳へ移動",
+      "jumpToEnpsBreakdown": "eNPSの内訳へ移動"
+    },
+    "enps": {
+      "breakdownTitle": "eNPS内訳",
+      "promoters": "推奨者（9〜10）",
+      "passives": "中立者（7〜8）",
+      "detractors": "批判者（0〜6）",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "平均:",
+      "minMax": "（最小: {{min}}、最大: {{max}}）",
+      "yes": "はい",
+      "no": "いいえ",
+      "answersMeta_one": "{{type}} | {{count}}件の回答",
+      "answersMeta_other": "{{type}} | {{count}}件の回答",
+      "responsesCount_one": "{{count}}件の回答",
+      "responsesCount_other": "{{count}}件の回答"
+    },
+    "questionType": {
+      "rating_1_5": "評価 1〜5",
+      "rating_1_10": "評価 1〜10",
+      "enps_0_10": "eNPS 0〜10",
+      "scale": "スケール",
+      "yes_no": "はい / いいえ",
+      "multiple_choice": "複数選択",
+      "text": "テキスト"
+    }
   }
 }

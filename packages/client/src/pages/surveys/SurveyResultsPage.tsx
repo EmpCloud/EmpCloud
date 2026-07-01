@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Users, BarChart3, Download } from "lucide-react";
@@ -7,6 +8,7 @@ const ENPS_COLOR = (score: number) =>
   score >= 50 ? "text-green-600" : score >= 0 ? "text-yellow-600" : "text-red-600";
 
 export default function SurveyResultsPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   const { data, isLoading } = useQuery({
@@ -18,14 +20,14 @@ export default function SurveyResultsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-gray-400">Loading results...</div>
+        <div className="text-gray-400">{t("surveyResults.loading")}</div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="text-center py-16 text-gray-400">Survey not found.</div>
+      <div className="text-center py-16 text-gray-400">{t("surveyResults.notFound")}</div>
     );
   }
 
@@ -58,7 +60,7 @@ export default function SurveyResultsPage() {
               data.status === "closed" ? "bg-blue-100 text-blue-700" :
               "bg-gray-100 text-gray-600"
             }`}>
-              {data.status}
+              {t(`surveyResults.status.${data.status}`)}
             </span>
             <span className="text-sm text-gray-500 capitalize">{data.type}</span>
           </div>
@@ -67,7 +69,7 @@ export default function SurveyResultsPage() {
           onClick={exportCSV}
           className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
         >
-          <Download className="h-4 w-4" /> Export CSV
+          <Download className="h-4 w-4" /> {t("surveyResults.actions.exportCsv")}
         </button>
       </div>
 
@@ -80,7 +82,7 @@ export default function SurveyResultsPage() {
               .getElementById("per-question-results")
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
-          aria-label="Jump to per-question results"
+          aria-label={t("surveyResults.a11y.jumpToPerQuestion")}
           className="bg-white rounded-xl border border-gray-200 p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <div className="flex items-center gap-3">
@@ -88,7 +90,7 @@ export default function SurveyResultsPage() {
               <Users className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Total Responses</p>
+              <p className="text-xs text-gray-500">{t("surveyResults.summary.totalResponses")}</p>
               <p className="text-xl font-bold text-gray-900">{data.response_count}</p>
             </div>
           </div>
@@ -101,7 +103,7 @@ export default function SurveyResultsPage() {
               .getElementById("per-question-results")
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
-          aria-label="Jump to questions breakdown"
+          aria-label={t("surveyResults.a11y.jumpToQuestionsBreakdown")}
           className="bg-white rounded-xl border border-gray-200 p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <div className="flex items-center gap-3">
@@ -109,7 +111,7 @@ export default function SurveyResultsPage() {
               <BarChart3 className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Questions</p>
+              <p className="text-xs text-gray-500">{t("surveyResults.summary.questions")}</p>
               <p className="text-xl font-bold text-gray-900">{data.questions.length}</p>
             </div>
           </div>
@@ -123,7 +125,7 @@ export default function SurveyResultsPage() {
                 .getElementById("enps-breakdown")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
-            aria-label="Jump to eNPS breakdown"
+            aria-label={t("surveyResults.a11y.jumpToEnpsBreakdown")}
             className="bg-white rounded-xl border border-gray-200 p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
@@ -133,7 +135,7 @@ export default function SurveyResultsPage() {
                 <span className="text-lg font-bold">{data.overall_enps.score >= 0 ? "+" : ""}{data.overall_enps.score}</span>
               </div>
               <div>
-                <p className="text-xs text-gray-500">eNPS Score</p>
+                <p className="text-xs text-gray-500">{t("surveyResults.summary.enpsScore")}</p>
                 <p className="text-sm text-gray-600">
                   P:{data.overall_enps.promoter_pct}% / D:{data.overall_enps.detractor_pct}%
                 </p>
@@ -146,16 +148,16 @@ export default function SurveyResultsPage() {
       {/* eNPS Breakdown */}
       {data.overall_enps && (
         <div id="enps-breakdown" className="bg-white rounded-xl border border-gray-200 p-6 mb-6 scroll-mt-4">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">eNPS Breakdown</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("surveyResults.enps.breakdownTitle")}</h2>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <p className="text-2xl font-bold text-green-600">{data.overall_enps.promoters}</p>
-              <p className="text-sm text-green-700 font-medium">Promoters (9-10)</p>
+              <p className="text-sm text-green-700 font-medium">{t("surveyResults.enps.promoters")}</p>
               <p className="text-xs text-green-600">{data.overall_enps.promoter_pct}%</p>
             </div>
             <div className="text-center p-4 bg-yellow-50 rounded-lg">
               <p className="text-2xl font-bold text-yellow-600">{data.overall_enps.passives}</p>
-              <p className="text-sm text-yellow-700 font-medium">Passives (7-8)</p>
+              <p className="text-sm text-yellow-700 font-medium">{t("surveyResults.enps.passives")}</p>
               <p className="text-xs text-yellow-600">
                 {data.overall_enps.total > 0
                   ? Math.round((data.overall_enps.passives / data.overall_enps.total) * 100)
@@ -164,7 +166,7 @@ export default function SurveyResultsPage() {
             </div>
             <div className="text-center p-4 bg-red-50 rounded-lg">
               <p className="text-2xl font-bold text-red-600">{data.overall_enps.detractors}</p>
-              <p className="text-sm text-red-700 font-medium">Detractors (0-6)</p>
+              <p className="text-sm text-red-700 font-medium">{t("surveyResults.enps.detractors")}</p>
               <p className="text-xs text-red-600">{data.overall_enps.detractor_pct}%</p>
             </div>
           </div>
@@ -208,7 +210,12 @@ export default function SurveyResultsPage() {
               <span className="text-sm font-mono text-gray-400">{idx + 1}.</span>
               <div className="flex-1">
                 <p className="font-medium text-gray-900">{q.question_text}</p>
-                <p className="text-xs text-gray-400 mt-0.5 capitalize">{q.question_type.replace(/_/g, " ")} | {q.total_answers} answers</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {t("surveyResults.question.answersMeta", {
+                    type: t(`surveyResults.questionType.${q.question_type}`),
+                    count: q.total_answers,
+                  })}
+                </p>
               </div>
             </div>
 
@@ -217,16 +224,16 @@ export default function SurveyResultsPage() {
               <div>
                 {q.avg_rating !== null && (
                   <p className="text-sm text-gray-600 mb-3">
-                    Average: <span className="font-bold text-gray-900">{q.avg_rating}</span>
+                    {t("surveyResults.question.average")} <span className="font-bold text-gray-900">{q.avg_rating}</span>
                     {q.min_rating !== null && (
-                      <span className="text-gray-400 ml-2">(min: {q.min_rating}, max: {q.max_rating})</span>
+                      <span className="text-gray-400 ml-2">{t("surveyResults.question.minMax", { min: q.min_rating, max: q.max_rating })}</span>
                     )}
                   </p>
                 )}
 
                 {q.enps && (
                   <div className="mb-3 inline-flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg">
-                    <span className="text-xs text-gray-500">eNPS:</span>
+                    <span className="text-xs text-gray-500">{t("surveyResults.enps.inlineLabel")}</span>
                     <span className={`text-sm font-bold ${ENPS_COLOR(q.enps.score)}`}>{q.enps.score}</span>
                   </div>
                 )}
@@ -246,7 +253,7 @@ export default function SurveyResultsPage() {
               <div className="flex gap-4">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-green-700 font-medium">Yes</span>
+                    <span className="text-sm text-green-700 font-medium">{t("surveyResults.question.yes")}</span>
                     <span className="text-sm text-gray-500">
                       {q.distribution.yes || 0} ({q.total_answers > 0 ? Math.round(((q.distribution.yes || 0) / q.total_answers) * 100) : 0}%)
                     </span>
@@ -260,7 +267,7 @@ export default function SurveyResultsPage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-red-700 font-medium">No</span>
+                    <span className="text-sm text-red-700 font-medium">{t("surveyResults.question.no")}</span>
                     <span className="text-sm text-gray-500">
                       {q.distribution.no || 0} ({q.total_answers > 0 ? Math.round(((q.distribution.no || 0) / q.total_answers) * 100) : 0}%)
                     </span>
@@ -300,7 +307,7 @@ export default function SurveyResultsPage() {
             {/* Text Responses */}
             {q.question_type === "text" && q.text_responses && (
               <div>
-                <p className="text-xs text-gray-400 mb-2">{q.text_responses.length} responses</p>
+                <p className="text-xs text-gray-400 mb-2">{t("surveyResults.question.responsesCount", { count: q.text_responses.length })}</p>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {q.text_responses.map((text: string, i: number) => (
                     <div key={i} className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700">

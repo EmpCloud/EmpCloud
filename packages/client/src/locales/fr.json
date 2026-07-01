@@ -3813,5 +3813,280 @@
     "checkResults": {
       "heading": "Résultats des vérifications"
     }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "Tableau de bord des événements",
+      "subtitle": "Gérez les événements de l'entreprise et suivez les présences.",
+      "createEvent": "Créer un événement"
+    },
+    "stats": {
+      "upcomingEvents": "Événements à venir",
+      "thisMonth": "Ce mois-ci",
+      "totalRsvps": "Total des inscriptions",
+      "eventTypes": "Types d'événements"
+    },
+    "typeBreakdown": {
+      "title": "Répartition par type d'événement"
+    },
+    "eventType": {
+      "meeting": "Réunion",
+      "training": "Formation",
+      "celebration": "Célébration",
+      "team_building": "Renforcement d'équipe",
+      "town_hall": "Réunion générale",
+      "holiday": "Jour férié",
+      "workshop": "Atelier",
+      "social": "Événement social",
+      "other": "Autre"
+    },
+    "form": {
+      "title": "Créer un événement",
+      "fields": {
+        "title": "Titre",
+        "description": "Description",
+        "eventType": "Type d'événement",
+        "allDay": "Événement sur la journée entière",
+        "mandatory": "Obligatoire",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "location": "Lieu",
+        "virtualLink": "Lien virtuel",
+        "targetAudience": "Public cible",
+        "targetIds": "ID cibles (JSON)",
+        "maxAttendees": "Participants maximum"
+      },
+      "placeholders": {
+        "title": "Titre de l'événement",
+        "description": "Description de l'événement...",
+        "location": "Bureau, salle 101, etc.",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "Illimité"
+      },
+      "targetType": {
+        "all": "Tous les employés",
+        "department": "Département",
+        "role": "Rôle"
+      },
+      "errors": {
+        "endBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
+      },
+      "cancel": "Annuler",
+      "submit": "Créer un événement"
+    },
+    "upcoming": {
+      "title": "Événements à venir",
+      "viewAll": "Tout afficher",
+      "loading": "Chargement...",
+      "empty": "Aucun événement à venir. Créez-en un ci-dessus !",
+      "view": "Afficher",
+      "cancel": "Annuler",
+      "deleteTitle": "Supprimer l'événement",
+      "attending_one": "{{count}} participant",
+      "attending_other": "{{count}} participants"
+    },
+    "deleteModal": {
+      "title": "Supprimer l'événement ?",
+      "body": "Supprimer {{name}} ? Cette action supprime définitivement l'événement et ses inscriptions. Elle est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer",
+      "deleting": "Suppression...",
+      "error": "Échec de la suppression de l'événement"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "Notation (1-5)",
+      "rating_1_10": "Notation (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "Oui / Non",
+      "multiple_choice": "Choix multiple",
+      "text": "Texte libre",
+      "scale": "Échelle"
+    },
+    "surveyType": {
+      "pulse": "Enquête flash",
+      "enps": "Enquête eNPS",
+      "engagement": "Enquête d'engagement",
+      "custom": "Enquête personnalisée",
+      "onboarding": "Enquête d'intégration",
+      "exit_survey": "Enquête de départ"
+    },
+    "header": {
+      "editTitle": "Modifier l'enquête",
+      "createTitle": "Créer une enquête",
+      "subtitle": "Concevez votre enquête et ajoutez des questions."
+    },
+    "details": {
+      "heading": "Détails de l'enquête",
+      "titleLabel": "Titre *",
+      "titlePlaceholder": "ex. : Enquête flash employés T1 2026",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brève description de l'objectif de l'enquête...",
+      "typeLabel": "Type",
+      "targetAudienceLabel": "Public cible",
+      "recurrenceLabel": "Récurrence",
+      "startDateLabel": "Date et heure de début",
+      "endDateLabel": "Date et heure de fin",
+      "dateTimeHelper": "Choisissez une date et une heure.",
+      "anonymousLabel": "Anonyme"
+    },
+    "target": {
+      "all": "Tous les employés",
+      "department": "Par service",
+      "role": "Par rôle",
+      "custom": "Personnalisé"
+    },
+    "recurrence": {
+      "none": "Ponctuelle",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuelle",
+      "quarterly": "Trimestrielle"
+    },
+    "questions": {
+      "heading": "Questions",
+      "addButton": "Ajouter une question",
+      "moveUpTitle": "Monter",
+      "removeTitle": "Supprimer la question",
+      "textPlaceholder": "Saisissez le texte de la question...",
+      "typeLabel": "Type",
+      "requiredLabel": "Obligatoire",
+      "optionsLabel": "Options (une par ligne)",
+      "optionsPlaceholder": "Option A\nOption B\nOption C",
+      "previewLabel": "Aperçu"
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "saveDraft": "Enregistrer comme brouillon",
+      "savePublish": "Enregistrer et publier"
+    },
+    "toast": {
+      "endBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
+    },
+    "preview": {
+      "emptyHint": "Saisissez une question pour voir l'aperçu",
+      "enpsNotLikely": "Peu probable",
+      "enpsVeryLikely": "Très probable",
+      "yes": "Oui",
+      "no": "Non",
+      "optionA": "Option A",
+      "optionB": "Option B",
+      "optionC": "Option C",
+      "textPlaceholder": "L'employé saisira sa réponse ici..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "Réunion",
+      "training": "Formation",
+      "celebration": "Célébration",
+      "team_building": "Cohésion d'équipe",
+      "town_hall": "Réunion générale",
+      "holiday": "Jour férié",
+      "workshop": "Atelier",
+      "social": "Événement social",
+      "other": "Autre"
+    },
+    "status": {
+      "upcoming": "À venir",
+      "ongoing": "En cours",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
+    },
+    "state": {
+      "loading": "Chargement de l'événement...",
+      "notFound": "Événement introuvable."
+    },
+    "header": {
+      "backToEvents": "Retour aux événements",
+      "delete": "Supprimer"
+    },
+    "badge": {
+      "mandatory": "Obligatoire"
+    },
+    "details": {
+      "dateLabel": "Date",
+      "allDaySuffix": " (Toute la journée)",
+      "dateRange": "jusqu'au {{date}}",
+      "locationLabel": "Lieu",
+      "virtualLabel": "Réunion virtuelle",
+      "joinOnline": "Rejoindre en ligne",
+      "attendeesLabel": "Participants",
+      "attendingCount_one": "{{count}} participant",
+      "attendingCount_other": "{{count}} participants",
+      "maybeSuffix_one": ", {{count}} peut-être",
+      "maybeSuffix_other": ", {{count}} peut-être",
+      "maxSuffix_one": " / {{count}} max",
+      "maxSuffix_other": " / {{count}} max"
+    },
+    "rsvp": {
+      "heading": "Votre réponse",
+      "currently": "(Actuellement : {{status}})",
+      "attending": "Je participe",
+      "maybe": "Peut-être",
+      "decline": "Décliner"
+    },
+    "delete": {
+      "title": "Supprimer l'événement ?",
+      "confirm": "Supprimer {{name}} ? Cette action supprime définitivement l'événement et ses réponses. Elle est irréversible.",
+      "error": "Échec de la suppression de l'événement",
+      "cancel": "Annuler",
+      "confirmButton": "Supprimer",
+      "deleting": "Suppression..."
+    },
+    "attendees": {
+      "attendingHeading_one": "Participant ({{count}})",
+      "attendingHeading_other": "Participants ({{count}})",
+      "maybeHeading_one": "Peut-être ({{count}})",
+      "maybeHeading_other": "Peut-être ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "Chargement des résultats...",
+    "notFound": "Enquête introuvable.",
+    "actions": {
+      "exportCsv": "Exporter en CSV"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Clôturée",
+      "draft": "Brouillon"
+    },
+    "summary": {
+      "totalResponses": "Total des réponses",
+      "questions": "Questions",
+      "enpsScore": "Score eNPS"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "Accéder aux résultats par question",
+      "jumpToQuestionsBreakdown": "Accéder à la répartition des questions",
+      "jumpToEnpsBreakdown": "Accéder à la répartition eNPS"
+    },
+    "enps": {
+      "breakdownTitle": "Répartition eNPS",
+      "promoters": "Promoteurs (9-10)",
+      "passives": "Passifs (7-8)",
+      "detractors": "Détracteurs (0-6)",
+      "inlineLabel": "eNPS :"
+    },
+    "question": {
+      "average": "Moyenne :",
+      "minMax": "(min : {{min}}, max : {{max}})",
+      "yes": "Oui",
+      "no": "Non",
+      "answersMeta_one": "{{type}} | {{count}} réponse",
+      "answersMeta_other": "{{type}} | {{count}} réponses",
+      "responsesCount_one": "{{count}} réponse",
+      "responsesCount_other": "{{count}} réponses"
+    },
+    "questionType": {
+      "rating_1_5": "Note 1-5",
+      "rating_1_10": "Note 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "Échelle",
+      "yes_no": "Oui / Non",
+      "multiple_choice": "Choix multiple",
+      "text": "Texte"
+    }
   }
 }
