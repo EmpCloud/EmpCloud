@@ -2538,5 +2538,202 @@
       "damaged": "क्षतिग्रस्त",
       "updated": "अपडेट किया गया"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "ऑनलाइन",
+      "typing": "टाइप कर रहे हैं…",
+      "typingOne": "{{name}} टाइप कर रहे हैं…",
+      "typingTwo": "{{name1}} और {{name2}} टाइप कर रहे हैं…",
+      "typingMany_one": "{{count}} व्यक्ति टाइप कर रहा है…",
+      "typingMany_other": "{{count}} लोग टाइप कर रहे हैं…"
+    },
+    "fallback": {
+      "someone": "कोई"
+    },
+    "sr": {
+      "sentAttachment": "एक अटैचमेंट भेजा"
+    },
+    "header": {
+      "conversationTitleFallback": "बातचीत",
+      "backToConversations": "बातचीत पर वापस जाएँ",
+      "membersTooltip": "सदस्य: {{roster}}",
+      "viewMembers": "सदस्य देखें",
+      "searchInConversation": "बातचीत में खोजें"
+    },
+    "mute": {
+      "unmute": "नोटिफ़िकेशन अनम्यूट करें",
+      "mute": "नोटिफ़िकेशन म्यूट करें",
+      "unmutedToast": "नोटिफ़िकेशन अनम्यूट हो गए.",
+      "mutedToast": "नोटिफ़िकेशन म्यूट हो गए.",
+      "error": "नोटिफ़िकेशन अपडेट नहीं हो सके. कृपया फिर से कोशिश करें."
+    },
+    "archive": {
+      "unarchive": "बातचीत अनआर्काइव करें",
+      "archive": "बातचीत आर्काइव करें",
+      "unarchivedToast": "बातचीत अनआर्काइव हो गई.",
+      "archivedToast": "बातचीत आर्काइव हो गई.",
+      "error": "बातचीत अपडेट नहीं हो सकी. कृपया फिर से कोशिश करें."
+    },
+    "search": {
+      "placeholder": "इस बातचीत में खोजें…",
+      "noMatches": "कोई मिलान नहीं."
+    },
+    "pinned": {
+      "label": "पिन किया गया",
+      "attachmentFallback": "📎 अटैचमेंट",
+      "goTo": "पिन किए गए संदेश पर जाएँ",
+      "unpin": "संदेश अनपिन करें",
+      "labelCount_one": "पिन किया गया · {{count}}",
+      "labelCount_other": "पिन किए गए · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "संदेश पिन हो गया.",
+      "unpinnedToast": "संदेश अनपिन हो गया.",
+      "error": "पिन अपडेट नहीं हो सका. कृपया फिर से कोशिश करें."
+    },
+    "members": {
+      "dialogLabel": "ग्रुप के सदस्य",
+      "saveName": "नाम सहेजें",
+      "cancel": "रद्द करें",
+      "renameGroup": "ग्रुप का नाम बदलें",
+      "close": "बंद करें",
+      "changePhoto": "ग्रुप फ़ोटो बदलें",
+      "descriptionPlaceholder": "ग्रुप का विवरण जोड़ें…",
+      "noDescription": "कोई विवरण नहीं",
+      "descCancel": "रद्द करें",
+      "descSave": "सहेजें",
+      "youSuffix": "(आप)",
+      "adminBadge": "एडमिन",
+      "removeMember": "{{name}} को हटाएँ",
+      "addMembers": "सदस्य जोड़ें",
+      "deleteGroup": "ग्रुप हटाएँ",
+      "leaveGroup": "ग्रुप छोड़ें",
+      "memberCount_one": "{{count}} सदस्य",
+      "memberCount_other": "{{count}} सदस्य"
+    },
+    "confirm": {
+      "leaveTitle": "ग्रुप छोड़ें?",
+      "leaveDescription": "आप \"{{group}}\" छोड़ देंगे और इसके संदेश मिलना बंद हो जाएँगे. ग्रुप एडमिन आपको दोबारा जोड़ सकते हैं.",
+      "leaveGroupFallback": "यह ग्रुप",
+      "leaveConfirm": "छोड़ें",
+      "deleteGroupTitle": "ग्रुप हटाएँ?",
+      "deleteGroupDescription": "\"{{group}}\" सभी के लिए हटा दिया जाएगा और सभी सदस्यों की चैट सूची से निकाल दिया जाएगा. इसे पूर्ववत नहीं किया जा सकता.",
+      "deleteGroupFallback": "यह ग्रुप",
+      "deleteGroupConfirm": "ग्रुप हटाएँ",
+      "bulkDeletePartial": "केवल आपके अपने संदेश हटाए जाएँगे; बाकी बने रहेंगे. इसे पूर्ववत नहीं किया जा सकता.",
+      "bulkDeleteAll": "ये संदेश सभी के लिए हटा दिए जाएँगे. इसे पूर्ववत नहीं किया जा सकता.",
+      "bulkDeleteConfirm": "हटाएँ",
+      "removeMemberTitle": "सदस्य हटाएँ?",
+      "removeMemberDescription": "{{name}} को \"{{group}}\" से हटा दिया जाएगा और वे इसके संदेश नहीं देख पाएँगे.",
+      "removeMemberGroupFallback": "यह ग्रुप",
+      "removeMemberConfirm": "हटाएँ",
+      "bulkDeleteTitle_one": "{{count}} संदेश हटाएँ?",
+      "bulkDeleteTitle_other": "{{count}} संदेश हटाएँ?"
+    },
+    "group": {
+      "renamedToast": "ग्रुप का नाम बदल गया.",
+      "renameError": "ग्रुप का नाम नहीं बदला जा सका. कृपया फिर से कोशिश करें.",
+      "descriptionUpdatedToast": "विवरण अपडेट हो गया.",
+      "descriptionError": "विवरण अपडेट नहीं हो सका.",
+      "photoMustBeImage": "ग्रुप फ़ोटो एक इमेज होनी चाहिए.",
+      "photoUpdatedToast": "ग्रुप फ़ोटो अपडेट हो गई.",
+      "photoUploadError": "फ़ोटो अपलोड नहीं हो सकी.",
+      "memberRemovedToast": "{{name}} को ग्रुप से हटा दिया गया.",
+      "memberRemoveError": "सदस्य को हटाया नहीं जा सका. कृपया फिर से कोशिश करें.",
+      "leftToast": "आपने ग्रुप छोड़ दिया.",
+      "leaveError": "ग्रुप नहीं छोड़ा जा सका. कृपया फिर से कोशिश करें.",
+      "deletedToast": "ग्रुप हटा दिया गया.",
+      "deleteError": "ग्रुप हटाया नहीं जा सका. कृपया फिर से कोशिश करें."
+    },
+    "attachment": {
+      "tooLarge": "\"{{name}}\" 10 MB से बड़ा है."
+    },
+    "dropFiles": "भेजने के लिए फ़ाइलें यहाँ छोड़ें",
+    "list": {
+      "failedToLoad": "संदेश लोड नहीं हो सके. कृपया फिर से कोशिश करें.",
+      "empty": "अभी कोई संदेश नहीं",
+      "emptyHint": "बातचीत शुरू करने के लिए नमस्ते कहें.",
+      "beginning": "बातचीत की शुरुआत",
+      "unreadDivider": "अपठित संदेश"
+    },
+    "message": {
+      "deletedTombstone": "यह संदेश हटा दिया गया था",
+      "forwardedFrom": "{{name}} से फ़ॉरवर्ड किया गया",
+      "goToMessage": "संदेश पर जाएँ"
+    },
+    "reply": {
+      "deletedQuote": "संदेश हटा दिया गया",
+      "attachmentQuote": "📎 अटैचमेंट"
+    },
+    "edit": {
+      "save": "सहेजें",
+      "cancel": "रद्द करें",
+      "hint": "सहेजने के लिए Enter · रद्द करने के लिए Esc"
+    },
+    "actions": {
+      "react": "रिएक्ट करें",
+      "reply": "जवाब दें",
+      "forward": "फ़ॉरवर्ड करें",
+      "edit": "संदेश संपादित करें",
+      "delete": "संदेश हटाएँ"
+    },
+    "meta": {
+      "edited": "संपादित",
+      "messageInfo": "संदेश जानकारी"
+    },
+    "jump": {
+      "latest": "नवीनतम पर जाएँ",
+      "newMessages_one": "{{count}} नया संदेश",
+      "newMessages_other": "{{count}} नए संदेश"
+    },
+    "select": {
+      "cancel": "चयन रद्द करें",
+      "deleteOnlyOwn": "आप केवल अपने संदेश ही हटा सकते हैं",
+      "deleteSelected": "चयनित हटाएँ",
+      "delete": "हटाएँ",
+      "forward": "फ़ॉरवर्ड करें",
+      "countSelected_one": "{{count}} चयनित",
+      "countSelected_other": "{{count}} चयनित"
+    },
+    "bulkDelete": {
+      "error": "कुछ संदेश हटाए नहीं जा सके. कृपया फिर से कोशिश करें.",
+      "successToast_one": "{{count}} संदेश हटाया गया.",
+      "successToast_other": "{{count}} संदेश हटाए गए."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "{{name}} को जवाब दे रहे हैं",
+        "deletedPreview": "संदेश हटा दिया गया",
+        "attachmentPreview": "📎 अटैचमेंट",
+        "cancel": "जवाब रद्द करें"
+      },
+      "removeAttachment": "अटैचमेंट हटाएँ",
+      "queuedClear": "साफ़ करें",
+      "placeholderCaption": "कैप्शन जोड़ें…",
+      "placeholderGroup": "संदेश लिखें… (उल्लेख के लिए @)",
+      "placeholderDirect": "संदेश लिखें…",
+      "attach": "फ़ोटो या फ़ाइल अटैच करें",
+      "emojiTitle": "इमोजी",
+      "emojiAria": "इमोजी डालें",
+      "send": "संदेश भेजें",
+      "hint": "भेजने के लिए Enter · नई लाइन के लिए Shift + Enter",
+      "hintMention": " · उल्लेख के लिए @",
+      "hintAttach": " · 10 MB तक अटैच करें",
+      "queuedFiles_one": "{{count}} और फ़ाइल कतार में",
+      "queuedFiles_other": "{{count}} और फ़ाइलें कतार में"
+    },
+    "toast": {
+      "messageNotLoaded": "वह संदेश लोड नहीं हुआ है — पुराने संदेश लोड करने के लिए ऊपर स्क्रॉल करें.",
+      "sendError": "आपका संदेश नहीं भेजा जा सका. कृपया फिर से कोशिश करें.",
+      "reactionError": "आपका रिएक्शन अपडेट नहीं हो सका.",
+      "deleteMessageError": "संदेश हटाया नहीं जा सका.",
+      "saveEditError": "आपका संपादन सहेजा नहीं जा सका. कृपया फिर से कोशिश करें.",
+      "linkCopied": "संदेश लिंक कॉपी हो गया.",
+      "linkCopyError": "लिंक कॉपी नहीं हो सका.",
+      "openChatError": "वह चैट नहीं खोली जा सकी.",
+      "messageTooLong_one": "संदेश बहुत लंबा है (अधिकतम {{count}} अक्षर).",
+      "messageTooLong_other": "संदेश बहुत लंबा है (अधिकतम {{count}} अक्षर)."
+    }
   }
 }

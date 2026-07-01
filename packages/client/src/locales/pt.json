@@ -2538,5 +2538,202 @@
       "damaged": "Danificado",
       "updated": "Atualizado"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "Online",
+      "typing": "a escrever…",
+      "typingOne": "{{name}} está a escrever…",
+      "typingTwo": "{{name1}} e {{name2}} estão a escrever…",
+      "typingMany_one": "{{count}} pessoa está a escrever…",
+      "typingMany_other": "{{count}} pessoas estão a escrever…"
+    },
+    "fallback": {
+      "someone": "Alguém"
+    },
+    "sr": {
+      "sentAttachment": "enviou um anexo"
+    },
+    "header": {
+      "conversationTitleFallback": "Conversa",
+      "backToConversations": "Voltar às conversas",
+      "membersTooltip": "Membros: {{roster}}",
+      "viewMembers": "Ver membros",
+      "searchInConversation": "Pesquisar na conversa"
+    },
+    "mute": {
+      "unmute": "Reativar notificações",
+      "mute": "Silenciar notificações",
+      "unmutedToast": "Notificações reativadas.",
+      "mutedToast": "Notificações silenciadas.",
+      "error": "Não foi possível atualizar as notificações. Tenta novamente."
+    },
+    "archive": {
+      "unarchive": "Desarquivar conversa",
+      "archive": "Arquivar conversa",
+      "unarchivedToast": "Conversa desarquivada.",
+      "archivedToast": "Conversa arquivada.",
+      "error": "Não foi possível atualizar a conversa. Tenta novamente."
+    },
+    "search": {
+      "placeholder": "Pesquisar nesta conversa…",
+      "noMatches": "Sem resultados."
+    },
+    "pinned": {
+      "label": "Fixada",
+      "attachmentFallback": "📎 Anexo",
+      "goTo": "Ir para a mensagem fixada",
+      "unpin": "Desafixar mensagem",
+      "labelCount_one": "Fixada · {{count}}",
+      "labelCount_other": "Fixadas · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "Mensagem fixada.",
+      "unpinnedToast": "Mensagem desafixada.",
+      "error": "Não foi possível atualizar a fixação. Tenta novamente."
+    },
+    "members": {
+      "dialogLabel": "Membros do grupo",
+      "saveName": "Guardar nome",
+      "cancel": "Cancelar",
+      "renameGroup": "Mudar o nome do grupo",
+      "close": "Fechar",
+      "changePhoto": "Alterar foto do grupo",
+      "descriptionPlaceholder": "Adicionar uma descrição do grupo…",
+      "noDescription": "Sem descrição",
+      "descCancel": "Cancelar",
+      "descSave": "Guardar",
+      "youSuffix": "(Tu)",
+      "adminBadge": "Administrador",
+      "removeMember": "Remover {{name}}",
+      "addMembers": "Adicionar membros",
+      "deleteGroup": "Eliminar grupo",
+      "leaveGroup": "Sair do grupo",
+      "memberCount_one": "{{count}} membro",
+      "memberCount_other": "{{count}} membros"
+    },
+    "confirm": {
+      "leaveTitle": "Sair do grupo?",
+      "leaveDescription": "Vais sair de \"{{group}}\" e deixar de receber as suas mensagens. O administrador do grupo pode voltar a adicionar-te.",
+      "leaveGroupFallback": "este grupo",
+      "leaveConfirm": "Sair",
+      "deleteGroupTitle": "Eliminar grupo?",
+      "deleteGroupDescription": "\"{{group}}\" será eliminado para todos e removido das listas de conversas de todos os membros. Esta ação não pode ser anulada.",
+      "deleteGroupFallback": "Este grupo",
+      "deleteGroupConfirm": "Eliminar grupo",
+      "bulkDeletePartial": "Apenas as tuas mensagens serão eliminadas; as restantes permanecem. Esta ação não pode ser anulada.",
+      "bulkDeleteAll": "Estas mensagens serão eliminadas para todos. Esta ação não pode ser anulada.",
+      "bulkDeleteConfirm": "Eliminar",
+      "removeMemberTitle": "Remover membro?",
+      "removeMemberDescription": "{{name}} deixa de fazer parte de \"{{group}}\" e deixará de ver as suas mensagens.",
+      "removeMemberGroupFallback": "este grupo",
+      "removeMemberConfirm": "Remover",
+      "bulkDeleteTitle_one": "Eliminar {{count}} mensagem?",
+      "bulkDeleteTitle_other": "Eliminar {{count}} mensagens?"
+    },
+    "group": {
+      "renamedToast": "Nome do grupo alterado.",
+      "renameError": "Não foi possível mudar o nome do grupo. Tenta novamente.",
+      "descriptionUpdatedToast": "Descrição atualizada.",
+      "descriptionError": "Não foi possível atualizar a descrição.",
+      "photoMustBeImage": "A foto do grupo tem de ser uma imagem.",
+      "photoUpdatedToast": "Foto do grupo atualizada.",
+      "photoUploadError": "Não foi possível carregar a foto.",
+      "memberRemovedToast": "{{name}} deixou de fazer parte do grupo.",
+      "memberRemoveError": "Não foi possível remover o membro. Tenta novamente.",
+      "leftToast": "Saíste do grupo.",
+      "leaveError": "Não foi possível sair do grupo. Tenta novamente.",
+      "deletedToast": "Grupo eliminado.",
+      "deleteError": "Não foi possível eliminar o grupo. Tenta novamente."
+    },
+    "attachment": {
+      "tooLarge": "\"{{name}}\" é maior do que 10 MB."
+    },
+    "dropFiles": "Largar ficheiros para enviar",
+    "list": {
+      "failedToLoad": "Falha ao carregar as mensagens. Tenta novamente.",
+      "empty": "Ainda não há mensagens",
+      "emptyHint": "Diz olá para iniciar a conversa.",
+      "beginning": "Início da conversa",
+      "unreadDivider": "Mensagens não lidas"
+    },
+    "message": {
+      "deletedTombstone": "Esta mensagem foi eliminada",
+      "forwardedFrom": "Reencaminhada de {{name}}",
+      "goToMessage": "Ir para a mensagem"
+    },
+    "reply": {
+      "deletedQuote": "Mensagem eliminada",
+      "attachmentQuote": "📎 Anexo"
+    },
+    "edit": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "hint": "Enter para guardar · Esc para cancelar"
+    },
+    "actions": {
+      "react": "Reagir",
+      "reply": "Responder",
+      "forward": "Reencaminhar",
+      "edit": "Editar mensagem",
+      "delete": "Eliminar mensagem"
+    },
+    "meta": {
+      "edited": "editada",
+      "messageInfo": "Informações da mensagem"
+    },
+    "jump": {
+      "latest": "Ir para a mais recente",
+      "newMessages_one": "{{count}} nova mensagem",
+      "newMessages_other": "{{count}} novas mensagens"
+    },
+    "select": {
+      "cancel": "Cancelar seleção",
+      "deleteOnlyOwn": "Só podes eliminar as tuas próprias mensagens",
+      "deleteSelected": "Eliminar selecionadas",
+      "delete": "Eliminar",
+      "forward": "Reencaminhar",
+      "countSelected_one": "{{count}} selecionada",
+      "countSelected_other": "{{count}} selecionadas"
+    },
+    "bulkDelete": {
+      "error": "Não foi possível eliminar algumas mensagens. Tenta novamente.",
+      "successToast_one": "{{count}} mensagem eliminada.",
+      "successToast_other": "{{count}} mensagens eliminadas."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "A responder a {{name}}",
+        "deletedPreview": "Mensagem eliminada",
+        "attachmentPreview": "📎 Anexo",
+        "cancel": "Cancelar resposta"
+      },
+      "removeAttachment": "Remover anexo",
+      "queuedClear": "limpar",
+      "placeholderCaption": "Adicionar uma legenda…",
+      "placeholderGroup": "Escreve uma mensagem… (@ para mencionar)",
+      "placeholderDirect": "Escreve uma mensagem…",
+      "attach": "Anexar uma foto ou ficheiro",
+      "emojiTitle": "Emoji",
+      "emojiAria": "Inserir emoji",
+      "send": "Enviar mensagem",
+      "hint": "Enter para enviar · Shift + Enter para nova linha",
+      "hintMention": " · @ para mencionar",
+      "hintAttach": " · Anexar até 10 MB",
+      "queuedFiles_one": "Mais {{count}} ficheiro em fila",
+      "queuedFiles_other": "Mais {{count}} ficheiros em fila"
+    },
+    "toast": {
+      "messageNotLoaded": "Essa mensagem não está carregada — desliza para cima para carregar as mensagens mais antigas.",
+      "sendError": "Não foi possível enviar a tua mensagem. Tenta novamente.",
+      "reactionError": "Não foi possível atualizar a tua reação.",
+      "deleteMessageError": "Não foi possível eliminar a mensagem.",
+      "saveEditError": "Não foi possível guardar a tua edição. Tenta novamente.",
+      "linkCopied": "Hiperligação da mensagem copiada.",
+      "linkCopyError": "Não foi possível copiar a hiperligação.",
+      "openChatError": "Não foi possível abrir essa conversa.",
+      "messageTooLong_one": "A mensagem é demasiado longa (máx. {{count}} caráter).",
+      "messageTooLong_other": "A mensagem é demasiado longa (máx. {{count}} carateres)."
+    }
   }
 }

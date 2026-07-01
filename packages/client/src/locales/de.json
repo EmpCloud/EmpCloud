@@ -2538,5 +2538,202 @@
       "damaged": "Beschädigt",
       "updated": "Aktualisiert"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "Online",
+      "typing": "schreibt …",
+      "typingOne": "{{name}} schreibt …",
+      "typingTwo": "{{name1}} und {{name2}} schreiben …",
+      "typingMany_one": "{{count}} Person schreibt …",
+      "typingMany_other": "{{count}} Personen schreiben …"
+    },
+    "fallback": {
+      "someone": "Jemand"
+    },
+    "sr": {
+      "sentAttachment": "hat einen Anhang gesendet"
+    },
+    "header": {
+      "conversationTitleFallback": "Unterhaltung",
+      "backToConversations": "Zurück zu den Unterhaltungen",
+      "membersTooltip": "Mitglieder: {{roster}}",
+      "viewMembers": "Mitglieder anzeigen",
+      "searchInConversation": "In Unterhaltung suchen"
+    },
+    "mute": {
+      "unmute": "Benachrichtigungen aktivieren",
+      "mute": "Benachrichtigungen stummschalten",
+      "unmutedToast": "Benachrichtigungen aktiviert.",
+      "mutedToast": "Benachrichtigungen stummgeschaltet.",
+      "error": "Benachrichtigungen konnten nicht aktualisiert werden. Bitte versuche es erneut."
+    },
+    "archive": {
+      "unarchive": "Unterhaltung aus Archiv holen",
+      "archive": "Unterhaltung archivieren",
+      "unarchivedToast": "Unterhaltung aus dem Archiv geholt.",
+      "archivedToast": "Unterhaltung archiviert.",
+      "error": "Die Unterhaltung konnte nicht aktualisiert werden. Bitte versuche es erneut."
+    },
+    "search": {
+      "placeholder": "In dieser Unterhaltung suchen …",
+      "noMatches": "Keine Treffer."
+    },
+    "pinned": {
+      "label": "Angepinnt",
+      "attachmentFallback": "📎 Anhang",
+      "goTo": "Zur angepinnten Nachricht",
+      "unpin": "Nachricht lösen",
+      "labelCount_one": "Angepinnt · {{count}}",
+      "labelCount_other": "Angepinnt · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "Nachricht angepinnt.",
+      "unpinnedToast": "Nachricht gelöst.",
+      "error": "Die Anpinnung konnte nicht aktualisiert werden. Bitte versuche es erneut."
+    },
+    "members": {
+      "dialogLabel": "Gruppenmitglieder",
+      "saveName": "Name speichern",
+      "cancel": "Abbrechen",
+      "renameGroup": "Gruppe umbenennen",
+      "close": "Schließen",
+      "changePhoto": "Gruppenfoto ändern",
+      "descriptionPlaceholder": "Gruppenbeschreibung hinzufügen …",
+      "noDescription": "Keine Beschreibung",
+      "descCancel": "Abbrechen",
+      "descSave": "Speichern",
+      "youSuffix": "(Du)",
+      "adminBadge": "Admin",
+      "removeMember": "{{name}} entfernen",
+      "addMembers": "Mitglieder hinzufügen",
+      "deleteGroup": "Gruppe löschen",
+      "leaveGroup": "Gruppe verlassen",
+      "memberCount_one": "{{count}} Mitglied",
+      "memberCount_other": "{{count}} Mitglieder"
+    },
+    "confirm": {
+      "leaveTitle": "Gruppe verlassen?",
+      "leaveDescription": "Du verlässt „{{group}}“ und erhältst keine Nachrichten mehr daraus. Der Gruppenadmin kann dich wieder hinzufügen.",
+      "leaveGroupFallback": "diese Gruppe",
+      "leaveConfirm": "Verlassen",
+      "deleteGroupTitle": "Gruppe löschen?",
+      "deleteGroupDescription": "„{{group}}“ wird für alle gelöscht und aus den Chat-Listen aller Mitglieder entfernt. Dies kann nicht rückgängig gemacht werden.",
+      "deleteGroupFallback": "Diese Gruppe",
+      "deleteGroupConfirm": "Gruppe löschen",
+      "bulkDeletePartial": "Es werden nur deine eigenen Nachrichten gelöscht; die der anderen bleiben erhalten. Dies kann nicht rückgängig gemacht werden.",
+      "bulkDeleteAll": "Diese Nachrichten werden für alle gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "bulkDeleteConfirm": "Löschen",
+      "removeMemberTitle": "Mitglied entfernen?",
+      "removeMemberDescription": "{{name}} wird aus „{{group}}“ entfernt und sieht die Nachrichten der Gruppe nicht mehr.",
+      "removeMemberGroupFallback": "diese Gruppe",
+      "removeMemberConfirm": "Entfernen",
+      "bulkDeleteTitle_one": "{{count}} Nachricht löschen?",
+      "bulkDeleteTitle_other": "{{count}} Nachrichten löschen?"
+    },
+    "group": {
+      "renamedToast": "Gruppe umbenannt.",
+      "renameError": "Die Gruppe konnte nicht umbenannt werden. Bitte versuche es erneut.",
+      "descriptionUpdatedToast": "Beschreibung aktualisiert.",
+      "descriptionError": "Die Beschreibung konnte nicht aktualisiert werden.",
+      "photoMustBeImage": "Das Gruppenfoto muss ein Bild sein.",
+      "photoUpdatedToast": "Gruppenfoto aktualisiert.",
+      "photoUploadError": "Das Foto konnte nicht hochgeladen werden.",
+      "memberRemovedToast": "{{name}} wurde aus der Gruppe entfernt.",
+      "memberRemoveError": "Das Mitglied konnte nicht entfernt werden. Bitte versuche es erneut.",
+      "leftToast": "Du hast die Gruppe verlassen.",
+      "leaveError": "Die Gruppe konnte nicht verlassen werden. Bitte versuche es erneut.",
+      "deletedToast": "Gruppe gelöscht.",
+      "deleteError": "Die Gruppe konnte nicht gelöscht werden. Bitte versuche es erneut."
+    },
+    "attachment": {
+      "tooLarge": "„{{name}}“ ist größer als 10 MB."
+    },
+    "dropFiles": "Dateien zum Senden ablegen",
+    "list": {
+      "failedToLoad": "Nachrichten konnten nicht geladen werden. Bitte versuche es erneut.",
+      "empty": "Noch keine Nachrichten",
+      "emptyHint": "Sag Hallo, um die Unterhaltung zu beginnen.",
+      "beginning": "Beginn der Unterhaltung",
+      "unreadDivider": "Ungelesene Nachrichten"
+    },
+    "message": {
+      "deletedTombstone": "Diese Nachricht wurde gelöscht",
+      "forwardedFrom": "Weitergeleitet von {{name}}",
+      "goToMessage": "Zur Nachricht"
+    },
+    "reply": {
+      "deletedQuote": "Nachricht gelöscht",
+      "attachmentQuote": "📎 Anhang"
+    },
+    "edit": {
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "hint": "Enter zum Speichern · Esc zum Abbrechen"
+    },
+    "actions": {
+      "react": "Reagieren",
+      "reply": "Antworten",
+      "forward": "Weiterleiten",
+      "edit": "Nachricht bearbeiten",
+      "delete": "Nachricht löschen"
+    },
+    "meta": {
+      "edited": "bearbeitet",
+      "messageInfo": "Nachrichteninfo"
+    },
+    "jump": {
+      "latest": "Zu den neuesten springen",
+      "newMessages_one": "{{count}} neue Nachricht",
+      "newMessages_other": "{{count}} neue Nachrichten"
+    },
+    "select": {
+      "cancel": "Auswahl abbrechen",
+      "deleteOnlyOwn": "Du kannst nur deine eigenen Nachrichten löschen",
+      "deleteSelected": "Auswahl löschen",
+      "delete": "Löschen",
+      "forward": "Weiterleiten",
+      "countSelected_one": "{{count}} ausgewählt",
+      "countSelected_other": "{{count}} ausgewählt"
+    },
+    "bulkDelete": {
+      "error": "Einige Nachrichten konnten nicht gelöscht werden. Bitte versuche es erneut.",
+      "successToast_one": "{{count}} Nachricht gelöscht.",
+      "successToast_other": "{{count}} Nachrichten gelöscht."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "Antwort an {{name}}",
+        "deletedPreview": "Nachricht gelöscht",
+        "attachmentPreview": "📎 Anhang",
+        "cancel": "Antwort abbrechen"
+      },
+      "removeAttachment": "Anhang entfernen",
+      "queuedClear": "leeren",
+      "placeholderCaption": "Beschriftung hinzufügen …",
+      "placeholderGroup": "Nachricht schreiben … (@ zum Erwähnen)",
+      "placeholderDirect": "Nachricht schreiben …",
+      "attach": "Foto oder Datei anhängen",
+      "emojiTitle": "Emoji",
+      "emojiAria": "Emoji einfügen",
+      "send": "Nachricht senden",
+      "hint": "Enter zum Senden · Umschalt + Enter für eine neue Zeile",
+      "hintMention": " · @ zum Erwähnen",
+      "hintAttach": " · Bis zu 10 MB anhängen",
+      "queuedFiles_one": "{{count}} weitere Datei in der Warteschlange",
+      "queuedFiles_other": "{{count}} weitere Dateien in der Warteschlange"
+    },
+    "toast": {
+      "messageNotLoaded": "Diese Nachricht ist nicht geladen – scrolle nach oben, um ältere Nachrichten zu laden.",
+      "sendError": "Deine Nachricht konnte nicht gesendet werden. Bitte versuche es erneut.",
+      "reactionError": "Deine Reaktion konnte nicht aktualisiert werden.",
+      "deleteMessageError": "Die Nachricht konnte nicht gelöscht werden.",
+      "saveEditError": "Deine Änderung konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "linkCopied": "Nachrichtenlink kopiert.",
+      "linkCopyError": "Der Link konnte nicht kopiert werden.",
+      "openChatError": "Dieser Chat konnte nicht geöffnet werden.",
+      "messageTooLong_one": "Die Nachricht ist zu lang (max. {{count}} Zeichen).",
+      "messageTooLong_other": "Die Nachricht ist zu lang (max. {{count}} Zeichen)."
+    }
   }
 }

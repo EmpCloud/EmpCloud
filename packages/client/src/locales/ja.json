@@ -2538,5 +2538,202 @@
       "damaged": "破損",
       "updated": "更新"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "オンライン",
+      "typing": "入力中…",
+      "typingOne": "{{name}}さんが入力中…",
+      "typingTwo": "{{name1}}さんと{{name2}}さんが入力中…",
+      "typingMany_one": "{{count}}人が入力中…",
+      "typingMany_other": "{{count}}人が入力中…"
+    },
+    "fallback": {
+      "someone": "誰か"
+    },
+    "sr": {
+      "sentAttachment": "添付ファイルを送信しました"
+    },
+    "header": {
+      "conversationTitleFallback": "会話",
+      "backToConversations": "会話一覧に戻る",
+      "membersTooltip": "メンバー: {{roster}}",
+      "viewMembers": "メンバーを表示",
+      "searchInConversation": "会話内を検索"
+    },
+    "mute": {
+      "unmute": "通知をオンにする",
+      "mute": "通知をミュート",
+      "unmutedToast": "通知をオンにしました。",
+      "mutedToast": "通知をミュートしました。",
+      "error": "通知を更新できませんでした。もう一度お試しください。"
+    },
+    "archive": {
+      "unarchive": "会話をアーカイブ解除",
+      "archive": "会話をアーカイブ",
+      "unarchivedToast": "会話をアーカイブ解除しました。",
+      "archivedToast": "会話をアーカイブしました。",
+      "error": "会話を更新できませんでした。もう一度お試しください。"
+    },
+    "search": {
+      "placeholder": "この会話内を検索…",
+      "noMatches": "一致する結果はありません。"
+    },
+    "pinned": {
+      "label": "ピン留め",
+      "attachmentFallback": "📎 添付ファイル",
+      "goTo": "ピン留めメッセージへ移動",
+      "unpin": "ピン留めを解除",
+      "labelCount_one": "ピン留め · {{count}}件",
+      "labelCount_other": "ピン留め · {{count}}件"
+    },
+    "pin": {
+      "pinnedToast": "メッセージをピン留めしました。",
+      "unpinnedToast": "ピン留めを解除しました。",
+      "error": "ピン留めを更新できませんでした。もう一度お試しください。"
+    },
+    "members": {
+      "dialogLabel": "グループメンバー",
+      "saveName": "名前を保存",
+      "cancel": "キャンセル",
+      "renameGroup": "グループ名を変更",
+      "close": "閉じる",
+      "changePhoto": "グループの写真を変更",
+      "descriptionPlaceholder": "グループの説明を追加…",
+      "noDescription": "説明はありません",
+      "descCancel": "キャンセル",
+      "descSave": "保存",
+      "youSuffix": "(自分)",
+      "adminBadge": "管理者",
+      "removeMember": "{{name}}さんを削除",
+      "addMembers": "メンバーを追加",
+      "deleteGroup": "グループを削除",
+      "leaveGroup": "グループを退出",
+      "memberCount_one": "メンバー{{count}}人",
+      "memberCount_other": "メンバー{{count}}人"
+    },
+    "confirm": {
+      "leaveTitle": "グループを退出しますか?",
+      "leaveDescription": "「{{group}}」を退出し、メッセージを受信しなくなります。グループの管理者によって再度追加してもらうことができます。",
+      "leaveGroupFallback": "このグループ",
+      "leaveConfirm": "退出",
+      "deleteGroupTitle": "グループを削除しますか?",
+      "deleteGroupDescription": "「{{group}}」は全員から削除され、すべてのメンバーのチャット一覧から消えます。この操作は取り消せません。",
+      "deleteGroupFallback": "このグループ",
+      "deleteGroupConfirm": "グループを削除",
+      "bulkDeletePartial": "自分のメッセージのみ削除され、他の人のメッセージは残ります。この操作は取り消せません。",
+      "bulkDeleteAll": "これらのメッセージは全員から削除されます。この操作は取り消せません。",
+      "bulkDeleteConfirm": "削除",
+      "removeMemberTitle": "メンバーを削除しますか?",
+      "removeMemberDescription": "{{name}}さんは「{{group}}」から削除され、メッセージを閲覧できなくなります。",
+      "removeMemberGroupFallback": "このグループ",
+      "removeMemberConfirm": "削除",
+      "bulkDeleteTitle_one": "{{count}}件のメッセージを削除しますか?",
+      "bulkDeleteTitle_other": "{{count}}件のメッセージを削除しますか?"
+    },
+    "group": {
+      "renamedToast": "グループ名を変更しました。",
+      "renameError": "グループ名を変更できませんでした。もう一度お試しください。",
+      "descriptionUpdatedToast": "説明を更新しました。",
+      "descriptionError": "説明を更新できませんでした。",
+      "photoMustBeImage": "グループの写真は画像にしてください。",
+      "photoUpdatedToast": "グループの写真を更新しました。",
+      "photoUploadError": "写真をアップロードできませんでした。",
+      "memberRemovedToast": "{{name}}さんをグループから削除しました。",
+      "memberRemoveError": "メンバーを削除できませんでした。もう一度お試しください。",
+      "leftToast": "グループを退出しました。",
+      "leaveError": "グループを退出できませんでした。もう一度お試しください。",
+      "deletedToast": "グループを削除しました。",
+      "deleteError": "グループを削除できませんでした。もう一度お試しください。"
+    },
+    "attachment": {
+      "tooLarge": "「{{name}}」は10 MBを超えています。"
+    },
+    "dropFiles": "ファイルをドロップして送信",
+    "list": {
+      "failedToLoad": "メッセージを読み込めませんでした。もう一度お試しください。",
+      "empty": "まだメッセージはありません",
+      "emptyHint": "あいさつして会話を始めましょう。",
+      "beginning": "会話の先頭",
+      "unreadDivider": "未読メッセージ"
+    },
+    "message": {
+      "deletedTombstone": "このメッセージは削除されました",
+      "forwardedFrom": "{{name}}さんから転送",
+      "goToMessage": "メッセージへ移動"
+    },
+    "reply": {
+      "deletedQuote": "削除されたメッセージ",
+      "attachmentQuote": "📎 添付ファイル"
+    },
+    "edit": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "hint": "Enterで保存 · Escでキャンセル"
+    },
+    "actions": {
+      "react": "リアクション",
+      "reply": "返信",
+      "forward": "転送",
+      "edit": "メッセージを編集",
+      "delete": "メッセージを削除"
+    },
+    "meta": {
+      "edited": "編集済み",
+      "messageInfo": "メッセージ情報"
+    },
+    "jump": {
+      "latest": "最新へ移動",
+      "newMessages_one": "新着メッセージ{{count}}件",
+      "newMessages_other": "新着メッセージ{{count}}件"
+    },
+    "select": {
+      "cancel": "選択をキャンセル",
+      "deleteOnlyOwn": "削除できるのは自分のメッセージのみです",
+      "deleteSelected": "選択したメッセージを削除",
+      "delete": "削除",
+      "forward": "転送",
+      "countSelected_one": "{{count}}件を選択中",
+      "countSelected_other": "{{count}}件を選択中"
+    },
+    "bulkDelete": {
+      "error": "一部のメッセージを削除できませんでした。もう一度お試しください。",
+      "successToast_one": "{{count}}件のメッセージを削除しました。",
+      "successToast_other": "{{count}}件のメッセージを削除しました。"
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "{{name}}さんに返信",
+        "deletedPreview": "削除されたメッセージ",
+        "attachmentPreview": "📎 添付ファイル",
+        "cancel": "返信をキャンセル"
+      },
+      "removeAttachment": "添付ファイルを削除",
+      "queuedClear": "クリア",
+      "placeholderCaption": "キャプションを追加…",
+      "placeholderGroup": "メッセージを入力…（@でメンション）",
+      "placeholderDirect": "メッセージを入力…",
+      "attach": "写真またはファイルを添付",
+      "emojiTitle": "絵文字",
+      "emojiAria": "絵文字を挿入",
+      "send": "メッセージを送信",
+      "hint": "Enterで送信 · Shift + Enterで改行",
+      "hintMention": " · @でメンション",
+      "hintAttach": " · 最大10 MBまで添付可能",
+      "queuedFiles_one": "他{{count}}件のファイルが待機中",
+      "queuedFiles_other": "他{{count}}件のファイルが待機中"
+    },
+    "toast": {
+      "messageNotLoaded": "そのメッセージは読み込まれていません。上にスクロールして以前のメッセージを読み込んでください。",
+      "sendError": "メッセージを送信できませんでした。もう一度お試しください。",
+      "reactionError": "リアクションを更新できませんでした。",
+      "deleteMessageError": "メッセージを削除できませんでした。",
+      "saveEditError": "編集内容を保存できませんでした。もう一度お試しください。",
+      "linkCopied": "メッセージのリンクをコピーしました。",
+      "linkCopyError": "リンクをコピーできませんでした。",
+      "openChatError": "そのチャットを開けませんでした。",
+      "messageTooLong_one": "メッセージが長すぎます（最大{{count}}文字）。",
+      "messageTooLong_other": "メッセージが長すぎます（最大{{count}}文字）。"
+    }
   }
 }

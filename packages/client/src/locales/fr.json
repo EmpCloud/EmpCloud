@@ -2538,5 +2538,202 @@
       "damaged": "Endommagé",
       "updated": "Mis à jour"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "En ligne",
+      "typing": "en train d'écrire…",
+      "typingOne": "{{name}} est en train d'écrire…",
+      "typingTwo": "{{name1}} et {{name2}} sont en train d'écrire…",
+      "typingMany_one": "{{count}} personne est en train d'écrire…",
+      "typingMany_other": "{{count}} personnes sont en train d'écrire…"
+    },
+    "fallback": {
+      "someone": "Quelqu'un"
+    },
+    "sr": {
+      "sentAttachment": "a envoyé une pièce jointe"
+    },
+    "header": {
+      "conversationTitleFallback": "Conversation",
+      "backToConversations": "Retour aux conversations",
+      "membersTooltip": "Membres : {{roster}}",
+      "viewMembers": "Voir les membres",
+      "searchInConversation": "Rechercher dans la conversation"
+    },
+    "mute": {
+      "unmute": "Réactiver les notifications",
+      "mute": "Couper les notifications",
+      "unmutedToast": "Notifications réactivées.",
+      "mutedToast": "Notifications coupées.",
+      "error": "Impossible de mettre à jour les notifications. Veuillez réessayer."
+    },
+    "archive": {
+      "unarchive": "Désarchiver la conversation",
+      "archive": "Archiver la conversation",
+      "unarchivedToast": "Conversation désarchivée.",
+      "archivedToast": "Conversation archivée.",
+      "error": "Impossible de mettre à jour la conversation. Veuillez réessayer."
+    },
+    "search": {
+      "placeholder": "Rechercher dans cette conversation…",
+      "noMatches": "Aucun résultat."
+    },
+    "pinned": {
+      "label": "Épinglé",
+      "attachmentFallback": "📎 Pièce jointe",
+      "goTo": "Aller au message épinglé",
+      "unpin": "Désépingler le message",
+      "labelCount_one": "Épinglé · {{count}}",
+      "labelCount_other": "Épinglés · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "Message épinglé.",
+      "unpinnedToast": "Message désépinglé.",
+      "error": "Impossible de mettre à jour l'épingle. Veuillez réessayer."
+    },
+    "members": {
+      "dialogLabel": "Membres du groupe",
+      "saveName": "Enregistrer le nom",
+      "cancel": "Annuler",
+      "renameGroup": "Renommer le groupe",
+      "close": "Fermer",
+      "changePhoto": "Changer la photo du groupe",
+      "descriptionPlaceholder": "Ajouter une description de groupe…",
+      "noDescription": "Aucune description",
+      "descCancel": "Annuler",
+      "descSave": "Enregistrer",
+      "youSuffix": "(Vous)",
+      "adminBadge": "Admin",
+      "removeMember": "Retirer {{name}}",
+      "addMembers": "Ajouter des membres",
+      "deleteGroup": "Supprimer le groupe",
+      "leaveGroup": "Quitter le groupe",
+      "memberCount_one": "{{count}} membre",
+      "memberCount_other": "{{count}} membres"
+    },
+    "confirm": {
+      "leaveTitle": "Quitter le groupe ?",
+      "leaveDescription": "Vous quitterez « {{group}} » et ne recevrez plus ses messages. L'administrateur du groupe pourra vous y rajouter.",
+      "leaveGroupFallback": "ce groupe",
+      "leaveConfirm": "Quitter",
+      "deleteGroupTitle": "Supprimer le groupe ?",
+      "deleteGroupDescription": "« {{group}} » sera supprimé pour tout le monde et retiré des listes de discussion de tous les membres. Cette action est irréversible.",
+      "deleteGroupFallback": "Ce groupe",
+      "deleteGroupConfirm": "Supprimer le groupe",
+      "bulkDeletePartial": "Seuls vos propres messages seront supprimés ; ceux des autres seront conservés. Cette action est irréversible.",
+      "bulkDeleteAll": "Ces messages seront supprimés pour tout le monde. Cette action est irréversible.",
+      "bulkDeleteConfirm": "Supprimer",
+      "removeMemberTitle": "Retirer ce membre ?",
+      "removeMemberDescription": "{{name}} sera retiré(e) de « {{group}} » et n'en verra plus les messages.",
+      "removeMemberGroupFallback": "ce groupe",
+      "removeMemberConfirm": "Retirer",
+      "bulkDeleteTitle_one": "Supprimer {{count}} message ?",
+      "bulkDeleteTitle_other": "Supprimer {{count}} messages ?"
+    },
+    "group": {
+      "renamedToast": "Groupe renommé.",
+      "renameError": "Impossible de renommer le groupe. Veuillez réessayer.",
+      "descriptionUpdatedToast": "Description mise à jour.",
+      "descriptionError": "Impossible de mettre à jour la description.",
+      "photoMustBeImage": "La photo du groupe doit être une image.",
+      "photoUpdatedToast": "Photo du groupe mise à jour.",
+      "photoUploadError": "Impossible d'envoyer la photo.",
+      "memberRemovedToast": "{{name}} a été retiré(e) du groupe.",
+      "memberRemoveError": "Impossible de retirer le membre. Veuillez réessayer.",
+      "leftToast": "Vous avez quitté le groupe.",
+      "leaveError": "Impossible de quitter le groupe. Veuillez réessayer.",
+      "deletedToast": "Groupe supprimé.",
+      "deleteError": "Impossible de supprimer le groupe. Veuillez réessayer."
+    },
+    "attachment": {
+      "tooLarge": "« {{name}} » dépasse 10 Mo."
+    },
+    "dropFiles": "Déposez les fichiers à envoyer",
+    "list": {
+      "failedToLoad": "Échec du chargement des messages. Veuillez réessayer.",
+      "empty": "Aucun message pour le moment",
+      "emptyHint": "Dites bonjour pour démarrer la conversation.",
+      "beginning": "Début de la conversation",
+      "unreadDivider": "Messages non lus"
+    },
+    "message": {
+      "deletedTombstone": "Ce message a été supprimé",
+      "forwardedFrom": "Transféré de {{name}}",
+      "goToMessage": "Aller au message"
+    },
+    "reply": {
+      "deletedQuote": "Message supprimé",
+      "attachmentQuote": "📎 Pièce jointe"
+    },
+    "edit": {
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "hint": "Entrée pour enregistrer · Échap pour annuler"
+    },
+    "actions": {
+      "react": "Réagir",
+      "reply": "Répondre",
+      "forward": "Transférer",
+      "edit": "Modifier le message",
+      "delete": "Supprimer le message"
+    },
+    "meta": {
+      "edited": "modifié",
+      "messageInfo": "Infos du message"
+    },
+    "jump": {
+      "latest": "Aller au plus récent",
+      "newMessages_one": "{{count}} nouveau message",
+      "newMessages_other": "{{count}} nouveaux messages"
+    },
+    "select": {
+      "cancel": "Annuler la sélection",
+      "deleteOnlyOwn": "Vous ne pouvez supprimer que vos propres messages",
+      "deleteSelected": "Supprimer la sélection",
+      "delete": "Supprimer",
+      "forward": "Transférer",
+      "countSelected_one": "{{count}} sélectionné",
+      "countSelected_other": "{{count}} sélectionnés"
+    },
+    "bulkDelete": {
+      "error": "Impossible de supprimer certains messages. Veuillez réessayer.",
+      "successToast_one": "{{count}} message supprimé.",
+      "successToast_other": "{{count}} messages supprimés."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "Réponse à {{name}}",
+        "deletedPreview": "Message supprimé",
+        "attachmentPreview": "📎 Pièce jointe",
+        "cancel": "Annuler la réponse"
+      },
+      "removeAttachment": "Supprimer la pièce jointe",
+      "queuedClear": "effacer",
+      "placeholderCaption": "Ajouter une légende…",
+      "placeholderGroup": "Écrivez un message… (@ pour mentionner)",
+      "placeholderDirect": "Écrivez un message…",
+      "attach": "Joindre une photo ou un fichier",
+      "emojiTitle": "Emoji",
+      "emojiAria": "Insérer un emoji",
+      "send": "Envoyer le message",
+      "hint": "Entrée pour envoyer · Maj + Entrée pour un saut de ligne",
+      "hintMention": " · @ pour mentionner",
+      "hintAttach": " · Joindre jusqu'à 10 Mo",
+      "queuedFiles_one": "{{count}} autre fichier en attente",
+      "queuedFiles_other": "{{count}} autres fichiers en attente"
+    },
+    "toast": {
+      "messageNotLoaded": "Ce message n'est pas chargé — faites défiler vers le haut pour charger les messages plus anciens.",
+      "sendError": "Impossible d'envoyer votre message. Veuillez réessayer.",
+      "reactionError": "Impossible de mettre à jour votre réaction.",
+      "deleteMessageError": "Impossible de supprimer le message.",
+      "saveEditError": "Impossible d'enregistrer votre modification. Veuillez réessayer.",
+      "linkCopied": "Lien du message copié.",
+      "linkCopyError": "Impossible de copier le lien.",
+      "openChatError": "Impossible d'ouvrir cette discussion.",
+      "messageTooLong_one": "Le message est trop long (max {{count}} caractère).",
+      "messageTooLong_other": "Le message est trop long (max {{count}} caractères)."
+    }
   }
 }

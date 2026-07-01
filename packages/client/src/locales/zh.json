@@ -2538,5 +2538,202 @@
       "damaged": "已损坏",
       "updated": "已更新"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "在线",
+      "typing": "正在输入…",
+      "typingOne": "{{name}} 正在输入…",
+      "typingTwo": "{{name1}} 和 {{name2}} 正在输入…",
+      "typingMany_one": "{{count}} 人正在输入…",
+      "typingMany_other": "{{count}} 人正在输入…"
+    },
+    "fallback": {
+      "someone": "某人"
+    },
+    "sr": {
+      "sentAttachment": "发送了一个附件"
+    },
+    "header": {
+      "conversationTitleFallback": "对话",
+      "backToConversations": "返回对话列表",
+      "membersTooltip": "成员：{{roster}}",
+      "viewMembers": "查看成员",
+      "searchInConversation": "在对话中搜索"
+    },
+    "mute": {
+      "unmute": "取消消息免打扰",
+      "mute": "开启消息免打扰",
+      "unmutedToast": "已取消消息免打扰。",
+      "mutedToast": "已开启消息免打扰。",
+      "error": "无法更新通知设置，请重试。"
+    },
+    "archive": {
+      "unarchive": "取消归档对话",
+      "archive": "归档对话",
+      "unarchivedToast": "已取消归档对话。",
+      "archivedToast": "已归档对话。",
+      "error": "无法更新对话，请重试。"
+    },
+    "search": {
+      "placeholder": "在此对话中搜索…",
+      "noMatches": "无匹配结果。"
+    },
+    "pinned": {
+      "label": "已置顶",
+      "attachmentFallback": "📎 附件",
+      "goTo": "跳转到置顶消息",
+      "unpin": "取消置顶消息",
+      "labelCount_one": "已置顶 · {{count}}",
+      "labelCount_other": "已置顶 · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "消息已置顶。",
+      "unpinnedToast": "已取消置顶消息。",
+      "error": "无法更新置顶状态，请重试。"
+    },
+    "members": {
+      "dialogLabel": "群组成员",
+      "saveName": "保存名称",
+      "cancel": "取消",
+      "renameGroup": "重命名群组",
+      "close": "关闭",
+      "changePhoto": "更换群组头像",
+      "descriptionPlaceholder": "添加群组简介…",
+      "noDescription": "暂无简介",
+      "descCancel": "取消",
+      "descSave": "保存",
+      "youSuffix": "（你）",
+      "adminBadge": "管理员",
+      "removeMember": "移除 {{name}}",
+      "addMembers": "添加成员",
+      "deleteGroup": "删除群组",
+      "leaveGroup": "退出群组",
+      "memberCount_one": "{{count}} 名成员",
+      "memberCount_other": "{{count}} 名成员"
+    },
+    "confirm": {
+      "leaveTitle": "退出群组？",
+      "leaveDescription": "你将退出“{{group}}”并停止接收其消息。群组管理员可以重新将你加入。",
+      "leaveGroupFallback": "该群组",
+      "leaveConfirm": "退出",
+      "deleteGroupTitle": "删除群组？",
+      "deleteGroupDescription": "“{{group}}”将对所有人删除，并从所有成员的聊天列表中移除。此操作无法撤销。",
+      "deleteGroupFallback": "该群组",
+      "deleteGroupConfirm": "删除群组",
+      "bulkDeletePartial": "仅会删除你自己的消息，其他人的消息将保留。此操作无法撤销。",
+      "bulkDeleteAll": "这些消息将对所有人删除。此操作无法撤销。",
+      "bulkDeleteConfirm": "删除",
+      "removeMemberTitle": "移除成员？",
+      "removeMemberDescription": "{{name}} 将被移出“{{group}}”，并不再看到其消息。",
+      "removeMemberGroupFallback": "该群组",
+      "removeMemberConfirm": "移除",
+      "bulkDeleteTitle_one": "删除 {{count}} 条消息？",
+      "bulkDeleteTitle_other": "删除 {{count}} 条消息？"
+    },
+    "group": {
+      "renamedToast": "群组已重命名。",
+      "renameError": "无法重命名群组，请重试。",
+      "descriptionUpdatedToast": "简介已更新。",
+      "descriptionError": "无法更新简介。",
+      "photoMustBeImage": "群组头像必须为图片。",
+      "photoUpdatedToast": "群组头像已更新。",
+      "photoUploadError": "无法上传图片。",
+      "memberRemovedToast": "{{name}} 已被移出群组。",
+      "memberRemoveError": "无法移除该成员，请重试。",
+      "leftToast": "你已退出群组。",
+      "leaveError": "无法退出群组，请重试。",
+      "deletedToast": "群组已删除。",
+      "deleteError": "无法删除群组，请重试。"
+    },
+    "attachment": {
+      "tooLarge": "“{{name}}”超过 10 MB。"
+    },
+    "dropFiles": "拖放文件以发送",
+    "list": {
+      "failedToLoad": "消息加载失败，请重试。",
+      "empty": "暂无消息",
+      "emptyHint": "打个招呼，开启对话吧。",
+      "beginning": "对话开头",
+      "unreadDivider": "未读消息"
+    },
+    "message": {
+      "deletedTombstone": "此消息已被删除",
+      "forwardedFrom": "转发自 {{name}}",
+      "goToMessage": "跳转到消息"
+    },
+    "reply": {
+      "deletedQuote": "消息已删除",
+      "attachmentQuote": "📎 附件"
+    },
+    "edit": {
+      "save": "保存",
+      "cancel": "取消",
+      "hint": "回车保存 · Esc 取消"
+    },
+    "actions": {
+      "react": "添加回应",
+      "reply": "回复",
+      "forward": "转发",
+      "edit": "编辑消息",
+      "delete": "删除消息"
+    },
+    "meta": {
+      "edited": "已编辑",
+      "messageInfo": "消息详情"
+    },
+    "jump": {
+      "latest": "跳转到最新",
+      "newMessages_one": "{{count}} 条新消息",
+      "newMessages_other": "{{count}} 条新消息"
+    },
+    "select": {
+      "cancel": "取消选择",
+      "deleteOnlyOwn": "你只能删除自己的消息",
+      "deleteSelected": "删除所选",
+      "delete": "删除",
+      "forward": "转发",
+      "countSelected_one": "已选择 {{count}} 条",
+      "countSelected_other": "已选择 {{count}} 条"
+    },
+    "bulkDelete": {
+      "error": "部分消息删除失败，请重试。",
+      "successToast_one": "已删除 {{count}} 条消息。",
+      "successToast_other": "已删除 {{count}} 条消息。"
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "正在回复 {{name}}",
+        "deletedPreview": "消息已删除",
+        "attachmentPreview": "📎 附件",
+        "cancel": "取消回复"
+      },
+      "removeAttachment": "移除附件",
+      "queuedClear": "清除",
+      "placeholderCaption": "添加文字说明…",
+      "placeholderGroup": "输入消息…（输入 @ 提及他人）",
+      "placeholderDirect": "输入消息…",
+      "attach": "添加照片或文件",
+      "emojiTitle": "表情",
+      "emojiAria": "插入表情",
+      "send": "发送消息",
+      "hint": "回车发送 · Shift + Enter 换行",
+      "hintMention": " · 输入 @ 提及他人",
+      "hintAttach": " · 最大可附加 10 MB",
+      "queuedFiles_one": "还有 {{count}} 个文件排队中",
+      "queuedFiles_other": "还有 {{count}} 个文件排队中"
+    },
+    "toast": {
+      "messageNotLoaded": "该消息尚未加载——向上滚动以加载更早的消息。",
+      "sendError": "消息发送失败，请重试。",
+      "reactionError": "无法更新你的回应。",
+      "deleteMessageError": "无法删除该消息。",
+      "saveEditError": "无法保存你的编辑，请重试。",
+      "linkCopied": "消息链接已复制。",
+      "linkCopyError": "无法复制链接。",
+      "openChatError": "无法打开该聊天。",
+      "messageTooLong_one": "消息过长（最多 {{count}} 个字符）。",
+      "messageTooLong_other": "消息过长（最多 {{count}} 个字符）。"
+    }
   }
 }

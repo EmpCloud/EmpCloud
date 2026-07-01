@@ -8,6 +8,7 @@
 // so the sidebar unread badge clears.
 
 import { useEffect, useLayoutEffect, useRef, useState, useMemo, Fragment } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ChatMessage, ConversationSummary } from "@empcloud/shared";
 import api from "@/api/client";
@@ -130,6 +131,7 @@ export default function MessageThread({
   conversation: ConversationSummary | null;
   onBack?: () => void;
 }) {
+  const { t } = useTranslation();
   const me = useAuthStore((s) => s.user);
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -408,7 +410,7 @@ export default function MessageThread({
   const jumpToMessage = (messageId: number) => {
     const node = scrollRef.current?.querySelector(`[data-msg-id="${messageId}"]`);
     if (!node) {
-      showToast("info", "That message isn't loaded — scroll up to load older messages.");
+      showToast("info", t("messageThread.toast.messageNotLoaded"));
       return;
     }
     node.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -448,8 +450,8 @@ export default function MessageThread({
     if (!newestId || newestMine || !messages) return;
     const last = messages[messages.length - 1];
     if (last.is_deleted || last.is_system) return;
-    const who = last.sender_name || "Someone";
-    const what = last.body || (last.attachment ? "sent an attachment" : "");
+    const who = last.sender_name || t("messageThread.fallback.someone");
+    const what = last.body || (last.attachment ? t("messageThread.sr.sentAttachment") : "");
     setSrAnnounce(`${who}: ${what}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newestId]);
@@ -738,7 +740,7 @@ export default function MessageThread({
   const stageFiles = (picked: File[]) => {
     const ok = picked.filter((f) => {
       if (f.size > MAX_ATTACHMENT_BYTES) {
-        showToast("error", `"${f.name}" is larger than 10 MB.`);
+        showToast("error", t("messageThread.attachment.tooLarge", { name: f.name }));
         return false;
       }
       return true;
@@ -788,7 +790,7 @@ export default function MessageThread({
     const body = draft.trim();
     if ((!body && !file) || sending) return;
     if (body.length > MAX_MESSAGE_CHARS) {
-      showToast("error", `Message is too long (max ${MAX_MESSAGE_CHARS} characters).`);
+      showToast("error", t("messageThread.toast.messageTooLong", { count: MAX_MESSAGE_CHARS }));
       return;
     }
     setSending(true);
@@ -872,7 +874,7 @@ export default function MessageThread({
       patchCache((old) =>
         old.map((m) => (m.id === tempId ? { ...m, tick_status: "failed" } : m)),
       );
-      showToast("error", "Couldn't send your message. Please try again.");
+      showToast("error", t("messageThread.toast.sendError"));
     } finally {
       setSending(false);
     }
@@ -981,9 +983,9 @@ export default function MessageThread({
       });
       await qc.invalidateQueries({ queryKey: ["chat-pinned", conversationId] });
       qc.invalidateQueries({ queryKey: ["chat-messages", conversationId] });
-      showToast("success", next ? "Message pinned." : "Message unpinned.");
+      showToast("success", next ? t("messageThread.pin.pinnedToast") : t("messageThread.pin.unpinnedToast"));
     } catch {
-      showToast("error", "Couldn't update the pin. Please try again.");
+      showToast("error", t("messageThread.pin.error"));
     }
   };
 
@@ -1052,9 +1054,9 @@ export default function MessageThread({
   const onTouchStartMsg = (e: React.TouchEvent, msg: ChatMessage) => {
     if (selectMode || msg.is_deleted || msg.id < 0) return;
     longPressFired.current = false;
-    const t = e.touches[0];
-    const x = t.clientX;
-    const y = t.clientY;
+    const touch = e.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
     longPressTimer.current = window.setTimeout(() => {
       longPressFired.current = true;
       // Haptic nudge where supported.
@@ -1094,7 +1096,7 @@ export default function MessageThread({
         { emoji },
       );
     } catch {
-      showToast("error", "Couldn't update your reaction.");
+      showToast("error", t("messageThread.toast.reactionError"));
       // Re-fetch to undo the optimistic change on failure.
       qc.invalidateQueries({ queryKey: ["chat-messages", conversationId] });
     }
@@ -1138,7 +1140,7 @@ export default function MessageThread({
       await qc.invalidateQueries({ queryKey: ["chat-messages", conversationId] });
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
     } catch {
-      showToast("error", "Couldn't delete the message.");
+      showToast("error", t("messageThread.toast.deleteMessageError"));
     } finally {
       setDeletingId(null);
     }
@@ -1164,12 +1166,12 @@ export default function MessageThread({
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
       showToast(
         "success",
-        `Deleted ${deletableSelected.length} message${deletableSelected.length > 1 ? "s" : ""}.`,
+        t("messageThread.bulkDelete.successToast", { count: deletableSelected.length }),
       );
       setConfirmBulkDelete(false);
       exitSelectMode();
     } catch {
-      showToast("error", "Couldn't delete some messages. Please try again.");
+      showToast("error", t("messageThread.bulkDelete.error"));
     } finally {
       setBulkDeleting(false);
     }
@@ -1208,7 +1210,7 @@ export default function MessageThread({
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
       cancelEdit();
     } catch {
-      showToast("error", "Couldn't save your edit. Please try again.");
+      showToast("error", t("messageThread.toast.saveEditError"));
     } finally {
       setSavingEdit(false);
     }
@@ -1224,10 +1226,10 @@ export default function MessageThread({
       // sources from the ["chat-conversations"] list — invalidating it refreshes
       // both the members panel and the sidebar member count.
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", `${memberName} was removed from the group.`);
+      showToast("success", t("messageThread.group.memberRemovedToast", { name: memberName }));
       setPendingRemove(null);
     } catch {
-      showToast("error", "Couldn't remove the member. Please try again.");
+      showToast("error", t("messageThread.group.memberRemoveError"));
     } finally {
       setRemoving(false);
     }
@@ -1238,12 +1240,12 @@ export default function MessageThread({
     try {
       await api.post(`/chat/conversations/${conversationId}/leave`);
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", "You left the group.");
+      showToast("success", t("messageThread.group.leftToast"));
       setConfirmLeave(false);
       setShowMembers(false);
       navigate("/messages"); // we no longer have access to this conversation
     } catch {
-      showToast("error", "Couldn't leave the group. Please try again.");
+      showToast("error", t("messageThread.group.leaveError"));
     } finally {
       setLeaving(false);
     }
@@ -1254,12 +1256,12 @@ export default function MessageThread({
     try {
       await api.delete(`/chat/conversations/${conversationId}`);
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", "Group deleted.");
+      showToast("success", t("messageThread.group.deletedToast"));
       setConfirmDeleteGroup(false);
       setShowMembers(false);
       navigate("/messages");
     } catch {
-      showToast("error", "Couldn't delete the group. Please try again.");
+      showToast("error", t("messageThread.group.deleteError"));
     } finally {
       setDeletingGroup(false);
     }
@@ -1285,10 +1287,10 @@ export default function MessageThread({
     try {
       await api.patch(`/chat/conversations/${conversationId}`, { name });
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", "Group renamed.");
+      showToast("success", t("messageThread.group.renamedToast"));
       setEditingName(false);
     } catch {
-      showToast("error", "Couldn't rename the group. Please try again.");
+      showToast("error", t("messageThread.group.renameError"));
     } finally {
       setSavingName(false);
     }
@@ -1309,10 +1311,10 @@ export default function MessageThread({
         description: descDraft.trim(),
       });
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", "Description updated.");
+      showToast("success", t("messageThread.group.descriptionUpdatedToast"));
       setEditingDesc(false);
     } catch {
-      showToast("error", "Couldn't update the description.");
+      showToast("error", t("messageThread.group.descriptionError"));
     } finally {
       setSavingDesc(false);
     }
@@ -1323,7 +1325,7 @@ export default function MessageThread({
   const handleAvatarPick = async (f: File | null) => {
     if (!f) return;
     if (!f.type.startsWith("image/")) {
-      showToast("error", "Group photo must be an image.");
+      showToast("error", t("messageThread.group.photoMustBeImage"));
       return;
     }
     const form = new FormData();
@@ -1336,9 +1338,9 @@ export default function MessageThread({
       // The serving URL is stable, so bust the cached avatar blob to show the
       // new image immediately.
       qc.invalidateQueries({ queryKey: ["chat-group-avatar"] });
-      showToast("success", "Group photo updated.");
+      showToast("success", t("messageThread.group.photoUpdatedToast"));
     } catch {
-      showToast("error", "Couldn't upload the photo.");
+      showToast("error", t("messageThread.group.photoUploadError"));
     }
   };
 
@@ -1351,9 +1353,9 @@ export default function MessageThread({
     try {
       await api.patch(`/chat/conversations/${conversationId}/mute`, { muted: !isMuted });
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", isMuted ? "Notifications unmuted." : "Notifications muted.");
+      showToast("success", isMuted ? t("messageThread.mute.unmutedToast") : t("messageThread.mute.mutedToast"));
     } catch {
-      showToast("error", "Couldn't update notifications. Please try again.");
+      showToast("error", t("messageThread.mute.error"));
     } finally {
       setMutingBusy(false);
     }
@@ -1367,9 +1369,9 @@ export default function MessageThread({
     try {
       await api.patch(`/chat/conversations/${conversationId}/archive`, { archived: !isArchived });
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
-      showToast("success", isArchived ? "Conversation unarchived." : "Conversation archived.");
+      showToast("success", isArchived ? t("messageThread.archive.unarchivedToast") : t("messageThread.archive.archivedToast"));
     } catch {
-      showToast("error", "Couldn't update the conversation. Please try again.");
+      showToast("error", t("messageThread.archive.error"));
     } finally {
       setArchivingBusy(false);
     }
@@ -1384,7 +1386,7 @@ export default function MessageThread({
       await qc.invalidateQueries({ queryKey: ["chat-conversations"] });
       navigate(`/messages/${res.data.data.id}`);
     } catch {
-      showToast("error", "Couldn't open that chat.");
+      showToast("error", t("messageThread.toast.openChatError"));
     }
   };
 
@@ -1394,7 +1396,7 @@ export default function MessageThread({
     if (isGroup) {
       const names = conversation.participants.map((p) => p.name).join(", ");
       const count = conversation.participants.length;
-      return names.length <= 60 ? names : `${count} members`;
+      return names.length <= 60 ? names : t("messageThread.members.memberCount", { count });
     }
     return conversation.counterpart?.designation ?? conversation.counterpart?.email ?? "";
   }, [conversation, isGroup]);
@@ -1424,7 +1426,7 @@ export default function MessageThread({
           <button
             onClick={onBack}
             className="p-1.5 -ml-1.5 rounded-lg text-gray-500 hover:bg-gray-100 sm:hidden"
-            aria-label="Back to conversations"
+            aria-label={t("messageThread.header.backToConversations")}
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -1455,11 +1457,11 @@ export default function MessageThread({
             type="button"
             onClick={() => setShowMembers(true)}
             className="min-w-0 flex items-center gap-1 text-left rounded-lg px-1 -mx-1 hover:bg-gray-50"
-            title={rosterTitle ? `Members: ${rosterTitle}` : "View members"}
+            title={rosterTitle ? t("messageThread.header.membersTooltip", { roster: rosterTitle }) : t("messageThread.header.viewMembers")}
           >
             <div className="min-w-0">
               <p className="text-sm font-semibold text-gray-900 truncate">
-                {conversation?.title ?? "Conversation"}
+                {conversation?.title ?? t("messageThread.header.conversationTitleFallback")}
               </p>
               {subtitle && <p className="text-xs text-gray-400 truncate">{subtitle}</p>}
             </div>
@@ -1468,7 +1470,7 @@ export default function MessageThread({
         ) : (
           <div className="min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate">
-              {conversation?.title ?? "Conversation"}
+              {conversation?.title ?? t("messageThread.header.conversationTitleFallback")}
             </p>
             {/* Presence line: "typing…" takes priority — when someone is typing
                 we show it here in place of Online / last seen. For a direct chat
@@ -1479,14 +1481,14 @@ export default function MessageThread({
               <p className="text-xs text-green-600 truncate">
                 {isGroup
                   ? typers.length === 1
-                    ? `${typers[0]} is typing…`
+                    ? t("messageThread.presence.typingOne", { name: typers[0] })
                     : typers.length === 2
-                      ? `${typers[0]} and ${typers[1]} are typing…`
-                      : `${typers.length} people are typing…`
-                  : "typing…"}
+                      ? t("messageThread.presence.typingTwo", { name1: typers[0], name2: typers[1] })
+                      : t("messageThread.presence.typingMany", { count: typers.length })
+                  : t("messageThread.presence.typing")}
               </p>
             ) : counterpartPresence?.online ? (
-              <p className="text-xs text-green-600">Online</p>
+              <p className="text-xs text-green-600">{t("messageThread.presence.online")}</p>
             ) : counterpartPresence ? (
               <p className="text-xs text-gray-400 truncate">
                 {lastSeenLabel(counterpartPresence.last_seen)}
@@ -1509,8 +1511,8 @@ export default function MessageThread({
               setSearchOpen((v) => !v);
               setThreadQuery("");
             }}
-            title="Search in conversation"
-            aria-label="Search in conversation"
+            title={t("messageThread.header.searchInConversation")}
+            aria-label={t("messageThread.header.searchInConversation")}
             className={`ml-auto p-2 rounded-lg hover:bg-gray-100 ${
               searchOpen ? "text-brand-600" : "text-gray-500"
             }`}
@@ -1524,8 +1526,8 @@ export default function MessageThread({
             type="button"
             onClick={handleToggleMute}
             disabled={mutingBusy}
-            title={isMuted ? "Unmute notifications" : "Mute notifications"}
-            aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
+            title={isMuted ? t("messageThread.mute.unmute") : t("messageThread.mute.mute")}
+            aria-label={isMuted ? t("messageThread.mute.unmute") : t("messageThread.mute.mute")}
             className={`p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
               isMuted ? "text-gray-400" : "text-gray-500"
             }`}
@@ -1539,8 +1541,8 @@ export default function MessageThread({
             type="button"
             onClick={handleToggleArchive}
             disabled={archivingBusy}
-            title={isArchived ? "Unarchive conversation" : "Archive conversation"}
-            aria-label={isArchived ? "Unarchive conversation" : "Archive conversation"}
+            title={isArchived ? t("messageThread.archive.unarchive") : t("messageThread.archive.archive")}
+            aria-label={isArchived ? t("messageThread.archive.unarchive") : t("messageThread.archive.archive")}
             className={`p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
               isArchived ? "text-brand-500" : "text-gray-500"
             }`}
@@ -1564,7 +1566,7 @@ export default function MessageThread({
               type="text"
               value={threadQuery}
               onChange={(e) => setThreadQuery(e.target.value)}
-              placeholder="Search in this conversation…"
+              placeholder={t("messageThread.search.placeholder")}
               data-gramm="false"
               className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
             />
@@ -1572,7 +1574,7 @@ export default function MessageThread({
           {threadQuery.trim().length >= 2 && (
             <div className="mt-1.5 max-h-48 overflow-y-auto">
               {(threadHits?.length ?? 0) === 0 ? (
-                <p className="px-2 py-2 text-xs text-gray-400">No matches.</p>
+                <p className="px-2 py-2 text-xs text-gray-400">{t("messageThread.search.noMatches")}</p>
               ) : (
                 threadHits!.map((hit) => (
                   <button
@@ -1600,23 +1602,25 @@ export default function MessageThread({
           <button
             type="button"
             onClick={() => jumpToMessage(pinnedMessages[0].id)}
-            title="Go to pinned message"
+            title={t("messageThread.pinned.goTo")}
             className="min-w-0 flex-1 text-left"
           >
             <p className="text-[11px] font-medium text-amber-700">
-              Pinned{pinnedMessages.length > 1 ? ` · ${pinnedMessages.length}` : ""}
+              {pinnedMessages.length > 1
+                ? t("messageThread.pinned.labelCount", { count: pinnedMessages.length })
+                : t("messageThread.pinned.label")}
             </p>
             <p className="truncate text-xs text-gray-600">
               <span className="text-gray-400">{pinnedMessages[0].sender_name}: </span>
-              {pinnedMessages[0].body || "📎 Attachment"}
+              {pinnedMessages[0].body || t("messageThread.pinned.attachmentFallback")}
             </p>
           </button>
           {/* Quick unpin */}
           <button
             type="button"
             onClick={() => handleTogglePin({ ...pinnedMessages[0], is_pinned: true })}
-            title="Unpin message"
-            aria-label="Unpin message"
+            title={t("messageThread.pinned.unpin")}
+            aria-label={t("messageThread.pinned.unpin")}
             className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-amber-500 hover:bg-amber-200/60 hover:text-amber-700"
           >
             <X className="h-3.5 w-3.5" />
@@ -1633,7 +1637,7 @@ export default function MessageThread({
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Group members"
+            aria-label={t("messageThread.members.dialogLabel")}
             className="w-full max-w-sm max-h-[80vh] overflow-hidden rounded-2xl bg-white shadow-xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1657,7 +1661,7 @@ export default function MessageThread({
                       onClick={handleRename}
                       disabled={savingName}
                       className="p-1 rounded-lg text-brand-600 hover:bg-brand-50 disabled:opacity-50"
-                      aria-label="Save name"
+                      aria-label={t("messageThread.members.saveName")}
                     >
                       <Check className="h-4 w-4" />
                     </button>
@@ -1666,7 +1670,7 @@ export default function MessageThread({
                       onClick={() => setEditingName(false)}
                       disabled={savingName}
                       className="p-1 rounded-lg text-gray-400 hover:bg-gray-100"
-                      aria-label="Cancel"
+                      aria-label={t("messageThread.members.cancel")}
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -1680,8 +1684,8 @@ export default function MessageThread({
                       <button
                         type="button"
                         onClick={startRename}
-                        title="Rename group"
-                        aria-label="Rename group"
+                        title={t("messageThread.members.renameGroup")}
+                        aria-label={t("messageThread.members.renameGroup")}
                         className="p-0.5 rounded text-gray-300 hover:text-brand-600 flex-shrink-0"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -1690,14 +1694,14 @@ export default function MessageThread({
                   </div>
                 )}
                 <p className="text-xs text-gray-400">
-                  {conversation.participants.length} members
+                  {t("messageThread.members.memberCount", { count: conversation.participants.length })}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowMembers(false)}
                 className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 flex-shrink-0"
-                aria-label="Close"
+                aria-label={t("messageThread.members.close")}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1712,8 +1716,8 @@ export default function MessageThread({
                     <button
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
-                      title="Change group photo"
-                      aria-label="Change group photo"
+                      title={t("messageThread.members.changePhoto")}
+                      aria-label={t("messageThread.members.changePhoto")}
                       className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-white shadow hover:bg-brand-700"
                     >
                       <Pencil className="h-3 w-3" />
@@ -1737,7 +1741,7 @@ export default function MessageThread({
                     onChange={(e) => setDescDraft(e.target.value)}
                     maxLength={500}
                     rows={2}
-                    placeholder="Add a group description…"
+                    placeholder={t("messageThread.members.descriptionPlaceholder")}
                     className="w-full resize-none rounded-lg border border-brand-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-200"
                   />
                   <div className="mt-1 flex justify-end gap-2 text-xs">
@@ -1747,7 +1751,7 @@ export default function MessageThread({
                       disabled={savingDesc}
                       className="rounded px-2 py-1 text-gray-500 hover:bg-gray-100"
                     >
-                      Cancel
+                      {t("messageThread.members.descCancel")}
                     </button>
                     <button
                       type="button"
@@ -1755,7 +1759,7 @@ export default function MessageThread({
                       disabled={savingDesc}
                       className="rounded bg-brand-600 px-2 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
                     >
-                      Save
+                      {t("messageThread.members.descSave")}
                     </button>
                   </div>
                 </div>
@@ -1768,7 +1772,9 @@ export default function MessageThread({
                   }`}
                 >
                   {conversation.description ||
-                    (isOwner ? "Add a group description…" : "No description")}
+                    (isOwner
+                      ? t("messageThread.members.descriptionPlaceholder")
+                      : t("messageThread.members.noDescription"))}
                 </button>
               )}
             </div>
@@ -1795,10 +1801,10 @@ export default function MessageThread({
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-gray-900 truncate">
                         {p.name}
-                        {isMe && <span className="ml-1 text-xs text-gray-400">(You)</span>}
+                        {isMe && <span className="ml-1 text-xs text-gray-400">{t("messageThread.members.youSuffix")}</span>}
                         {isCreator && (
                           <span className="ml-1 text-[10px] font-medium text-brand-600 uppercase tracking-wide">
-                            Admin
+                            {t("messageThread.members.adminBadge")}
                           </span>
                         )}
                       </p>
@@ -1810,8 +1816,8 @@ export default function MessageThread({
                       <button
                         type="button"
                         onClick={() => setPendingRemove({ id: p.user_id, name: p.name })}
-                        title={`Remove ${p.name}`}
-                        aria-label={`Remove ${p.name}`}
+                        title={t("messageThread.members.removeMember", { name: p.name })}
+                        aria-label={t("messageThread.members.removeMember", { name: p.name })}
                         className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-40 flex-shrink-0"
                       >
                         <UserMinus className="h-4 w-4" />
@@ -1830,14 +1836,14 @@ export default function MessageThread({
                     onClick={() => setShowAddMembers(true)}
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50"
                   >
-                    <UserPlus className="h-4 w-4" /> Add members
+                    <UserPlus className="h-4 w-4" /> {t("messageThread.members.addMembers")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmDeleteGroup(true)}
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
                   >
-                    <Trash2 className="h-4 w-4" /> Delete group
+                    <Trash2 className="h-4 w-4" /> {t("messageThread.members.deleteGroup")}
                   </button>
                 </>
               )}
@@ -1847,7 +1853,7 @@ export default function MessageThread({
                   onClick={() => setConfirmLeave(true)}
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
                 >
-                  <LogOut className="h-4 w-4" /> Leave group
+                  <LogOut className="h-4 w-4" /> {t("messageThread.members.leaveGroup")}
                 </button>
               )}
             </div>
@@ -1904,8 +1910,8 @@ export default function MessageThread({
                     const url = `${window.location.origin}/messages/${conversationId}?m=${contextMenu.msg.id}`;
                     navigator.clipboard
                       ?.writeText(url)
-                      .then(() => showToast("success", "Message link copied."))
-                      .catch(() => showToast("error", "Couldn't copy the link."));
+                      .then(() => showToast("success", t("messageThread.toast.linkCopied")))
+                      .catch(() => showToast("error", t("messageThread.toast.linkCopyError")));
                   }
                 : undefined,
             isPinned: !!contextMenu.msg.is_pinned,
@@ -1927,9 +1933,11 @@ export default function MessageThread({
       {/* Leave-group confirmation */}
       <ConfirmDialog
         open={confirmLeave}
-        title="Leave group?"
-        description={`You'll leave "${conversation?.title ?? "this group"}" and stop receiving its messages. You can be re-added by the group admin.`}
-        confirmText="Leave"
+        title={t("messageThread.confirm.leaveTitle")}
+        description={t("messageThread.confirm.leaveDescription", {
+          group: conversation?.title ?? t("messageThread.confirm.leaveGroupFallback"),
+        })}
+        confirmText={t("messageThread.confirm.leaveConfirm")}
         variant="danger"
         loading={leaving}
         onConfirm={handleLeave}
@@ -1939,9 +1947,11 @@ export default function MessageThread({
       {/* Delete-group confirmation (creator only) */}
       <ConfirmDialog
         open={confirmDeleteGroup}
-        title="Delete group?"
-        description={`"${conversation?.title ?? "This group"}" will be deleted for everyone and removed from all members' chat lists. This can't be undone.`}
-        confirmText="Delete group"
+        title={t("messageThread.confirm.deleteGroupTitle")}
+        description={t("messageThread.confirm.deleteGroupDescription", {
+          group: conversation?.title ?? t("messageThread.confirm.deleteGroupFallback"),
+        })}
+        confirmText={t("messageThread.confirm.deleteGroupConfirm")}
         variant="danger"
         loading={deletingGroup}
         onConfirm={handleDeleteGroup}
@@ -1951,13 +1961,13 @@ export default function MessageThread({
       {/* Bulk-delete confirmation (selected own messages) */}
       <ConfirmDialog
         open={confirmBulkDelete}
-        title={`Delete ${deletableSelected.length} message${deletableSelected.length > 1 ? "s" : ""}?`}
+        title={t("messageThread.confirm.bulkDeleteTitle", { count: deletableSelected.length })}
         description={
           deletableSelected.length < selectedIds.size
-            ? "Only your own messages will be deleted; others stay. This can't be undone."
-            : "These messages will be deleted for everyone. This can't be undone."
+            ? t("messageThread.confirm.bulkDeletePartial")
+            : t("messageThread.confirm.bulkDeleteAll")
         }
-        confirmText="Delete"
+        confirmText={t("messageThread.confirm.bulkDeleteConfirm")}
         variant="danger"
         loading={bulkDeleting}
         onConfirm={handleBulkDelete}
@@ -1967,13 +1977,16 @@ export default function MessageThread({
       {/* Remove-member confirmation (replaces the native confirm()). */}
       <ConfirmDialog
         open={!!pendingRemove}
-        title="Remove member?"
+        title={t("messageThread.confirm.removeMemberTitle")}
         description={
           pendingRemove
-            ? `${pendingRemove.name} will be removed from "${conversation?.title ?? "this group"}" and will no longer see its messages.`
+            ? t("messageThread.confirm.removeMemberDescription", {
+                name: pendingRemove.name,
+                group: conversation?.title ?? t("messageThread.confirm.removeMemberGroupFallback"),
+              })
             : ""
         }
-        confirmText="Remove"
+        confirmText={t("messageThread.confirm.removeMemberConfirm")}
         variant="danger"
         loading={removing}
         onConfirm={handleConfirmRemove}
@@ -1997,7 +2010,7 @@ export default function MessageThread({
       >
         {isDragging && (
           <div className="pointer-events-none absolute inset-0 z-30 m-2 flex items-center justify-center rounded-xl border-2 border-dashed border-brand-400 bg-brand-50/80">
-            <p className="text-sm font-medium text-brand-700">Drop files to send</p>
+            <p className="text-sm font-medium text-brand-700">{t("messageThread.dropFiles")}</p>
           </div>
         )}
         {isLoading ? (
@@ -2010,12 +2023,12 @@ export default function MessageThread({
           </div>
         ) : isError ? (
           <div className="h-full flex items-center justify-center text-sm text-red-500">
-            Failed to load messages. Please try again.
+            {t("messageThread.list.failedToLoad")}
           </div>
         ) : !messages || messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-gray-400">
-            <p className="text-sm font-medium text-gray-500">No messages yet</p>
-            <p className="text-xs mt-1">Say hello to get the conversation started.</p>
+            <p className="text-sm font-medium text-gray-500">{t("messageThread.list.empty")}</p>
+            <p className="text-xs mt-1">{t("messageThread.list.emptyHint")}</p>
           </div>
         ) : (
           // min-h-full + justify-end keeps a short conversation pinned to the
@@ -2030,7 +2043,7 @@ export default function MessageThread({
             )}
             {reachedStart && (
               <div className="flex justify-center py-2">
-                <span className="text-[11px] text-gray-400">Beginning of conversation</span>
+                <span className="text-[11px] text-gray-400">{t("messageThread.list.beginning")}</span>
               </div>
             )}
             {messages.map((msg, idx) => {
@@ -2057,7 +2070,7 @@ export default function MessageThread({
                     <div className="my-2 flex items-center gap-2">
                       <span className="h-px flex-1 bg-brand-300" />
                       <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-[11px] font-semibold text-brand-700">
-                        Unread messages
+                        {t("messageThread.list.unreadDivider")}
                       </span>
                       <span className="h-px flex-1 bg-brand-300" />
                     </div>
@@ -2118,7 +2131,7 @@ export default function MessageThread({
                       <div className={`flex items-end gap-1.5 ${mine ? "flex-row-reverse" : ""}`}>
                         {msg.is_deleted ? (
                           <div className="px-3.5 py-2 rounded-2xl bg-gray-100 text-gray-400 italic text-sm">
-                            This message was deleted
+                            {t("messageThread.message.deletedTombstone")}
                           </div>
                         ) : jumbo > 0 ? (
                           // Emoji-only message: render large + bubble-less (jumbo emoji).
@@ -2158,7 +2171,7 @@ export default function MessageThread({
                                 disabled={savingEdit}
                                 className="flex items-center gap-1 rounded-lg bg-brand-600 px-2.5 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
                               >
-                                <Check className="h-3 w-3" /> Save
+                                <Check className="h-3 w-3" /> {t("messageThread.edit.save")}
                               </button>
                               <button
                                 type="button"
@@ -2166,9 +2179,9 @@ export default function MessageThread({
                                 disabled={savingEdit}
                                 className="rounded-lg px-2 py-1 text-gray-500 hover:bg-gray-100"
                               >
-                                Cancel
+                                {t("messageThread.edit.cancel")}
                               </button>
-                              <span className="text-gray-400">Enter to save · Esc to cancel</span>
+                              <span className="text-gray-400">{t("messageThread.edit.hint")}</span>
                             </div>
                           </div>
                         ) : (
@@ -2184,7 +2197,7 @@ export default function MessageThread({
                               <p
                                 className={`mb-1 flex items-center gap-1 text-xs italic ${mine ? "text-white/70" : "text-gray-400"}`}
                               >
-                                <Forward className="h-3 w-3" /> Forwarded from {msg.forwarded_from}
+                                <Forward className="h-3 w-3" /> {t("messageThread.message.forwardedFrom", { name: msg.forwarded_from })}
                               </p>
                             )}
                             {/* Quoted reply header — click to jump to the original. */}
@@ -2195,7 +2208,7 @@ export default function MessageThread({
                                   e.stopPropagation();
                                   if (msg.reply_to) jumpToMessage(msg.reply_to.id);
                                 }}
-                                title="Go to message"
+                                title={t("messageThread.message.goToMessage")}
                                 className={`mb-1.5 block w-full rounded-lg border-l-2 px-2 py-1 text-left text-xs transition-colors ${
                                   mine
                                     ? "border-white/60 bg-white/15 hover:bg-white/25"
@@ -2211,9 +2224,9 @@ export default function MessageThread({
                                   className={`truncate ${mine ? "text-white/80" : "text-gray-500"}`}
                                 >
                                   {msg.reply_to.is_deleted
-                                    ? "Message deleted"
+                                    ? t("messageThread.reply.deletedQuote")
                                     : msg.reply_to.body ||
-                                      (msg.reply_to.has_attachment ? "📎 Attachment" : "")}
+                                      (msg.reply_to.has_attachment ? t("messageThread.reply.attachmentQuote") : "")}
                                 </p>
                               </button>
                             )}
@@ -2246,8 +2259,8 @@ export default function MessageThread({
                               onClick={() =>
                                 setReactPickerFor((cur) => (cur === msg.id ? null : msg.id))
                               }
-                              title="React"
-                              aria-label="React"
+                              title={t("messageThread.actions.react")}
+                              aria-label={t("messageThread.actions.react")}
                               className="p-1 rounded text-gray-300 hover:text-brand-600"
                             >
                               <SmilePlus className="h-3.5 w-3.5" />
@@ -2263,16 +2276,16 @@ export default function MessageThread({
                             )}
                             <button
                               onClick={() => setReplyTo(msg)}
-                              title="Reply"
-                              aria-label="Reply"
+                              title={t("messageThread.actions.reply")}
+                              aria-label={t("messageThread.actions.reply")}
                               className="p-1 rounded text-gray-300 hover:text-brand-600"
                             >
                               <Reply className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => setForwardMsgs([msg])}
-                              title="Forward"
-                              aria-label="Forward"
+                              title={t("messageThread.actions.forward")}
+                              aria-label={t("messageThread.actions.forward")}
                               className="p-1 rounded text-gray-300 hover:text-brand-600"
                             >
                               <Forward className="h-3.5 w-3.5" />
@@ -2280,8 +2293,8 @@ export default function MessageThread({
                             {mine && msg.body && (
                               <button
                                 onClick={() => startEdit(msg)}
-                                title="Edit message"
-                                aria-label="Edit message"
+                                title={t("messageThread.actions.edit")}
+                                aria-label={t("messageThread.actions.edit")}
                                 className="p-1 rounded text-gray-300 hover:text-brand-600"
                               >
                                 <Pencil className="h-3.5 w-3.5" />
@@ -2291,8 +2304,8 @@ export default function MessageThread({
                               <button
                                 onClick={() => handleDelete(msg.id)}
                                 disabled={deletingId === msg.id}
-                                title="Delete message"
-                                aria-label="Delete message"
+                                title={t("messageThread.actions.delete")}
+                                aria-label={t("messageThread.actions.delete")}
                                 className="p-1 rounded text-gray-300 hover:text-red-500 disabled:opacity-50"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
@@ -2305,7 +2318,7 @@ export default function MessageThread({
                         className={`flex items-center gap-1 text-[10px] text-gray-500 mt-0.5 ${mine ? "mr-1" : "ml-1"}`}
                       >
                         {clockTime(msg.created_at)}
-                        {msg.edited_at && !msg.is_deleted ? " · edited" : ""}
+                        {msg.edited_at && !msg.is_deleted ? ` · ${t("messageThread.meta.edited")}` : ""}
                         {/* My own ticks. In a group, tapping opens the receipts
                             panel; the glyph sits in a brand bubble so render it
                             against that color via a tiny wrapper. */}
@@ -2313,7 +2326,7 @@ export default function MessageThread({
                           <span
                             onClick={() => isGroup && msg.id > 0 && setReceiptsForId(msg.id)}
                             className={`ml-0.5 inline-flex items-center ${isGroup ? "cursor-pointer" : ""}`}
-                            title={isGroup ? "Message info" : msg.tick_status}
+                            title={isGroup ? t("messageThread.meta.messageInfo") : msg.tick_status}
                           >
                             <TickGlyph status={msg.tick_status} onRetry={() => handleRetry(msg)} />
                           </span>
@@ -2353,8 +2366,8 @@ export default function MessageThread({
           >
             <ChevronDown className="h-4 w-4" />
             {missedCount > 0
-              ? `${missedCount} new message${missedCount > 1 ? "s" : ""}`
-              : "Jump to latest"}
+              ? t("messageThread.jump.newMessages", { count: missedCount })
+              : t("messageThread.jump.latest")}
           </button>
         </div>
       )}
@@ -2376,12 +2389,12 @@ export default function MessageThread({
               type="button"
               onClick={exitSelectMode}
               className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100"
-              aria-label="Cancel selection"
+              aria-label={t("messageThread.select.cancel")}
             >
               <X className="h-5 w-5" />
             </button>
             <span className="text-sm font-medium text-gray-700">
-              {selectedIds.size} selected
+              {t("messageThread.select.countSelected", { count: selectedIds.size })}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -2392,12 +2405,12 @@ export default function MessageThread({
               onClick={() => setConfirmBulkDelete(true)}
               title={
                 deletableSelected.length === 0
-                  ? "You can only delete your own messages"
-                  : "Delete selected"
+                  ? t("messageThread.select.deleteOnlyOwn")
+                  : t("messageThread.select.deleteSelected")
               }
               className="flex items-center gap-1.5 rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-40"
             >
-              <Trash2 className="h-4 w-4" /> Delete
+              <Trash2 className="h-4 w-4" /> {t("messageThread.select.delete")}
             </button>
             <button
               type="button"
@@ -2408,7 +2421,7 @@ export default function MessageThread({
               }}
               className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
             >
-              <Forward className="h-4 w-4" /> Forward
+              <Forward className="h-4 w-4" /> {t("messageThread.select.forward")}
             </button>
           </div>
         </div>
@@ -2422,19 +2435,19 @@ export default function MessageThread({
             <Reply className="h-4 w-4 flex-shrink-0 text-brand-500" />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-brand-700">
-                Replying to {replyTo.sender_name}
+                {t("messageThread.composer.reply.replyingTo", { name: replyTo.sender_name })}
               </p>
               <p className="truncate text-xs text-gray-500">
                 {replyTo.is_deleted
-                  ? "Message deleted"
-                  : replyTo.body || (replyTo.attachment ? "📎 Attachment" : "")}
+                  ? t("messageThread.composer.reply.deletedPreview")
+                  : replyTo.body || (replyTo.attachment ? t("messageThread.composer.reply.attachmentPreview") : "")}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setReplyTo(null)}
               className="p-1 rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-600"
-              aria-label="Cancel reply"
+              aria-label={t("messageThread.composer.reply.cancel")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -2464,7 +2477,7 @@ export default function MessageThread({
               onClick={clearFile}
               disabled={sending}
               className="p-1 rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-600 disabled:opacity-50"
-              aria-label="Remove attachment"
+              aria-label={t("messageThread.composer.removeAttachment")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -2475,13 +2488,13 @@ export default function MessageThread({
         {queuedFiles.length > 0 && (
           <div className="mb-2 flex items-center gap-2 text-xs text-gray-500">
             <Paperclip className="h-3.5 w-3.5" />
-            {queuedFiles.length} more file{queuedFiles.length > 1 ? "s" : ""} queued
+            {t("messageThread.composer.queuedFiles", { count: queuedFiles.length })}
             <button
               type="button"
               onClick={() => setQueuedFiles([])}
               className="rounded px-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
             >
-              clear
+              {t("messageThread.composer.queuedClear")}
             </button>
           </div>
         )}
@@ -2559,8 +2572,8 @@ export default function MessageThread({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={sending}
-              title="Attach a photo or file"
-              aria-label="Attach a photo or file"
+              title={t("messageThread.composer.attach")}
+              aria-label={t("messageThread.composer.attach")}
               className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200/70 hover:text-gray-600 disabled:opacity-40"
             >
               <Paperclip className="h-5 w-5" />
@@ -2589,7 +2602,11 @@ export default function MessageThread({
               }
               rows={1}
               placeholder={
-                file ? "Add a caption…" : isGroup ? "Type a message… (@ to mention)" : "Type a message…"
+                file
+                  ? t("messageThread.composer.placeholderCaption")
+                  : isGroup
+                    ? t("messageThread.composer.placeholderGroup")
+                    : t("messageThread.composer.placeholderDirect")
               }
               // Stop Grammarly/extensions from injecting their overlay widget
               // into the composer (it was sitting on top of the rounded pill).
@@ -2602,8 +2619,8 @@ export default function MessageThread({
               type="button"
               onClick={() => setShowEmoji((v) => !v)}
               disabled={sending}
-              title="Emoji"
-              aria-label="Insert emoji"
+              title={t("messageThread.composer.emojiTitle")}
+              aria-label={t("messageThread.composer.emojiAria")}
               className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full hover:bg-gray-200/70 disabled:opacity-40 ${
                 showEmoji ? "text-brand-600" : "text-gray-400 hover:text-gray-600"
               }`}
@@ -2619,15 +2636,15 @@ export default function MessageThread({
               (!draft.trim() && !file) || sending || draft.length > MAX_MESSAGE_CHARS
             }
             className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:hover:bg-brand-600 disabled:active:scale-100"
-            aria-label="Send message"
+            aria-label={t("messageThread.composer.send")}
           >
             <Send className="h-[18px] w-[18px] -ml-0.5" />
           </button>
         </div>
         <div className="mt-1.5 ml-2 flex items-center justify-between gap-2">
           <p className="text-[10px] text-gray-400">
-            Enter to send · Shift + Enter for a new line
-            {isGroup ? " · @ to mention" : " · Attach up to 10 MB"}
+            {t("messageThread.composer.hint")}
+            {isGroup ? t("messageThread.composer.hintMention") : t("messageThread.composer.hintAttach")}
           </p>
           {/* Character counter — only shown as you approach / exceed the limit. */}
           {draft.length > MAX_MESSAGE_CHARS - 200 && (

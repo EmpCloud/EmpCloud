@@ -2544,5 +2544,202 @@
       "damaged": "Damaged",
       "updated": "Updated"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "Online",
+      "typing": "typing…",
+      "typingOne": "{{name}} is typing…",
+      "typingTwo": "{{name1}} and {{name2}} are typing…",
+      "typingMany_one": "{{count}} person is typing…",
+      "typingMany_other": "{{count}} people are typing…"
+    },
+    "fallback": {
+      "someone": "Someone"
+    },
+    "sr": {
+      "sentAttachment": "sent an attachment"
+    },
+    "header": {
+      "conversationTitleFallback": "Conversation",
+      "backToConversations": "Back to conversations",
+      "membersTooltip": "Members: {{roster}}",
+      "viewMembers": "View members",
+      "searchInConversation": "Search in conversation"
+    },
+    "mute": {
+      "unmute": "Unmute notifications",
+      "mute": "Mute notifications",
+      "unmutedToast": "Notifications unmuted.",
+      "mutedToast": "Notifications muted.",
+      "error": "Couldn't update notifications. Please try again."
+    },
+    "archive": {
+      "unarchive": "Unarchive conversation",
+      "archive": "Archive conversation",
+      "unarchivedToast": "Conversation unarchived.",
+      "archivedToast": "Conversation archived.",
+      "error": "Couldn't update the conversation. Please try again."
+    },
+    "search": {
+      "placeholder": "Search in this conversation…",
+      "noMatches": "No matches."
+    },
+    "pinned": {
+      "label": "Pinned",
+      "attachmentFallback": "📎 Attachment",
+      "goTo": "Go to pinned message",
+      "unpin": "Unpin message",
+      "labelCount_one": "Pinned · {{count}}",
+      "labelCount_other": "Pinned · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "Message pinned.",
+      "unpinnedToast": "Message unpinned.",
+      "error": "Couldn't update the pin. Please try again."
+    },
+    "members": {
+      "dialogLabel": "Group members",
+      "saveName": "Save name",
+      "cancel": "Cancel",
+      "renameGroup": "Rename group",
+      "close": "Close",
+      "changePhoto": "Change group photo",
+      "descriptionPlaceholder": "Add a group description…",
+      "noDescription": "No description",
+      "descCancel": "Cancel",
+      "descSave": "Save",
+      "youSuffix": "(You)",
+      "adminBadge": "Admin",
+      "removeMember": "Remove {{name}}",
+      "addMembers": "Add members",
+      "deleteGroup": "Delete group",
+      "leaveGroup": "Leave group",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members"
+    },
+    "confirm": {
+      "leaveTitle": "Leave group?",
+      "leaveDescription": "You'll leave \"{{group}}\" and stop receiving its messages. You can be re-added by the group admin.",
+      "leaveGroupFallback": "this group",
+      "leaveConfirm": "Leave",
+      "deleteGroupTitle": "Delete group?",
+      "deleteGroupDescription": "\"{{group}}\" will be deleted for everyone and removed from all members' chat lists. This can't be undone.",
+      "deleteGroupFallback": "This group",
+      "deleteGroupConfirm": "Delete group",
+      "bulkDeletePartial": "Only your own messages will be deleted; others stay. This can't be undone.",
+      "bulkDeleteAll": "These messages will be deleted for everyone. This can't be undone.",
+      "bulkDeleteConfirm": "Delete",
+      "removeMemberTitle": "Remove member?",
+      "removeMemberDescription": "{{name}} will be removed from \"{{group}}\" and will no longer see its messages.",
+      "removeMemberGroupFallback": "this group",
+      "removeMemberConfirm": "Remove",
+      "bulkDeleteTitle_one": "Delete {{count}} message?",
+      "bulkDeleteTitle_other": "Delete {{count}} messages?"
+    },
+    "group": {
+      "renamedToast": "Group renamed.",
+      "renameError": "Couldn't rename the group. Please try again.",
+      "descriptionUpdatedToast": "Description updated.",
+      "descriptionError": "Couldn't update the description.",
+      "photoMustBeImage": "Group photo must be an image.",
+      "photoUpdatedToast": "Group photo updated.",
+      "photoUploadError": "Couldn't upload the photo.",
+      "memberRemovedToast": "{{name}} was removed from the group.",
+      "memberRemoveError": "Couldn't remove the member. Please try again.",
+      "leftToast": "You left the group.",
+      "leaveError": "Couldn't leave the group. Please try again.",
+      "deletedToast": "Group deleted.",
+      "deleteError": "Couldn't delete the group. Please try again."
+    },
+    "attachment": {
+      "tooLarge": "\"{{name}}\" is larger than 10 MB."
+    },
+    "dropFiles": "Drop files to send",
+    "list": {
+      "failedToLoad": "Failed to load messages. Please try again.",
+      "empty": "No messages yet",
+      "emptyHint": "Say hello to get the conversation started.",
+      "beginning": "Beginning of conversation",
+      "unreadDivider": "Unread messages"
+    },
+    "message": {
+      "deletedTombstone": "This message was deleted",
+      "forwardedFrom": "Forwarded from {{name}}",
+      "goToMessage": "Go to message"
+    },
+    "reply": {
+      "deletedQuote": "Message deleted",
+      "attachmentQuote": "📎 Attachment"
+    },
+    "edit": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "hint": "Enter to save · Esc to cancel"
+    },
+    "actions": {
+      "react": "React",
+      "reply": "Reply",
+      "forward": "Forward",
+      "edit": "Edit message",
+      "delete": "Delete message"
+    },
+    "meta": {
+      "edited": "edited",
+      "messageInfo": "Message info"
+    },
+    "jump": {
+      "latest": "Jump to latest",
+      "newMessages_one": "{{count}} new message",
+      "newMessages_other": "{{count}} new messages"
+    },
+    "select": {
+      "cancel": "Cancel selection",
+      "deleteOnlyOwn": "You can only delete your own messages",
+      "deleteSelected": "Delete selected",
+      "delete": "Delete",
+      "forward": "Forward",
+      "countSelected_one": "{{count}} selected",
+      "countSelected_other": "{{count}} selected"
+    },
+    "bulkDelete": {
+      "error": "Couldn't delete some messages. Please try again.",
+      "successToast_one": "Deleted {{count}} message.",
+      "successToast_other": "Deleted {{count}} messages."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "Replying to {{name}}",
+        "deletedPreview": "Message deleted",
+        "attachmentPreview": "📎 Attachment",
+        "cancel": "Cancel reply"
+      },
+      "removeAttachment": "Remove attachment",
+      "queuedClear": "clear",
+      "placeholderCaption": "Add a caption…",
+      "placeholderGroup": "Type a message… (@ to mention)",
+      "placeholderDirect": "Type a message…",
+      "attach": "Attach a photo or file",
+      "emojiTitle": "Emoji",
+      "emojiAria": "Insert emoji",
+      "send": "Send message",
+      "hint": "Enter to send · Shift + Enter for a new line",
+      "hintMention": " · @ to mention",
+      "hintAttach": " · Attach up to 10 MB",
+      "queuedFiles_one": "{{count}} more file queued",
+      "queuedFiles_other": "{{count}} more files queued"
+    },
+    "toast": {
+      "messageNotLoaded": "That message isn't loaded — scroll up to load older messages.",
+      "sendError": "Couldn't send your message. Please try again.",
+      "reactionError": "Couldn't update your reaction.",
+      "deleteMessageError": "Couldn't delete the message.",
+      "saveEditError": "Couldn't save your edit. Please try again.",
+      "linkCopied": "Message link copied.",
+      "linkCopyError": "Couldn't copy the link.",
+      "openChatError": "Couldn't open that chat.",
+      "messageTooLong_one": "Message is too long (max {{count}} characters).",
+      "messageTooLong_other": "Message is too long (max {{count}} characters)."
+    }
   }
 }

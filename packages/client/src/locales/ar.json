@@ -2538,5 +2538,238 @@
       "damaged": "تالف",
       "updated": "تم التحديث"
     }
+  },
+  "messageThread": {
+    "presence": {
+      "online": "متصل",
+      "typing": "يكتب…",
+      "typingOne": "‏{{name}} يكتب…",
+      "typingTwo": "‏{{name1}} و{{name2}} يكتبان…",
+      "typingMany_zero": "‏{{count}} أشخاص يكتبون…",
+      "typingMany_one": "‏{{count}} أشخاص يكتبون…",
+      "typingMany_two": "‏{{count}} أشخاص يكتبون…",
+      "typingMany_few": "‏{{count}} أشخاص يكتبون…",
+      "typingMany_many": "‏{{count}} شخصًا يكتبون…",
+      "typingMany_other": "‏{{count}} شخص يكتبون…"
+    },
+    "fallback": {
+      "someone": "شخص ما"
+    },
+    "sr": {
+      "sentAttachment": "أرسل مرفقًا"
+    },
+    "header": {
+      "conversationTitleFallback": "محادثة",
+      "backToConversations": "العودة إلى المحادثات",
+      "membersTooltip": "الأعضاء: {{roster}}",
+      "viewMembers": "عرض الأعضاء",
+      "searchInConversation": "البحث في المحادثة"
+    },
+    "mute": {
+      "unmute": "إلغاء كتم الإشعارات",
+      "mute": "كتم الإشعارات",
+      "unmutedToast": "تم إلغاء كتم الإشعارات.",
+      "mutedToast": "تم كتم الإشعارات.",
+      "error": "تعذّر تحديث الإشعارات. يُرجى المحاولة مرة أخرى."
+    },
+    "archive": {
+      "unarchive": "إلغاء أرشفة المحادثة",
+      "archive": "أرشفة المحادثة",
+      "unarchivedToast": "تم إلغاء أرشفة المحادثة.",
+      "archivedToast": "تمت أرشفة المحادثة.",
+      "error": "تعذّر تحديث المحادثة. يُرجى المحاولة مرة أخرى."
+    },
+    "search": {
+      "placeholder": "البحث في هذه المحادثة…",
+      "noMatches": "لا توجد نتائج."
+    },
+    "pinned": {
+      "label": "مثبّتة",
+      "attachmentFallback": "📎 مرفق",
+      "goTo": "الانتقال إلى الرسالة المثبّتة",
+      "unpin": "إلغاء تثبيت الرسالة",
+      "labelCount_zero": "مثبّتة · {{count}}",
+      "labelCount_one": "مثبّتة · {{count}}",
+      "labelCount_two": "مثبّتة · {{count}}",
+      "labelCount_few": "مثبّتة · {{count}}",
+      "labelCount_many": "مثبّتة · {{count}}",
+      "labelCount_other": "مثبّتة · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "تم تثبيت الرسالة.",
+      "unpinnedToast": "تم إلغاء تثبيت الرسالة.",
+      "error": "تعذّر تحديث التثبيت. يُرجى المحاولة مرة أخرى."
+    },
+    "members": {
+      "dialogLabel": "أعضاء المجموعة",
+      "saveName": "حفظ الاسم",
+      "cancel": "إلغاء",
+      "renameGroup": "إعادة تسمية المجموعة",
+      "close": "إغلاق",
+      "changePhoto": "تغيير صورة المجموعة",
+      "descriptionPlaceholder": "أضف وصفًا للمجموعة…",
+      "noDescription": "لا يوجد وصف",
+      "descCancel": "إلغاء",
+      "descSave": "حفظ",
+      "youSuffix": "(أنت)",
+      "adminBadge": "مشرف",
+      "removeMember": "إزالة {{name}}",
+      "addMembers": "إضافة أعضاء",
+      "deleteGroup": "حذف المجموعة",
+      "leaveGroup": "مغادرة المجموعة",
+      "memberCount_zero": "‏{{count}} أعضاء",
+      "memberCount_one": "‏{{count}} أعضاء",
+      "memberCount_two": "‏{{count}} أعضاء",
+      "memberCount_few": "‏{{count}} أعضاء",
+      "memberCount_many": "‏{{count}} عضوًا",
+      "memberCount_other": "‏{{count}} عضو"
+    },
+    "confirm": {
+      "leaveTitle": "مغادرة المجموعة؟",
+      "leaveDescription": "ستغادر \"{{group}}\" وستتوقف عن تلقّي رسائلها. يمكن لمشرف المجموعة إعادة إضافتك.",
+      "leaveGroupFallback": "هذه المجموعة",
+      "leaveConfirm": "مغادرة",
+      "deleteGroupTitle": "حذف المجموعة؟",
+      "deleteGroupDescription": "سيتم حذف \"{{group}}\" للجميع وإزالتها من قوائم محادثات كل الأعضاء. لا يمكن التراجع عن هذا الإجراء.",
+      "deleteGroupFallback": "هذه المجموعة",
+      "deleteGroupConfirm": "حذف المجموعة",
+      "bulkDeletePartial": "سيتم حذف رسائلك أنت فقط؛ وستبقى رسائل الآخرين. لا يمكن التراجع عن هذا الإجراء.",
+      "bulkDeleteAll": "سيتم حذف هذه الرسائل للجميع. لا يمكن التراجع عن هذا الإجراء.",
+      "bulkDeleteConfirm": "حذف",
+      "removeMemberTitle": "إزالة العضو؟",
+      "removeMemberDescription": "ستتم إزالة {{name}} من \"{{group}}\" ولن يرى رسائلها بعد الآن.",
+      "removeMemberGroupFallback": "هذه المجموعة",
+      "removeMemberConfirm": "إزالة",
+      "bulkDeleteTitle_zero": "حذف {{count}} رسالة؟",
+      "bulkDeleteTitle_one": "حذف {{count}} رسالة؟",
+      "bulkDeleteTitle_two": "حذف {{count}} رسالة؟",
+      "bulkDeleteTitle_few": "حذف {{count}} رسائل؟",
+      "bulkDeleteTitle_many": "حذف {{count}} رسالة؟",
+      "bulkDeleteTitle_other": "حذف {{count}} رسالة؟"
+    },
+    "group": {
+      "renamedToast": "تمت إعادة تسمية المجموعة.",
+      "renameError": "تعذّرت إعادة تسمية المجموعة. يُرجى المحاولة مرة أخرى.",
+      "descriptionUpdatedToast": "تم تحديث الوصف.",
+      "descriptionError": "تعذّر تحديث الوصف.",
+      "photoMustBeImage": "يجب أن تكون صورة المجموعة من نوع صورة.",
+      "photoUpdatedToast": "تم تحديث صورة المجموعة.",
+      "photoUploadError": "تعذّر رفع الصورة.",
+      "memberRemovedToast": "تمت إزالة {{name}} من المجموعة.",
+      "memberRemoveError": "تعذّرت إزالة العضو. يُرجى المحاولة مرة أخرى.",
+      "leftToast": "لقد غادرت المجموعة.",
+      "leaveError": "تعذّرت مغادرة المجموعة. يُرجى المحاولة مرة أخرى.",
+      "deletedToast": "تم حذف المجموعة.",
+      "deleteError": "تعذّر حذف المجموعة. يُرجى المحاولة مرة أخرى."
+    },
+    "attachment": {
+      "tooLarge": "حجم \"{{name}}\" أكبر من 10 ميغابايت."
+    },
+    "dropFiles": "أفلِت الملفات للإرسال",
+    "list": {
+      "failedToLoad": "تعذّر تحميل الرسائل. يُرجى المحاولة مرة أخرى.",
+      "empty": "لا توجد رسائل بعد",
+      "emptyHint": "ابدأ المحادثة بإلقاء التحية.",
+      "beginning": "بداية المحادثة",
+      "unreadDivider": "رسائل غير مقروءة"
+    },
+    "message": {
+      "deletedTombstone": "تم حذف هذه الرسالة",
+      "forwardedFrom": "مُعاد توجيهها من {{name}}",
+      "goToMessage": "الانتقال إلى الرسالة"
+    },
+    "reply": {
+      "deletedQuote": "تم حذف الرسالة",
+      "attachmentQuote": "📎 مرفق"
+    },
+    "edit": {
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "hint": "Enter للحفظ · Esc للإلغاء"
+    },
+    "actions": {
+      "react": "تفاعل",
+      "reply": "رد",
+      "forward": "إعادة توجيه",
+      "edit": "تعديل الرسالة",
+      "delete": "حذف الرسالة"
+    },
+    "meta": {
+      "edited": "مُعدّلة",
+      "messageInfo": "معلومات الرسالة"
+    },
+    "jump": {
+      "latest": "الانتقال إلى الأحدث",
+      "newMessages_zero": "{{count}} رسالة جديدة",
+      "newMessages_one": "{{count}} رسالة جديدة",
+      "newMessages_two": "{{count}} رسالة جديدة",
+      "newMessages_few": "{{count}} رسائل جديدة",
+      "newMessages_many": "{{count}} رسالة جديدة",
+      "newMessages_other": "{{count}} رسالة جديدة"
+    },
+    "select": {
+      "cancel": "إلغاء التحديد",
+      "deleteOnlyOwn": "يمكنك حذف رسائلك أنت فقط",
+      "deleteSelected": "حذف المحدد",
+      "delete": "حذف",
+      "forward": "إعادة توجيه",
+      "countSelected_zero": "تم تحديد {{count}}",
+      "countSelected_one": "تم تحديد {{count}}",
+      "countSelected_two": "تم تحديد {{count}}",
+      "countSelected_few": "تم تحديد {{count}}",
+      "countSelected_many": "تم تحديد {{count}}",
+      "countSelected_other": "تم تحديد {{count}}"
+    },
+    "bulkDelete": {
+      "error": "تعذّر حذف بعض الرسائل. يُرجى المحاولة مرة أخرى.",
+      "successToast_zero": "تم حذف {{count}} رسالة.",
+      "successToast_one": "تم حذف {{count}} رسالة.",
+      "successToast_two": "تم حذف {{count}} رسالة.",
+      "successToast_few": "تم حذف {{count}} رسائل.",
+      "successToast_many": "تم حذف {{count}} رسالة.",
+      "successToast_other": "تم حذف {{count}} رسالة."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "الرد على {{name}}",
+        "deletedPreview": "تم حذف الرسالة",
+        "attachmentPreview": "📎 مرفق",
+        "cancel": "إلغاء الرد"
+      },
+      "removeAttachment": "إزالة المرفق",
+      "queuedClear": "مسح",
+      "placeholderCaption": "أضف تعليقًا…",
+      "placeholderGroup": "اكتب رسالة… (@ للإشارة)",
+      "placeholderDirect": "اكتب رسالة…",
+      "attach": "إرفاق صورة أو ملف",
+      "emojiTitle": "إيموجي",
+      "emojiAria": "إدراج إيموجي",
+      "send": "إرسال الرسالة",
+      "hint": "Enter للإرسال · Shift + Enter لسطر جديد",
+      "hintMention": " · @ للإشارة",
+      "hintAttach": " · أرفِق حتى 10 ميغابايت",
+      "queuedFiles_zero": "{{count}} ملف إضافي في قائمة الانتظار",
+      "queuedFiles_one": "{{count}} ملف إضافي في قائمة الانتظار",
+      "queuedFiles_two": "{{count}} ملف إضافي في قائمة الانتظار",
+      "queuedFiles_few": "{{count}} ملفات إضافية في قائمة الانتظار",
+      "queuedFiles_many": "{{count}} ملفًا إضافيًا في قائمة الانتظار",
+      "queuedFiles_other": "{{count}} ملف إضافي في قائمة الانتظار"
+    },
+    "toast": {
+      "messageNotLoaded": "تلك الرسالة غير محمّلة — مرّر للأعلى لتحميل الرسائل الأقدم.",
+      "sendError": "تعذّر إرسال رسالتك. يُرجى المحاولة مرة أخرى.",
+      "reactionError": "تعذّر تحديث تفاعلك.",
+      "deleteMessageError": "تعذّر حذف الرسالة.",
+      "saveEditError": "تعذّر حفظ تعديلك. يُرجى المحاولة مرة أخرى.",
+      "linkCopied": "تم نسخ رابط الرسالة.",
+      "linkCopyError": "تعذّر نسخ الرابط.",
+      "openChatError": "تعذّر فتح تلك المحادثة.",
+      "messageTooLong_zero": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرف).",
+      "messageTooLong_one": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرف).",
+      "messageTooLong_two": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرف).",
+      "messageTooLong_few": "الرسالة طويلة جدًا (الحد الأقصى {{count}} أحرف).",
+      "messageTooLong_many": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرفًا).",
+      "messageTooLong_other": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرف)."
+    }
   }
 }
