@@ -6389,5 +6389,14 @@
     "assignedCount_other": "(已分配 {{count}} 个)",
     "permissionCount_one": "{{count}} 项权限",
     "permissionCount_other": "{{count}} 项权限"
+  },
+  "viewModeToggle": {
+    "myView": "我的视图",
+    "adminView": "管理员视图",
+    "myViewTitle": "个人自助服务视图",
+    "adminViewTitle": "管理员视图 — 仅显示您的自定义角色权限已解锁的项目"
+  },
+  "aiBadge": {
+    "label": "AI 驱动"
   }
 }

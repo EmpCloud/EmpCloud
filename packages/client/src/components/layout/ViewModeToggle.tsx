@@ -7,8 +7,10 @@
 import { useViewModeStore } from "@/lib/use-view-mode";
 import { useNavigate } from "react-router-dom";
 import { UserCircle, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function ViewModeToggle() {
+  const { t } = useTranslation();
   const viewMode = useViewModeStore((s) => s.viewMode);
   const setViewMode = useViewModeStore((s) => s.setViewMode);
   const navigate = useNavigate();
@@ -31,10 +33,10 @@ export function ViewModeToggle() {
             ? "bg-white text-gray-900 shadow-sm"
             : "text-gray-500 hover:text-gray-700"
         }`}
-        title="Personal self-service view"
+        title={t("viewModeToggle.myViewTitle")}
       >
         <UserCircle className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">My view</span>
+        <span className="hidden sm:inline">{t("viewModeToggle.myView")}</span>
       </button>
       <button
         type="button"
@@ -44,10 +46,10 @@ export function ViewModeToggle() {
             ? "bg-brand-600 text-white shadow-sm"
             : "text-gray-500 hover:text-gray-700"
         }`}
-        title="Admin view — only items your custom-role permissions unlock"
+        title={t("viewModeToggle.adminViewTitle")}
       >
         <Shield className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Admin view</span>
+        <span className="hidden sm:inline">{t("viewModeToggle.adminView")}</span>
       </button>
     </div>
   );

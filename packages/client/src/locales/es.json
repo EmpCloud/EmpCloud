@@ -6389,5 +6389,14 @@
     "assignedCount_other": "({{count}} asignados)",
     "permissionCount_one": "{{count}} permiso",
     "permissionCount_other": "{{count}} permisos"
+  },
+  "viewModeToggle": {
+    "myView": "Mi vista",
+    "adminView": "Vista de administrador",
+    "myViewTitle": "Vista personal de autoservicio",
+    "adminViewTitle": "Vista de administrador — solo los elementos que habilitan los permisos de tu rol personalizado"
+  },
+  "aiBadge": {
+    "label": "Con tecnología de IA"
   }
 }

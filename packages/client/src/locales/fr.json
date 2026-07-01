@@ -6389,5 +6389,14 @@
     "assignedCount_other": "({{count}} attribués)",
     "permissionCount_one": "{{count}} autorisation",
     "permissionCount_other": "{{count}} autorisations"
+  },
+  "viewModeToggle": {
+    "myView": "Ma vue",
+    "adminView": "Vue administrateur",
+    "myViewTitle": "Vue libre-service personnelle",
+    "adminViewTitle": "Vue administrateur — uniquement les éléments débloqués par les autorisations de votre rôle personnalisé"
+  },
+  "aiBadge": {
+    "label": "Optimisé par l'IA"
   }
 }

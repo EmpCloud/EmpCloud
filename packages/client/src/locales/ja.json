@@ -6389,5 +6389,14 @@
     "assignedCount_other": "（{{count}}件割り当て済み）",
     "permissionCount_one": "{{count}}件の権限",
     "permissionCount_other": "{{count}}件の権限"
+  },
+  "viewModeToggle": {
+    "myView": "マイビュー",
+    "adminView": "管理者ビュー",
+    "myViewTitle": "個人向けセルフサービスビュー",
+    "adminViewTitle": "管理者ビュー — カスタムロールの権限で許可された項目のみ"
+  },
+  "aiBadge": {
+    "label": "AI搭載"
   }
 }

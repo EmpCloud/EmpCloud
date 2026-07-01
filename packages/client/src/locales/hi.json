@@ -6389,5 +6389,14 @@
     "assignedCount_other": "({{count}} असाइन किए गए)",
     "permissionCount_one": "{{count}} अनुमति",
     "permissionCount_other": "{{count}} अनुमतियाँ"
+  },
+  "viewModeToggle": {
+    "myView": "मेरा व्यू",
+    "adminView": "एडमिन व्यू",
+    "myViewTitle": "व्यक्तिगत सेल्फ-सर्विस व्यू",
+    "adminViewTitle": "एडमिन व्यू — केवल वे आइटम जो आपकी कस्टम-रोल अनुमतियाँ अनलॉक करती हैं"
+  },
+  "aiBadge": {
+    "label": "AI संचालित"
   }
 }

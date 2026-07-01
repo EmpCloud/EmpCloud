@@ -6389,5 +6389,14 @@
     "assignedCount_other": "({{count}} zugewiesen)",
     "permissionCount_one": "{{count}} Berechtigung",
     "permissionCount_other": "{{count}} Berechtigungen"
+  },
+  "viewModeToggle": {
+    "myView": "Meine Ansicht",
+    "adminView": "Administratoransicht",
+    "myViewTitle": "Persönliche Self-Service-Ansicht",
+    "adminViewTitle": "Administratoransicht – nur Elemente, die Ihre benutzerdefinierten Rollenberechtigungen freischalten"
+  },
+  "aiBadge": {
+    "label": "KI-gestützt"
   }
 }

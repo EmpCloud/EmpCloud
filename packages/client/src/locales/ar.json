@@ -6761,5 +6761,14 @@
     "permissionCount_few": "{{count}} أذونات",
     "permissionCount_many": "{{count}} إذنًا",
     "permissionCount_other": "{{count}} إذن"
+  },
+  "viewModeToggle": {
+    "myView": "عرضي",
+    "adminView": "عرض المسؤول",
+    "myViewTitle": "عرض الخدمة الذاتية الشخصية",
+    "adminViewTitle": "عرض المسؤول — العناصر التي تتيحها صلاحيات دورك المخصص فقط"
+  },
+  "aiBadge": {
+    "label": "مدعوم بالذكاء الاصطناعي"
   }
 }

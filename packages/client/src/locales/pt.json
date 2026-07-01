@@ -6389,5 +6389,14 @@
     "assignedCount_other": "({{count}} atribuídas)",
     "permissionCount_one": "{{count}} permissão",
     "permissionCount_other": "{{count}} permissões"
+  },
+  "viewModeToggle": {
+    "myView": "Minha visão",
+    "adminView": "Visão de administrador",
+    "myViewTitle": "Visão pessoal de autoatendimento",
+    "adminViewTitle": "Visão de administrador — apenas itens desbloqueados pelas permissões da sua função personalizada"
+  },
+  "aiBadge": {
+    "label": "Com tecnologia de IA"
   }
 }

@@ -6389,5 +6389,14 @@
     "assignedCount_other": "({{count}} assigned)",
     "permissionCount_one": "{{count}} permission",
     "permissionCount_other": "{{count}} permissions"
+  },
+  "viewModeToggle": {
+    "myView": "My view",
+    "adminView": "Admin view",
+    "myViewTitle": "Personal self-service view",
+    "adminViewTitle": "Admin view — only items your custom-role permissions unlock"
+  },
+  "aiBadge": {
+    "label": "AI Powered"
   }
 }
