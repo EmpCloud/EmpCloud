@@ -1226,12 +1226,17 @@ export const updatePositionSchema = positionBaseSchema
     path: ["max_salary"],
   });
 
-export const assignPositionSchema = z.object({
-  user_id: z.number().int().positive(),
-  start_date: z.string(),
-  end_date: z.string().optional().nullable(),
-  is_primary: z.boolean().default(true),
-});
+export const assignPositionSchema = z
+  .object({
+    user_id: z.number().int().positive(),
+    start_date: z.string().date(),
+    end_date: z.string().date().optional().nullable(),
+    is_primary: z.boolean().default(true),
+  })
+  .refine((d) => !d.end_date || d.end_date >= d.start_date, {
+    message: "end_date must be on or after start_date",
+    path: ["end_date"],
+  });
 
 export const positionQuerySchema = paginationSchema.extend({
   department_id: z.coerce.number().int().positive().optional(),
