@@ -105,6 +105,7 @@ export async function listPositions(
     page?: number;
     perPage?: number;
     department_id?: number;
+    location_id?: number;
     status?: string;
     employment_type?: string;
     search?: string;
@@ -123,6 +124,9 @@ export async function listPositions(
   }
   if (params?.department_id) {
     query = query.where({ "positions.department_id": params.department_id });
+  }
+  if (params?.location_id) {
+    query = query.where({ "positions.location_id": params.location_id });
   }
   if (params?.employment_type) {
     query = query.where({ "positions.employment_type": params.employment_type });
@@ -231,6 +235,15 @@ export async function updatePosition(
     }
   }
 
+  // Guard the headcount invariant: the budget can't be lowered below the number of
+  // people already assigned. Otherwise the position shows negative vacancies and the
+  // filled/active status that assign/remove maintain gets out of sync.
+  if (data.headcount_budget != null && data.headcount_budget < existing.headcount_filled) {
+    throw new ValidationError(
+      `Headcount budget (${data.headcount_budget}) cannot be less than the current filled headcount (${existing.headcount_filled})`
+    );
+  }
+
   await db("positions")
     .where({ id: positionId })
     .update({
@@ -277,63 +290,70 @@ export async function assignUserToPosition(
 ) {
   const db = getDB();
 
-  const position = await db("positions")
-    .where({ id: positionId, organization_id: orgId, status: "active" })
-    .first();
+  // Run the budget check + insert + increment inside a single transaction with a
+  // row lock (SELECT ... FOR UPDATE) on the position. Without the lock, two
+  // concurrent assigns can both read headcount_filled < headcount_budget before
+  // either writes, and the position ends up over-filled. The lock serializes the
+  // assigns so the second one sees the incremented count and is rejected when full.
+  return db.transaction(async (trx) => {
+    const position = await trx("positions")
+      .where({ id: positionId, organization_id: orgId, status: "active" })
+      .forUpdate()
+      .first();
 
-  if (!position) throw new NotFoundError("Position");
+    if (!position) throw new NotFoundError("Position");
 
-  // Verify user belongs to org
-  const user = await db("users")
-    .where({ id: userId, organization_id: orgId })
-    .first();
-  if (!user) throw new NotFoundError("User");
+    // Verify user belongs to org
+    const user = await trx("users")
+      .where({ id: userId, organization_id: orgId })
+      .first();
+    if (!user) throw new NotFoundError("User");
 
-  // Check if user already has an active assignment for this position
-  const existingAssignment = await db("position_assignments")
-    .where({ position_id: positionId, user_id: userId, status: "active" })
-    .first();
-  if (existingAssignment) {
-    throw new ValidationError("User is already assigned to this position");
-  }
+    // Check if user already has an active assignment for this position
+    const existingAssignment = await trx("position_assignments")
+      .where({ position_id: positionId, user_id: userId, status: "active" })
+      .first();
+    if (existingAssignment) {
+      throw new ValidationError("User is already assigned to this position");
+    }
 
-  // Check headcount budget
-  if (position.headcount_filled >= position.headcount_budget) {
-    throw new ValidationError(
-      `Position headcount budget is full (${position.headcount_filled}/${position.headcount_budget})`
-    );
-  }
+    // Check headcount budget — race-safe now that the position row is locked
+    if (position.headcount_filled >= position.headcount_budget) {
+      throw new ValidationError(
+        `Position headcount budget is full (${position.headcount_filled}/${position.headcount_budget})`
+      );
+    }
 
-  const [id] = await db("position_assignments").insert({
-    position_id: positionId,
-    organization_id: orgId,
-    user_id: userId,
-    start_date: data.start_date,
-    end_date: data.end_date || null,
-    is_primary: data.is_primary ?? true,
-    status: "active",
-    created_at: new Date(),
-    updated_at: new Date(),
-  });
-
-  // Increment headcount_filled and update timestamp
-  await db("positions")
-    .where({ id: positionId })
-    .update({
-      headcount_filled: db.raw("headcount_filled + 1"),
+    const [id] = await trx("position_assignments").insert({
+      position_id: positionId,
+      organization_id: orgId,
+      user_id: userId,
+      start_date: data.start_date,
+      end_date: data.end_date || null,
+      is_primary: data.is_primary ?? true,
+      status: "active",
+      created_at: new Date(),
       updated_at: new Date(),
     });
 
-  // Auto-update status to "filled" when headcount_filled reaches headcount_budget
-  const updated = await db("positions").where({ id: positionId }).first();
-  if (updated && updated.headcount_filled >= updated.headcount_budget) {
-    await db("positions")
+    // Increment headcount_filled and update timestamp
+    await trx("positions")
       .where({ id: positionId })
-      .update({ status: "filled", updated_at: new Date() });
-  }
+      .update({
+        headcount_filled: trx.raw("headcount_filled + 1"),
+        updated_at: new Date(),
+      });
 
-  const assignment = await db("position_assignments").where({ id }).first();
-  return assignment;
+    // Auto-update status to "filled" when headcount reaches budget. We hold the
+    // lock and just incremented by 1, so the new value is headcount_filled + 1.
+    if (position.headcount_filled + 1 >= position.headcount_budget) {
+      await trx("positions")
+        .where({ id: positionId })
+        .update({ status: "filled", updated_at: new Date() });
+    }
+
+    return trx("position_assignments").where({ id }).first();
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -343,32 +363,44 @@ export async function assignUserToPosition(
 export async function removeUserFromPosition(orgId: number, assignmentId: number) {
   const db = getDB();
 
-  const assignment = await db("position_assignments")
-    .where({ id: assignmentId, organization_id: orgId, status: "active" })
-    .first();
+  // End the assignment, decrement headcount and revert status inside one transaction
+  // with a row lock on the position, so concurrent assign/remove operations can't
+  // interleave and leave headcount_filled or status inconsistent.
+  return db.transaction(async (trx) => {
+    const assignment = await trx("position_assignments")
+      .where({ id: assignmentId, organization_id: orgId, status: "active" })
+      .first();
 
-  if (!assignment) throw new NotFoundError("Position Assignment");
+    if (!assignment) throw new NotFoundError("Position Assignment");
 
-  await db("position_assignments")
-    .where({ id: assignmentId })
-    .update({ status: "ended", end_date: new Date(), updated_at: new Date() });
-
-  // Decrement headcount_filled (min 0)
-  await db("positions")
-    .where({ id: assignment.position_id })
-    .where("headcount_filled", ">", 0)
-    .update({
-      headcount_filled: db.raw("headcount_filled - 1"),
-      updated_at: new Date(),
-    });
-
-  // If position was "filled" (fully staffed), revert to "active" since there's now a vacancy
-  const pos = await db("positions").where({ id: assignment.position_id }).first();
-  if (pos && (pos.status === "filled" || pos.status === "frozen") && pos.headcount_filled < pos.headcount_budget) {
-    await db("positions")
+    // Lock the position row for the rest of the transaction.
+    const pos = await trx("positions")
       .where({ id: assignment.position_id })
-      .update({ status: "active", updated_at: new Date() });
-  }
+      .forUpdate()
+      .first();
+
+    await trx("position_assignments")
+      .where({ id: assignmentId })
+      .update({ status: "ended", end_date: new Date(), updated_at: new Date() });
+
+    // Decrement headcount_filled (floor at 0)
+    await trx("positions")
+      .where({ id: assignment.position_id })
+      .where("headcount_filled", ">", 0)
+      .update({
+        headcount_filled: trx.raw("headcount_filled - 1"),
+        updated_at: new Date(),
+      });
+
+    // If the position was fully staffed/frozen, revert to "active" now that a seat
+    // opened. Derive the new filled count from the locked row.
+    const newFilled = Math.max(0, (pos?.headcount_filled ?? 0) - 1);
+    if (pos && (pos.status === "filled" || pos.status === "frozen") && newFilled < pos.headcount_budget) {
+      await trx("positions")
+        .where({ id: assignment.position_id })
+        .update({ status: "active", updated_at: new Date() });
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -421,12 +453,31 @@ export async function getPositionHierarchy(orgId: number) {
 // Get Vacancies (positions where filled < budget)
 // ---------------------------------------------------------------------------
 
-export async function getVacancies(orgId: number) {
+export async function getVacancies(
+  orgId: number,
+  params?: {
+    department_id?: number;
+    employment_type?: string;
+    is_critical?: boolean;
+  }
+) {
   const db = getDB();
 
-  const vacancies = await db("positions")
+  let query = db("positions")
     .where({ "positions.organization_id": orgId, "positions.status": "active" })
-    .whereRaw("positions.headcount_filled < positions.headcount_budget")
+    .whereRaw("positions.headcount_filled < positions.headcount_budget");
+
+  if (params?.department_id) {
+    query = query.where({ "positions.department_id": params.department_id });
+  }
+  if (params?.employment_type) {
+    query = query.where({ "positions.employment_type": params.employment_type });
+  }
+  if (params?.is_critical !== undefined) {
+    query = query.where({ "positions.is_critical": params.is_critical });
+  }
+
+  const vacancies = await query
     .select(
       "positions.*",
       "organization_departments.name as department_name",
@@ -485,6 +536,7 @@ export async function listHeadcountPlans(
     fiscal_year?: string;
     status?: string;
     department_id?: number;
+    quarter?: string;
     search?: string;
   }
 ) {
@@ -503,6 +555,9 @@ export async function listHeadcountPlans(
   }
   if (params?.department_id) {
     query = query.where({ "headcount_plans.department_id": params.department_id });
+  }
+  if (params?.quarter) {
+    query = query.where({ "headcount_plans.quarter": params.quarter });
   }
   if (params?.search) {
     const s = `%${params.search}%`;
@@ -548,6 +603,16 @@ export async function updateHeadcountPlan(
   // Only allow updates if not yet approved
   if (existing.status === "approved") {
     throw new ValidationError("Cannot update an approved headcount plan");
+  }
+
+  // Approval/rejection must go through the dedicated approve/reject endpoints, which
+  // set approved_headcount/approved_by and write audit logs. A plain update may only
+  // move a plan between draft and submitted (the Submit action PUTs status:"submitted");
+  // block it from jumping straight to approved/rejected, which would skip that workflow.
+  if (data.status && data.status !== "draft" && data.status !== "submitted") {
+    throw new ValidationError(
+      `Cannot set status "${data.status}" via update; use the approve or reject action instead`
+    );
   }
 
   await db("headcount_plans")
@@ -625,7 +690,8 @@ export async function rejectHeadcountPlan(
     .where({ id: planId })
     .update({
       status: "rejected",
-      approved_by: userId,
+      rejected_by: userId,
+      rejected_at: new Date(),
       notes: reason ? `Rejected: ${reason}` : plan.notes,
       updated_at: new Date(),
     });
