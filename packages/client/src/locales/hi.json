@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "इस श्रेणी में कोई कर्मचारी नहीं।",
       "lateBy": "देरी",
       "minSuffix": "मिनट",
-      "close": "बंद करें"
+      "close": "बंद करें",
+      "dateLabel": "तिथि",
+      "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।",
+      "searchPlaceholder": "नाम, ईमेल या विभाग खोजें"
     },
     "export": {
       "title": "उपस्थिति रिपोर्ट निर्यात करें",
@@ -1706,7 +1709,8 @@
       "previous": "पिछला",
       "next": "अगला",
       "alertPlannedInvalid": "नियोजित हेडकाउंट 0 या उससे अधिक होना चाहिए।",
-      "alertCurrentInvalid": "वर्तमान हेडकाउंट 0 या उससे अधिक होना चाहिए।"
+      "alertCurrentInvalid": "वर्तमान हेडकाउंट 0 या उससे अधिक होना चाहिए।",
+      "searchPlaceholder": "योजना शीर्षक या वित्तीय वर्ष से खोजें..."
     },
     "vacancies": {
       "title": "खुली रिक्तियाँ",
@@ -1850,7 +1854,9 @@
       "announcement_created": "घोषणा बनाई",
       "policy_created": "नीति बनाई",
       "policy_acknowledged": "नीति स्वीकृत"
-    }
+    },
+    "noActionMatches": "कोई मिलती-जुलती क्रिया नहीं",
+    "searchActions": "क्रिया प्रकार खोजें..."
   },
   "employees": {
     "directory": {
@@ -2537,6 +2543,537 @@
       "found": "मिल गया",
       "damaged": "क्षतिग्रस्त",
       "updated": "अपडेट किया गया"
+    }
+  },
+  "customFields": {
+    "title": "कस्टम फ़ील्ड",
+    "subtitle": "कर्मचारियों, विभागों और अन्य इकाइयों के लिए कस्टम डेटा फ़ील्ड परिभाषित करें",
+    "addField": "फ़ील्ड जोड़ें",
+    "entity": {
+      "employee": "कर्मचारी",
+      "department": "विभाग",
+      "location": "स्थान",
+      "project": "परियोजना",
+      "document": "दस्तावेज़"
+    },
+    "fieldType": {
+      "text": "टेक्स्ट",
+      "textarea": "टेक्स्ट क्षेत्र",
+      "number": "संख्या",
+      "decimal": "दशमलव",
+      "date": "तिथि",
+      "datetime": "तिथि और समय",
+      "dropdown": "ड्रॉपडाउन",
+      "multi_select": "बहु चयन",
+      "checkbox": "चेकबॉक्स",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "url": "URL",
+      "file": "फ़ाइल"
+    },
+    "editField": "फ़ील्ड संपादित करें",
+    "newField": "नया फ़ील्ड",
+    "preview": "पूर्वावलोकन",
+    "hidePreview": "पूर्वावलोकन छिपाएं",
+    "fieldName": "फ़ील्ड नाम *",
+    "fieldNamePlaceholder": "जैसे टी-शर्ट साइज़",
+    "section": "अनुभाग",
+    "placeholder": "प्लेसहोल्डर",
+    "defaultValue": "डिफ़ॉल्ट मान",
+    "validationRegex": "वैलिडेशन रेगेक्स",
+    "minValue": "न्यूनतम मान",
+    "maxValue": "अधिकतम मान",
+    "helpText": "सहायता पाठ",
+    "helpTextPlaceholder": "उपयोगकर्ताओं को दिखाया जाने वाला टूलटिप या विवरण",
+    "options": "विकल्प",
+    "optionPlaceholder": "विकल्प टाइप करें और Enter दबाएं",
+    "add": "जोड़ें",
+    "required": "आवश्यक",
+    "searchable": "खोजने योग्य",
+    "fieldPreview": "फ़ील्ड पूर्वावलोकन",
+    "saveError": "फ़ील्ड सहेजने में विफल। कृपया पुनः प्रयास करें।",
+    "saving": "सहेजा जा रहा है...",
+    "updateFieldBtn": "फ़ील्ड अपडेट करें",
+    "createField": "फ़ील्ड बनाएं",
+    "cancel": "रद्द करें",
+    "loading": "फ़ील्ड लोड हो रहे हैं...",
+    "empty": "{{entity}} के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं है।",
+    "emptyHint": "अपना पहला कस्टम फ़ील्ड बनाने के लिए \"फ़ील्ड जोड़ें\" पर क्लिक करें।",
+    "colFieldName": "फ़ील्ड नाम",
+    "colKey": "कुंजी",
+    "colType": "प्रकार",
+    "colActions": "क्रियाएं",
+    "optionsCount_one": "({{count}} विकल्प)",
+    "optionsCount_other": "({{count}} विकल्प)",
+    "yes": "हां",
+    "no": "नहीं",
+    "editFieldAria": "फ़ील्ड संपादित करें",
+    "deleteFieldAria": "फ़ील्ड हटाएं",
+    "deactivateNamed": "फ़ील्ड \"{{name}}\" निष्क्रिय करें?",
+    "deactivate": "फ़ील्ड निष्क्रिय करें?",
+    "deactivateDesc": "मौजूदा मान सुरक्षित रहेंगे।",
+    "deactivateBtn": "निष्क्रिय करें",
+    "previewFieldName": "फ़ील्ड नाम",
+    "previewEnter": "{{name}} दर्ज करें",
+    "previewValue": "मान",
+    "previewSelect": "{{name}} चुनें...",
+    "previewOption": "विकल्प",
+    "noOptionsDefined": "कोई विकल्प परिभाषित नहीं",
+    "previewCheckbox": "चेकबॉक्स",
+    "fieldTypeField": "फ़ील्ड प्रकार *"
+  },
+  "orgSettings": {
+    "loading": "सेटिंग्स लोड हो रही हैं...",
+    "title": "संगठन सेटिंग्स",
+    "subtitle": "अपनी कंपनी के विवरण, विभाग और स्थान प्रबंधित करें।",
+    "companyInfo": "कंपनी जानकारी",
+    "edit": "संपादित करें",
+    "field": {
+      "name": "नाम",
+      "legalName": "कानूनी नाम",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "country": "देश",
+      "state": "राज्य",
+      "city": "शहर",
+      "timezone": "समय क्षेत्र",
+      "language": "भाषा"
+    },
+    "errEmail": "कृपया एक मान्य ईमेल पता दर्ज करें (जैसे user@example.com)।",
+    "errCity": "शहर में केवल अक्षर, स्पेस और हाइफ़न होने चाहिए।",
+    "errState": "राज्य में केवल अक्षर, स्पेस और हाइफ़न होने चाहिए।",
+    "editCompanyInfo": "कंपनी जानकारी संपादित करें",
+    "selectTimezone": "समय क्षेत्र चुनें",
+    "selectCountry": "देश चुनें",
+    "cancel": "रद्द करें",
+    "saveChanges": "परिवर्तन सहेजें",
+    "updateError": "अपडेट करने में विफल। कृपया पुनः प्रयास करें।",
+    "departments": "विभाग ({{count}})",
+    "add": "जोड़ें",
+    "departmentName": "विभाग का नाम",
+    "renameDepartment": "विभाग का नाम बदलें",
+    "deleteDepartment": "विभाग हटाएं",
+    "save": "सहेजें",
+    "addDeptError": "विभाग जोड़ने में विफल।",
+    "renameDeptError": "विभाग का नाम बदलने में विफल।",
+    "deleteDeptError": "विभाग हटाने में विफल।",
+    "locations": "स्थान ({{count}})",
+    "timezoneRequired": "समय क्षेत्र आवश्यक है।",
+    "locationName": "स्थान का नाम",
+    "selectTimezoneRequired": "समय क्षेत्र चुनें *",
+    "noTimezone": "कोई समय क्षेत्र नहीं",
+    "editLocation": "स्थान संपादित करें",
+    "deleteLocation": "स्थान हटाएं",
+    "addLocError": "स्थान जोड़ने में विफल।",
+    "updateLocError": "स्थान अपडेट करने में विफल।",
+    "deleteLocError": "स्थान हटाने में विफल।"
+  },
+  "apiKeys": {
+    "title": "API कुंजियां",
+    "newKey": "नई कुंजी",
+    "description": "EmpCloud API तक प्रोग्रामेटिक एक्सेस के लिए कुंजियां जनरेट करें। एक कुंजी EmpCloud और पेरोल मॉड्यूल दोनों में काम करती है, और इसे बनाने वाले एडमिन की अनुमतियां रखती है।",
+    "statusRevoked": "रद्द",
+    "statusExpired": "समाप्त",
+    "statusActive": "सक्रिय",
+    "createError": "API कुंजी बनाने में विफल",
+    "copyError": "कॉपी नहीं हो सका — चुनें और मैन्युअल रूप से कॉपी करें",
+    "revokeConfirm": "\"{{name}}\" रद्द करें? इसका उपयोग करने वाला कोई भी एकीकरण तुरंत काम करना बंद कर देगा।",
+    "revoked": "API कुंजी रद्द की गई",
+    "revokeError": "कुंजी रद्द करने में विफल",
+    "howToTitle": "अपनी API कुंजी का उपयोग कैसे करें",
+    "howToIntro": "जनरेट की गई कुंजी एक <strong>Bearer टोकन</strong> है। इसे हर API अनुरोध पर <code>Authorization</code> हेडर में भेजें — बिल्कुल लॉग-इन सेशन टोकन की तरह:",
+    "bulletBothSystems": "<strong>दोनों सिस्टम में काम करती है।</strong> वही टोकन EmpCloud API और पेरोल मॉड्यूल API के विरुद्ध प्रमाणित होता है — किसी अलग लॉगिन या टोकन एक्सचेंज की आवश्यकता नहीं।",
+    "bulletPermissions": "<strong>आपकी अनुमतियां विरासत में लेती है।</strong> कुंजी केवल वही कर सकती है जो इसे बनाने वाला एडमिन कर सकता है। यह हमेशा उस एडमिन की वर्तमान भूमिका को दर्शाती है — भूमिका बदलें और कुंजी की पहुंच भी बदल जाती है।",
+    "bulletShownOnce": "<strong>केवल एक बार दिखाई जाती है।</strong> पूरी कुंजी निर्माण के समय केवल एक बार प्रदर्शित होती है। इसे किसी सुरक्षित स्थान (सीक्रेट्स मैनेजर) में रखें — हम केवल एक हैश की गई प्रति रखते हैं और इसे दोबारा नहीं दिखा सकते।",
+    "bulletRevocable": "<strong>रद्द करने योग्य और समाप्त होने योग्य।</strong> एक वैकल्पिक समाप्ति सेट करें, या कुंजी को कभी भी रद्द करें। रद्द या समाप्त कुंजियां हर जगह तुरंत काम करना बंद कर देती हैं। कुंजी को पासवर्ड की तरह समझें — जिसके पास यह है वह आपकी अनुमतियों के साथ कार्य कर सकता है।",
+    "copyNow": "इस कुंजी को अभी कॉपी करें — यह दोबारा नहीं दिखाई जाएगी।",
+    "copied": "कॉपी किया गया",
+    "copy": "कॉपी करें",
+    "dismiss": "खारिज करें",
+    "useAsBearer": "इसे Authorization हेडर में Bearer टोकन के रूप में उपयोग करें:",
+    "keyName": "कुंजी का नाम",
+    "keyNamePlaceholder": "जैसे उपस्थिति निर्यात",
+    "expiresInDays": "समाप्ति (दिनों में)",
+    "never": "कभी नहीं",
+    "generating": "जनरेट हो रहा है…",
+    "generateKey": "कुंजी जनरेट करें",
+    "cancel": "रद्द करें",
+    "loadingKeys": "कुंजियां लोड हो रही हैं…",
+    "noKeys": "अभी तक कोई API कुंजी नहीं।",
+    "colName": "नाम",
+    "colKey": "कुंजी",
+    "colStatus": "स्थिति",
+    "colLastUsed": "अंतिम उपयोग",
+    "colExpires": "समाप्ति",
+    "colCreated": "बनाई गई",
+    "revoke": "रद्द करें"
+  },
+  "assetCategories": {
+    "title": "संपत्ति श्रेणियां",
+    "subtitle": "संपत्तियों को प्रकार के अनुसार व्यवस्थित करें",
+    "addCategory": "श्रेणी जोड़ें",
+    "loading": "श्रेणियां लोड हो रही हैं...",
+    "empty": "अभी तक कोई श्रेणी नहीं। अपनी पहली श्रेणी बनाएं।",
+    "colName": "नाम",
+    "colDescription": "विवरण",
+    "colActions": "क्रियाएं",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "editCategory": "श्रेणी संपादित करें",
+    "newCategory": "नई श्रेणी",
+    "nameLabel": "नाम *",
+    "namePlaceholder": "जैसे लैपटॉप, मॉनिटर, फ़ोन",
+    "descriptionLabel": "विवरण",
+    "cancel": "रद्द करें",
+    "update": "अपडेट करें",
+    "create": "बनाएं",
+    "deactivateError": "श्रेणी निष्क्रिय करने में विफल",
+    "deactivateTitle": "श्रेणी निष्क्रिय करें?",
+    "deactivateBody": "<strong>{{name}}</strong> निष्क्रिय करें? इस श्रेणी से टैग की गई मौजूदा संपत्तियां टैग बनाए रखती हैं, लेकिन पुनर्स्थापित होने तक यहां कोई नई संपत्ति नहीं रखी जा सकती।",
+    "deactivating": "निष्क्रिय किया जा रहा है...",
+    "deactivate": "निष्क्रिय करें"
+  },
+  "helpdeskDashboard": {
+    "loading": "हेल्पडेस्क डैशबोर्ड लोड हो रहा है...",
+    "title": "हेल्पडेस्क डैशबोर्ड",
+    "subtitle": "HR हेल्पडेस्क टिकट और SLA प्रदर्शन का अवलोकन।",
+    "viewAllTickets": "सभी टिकट देखें",
+    "stat": {
+      "totalOpen": "कुल खुले",
+      "inProgress": "प्रगति पर",
+      "overdue": "अतिदेय (SLA उल्लंघित)",
+      "resolvedToday": "आज हल किए गए"
+    },
+    "slaCompliance": {
+      "heading": "SLA अनुपालन",
+      "caption": "SLA के भीतर हल किए गए टिकट"
+    },
+    "avgResolution": {
+      "heading": "औसत समाधान समय",
+      "unit": "घंटे"
+    },
+    "satisfaction": {
+      "heading": "संतुष्टि रेटिंग",
+      "notAvailable": "लागू नहीं",
+      "ratingCount_one": "{{count}} रेटिंग",
+      "ratingCount_other": "{{count}} रेटिंग"
+    },
+    "categoryBreakdown": {
+      "heading": "श्रेणी अनुसार टिकट"
+    },
+    "recentTickets": {
+      "heading": "हाल के टिकट"
+    },
+    "noTicketsYet": "अभी तक कोई टिकट नहीं",
+    "category": {
+      "leave": "अवकाश",
+      "payroll": "पेरोल",
+      "benefits": "लाभ",
+      "it": "IT",
+      "facilities": "सुविधाएँ",
+      "onboarding": "ऑनबोर्डिंग",
+      "policy": "नीति",
+      "general": "सामान्य"
+    },
+    "priority": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "urgent": "अत्यावश्यक"
+    },
+    "status": {
+      "open": "खुला",
+      "in_progress": "प्रगति पर",
+      "awaiting_response": "प्रतिक्रिया की प्रतीक्षा में",
+      "resolved": "हल किया गया",
+      "closed": "बंद",
+      "reopened": "पुनः खोला गया"
+    }
+  },
+  "submitFeedback": {
+    "title": "फ़ीडबैक भेजें",
+    "successHeading": "फ़ीडबैक भेज दिया गया",
+    "successMessage": "आपका फ़ीडबैक गुमनाम रूप से भेज दिया गया है। आपकी पहचान न तो सहेजी जाती है और न ही किसी को दिखती है। आप अपने फ़ीडबैक की स्थिति \"मेरा फ़ीडबैक\" पेज पर देख सकते हैं।",
+    "submitAnother": "एक और भेजें",
+    "bannerTitle": "आपका फ़ीडबैक पूरी तरह गुमनाम है",
+    "bannerBody": "आपकी पहचान को हैश किया जाता है और इसका आप तक पता नहीं लगाया जा सकता। HR को केवल फ़ीडबैक की सामग्री दिखेगी, आपका नाम या ईमेल कभी नहीं।",
+    "categoryLabel": "श्रेणी",
+    "subjectLabel": "विषय",
+    "messageLabel": "संदेश",
+    "subjectPlaceholder": "आपके फ़ीडबैक का संक्षिप्त सारांश",
+    "messagePlaceholder": "अपने फ़ीडबैक का विस्तार से वर्णन करें...",
+    "markUrgent": "अत्यावश्यक के रूप में चिह्नित करें",
+    "submitAnon": "गुमनाम रूप से भेजें",
+    "submitting": "भेजा जा रहा है...",
+    "submitError": "फ़ीडबैक भेजने में विफल। कृपया पुनः प्रयास करें।",
+    "category": {
+      "workplace": "कार्यस्थल",
+      "management": "प्रबंधन",
+      "process": "प्रक्रिया",
+      "culture": "संस्कृति",
+      "harassment": "उत्पीड़न",
+      "safety": "सुरक्षा",
+      "suggestion": "सुझाव",
+      "other": "अन्य"
+    }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "व्यक्तिगत",
+      "education": "शिक्षा",
+      "experience": "अनुभव",
+      "dependents": "आश्रित",
+      "addresses": "पते",
+      "custom": "कस्टम फ़ील्ड"
+    },
+    "invalidEmployee": {
+      "title": "अमान्य कर्मचारी",
+      "description": "URL में कर्मचारी ID अनुपस्थित या अमान्य है।",
+      "backLink": "कर्मचारी निर्देशिका पर वापस जाएँ"
+    },
+    "accessDenied": {
+      "title": "पहुँच अस्वीकृत",
+      "description": "आपके पास यह प्रोफ़ाइल देखने की अनुमति नहीं है।",
+      "backLink": "डैशबोर्ड पर वापस जाएँ"
+    },
+    "loadingProfile": "प्रोफ़ाइल लोड हो रही है...",
+    "employeeNotFound": "कर्मचारी नहीं मिला",
+    "backToDirectory": "निर्देशिका पर वापस जाएँ",
+    "noDesignation": "कोई पदनाम नहीं",
+    "biometricPhotoTooltip": "फ़ोटो बायोमेट्रिक कियोस्क नामांकन के माध्यम से प्रबंधित होती है",
+    "biometricPhotoAlt": "बायोमेट्रिक चेहरा",
+    "profilePhotoAlt": "प्रोफ़ाइल",
+    "biometricPhotoHint": "बायोमेट्रिक नामांकन से फ़ोटो — कियोस्क के माध्यम से प्रबंधित।",
+    "removingPhoto": "हटाई जा रही है...",
+    "removePhoto": "फ़ोटो हटाएँ",
+    "empCodeLabel": "कर्मचारी कोड: {{code}}",
+    "joinedLabel": "ज्वाइन किया: {{date}}",
+    "cancel": "रद्द करें",
+    "editMyInfo": "मेरी जानकारी संपादित करें",
+    "editProfile": "प्रोफ़ाइल संपादित करें",
+    "removePhotoDialog": {
+      "title": "अपनी प्रोफ़ाइल फ़ोटो हटाएँ?",
+      "description": "आपको फिर से आद्याक्षर दिखेंगे।",
+      "confirm": "फ़ोटो हटाएँ"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PAN में 5 अक्षर + 4 अंक + 1 अक्षर होने चाहिए (उदा. ABCDE1234F)",
+      "aadhaar": "आधार 12 अंकों का होना चाहिए",
+      "uan": "UAN 12 अंकों का होना चाहिए",
+      "passport": "पासपोर्ट में 1 अक्षर + 7 अंक होने चाहिए (उदा. A1234567)"
+    },
+    "personal": {
+      "saveFailed": "सहेजने में विफल",
+      "selfServiceNotice": "आप अपनी व्यक्तिगत और आपातकालीन संपर्क जानकारी संपादित कर सकते हैं। प्रशासनिक फ़ील्ड अपडेट करने के लिए HR से संपर्क करें।"
+    },
+    "field": {
+      "personalEmail": "व्यक्तिगत ईमेल",
+      "contactNumber": "संपर्क नंबर",
+      "gender": "लिंग",
+      "dateOfBirth": "जन्म तिथि",
+      "bloodGroup": "रक्त समूह",
+      "maritalStatus": "वैवाहिक स्थिति",
+      "nationality": "राष्ट्रीयता",
+      "aadharNumber": "आधार नंबर",
+      "panNumber": "PAN नंबर",
+      "uanNumber": "UAN नंबर",
+      "passportNumber": "पासपोर्ट नंबर",
+      "passportExpiry": "पासपोर्ट समाप्ति",
+      "visaStatus": "वीज़ा स्थिति",
+      "visaExpiry": "वीज़ा समाप्ति",
+      "emergencyContact": "आपातकालीन संपर्क",
+      "emergencyPhone": "आपातकालीन फ़ोन",
+      "emergencyRelation": "आपातकालीन संबंध",
+      "noticePeriodDays": "नोटिस अवधि (दिन)",
+      "reportingManager": "रिपोर्टिंग मैनेजर",
+      "department": "विभाग",
+      "shift": "शिफ़्ट",
+      "designation": "पदनाम",
+      "employeeCode": "कर्मचारी कोड",
+      "probationStart": "परिवीक्षा प्रारंभ",
+      "probationEnd": "परिवीक्षा समाप्ति",
+      "confirmationDate": "पुष्टिकरण तिथि",
+      "customRoles": "कस्टम भूमिकाएँ",
+      "additionalManagers": "अतिरिक्त मैनेजर"
+    },
+    "select": {
+      "placeholder": "चुनें"
+    },
+    "gender": {
+      "male": "पुरुष",
+      "female": "महिला",
+      "other": "अन्य"
+    },
+    "maritalStatus": {
+      "single": "अविवाहित",
+      "married": "विवाहित",
+      "divorced": "तलाकशुदा",
+      "widowed": "विधवा/विधुर"
+    },
+    "placeholder": {
+      "aadhar": "12 अंक",
+      "pan": "ABCDE1234F",
+      "uan": "12 अंक",
+      "passport": "A1234567",
+      "designationSelfService": "बदलने के लिए HR से संपर्क करें",
+      "designation": "उदा. वरिष्ठ इंजीनियर",
+      "empCodeSelfService": "सेट करने के लिए HR से संपर्क करें",
+      "empCode": "उदा. EMP001"
+    },
+    "reportingManager": {
+      "none": "कोई मैनेजर नहीं"
+    },
+    "department": {
+      "none": "कोई विभाग नहीं"
+    },
+    "shift": {
+      "none": "कोई शिफ़्ट नहीं"
+    },
+    "saving": "सहेजा जा रहा है...",
+    "saveChanges": "परिवर्तन सहेजें",
+    "additionalManagers": {
+      "loading": "लोड हो रहा है…",
+      "none": "कोई अतिरिक्त मैनेजर नहीं",
+      "userFallback": "उपयोगकर्ता #{{id}}",
+      "selectedCount_one": "({{count}} चयनित)",
+      "selectedCount_other": "({{count}} चयनित)",
+      "helpText": "प्राथमिक रिपोर्टिंग मैनेजर के समान टीम-स्कोप पहुँच वाले सह-मैनेजर। हर टीम-स्कोप अनुमति में मान्य।",
+      "removeAria": "{{name}} को हटाएँ",
+      "removeAriaFallback": "मैनेजर",
+      "searchPlaceholder": "नाम या ईमेल से खोजें…",
+      "addPlaceholder": "एक और जोड़ें…",
+      "noMatches": "कोई मेल खाता उपयोगकर्ता नहीं",
+      "allSelected": "सभी पात्र उपयोगकर्ता पहले से चयनित हैं",
+      "savingButton": "सहेजा जा रहा है…",
+      "saveButton": "अतिरिक्त मैनेजर सहेजें",
+      "unsavedChanges": "असहेजे परिवर्तन",
+      "saved": "सहेजा गया"
+    },
+    "apiError": {
+      "requestFailed": "अनुरोध विफल"
+    },
+    "education": {
+      "add": "शिक्षा जोड़ें",
+      "edit": "शिक्षा संपादित करें",
+      "empty": "अभी तक कोई शिक्षा रिकॉर्ड नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह शिक्षा रिकॉर्ड हटाएँ?"
+      },
+      "field": {
+        "degree": "डिग्री",
+        "institution": "संस्थान",
+        "fieldOfStudy": "अध्ययन क्षेत्र",
+        "grade": "ग्रेड",
+        "startYear": "प्रारंभ वर्ष",
+        "endYear": "समाप्ति वर्ष"
+      },
+      "placeholder": {
+        "degree": "उदा. बी.टेक",
+        "institution": "उदा. IIT दिल्ली"
+      },
+      "validation": {
+        "required": "डिग्री और संस्थान आवश्यक हैं",
+        "endYear": "समाप्ति वर्ष प्रारंभ वर्ष को या उसके बाद होना चाहिए"
+      },
+      "fromYear": "{{year}} से",
+      "gradeSuffix": "ग्रेड: {{grade}}"
+    },
+    "save": "सहेजें",
+    "edit": "संपादित करें",
+    "delete": "हटाएँ",
+    "experience": {
+      "add": "अनुभव जोड़ें",
+      "edit": "अनुभव संपादित करें",
+      "empty": "अभी तक कोई कार्य अनुभव रिकॉर्ड नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह अनुभव रिकॉर्ड हटाएँ?"
+      },
+      "field": {
+        "company": "कंपनी",
+        "designation": "पदनाम",
+        "startDate": "प्रारंभ तिथि",
+        "endDate": "समाप्ति तिथि",
+        "description": "विवरण"
+      },
+      "currentlyWorking": "वर्तमान में यहाँ कार्यरत",
+      "current": "वर्तमान",
+      "present": "वर्तमान",
+      "validation": {
+        "required": "कंपनी, पदनाम और प्रारंभ तिथि आवश्यक हैं"
+      }
+    },
+    "dependents": {
+      "add": "आश्रित जोड़ें",
+      "edit": "आश्रित संपादित करें",
+      "empty": "अभी तक कोई आश्रित नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह आश्रित हटाएँ?"
+      },
+      "field": {
+        "name": "नाम",
+        "relationship": "संबंध",
+        "dateOfBirth": "जन्म तिथि",
+        "gender": "लिंग",
+        "nomineePercent": "नामिती %"
+      },
+      "isNominee": "नामिती है",
+      "placeholder": {
+        "relationship": "उदा. पति/पत्नी, संतान, माता-पिता"
+      },
+      "validation": {
+        "required": "नाम और संबंध आवश्यक हैं"
+      },
+      "column": {
+        "name": "नाम",
+        "relationship": "संबंध",
+        "dob": "जन्म तिथि",
+        "gender": "लिंग",
+        "nominee": "नामिती",
+        "actions": "क्रियाएँ"
+      },
+      "nomineeYes": "हाँ",
+      "nomineeNo": "नहीं"
+    },
+    "addresses": {
+      "add": "पता जोड़ें",
+      "edit": "पता संपादित करें",
+      "empty": "अभी तक कोई पता नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह पता हटाएँ?"
+      },
+      "field": {
+        "type": "प्रकार",
+        "country": "देश",
+        "line1": "पता पंक्ति 1",
+        "line2": "पता पंक्ति 2",
+        "city": "शहर",
+        "state": "राज्य",
+        "zipcode": "पिन कोड"
+      },
+      "type": {
+        "current": "वर्तमान",
+        "permanent": "स्थायी"
+      },
+      "validation": {
+        "required": "पता पंक्ति 1, शहर, राज्य और पिन कोड आवश्यक हैं"
+      }
+    },
+    "customFields": {
+      "loading": "कस्टम फ़ील्ड लोड हो रहे हैं...",
+      "emptyTitle": "अभी तक कर्मचारियों के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं किए गए हैं।",
+      "emptyHint": "HR प्रशासक कस्टम फ़ील्ड सेटिंग्स पृष्ठ से कस्टम फ़ील्ड बना सकते हैं।",
+      "heading": "कस्टम फ़ील्ड",
+      "saveFailed": "कस्टम फ़ील्ड सहेजने में विफल",
+      "defaultSection": "कस्टम फ़ील्ड",
+      "display": {
+        "yes": "हाँ",
+        "no": "नहीं"
+      },
+      "selectPlaceholder": "चुनें...",
+      "filePlaceholder": "फ़ाइल संदर्भ या पथ"
     }
   },
   "assetDetail": {

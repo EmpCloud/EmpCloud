@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "此类别中没有员工。",
       "lateBy": "迟到时长",
       "minSuffix": "分钟",
-      "close": "关闭"
+      "close": "关闭",
+      "dateLabel": "日期",
+      "noSearchResults": "没有员工与您的搜索匹配。",
+      "searchPlaceholder": "搜索姓名、邮箱或部门"
     },
     "export": {
       "title": "导出考勤报表",
@@ -1706,7 +1709,8 @@
       "previous": "上一页",
       "next": "下一页",
       "alertPlannedInvalid": "计划人数必须为 0 或更大。",
-      "alertCurrentInvalid": "当前人数必须为 0 或更大。"
+      "alertCurrentInvalid": "当前人数必须为 0 或更大。",
+      "searchPlaceholder": "按计划名称或财年搜索..."
     },
     "vacancies": {
       "title": "公开空缺",
@@ -1850,7 +1854,9 @@
       "announcement_created": "创建公告",
       "policy_created": "创建政策",
       "policy_acknowledged": "确认政策"
-    }
+    },
+    "noActionMatches": "无匹配的操作",
+    "searchActions": "搜索操作类型..."
   },
   "employees": {
     "directory": {
@@ -2537,6 +2543,537 @@
       "found": "已找到",
       "damaged": "已损坏",
       "updated": "已更新"
+    }
+  },
+  "customFields": {
+    "title": "自定义字段",
+    "subtitle": "为员工、部门和其他实体定义自定义数据字段",
+    "addField": "添加字段",
+    "entity": {
+      "employee": "员工",
+      "department": "部门",
+      "location": "地点",
+      "project": "项目",
+      "document": "文档"
+    },
+    "fieldType": {
+      "text": "文本",
+      "textarea": "文本区域",
+      "number": "数字",
+      "decimal": "小数",
+      "date": "日期",
+      "datetime": "日期和时间",
+      "dropdown": "下拉菜单",
+      "multi_select": "多选",
+      "checkbox": "复选框",
+      "email": "邮箱",
+      "phone": "电话",
+      "url": "网址",
+      "file": "文件"
+    },
+    "editField": "编辑字段",
+    "newField": "新建字段",
+    "preview": "预览",
+    "hidePreview": "隐藏预览",
+    "fieldName": "字段名称 *",
+    "fieldNamePlaceholder": "例如 T 恤尺码",
+    "section": "分区",
+    "placeholder": "占位符",
+    "defaultValue": "默认值",
+    "validationRegex": "验证正则",
+    "minValue": "最小值",
+    "maxValue": "最大值",
+    "helpText": "帮助文本",
+    "helpTextPlaceholder": "显示给用户的提示或说明",
+    "options": "选项",
+    "optionPlaceholder": "输入选项并按 Enter",
+    "add": "添加",
+    "required": "必填",
+    "searchable": "可搜索",
+    "fieldPreview": "字段预览",
+    "saveError": "保存字段失败。请重试。",
+    "saving": "正在保存...",
+    "updateFieldBtn": "更新字段",
+    "createField": "创建字段",
+    "cancel": "取消",
+    "loading": "正在加载字段...",
+    "empty": "未为 {{entity}} 定义自定义字段。",
+    "emptyHint": "点击“添加字段”创建您的第一个自定义字段。",
+    "colFieldName": "字段名称",
+    "colKey": "键",
+    "colType": "类型",
+    "colActions": "操作",
+    "optionsCount_one": "（{{count}} 个选项）",
+    "optionsCount_other": "（{{count}} 个选项）",
+    "yes": "是",
+    "no": "否",
+    "editFieldAria": "编辑字段",
+    "deleteFieldAria": "删除字段",
+    "deactivateNamed": "停用字段“{{name}}”？",
+    "deactivate": "停用字段？",
+    "deactivateDesc": "现有值将被保留。",
+    "deactivateBtn": "停用",
+    "previewFieldName": "字段名称",
+    "previewEnter": "输入{{name}}",
+    "previewValue": "值",
+    "previewSelect": "选择{{name}}...",
+    "previewOption": "选项",
+    "noOptionsDefined": "未定义选项",
+    "previewCheckbox": "复选框",
+    "fieldTypeField": "字段类型 *"
+  },
+  "orgSettings": {
+    "loading": "正在加载设置...",
+    "title": "组织设置",
+    "subtitle": "管理您公司的详细信息、部门和地点。",
+    "companyInfo": "公司信息",
+    "edit": "编辑",
+    "field": {
+      "name": "名称",
+      "legalName": "法定名称",
+      "email": "邮箱",
+      "phone": "电话",
+      "country": "国家",
+      "state": "省/州",
+      "city": "城市",
+      "timezone": "时区",
+      "language": "语言"
+    },
+    "errEmail": "请输入有效的电子邮件地址（例如 user@example.com）。",
+    "errCity": "城市只能包含字母、空格和连字符。",
+    "errState": "省/州只能包含字母、空格和连字符。",
+    "editCompanyInfo": "编辑公司信息",
+    "selectTimezone": "选择时区",
+    "selectCountry": "选择国家",
+    "cancel": "取消",
+    "saveChanges": "保存更改",
+    "updateError": "更新失败。请重试。",
+    "departments": "部门（{{count}}）",
+    "add": "添加",
+    "departmentName": "部门名称",
+    "renameDepartment": "重命名部门",
+    "deleteDepartment": "删除部门",
+    "save": "保存",
+    "addDeptError": "添加部门失败。",
+    "renameDeptError": "重命名部门失败。",
+    "deleteDeptError": "删除部门失败。",
+    "locations": "地点（{{count}}）",
+    "timezoneRequired": "时区为必填项。",
+    "locationName": "地点名称",
+    "selectTimezoneRequired": "选择时区 *",
+    "noTimezone": "无时区",
+    "editLocation": "编辑地点",
+    "deleteLocation": "删除地点",
+    "addLocError": "添加地点失败。",
+    "updateLocError": "更新地点失败。",
+    "deleteLocError": "删除地点失败。"
+  },
+  "apiKeys": {
+    "title": "API 密钥",
+    "newKey": "新建密钥",
+    "description": "生成用于以编程方式访问 EmpCloud API 的密钥。一个密钥可在 EmpCloud 和薪资模块中通用，并携带创建它的管理员的权限。",
+    "statusRevoked": "已撤销",
+    "statusExpired": "已过期",
+    "statusActive": "有效",
+    "createError": "创建 API 密钥失败",
+    "copyError": "无法复制 — 请手动选择并复制",
+    "revokeConfirm": "撤销“{{name}}”？任何使用它的集成将立即停止工作。",
+    "revoked": "API 密钥已撤销",
+    "revokeError": "撤销密钥失败",
+    "howToTitle": "如何使用您的 API 密钥",
+    "howToIntro": "生成的密钥是<strong>Bearer 令牌</strong>。在每个 API 请求的 <code>Authorization</code> 标头中发送它 — 就像已登录的会话令牌一样:",
+    "bulletBothSystems": "<strong>在两个系统中均可使用。</strong> 同一个令牌可对 EmpCloud API 和薪资模块 API 进行身份验证 — 无需单独登录或交换令牌。",
+    "bulletPermissions": "<strong>继承您的权限。</strong> 密钥只能执行创建它的管理员所能执行的操作。它始终反映该管理员的当前角色 — 更改角色，密钥的访问权限也随之改变。",
+    "bulletShownOnce": "<strong>仅显示一次。</strong> 完整密钥仅在创建时显示一次。请将其妥善存储（密钥管理器）— 我们只保留经过哈希处理的副本，无法再次显示。",
+    "bulletRevocable": "<strong>可撤销且可设置有效期。</strong> 设置可选的有效期，或随时撤销密钥。已撤销或已过期的密钥会在各处立即停止工作。请像对待密码一样对待密钥 — 任何持有它的人都能以您的权限进行操作。",
+    "copyNow": "立即复制此密钥 — 它不会再次显示。",
+    "copied": "已复制",
+    "copy": "复制",
+    "dismiss": "关闭",
+    "useAsBearer": "在 Authorization 标头中将其用作 Bearer 令牌:",
+    "keyName": "密钥名称",
+    "keyNamePlaceholder": "例如 考勤导出",
+    "expiresInDays": "有效期（天）",
+    "never": "永不",
+    "generating": "正在生成…",
+    "generateKey": "生成密钥",
+    "cancel": "取消",
+    "loadingKeys": "正在加载密钥…",
+    "noKeys": "暂无 API 密钥。",
+    "colName": "名称",
+    "colKey": "密钥",
+    "colStatus": "状态",
+    "colLastUsed": "最近使用",
+    "colExpires": "到期",
+    "colCreated": "创建时间",
+    "revoke": "撤销"
+  },
+  "assetCategories": {
+    "title": "资产类别",
+    "subtitle": "按类型组织资产",
+    "addCategory": "添加类别",
+    "loading": "正在加载类别...",
+    "empty": "暂无类别。请创建第一个。",
+    "colName": "名称",
+    "colDescription": "描述",
+    "colActions": "操作",
+    "edit": "编辑",
+    "delete": "删除",
+    "editCategory": "编辑类别",
+    "newCategory": "新建类别",
+    "nameLabel": "名称 *",
+    "namePlaceholder": "例如 笔记本电脑、显示器、手机",
+    "descriptionLabel": "描述",
+    "cancel": "取消",
+    "update": "更新",
+    "create": "创建",
+    "deactivateError": "停用类别失败",
+    "deactivateTitle": "停用类别？",
+    "deactivateBody": "停用 <strong>{{name}}</strong>？已用此类别标记的现有资产将保留标记，但在恢复之前无法将新资产放入此处。",
+    "deactivating": "正在停用...",
+    "deactivate": "停用"
+  },
+  "helpdeskDashboard": {
+    "loading": "正在加载服务台仪表板……",
+    "title": "服务台仪表板",
+    "subtitle": "HR 服务台工单与 SLA 表现概览。",
+    "viewAllTickets": "查看全部工单",
+    "stat": {
+      "totalOpen": "待处理总数",
+      "inProgress": "处理中",
+      "overdue": "已逾期（违反 SLA）",
+      "resolvedToday": "今日已解决"
+    },
+    "slaCompliance": {
+      "heading": "SLA 达标率",
+      "caption": "在 SLA 内解决的工单"
+    },
+    "avgResolution": {
+      "heading": "平均解决时长",
+      "unit": "小时"
+    },
+    "satisfaction": {
+      "heading": "满意度评分",
+      "notAvailable": "暂无",
+      "ratingCount_one": "{{count}} 条评分",
+      "ratingCount_other": "{{count}} 条评分"
+    },
+    "categoryBreakdown": {
+      "heading": "按类别统计工单"
+    },
+    "recentTickets": {
+      "heading": "近期工单"
+    },
+    "noTicketsYet": "暂无工单",
+    "category": {
+      "leave": "请假",
+      "payroll": "薪资",
+      "benefits": "福利",
+      "it": "IT",
+      "facilities": "后勤设施",
+      "onboarding": "入职",
+      "policy": "政策制度",
+      "general": "综合"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "紧急"
+    },
+    "status": {
+      "open": "待处理",
+      "in_progress": "处理中",
+      "awaiting_response": "等待回复",
+      "resolved": "已解决",
+      "closed": "已关闭",
+      "reopened": "已重新打开"
+    }
+  },
+  "submitFeedback": {
+    "title": "提交反馈",
+    "successHeading": "反馈已提交",
+    "successMessage": "您的反馈已匿名提交。我们不会存储您的身份信息，任何人都无法看到。您可以在“我的反馈”页面查看反馈的处理进度。",
+    "submitAnother": "再次提交",
+    "bannerTitle": "您的反馈完全匿名",
+    "bannerBody": "您的身份信息经过哈希处理，无法追溯到您本人。人力资源部门只能看到反馈内容，绝不会看到您的姓名或邮箱。",
+    "categoryLabel": "类别",
+    "subjectLabel": "主题",
+    "messageLabel": "内容",
+    "subjectPlaceholder": "简要概括您的反馈",
+    "messagePlaceholder": "请详细描述您的反馈……",
+    "markUrgent": "标记为紧急",
+    "submitAnon": "匿名提交",
+    "submitting": "提交中……",
+    "submitError": "反馈提交失败，请重试。",
+    "category": {
+      "workplace": "工作环境",
+      "management": "管理层",
+      "process": "流程",
+      "culture": "企业文化",
+      "harassment": "骚扰",
+      "safety": "安全",
+      "suggestion": "建议",
+      "other": "其他"
+    }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "个人信息",
+      "education": "教育经历",
+      "experience": "工作经历",
+      "dependents": "受抚养人",
+      "addresses": "地址",
+      "custom": "自定义字段"
+    },
+    "invalidEmployee": {
+      "title": "无效员工",
+      "description": "URL 中的员工 ID 缺失或无效。",
+      "backLink": "返回员工目录"
+    },
+    "accessDenied": {
+      "title": "访问被拒绝",
+      "description": "您无权查看此档案。",
+      "backLink": "返回仪表盘"
+    },
+    "loadingProfile": "正在加载档案……",
+    "employeeNotFound": "未找到员工",
+    "backToDirectory": "返回目录",
+    "noDesignation": "无职位",
+    "biometricPhotoTooltip": "照片通过生物识别终端录入管理",
+    "biometricPhotoAlt": "生物识别人脸",
+    "profilePhotoAlt": "档案",
+    "biometricPhotoHint": "照片来自生物识别录入——通过终端管理。",
+    "removingPhoto": "正在移除……",
+    "removePhoto": "移除照片",
+    "empCodeLabel": "员工编号：{{code}}",
+    "joinedLabel": "入职日期：{{date}}",
+    "cancel": "取消",
+    "editMyInfo": "编辑我的信息",
+    "editProfile": "编辑档案",
+    "removePhotoDialog": {
+      "title": "移除您的档案照片？",
+      "description": "将重新显示姓名首字母。",
+      "confirm": "移除照片"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PAN 必须为 5 个字母 + 4 个数字 + 1 个字母（例如 ABCDE1234F）",
+      "aadhaar": "Aadhaar 必须为 12 位数字",
+      "uan": "UAN 必须为 12 位数字",
+      "passport": "护照号必须为 1 个字母 + 7 个数字（例如 A1234567）"
+    },
+    "personal": {
+      "saveFailed": "保存失败",
+      "selfServiceNotice": "您可以编辑个人信息和紧急联系人信息。如需更新管理字段，请联系人力资源部。"
+    },
+    "field": {
+      "personalEmail": "个人邮箱",
+      "contactNumber": "联系电话",
+      "gender": "性别",
+      "dateOfBirth": "出生日期",
+      "bloodGroup": "血型",
+      "maritalStatus": "婚姻状况",
+      "nationality": "国籍",
+      "aadharNumber": "Aadhar 号码",
+      "panNumber": "PAN 号码",
+      "uanNumber": "UAN 号码",
+      "passportNumber": "护照号码",
+      "passportExpiry": "护照有效期",
+      "visaStatus": "签证状态",
+      "visaExpiry": "签证有效期",
+      "emergencyContact": "紧急联系人",
+      "emergencyPhone": "紧急联系电话",
+      "emergencyRelation": "紧急联系人关系",
+      "noticePeriodDays": "通知期（天）",
+      "reportingManager": "汇报经理",
+      "department": "部门",
+      "shift": "班次",
+      "designation": "职位",
+      "employeeCode": "员工编号",
+      "probationStart": "试用期开始",
+      "probationEnd": "试用期结束",
+      "confirmationDate": "转正日期",
+      "customRoles": "自定义角色",
+      "additionalManagers": "其他经理"
+    },
+    "select": {
+      "placeholder": "请选择"
+    },
+    "gender": {
+      "male": "男",
+      "female": "女",
+      "other": "其他"
+    },
+    "maritalStatus": {
+      "single": "未婚",
+      "married": "已婚",
+      "divorced": "离异",
+      "widowed": "丧偶"
+    },
+    "placeholder": {
+      "aadhar": "12 位数字",
+      "pan": "ABCDE1234F",
+      "uan": "12 位数字",
+      "passport": "A1234567",
+      "designationSelfService": "如需更改请联系人力资源部",
+      "designation": "例如：高级工程师",
+      "empCodeSelfService": "如需设置请联系人力资源部",
+      "empCode": "例如：EMP001"
+    },
+    "reportingManager": {
+      "none": "无经理"
+    },
+    "department": {
+      "none": "无部门"
+    },
+    "shift": {
+      "none": "无班次"
+    },
+    "saving": "正在保存……",
+    "saveChanges": "保存更改",
+    "additionalManagers": {
+      "loading": "正在加载……",
+      "none": "无其他经理",
+      "userFallback": "用户 #{{id}}",
+      "selectedCount_one": "（已选择 {{count}} 个）",
+      "selectedCount_other": "（已选择 {{count}} 个）",
+      "helpText": "与主汇报经理拥有相同团队范围访问权限的协同经理。每项团队范围的权限均予以认可。",
+      "removeAria": "移除 {{name}}",
+      "removeAriaFallback": "经理",
+      "searchPlaceholder": "按姓名或邮箱搜索……",
+      "addPlaceholder": "添加另一位……",
+      "noMatches": "无匹配用户",
+      "allSelected": "所有符合条件的用户均已选择",
+      "savingButton": "正在保存……",
+      "saveButton": "保存其他经理",
+      "unsavedChanges": "未保存的更改",
+      "saved": "已保存"
+    },
+    "apiError": {
+      "requestFailed": "请求失败"
+    },
+    "education": {
+      "add": "添加教育经历",
+      "edit": "编辑教育经历",
+      "empty": "尚未添加教育记录。",
+      "deleteDialog": {
+        "title": "删除此教育记录？"
+      },
+      "field": {
+        "degree": "学位",
+        "institution": "院校",
+        "fieldOfStudy": "专业",
+        "grade": "成绩",
+        "startYear": "起始年份",
+        "endYear": "结束年份"
+      },
+      "placeholder": {
+        "degree": "例如：工学学士",
+        "institution": "例如：印度理工学院德里分校"
+      },
+      "validation": {
+        "required": "学位和院校为必填项",
+        "endYear": "结束年份必须不早于起始年份"
+      },
+      "fromYear": "自 {{year}} 年起",
+      "gradeSuffix": "成绩：{{grade}}"
+    },
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "experience": {
+      "add": "添加工作经历",
+      "edit": "编辑工作经历",
+      "empty": "尚未添加工作经历记录。",
+      "deleteDialog": {
+        "title": "删除此工作经历记录？"
+      },
+      "field": {
+        "company": "公司",
+        "designation": "职位",
+        "startDate": "开始日期",
+        "endDate": "结束日期",
+        "description": "描述"
+      },
+      "currentlyWorking": "目前在职",
+      "current": "当前",
+      "present": "至今",
+      "validation": {
+        "required": "公司、职位和开始日期为必填项"
+      }
+    },
+    "dependents": {
+      "add": "添加受抚养人",
+      "edit": "编辑受抚养人",
+      "empty": "尚未添加受抚养人。",
+      "deleteDialog": {
+        "title": "删除此受抚养人？"
+      },
+      "field": {
+        "name": "姓名",
+        "relationship": "关系",
+        "dateOfBirth": "出生日期",
+        "gender": "性别",
+        "nomineePercent": "受益人比例 %"
+      },
+      "isNominee": "是否为受益人",
+      "placeholder": {
+        "relationship": "例如：配偶、子女、父母"
+      },
+      "validation": {
+        "required": "姓名和关系为必填项"
+      },
+      "column": {
+        "name": "姓名",
+        "relationship": "关系",
+        "dob": "出生日期",
+        "gender": "性别",
+        "nominee": "受益人",
+        "actions": "操作"
+      },
+      "nomineeYes": "是",
+      "nomineeNo": "否"
+    },
+    "addresses": {
+      "add": "添加地址",
+      "edit": "编辑地址",
+      "empty": "尚未添加地址。",
+      "deleteDialog": {
+        "title": "删除此地址？"
+      },
+      "field": {
+        "type": "类型",
+        "country": "国家/地区",
+        "line1": "地址行 1",
+        "line2": "地址行 2",
+        "city": "城市",
+        "state": "省/州",
+        "zipcode": "邮政编码"
+      },
+      "type": {
+        "current": "现居",
+        "permanent": "永久"
+      },
+      "validation": {
+        "required": "地址行 1、城市、省/州和邮政编码为必填项"
+      }
+    },
+    "customFields": {
+      "loading": "正在加载自定义字段……",
+      "emptyTitle": "尚未为员工定义任何自定义字段。",
+      "emptyHint": "人力资源管理员可在自定义字段设置页面创建自定义字段。",
+      "heading": "自定义字段",
+      "saveFailed": "保存自定义字段失败",
+      "defaultSection": "自定义字段",
+      "display": {
+        "yes": "是",
+        "no": "否"
+      },
+      "selectPlaceholder": "请选择……",
+      "filePlaceholder": "文件引用或路径"
     }
   },
   "assetDetail": {

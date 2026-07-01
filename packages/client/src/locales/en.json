@@ -1687,7 +1687,12 @@
       "cancel": "Cancel",
       "close": "Close",
       "failedCreate": "Failed to create plan",
+      "failedApprove": "Failed to approve plan",
+      "failedReject": "Failed to reject plan",
+      "failedSubmit": "Failed to submit plan",
       "allStatuses": "All Statuses",
+      "allDepartments": "All Departments",
+      "allYears": "All Years",
       "statusDraft": "Draft",
       "statusSubmitted": "Submitted",
       "statusApproved": "Approved",
@@ -1754,6 +1759,8 @@
       "searchPlaceholder": "Search by title or code...",
       "allDepartments": "All Departments",
       "allStatuses": "All Statuses",
+      "criticalOnly": "Critical only",
+      "allTypes": "All Types",
       "statusActive": "Active",
       "statusFilled": "Filled",
       "statusFrozen": "Frozen",
@@ -2543,6 +2550,537 @@
       "found": "Found",
       "damaged": "Damaged",
       "updated": "Updated"
+    }
+  },
+  "customFields": {
+    "title": "Custom Fields",
+    "subtitle": "Define custom data fields for employees, departments, and other entities",
+    "addField": "Add Field",
+    "entity": {
+      "employee": "Employee",
+      "department": "Department",
+      "location": "Location",
+      "project": "Project",
+      "document": "Document"
+    },
+    "fieldType": {
+      "text": "Text",
+      "textarea": "Text Area",
+      "number": "Number",
+      "decimal": "Decimal",
+      "date": "Date",
+      "datetime": "Date & Time",
+      "dropdown": "Dropdown",
+      "multi_select": "Multi Select",
+      "checkbox": "Checkbox",
+      "email": "Email",
+      "phone": "Phone",
+      "url": "URL",
+      "file": "File"
+    },
+    "editField": "Edit Field",
+    "newField": "New Field",
+    "preview": "Preview",
+    "hidePreview": "Hide Preview",
+    "fieldName": "Field Name *",
+    "fieldNamePlaceholder": "e.g. T-Shirt Size",
+    "section": "Section",
+    "placeholder": "Placeholder",
+    "defaultValue": "Default Value",
+    "validationRegex": "Validation Regex",
+    "minValue": "Min Value",
+    "maxValue": "Max Value",
+    "helpText": "Help Text",
+    "helpTextPlaceholder": "Tooltip or description shown to users",
+    "options": "Options",
+    "optionPlaceholder": "Type option and press Enter",
+    "add": "Add",
+    "required": "Required",
+    "searchable": "Searchable",
+    "fieldPreview": "Field Preview",
+    "saveError": "Failed to save field. Please try again.",
+    "saving": "Saving...",
+    "updateFieldBtn": "Update Field",
+    "createField": "Create Field",
+    "cancel": "Cancel",
+    "loading": "Loading fields...",
+    "empty": "No custom fields defined for {{entity}}.",
+    "emptyHint": "Click \"Add Field\" to create your first custom field.",
+    "colFieldName": "Field Name",
+    "colKey": "Key",
+    "colType": "Type",
+    "colActions": "Actions",
+    "optionsCount_one": "({{count}} option)",
+    "optionsCount_other": "({{count}} options)",
+    "yes": "Yes",
+    "no": "No",
+    "editFieldAria": "Edit field",
+    "deleteFieldAria": "Delete field",
+    "deactivateNamed": "Deactivate field \"{{name}}\"?",
+    "deactivate": "Deactivate field?",
+    "deactivateDesc": "Existing values will be preserved.",
+    "deactivateBtn": "Deactivate",
+    "previewFieldName": "Field Name",
+    "previewEnter": "Enter {{name}}",
+    "previewValue": "value",
+    "previewSelect": "Select {{name}}...",
+    "previewOption": "option",
+    "noOptionsDefined": "No options defined",
+    "previewCheckbox": "Checkbox",
+    "fieldTypeField": "Field Type *"
+  },
+  "orgSettings": {
+    "loading": "Loading settings...",
+    "title": "Organization Settings",
+    "subtitle": "Manage your company details, departments, and locations.",
+    "companyInfo": "Company Information",
+    "edit": "Edit",
+    "field": {
+      "name": "Name",
+      "legalName": "Legal Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "state": "State",
+      "city": "City",
+      "timezone": "Timezone",
+      "language": "Language"
+    },
+    "errEmail": "Please enter a valid email address (e.g., user@example.com).",
+    "errCity": "City must only contain letters, spaces, and hyphens.",
+    "errState": "State must only contain letters, spaces, and hyphens.",
+    "editCompanyInfo": "Edit Company Information",
+    "selectTimezone": "Select timezone",
+    "selectCountry": "Select country",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "updateError": "Failed to update. Please try again.",
+    "departments": "Departments ({{count}})",
+    "add": "Add",
+    "departmentName": "Department name",
+    "renameDepartment": "Rename department",
+    "deleteDepartment": "Delete department",
+    "save": "Save",
+    "addDeptError": "Failed to add department.",
+    "renameDeptError": "Failed to rename department.",
+    "deleteDeptError": "Failed to delete department.",
+    "locations": "Locations ({{count}})",
+    "timezoneRequired": "Timezone is required.",
+    "locationName": "Location name",
+    "selectTimezoneRequired": "Select timezone *",
+    "noTimezone": "No timezone",
+    "editLocation": "Edit location",
+    "deleteLocation": "Delete location",
+    "addLocError": "Failed to add location.",
+    "updateLocError": "Failed to update location.",
+    "deleteLocError": "Failed to delete location."
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "newKey": "New Key",
+    "description": "Generate keys for programmatic access to the EmpCloud APIs. One key works across EmpCloud and the Payroll module, and carries the permissions of the admin who created it.",
+    "statusRevoked": "Revoked",
+    "statusExpired": "Expired",
+    "statusActive": "Active",
+    "createError": "Failed to create API key",
+    "copyError": "Couldn't copy — select and copy manually",
+    "revokeConfirm": "Revoke \"{{name}}\"? Any integration using it will stop working immediately.",
+    "revoked": "API key revoked",
+    "revokeError": "Failed to revoke key",
+    "howToTitle": "How to use your API key",
+    "howToIntro": "The generated key is a <strong>Bearer token</strong>. Send it in the <code>Authorization</code> header on every API request — exactly like a logged-in session token:",
+    "bulletBothSystems": "<strong>Works in both systems.</strong> The same token authenticates against EmpCloud APIs and the Payroll module APIs — no separate login or token exchange needed.",
+    "bulletPermissions": "<strong>Inherits your permissions.</strong> A key can only do what the admin who created it can do. It always reflects that admin's current role — change the role and the key's access changes with it.",
+    "bulletShownOnce": "<strong>Shown only once.</strong> The full key is displayed a single time at creation. Store it somewhere safe (a secrets manager) — we keep only a hashed copy and can't show it again.",
+    "bulletRevocable": "<strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a password — anyone who has it can act with your permissions.",
+    "copyNow": "Copy this key now — it won't be shown again.",
+    "copied": "Copied",
+    "copy": "Copy",
+    "dismiss": "Dismiss",
+    "useAsBearer": "Use it as a Bearer token in the Authorization header:",
+    "keyName": "Key name",
+    "keyNamePlaceholder": "e.g. Attendance export",
+    "expiresInDays": "Expires in (days)",
+    "never": "Never",
+    "generating": "Generating…",
+    "generateKey": "Generate key",
+    "cancel": "Cancel",
+    "loadingKeys": "Loading keys…",
+    "noKeys": "No API keys yet.",
+    "colName": "Name",
+    "colKey": "Key",
+    "colStatus": "Status",
+    "colLastUsed": "Last used",
+    "colExpires": "Expires",
+    "colCreated": "Created",
+    "revoke": "Revoke"
+  },
+  "assetCategories": {
+    "title": "Asset Categories",
+    "subtitle": "Organize assets by type",
+    "addCategory": "Add Category",
+    "loading": "Loading categories...",
+    "empty": "No categories yet. Create your first one.",
+    "colName": "Name",
+    "colDescription": "Description",
+    "colActions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "editCategory": "Edit Category",
+    "newCategory": "New Category",
+    "nameLabel": "Name *",
+    "namePlaceholder": "e.g. Laptop, Monitor, Phone",
+    "descriptionLabel": "Description",
+    "cancel": "Cancel",
+    "update": "Update",
+    "create": "Create",
+    "deactivateError": "Failed to deactivate category",
+    "deactivateTitle": "Deactivate category?",
+    "deactivateBody": "Deactivate <strong>{{name}}</strong>? Existing assets tagged with this category keep the tag, but no new assets can be placed here until it's restored.",
+    "deactivating": "Deactivating...",
+    "deactivate": "Deactivate"
+  },
+  "helpdeskDashboard": {
+    "loading": "Loading helpdesk dashboard...",
+    "title": "Helpdesk Dashboard",
+    "subtitle": "Overview of HR helpdesk tickets and SLA performance.",
+    "viewAllTickets": "View All Tickets",
+    "stat": {
+      "totalOpen": "Total Open",
+      "inProgress": "In Progress",
+      "overdue": "Overdue (SLA Breached)",
+      "resolvedToday": "Resolved Today"
+    },
+    "slaCompliance": {
+      "heading": "SLA Compliance",
+      "caption": "Tickets resolved within SLA"
+    },
+    "avgResolution": {
+      "heading": "Average Resolution Time",
+      "unit": "hours"
+    },
+    "satisfaction": {
+      "heading": "Satisfaction Rating",
+      "notAvailable": "N/A",
+      "ratingCount_one": "{{count}} rating",
+      "ratingCount_other": "{{count}} ratings"
+    },
+    "categoryBreakdown": {
+      "heading": "Tickets by Category"
+    },
+    "recentTickets": {
+      "heading": "Recent Tickets"
+    },
+    "noTicketsYet": "No tickets yet",
+    "category": {
+      "leave": "Leave",
+      "payroll": "Payroll",
+      "benefits": "Benefits",
+      "it": "IT",
+      "facilities": "Facilities",
+      "onboarding": "Onboarding",
+      "policy": "Policy",
+      "general": "General"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "awaiting_response": "Awaiting Response",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    }
+  },
+  "submitFeedback": {
+    "title": "Submit Feedback",
+    "successHeading": "Feedback Submitted",
+    "successMessage": "Your feedback has been submitted anonymously. Your identity is not stored or visible to anyone. You can check the status of your feedback on the \"My Feedback\" page.",
+    "submitAnother": "Submit Another",
+    "bannerTitle": "Your feedback is completely anonymous",
+    "bannerBody": "Your identity is hashed and cannot be traced back to you. HR will see the feedback content but never your name or email.",
+    "categoryLabel": "Category",
+    "subjectLabel": "Subject",
+    "messageLabel": "Message",
+    "subjectPlaceholder": "Brief summary of your feedback",
+    "messagePlaceholder": "Describe your feedback in detail...",
+    "markUrgent": "Mark as urgent",
+    "submitAnon": "Submit Anonymously",
+    "submitting": "Submitting...",
+    "submitError": "Failed to submit feedback. Please try again.",
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
+      "other": "Other"
+    }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "Personal",
+      "education": "Education",
+      "experience": "Experience",
+      "dependents": "Dependents",
+      "addresses": "Addresses",
+      "custom": "Custom Fields"
+    },
+    "invalidEmployee": {
+      "title": "Invalid Employee",
+      "description": "The employee ID in the URL is missing or invalid.",
+      "backLink": "Back to Employee Directory"
+    },
+    "accessDenied": {
+      "title": "Access denied",
+      "description": "You don't have permission to view this profile.",
+      "backLink": "Back to Dashboard"
+    },
+    "loadingProfile": "Loading profile...",
+    "employeeNotFound": "Employee not found",
+    "backToDirectory": "Back to Directory",
+    "noDesignation": "No designation",
+    "biometricPhotoTooltip": "Photo is managed via biometric kiosk enrollment",
+    "biometricPhotoAlt": "Biometric face",
+    "profilePhotoAlt": "Profile",
+    "biometricPhotoHint": "Photo from biometric enrollment — managed via the kiosk.",
+    "removingPhoto": "Removing...",
+    "removePhoto": "Remove photo",
+    "empCodeLabel": "Emp Code: {{code}}",
+    "joinedLabel": "Joined: {{date}}",
+    "cancel": "Cancel",
+    "editMyInfo": "Edit My Info",
+    "editProfile": "Edit Profile",
+    "removePhotoDialog": {
+      "title": "Remove your profile photo?",
+      "description": "You'll show initials again.",
+      "confirm": "Remove photo"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PAN must be 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F)",
+      "aadhaar": "Aadhaar must be 12 digits",
+      "uan": "UAN must be 12 digits",
+      "passport": "Passport must be 1 letter + 7 digits (e.g. A1234567)"
+    },
+    "personal": {
+      "saveFailed": "Failed to save",
+      "selfServiceNotice": "You can edit your personal and emergency contact information. Contact HR to update administrative fields."
+    },
+    "field": {
+      "personalEmail": "Personal Email",
+      "contactNumber": "Contact Number",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "bloodGroup": "Blood Group",
+      "maritalStatus": "Marital Status",
+      "nationality": "Nationality",
+      "aadharNumber": "Aadhar Number",
+      "panNumber": "PAN Number",
+      "uanNumber": "UAN Number",
+      "passportNumber": "Passport Number",
+      "passportExpiry": "Passport Expiry",
+      "visaStatus": "Visa Status",
+      "visaExpiry": "Visa Expiry",
+      "emergencyContact": "Emergency Contact",
+      "emergencyPhone": "Emergency Phone",
+      "emergencyRelation": "Emergency Relation",
+      "noticePeriodDays": "Notice Period (days)",
+      "reportingManager": "Reporting Manager",
+      "department": "Department",
+      "shift": "Shift",
+      "designation": "Designation",
+      "employeeCode": "Employee Code",
+      "probationStart": "Probation Start",
+      "probationEnd": "Probation End",
+      "confirmationDate": "Confirmation Date",
+      "customRoles": "Custom Roles",
+      "additionalManagers": "Additional Managers"
+    },
+    "select": {
+      "placeholder": "Select"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "maritalStatus": {
+      "single": "Single",
+      "married": "Married",
+      "divorced": "Divorced",
+      "widowed": "Widowed"
+    },
+    "placeholder": {
+      "aadhar": "12 digits",
+      "pan": "ABCDE1234F",
+      "uan": "12 digits",
+      "passport": "A1234567",
+      "designationSelfService": "Contact HR to change",
+      "designation": "e.g. Senior Engineer",
+      "empCodeSelfService": "Contact HR to set",
+      "empCode": "e.g. EMP001"
+    },
+    "reportingManager": {
+      "none": "No Manager"
+    },
+    "department": {
+      "none": "No department"
+    },
+    "shift": {
+      "none": "No shift"
+    },
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "additionalManagers": {
+      "loading": "Loading…",
+      "none": "No additional managers",
+      "userFallback": "User #{{id}}",
+      "selectedCount_one": "({{count}} selected)",
+      "selectedCount_other": "({{count}} selected)",
+      "helpText": "Co-managers with the same team-scope access as the primary Reporting Manager. Honoured by every team-scoped permission.",
+      "removeAria": "Remove {{name}}",
+      "removeAriaFallback": "manager",
+      "searchPlaceholder": "Search by name or email…",
+      "addPlaceholder": "Add another…",
+      "noMatches": "No matching users",
+      "allSelected": "All eligible users already selected",
+      "savingButton": "Saving…",
+      "saveButton": "Save additional managers",
+      "unsavedChanges": "unsaved changes",
+      "saved": "Saved"
+    },
+    "apiError": {
+      "requestFailed": "Request failed"
+    },
+    "education": {
+      "add": "Add Education",
+      "edit": "Edit Education",
+      "empty": "No education records added yet.",
+      "deleteDialog": {
+        "title": "Delete this education record?"
+      },
+      "field": {
+        "degree": "Degree",
+        "institution": "Institution",
+        "fieldOfStudy": "Field of Study",
+        "grade": "Grade",
+        "startYear": "Start Year",
+        "endYear": "End Year"
+      },
+      "placeholder": {
+        "degree": "e.g. B.Tech",
+        "institution": "e.g. IIT Delhi"
+      },
+      "validation": {
+        "required": "Degree and Institution are required",
+        "endYear": "End year must be on or after start year"
+      },
+      "fromYear": "From {{year}}",
+      "gradeSuffix": "Grade: {{grade}}"
+    },
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "experience": {
+      "add": "Add Experience",
+      "edit": "Edit Experience",
+      "empty": "No work experience records added yet.",
+      "deleteDialog": {
+        "title": "Delete this experience record?"
+      },
+      "field": {
+        "company": "Company",
+        "designation": "Designation",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "description": "Description"
+      },
+      "currentlyWorking": "Currently working here",
+      "current": "Current",
+      "present": "Present",
+      "validation": {
+        "required": "Company, Designation and Start Date are required"
+      }
+    },
+    "dependents": {
+      "add": "Add Dependent",
+      "edit": "Edit Dependent",
+      "empty": "No dependents added yet.",
+      "deleteDialog": {
+        "title": "Delete this dependent?"
+      },
+      "field": {
+        "name": "Name",
+        "relationship": "Relationship",
+        "dateOfBirth": "Date of Birth",
+        "gender": "Gender",
+        "nomineePercent": "Nominee %"
+      },
+      "isNominee": "Is Nominee",
+      "placeholder": {
+        "relationship": "e.g. Spouse, Child, Parent"
+      },
+      "validation": {
+        "required": "Name and Relationship are required"
+      },
+      "column": {
+        "name": "Name",
+        "relationship": "Relationship",
+        "dob": "DOB",
+        "gender": "Gender",
+        "nominee": "Nominee",
+        "actions": "Actions"
+      },
+      "nomineeYes": "Yes",
+      "nomineeNo": "No"
+    },
+    "addresses": {
+      "add": "Add Address",
+      "edit": "Edit Address",
+      "empty": "No addresses added yet.",
+      "deleteDialog": {
+        "title": "Delete this address?"
+      },
+      "field": {
+        "type": "Type",
+        "country": "Country",
+        "line1": "Address Line 1",
+        "line2": "Address Line 2",
+        "city": "City",
+        "state": "State",
+        "zipcode": "Zipcode"
+      },
+      "type": {
+        "current": "Current",
+        "permanent": "Permanent"
+      },
+      "validation": {
+        "required": "Address line 1, City, State and Zipcode are required"
+      }
+    },
+    "customFields": {
+      "loading": "Loading custom fields...",
+      "emptyTitle": "No custom fields have been defined for employees yet.",
+      "emptyHint": "HR administrators can create custom fields from the Custom Fields settings page.",
+      "heading": "Custom Fields",
+      "saveFailed": "Failed to save custom fields",
+      "defaultSection": "Custom Fields",
+      "display": {
+        "yes": "Yes",
+        "no": "No"
+      },
+      "selectPlaceholder": "Select...",
+      "filePlaceholder": "File reference or path"
     }
   },
   "assetDetail": {

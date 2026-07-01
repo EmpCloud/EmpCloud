@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "このカテゴリに従業員はいません。",
       "lateBy": "遅刻時間",
       "minSuffix": "分",
-      "close": "閉じる"
+      "close": "閉じる",
+      "dateLabel": "日付",
+      "noSearchResults": "検索に一致する従業員はいません。",
+      "searchPlaceholder": "名前、メール、部門で検索"
     },
     "export": {
       "title": "勤怠レポートのエクスポート",
@@ -1706,7 +1709,8 @@
       "previous": "前へ",
       "next": "次へ",
       "alertPlannedInvalid": "計画人員は 0 以上である必要があります。",
-      "alertCurrentInvalid": "現在の人員は 0 以上である必要があります。"
+      "alertCurrentInvalid": "現在の人員は 0 以上である必要があります。",
+      "searchPlaceholder": "プラン名または会計年度で検索..."
     },
     "vacancies": {
       "title": "公開中の欠員",
@@ -1850,7 +1854,9 @@
       "announcement_created": "お知らせ作成",
       "policy_created": "ポリシー作成",
       "policy_acknowledged": "ポリシー承認"
-    }
+    },
+    "noActionMatches": "一致するアクションがありません",
+    "searchActions": "アクションの種類を検索..."
   },
   "employees": {
     "directory": {
@@ -2537,6 +2543,537 @@
       "found": "発見",
       "damaged": "破損",
       "updated": "更新"
+    }
+  },
+  "customFields": {
+    "title": "カスタムフィールド",
+    "subtitle": "従業員、部門、その他のエンティティ用のカスタムデータフィールドを定義します",
+    "addField": "フィールドを追加",
+    "entity": {
+      "employee": "従業員",
+      "department": "部門",
+      "location": "場所",
+      "project": "プロジェクト",
+      "document": "ドキュメント"
+    },
+    "fieldType": {
+      "text": "テキスト",
+      "textarea": "テキストエリア",
+      "number": "数値",
+      "decimal": "小数",
+      "date": "日付",
+      "datetime": "日時",
+      "dropdown": "ドロップダウン",
+      "multi_select": "複数選択",
+      "checkbox": "チェックボックス",
+      "email": "メール",
+      "phone": "電話",
+      "url": "URL",
+      "file": "ファイル"
+    },
+    "editField": "フィールドを編集",
+    "newField": "新規フィールド",
+    "preview": "プレビュー",
+    "hidePreview": "プレビューを非表示",
+    "fieldName": "フィールド名 *",
+    "fieldNamePlaceholder": "例: Tシャツのサイズ",
+    "section": "セクション",
+    "placeholder": "プレースホルダー",
+    "defaultValue": "既定値",
+    "validationRegex": "検証用正規表現",
+    "minValue": "最小値",
+    "maxValue": "最大値",
+    "helpText": "ヘルプテキスト",
+    "helpTextPlaceholder": "ユーザーに表示されるツールチップまたは説明",
+    "options": "選択肢",
+    "optionPlaceholder": "選択肢を入力して Enter キーを押してください",
+    "add": "追加",
+    "required": "必須",
+    "searchable": "検索可能",
+    "fieldPreview": "フィールドプレビュー",
+    "saveError": "フィールドの保存に失敗しました。もう一度お試しください。",
+    "saving": "保存中...",
+    "updateFieldBtn": "フィールドを更新",
+    "createField": "フィールドを作成",
+    "cancel": "キャンセル",
+    "loading": "フィールドを読み込み中...",
+    "empty": "{{entity}} のカスタムフィールドは定義されていません。",
+    "emptyHint": "「フィールドを追加」をクリックして最初のカスタムフィールドを作成してください。",
+    "colFieldName": "フィールド名",
+    "colKey": "キー",
+    "colType": "種類",
+    "colActions": "操作",
+    "optionsCount_one": "（選択肢 {{count}} 件）",
+    "optionsCount_other": "（選択肢 {{count}} 件）",
+    "yes": "はい",
+    "no": "いいえ",
+    "editFieldAria": "フィールドを編集",
+    "deleteFieldAria": "フィールドを削除",
+    "deactivateNamed": "フィールド「{{name}}」を無効化しますか？",
+    "deactivate": "フィールドを無効化しますか？",
+    "deactivateDesc": "既存の値は保持されます。",
+    "deactivateBtn": "無効化",
+    "previewFieldName": "フィールド名",
+    "previewEnter": "{{name}} を入力",
+    "previewValue": "値",
+    "previewSelect": "{{name}} を選択...",
+    "previewOption": "選択肢",
+    "noOptionsDefined": "選択肢が定義されていません",
+    "previewCheckbox": "チェックボックス",
+    "fieldTypeField": "フィールドの種類 *"
+  },
+  "orgSettings": {
+    "loading": "設定を読み込み中...",
+    "title": "組織設定",
+    "subtitle": "会社の詳細、部門、拠点を管理します。",
+    "companyInfo": "会社情報",
+    "edit": "編集",
+    "field": {
+      "name": "名前",
+      "legalName": "正式名称",
+      "email": "メール",
+      "phone": "電話",
+      "country": "国",
+      "state": "州",
+      "city": "市区町村",
+      "timezone": "タイムゾーン",
+      "language": "言語"
+    },
+    "errEmail": "有効なメールアドレスを入力してください（例: user@example.com）。",
+    "errCity": "市区町村には文字、スペース、ハイフンのみを使用できます。",
+    "errState": "州には文字、スペース、ハイフンのみを使用できます。",
+    "editCompanyInfo": "会社情報を編集",
+    "selectTimezone": "タイムゾーンを選択",
+    "selectCountry": "国を選択",
+    "cancel": "キャンセル",
+    "saveChanges": "変更を保存",
+    "updateError": "更新に失敗しました。もう一度お試しください。",
+    "departments": "部門（{{count}}）",
+    "add": "追加",
+    "departmentName": "部門名",
+    "renameDepartment": "部門名を変更",
+    "deleteDepartment": "部門を削除",
+    "save": "保存",
+    "addDeptError": "部門の追加に失敗しました。",
+    "renameDeptError": "部門名の変更に失敗しました。",
+    "deleteDeptError": "部門の削除に失敗しました。",
+    "locations": "拠点（{{count}}）",
+    "timezoneRequired": "タイムゾーンは必須です。",
+    "locationName": "拠点名",
+    "selectTimezoneRequired": "タイムゾーンを選択 *",
+    "noTimezone": "タイムゾーンなし",
+    "editLocation": "拠点を編集",
+    "deleteLocation": "拠点を削除",
+    "addLocError": "拠点の追加に失敗しました。",
+    "updateLocError": "拠点の更新に失敗しました。",
+    "deleteLocError": "拠点の削除に失敗しました。"
+  },
+  "apiKeys": {
+    "title": "APIキー",
+    "newKey": "新規キー",
+    "description": "EmpCloud APIへのプログラムアクセス用のキーを生成します。1つのキーがEmpCloudとPayrollモジュールの両方で機能し、作成した管理者の権限を継承します。",
+    "statusRevoked": "取り消し済み",
+    "statusExpired": "期限切れ",
+    "statusActive": "有効",
+    "createError": "APIキーの作成に失敗しました",
+    "copyError": "コピーできませんでした — 選択して手動でコピーしてください",
+    "revokeConfirm": "「{{name}}」を取り消しますか？これを使用しているすべての連携が直ちに動作しなくなります。",
+    "revoked": "APIキーを取り消しました",
+    "revokeError": "キーの取り消しに失敗しました",
+    "howToTitle": "APIキーの使い方",
+    "howToIntro": "生成されたキーは<strong>Bearerトークン</strong>です。ログインセッショントークンと同様に、すべてのAPIリクエストの<code>Authorization</code>ヘッダーで送信してください:",
+    "bulletBothSystems": "<strong>両方のシステムで機能します。</strong> 同じトークンでEmpCloud APIとPayrollモジュールAPIの両方に認証できます — 別途のログインやトークン交換は不要です。",
+    "bulletPermissions": "<strong>あなたの権限を継承します。</strong> キーは、作成した管理者ができることしかできません。常にその管理者の現在のロールを反映します — ロールを変更するとキーのアクセスも変わります。",
+    "bulletShownOnce": "<strong>表示は一度だけ。</strong> 完全なキーは作成時に一度だけ表示されます。安全な場所（シークレットマネージャー）に保管してください — 当社はハッシュ化されたコピーのみを保持し、再表示できません。",
+    "bulletRevocable": "<strong>取り消し・有効期限の設定が可能。</strong> 任意の有効期限を設定するか、いつでもキーを取り消せます。取り消されたキーや期限切れのキーは、どこでも直ちに動作しなくなります。キーはパスワードと同じように扱ってください — 所持する誰もがあなたの権限で操作できます。",
+    "copyNow": "このキーを今すぐコピーしてください — 再表示されません。",
+    "copied": "コピー済み",
+    "copy": "コピー",
+    "dismiss": "閉じる",
+    "useAsBearer": "Authorizationヘッダーで Bearer トークンとして使用してください:",
+    "keyName": "キー名",
+    "keyNamePlaceholder": "例: 勤怠エクスポート",
+    "expiresInDays": "有効期限（日数）",
+    "never": "なし",
+    "generating": "生成中…",
+    "generateKey": "キーを生成",
+    "cancel": "キャンセル",
+    "loadingKeys": "キーを読み込み中…",
+    "noKeys": "まだAPIキーがありません。",
+    "colName": "名前",
+    "colKey": "キー",
+    "colStatus": "ステータス",
+    "colLastUsed": "最終使用",
+    "colExpires": "有効期限",
+    "colCreated": "作成日",
+    "revoke": "取り消す"
+  },
+  "assetCategories": {
+    "title": "資産カテゴリ",
+    "subtitle": "資産をタイプ別に整理",
+    "addCategory": "カテゴリを追加",
+    "loading": "カテゴリを読み込み中...",
+    "empty": "まだカテゴリがありません。最初のカテゴリを作成してください。",
+    "colName": "名前",
+    "colDescription": "説明",
+    "colActions": "操作",
+    "edit": "編集",
+    "delete": "削除",
+    "editCategory": "カテゴリを編集",
+    "newCategory": "新規カテゴリ",
+    "nameLabel": "名前 *",
+    "namePlaceholder": "例: ノートPC、モニター、電話",
+    "descriptionLabel": "説明",
+    "cancel": "キャンセル",
+    "update": "更新",
+    "create": "作成",
+    "deactivateError": "カテゴリの無効化に失敗しました",
+    "deactivateTitle": "カテゴリを無効化しますか？",
+    "deactivateBody": "<strong>{{name}}</strong> を無効化しますか？このカテゴリでタグ付けされた既存の資産はタグを保持しますが、復元されるまで新しい資産をここに配置できません。",
+    "deactivating": "無効化中...",
+    "deactivate": "無効化"
+  },
+  "helpdeskDashboard": {
+    "loading": "ヘルプデスクダッシュボードを読み込み中...",
+    "title": "ヘルプデスクダッシュボード",
+    "subtitle": "人事ヘルプデスクのチケットとSLA達成状況の概要。",
+    "viewAllTickets": "すべてのチケットを表示",
+    "stat": {
+      "totalOpen": "オープン合計",
+      "inProgress": "対応中",
+      "overdue": "期限超過（SLA違反）",
+      "resolvedToday": "本日解決済み"
+    },
+    "slaCompliance": {
+      "heading": "SLA遵守率",
+      "caption": "SLA内に解決したチケット"
+    },
+    "avgResolution": {
+      "heading": "平均解決時間",
+      "unit": "時間"
+    },
+    "satisfaction": {
+      "heading": "満足度評価",
+      "notAvailable": "なし",
+      "ratingCount_one": "{{count}}件の評価",
+      "ratingCount_other": "{{count}}件の評価"
+    },
+    "categoryBreakdown": {
+      "heading": "カテゴリ別チケット"
+    },
+    "recentTickets": {
+      "heading": "最近のチケット"
+    },
+    "noTicketsYet": "チケットはまだありません",
+    "category": {
+      "leave": "休暇",
+      "payroll": "給与",
+      "benefits": "福利厚生",
+      "it": "IT",
+      "facilities": "施設",
+      "onboarding": "オンボーディング",
+      "policy": "ポリシー",
+      "general": "一般"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "緊急"
+    },
+    "status": {
+      "open": "オープン",
+      "in_progress": "対応中",
+      "awaiting_response": "返信待ち",
+      "resolved": "解決済み",
+      "closed": "クローズ",
+      "reopened": "再オープン"
+    }
+  },
+  "submitFeedback": {
+    "title": "フィードバックを送信",
+    "successHeading": "フィードバックを送信しました",
+    "successMessage": "フィードバックは匿名で送信されました。あなたの身元は保存されず、誰にも知られることはありません。送信したフィードバックの状況は「マイフィードバック」ページで確認できます。",
+    "submitAnother": "別のフィードバックを送信",
+    "bannerTitle": "フィードバックは完全に匿名です",
+    "bannerBody": "あなたの身元はハッシュ化され、あなたを特定することはできません。人事部はフィードバックの内容のみを確認でき、氏名やメールアドレスが見られることはありません。",
+    "categoryLabel": "カテゴリー",
+    "subjectLabel": "件名",
+    "messageLabel": "本文",
+    "subjectPlaceholder": "フィードバックの概要を簡潔に",
+    "messagePlaceholder": "フィードバックの内容を詳しくご記入ください...",
+    "markUrgent": "緊急としてマークする",
+    "submitAnon": "匿名で送信",
+    "submitting": "送信中...",
+    "submitError": "フィードバックの送信に失敗しました。もう一度お試しください。",
+    "category": {
+      "workplace": "職場環境",
+      "management": "マネジメント",
+      "process": "業務プロセス",
+      "culture": "企業文化",
+      "harassment": "ハラスメント",
+      "safety": "安全",
+      "suggestion": "提案",
+      "other": "その他"
+    }
+  },
+  "employeeProfile": {
+    "tab": {
+      "personal": "個人情報",
+      "education": "学歴",
+      "experience": "職歴",
+      "dependents": "扶養家族",
+      "addresses": "住所",
+      "custom": "カスタム項目"
+    },
+    "invalidEmployee": {
+      "title": "無効な従業員",
+      "description": "URL内の従業員IDが見つからないか、無効です。",
+      "backLink": "従業員ディレクトリに戻る"
+    },
+    "accessDenied": {
+      "title": "アクセスが拒否されました",
+      "description": "このプロフィールを閲覧する権限がありません。",
+      "backLink": "ダッシュボードに戻る"
+    },
+    "loadingProfile": "プロフィールを読み込み中...",
+    "employeeNotFound": "従業員が見つかりません",
+    "backToDirectory": "ディレクトリに戻る",
+    "noDesignation": "役職なし",
+    "biometricPhotoTooltip": "写真は生体認証キオスクの登録で管理されます",
+    "biometricPhotoAlt": "生体認証の顔写真",
+    "profilePhotoAlt": "プロフィール",
+    "biometricPhotoHint": "生体認証登録の写真 — キオスクで管理されます。",
+    "removingPhoto": "削除中...",
+    "removePhoto": "写真を削除",
+    "empCodeLabel": "従業員コード: {{code}}",
+    "joinedLabel": "入社日: {{date}}",
+    "cancel": "キャンセル",
+    "editMyInfo": "自分の情報を編集",
+    "editProfile": "プロフィールを編集",
+    "removePhotoDialog": {
+      "title": "プロフィール写真を削除しますか？",
+      "description": "再びイニシャルが表示されます。",
+      "confirm": "写真を削除"
+    },
+    "fieldRow": {
+      "empty": "-"
+    },
+    "validation": {
+      "pan": "PANは英字5文字＋数字4桁＋英字1文字で入力してください（例: ABCDE1234F）",
+      "aadhaar": "Aadhaarは12桁で入力してください",
+      "uan": "UANは12桁で入力してください",
+      "passport": "パスポート番号は英字1文字＋数字7桁で入力してください（例: A1234567）"
+    },
+    "personal": {
+      "saveFailed": "保存に失敗しました",
+      "selfServiceNotice": "個人情報および緊急連絡先情報を編集できます。管理項目の更新は人事担当者にお問い合わせください。"
+    },
+    "field": {
+      "personalEmail": "個人メールアドレス",
+      "contactNumber": "連絡先電話番号",
+      "gender": "性別",
+      "dateOfBirth": "生年月日",
+      "bloodGroup": "血液型",
+      "maritalStatus": "婚姻状況",
+      "nationality": "国籍",
+      "aadharNumber": "Aadhar番号",
+      "panNumber": "PAN番号",
+      "uanNumber": "UAN番号",
+      "passportNumber": "パスポート番号",
+      "passportExpiry": "パスポート有効期限",
+      "visaStatus": "ビザステータス",
+      "visaExpiry": "ビザ有効期限",
+      "emergencyContact": "緊急連絡先",
+      "emergencyPhone": "緊急連絡先電話番号",
+      "emergencyRelation": "緊急連絡先との続柄",
+      "noticePeriodDays": "退職予告期間（日）",
+      "reportingManager": "直属の上司",
+      "department": "部署",
+      "shift": "シフト",
+      "designation": "役職",
+      "employeeCode": "従業員コード",
+      "probationStart": "試用期間開始日",
+      "probationEnd": "試用期間終了日",
+      "confirmationDate": "本採用日",
+      "customRoles": "カスタムロール",
+      "additionalManagers": "追加マネージャー"
+    },
+    "select": {
+      "placeholder": "選択"
+    },
+    "gender": {
+      "male": "男性",
+      "female": "女性",
+      "other": "その他"
+    },
+    "maritalStatus": {
+      "single": "未婚",
+      "married": "既婚",
+      "divorced": "離婚",
+      "widowed": "死別"
+    },
+    "placeholder": {
+      "aadhar": "12桁",
+      "pan": "ABCDE1234F",
+      "uan": "12桁",
+      "passport": "A1234567",
+      "designationSelfService": "変更は人事にお問い合わせください",
+      "designation": "例: シニアエンジニア",
+      "empCodeSelfService": "設定は人事にお問い合わせください",
+      "empCode": "例: EMP001"
+    },
+    "reportingManager": {
+      "none": "上司なし"
+    },
+    "department": {
+      "none": "部署なし"
+    },
+    "shift": {
+      "none": "シフトなし"
+    },
+    "saving": "保存中...",
+    "saveChanges": "変更を保存",
+    "additionalManagers": {
+      "loading": "読み込み中…",
+      "none": "追加マネージャーなし",
+      "userFallback": "ユーザー #{{id}}",
+      "selectedCount_one": "（{{count}}件選択中）",
+      "selectedCount_other": "（{{count}}件選択中）",
+      "helpText": "直属の上司と同じチーム範囲のアクセス権を持つ共同マネージャー。チーム範囲のすべての権限で適用されます。",
+      "removeAria": "{{name}}を削除",
+      "removeAriaFallback": "マネージャー",
+      "searchPlaceholder": "名前またはメールアドレスで検索…",
+      "addPlaceholder": "別のマネージャーを追加…",
+      "noMatches": "一致するユーザーがいません",
+      "allSelected": "対象ユーザーはすべて選択済みです",
+      "savingButton": "保存中…",
+      "saveButton": "追加マネージャーを保存",
+      "unsavedChanges": "未保存の変更",
+      "saved": "保存しました"
+    },
+    "apiError": {
+      "requestFailed": "リクエストに失敗しました"
+    },
+    "education": {
+      "add": "学歴を追加",
+      "edit": "学歴を編集",
+      "empty": "まだ学歴が登録されていません。",
+      "deleteDialog": {
+        "title": "この学歴を削除しますか？"
+      },
+      "field": {
+        "degree": "学位",
+        "institution": "学校名",
+        "fieldOfStudy": "専攻分野",
+        "grade": "成績",
+        "startYear": "開始年",
+        "endYear": "終了年"
+      },
+      "placeholder": {
+        "degree": "例: 学士（工学）",
+        "institution": "例: デリー工科大学"
+      },
+      "validation": {
+        "required": "学位と学校名は必須です",
+        "endYear": "終了年は開始年以降にしてください"
+      },
+      "fromYear": "{{year}}年から",
+      "gradeSuffix": "成績：{{grade}}"
+    },
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "experience": {
+      "add": "職歴を追加",
+      "edit": "職歴を編集",
+      "empty": "まだ職歴が登録されていません。",
+      "deleteDialog": {
+        "title": "この職歴を削除しますか？"
+      },
+      "field": {
+        "company": "会社名",
+        "designation": "役職",
+        "startDate": "開始日",
+        "endDate": "終了日",
+        "description": "職務内容"
+      },
+      "currentlyWorking": "現在在籍中",
+      "current": "現職",
+      "present": "現在",
+      "validation": {
+        "required": "会社名、役職、開始日は必須です"
+      }
+    },
+    "dependents": {
+      "add": "扶養家族を追加",
+      "edit": "扶養家族を編集",
+      "empty": "まだ扶養家族が登録されていません。",
+      "deleteDialog": {
+        "title": "この扶養家族を削除しますか？"
+      },
+      "field": {
+        "name": "氏名",
+        "relationship": "続柄",
+        "dateOfBirth": "生年月日",
+        "gender": "性別",
+        "nomineePercent": "受取人割合（%）"
+      },
+      "isNominee": "受取人",
+      "placeholder": {
+        "relationship": "例: 配偶者、子、親"
+      },
+      "validation": {
+        "required": "氏名と続柄は必須です"
+      },
+      "column": {
+        "name": "氏名",
+        "relationship": "続柄",
+        "dob": "生年月日",
+        "gender": "性別",
+        "nominee": "受取人",
+        "actions": "操作"
+      },
+      "nomineeYes": "はい",
+      "nomineeNo": "いいえ"
+    },
+    "addresses": {
+      "add": "住所を追加",
+      "edit": "住所を編集",
+      "empty": "まだ住所が登録されていません。",
+      "deleteDialog": {
+        "title": "この住所を削除しますか？"
+      },
+      "field": {
+        "type": "種類",
+        "country": "国",
+        "line1": "住所1",
+        "line2": "住所2",
+        "city": "市区町村",
+        "state": "都道府県・州",
+        "zipcode": "郵便番号"
+      },
+      "type": {
+        "current": "現住所",
+        "permanent": "恒久住所"
+      },
+      "validation": {
+        "required": "住所1、市区町村、都道府県・州、郵便番号は必須です"
+      }
+    },
+    "customFields": {
+      "loading": "カスタム項目を読み込み中...",
+      "emptyTitle": "従業員向けのカスタム項目はまだ定義されていません。",
+      "emptyHint": "人事管理者はカスタム項目設定ページからカスタム項目を作成できます。",
+      "heading": "カスタム項目",
+      "saveFailed": "カスタム項目の保存に失敗しました",
+      "defaultSection": "カスタム項目",
+      "display": {
+        "yes": "はい",
+        "no": "いいえ"
+      },
+      "selectPlaceholder": "選択...",
+      "filePlaceholder": "ファイル参照またはパス"
     }
   },
   "assetDetail": {

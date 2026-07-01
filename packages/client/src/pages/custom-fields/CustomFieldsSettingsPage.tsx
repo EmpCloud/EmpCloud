@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Plus,
@@ -13,6 +14,10 @@ import {
 import api from "@/api/client";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
+// Labels resolved at render via t() under customFields.entity.* and
+// customFields.fieldType.*, with the English value as the defaultValue.
 const ENTITY_TYPES = [
   { key: "employee", label: "Employee" },
   { key: "department", label: "Department" },
@@ -20,6 +25,10 @@ const ENTITY_TYPES = [
   { key: "project", label: "Project" },
   { key: "document", label: "Document" },
 ] as const;
+function entityLabel(key: string, t: TFn): string {
+  const fallback = ENTITY_TYPES.find((e) => e.key === key)?.label ?? key;
+  return t(`customFields.entity.${key}`, { defaultValue: fallback });
+}
 
 const FIELD_TYPES = [
   { value: "text", label: "Text" },
@@ -36,6 +45,10 @@ const FIELD_TYPES = [
   { value: "url", label: "URL" },
   { value: "file", label: "File" },
 ] as const;
+function fieldTypeLabel(value: string, t: TFn): string {
+  const fallback = FIELD_TYPES.find((f) => f.value === value)?.label ?? value;
+  return t(`customFields.fieldType.${value}`, { defaultValue: fallback });
+}
 
 type FieldDefinition = {
   id: number;
@@ -73,6 +86,7 @@ const INITIAL_FORM = {
 };
 
 export default function CustomFieldsSettingsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("employee");
   const [showForm, setShowForm] = useState(false);
@@ -254,9 +268,9 @@ export default function CustomFieldsSettingsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Custom Fields</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("customFields.title")}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Define custom data fields for employees, departments, and other entities
+            {t("customFields.subtitle")}
           </p>
         </div>
         {!showForm && (
@@ -268,7 +282,7 @@ export default function CustomFieldsSettingsPage() {
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Add Field
+            {t("customFields.addField")}
           </button>
         )}
       </div>
@@ -276,7 +290,7 @@ export default function CustomFieldsSettingsPage() {
       {/* Entity Type Tabs */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-4">
-          {ENTITY_TYPES.map(({ key, label }) => (
+          {ENTITY_TYPES.map(({ key }) => (
             <button
               key={key}
               onClick={() => {
@@ -289,7 +303,7 @@ export default function CustomFieldsSettingsPage() {
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              {label}
+              {entityLabel(key, t)}
             </button>
           ))}
         </nav>
@@ -303,7 +317,7 @@ export default function CustomFieldsSettingsPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              {editingId ? "Edit Field" : "New Field"}
+              {editingId ? t("customFields.editField") : t("customFields.newField")}
             </h2>
             <div className="flex items-center gap-2">
               <button
@@ -311,7 +325,7 @@ export default function CustomFieldsSettingsPage() {
                 className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
               >
                 <Eye className="h-4 w-4" />
-                {showPreview ? "Hide Preview" : "Preview"}
+                {showPreview ? t("customFields.hidePreview") : t("customFields.preview")}
               </button>
               <button
                 onClick={resetForm}
@@ -327,7 +341,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Field Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Field Name *
+                  {t("customFields.fieldName")}
                 </label>
                 <input
                   type="text"
@@ -335,7 +349,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, field_name: e.target.value })
                   }
-                  placeholder="e.g. T-Shirt Size"
+                  placeholder={t("customFields.fieldNamePlaceholder")}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   required
                 />
@@ -344,7 +358,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Field Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Field Type *
+                  {t("customFields.fieldTypeField")}
                 </label>
                 <select
                   value={form.field_type}
@@ -353,9 +367,9 @@ export default function CustomFieldsSettingsPage() {
                   }
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  {FIELD_TYPES.map(({ value, label }) => (
+                  {FIELD_TYPES.map(({ value }) => (
                     <option key={value} value={value}>
-                      {label}
+                      {fieldTypeLabel(value, t)}
                     </option>
                   ))}
                 </select>
@@ -364,7 +378,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Section */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Section
+                  {t("customFields.section")}
                 </label>
                 <input
                   type="text"
@@ -372,7 +386,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, section: e.target.value })
                   }
-                  placeholder="Custom Fields"
+                  placeholder={t("customFields.title")}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
@@ -380,7 +394,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Placeholder */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Placeholder
+                  {t("customFields.placeholder")}
                 </label>
                 <input
                   type="text"
@@ -395,7 +409,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Default Value */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Default Value
+                  {t("customFields.defaultValue")}
                 </label>
                 <input
                   type="text"
@@ -410,7 +424,7 @@ export default function CustomFieldsSettingsPage() {
               {/* Validation Regex */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Validation Regex
+                  {t("customFields.validationRegex")}
                 </label>
                 <input
                   type="text"
@@ -428,7 +442,7 @@ export default function CustomFieldsSettingsPage() {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Min Value
+                      {t("customFields.minValue")}
                     </label>
                     <input
                       type="number"
@@ -441,7 +455,7 @@ export default function CustomFieldsSettingsPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Max Value
+                      {t("customFields.maxValue")}
                     </label>
                     <input
                       type="number"
@@ -459,7 +473,7 @@ export default function CustomFieldsSettingsPage() {
             {/* Help Text */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Help Text
+                {t("customFields.helpText")}
               </label>
               <textarea
                 value={form.help_text}
@@ -468,7 +482,7 @@ export default function CustomFieldsSettingsPage() {
                 }
                 rows={2}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                placeholder="Tooltip or description shown to users"
+                placeholder={t("customFields.helpTextPlaceholder")}
               />
             </div>
 
@@ -476,7 +490,7 @@ export default function CustomFieldsSettingsPage() {
             {needsOptions && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Options
+                  {t("customFields.options")}
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
@@ -489,7 +503,7 @@ export default function CustomFieldsSettingsPage() {
                         addOption();
                       }
                     }}
-                    placeholder="Type option and press Enter"
+                    placeholder={t("customFields.optionPlaceholder")}
                     className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <button
@@ -497,7 +511,7 @@ export default function CustomFieldsSettingsPage() {
                     onClick={addOption}
                     className="px-3 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200"
                   >
-                    Add
+                    {t("customFields.add")}
                   </button>
                 </div>
                 {form.options.length > 0 && (
@@ -533,7 +547,7 @@ export default function CustomFieldsSettingsPage() {
                   }
                   className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                 />
-                Required
+                {t("customFields.required")}
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700">
                 <input
@@ -544,7 +558,7 @@ export default function CustomFieldsSettingsPage() {
                   }
                   className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                 />
-                Searchable
+                {t("customFields.searchable")}
               </label>
             </div>
 
@@ -552,7 +566,7 @@ export default function CustomFieldsSettingsPage() {
             {showPreview && (
               <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                 <p className="text-xs font-medium text-gray-400 mb-2 uppercase">
-                  Field Preview
+                  {t("customFields.fieldPreview")}
                 </p>
                 <FieldPreview form={form} />
               </div>
@@ -570,7 +584,7 @@ export default function CustomFieldsSettingsPage() {
                 resp?.message
                 || err?.response?.data?.message
                 || err?.message
-                || "Failed to save field. Please try again.";
+                || t("customFields.saveError");
               return (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
                   <div className="font-medium">{message}</div>
@@ -596,15 +610,15 @@ export default function CustomFieldsSettingsPage() {
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
               >
                 {createMutation.isPending || updateMutation.isPending
-                  ? "Saving..."
-                  : editingId ? "Update Field" : "Create Field"}
+                  ? t("customFields.saving")
+                  : editingId ? t("customFields.updateFieldBtn") : t("customFields.createField")}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
                 className="text-gray-500 hover:text-gray-700 px-4 py-2 text-sm"
               >
-                Cancel
+                {t("customFields.cancel")}
               </button>
             </div>
           </form>
@@ -613,15 +627,14 @@ export default function CustomFieldsSettingsPage() {
 
       {/* Field Definitions List */}
       {isLoading ? (
-        <div className="text-center py-10 text-gray-400">Loading fields...</div>
+        <div className="text-center py-10 text-gray-400">{t("customFields.loading")}</div>
       ) : fields.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
           <p className="text-gray-400">
-            No custom fields defined for{" "}
-            {ENTITY_TYPES.find((t) => t.key === activeTab)?.label || activeTab}.
+            {t("customFields.empty", { entity: entityLabel(activeTab, t) })}
           </p>
           <p className="text-sm text-gray-400 mt-1">
-            Click "Add Field" to create your first custom field.
+            {t("customFields.emptyHint")}
           </p>
         </div>
       ) : (
@@ -641,22 +654,22 @@ export default function CustomFieldsSettingsPage() {
                   <tr>
                     <th className="w-10" />
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Field Name
+                      {t("customFields.colFieldName")}
                     </th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Key
+                      {t("customFields.colKey")}
                     </th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Type
+                      {t("customFields.colType")}
                     </th>
                     <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Required
+                      {t("customFields.required")}
                     </th>
                     <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Searchable
+                      {t("customFields.searchable")}
                     </th>
                     <th className="text-right text-xs font-medium text-gray-500 uppercase px-4 py-3">
-                      Actions
+                      {t("customFields.colActions")}
                     </th>
                   </tr>
                 </thead>
@@ -695,44 +708,44 @@ export default function CustomFieldsSettingsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-block bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-medium">
-                          {field.field_type}
+                          {fieldTypeLabel(field.field_type, t)}
                         </span>
                         {field.options && field.options.length > 0 && (
                           <span className="text-xs text-gray-400 ml-1">
-                            ({field.options.length} options)
+                            {t("customFields.optionsCount", { count: field.options.length })}
                           </span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {field.is_required ? (
                           <span className="text-green-600 text-xs font-medium">
-                            Yes
+                            {t("customFields.yes")}
                           </span>
                         ) : (
-                          <span className="text-gray-300 text-xs">No</span>
+                          <span className="text-gray-300 text-xs">{t("customFields.no")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {field.is_searchable ? (
                           <span className="text-green-600 text-xs font-medium">
-                            Yes
+                            {t("customFields.yes")}
                           </span>
                         ) : (
-                          <span className="text-gray-300 text-xs">No</span>
+                          <span className="text-gray-300 text-xs">{t("customFields.no")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1 flex-shrink-0">
                           <button
                             onClick={() => startEdit(field)}
-                            aria-label="Edit field"
+                            aria-label={t("customFields.editFieldAria")}
                             className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => setDeleteFieldTarget({ id: field.id, field_name: field.field_name })}
-                            aria-label="Delete field"
+                            aria-label={t("customFields.deleteFieldAria")}
                             className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100 flex-shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -750,9 +763,9 @@ export default function CustomFieldsSettingsPage() {
 
       <ConfirmDialog
         open={deleteFieldTarget !== null}
-        title={deleteFieldTarget ? `Deactivate field "${deleteFieldTarget.field_name}"?` : "Deactivate field?"}
-        description="Existing values will be preserved."
-        confirmText="Deactivate"
+        title={deleteFieldTarget ? t("customFields.deactivateNamed", { name: deleteFieldTarget.field_name }) : t("customFields.deactivate")}
+        description={t("customFields.deactivateDesc")}
+        confirmText={t("customFields.deactivateBtn")}
         variant="danger"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteFieldTarget && deleteMutation.mutate(deleteFieldTarget.id)}
@@ -767,13 +780,15 @@ export default function CustomFieldsSettingsPage() {
 // ---------------------------------------------------------------------------
 
 function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
+  const { t } = useTranslation();
   const commonClass =
     "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white";
+  const fieldName = form.field_name || t("customFields.previewFieldName");
 
   return (
     <div className="max-w-md">
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        {form.field_name || "Field Name"}
+        {fieldName}
         {form.is_required && <span className="text-red-500 ml-1">*</span>}
       </label>
 
@@ -791,13 +806,13 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
               ? "url"
               : "text"
           }
-          placeholder={form.placeholder || `Enter ${form.field_name || "value"}`}
+          placeholder={form.placeholder || t("customFields.previewEnter", { name: form.field_name || t("customFields.previewValue") })}
           className={commonClass}
           disabled
         />
       ) : form.field_type === "textarea" ? (
         <textarea
-          placeholder={form.placeholder || `Enter ${form.field_name || "value"}`}
+          placeholder={form.placeholder || t("customFields.previewEnter", { name: form.field_name || t("customFields.previewValue") })}
           rows={3}
           className={commonClass}
           disabled
@@ -815,7 +830,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
         <input type="datetime-local" className={commonClass} disabled />
       ) : form.field_type === "dropdown" ? (
         <select className={commonClass} disabled>
-          <option>Select {form.field_name || "option"}...</option>
+          <option>{t("customFields.previewSelect", { name: form.field_name || t("customFields.previewOption") })}</option>
           {form.options.map((opt, i) => (
             <option key={i}>{opt}</option>
           ))}
@@ -832,7 +847,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
               </span>
             ))
           ) : (
-            <span className="text-sm text-gray-400">No options defined</span>
+            <span className="text-sm text-gray-400">{t("customFields.noOptionsDefined")}</span>
           )}
         </div>
       ) : form.field_type === "checkbox" ? (
@@ -842,7 +857,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
             className="rounded border-gray-300"
             disabled
           />
-          {form.field_name || "Checkbox"}
+          {form.field_name || t("customFields.previewCheckbox")}
         </label>
       ) : form.field_type === "file" ? (
         <input type="file" className={commonClass} disabled />

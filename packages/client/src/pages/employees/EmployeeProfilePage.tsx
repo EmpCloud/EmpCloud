@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -38,6 +39,7 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function EmployeeProfilePage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const userId = Number(id);
   const queryClient = useQueryClient();
@@ -212,10 +214,10 @@ export default function EmployeeProfilePage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <User className="h-12 w-12 text-gray-300 mb-4" />
-        <h2 className="text-lg font-semibold text-gray-700 mb-1">Invalid Employee</h2>
-        <p className="text-sm text-gray-500 mb-4">The employee ID in the URL is missing or invalid.</p>
+        <h2 className="text-lg font-semibold text-gray-700 mb-1">{t("employeeProfile.invalidEmployee.title")}</h2>
+        <p className="text-sm text-gray-500 mb-4">{t("employeeProfile.invalidEmployee.description")}</p>
         <Link to="/employees" className="text-brand-600 text-sm font-medium hover:text-brand-700">
-          &larr; Back to Employee Directory
+          &larr; {t("employeeProfile.invalidEmployee.backLink")}
         </Link>
       </div>
     );
@@ -225,12 +227,12 @@ export default function EmployeeProfilePage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <User className="h-12 w-12 text-gray-300 mb-4" />
-        <h2 className="text-lg font-semibold text-gray-700 mb-1">Access denied</h2>
+        <h2 className="text-lg font-semibold text-gray-700 mb-1">{t("employeeProfile.accessDenied.title")}</h2>
         <p className="text-sm text-gray-500 mb-4">
-          You don't have permission to view this profile.
+          {t("employeeProfile.accessDenied.description")}
         </p>
         <Link to="/" className="text-brand-600 text-sm font-medium hover:text-brand-700">
-          &larr; Back to Dashboard
+          &larr; {t("employeeProfile.accessDenied.backLink")}
         </Link>
       </div>
     );
@@ -239,7 +241,7 @@ export default function EmployeeProfilePage() {
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center py-20 text-gray-400">
-        Loading profile...
+        {t("employeeProfile.loadingProfile")}
       </div>
     );
   }
@@ -247,7 +249,7 @@ export default function EmployeeProfilePage() {
   if (!profile) {
     return (
       <div className="flex items-center justify-center py-20 text-gray-400">
-        Employee not found
+        {t("employeeProfile.employeeNotFound")}
       </div>
     );
   }
@@ -259,7 +261,7 @@ export default function EmployeeProfilePage() {
         to="/employees"
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-brand-600 mb-6"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to Directory
+        <ArrowLeft className="h-4 w-4" /> {t("employeeProfile.backToDirectory")}
       </Link>
 
       {/* Header */}
@@ -282,20 +284,20 @@ export default function EmployeeProfilePage() {
                   onClick={() => photoEditable && photoInputRef.current?.click()}
                   title={
                     hasBiometric
-                      ? "Photo is managed via biometric kiosk enrollment"
+                      ? t("employeeProfile.biometricPhotoTooltip")
                       : undefined
                   }
                 >
                   {hasBiometric ? (
                     <img
                       src={`/api/v3/biometric/face/${userId}.jpg`}
-                      alt="Biometric face"
+                      alt={t("employeeProfile.biometricPhotoAlt")}
                       className="h-full w-full object-cover"
                     />
                   ) : photoUrl ? (
                     <img
                       src={photoUrl}
-                      alt="Profile"
+                      alt={t("employeeProfile.profilePhotoAlt")}
                       className="h-full w-full object-cover"
                       onError={() => setPhotoUrl(null)}
                     />
@@ -327,13 +329,13 @@ export default function EmployeeProfilePage() {
                   <h1 className="text-xl font-bold text-gray-900">
                     {profile.first_name} {profile.last_name}
                   </h1>
-                  <p className="text-sm text-gray-500">{profile.designation || "No designation"}</p>
+                  <p className="text-sm text-gray-500">{profile.designation || t("employeeProfile.noDesignation")}</p>
                   <p className="text-sm text-gray-400">{profile.email}</p>
                   {/* Hint when the photo comes from biometric enrollment —
                       explains why the upload affordance isn't there. */}
                   {hasBiometric && (
                     <p className="mt-1 text-xs text-gray-500">
-                      Photo from biometric enrollment — managed via the kiosk.
+                      {t("employeeProfile.biometricPhotoHint")}
                     </p>
                   )}
                   {/* #1650 — Remove photo only meaningful for the manual
@@ -348,10 +350,10 @@ export default function EmployeeProfilePage() {
                     >
                       {removingPhoto ? (
                         <>
-                          <Loader2 className="h-3 w-3 animate-spin" /> Removing...
+                          <Loader2 className="h-3 w-3 animate-spin" /> {t("employeeProfile.removingPhoto")}
                         </>
                       ) : (
-                        "Remove photo"
+                        t("employeeProfile.removePhoto")
                       )}
                     </button>
                   )}
@@ -361,9 +363,9 @@ export default function EmployeeProfilePage() {
           })()}
           <div className="ml-auto flex items-start gap-4">
             <div className="text-right text-sm text-gray-500">
-              {profile.emp_code && <p>Emp Code: {profile.emp_code}</p>}
+              {profile.emp_code && <p>{t("employeeProfile.empCodeLabel", { code: profile.emp_code })}</p>}
               {profile.date_of_joining && (
-                <p>Joined: {new Date(profile.date_of_joining).toLocaleDateString()}</p>
+                <p>{t("employeeProfile.joinedLabel", { date: new Date(profile.date_of_joining).toLocaleDateString() })}</p>
               )}
             </div>
             {activeTab === "personal" && canEdit && (
@@ -372,7 +374,7 @@ export default function EmployeeProfilePage() {
                 className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
               >
                 <Pencil className="h-3.5 w-3.5" />
-                {editing ? "Cancel" : isOwnProfile && !isHR ? "Edit My Info" : "Edit Profile"}
+                {editing ? t("employeeProfile.cancel") : isOwnProfile && !isHR ? t("employeeProfile.editMyInfo") : t("employeeProfile.editProfile")}
               </button>
             )}
           </div>
@@ -393,7 +395,7 @@ export default function EmployeeProfilePage() {
               }`}
             >
               <Icon className="h-4 w-4" />
-              {label}
+              {t(`employeeProfile.tab.${key}`, { defaultValue: label })}
             </button>
           ))}
         </nav>
@@ -407,7 +409,7 @@ export default function EmployeeProfilePage() {
             editing={editing}
             onSave={(data: Record<string, unknown>) => updateProfile.mutate(data)}
             saving={updateProfile.isPending}
-            error={updateProfile.isError ? ((updateProfile.error as any)?.response?.data?.error?.message || "Failed to save") : null}
+            error={updateProfile.isError ? ((updateProfile.error as any)?.response?.data?.error?.message || t("employeeProfile.personal.saveFailed")) : null}
             allUsers={allUsers || []}
             departments={departments || []}
             shifts={shifts || []}
@@ -424,9 +426,9 @@ export default function EmployeeProfilePage() {
 
       <ConfirmDialog
         open={showRemovePhoto}
-        title="Remove your profile photo?"
-        description="You'll show initials again."
-        confirmText="Remove photo"
+        title={t("employeeProfile.removePhotoDialog.title")}
+        description={t("employeeProfile.removePhotoDialog.description")}
+        confirmText={t("employeeProfile.removePhotoDialog.confirm")}
         variant="danger"
         loading={removingPhoto}
         onConfirm={handlePhotoRemove}
@@ -441,10 +443,11 @@ export default function EmployeeProfilePage() {
 // ---------------------------------------------------------------------------
 
 function FieldRow({ label, value }: { label: string; value?: string | number | null }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-3 py-3 border-b border-gray-100 last:border-0">
       <dt className="text-sm font-medium text-gray-500">{label}</dt>
-      <dd className="col-span-2 text-sm text-gray-900">{value || "-"}</dd>
+      <dd className="col-span-2 text-sm text-gray-900">{value || t("employeeProfile.fieldRow.empty")}</dd>
     </div>
   );
 }
@@ -455,31 +458,30 @@ const AADHAR_REGEX = /^[0-9]{12}$/;
 const UAN_REGEX = /^[0-9]{12}$/; // EPFO Universal Account Number — always 12 digits
 const PASSPORT_REGEX = /^[A-PR-WY][0-9]{7}$/; // Indian passport: 1 letter (excl. Q, X, Z), 7 digits
 
+// Returns an i18n KEY (not the message) so the calling component can render
+// it with t(). Keeps this helper hook-free / pure.
 function validateIdDoc(
   field: "pan_number" | "aadhar_number" | "uan_number" | "passport_number",
   value: string,
 ): string | null {
   if (!value) return null; // empty is allowed (optional field)
   if (field === "pan_number") {
-    return PAN_REGEX.test(value)
-      ? null
-      : "PAN must be 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F)";
+    return PAN_REGEX.test(value) ? null : "employeeProfile.validation.pan";
   }
   if (field === "aadhar_number") {
-    return AADHAR_REGEX.test(value) ? null : "Aadhaar must be 12 digits";
+    return AADHAR_REGEX.test(value) ? null : "employeeProfile.validation.aadhaar";
   }
   if (field === "uan_number") {
-    return UAN_REGEX.test(value) ? null : "UAN must be 12 digits";
+    return UAN_REGEX.test(value) ? null : "employeeProfile.validation.uan";
   }
   if (field === "passport_number") {
-    return PASSPORT_REGEX.test(value)
-      ? null
-      : "Passport must be 1 letter + 7 digits (e.g. A1234567)";
+    return PASSPORT_REGEX.test(value) ? null : "employeeProfile.validation.passport";
   }
   return null;
 }
 
 function PersonalTab({ profile, editing, onSave, saving, error, allUsers, departments, shifts, userId, selfService }: { profile: any; editing?: boolean; onSave?: (data: Record<string, unknown>) => void; saving?: boolean; error?: string | null; allUsers?: any[]; departments?: any[]; shifts?: any[]; userId?: number; selfService?: boolean }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<Record<string, string>>({});
   const [idErrors, setIdErrors] = useState<{ pan_number?: string; aadhar_number?: string; uan_number?: string; passport_number?: string }>({});
   // Bug fix: previously this effect depended on [editing, profile], so any
@@ -549,52 +551,52 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
         {error && <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">{error}</div>}
         {selfService && (
           <div className="bg-blue-50 border border-blue-200 text-blue-700 text-sm p-3 rounded-lg mb-4">
-            You can edit your personal and emergency contact information. Contact HR to update administrative fields.
+            {t("employeeProfile.personal.selfServiceNotice")}
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Personal Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.personalEmail")}</label>
             <input type="email" value={form.personal_email} onChange={(e) => set("personal_email", e.target.value)} className={canEditField("personal_email") ? inputClass : disabledClass} disabled={!canEditField("personal_email")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.contactNumber")}</label>
             <input type="text" value={form.contact_number} onChange={(e) => set("contact_number", e.target.value)} className={canEditField("contact_number") ? inputClass : disabledClass} disabled={!canEditField("contact_number")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.gender")}</label>
             <select value={form.gender} onChange={(e) => set("gender", e.target.value)} className={canEditField("gender") ? inputClass : disabledClass} disabled={!canEditField("gender")}>
-              <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="">{t("employeeProfile.select.placeholder")}</option>
+              <option value="male">{t("employeeProfile.gender.male")}</option>
+              <option value="female">{t("employeeProfile.gender.female")}</option>
+              <option value="other">{t("employeeProfile.gender.other")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.dateOfBirth")}</label>
             {/* #1406 — DOB cannot be in the future */}
             <input type="date" max={new Date().toISOString().slice(0, 10)} value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} className={canEditField("date_of_birth") ? inputClass : disabledClass} disabled={!canEditField("date_of_birth")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.bloodGroup")}</label>
             <input type="text" value={form.blood_group} onChange={(e) => set("blood_group", e.target.value)} className={canEditField("blood_group") ? inputClass : disabledClass} disabled={!canEditField("blood_group")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.maritalStatus")}</label>
             <select value={form.marital_status} onChange={(e) => set("marital_status", e.target.value)} className={canEditField("marital_status") ? inputClass : disabledClass} disabled={!canEditField("marital_status")}>
-              <option value="">Select</option>
-              <option value="single">Single</option>
-              <option value="married">Married</option>
-              <option value="divorced">Divorced</option>
-              <option value="widowed">Widowed</option>
+              <option value="">{t("employeeProfile.select.placeholder")}</option>
+              <option value="single">{t("employeeProfile.maritalStatus.single")}</option>
+              <option value="married">{t("employeeProfile.maritalStatus.married")}</option>
+              <option value="divorced">{t("employeeProfile.maritalStatus.divorced")}</option>
+              <option value="widowed">{t("employeeProfile.maritalStatus.widowed")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.nationality")}</label>
             <input type="text" value={form.nationality} onChange={(e) => set("nationality", e.target.value)} className={canEditField("nationality") ? inputClass : disabledClass} disabled={!canEditField("nationality")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.aadharNumber")}</label>
             <input
               type="text"
               value={form.aadhar_number}
@@ -606,14 +608,14 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               onBlur={(e) => setIdErrors((p) => ({ ...p, aadhar_number: validateIdDoc("aadhar_number", e.target.value) || undefined }))}
               inputMode="numeric"
               maxLength={12}
-              placeholder="12 digits"
+              placeholder={t("employeeProfile.placeholder.aadhar")}
               className={`${canEditField("aadhar_number") ? inputClass : disabledClass} ${idErrors.aadhar_number ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={!canEditField("aadhar_number")}
             />
-            {idErrors.aadhar_number && <p className="text-xs text-red-600 mt-1">{idErrors.aadhar_number}</p>}
+            {idErrors.aadhar_number && <p className="text-xs text-red-600 mt-1">{t(idErrors.aadhar_number)}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.panNumber")}</label>
             <input
               type="text"
               value={form.pan_number}
@@ -623,14 +625,14 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               }}
               onBlur={(e) => setIdErrors((p) => ({ ...p, pan_number: validateIdDoc("pan_number", e.target.value) || undefined }))}
               maxLength={10}
-              placeholder="ABCDE1234F"
+              placeholder={t("employeeProfile.placeholder.pan")}
               className={`${canEditField("pan_number") ? inputClass : disabledClass} ${idErrors.pan_number ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={!canEditField("pan_number")}
             />
-            {idErrors.pan_number && <p className="text-xs text-red-600 mt-1">{idErrors.pan_number}</p>}
+            {idErrors.pan_number && <p className="text-xs text-red-600 mt-1">{t(idErrors.pan_number)}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">UAN Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.uanNumber")}</label>
             <input
               type="text"
               value={form.uan_number}
@@ -642,14 +644,14 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               onBlur={(e) => setIdErrors((p) => ({ ...p, uan_number: validateIdDoc("uan_number", e.target.value) || undefined }))}
               inputMode="numeric"
               maxLength={12}
-              placeholder="12 digits"
+              placeholder={t("employeeProfile.placeholder.uan")}
               className={`${canEditField("uan_number") ? inputClass : disabledClass} ${idErrors.uan_number ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={!canEditField("uan_number")}
             />
-            {idErrors.uan_number && <p className="text-xs text-red-600 mt-1">{idErrors.uan_number}</p>}
+            {idErrors.uan_number && <p className="text-xs text-red-600 mt-1">{t(idErrors.uan_number)}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.passportNumber")}</label>
             <input
               type="text"
               value={form.passport_number}
@@ -659,44 +661,44 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               }}
               onBlur={(e) => setIdErrors((p) => ({ ...p, passport_number: validateIdDoc("passport_number", e.target.value) || undefined }))}
               maxLength={8}
-              placeholder="A1234567"
+              placeholder={t("employeeProfile.placeholder.passport")}
               className={`${canEditField("passport_number") ? inputClass : disabledClass} ${idErrors.passport_number ? "border-red-500 focus:ring-red-500" : ""}`}
               disabled={!canEditField("passport_number")}
             />
-            {idErrors.passport_number && <p className="text-xs text-red-600 mt-1">{idErrors.passport_number}</p>}
+            {idErrors.passport_number && <p className="text-xs text-red-600 mt-1">{t(idErrors.passport_number)}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Passport Expiry</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.passportExpiry")}</label>
             <input type="date" value={form.passport_expiry} onChange={(e) => set("passport_expiry", e.target.value)} className={canEditField("passport_expiry") ? inputClass : disabledClass} disabled={!canEditField("passport_expiry")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Visa Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.visaStatus")}</label>
             <input type="text" value={form.visa_status} onChange={(e) => set("visa_status", e.target.value)} className={canEditField("visa_status") ? inputClass : disabledClass} disabled={!canEditField("visa_status")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Visa Expiry</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.visaExpiry")}</label>
             <input type="date" value={form.visa_expiry} onChange={(e) => set("visa_expiry", e.target.value)} className={canEditField("visa_expiry") ? inputClass : disabledClass} disabled={!canEditField("visa_expiry")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.emergencyContact")}</label>
             <input type="text" value={form.emergency_contact_name} onChange={(e) => set("emergency_contact_name", e.target.value)} className={canEditField("emergency_contact_name") ? inputClass : disabledClass} disabled={!canEditField("emergency_contact_name")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Phone</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.emergencyPhone")}</label>
             <input type="text" value={form.emergency_contact_phone} onChange={(e) => set("emergency_contact_phone", e.target.value)} className={canEditField("emergency_contact_phone") ? inputClass : disabledClass} disabled={!canEditField("emergency_contact_phone")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Relation</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.emergencyRelation")}</label>
             <input type="text" value={form.emergency_contact_relation} onChange={(e) => set("emergency_contact_relation", e.target.value)} className={canEditField("emergency_contact_relation") ? inputClass : disabledClass} disabled={!canEditField("emergency_contact_relation")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notice Period (days)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.noticePeriodDays")}</label>
             <input type="number" value={form.notice_period_days} onChange={(e) => set("notice_period_days", e.target.value)} className={canEditField("notice_period_days") ? inputClass : disabledClass} disabled={!canEditField("notice_period_days")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Reporting Manager</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.reportingManager")}</label>
             <select value={form.reporting_manager_id} onChange={(e) => set("reporting_manager_id", e.target.value)} className={canEditField("reporting_manager_id") ? inputClass : disabledClass} disabled={!canEditField("reporting_manager_id")}>
-              <option value="">No Manager</option>
+              <option value="">{t("employeeProfile.reportingManager.none")}</option>
               {(allUsers || [])
                 .filter((u: any) => u.id !== userId && ["manager", "hr_admin", "org_admin", "super_admin"].includes(u.role))
                 .map((u: any) => (
@@ -726,9 +728,9 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
           {/* #1423 — Department (HR-only). Self-service users see a disabled
               dropdown so they're aware it exists but can't change it. */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.department")}</label>
             <select value={form.department_id} onChange={(e) => set("department_id", e.target.value)} className={!selfService ? inputClass : disabledClass} disabled={selfService}>
-              <option value="">No department</option>
+              <option value="">{t("employeeProfile.department.none")}</option>
               {(departments || []).map((d: any) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}
@@ -737,9 +739,9 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
           {/* #1423 — Shift (HR-only). Sent as shift_id; the server creates a
               user_shift_assignments row starting today when this changes. */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Shift</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.shift")}</label>
             <select value={form.shift_id} onChange={(e) => set("shift_id", e.target.value)} className={!selfService ? inputClass : disabledClass} disabled={selfService}>
-              <option value="">No shift</option>
+              <option value="">{t("employeeProfile.shift.none")}</option>
               {(shifts || []).map((s: any) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
@@ -747,21 +749,21 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
           </div>
           {/* #1424 — Designation. HR can edit; employees see it read-only. */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.designation")}</label>
             <input
               type="text"
               value={form.designation}
               onChange={(e) => set("designation", e.target.value)}
               className={!selfService ? inputClass : disabledClass}
               disabled={selfService}
-              placeholder={selfService ? "Contact HR to change" : "e.g. Senior Engineer"}
+              placeholder={selfService ? t("employeeProfile.placeholder.designationSelfService") : t("employeeProfile.placeholder.designation")}
             />
           </div>
           {/* emp-payroll#246 — Employee Code. HR-editable; employees see it
               read-only. Used downstream by emp-payroll for the My Profile
               header and the salary slip. */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Employee Code</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("employeeProfile.field.employeeCode")}</label>
             <input
               type="text"
               value={form.emp_code}
@@ -769,7 +771,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               className={!selfService ? inputClass : disabledClass}
               disabled={selfService}
               maxLength={50}
-              placeholder={selfService ? "Contact HR to set" : "e.g. EMP001"}
+              placeholder={selfService ? t("employeeProfile.placeholder.empCodeSelfService") : t("employeeProfile.placeholder.empCode")}
             />
           </div>
         </div>
@@ -791,7 +793,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
             disabled={saving}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
           >
-            <Check className="h-4 w-4" /> {saving ? "Saving..." : "Save Changes"}
+            <Check className="h-4 w-4" /> {saving ? t("employeeProfile.saving") : t("employeeProfile.saveChanges")}
           </button>
         </div>
       </div>
@@ -800,55 +802,55 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
 
   return (
     <dl>
-      <FieldRow label="Personal Email" value={profile.personal_email} />
-      <FieldRow label="Contact Number" value={profile.contact_number} />
-      <FieldRow label="Gender" value={profile.gender} />
+      <FieldRow label={t("employeeProfile.field.personalEmail")} value={profile.personal_email} />
+      <FieldRow label={t("employeeProfile.field.contactNumber")} value={profile.contact_number} />
+      <FieldRow label={t("employeeProfile.field.gender")} value={profile.gender} />
       <FieldRow
-        label="Date of Birth"
+        label={t("employeeProfile.field.dateOfBirth")}
         value={profile.date_of_birth ? new Date(profile.date_of_birth).toLocaleDateString() : null}
       />
-      <FieldRow label="Blood Group" value={profile.blood_group} />
-      <FieldRow label="Marital Status" value={profile.marital_status} />
-      <FieldRow label="Nationality" value={profile.nationality} />
-      <FieldRow label="Aadhar Number" value={profile.aadhar_number} />
-      <FieldRow label="PAN Number" value={profile.pan_number} />
-      <FieldRow label="UAN Number" value={profile.uan_number} />
-      <FieldRow label="Passport Number" value={profile.passport_number} />
+      <FieldRow label={t("employeeProfile.field.bloodGroup")} value={profile.blood_group} />
+      <FieldRow label={t("employeeProfile.field.maritalStatus")} value={profile.marital_status} />
+      <FieldRow label={t("employeeProfile.field.nationality")} value={profile.nationality} />
+      <FieldRow label={t("employeeProfile.field.aadharNumber")} value={profile.aadhar_number} />
+      <FieldRow label={t("employeeProfile.field.panNumber")} value={profile.pan_number} />
+      <FieldRow label={t("employeeProfile.field.uanNumber")} value={profile.uan_number} />
+      <FieldRow label={t("employeeProfile.field.passportNumber")} value={profile.passport_number} />
       <FieldRow
-        label="Passport Expiry"
+        label={t("employeeProfile.field.passportExpiry")}
         value={profile.passport_expiry ? new Date(profile.passport_expiry).toLocaleDateString() : null}
       />
-      <FieldRow label="Visa Status" value={profile.visa_status} />
+      <FieldRow label={t("employeeProfile.field.visaStatus")} value={profile.visa_status} />
       <FieldRow
-        label="Visa Expiry"
+        label={t("employeeProfile.field.visaExpiry")}
         value={profile.visa_expiry ? new Date(profile.visa_expiry).toLocaleDateString() : null}
       />
-      <FieldRow label="Emergency Contact" value={profile.emergency_contact_name} />
-      <FieldRow label="Emergency Phone" value={profile.emergency_contact_phone} />
-      <FieldRow label="Emergency Relation" value={profile.emergency_contact_relation} />
+      <FieldRow label={t("employeeProfile.field.emergencyContact")} value={profile.emergency_contact_name} />
+      <FieldRow label={t("employeeProfile.field.emergencyPhone")} value={profile.emergency_contact_phone} />
+      <FieldRow label={t("employeeProfile.field.emergencyRelation")} value={profile.emergency_contact_relation} />
       <FieldRow
-        label="Probation Start"
+        label={t("employeeProfile.field.probationStart")}
         value={profile.probation_start_date ? new Date(profile.probation_start_date).toLocaleDateString() : null}
       />
       <FieldRow
-        label="Probation End"
+        label={t("employeeProfile.field.probationEnd")}
         value={profile.probation_end_date ? new Date(profile.probation_end_date).toLocaleDateString() : null}
       />
       <FieldRow
-        label="Confirmation Date"
+        label={t("employeeProfile.field.confirmationDate")}
         value={profile.confirmation_date ? new Date(profile.confirmation_date).toLocaleDateString() : null}
       />
-      <FieldRow label="Notice Period (days)" value={profile.notice_period_days} />
-      <FieldRow label="Reporting Manager" value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
+      <FieldRow label={t("employeeProfile.field.noticePeriodDays")} value={profile.notice_period_days} />
+      <FieldRow label={t("employeeProfile.field.reportingManager")} value={profile.reporting_manager_name || (profile.reporting_manager_id ? `User #${profile.reporting_manager_id}` : null)} />
       <AdditionalManagersReadRow userId={profile.id} />
       <CustomRolesReadRow userId={profile.id} />
       {/* #1423 / #1424 — surface designation, department and current shift in
           the read-only view so self-service employees can see them even if
           they can't edit them. */}
-      <FieldRow label="Designation" value={profile.designation} />
-      <FieldRow label="Employee Code" value={profile.emp_code} />
-      <FieldRow label="Department" value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
-      <FieldRow label="Shift" value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
+      <FieldRow label={t("employeeProfile.field.designation")} value={profile.designation} />
+      <FieldRow label={t("employeeProfile.field.employeeCode")} value={profile.emp_code} />
+      <FieldRow label={t("employeeProfile.field.department")} value={profile.department_name || (profile.department_id ? `Dept #${profile.department_id}` : null)} />
+      <FieldRow label={t("employeeProfile.field.shift")} value={profile.shift_name || (profile.shift_id ? `Shift #${profile.shift_id}` : null)} />
     </dl>
   );
 }
@@ -856,6 +858,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
 // Read-only chip list of the user's assigned custom roles. Renders nothing
 // when there are no custom roles so the summary stays compact.
 function CustomRolesReadRow({ userId }: { userId?: number }) {
+  const { t } = useTranslation();
   // Only viewers with roles:view / roles:manage can read a user's custom-role
   // assignments. Without this gate the query fired for every profile viewer
   // (e.g. an employee on their own profile) and 403'd on /roles/users/:id.
@@ -870,7 +873,7 @@ function CustomRolesReadRow({ userId }: { userId?: number }) {
   if (!Array.isArray(data) || data.length === 0) return null;
   return (
     <div className="grid grid-cols-3 gap-x-4 py-2 border-b border-gray-100">
-      <dt className="text-sm font-medium text-gray-500 col-span-1">Custom Roles</dt>
+      <dt className="text-sm font-medium text-gray-500 col-span-1">{t("employeeProfile.field.customRoles")}</dt>
       <dd className="text-sm text-gray-900 col-span-2 flex flex-wrap gap-1.5">
         {data.map((r: any) => (
           <span
@@ -891,6 +894,7 @@ function CustomRolesReadRow({ userId }: { userId?: number }) {
 // `managers` array enriched server-side so we don't depend on a paginated
 // /users list to look up names.
 function AdditionalManagersReadRow({ userId }: { userId?: number }) {
+  const { t } = useTranslation();
   const { data } = useQuery({
     queryKey: ["employee-additional-managers", userId],
     queryFn: () =>
@@ -902,7 +906,7 @@ function AdditionalManagersReadRow({ userId }: { userId?: number }) {
   if (managers.length === 0) return null;
   return (
     <div className="grid grid-cols-3 gap-x-4 py-2 border-b border-gray-100">
-      <dt className="text-sm font-medium text-gray-500 col-span-1">Additional Managers</dt>
+      <dt className="text-sm font-medium text-gray-500 col-span-1">{t("employeeProfile.field.additionalManagers")}</dt>
       <dd className="text-sm text-gray-900 col-span-2 flex flex-wrap gap-1.5">
         {managers.map((u) => (
           <span
@@ -952,6 +956,7 @@ function AdditionalManagersField({
   primaryManagerId: number | null;
   canEdit: boolean;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -1038,13 +1043,13 @@ function AdditionalManagersField({
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Additional Managers
+          {t("employeeProfile.field.additionalManagers")}
         </label>
         <div className="min-h-[40px] flex flex-wrap items-center gap-1.5 border border-gray-200 rounded-md bg-gray-50 px-2 py-2">
           {isLoading ? (
-            <span className="text-sm text-gray-400">Loading…</span>
+            <span className="text-sm text-gray-400">{t("employeeProfile.additionalManagers.loading")}</span>
           ) : selected.length === 0 ? (
-            <span className="text-sm text-gray-400">No additional managers</span>
+            <span className="text-sm text-gray-400">{t("employeeProfile.additionalManagers.none")}</span>
           ) : (
             selected.map((id) => {
               const u = usersById.get(id);
@@ -1057,7 +1062,7 @@ function AdditionalManagersField({
                     {(u?.first_name?.[0] || "?")}{(u?.last_name?.[0] || "")}
                   </span>
                   <span className="truncate max-w-[160px]">
-                    {u ? `${u.first_name} ${u.last_name}` : `User #${id}`}
+                    {u ? `${u.first_name} ${u.last_name}` : t("employeeProfile.additionalManagers.userFallback", { id })}
                   </span>
                 </span>
               );
@@ -1072,16 +1077,15 @@ function AdditionalManagersField({
   return (
     <div ref={containerRef}>
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        Additional Managers
+        {t("employeeProfile.field.additionalManagers")}
         {selected.length > 0 && (
           <span className="ml-2 text-xs font-normal text-gray-400">
-            ({selected.length} selected)
+            {t("employeeProfile.additionalManagers.selectedCount", { count: selected.length })}
           </span>
         )}
       </label>
       <p className="text-xs text-gray-500 mb-2">
-        Co-managers with the same team-scope access as the primary Reporting
-        Manager. Honoured by every team-scoped permission.
+        {t("employeeProfile.additionalManagers.helpText")}
       </p>
 
       {/* Selected-chips + search input wrapper */}
@@ -1101,13 +1105,13 @@ function AdditionalManagersField({
                   {(u?.first_name?.[0] || "?")}{(u?.last_name?.[0] || "")}
                 </span>
                 <span className="truncate max-w-[160px]">
-                  {u ? `${u.first_name} ${u.last_name}` : `User #${id}`}
+                  {u ? `${u.first_name} ${u.last_name}` : t("employeeProfile.additionalManagers.userFallback", { id })}
                 </span>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); remove(id); }}
                   className="ml-0.5 h-4 w-4 flex items-center justify-center rounded-full hover:bg-brand-200"
-                  aria-label={`Remove ${u ? `${u.first_name} ${u.last_name}` : "manager"}`}
+                  aria-label={t("employeeProfile.additionalManagers.removeAria", { name: u ? `${u.first_name} ${u.last_name}` : t("employeeProfile.additionalManagers.removeAriaFallback") })}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -1119,7 +1123,7 @@ function AdditionalManagersField({
             value={query}
             onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
             onFocus={() => setOpen(true)}
-            placeholder={selected.length === 0 ? "Search by name or email…" : "Add another…"}
+            placeholder={selected.length === 0 ? t("employeeProfile.additionalManagers.searchPlaceholder") : t("employeeProfile.additionalManagers.addPlaceholder")}
             className="flex-1 min-w-[140px] outline-none text-sm py-0.5 bg-transparent"
           />
         </div>
@@ -1129,7 +1133,7 @@ function AdditionalManagersField({
           <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
             {filtered.length === 0 ? (
               <div className="px-3 py-2 text-sm text-gray-400">
-                {query ? "No matching users" : "All eligible users already selected"}
+                {query ? t("employeeProfile.additionalManagers.noMatches") : t("employeeProfile.additionalManagers.allSelected")}
               </div>
             ) : (
               filtered.map((u: any) => (
@@ -1168,16 +1172,16 @@ function AdditionalManagersField({
           disabled={!dirty || mutation.isPending}
           className="px-3 py-1.5 text-sm font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50"
         >
-          {mutation.isPending ? "Saving…" : "Save additional managers"}
+          {mutation.isPending ? t("employeeProfile.additionalManagers.savingButton") : t("employeeProfile.additionalManagers.saveButton")}
         </button>
         {dirty && !mutation.isPending && (
-          <span className="text-xs text-amber-600">unsaved changes</span>
+          <span className="text-xs text-amber-600">{t("employeeProfile.additionalManagers.unsavedChanges")}</span>
         )}
         {mutation.isSuccess && !dirty && (
-          <span className="text-xs text-green-600">Saved</span>
+          <span className="text-xs text-green-600">{t("employeeProfile.additionalManagers.saved")}</span>
         )}
         {mutation.isError && (
-          <span className="text-xs text-red-600">{extractApiError(mutation.error)}</span>
+          <span className="text-xs text-red-600">{extractApiError(mutation.error, t("employeeProfile.apiError.requestFailed"))}</span>
         )}
       </div>
     </div>
@@ -1185,7 +1189,9 @@ function AdditionalManagersField({
 }
 
 
-function extractApiError(err: any): string {
+// `fallback` lets the caller pass a translated last-resort message
+// (t("employeeProfile.apiError.requestFailed")) without making this helper a hook.
+function extractApiError(err: any, fallback = "Request failed"): string {
   const resp = err?.response?.data?.error;
   const details: any[] = Array.isArray(resp?.details) ? resp.details : [];
   if (details.length > 0) {
@@ -1194,7 +1200,7 @@ function extractApiError(err: any): string {
       .filter(Boolean)
       .join("; ");
   }
-  return resp?.message || err?.message || "Request failed";
+  return resp?.message || err?.message || fallback;
 }
 
 // ---------------------------------------------------------------------------
@@ -1202,6 +1208,7 @@ function extractApiError(err: any): string {
 // ---------------------------------------------------------------------------
 
 function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -1227,20 +1234,20 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   const createMutation = useMutation({
     mutationFn: (payload: any) => api.post(`/employees/${userId}/education`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: any }) =>
       api.put(`/employees/${userId}/education/${id}`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/education/${id}`),
     onSuccess: () => { invalidate(); setDeleteId(null); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   function resetForm() {
@@ -1275,7 +1282,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
     setError(null);
     const payload = buildPayload();
     if (!payload.degree || !payload.institution) {
-      setError("Degree and Institution are required");
+      setError(t("employeeProfile.education.validation.required"));
       return;
     }
     // #1405 — end year must not be before start year
@@ -1284,7 +1291,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
       payload.end_year != null &&
       payload.end_year < payload.start_year
     ) {
-      setError("End year must be on or after start year");
+      setError(t("employeeProfile.education.validation.endYear"));
       return;
     }
     if (editingId) updateMutation.mutate({ id: editingId, payload });
@@ -1306,7 +1313,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
             onClick={startAdd}
             className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Education
+            <Plus className="h-4 w-4" /> {t("employeeProfile.education.add")}
           </button>
         </div>
       )}
@@ -1314,30 +1321,30 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
       {showForm && (
         <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
           <h4 className="text-sm font-semibold text-gray-700 mb-3">
-            {editingId ? "Edit Education" : "Add Education"}
+            {editingId ? t("employeeProfile.education.edit") : t("employeeProfile.education.add")}
           </h4>
           <SubResourceError error={error} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Degree *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.education.field.degree")} *</label>
               <input
                 value={form.degree || ""}
                 onChange={(e) => setForm({ ...form, degree: e.target.value })}
                 className={subInputClass}
-                placeholder="e.g. B.Tech"
+                placeholder={t("employeeProfile.education.placeholder.degree")}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Institution *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.education.field.institution")} *</label>
               <input
                 value={form.institution || ""}
                 onChange={(e) => setForm({ ...form, institution: e.target.value })}
                 className={subInputClass}
-                placeholder="e.g. IIT Delhi"
+                placeholder={t("employeeProfile.education.placeholder.institution")}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Field of Study</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.education.field.fieldOfStudy")}</label>
               <input
                 value={form.field_of_study || ""}
                 onChange={(e) => setForm({ ...form, field_of_study: e.target.value })}
@@ -1345,7 +1352,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Grade</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.education.field.grade")}</label>
               <input
                 value={form.grade || ""}
                 onChange={(e) => setForm({ ...form, grade: e.target.value })}
@@ -1353,7 +1360,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Start Year</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.education.field.startYear")}</label>
               <input
                 type="number"
                 value={form.start_year || ""}
@@ -1362,7 +1369,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">End Year</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.education.field.endYear")}</label>
               <input
                 type="number"
                 value={form.end_year || ""}
@@ -1377,20 +1384,20 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               disabled={saving}
               className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
-              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Check className="h-3.5 w-3.5" /> {saving ? t("employeeProfile.saving") : t("employeeProfile.save")}
             </button>
             <button
               onClick={resetForm}
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
             >
-              <X className="h-3.5 w-3.5" /> Cancel
+              <X className="h-3.5 w-3.5" /> {t("employeeProfile.cancel")}
             </button>
           </div>
         </div>
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">No education records added yet.</p>
+        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.education.empty")}</p>
       ) : (
         <div className="space-y-4">
           {data.map((edu: any) => (
@@ -1405,9 +1412,9 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
                   {edu.start_year && edu.end_year
                     ? `${edu.start_year} - ${edu.end_year}`
                     : edu.start_year
-                    ? `From ${edu.start_year}`
+                    ? t("employeeProfile.education.fromYear", { year: edu.start_year })
                     : ""}
-                  {edu.grade ? ` | Grade: ${edu.grade}` : ""}
+                  {edu.grade ? ` | ${t("employeeProfile.education.gradeSuffix", { grade: edu.grade })}` : ""}
                 </p>
               </div>
               {canEdit && (
@@ -1415,14 +1422,14 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
                   <button
                     onClick={() => startEdit(edu)}
                     className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
-                    title="Edit"
+                    title={t("employeeProfile.edit")}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(edu.id)}
                     className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
-                    title="Delete"
+                    title={t("employeeProfile.delete")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -1435,8 +1442,8 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 
       <ConfirmDialog
         open={deleteId !== null}
-        title="Delete this education record?"
-        confirmText="Delete"
+        title={t("employeeProfile.education.deleteDialog.title")}
+        confirmText={t("employeeProfile.delete")}
         variant="danger"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
@@ -1451,6 +1458,7 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 // ---------------------------------------------------------------------------
 
 function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -1483,20 +1491,20 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
   const createMutation = useMutation({
     mutationFn: (payload: any) => api.post(`/employees/${userId}/experience`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: any }) =>
       api.put(`/employees/${userId}/experience/${id}`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/experience/${id}`),
     onSuccess: () => { invalidate(); setDeleteId(null); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   function resetForm() {
@@ -1528,7 +1536,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
   function handleSave() {
     setError(null);
     if (!form.company_name.trim() || !form.designation.trim() || !form.start_date) {
-      setError("Company, Designation and Start Date are required");
+      setError(t("employeeProfile.experience.validation.required"));
       return;
     }
     const payload = buildPayload();
@@ -1551,7 +1559,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
             onClick={startAdd}
             className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Experience
+            <Plus className="h-4 w-4" /> {t("employeeProfile.experience.add")}
           </button>
         </div>
       )}
@@ -1559,12 +1567,12 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
       {showForm && (
         <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
           <h4 className="text-sm font-semibold text-gray-700 mb-3">
-            {editingId ? "Edit Experience" : "Add Experience"}
+            {editingId ? t("employeeProfile.experience.edit") : t("employeeProfile.experience.add")}
           </h4>
           <SubResourceError error={error} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Company *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.experience.field.company")} *</label>
               <input
                 value={form.company_name}
                 onChange={(e) => setForm({ ...form, company_name: e.target.value })}
@@ -1572,7 +1580,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Designation *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.experience.field.designation")} *</label>
               <input
                 value={form.designation}
                 onChange={(e) => setForm({ ...form, designation: e.target.value })}
@@ -1580,7 +1588,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Start Date *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.experience.field.startDate")} *</label>
               <input
                 type="date"
                 value={form.start_date}
@@ -1589,7 +1597,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">End Date</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.experience.field.endDate")}</label>
               <input
                 type="date"
                 value={form.end_date}
@@ -1606,11 +1614,11 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
                   onChange={(e) => setForm({ ...form, is_current: e.target.checked })}
                   className="rounded border-gray-300 text-brand-600"
                 />
-                Currently working here
+                {t("employeeProfile.experience.currentlyWorking")}
               </label>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.experience.field.description")}</label>
               <textarea
                 rows={3}
                 value={form.description}
@@ -1625,20 +1633,20 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
               disabled={saving}
               className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
-              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Check className="h-3.5 w-3.5" /> {saving ? t("employeeProfile.saving") : t("employeeProfile.save")}
             </button>
             <button
               onClick={resetForm}
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
             >
-              <X className="h-3.5 w-3.5" /> Cancel
+              <X className="h-3.5 w-3.5" /> {t("employeeProfile.cancel")}
             </button>
           </div>
         </div>
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">No work experience records added yet.</p>
+        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.experience.empty")}</p>
       ) : (
         <div className="space-y-4">
           {data.map((exp: any) => (
@@ -1649,7 +1657,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
                     <h3 className="text-sm font-semibold text-gray-900">{exp.designation}</h3>
                     {exp.is_current && (
                       <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                        Current
+                        {t("employeeProfile.experience.current")}
                       </span>
                     )}
                   </div>
@@ -1657,7 +1665,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
                   <p className="text-xs text-gray-400 mt-1">
                     {exp.start_date ? new Date(exp.start_date).toLocaleDateString() : ""} -{" "}
                     {exp.is_current
-                      ? "Present"
+                      ? t("employeeProfile.experience.present")
                       : exp.end_date
                       ? new Date(exp.end_date).toLocaleDateString()
                       : ""}
@@ -1671,14 +1679,14 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
                     <button
                       onClick={() => startEdit(exp)}
                       className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
-                      title="Edit"
+                      title={t("employeeProfile.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(exp.id)}
                       className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
-                      title="Delete"
+                      title={t("employeeProfile.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1692,8 +1700,8 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
 
       <ConfirmDialog
         open={deleteId !== null}
-        title="Delete this experience record?"
-        confirmText="Delete"
+        title={t("employeeProfile.experience.deleteDialog.title")}
+        confirmText={t("employeeProfile.delete")}
         variant="danger"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
@@ -1708,6 +1716,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
 // ---------------------------------------------------------------------------
 
 function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -1743,20 +1752,20 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
   const createMutation = useMutation({
     mutationFn: (payload: any) => api.post(`/employees/${userId}/dependents`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: any }) =>
       api.put(`/employees/${userId}/dependents/${id}`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/dependents/${id}`),
     onSuccess: () => { invalidate(); setDeleteId(null); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   function resetForm() {
@@ -1788,7 +1797,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
   function handleSave() {
     setError(null);
     if (!form.name.trim() || !form.relationship.trim()) {
-      setError("Name and Relationship are required");
+      setError(t("employeeProfile.dependents.validation.required"));
       return;
     }
     const payload = buildPayload();
@@ -1811,7 +1820,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
             onClick={startAdd}
             className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Dependent
+            <Plus className="h-4 w-4" /> {t("employeeProfile.dependents.add")}
           </button>
         </div>
       )}
@@ -1819,12 +1828,12 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
       {showForm && (
         <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
           <h4 className="text-sm font-semibold text-gray-700 mb-3">
-            {editingId ? "Edit Dependent" : "Add Dependent"}
+            {editingId ? t("employeeProfile.dependents.edit") : t("employeeProfile.dependents.add")}
           </h4>
           <SubResourceError error={error} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.dependents.field.name")} *</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -1832,16 +1841,16 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Relationship *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.dependents.field.relationship")} *</label>
               <input
                 value={form.relationship}
                 onChange={(e) => setForm({ ...form, relationship: e.target.value })}
-                placeholder="e.g. Spouse, Child, Parent"
+                placeholder={t("employeeProfile.dependents.placeholder.relationship")}
                 className={subInputClass}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Date of Birth</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.dependents.field.dateOfBirth")}</label>
               {/* #1406 — DOB cannot be in the future */}
               <input
                 type="date"
@@ -1852,16 +1861,16 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Gender</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.dependents.field.gender")}</label>
               <select
                 value={form.gender}
                 onChange={(e) => setForm({ ...form, gender: e.target.value })}
                 className={subInputClass}
               >
-                <option value="">Select</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="">{t("employeeProfile.select.placeholder")}</option>
+                <option value="male">{t("employeeProfile.gender.male")}</option>
+                <option value="female">{t("employeeProfile.gender.female")}</option>
+                <option value="other">{t("employeeProfile.gender.other")}</option>
               </select>
             </div>
             <div>
@@ -1872,12 +1881,12 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
                   onChange={(e) => setForm({ ...form, is_nominee: e.target.checked })}
                   className="rounded border-gray-300 text-brand-600"
                 />
-                Is Nominee
+                {t("employeeProfile.dependents.isNominee")}
               </label>
             </div>
             {form.is_nominee && (
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Nominee %</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.dependents.field.nomineePercent")}</label>
                 <input
                   type="number"
                   min={0}
@@ -1895,31 +1904,31 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
               disabled={saving}
               className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
-              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Check className="h-3.5 w-3.5" /> {saving ? t("employeeProfile.saving") : t("employeeProfile.save")}
             </button>
             <button
               onClick={resetForm}
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
             >
-              <X className="h-3.5 w-3.5" /> Cancel
+              <X className="h-3.5 w-3.5" /> {t("employeeProfile.cancel")}
             </button>
           </div>
         </div>
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">No dependents added yet.</p>
+        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.dependents.empty")}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Name</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Relationship</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">DOB</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Gender</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">Nominee</th>
-                {canEdit && <th className="text-right text-xs font-medium text-gray-500 uppercase px-4 py-2">Actions</th>}
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">{t("employeeProfile.dependents.column.name")}</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">{t("employeeProfile.dependents.column.relationship")}</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">{t("employeeProfile.dependents.column.dob")}</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">{t("employeeProfile.dependents.column.gender")}</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-2">{t("employeeProfile.dependents.column.nominee")}</th>
+                {canEdit && <th className="text-right text-xs font-medium text-gray-500 uppercase px-4 py-2">{t("employeeProfile.dependents.column.actions")}</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -1928,16 +1937,16 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
                   <td className="px-4 py-3 text-sm text-gray-900">{dep.name}</td>
                   <td className="px-4 py-3 text-sm text-gray-500">{dep.relationship}</td>
                   <td className="px-4 py-3 text-sm text-gray-500">
-                    {dep.date_of_birth ? new Date(dep.date_of_birth).toLocaleDateString() : "-"}
+                    {dep.date_of_birth ? new Date(dep.date_of_birth).toLocaleDateString() : t("employeeProfile.fieldRow.empty")}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500 capitalize">{dep.gender || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500 capitalize">{dep.gender || t("employeeProfile.fieldRow.empty")}</td>
                   <td className="px-4 py-3 text-sm">
                     {dep.is_nominee ? (
                       <span className="text-green-700 font-medium">
-                        Yes {dep.nominee_percentage ? `(${dep.nominee_percentage}%)` : ""}
+                        {t("employeeProfile.dependents.nomineeYes")} {dep.nominee_percentage ? `(${dep.nominee_percentage}%)` : ""}
                       </span>
                     ) : (
-                      <span className="text-gray-400">No</span>
+                      <span className="text-gray-400">{t("employeeProfile.dependents.nomineeNo")}</span>
                     )}
                   </td>
                   {canEdit && (
@@ -1946,14 +1955,14 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
                         <button
                           onClick={() => startEdit(dep)}
                           className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
-                          title="Edit"
+                          title={t("employeeProfile.edit")}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(dep.id)}
                           className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
-                          title="Delete"
+                          title={t("employeeProfile.delete")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -1969,8 +1978,8 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
 
       <ConfirmDialog
         open={deleteId !== null}
-        title="Delete this dependent?"
-        confirmText="Delete"
+        title={t("employeeProfile.dependents.deleteDialog.title")}
+        confirmText={t("employeeProfile.delete")}
         variant="danger"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
@@ -1985,6 +1994,7 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
 // ---------------------------------------------------------------------------
 
 function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number; canEdit: boolean }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -2019,20 +2029,20 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   const createMutation = useMutation({
     mutationFn: (payload: any) => api.post(`/employees/${userId}/addresses`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: any }) =>
       api.put(`/employees/${userId}/addresses/${id}`, payload),
     onSuccess: () => { invalidate(); resetForm(); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/employees/${userId}/addresses/${id}`),
     onSuccess: () => { invalidate(); setDeleteId(null); },
-    onError: (err: any) => setError(extractApiError(err)),
+    onError: (err: any) => setError(extractApiError(err, t("employeeProfile.apiError.requestFailed"))),
   });
 
   function resetForm() {
@@ -2065,7 +2075,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
   function handleSave() {
     setError(null);
     if (!form.line1.trim() || !form.city.trim() || !form.state.trim() || !form.zipcode.trim()) {
-      setError("Address line 1, City, State and Zipcode are required");
+      setError(t("employeeProfile.addresses.validation.required"));
       return;
     }
     const payload = buildPayload();
@@ -2088,7 +2098,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
             onClick={startAdd}
             className="flex items-center gap-1.5 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Address
+            <Plus className="h-4 w-4" /> {t("employeeProfile.addresses.add")}
           </button>
         </div>
       )}
@@ -2096,23 +2106,23 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
       {showForm && (
         <div className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
           <h4 className="text-sm font-semibold text-gray-700 mb-3">
-            {editingId ? "Edit Address" : "Add Address"}
+            {editingId ? t("employeeProfile.addresses.edit") : t("employeeProfile.addresses.add")}
           </h4>
           <SubResourceError error={error} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Type *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.type")} *</label>
               <select
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
                 className={subInputClass}
               >
-                <option value="current">Current</option>
-                <option value="permanent">Permanent</option>
+                <option value="current">{t("employeeProfile.addresses.type.current")}</option>
+                <option value="permanent">{t("employeeProfile.addresses.type.permanent")}</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Country</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.country")}</label>
               <input
                 value={form.country}
                 onChange={(e) => setForm({ ...form, country: e.target.value })}
@@ -2120,7 +2130,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Address Line 1 *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.line1")} *</label>
               <input
                 value={form.line1}
                 onChange={(e) => setForm({ ...form, line1: e.target.value })}
@@ -2128,7 +2138,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Address Line 2</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.line2")}</label>
               <input
                 value={form.line2}
                 onChange={(e) => setForm({ ...form, line2: e.target.value })}
@@ -2136,7 +2146,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">City *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.city")} *</label>
               <input
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
@@ -2144,7 +2154,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">State *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.state")} *</label>
               <input
                 value={form.state}
                 onChange={(e) => setForm({ ...form, state: e.target.value })}
@@ -2152,7 +2162,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Zipcode *</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">{t("employeeProfile.addresses.field.zipcode")} *</label>
               {/* #1407 — zipcode must be digits only */}
               <input
                 inputMode="numeric"
@@ -2169,27 +2179,27 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
               disabled={saving}
               className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
-              <Check className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+              <Check className="h-3.5 w-3.5" /> {saving ? t("employeeProfile.saving") : t("employeeProfile.save")}
             </button>
             <button
               onClick={resetForm}
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
             >
-              <X className="h-3.5 w-3.5" /> Cancel
+              <X className="h-3.5 w-3.5" /> {t("employeeProfile.cancel")}
             </button>
           </div>
         </div>
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">No addresses added yet.</p>
+        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.addresses.empty")}</p>
       ) : (
         <div className="space-y-4">
           {data.map((addr: any) => (
             <div key={addr.id} className="border border-gray-100 rounded-lg p-4 flex items-start justify-between">
               <div className="flex-1">
                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full font-medium uppercase mb-2 inline-block">
-                  {addr.type}
+                  {t(`employeeProfile.addresses.type.${addr.type}`, { defaultValue: addr.type })}
                 </span>
                 <p className="text-sm text-gray-900">{addr.line1}</p>
                 {addr.line2 && <p className="text-sm text-gray-600">{addr.line2}</p>}
@@ -2203,14 +2213,14 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
                   <button
                     onClick={() => startEdit(addr)}
                     className="p-1.5 text-gray-400 hover:text-brand-600 rounded hover:bg-gray-100"
-                    title="Edit"
+                    title={t("employeeProfile.edit")}
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(addr.id)}
                     className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-100"
-                    title="Delete"
+                    title={t("employeeProfile.delete")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -2223,8 +2233,8 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
 
       <ConfirmDialog
         open={deleteId !== null}
-        title="Delete this address?"
-        confirmText="Delete"
+        title={t("employeeProfile.addresses.deleteDialog.title")}
+        confirmText={t("employeeProfile.delete")}
         variant="danger"
         loading={deleteMutation.isPending}
         onConfirm={() => deleteId !== null && deleteMutation.mutate(deleteId)}
@@ -2264,6 +2274,7 @@ type FieldDef = {
 };
 
 function CustomFieldsTab({ entityId }: { entityId: number }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [formValues, setFormValues] = useState<Record<number, unknown>>({});
@@ -2299,7 +2310,7 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
       setError(null);
     },
     onError: (err: any) => {
-      setError(err.response?.data?.error?.message || "Failed to save custom fields");
+      setError(err.response?.data?.error?.message || t("employeeProfile.customFields.saveFailed"));
     },
   });
 
@@ -2324,17 +2335,17 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-gray-400">Loading custom fields...</p>;
+    return <p className="text-sm text-gray-400">{t("employeeProfile.customFields.loading")}</p>;
   }
 
   if (definitions.length === 0) {
     return (
       <div className="text-center py-6">
         <p className="text-sm text-gray-400">
-          No custom fields have been defined for employees yet.
+          {t("employeeProfile.customFields.emptyTitle")}
         </p>
         <p className="text-xs text-gray-400 mt-1">
-          HR administrators can create custom fields from the Custom Fields settings page.
+          {t("employeeProfile.customFields.emptyHint")}
         </p>
       </div>
     );
@@ -2343,7 +2354,7 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
   // Group definitions by section
   const sections: Record<string, FieldDef[]> = {};
   for (const def of definitions) {
-    const sec = def.section || "Custom Fields";
+    const sec = def.section || t("employeeProfile.customFields.defaultSection");
     if (!sections[sec]) sections[sec] = [];
     sections[sec].push(def);
   }
@@ -2357,14 +2368,14 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-700">Custom Fields</h3>
+        <h3 className="text-sm font-semibold text-gray-700">{t("employeeProfile.customFields.heading")}</h3>
         {!editing ? (
           <button
             onClick={startEditing}
             className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700"
           >
             <Pencil className="h-3.5 w-3.5" />
-            Edit
+            {t("employeeProfile.edit")}
           </button>
         ) : (
           <div className="flex items-center gap-2">
@@ -2374,7 +2385,7 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
               className="flex items-center gap-1 text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
               <Check className="h-3.5 w-3.5" />
-              Save
+              {t("employeeProfile.save")}
             </button>
             <button
               onClick={() => {
@@ -2384,7 +2395,7 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
             >
               <X className="h-3.5 w-3.5" />
-              Cancel
+              {t("employeeProfile.cancel")}
             </button>
           </div>
         )}
@@ -2430,11 +2441,12 @@ function CustomFieldsTab({ entityId }: { entityId: number }) {
 }
 
 function CustomFieldDisplay({ def, value }: { def: FieldDef; value: unknown }) {
-  let displayValue: string = "-";
+  const { t } = useTranslation();
+  let displayValue: string = t("employeeProfile.fieldRow.empty");
 
   if (value !== null && value !== undefined && value !== "") {
     if (def.field_type === "checkbox") {
-      displayValue = value ? "Yes" : "No";
+      displayValue = value ? t("employeeProfile.customFields.display.yes") : t("employeeProfile.customFields.display.no");
     } else if (def.field_type === "multi_select" && Array.isArray(value)) {
       displayValue = value.join(", ");
     } else if (def.field_type === "date" || def.field_type === "datetime") {
@@ -2468,6 +2480,7 @@ function CustomFieldEdit({
   value: unknown;
   onChange: (val: unknown) => void;
 }) {
+  const { t } = useTranslation();
   const inputClass =
     "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
 
@@ -2539,7 +2552,7 @@ function CustomFieldEdit({
           onChange={(e) => onChange(e.target.value || null)}
           className={inputClass}
         >
-          <option value="">Select...</option>
+          <option value="">{t("employeeProfile.customFields.selectPlaceholder")}</option>
           {(def.options || []).map((opt) => (
             <option key={opt} value={opt}>
               {opt}
@@ -2592,7 +2605,7 @@ function CustomFieldEdit({
           type="text"
           value={String(value ?? "")}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={def.placeholder || "File reference or path"}
+          placeholder={def.placeholder || t("employeeProfile.customFields.filePlaceholder")}
           className={inputClass}
         />
       );
