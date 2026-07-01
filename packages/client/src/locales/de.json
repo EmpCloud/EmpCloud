@@ -2735,5 +2735,130 @@
       "messageTooLong_one": "Die Nachricht ist zu lang (max. {{count}} Zeichen).",
       "messageTooLong_other": "Die Nachricht ist zu lang (max. {{count}} Zeichen)."
     }
+  },
+  "pricingManagement": {
+    "title": "Preisverwaltung",
+    "subtitle": "Verwalten Sie Plan-Stufen und Preise pro Sitzplatz je Währung, Mengenstaffel und Gültigkeitsdatum. Bestehende Abonnements behalten ihren gespeicherten Preis; Änderungen gelten für neue Abonnements und Plan-Upgrades.",
+    "tiers": {
+      "heading": "Stufen",
+      "add": "Stufe hinzufügen",
+      "empty": "Noch keine Stufen vorhanden.",
+      "col": {
+        "slug": "Slug",
+        "name": "Name",
+        "description": "Beschreibung",
+        "sort": "Sortierung",
+        "active": "Aktiv",
+        "actions": "Aktionen"
+      },
+      "deleteConfirm": "Stufe \"{{name}}\" ({{slug}}) löschen?"
+    },
+    "pricingRows": {
+      "heading": "Preiszeilen",
+      "add": "Preiszeile hinzufügen",
+      "empty": "Noch keine Preiszeilen vorhanden.",
+      "col": {
+        "tier": "Stufe",
+        "currency": "Währung",
+        "pricePerSeat": "Preis / Sitzplatz",
+        "seatBand": "Sitzplatz-Staffel",
+        "effectiveFrom": "Gültig ab",
+        "notes": "Notizen",
+        "actions": "Aktionen"
+      },
+      "deleteConfirm": "Diese Preiszeile löschen?"
+    },
+    "billingCycles": {
+      "heading": "Abrechnungszyklen",
+      "add": "Zyklus hinzufügen",
+      "empty": "Noch keine Abrechnungszyklen vorhanden.",
+      "col": {
+        "cycle": "Zyklus",
+        "label": "Bezeichnung",
+        "discount": "Rabatt",
+        "months": "Monate",
+        "active": "Aktiv",
+        "actions": "Aktionen"
+      },
+      "flat": "pauschal {{currency}} {{amount}}",
+      "save": "{{percent}} % sparen",
+      "deleteConfirm": "Abrechnungszyklus \"{{cycle}}\" löschen?"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "loading": "Wird geladen ...",
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert ..."
+    },
+    "tierModal": {
+      "addTitle": "Stufe hinzufügen",
+      "editTitle": "Stufe bearbeiten — {{name}}",
+      "field": {
+        "slug": "Slug",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Interne Kennung (Kleinbuchstaben, keine Leerzeichen). Kann nach der Erstellung nicht geändert werden.",
+        "name": "Name",
+        "namePlaceholder": "Starter",
+        "description": "Beschreibung",
+        "sortOrder": "Sortierreihenfolge",
+        "active": "Aktiv"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Preiszeile hinzufügen",
+      "editTitle": "Preiszeile bearbeiten",
+      "field": {
+        "tier": "Stufe",
+        "currency": "Währung",
+        "pricePerSeat": "Preis pro Sitzplatz (in Haupteinheit — ₹/$/£/€, nicht Paise/Cent)",
+        "minSeats": "Min. Sitzplätze",
+        "maxSeats": "Max. Sitzplätze (leer = ∞)",
+        "effectiveFrom": "Gültig ab",
+        "effectiveFromHelp": "Zukünftige Daten planen Preisänderungen. Die neueste passende Zeile gilt zum Zeitpunkt der Abonnement-Erstellung / des Upgrades.",
+        "notes": "Notizen",
+        "notesPlaceholder": "Q3-Aktion, veraltete Stufe usw."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Abrechnungszyklus hinzufügen",
+      "editTitle": "Abrechnungszyklus bearbeiten — {{cycle}}",
+      "field": {
+        "cycleSlug": "Zyklus-Slug",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Bezeichnung",
+        "labelPlaceholder": "Halbjährlich",
+        "discountPct": "Rabatt %",
+        "discountPctHelp": "Wird als \"N % sparen\" auf der Zyklus-Schaltfläche angezeigt.",
+        "monthsPerCycle": "Monate pro Zyklus",
+        "sortOrder": "Sortierreihenfolge",
+        "active": "Aktiv"
+      },
+      "override": {
+        "heading": "Betrag überschreiben (optional)",
+        "help": "Falls gesetzt, ersetzt dieser exakte Betrag pro Sitzplatz die rabattbasierte Berechnung, wenn die Währung des Kunden übereinstimmt. Leer lassen, um den Rabatt-% zu verwenden.",
+        "amount": "Betrag pro Sitzplatz (Haupteinheit)",
+        "amountPlaceholder": "z. B. 4800.00",
+        "currency": "Währung",
+        "currencyNone": "— Keine —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Stufe erstellt",
+      "tierUpdated": "Stufe aktualisiert",
+      "tierDeleted": "Stufe gelöscht",
+      "priceAdded": "Preiszeile hinzugefügt",
+      "priceUpdated": "Preiszeile aktualisiert",
+      "priceDeleted": "Preiszeile gelöscht",
+      "cycleCreated": "Abrechnungszyklus erstellt",
+      "cycleUpdated": "Abrechnungszyklus aktualisiert",
+      "cycleDeleted": "Abrechnungszyklus gelöscht",
+      "failed": "Fehlgeschlagen"
+    }
   }
 }

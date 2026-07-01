@@ -2735,5 +2735,130 @@
       "messageTooLong_one": "A mensagem é demasiado longa (máx. {{count}} caráter).",
       "messageTooLong_other": "A mensagem é demasiado longa (máx. {{count}} carateres)."
     }
+  },
+  "pricingManagement": {
+    "title": "Gestão de Preços",
+    "subtitle": "Faça a gestão dos níveis de plano e dos preços por lugar por moeda, escalão de volume e data de entrada em vigor. As subscrições existentes mantêm o preço armazenado; as alterações aplicam-se a novas subscrições e a upgrades de plano.",
+    "tiers": {
+      "heading": "Níveis",
+      "add": "Adicionar nível",
+      "empty": "Ainda não há níveis.",
+      "col": {
+        "slug": "Slug",
+        "name": "Nome",
+        "description": "Descrição",
+        "sort": "Ordem",
+        "active": "Ativo",
+        "actions": "Ações"
+      },
+      "deleteConfirm": "Eliminar o nível \"{{name}}\" ({{slug}})?"
+    },
+    "pricingRows": {
+      "heading": "Linhas de preços",
+      "add": "Adicionar linha de preço",
+      "empty": "Ainda não há linhas de preços.",
+      "col": {
+        "tier": "Nível",
+        "currency": "Moeda",
+        "pricePerSeat": "Preço / lugar",
+        "seatBand": "Escalão de lugares",
+        "effectiveFrom": "Em vigor a partir de",
+        "notes": "Notas",
+        "actions": "Ações"
+      },
+      "deleteConfirm": "Eliminar esta linha de preço?"
+    },
+    "billingCycles": {
+      "heading": "Ciclos de faturação",
+      "add": "Adicionar ciclo",
+      "empty": "Ainda não há ciclos de faturação.",
+      "col": {
+        "cycle": "Ciclo",
+        "label": "Rótulo",
+        "discount": "Desconto",
+        "months": "Meses",
+        "active": "Ativo",
+        "actions": "Ações"
+      },
+      "flat": "fixo {{currency}} {{amount}}",
+      "save": "Poupe {{percent}}%",
+      "deleteConfirm": "Eliminar o ciclo de faturação \"{{cycle}}\"?"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "loading": "A carregar...",
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "A guardar..."
+    },
+    "tierModal": {
+      "addTitle": "Adicionar nível",
+      "editTitle": "Editar nível — {{name}}",
+      "field": {
+        "slug": "Slug",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Identificador interno (minúsculas, sem espaços). Não pode ser alterado após a criação.",
+        "name": "Nome",
+        "namePlaceholder": "Starter",
+        "description": "Descrição",
+        "sortOrder": "Ordem de classificação",
+        "active": "Ativo"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Adicionar linha de preço",
+      "editTitle": "Editar linha de preço",
+      "field": {
+        "tier": "Nível",
+        "currency": "Moeda",
+        "pricePerSeat": "Preço por lugar (em unidade principal — ₹/$/£/€, não paise/cêntimos)",
+        "minSeats": "Mín. de lugares",
+        "maxSeats": "Máx. de lugares (em branco = ∞)",
+        "effectiveFrom": "Em vigor a partir de",
+        "effectiveFromHelp": "As datas futuras agendam alterações de preço. A linha correspondente mais recente prevalece no momento da criação / upgrade da subscrição.",
+        "notes": "Notas",
+        "notesPlaceholder": "Promoção do 3.º trimestre, nível descontinuado, etc."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Adicionar ciclo de faturação",
+      "editTitle": "Editar ciclo de faturação — {{cycle}}",
+      "field": {
+        "cycleSlug": "Slug do ciclo",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Rótulo",
+        "labelPlaceholder": "Semestral",
+        "discountPct": "Desconto %",
+        "discountPctHelp": "Apresentado como \"Poupe N%\" no botão do ciclo.",
+        "monthsPerCycle": "Meses por ciclo",
+        "sortOrder": "Ordem de classificação",
+        "active": "Ativo"
+      },
+      "override": {
+        "heading": "Valor de substituição (opcional)",
+        "help": "Se definido, este valor exato por lugar substitui o cálculo baseado no desconto quando a moeda do cliente corresponder. Deixe em branco para usar a % de desconto.",
+        "amount": "Valor por lugar (unidade principal)",
+        "amountPlaceholder": "ex.: 4800.00",
+        "currency": "Moeda",
+        "currencyNone": "— Nenhuma —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Nível criado",
+      "tierUpdated": "Nível atualizado",
+      "tierDeleted": "Nível eliminado",
+      "priceAdded": "Linha de preço adicionada",
+      "priceUpdated": "Linha de preço atualizada",
+      "priceDeleted": "Linha de preço eliminada",
+      "cycleCreated": "Ciclo de faturação criado",
+      "cycleUpdated": "Ciclo de faturação atualizado",
+      "cycleDeleted": "Ciclo de faturação eliminado",
+      "failed": "Falhou"
+    }
   }
 }

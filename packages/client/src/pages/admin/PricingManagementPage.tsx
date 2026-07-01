@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
@@ -74,6 +75,7 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 export default function PricingManagementPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
 
   const tiersQ = useQuery<{ data: Tier[] }>({
@@ -111,15 +113,15 @@ export default function PricingManagementPage() {
     setTierForm({ slug: "", name: "", description: "", sort_order: 100, is_active: true });
     setTierModal({ mode: "create" });
   }
-  function openEditTier(t: Tier) {
+  function openEditTier(tier: Tier) {
     setTierForm({
-      slug: t.slug,
-      name: t.name,
-      description: t.description || "",
-      sort_order: t.sort_order,
-      is_active: t.is_active,
+      slug: tier.slug,
+      name: tier.name,
+      description: tier.description || "",
+      sort_order: tier.sort_order,
+      is_active: tier.is_active,
     });
-    setTierModal({ mode: "edit", row: t });
+    setTierModal({ mode: "edit", row: tier });
   }
 
   const tierMutation = useMutation({
@@ -130,13 +132,13 @@ export default function PricingManagementPage() {
       return api.put(`/admin/pricing/tiers/${tierModal!.row!.id}`, tierForm).then((r) => r.data);
     },
     onSuccess: () => {
-      toast.success(tierModal?.mode === "create" ? "Tier created" : "Tier updated");
+      toast.success(tierModal?.mode === "create" ? t("pricingManagement.toast.tierCreated") : t("pricingManagement.toast.tierUpdated"));
       setTierModal(null);
       qc.invalidateQueries({ queryKey: ["admin-pricing-tiers"] });
       qc.invalidateQueries({ queryKey: ["admin-pricing-rows"] });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed");
+      toast.error(err?.response?.data?.error?.message || err?.message || t("pricingManagement.toast.failed"));
     },
   });
 
@@ -144,12 +146,12 @@ export default function PricingManagementPage() {
     mutationFn: (id: number) =>
       api.delete(`/admin/pricing/tiers/${id}`).then((r) => r.data),
     onSuccess: () => {
-      toast.success("Tier deleted");
+      toast.success(t("pricingManagement.toast.tierDeleted"));
       qc.invalidateQueries({ queryKey: ["admin-pricing-tiers"] });
       qc.invalidateQueries({ queryKey: ["admin-pricing-rows"] });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed");
+      toast.error(err?.response?.data?.error?.message || err?.message || t("pricingManagement.toast.failed"));
     },
   });
 
@@ -213,12 +215,12 @@ export default function PricingManagementPage() {
         .then((r) => r.data);
     },
     onSuccess: () => {
-      toast.success(priceModal?.mode === "create" ? "Pricing row added" : "Pricing row updated");
+      toast.success(priceModal?.mode === "create" ? t("pricingManagement.toast.priceAdded") : t("pricingManagement.toast.priceUpdated"));
       setPriceModal(null);
       qc.invalidateQueries({ queryKey: ["admin-pricing-rows"] });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed");
+      toast.error(err?.response?.data?.error?.message || err?.message || t("pricingManagement.toast.failed"));
     },
   });
 
@@ -226,11 +228,11 @@ export default function PricingManagementPage() {
     mutationFn: (id: number) =>
       api.delete(`/admin/pricing/rows/${id}`).then((r) => r.data),
     onSuccess: () => {
-      toast.success("Pricing row deleted");
+      toast.success(t("pricingManagement.toast.priceDeleted"));
       qc.invalidateQueries({ queryKey: ["admin-pricing-rows"] });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed");
+      toast.error(err?.response?.data?.error?.message || err?.message || t("pricingManagement.toast.failed"));
     },
   });
 
@@ -311,22 +313,22 @@ export default function PricingManagementPage() {
         .then((r) => r.data);
     },
     onSuccess: () => {
-      toast.success(cycleModal?.mode === "create" ? "Billing cycle created" : "Billing cycle updated");
+      toast.success(cycleModal?.mode === "create" ? t("pricingManagement.toast.cycleCreated") : t("pricingManagement.toast.cycleUpdated"));
       setCycleModal(null);
       qc.invalidateQueries({ queryKey: ["admin-billing-cycles"] });
     },
     onError: (err: any) =>
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed"),
+      toast.error(err?.response?.data?.error?.message || err?.message || t("pricingManagement.toast.failed")),
   });
 
   const deleteCycle = useMutation({
     mutationFn: (id: number) => api.delete(`/admin/pricing/billing-cycles/${id}`).then((r) => r.data),
     onSuccess: () => {
-      toast.success("Billing cycle deleted");
+      toast.success(t("pricingManagement.toast.cycleDeleted"));
       qc.invalidateQueries({ queryKey: ["admin-billing-cycles"] });
     },
     onError: (err: any) =>
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed"),
+      toast.error(err?.response?.data?.error?.message || err?.message || t("pricingManagement.toast.failed")),
   });
 
   return (
@@ -334,11 +336,10 @@ export default function PricingManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Pricing Management
+            {t("pricingManagement.title")}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Manage plan tiers and per-seat pricing per currency, volume band, and effective date.
-            Existing subscriptions keep their stored price; changes apply to new subscriptions and plan upgrades.
+            {t("pricingManagement.subtitle")}
           </p>
         </div>
       </div>
@@ -347,65 +348,65 @@ export default function PricingManagementPage() {
       <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
           <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <Tag className="h-5 w-5 text-brand-600" /> Tiers
+            <Tag className="h-5 w-5 text-brand-600" /> {t("pricingManagement.tiers.heading")}
           </h2>
           <button
             onClick={openCreateTier}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add tier
+            <Plus className="h-4 w-4" /> {t("pricingManagement.tiers.add")}
           </button>
         </div>
         {tiersQ.isLoading ? (
           <div className="flex items-center justify-center py-8 text-sm text-gray-400">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("pricingManagement.loading")}
           </div>
         ) : tiers.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">No tiers yet.</div>
+          <div className="py-8 text-center text-sm text-gray-400">{t("pricingManagement.tiers.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                 <tr>
-                  <th className="px-3 py-2 text-left">Slug</th>
-                  <th className="px-3 py-2 text-left">Name</th>
-                  <th className="px-3 py-2 text-left">Description</th>
-                  <th className="px-3 py-2 text-right">Sort</th>
-                  <th className="px-3 py-2 text-center">Active</th>
-                  <th className="px-3 py-2 text-right">Actions</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.slug")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.name")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.description")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.tiers.col.sort")}</th>
+                  <th className="px-3 py-2 text-center">{t("pricingManagement.tiers.col.active")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.tiers.col.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {tiers.map((t) => (
-                  <tr key={t.id}>
-                    <td className="px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">{t.slug}</td>
-                    <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">{t.name}</td>
-                    <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{t.description}</td>
-                    <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{t.sort_order}</td>
+                {tiers.map((tier) => (
+                  <tr key={tier.id}>
+                    <td className="px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">{tier.slug}</td>
+                    <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">{tier.name}</td>
+                    <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{tier.description}</td>
+                    <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{tier.sort_order}</td>
                     <td className="px-3 py-2 text-center">
-                      {t.is_active ? (
+                      {tier.is_active ? (
                         <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
-                          Active
+                          {t("pricingManagement.status.active")}
                         </span>
                       ) : (
-                        <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">Inactive</span>
+                        <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{t("pricingManagement.status.inactive")}</span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
                       <button
-                        onClick={() => openEditTier(t)}
+                        onClick={() => openEditTier(tier)}
                         className="text-gray-500 hover:text-gray-700 mr-2"
-                        title="Edit"
+                        title={t("pricingManagement.actions.edit")}
                       >
                         <Pencil className="h-4 w-4 inline" />
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm(`Delete tier "${t.name}" (${t.slug})?`))
-                            deleteTier.mutate(t.id);
+                          if (window.confirm(t("pricingManagement.tiers.deleteConfirm", { name: tier.name, slug: tier.slug })))
+                            deleteTier.mutate(tier.id);
                         }}
                         className="text-red-500 hover:text-red-700"
-                        title="Delete"
+                        title={t("pricingManagement.actions.delete")}
                       >
                         <Trash2 className="h-4 w-4 inline" />
                       </button>
@@ -422,34 +423,34 @@ export default function PricingManagementPage() {
       <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
           <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <Coins className="h-5 w-5 text-brand-600" /> Pricing rows
+            <Coins className="h-5 w-5 text-brand-600" /> {t("pricingManagement.pricingRows.heading")}
           </h2>
           <button
             onClick={openCreatePrice}
             disabled={tiers.length === 0}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
           >
-            <Plus className="h-4 w-4" /> Add pricing row
+            <Plus className="h-4 w-4" /> {t("pricingManagement.pricingRows.add")}
           </button>
         </div>
         {pricingQ.isLoading ? (
           <div className="flex items-center justify-center py-8 text-sm text-gray-400">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("pricingManagement.loading")}
           </div>
         ) : pricing.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">No pricing rows yet.</div>
+          <div className="py-8 text-center text-sm text-gray-400">{t("pricingManagement.pricingRows.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                 <tr>
-                  <th className="px-3 py-2 text-left">Tier</th>
-                  <th className="px-3 py-2 text-left">Currency</th>
-                  <th className="px-3 py-2 text-right">Price / seat</th>
-                  <th className="px-3 py-2 text-left">Seat band</th>
-                  <th className="px-3 py-2 text-left">Effective from</th>
-                  <th className="px-3 py-2 text-left">Notes</th>
-                  <th className="px-3 py-2 text-right">Actions</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.tier")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.currency")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.pricingRows.col.pricePerSeat")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.seatBand")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.effectiveFrom")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.notes")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.pricingRows.col.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -474,16 +475,16 @@ export default function PricingManagementPage() {
                       <button
                         onClick={() => openEditPrice(p)}
                         className="text-gray-500 hover:text-gray-700 mr-2"
-                        title="Edit"
+                        title={t("pricingManagement.actions.edit")}
                       >
                         <Pencil className="h-4 w-4 inline" />
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm("Delete this pricing row?")) deletePrice.mutate(p.id);
+                          if (window.confirm(t("pricingManagement.pricingRows.deleteConfirm"))) deletePrice.mutate(p.id);
                         }}
                         className="text-red-500 hover:text-red-700"
-                        title="Delete"
+                        title={t("pricingManagement.actions.delete")}
                       >
                         <Trash2 className="h-4 w-4 inline" />
                       </button>
@@ -500,32 +501,32 @@ export default function PricingManagementPage() {
       <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
           <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <CalendarDays className="h-5 w-5 text-brand-600" /> Billing cycles
+            <CalendarDays className="h-5 w-5 text-brand-600" /> {t("pricingManagement.billingCycles.heading")}
           </h2>
           <button
             onClick={() => openCycleModal()}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add cycle
+            <Plus className="h-4 w-4" /> {t("pricingManagement.billingCycles.add")}
           </button>
         </div>
         {cyclesQ.isLoading ? (
           <div className="flex items-center justify-center py-8 text-sm text-gray-400">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("pricingManagement.loading")}
           </div>
         ) : cycles.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">No billing cycles yet.</div>
+          <div className="py-8 text-center text-sm text-gray-400">{t("pricingManagement.billingCycles.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                 <tr>
-                  <th className="px-3 py-2 text-left">Cycle</th>
-                  <th className="px-3 py-2 text-left">Label</th>
-                  <th className="px-3 py-2 text-right">Discount</th>
-                  <th className="px-3 py-2 text-right">Months</th>
-                  <th className="px-3 py-2 text-center">Active</th>
-                  <th className="px-3 py-2 text-right">Actions</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.billingCycles.col.cycle")}</th>
+                  <th className="px-3 py-2 text-left">{t("pricingManagement.billingCycles.col.label")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.billingCycles.col.discount")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.billingCycles.col.months")}</th>
+                  <th className="px-3 py-2 text-center">{t("pricingManagement.billingCycles.col.active")}</th>
+                  <th className="px-3 py-2 text-right">{t("pricingManagement.billingCycles.col.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -536,10 +537,10 @@ export default function PricingManagementPage() {
                     <td className="px-3 py-2 text-right text-emerald-700 dark:text-emerald-300">
                       {c.override_amount_per_seat != null && c.override_currency ? (
                         <span className="font-mono text-purple-700 dark:text-purple-300">
-                          flat {c.override_currency} {(c.override_amount_per_seat / 100).toFixed(2)}
+                          {t("pricingManagement.billingCycles.flat", { currency: c.override_currency, amount: (c.override_amount_per_seat / 100).toFixed(2) })}
                         </span>
                       ) : Number(c.discount_pct) > 0 ? (
-                        `Save ${Number(c.discount_pct)}%`
+                        t("pricingManagement.billingCycles.save", { percent: Number(c.discount_pct) })
                       ) : (
                         "—"
                       )}
@@ -547,25 +548,25 @@ export default function PricingManagementPage() {
                     <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{c.months_in_cycle}</td>
                     <td className="px-3 py-2 text-center">
                       {c.is_active ? (
-                        <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Active</span>
+                        <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">{t("pricingManagement.status.active")}</span>
                       ) : (
-                        <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">Inactive</span>
+                        <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{t("pricingManagement.status.inactive")}</span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
                       <button
                         onClick={() => openCycleModal(c)}
                         className="text-gray-500 hover:text-gray-700 mr-2"
-                        title="Edit"
+                        title={t("pricingManagement.actions.edit")}
                       >
                         <Pencil className="h-4 w-4 inline" />
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm(`Delete billing cycle "${c.cycle}"?`)) deleteCycle.mutate(c.id);
+                          if (window.confirm(t("pricingManagement.billingCycles.deleteConfirm", { cycle: c.cycle }))) deleteCycle.mutate(c.id);
                         }}
                         className="text-red-500 hover:text-red-700"
-                        title="Delete"
+                        title={t("pricingManagement.actions.delete")}
                       >
                         <Trash2 className="h-4 w-4 inline" />
                       </button>
@@ -581,34 +582,34 @@ export default function PricingManagementPage() {
       {/* Tier modal */}
       {tierModal && (
         <Modal
-          title={tierModal.mode === "create" ? "Add tier" : `Edit tier — ${tierModal.row!.name}`}
+          title={tierModal.mode === "create" ? t("pricingManagement.tierModal.addTitle") : t("pricingManagement.tierModal.editTitle", { name: tierModal.row!.name })}
           onClose={() => (tierMutation.isPending ? null : setTierModal(null))}
         >
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Slug</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.slug")}</label>
               <input
                 value={tierForm.slug}
                 onChange={(e) => setTierForm({ ...tierForm, slug: e.target.value.toLowerCase() })}
-                placeholder="starter"
+                placeholder={t("pricingManagement.tierModal.field.slugPlaceholder")}
                 disabled={tierModal.mode === "edit"}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
               />
               <p className="mt-1 text-xs text-gray-500">
-                Internal identifier (lowercase, no spaces). Cannot be changed after creation.
+                {t("pricingManagement.tierModal.field.slugHelp")}
               </p>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Name</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.name")}</label>
               <input
                 value={tierForm.name}
                 onChange={(e) => setTierForm({ ...tierForm, name: e.target.value })}
-                placeholder="Starter"
+                placeholder={t("pricingManagement.tierModal.field.namePlaceholder")}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Description</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.description")}</label>
               <textarea
                 value={tierForm.description}
                 rows={2}
@@ -618,7 +619,7 @@ export default function PricingManagementPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Sort order</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.sortOrder")}</label>
                 <input
                   type="number"
                   value={tierForm.sort_order}
@@ -635,7 +636,7 @@ export default function PricingManagementPage() {
                     checked={tierForm.is_active}
                     onChange={(e) => setTierForm({ ...tierForm, is_active: e.target.checked })}
                   />
-                  Active
+                  {t("pricingManagement.tierModal.field.active")}
                 </label>
               </div>
             </div>
@@ -645,14 +646,14 @@ export default function PricingManagementPage() {
                 disabled={tierMutation.isPending}
                 className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50"
               >
-                Cancel
+                {t("pricingManagement.actions.cancel")}
               </button>
               <button
                 onClick={() => tierMutation.mutate()}
                 disabled={tierMutation.isPending}
                 className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
               >
-                {tierMutation.isPending ? "Saving..." : "Save"}
+                {tierMutation.isPending ? t("pricingManagement.actions.saving") : t("pricingManagement.actions.save")}
               </button>
             </div>
           </div>
@@ -662,26 +663,26 @@ export default function PricingManagementPage() {
       {/* Pricing row modal */}
       {priceModal && (
         <Modal
-          title={priceModal.mode === "create" ? "Add pricing row" : "Edit pricing row"}
+          title={priceModal.mode === "create" ? t("pricingManagement.priceModal.addTitle") : t("pricingManagement.priceModal.editTitle")}
           onClose={() => (priceMutation.isPending ? null : setPriceModal(null))}
         >
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Tier</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.tier")}</label>
                 <select
                   value={priceForm.tier_id}
                   onChange={(e) => setPriceForm({ ...priceForm, tier_id: Number(e.target.value) })}
                   disabled={priceModal.mode === "edit"}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
                 >
-                  {tiers.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name} ({t.slug})</option>
+                  {tiers.map((tier) => (
+                    <option key={tier.id} value={tier.id}>{tier.name} ({tier.slug})</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Currency</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.currency")}</label>
                 <select
                   value={priceForm.currency}
                   onChange={(e) => setPriceForm({ ...priceForm, currency: e.target.value })}
@@ -694,7 +695,7 @@ export default function PricingManagementPage() {
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">
-                Price per seat (in major unit — ₹/$/£/€, not paise/cents)
+                {t("pricingManagement.priceModal.field.pricePerSeat")}
               </label>
               <input
                 type="number"
@@ -707,7 +708,7 @@ export default function PricingManagementPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Min seats</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.minSeats")}</label>
                 <input
                   type="number"
                   min={1}
@@ -717,7 +718,7 @@ export default function PricingManagementPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Max seats (blank = ∞)</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.maxSeats")}</label>
                 <input
                   type="number"
                   min={1}
@@ -728,7 +729,7 @@ export default function PricingManagementPage() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Effective from</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.effectiveFrom")}</label>
               <input
                 type="date"
                 value={priceForm.effective_from}
@@ -736,15 +737,15 @@ export default function PricingManagementPage() {
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
               />
               <p className="mt-1 text-xs text-gray-500">
-                Future dates schedule price changes. The newest matching row wins at the moment of subscription create / upgrade.
+                {t("pricingManagement.priceModal.field.effectiveFromHelp")}
               </p>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Notes</label>
+              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.notes")}</label>
               <input
                 value={priceForm.notes}
                 onChange={(e) => setPriceForm({ ...priceForm, notes: e.target.value })}
-                placeholder="Q3 promo, deprecated tier, etc."
+                placeholder={t("pricingManagement.priceModal.field.notesPlaceholder")}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
               />
             </div>
@@ -754,14 +755,14 @@ export default function PricingManagementPage() {
                 disabled={priceMutation.isPending}
                 className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50"
               >
-                Cancel
+                {t("pricingManagement.actions.cancel")}
               </button>
               <button
                 onClick={() => priceMutation.mutate()}
                 disabled={priceMutation.isPending}
                 className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
               >
-                {priceMutation.isPending ? "Saving..." : "Save"}
+                {priceMutation.isPending ? t("pricingManagement.actions.saving") : t("pricingManagement.actions.save")}
               </button>
             </div>
           </div>
@@ -770,34 +771,34 @@ export default function PricingManagementPage() {
       {/* Billing cycle modal */}
       {cycleModal && (
         <Modal
-          title={cycleModal.mode === "create" ? "Add billing cycle" : `Edit billing cycle — ${cycleModal.row!.cycle}`}
+          title={cycleModal.mode === "create" ? t("pricingManagement.cycleModal.addTitle") : t("pricingManagement.cycleModal.editTitle", { cycle: cycleModal.row!.cycle })}
           onClose={() => (cycleMutation.isPending ? null : setCycleModal(null))}
         >
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Cycle slug</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.cycleSlug")}</label>
                 <input
                   value={cycleForm.cycle}
                   onChange={(e) => setCycleForm({ ...cycleForm, cycle: e.target.value.toLowerCase() })}
-                  placeholder="semi-annual"
+                  placeholder={t("pricingManagement.cycleModal.field.cycleSlugPlaceholder")}
                   disabled={cycleModal.mode === "edit"}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Label</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.label")}</label>
                 <input
                   value={cycleForm.label}
                   onChange={(e) => setCycleForm({ ...cycleForm, label: e.target.value })}
-                  placeholder="Semi-Annual"
+                  placeholder={t("pricingManagement.cycleModal.field.labelPlaceholder")}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Discount %</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.discountPct")}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -807,10 +808,10 @@ export default function PricingManagementPage() {
                   onChange={(e) => setCycleForm({ ...cycleForm, discount_pct: Number(e.target.value) || 0 })}
                   className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
                 />
-                <p className="mt-1 text-xs text-gray-500">Shown as "Save N%" on the cycle button.</p>
+                <p className="mt-1 text-xs text-gray-500">{t("pricingManagement.cycleModal.field.discountPctHelp")}</p>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Months per cycle</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.monthsPerCycle")}</label>
                 <input
                   type="number"
                   min={1}
@@ -822,7 +823,7 @@ export default function PricingManagementPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Sort order</label>
+                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.sortOrder")}</label>
                 <input
                   type="number"
                   value={cycleForm.sort_order}
@@ -837,7 +838,7 @@ export default function PricingManagementPage() {
                     checked={cycleForm.is_active}
                     onChange={(e) => setCycleForm({ ...cycleForm, is_active: e.target.checked })}
                   />
-                  Active
+                  {t("pricingManagement.cycleModal.field.active")}
                 </label>
               </div>
             </div>
@@ -847,16 +848,15 @@ export default function PricingManagementPage() {
                 annual / quarterly total directly instead of a discount %. */}
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/40">
               <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Override amount (optional)
+                {t("pricingManagement.cycleModal.override.heading")}
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                If set, this exact per-seat amount replaces the discount-based calculation
-                when the customer's currency matches. Leave blank to use discount %.
+                {t("pricingManagement.cycleModal.override.help")}
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">
-                    Amount per seat (major unit)
+                    {t("pricingManagement.cycleModal.override.amount")}
                   </label>
                   <input
                     type="number"
@@ -866,12 +866,12 @@ export default function PricingManagementPage() {
                     onChange={(e) =>
                       setCycleForm({ ...cycleForm, override_amount_major: e.target.value })
                     }
-                    placeholder="e.g. 4800.00"
+                    placeholder={t("pricingManagement.cycleModal.override.amountPlaceholder")}
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm font-mono"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Currency</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.override.currency")}</label>
                   <select
                     value={cycleForm.override_currency}
                     onChange={(e) =>
@@ -879,7 +879,7 @@ export default function PricingManagementPage() {
                     }
                     className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
                   >
-                    <option value="">— None —</option>
+                    <option value="">{t("pricingManagement.cycleModal.override.currencyNone")}</option>
                     {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
@@ -892,14 +892,14 @@ export default function PricingManagementPage() {
                 disabled={cycleMutation.isPending}
                 className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50"
               >
-                Cancel
+                {t("pricingManagement.actions.cancel")}
               </button>
               <button
                 onClick={() => cycleMutation.mutate()}
                 disabled={cycleMutation.isPending}
                 className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
               >
-                {cycleMutation.isPending ? "Saving..." : "Save"}
+                {cycleMutation.isPending ? t("pricingManagement.actions.saving") : t("pricingManagement.actions.save")}
               </button>
             </div>
           </div>

@@ -2735,5 +2735,130 @@
       "messageTooLong_one": "El mensaje es demasiado largo (máximo {{count}} carácter).",
       "messageTooLong_other": "El mensaje es demasiado largo (máximo {{count}} caracteres)."
     }
+  },
+  "pricingManagement": {
+    "title": "Gestión de precios",
+    "subtitle": "Gestione los niveles de plan y los precios por puesto según la moneda, el tramo de volumen y la fecha de entrada en vigor. Las suscripciones existentes conservan su precio almacenado; los cambios se aplican a las nuevas suscripciones y a las mejoras de plan.",
+    "tiers": {
+      "heading": "Niveles",
+      "add": "Añadir nivel",
+      "empty": "Aún no hay niveles.",
+      "col": {
+        "slug": "Slug",
+        "name": "Nombre",
+        "description": "Descripción",
+        "sort": "Orden",
+        "active": "Activo",
+        "actions": "Acciones"
+      },
+      "deleteConfirm": "¿Eliminar el nivel \"{{name}}\" ({{slug}})?"
+    },
+    "pricingRows": {
+      "heading": "Filas de precios",
+      "add": "Añadir fila de precios",
+      "empty": "Aún no hay filas de precios.",
+      "col": {
+        "tier": "Nivel",
+        "currency": "Moneda",
+        "pricePerSeat": "Precio / puesto",
+        "seatBand": "Tramo de puestos",
+        "effectiveFrom": "En vigor desde",
+        "notes": "Notas",
+        "actions": "Acciones"
+      },
+      "deleteConfirm": "¿Eliminar esta fila de precios?"
+    },
+    "billingCycles": {
+      "heading": "Ciclos de facturación",
+      "add": "Añadir ciclo",
+      "empty": "Aún no hay ciclos de facturación.",
+      "col": {
+        "cycle": "Ciclo",
+        "label": "Etiqueta",
+        "discount": "Descuento",
+        "months": "Meses",
+        "active": "Activo",
+        "actions": "Acciones"
+      },
+      "flat": "{{currency}} {{amount}} fijo",
+      "save": "Ahorra un {{percent}}%",
+      "deleteConfirm": "¿Eliminar el ciclo de facturación \"{{cycle}}\"?"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "loading": "Cargando...",
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "Guardando..."
+    },
+    "tierModal": {
+      "addTitle": "Añadir nivel",
+      "editTitle": "Editar nivel — {{name}}",
+      "field": {
+        "slug": "Slug",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Identificador interno (minúsculas, sin espacios). No se puede cambiar tras la creación.",
+        "name": "Nombre",
+        "namePlaceholder": "Starter",
+        "description": "Descripción",
+        "sortOrder": "Orden de clasificación",
+        "active": "Activo"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Añadir fila de precios",
+      "editTitle": "Editar fila de precios",
+      "field": {
+        "tier": "Nivel",
+        "currency": "Moneda",
+        "pricePerSeat": "Precio por puesto (en unidad mayor — ₹/$/£/€, no paise/céntimos)",
+        "minSeats": "Puestos mínimos",
+        "maxSeats": "Puestos máximos (en blanco = ∞)",
+        "effectiveFrom": "En vigor desde",
+        "effectiveFromHelp": "Las fechas futuras programan cambios de precio. La fila coincidente más reciente prevalece en el momento de crear la suscripción o de mejorar el plan.",
+        "notes": "Notas",
+        "notesPlaceholder": "Promoción del 3.er trimestre, nivel obsoleto, etc."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Añadir ciclo de facturación",
+      "editTitle": "Editar ciclo de facturación — {{cycle}}",
+      "field": {
+        "cycleSlug": "Slug del ciclo",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Etiqueta",
+        "labelPlaceholder": "Semestral",
+        "discountPct": "Descuento %",
+        "discountPctHelp": "Se muestra como \"Ahorra un N%\" en el botón del ciclo.",
+        "monthsPerCycle": "Meses por ciclo",
+        "sortOrder": "Orden de clasificación",
+        "active": "Activo"
+      },
+      "override": {
+        "heading": "Importe de sustitución (opcional)",
+        "help": "Si se establece, este importe exacto por puesto reemplaza el cálculo basado en el descuento cuando coincide la moneda del cliente. Déjelo en blanco para usar el % de descuento.",
+        "amount": "Importe por puesto (unidad mayor)",
+        "amountPlaceholder": "p. ej. 4800.00",
+        "currency": "Moneda",
+        "currencyNone": "— Ninguna —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Nivel creado",
+      "tierUpdated": "Nivel actualizado",
+      "tierDeleted": "Nivel eliminado",
+      "priceAdded": "Fila de precios añadida",
+      "priceUpdated": "Fila de precios actualizada",
+      "priceDeleted": "Fila de precios eliminada",
+      "cycleCreated": "Ciclo de facturación creado",
+      "cycleUpdated": "Ciclo de facturación actualizado",
+      "cycleDeleted": "Ciclo de facturación eliminado",
+      "failed": "Error"
+    }
   }
 }

@@ -2735,5 +2735,130 @@
       "messageTooLong_one": "Le message est trop long (max {{count}} caractère).",
       "messageTooLong_other": "Le message est trop long (max {{count}} caractères)."
     }
+  },
+  "pricingManagement": {
+    "title": "Gestion des tarifs",
+    "subtitle": "Gérez les niveaux de forfait et la tarification par siège selon la devise, la tranche de volume et la date d'effet. Les abonnements existants conservent leur tarif enregistré ; les modifications s'appliquent aux nouveaux abonnements et aux mises à niveau de forfait.",
+    "tiers": {
+      "heading": "Niveaux",
+      "add": "Ajouter un niveau",
+      "empty": "Aucun niveau pour le moment.",
+      "col": {
+        "slug": "Identifiant",
+        "name": "Nom",
+        "description": "Description",
+        "sort": "Tri",
+        "active": "Actif",
+        "actions": "Actions"
+      },
+      "deleteConfirm": "Supprimer le niveau « {{name}} » ({{slug}}) ?"
+    },
+    "pricingRows": {
+      "heading": "Lignes tarifaires",
+      "add": "Ajouter une ligne tarifaire",
+      "empty": "Aucune ligne tarifaire pour le moment.",
+      "col": {
+        "tier": "Niveau",
+        "currency": "Devise",
+        "pricePerSeat": "Prix / siège",
+        "seatBand": "Tranche de sièges",
+        "effectiveFrom": "En vigueur à partir du",
+        "notes": "Notes",
+        "actions": "Actions"
+      },
+      "deleteConfirm": "Supprimer cette ligne tarifaire ?"
+    },
+    "billingCycles": {
+      "heading": "Cycles de facturation",
+      "add": "Ajouter un cycle",
+      "empty": "Aucun cycle de facturation pour le moment.",
+      "col": {
+        "cycle": "Cycle",
+        "label": "Libellé",
+        "discount": "Remise",
+        "months": "Mois",
+        "active": "Actif",
+        "actions": "Actions"
+      },
+      "flat": "tarif fixe {{currency}} {{amount}}",
+      "save": "Économisez {{percent}} %",
+      "deleteConfirm": "Supprimer le cycle de facturation « {{cycle}} » ?"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "loading": "Chargement...",
+    "actions": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement..."
+    },
+    "tierModal": {
+      "addTitle": "Ajouter un niveau",
+      "editTitle": "Modifier le niveau — {{name}}",
+      "field": {
+        "slug": "Identifiant",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Identifiant interne (minuscules, sans espaces). Ne peut pas être modifié après la création.",
+        "name": "Nom",
+        "namePlaceholder": "Starter",
+        "description": "Description",
+        "sortOrder": "Ordre de tri",
+        "active": "Actif"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Ajouter une ligne tarifaire",
+      "editTitle": "Modifier la ligne tarifaire",
+      "field": {
+        "tier": "Niveau",
+        "currency": "Devise",
+        "pricePerSeat": "Prix par siège (en unité principale — ₹/$/£/€, et non en paise/centimes)",
+        "minSeats": "Sièges min.",
+        "maxSeats": "Sièges max. (vide = ∞)",
+        "effectiveFrom": "En vigueur à partir du",
+        "effectiveFromHelp": "Les dates futures programment les modifications de tarif. La ligne correspondante la plus récente l'emporte au moment de la création ou de la mise à niveau de l'abonnement.",
+        "notes": "Notes",
+        "notesPlaceholder": "Promo T3, niveau obsolète, etc."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Ajouter un cycle de facturation",
+      "editTitle": "Modifier le cycle de facturation — {{cycle}}",
+      "field": {
+        "cycleSlug": "Identifiant du cycle",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Libellé",
+        "labelPlaceholder": "Semestriel",
+        "discountPct": "Remise %",
+        "discountPctHelp": "Affiché comme « Économisez N % » sur le bouton du cycle.",
+        "monthsPerCycle": "Mois par cycle",
+        "sortOrder": "Ordre de tri",
+        "active": "Actif"
+      },
+      "override": {
+        "heading": "Montant de remplacement (facultatif)",
+        "help": "S'il est défini, ce montant exact par siège remplace le calcul basé sur la remise lorsque la devise du client correspond. Laissez vide pour utiliser la remise %.",
+        "amount": "Montant par siège (unité principale)",
+        "amountPlaceholder": "ex. 4800.00",
+        "currency": "Devise",
+        "currencyNone": "— Aucune —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Niveau créé",
+      "tierUpdated": "Niveau mis à jour",
+      "tierDeleted": "Niveau supprimé",
+      "priceAdded": "Ligne tarifaire ajoutée",
+      "priceUpdated": "Ligne tarifaire mise à jour",
+      "priceDeleted": "Ligne tarifaire supprimée",
+      "cycleCreated": "Cycle de facturation créé",
+      "cycleUpdated": "Cycle de facturation mis à jour",
+      "cycleDeleted": "Cycle de facturation supprimé",
+      "failed": "Échec"
+    }
   }
 }

@@ -2771,5 +2771,130 @@
       "messageTooLong_many": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرفًا).",
       "messageTooLong_other": "الرسالة طويلة جدًا (الحد الأقصى {{count}} حرف)."
     }
+  },
+  "pricingManagement": {
+    "title": "إدارة التسعير",
+    "subtitle": "إدارة مستويات الخطط والتسعير لكل مقعد حسب العملة ونطاق الحجم وتاريخ السريان. تحتفظ الاشتراكات الحالية بسعرها المخزَّن؛ وتُطبَّق التغييرات على الاشتراكات الجديدة وترقيات الخطط.",
+    "tiers": {
+      "heading": "المستويات",
+      "add": "إضافة مستوى",
+      "empty": "لا توجد مستويات بعد.",
+      "col": {
+        "slug": "المعرّف",
+        "name": "الاسم",
+        "description": "الوصف",
+        "sort": "الترتيب",
+        "active": "نشط",
+        "actions": "الإجراءات"
+      },
+      "deleteConfirm": "حذف المستوى \"{{name}}\" ({{slug}})؟"
+    },
+    "pricingRows": {
+      "heading": "صفوف التسعير",
+      "add": "إضافة صف تسعير",
+      "empty": "لا توجد صفوف تسعير بعد.",
+      "col": {
+        "tier": "المستوى",
+        "currency": "العملة",
+        "pricePerSeat": "السعر / المقعد",
+        "seatBand": "نطاق المقاعد",
+        "effectiveFrom": "ساري من",
+        "notes": "ملاحظات",
+        "actions": "الإجراءات"
+      },
+      "deleteConfirm": "حذف صف التسعير هذا؟"
+    },
+    "billingCycles": {
+      "heading": "دورات الفوترة",
+      "add": "إضافة دورة",
+      "empty": "لا توجد دورات فوترة بعد.",
+      "col": {
+        "cycle": "الدورة",
+        "label": "التسمية",
+        "discount": "الخصم",
+        "months": "الأشهر",
+        "active": "نشط",
+        "actions": "الإجراءات"
+      },
+      "flat": "ثابت {{currency}} {{amount}}",
+      "save": "وفّر {{percent}}%",
+      "deleteConfirm": "حذف دورة الفوترة \"{{cycle}}\"؟"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "loading": "جارٍ التحميل...",
+    "actions": {
+      "edit": "تعديل",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ..."
+    },
+    "tierModal": {
+      "addTitle": "إضافة مستوى",
+      "editTitle": "تعديل المستوى — {{name}}",
+      "field": {
+        "slug": "المعرّف",
+        "slugPlaceholder": "starter",
+        "slugHelp": "معرّف داخلي (أحرف صغيرة، بدون مسافات). لا يمكن تغييره بعد الإنشاء.",
+        "name": "الاسم",
+        "namePlaceholder": "Starter",
+        "description": "الوصف",
+        "sortOrder": "ترتيب الفرز",
+        "active": "نشط"
+      }
+    },
+    "priceModal": {
+      "addTitle": "إضافة صف تسعير",
+      "editTitle": "تعديل صف التسعير",
+      "field": {
+        "tier": "المستوى",
+        "currency": "العملة",
+        "pricePerSeat": "السعر لكل مقعد (بالوحدة الكبرى — ₹/$/£/€، وليس بالبيسة/السنت)",
+        "minSeats": "الحد الأدنى للمقاعد",
+        "maxSeats": "الحد الأقصى للمقاعد (فارغ = ∞)",
+        "effectiveFrom": "ساري من",
+        "effectiveFromHelp": "تجدول التواريخ المستقبلية تغييرات الأسعار. يسري أحدث صف مطابق عند لحظة إنشاء الاشتراك / الترقية.",
+        "notes": "ملاحظات",
+        "notesPlaceholder": "عرض الربع الثالث، مستوى مهمل، إلخ."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "إضافة دورة فوترة",
+      "editTitle": "تعديل دورة الفوترة — {{cycle}}",
+      "field": {
+        "cycleSlug": "معرّف الدورة",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "التسمية",
+        "labelPlaceholder": "Semi-Annual",
+        "discountPct": "نسبة الخصم %",
+        "discountPctHelp": "تُعرض كـ \"وفّر N%\" على زر الدورة.",
+        "monthsPerCycle": "الأشهر لكل دورة",
+        "sortOrder": "ترتيب الفرز",
+        "active": "نشط"
+      },
+      "override": {
+        "heading": "مبلغ التجاوز (اختياري)",
+        "help": "إذا تم تعيينه، يحل هذا المبلغ المحدد لكل مقعد محل الحساب القائم على الخصم عند تطابق عملة العميل. اتركه فارغًا لاستخدام نسبة الخصم %.",
+        "amount": "المبلغ لكل مقعد (الوحدة الكبرى)",
+        "amountPlaceholder": "مثال 4800.00",
+        "currency": "العملة",
+        "currencyNone": "— بلا —"
+      }
+    },
+    "toast": {
+      "tierCreated": "تم إنشاء المستوى",
+      "tierUpdated": "تم تحديث المستوى",
+      "tierDeleted": "تم حذف المستوى",
+      "priceAdded": "تمت إضافة صف التسعير",
+      "priceUpdated": "تم تحديث صف التسعير",
+      "priceDeleted": "تم حذف صف التسعير",
+      "cycleCreated": "تم إنشاء دورة الفوترة",
+      "cycleUpdated": "تم تحديث دورة الفوترة",
+      "cycleDeleted": "تم حذف دورة الفوترة",
+      "failed": "فشل"
+    }
   }
 }

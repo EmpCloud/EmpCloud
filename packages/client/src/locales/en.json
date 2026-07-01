@@ -2741,5 +2741,130 @@
       "messageTooLong_one": "Message is too long (max {{count}} characters).",
       "messageTooLong_other": "Message is too long (max {{count}} characters)."
     }
+  },
+  "pricingManagement": {
+    "title": "Pricing Management",
+    "subtitle": "Manage plan tiers and per-seat pricing per currency, volume band, and effective date. Existing subscriptions keep their stored price; changes apply to new subscriptions and plan upgrades.",
+    "tiers": {
+      "heading": "Tiers",
+      "add": "Add tier",
+      "empty": "No tiers yet.",
+      "col": {
+        "slug": "Slug",
+        "name": "Name",
+        "description": "Description",
+        "sort": "Sort",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "deleteConfirm": "Delete tier \"{{name}}\" ({{slug}})?"
+    },
+    "pricingRows": {
+      "heading": "Pricing rows",
+      "add": "Add pricing row",
+      "empty": "No pricing rows yet.",
+      "col": {
+        "tier": "Tier",
+        "currency": "Currency",
+        "pricePerSeat": "Price / seat",
+        "seatBand": "Seat band",
+        "effectiveFrom": "Effective from",
+        "notes": "Notes",
+        "actions": "Actions"
+      },
+      "deleteConfirm": "Delete this pricing row?"
+    },
+    "billingCycles": {
+      "heading": "Billing cycles",
+      "add": "Add cycle",
+      "empty": "No billing cycles yet.",
+      "col": {
+        "cycle": "Cycle",
+        "label": "Label",
+        "discount": "Discount",
+        "months": "Months",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "flat": "flat {{currency}} {{amount}}",
+      "save": "Save {{percent}}%",
+      "deleteConfirm": "Delete billing cycle \"{{cycle}}\"?"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "loading": "Loading...",
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "tierModal": {
+      "addTitle": "Add tier",
+      "editTitle": "Edit tier — {{name}}",
+      "field": {
+        "slug": "Slug",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Internal identifier (lowercase, no spaces). Cannot be changed after creation.",
+        "name": "Name",
+        "namePlaceholder": "Starter",
+        "description": "Description",
+        "sortOrder": "Sort order",
+        "active": "Active"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Add pricing row",
+      "editTitle": "Edit pricing row",
+      "field": {
+        "tier": "Tier",
+        "currency": "Currency",
+        "pricePerSeat": "Price per seat (in major unit — ₹/$/£/€, not paise/cents)",
+        "minSeats": "Min seats",
+        "maxSeats": "Max seats (blank = ∞)",
+        "effectiveFrom": "Effective from",
+        "effectiveFromHelp": "Future dates schedule price changes. The newest matching row wins at the moment of subscription create / upgrade.",
+        "notes": "Notes",
+        "notesPlaceholder": "Q3 promo, deprecated tier, etc."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Add billing cycle",
+      "editTitle": "Edit billing cycle — {{cycle}}",
+      "field": {
+        "cycleSlug": "Cycle slug",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Label",
+        "labelPlaceholder": "Semi-Annual",
+        "discountPct": "Discount %",
+        "discountPctHelp": "Shown as \"Save N%\" on the cycle button.",
+        "monthsPerCycle": "Months per cycle",
+        "sortOrder": "Sort order",
+        "active": "Active"
+      },
+      "override": {
+        "heading": "Override amount (optional)",
+        "help": "If set, this exact per-seat amount replaces the discount-based calculation when the customer's currency matches. Leave blank to use discount %.",
+        "amount": "Amount per seat (major unit)",
+        "amountPlaceholder": "e.g. 4800.00",
+        "currency": "Currency",
+        "currencyNone": "— None —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Tier created",
+      "tierUpdated": "Tier updated",
+      "tierDeleted": "Tier deleted",
+      "priceAdded": "Pricing row added",
+      "priceUpdated": "Pricing row updated",
+      "priceDeleted": "Pricing row deleted",
+      "cycleCreated": "Billing cycle created",
+      "cycleUpdated": "Billing cycle updated",
+      "cycleDeleted": "Billing cycle deleted",
+      "failed": "Failed"
+    }
   }
 }

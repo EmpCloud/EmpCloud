@@ -2735,5 +2735,130 @@
       "messageTooLong_one": "消息过长（最多 {{count}} 个字符）。",
       "messageTooLong_other": "消息过长（最多 {{count}} 个字符）。"
     }
+  },
+  "pricingManagement": {
+    "title": "定价管理",
+    "subtitle": "按货币、用量区间和生效日期管理套餐层级和每席位定价。现有订阅将保留其已存储的价格；变更仅适用于新订阅和套餐升级。",
+    "tiers": {
+      "heading": "层级",
+      "add": "添加层级",
+      "empty": "暂无层级。",
+      "col": {
+        "slug": "标识符",
+        "name": "名称",
+        "description": "描述",
+        "sort": "排序",
+        "active": "启用",
+        "actions": "操作"
+      },
+      "deleteConfirm": "确定删除层级“{{name}}”（{{slug}}）吗？"
+    },
+    "pricingRows": {
+      "heading": "定价行",
+      "add": "添加定价行",
+      "empty": "暂无定价行。",
+      "col": {
+        "tier": "层级",
+        "currency": "货币",
+        "pricePerSeat": "单席位价格",
+        "seatBand": "席位区间",
+        "effectiveFrom": "生效日期",
+        "notes": "备注",
+        "actions": "操作"
+      },
+      "deleteConfirm": "确定删除此定价行吗？"
+    },
+    "billingCycles": {
+      "heading": "计费周期",
+      "add": "添加周期",
+      "empty": "暂无计费周期。",
+      "col": {
+        "cycle": "周期",
+        "label": "标签",
+        "discount": "折扣",
+        "months": "月数",
+        "active": "启用",
+        "actions": "操作"
+      },
+      "flat": "固定 {{currency}} {{amount}}",
+      "save": "节省 {{percent}}%",
+      "deleteConfirm": "确定删除计费周期“{{cycle}}”吗？"
+    },
+    "status": {
+      "active": "启用",
+      "inactive": "停用"
+    },
+    "loading": "加载中…",
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "保存中…"
+    },
+    "tierModal": {
+      "addTitle": "添加层级",
+      "editTitle": "编辑层级 — {{name}}",
+      "field": {
+        "slug": "标识符",
+        "slugPlaceholder": "starter",
+        "slugHelp": "内部标识符（小写、无空格）。创建后无法更改。",
+        "name": "名称",
+        "namePlaceholder": "Starter",
+        "description": "描述",
+        "sortOrder": "排序顺序",
+        "active": "启用"
+      }
+    },
+    "priceModal": {
+      "addTitle": "添加定价行",
+      "editTitle": "编辑定价行",
+      "field": {
+        "tier": "层级",
+        "currency": "货币",
+        "pricePerSeat": "单席位价格（以主单位计 — ₹/$/£/€，而非派萨/分）",
+        "minSeats": "最少席位数",
+        "maxSeats": "最多席位数（留空 = ∞）",
+        "effectiveFrom": "生效日期",
+        "effectiveFromHelp": "未来日期可用于预定价格变更。在创建订阅／升级时，匹配的最新定价行优先生效。",
+        "notes": "备注",
+        "notesPlaceholder": "如 Q3 促销、已弃用层级等。"
+      }
+    },
+    "cycleModal": {
+      "addTitle": "添加计费周期",
+      "editTitle": "编辑计费周期 — {{cycle}}",
+      "field": {
+        "cycleSlug": "周期标识符",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "标签",
+        "labelPlaceholder": "Semi-Annual",
+        "discountPct": "折扣百分比",
+        "discountPctHelp": "在周期按钮上显示为“节省 N%”。",
+        "monthsPerCycle": "每周期月数",
+        "sortOrder": "排序顺序",
+        "active": "启用"
+      },
+      "override": {
+        "heading": "覆盖金额（可选）",
+        "help": "如已设置，当客户货币匹配时，此精确的单席位金额将替代基于折扣的计算。留空则使用折扣百分比。",
+        "amount": "单席位金额（主单位）",
+        "amountPlaceholder": "如 4800.00",
+        "currency": "货币",
+        "currencyNone": "— 无 —"
+      }
+    },
+    "toast": {
+      "tierCreated": "层级已创建",
+      "tierUpdated": "层级已更新",
+      "tierDeleted": "层级已删除",
+      "priceAdded": "定价行已添加",
+      "priceUpdated": "定价行已更新",
+      "priceDeleted": "定价行已删除",
+      "cycleCreated": "计费周期已创建",
+      "cycleUpdated": "计费周期已更新",
+      "cycleDeleted": "计费周期已删除",
+      "failed": "操作失败"
+    }
   }
 }

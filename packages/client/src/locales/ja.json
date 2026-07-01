@@ -2735,5 +2735,130 @@
       "messageTooLong_one": "メッセージが長すぎます（最大{{count}}文字）。",
       "messageTooLong_other": "メッセージが長すぎます（最大{{count}}文字）。"
     }
+  },
+  "pricingManagement": {
+    "title": "料金管理",
+    "subtitle": "プランティアと、通貨・数量帯・適用開始日ごとのシートあたり料金を管理します。既存のサブスクリプションは保存済みの料金を維持し、変更は新規サブスクリプションおよびプランのアップグレードに適用されます。",
+    "tiers": {
+      "heading": "ティア",
+      "add": "ティアを追加",
+      "empty": "ティアはまだありません。",
+      "col": {
+        "slug": "スラッグ",
+        "name": "名称",
+        "description": "説明",
+        "sort": "並び順",
+        "active": "有効",
+        "actions": "操作"
+      },
+      "deleteConfirm": "ティア「{{name}}」({{slug}})を削除しますか？"
+    },
+    "pricingRows": {
+      "heading": "料金行",
+      "add": "料金行を追加",
+      "empty": "料金行はまだありません。",
+      "col": {
+        "tier": "ティア",
+        "currency": "通貨",
+        "pricePerSeat": "シートあたり料金",
+        "seatBand": "シート数量帯",
+        "effectiveFrom": "適用開始日",
+        "notes": "備考",
+        "actions": "操作"
+      },
+      "deleteConfirm": "この料金行を削除しますか？"
+    },
+    "billingCycles": {
+      "heading": "請求サイクル",
+      "add": "サイクルを追加",
+      "empty": "請求サイクルはまだありません。",
+      "col": {
+        "cycle": "サイクル",
+        "label": "ラベル",
+        "discount": "割引",
+        "months": "月数",
+        "active": "有効",
+        "actions": "操作"
+      },
+      "flat": "定額 {{currency}} {{amount}}",
+      "save": "{{percent}}%割引",
+      "deleteConfirm": "請求サイクル「{{cycle}}」を削除しますか？"
+    },
+    "status": {
+      "active": "有効",
+      "inactive": "無効"
+    },
+    "loading": "読み込み中...",
+    "actions": {
+      "edit": "編集",
+      "delete": "削除",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "saving": "保存中..."
+    },
+    "tierModal": {
+      "addTitle": "ティアを追加",
+      "editTitle": "ティアを編集 — {{name}}",
+      "field": {
+        "slug": "スラッグ",
+        "slugPlaceholder": "starter",
+        "slugHelp": "内部識別子（小文字、スペースなし）。作成後は変更できません。",
+        "name": "名称",
+        "namePlaceholder": "Starter",
+        "description": "説明",
+        "sortOrder": "並び順",
+        "active": "有効"
+      }
+    },
+    "priceModal": {
+      "addTitle": "料金行を追加",
+      "editTitle": "料金行を編集",
+      "field": {
+        "tier": "ティア",
+        "currency": "通貨",
+        "pricePerSeat": "シートあたり料金（主要単位 — ₹/$/£/€。パイサ／セントではありません）",
+        "minSeats": "最小シート数",
+        "maxSeats": "最大シート数（空欄 = ∞）",
+        "effectiveFrom": "適用開始日",
+        "effectiveFromHelp": "将来の日付を指定すると料金変更が予約されます。サブスクリプションの作成／アップグレード時点で、一致する行のうち最も新しいものが適用されます。",
+        "notes": "備考",
+        "notesPlaceholder": "第3四半期プロモ、廃止予定ティアなど"
+      }
+    },
+    "cycleModal": {
+      "addTitle": "請求サイクルを追加",
+      "editTitle": "請求サイクルを編集 — {{cycle}}",
+      "field": {
+        "cycleSlug": "サイクルスラッグ",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "ラベル",
+        "labelPlaceholder": "Semi-Annual",
+        "discountPct": "割引率（％）",
+        "discountPctHelp": "サイクルボタンに「N%割引」と表示されます。",
+        "monthsPerCycle": "サイクルあたり月数",
+        "sortOrder": "並び順",
+        "active": "有効"
+      },
+      "override": {
+        "heading": "上書き金額（任意）",
+        "help": "設定すると、顧客の通貨が一致する場合に、割引ベースの計算に代わってこのシートあたり金額が適用されます。空欄の場合は割引率を使用します。",
+        "amount": "シートあたり金額（主要単位）",
+        "amountPlaceholder": "例：4800.00",
+        "currency": "通貨",
+        "currencyNone": "— なし —"
+      }
+    },
+    "toast": {
+      "tierCreated": "ティアを作成しました",
+      "tierUpdated": "ティアを更新しました",
+      "tierDeleted": "ティアを削除しました",
+      "priceAdded": "料金行を追加しました",
+      "priceUpdated": "料金行を更新しました",
+      "priceDeleted": "料金行を削除しました",
+      "cycleCreated": "請求サイクルを作成しました",
+      "cycleUpdated": "請求サイクルを更新しました",
+      "cycleDeleted": "請求サイクルを削除しました",
+      "failed": "失敗しました"
+    }
   }
 }
