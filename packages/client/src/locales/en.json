@@ -3151,5 +3151,231 @@
       "subscriptions_one": "{{count}} subscription",
       "subscriptions_other": "{{count}} subscriptions"
     }
+  },
+  "orgDetail": {
+    "loading": "Loading...",
+    "error": {
+      "loadFailed": "Failed to load organization details.",
+      "backToOrganizations": "Back to organizations"
+    },
+    "backToAll": "Back to all organizations",
+    "createdOn": "Created",
+    "stats": {
+      "users": "Users",
+      "activeSubscriptions": "Active Subscriptions",
+      "monthlyRevenue": "Monthly Revenue",
+      "totalSpend": "Total Spend"
+    },
+    "users": {
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "deactivate": "Deactivate user",
+        "activate": "Activate user",
+        "resetPassword": "Reset password",
+        "changeRole": "Change role"
+      },
+      "empty": "No users in this organization",
+      "heading_one": "Users ({{count}})",
+      "heading_other": "Users ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "Module",
+        "plan": "Plan",
+        "status": "Status",
+        "seats": "Seats",
+        "pricePerSeat": "Price/Seat",
+        "monthly": "Monthly",
+        "billing": "Billing",
+        "periodEnd": "Period End"
+      },
+      "empty": "No subscriptions",
+      "heading_one": "Subscriptions ({{count}})",
+      "heading_other": "Subscriptions ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "Action",
+        "entity": "Entity",
+        "ip": "IP",
+        "time": "Time"
+      },
+      "heading_one": "Audit Log (Last {{count}})",
+      "heading_other": "Audit Log (Last {{count}})"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Reset password for <strong>{{name}}</strong> ({{email}}).",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Minimum 8 characters",
+      "submitting": "Resetting...",
+      "submit": "Reset Password"
+    },
+    "changeRole": {
+      "title": "Change Role",
+      "description": "Change role for <strong>{{name}}</strong>.",
+      "currentRole": "Current role: {{role}}",
+      "newRoleLabel": "New Role",
+      "submitting": "Updating...",
+      "submit": "Update Role"
+    },
+    "actions": {
+      "cancel": "Cancel"
+    },
+    "tabs": {
+      "users_one": "Users ({{count}})",
+      "users_other": "Users ({{count}})",
+      "subscriptions_one": "Subscriptions ({{count}})",
+      "subscriptions_other": "Subscriptions ({{count}})",
+      "auditLog_one": "Audit Log (Last {{count}})",
+      "auditLog_other": "Audit Log (Last {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "All Organizations",
+    "createButton": "Create Organization",
+    "modal": {
+      "title": "Create New Organization",
+      "fields": {
+        "orgName": "Organization Name",
+        "firstName": "Admin First Name",
+        "lastName": "Admin Last Name",
+        "email": "Admin Email",
+        "password": "Admin Password",
+        "country": "Country",
+        "timezone": "Timezone"
+      },
+      "passwordHint": "Must contain uppercase, lowercase, digit, and special character.",
+      "placeholders": {
+        "password": "Min 8 chars, uppercase, lowercase, digit, special"
+      },
+      "cancel": "Cancel",
+      "submit": "Create Organization",
+      "submitting": "Creating...",
+      "error": "Failed to create organization. Please check all fields."
+    },
+    "search": {
+      "placeholder": "Search by name or email..."
+    },
+    "table": {
+      "headers": {
+        "organization": "Organization",
+        "adminEmail": "Admin Email",
+        "employees": "Employees",
+        "activeModules": "Active Modules",
+        "monthlySpend": "Monthly Spend",
+        "status": "Status",
+        "joined": "Joined"
+      }
+    },
+    "status": {
+      "active": "active"
+    },
+    "loading": "Loading...",
+    "empty": "No organizations found",
+    "pagination": {
+      "summary": "Page {{page}} of {{totalPages}} ({{total}} total)"
+    },
+    "subtitle_one": "{{count}} organization registered on the platform.",
+    "subtitle_other": "{{count}} organizations registered on the platform."
+  },
+  "superAdminDashboard": {
+    "title": "Platform Dashboard",
+    "subtitle": "Real-time overview of the entire EMP Cloud platform.",
+    "loading": "Loading platform data...",
+    "error": {
+      "title": "Failed to load dashboard data",
+      "retryHint": "Please try refreshing the page"
+    },
+    "stats": {
+      "totalOrganizations": "Total Organizations",
+      "totalUsers": "Total Users",
+      "activeSubscriptions": "Active Subscriptions",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "System Health",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "newThisMonth_one": "+{{count}} this month",
+      "newThisMonth_other": "+{{count}} this month"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "All systems operational",
+      "degraded": "Some systems degraded",
+      "offline": "Systems offline"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "Organizations",
+        "description": "View and manage all organizations"
+      },
+      "moduleAnalytics": {
+        "label": "Module Analytics",
+        "description": "Subscribers, seats, revenue per module"
+      },
+      "revenueAnalytics": {
+        "label": "Revenue Analytics",
+        "description": "MRR, ARR, trends, top customers"
+      },
+      "subscriptionMetrics": {
+        "label": "Subscription Metrics",
+        "description": "Plans, utilization, billing cycles"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Revenue Trend"
+      },
+      "revenueByModule": {
+        "title": "Revenue by Module"
+      },
+      "moduleAdoption": {
+        "title": "Module Adoption"
+      },
+      "growthTrends": {
+        "title": "Growth Trends"
+      },
+      "viewDetails": "View details",
+      "legend": {
+        "organizations": "Organizations",
+        "totalSeats": "Total Seats",
+        "newOrgs": "New Orgs",
+        "newUsers": "New Users"
+      }
+    },
+    "empty": {
+      "revenue": "No revenue data yet",
+      "adoption": "No adoption data yet",
+      "growth": "No growth data yet",
+      "activity": "No recent activity"
+    },
+    "systemHealth": {
+      "title": "System Health",
+      "badge": {
+        "allOperational": "All Operational",
+        "degraded": "Degraded",
+        "checking": "Checking..."
+      },
+      "checkingModules": "Checking health..."
+    },
+    "healthBadge": {
+      "healthy": "Healthy",
+      "down": "Down"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "systemActor": "System"
+    }
   }
 }

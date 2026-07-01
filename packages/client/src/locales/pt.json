@@ -3145,5 +3145,231 @@
       "subscriptions_one": "{{count}} subscrição",
       "subscriptions_other": "{{count}} subscrições"
     }
+  },
+  "orgDetail": {
+    "loading": "A carregar...",
+    "error": {
+      "loadFailed": "Falha ao carregar os detalhes da organização.",
+      "backToOrganizations": "Voltar às organizações"
+    },
+    "backToAll": "Voltar a todas as organizações",
+    "createdOn": "Criada",
+    "stats": {
+      "users": "Utilizadores",
+      "activeSubscriptions": "Subscrições Ativas",
+      "monthlyRevenue": "Receita Mensal",
+      "totalSpend": "Gasto Total"
+    },
+    "users": {
+      "columns": {
+        "name": "Nome",
+        "email": "E-mail",
+        "role": "Função",
+        "status": "Estado",
+        "joined": "Data de adesão",
+        "actions": "Ações"
+      },
+      "status": {
+        "active": "Ativo",
+        "inactive": "Inativo"
+      },
+      "actions": {
+        "deactivate": "Desativar utilizador",
+        "activate": "Ativar utilizador",
+        "resetPassword": "Repor palavra-passe",
+        "changeRole": "Alterar função"
+      },
+      "empty": "Não existem utilizadores nesta organização",
+      "heading_one": "Utilizador ({{count}})",
+      "heading_other": "Utilizadores ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "Módulo",
+        "plan": "Plano",
+        "status": "Estado",
+        "seats": "Lugares",
+        "pricePerSeat": "Preço/Lugar",
+        "monthly": "Mensal",
+        "billing": "Faturação",
+        "periodEnd": "Fim do Período"
+      },
+      "empty": "Sem subscrições",
+      "heading_one": "Subscrição ({{count}})",
+      "heading_other": "Subscrições ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "Ação",
+        "entity": "Entidade",
+        "ip": "IP",
+        "time": "Hora"
+      },
+      "heading_one": "Registo de Auditoria (Último {{count}})",
+      "heading_other": "Registo de Auditoria (Últimos {{count}})"
+    },
+    "resetPassword": {
+      "title": "Repor Palavra-passe",
+      "description": "Repor a palavra-passe de <strong>{{name}}</strong> ({{email}}).",
+      "newPasswordLabel": "Nova Palavra-passe",
+      "newPasswordPlaceholder": "Mínimo de 8 caracteres",
+      "submitting": "A repor...",
+      "submit": "Repor Palavra-passe"
+    },
+    "changeRole": {
+      "title": "Alterar Função",
+      "description": "Alterar a função de <strong>{{name}}</strong>.",
+      "currentRole": "Função atual: {{role}}",
+      "newRoleLabel": "Nova Função",
+      "submitting": "A atualizar...",
+      "submit": "Atualizar Função"
+    },
+    "actions": {
+      "cancel": "Cancelar"
+    },
+    "tabs": {
+      "users_one": "Utilizador ({{count}})",
+      "users_other": "Utilizadores ({{count}})",
+      "subscriptions_one": "Subscrição ({{count}})",
+      "subscriptions_other": "Subscrições ({{count}})",
+      "auditLog_one": "Registo de Auditoria (Último {{count}})",
+      "auditLog_other": "Registo de Auditoria (Últimos {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "Todas as Organizações",
+    "createButton": "Criar Organização",
+    "modal": {
+      "title": "Criar Nova Organização",
+      "fields": {
+        "orgName": "Nome da Organização",
+        "firstName": "Primeiro Nome do Administrador",
+        "lastName": "Apelido do Administrador",
+        "email": "Email do Administrador",
+        "password": "Palavra-passe do Administrador",
+        "country": "País",
+        "timezone": "Fuso Horário"
+      },
+      "passwordHint": "Deve conter maiúsculas, minúsculas, dígito e carácter especial.",
+      "placeholders": {
+        "password": "Mín. 8 caracteres, maiúsculas, minúsculas, dígito, especial"
+      },
+      "cancel": "Cancelar",
+      "submit": "Criar Organização",
+      "submitting": "A criar...",
+      "error": "Falha ao criar a organização. Por favor, verifique todos os campos."
+    },
+    "search": {
+      "placeholder": "Pesquisar por nome ou email..."
+    },
+    "table": {
+      "headers": {
+        "organization": "Organização",
+        "adminEmail": "Email do Administrador",
+        "employees": "Funcionários",
+        "activeModules": "Módulos Ativos",
+        "monthlySpend": "Gasto Mensal",
+        "status": "Estado",
+        "joined": "Data de Adesão"
+      }
+    },
+    "status": {
+      "active": "ativa"
+    },
+    "loading": "A carregar...",
+    "empty": "Nenhuma organização encontrada",
+    "pagination": {
+      "summary": "Página {{page}} de {{totalPages}} ({{total}} no total)"
+    },
+    "subtitle_one": "{{count}} organização registada na plataforma.",
+    "subtitle_other": "{{count}} organizações registadas na plataforma."
+  },
+  "superAdminDashboard": {
+    "title": "Painel da Plataforma",
+    "subtitle": "Visão geral em tempo real de toda a plataforma EMP Cloud.",
+    "loading": "A carregar dados da plataforma...",
+    "error": {
+      "title": "Falha ao carregar os dados do painel",
+      "retryHint": "Tente atualizar a página"
+    },
+    "stats": {
+      "totalOrganizations": "Total de Organizações",
+      "totalUsers": "Total de Utilizadores",
+      "activeSubscriptions": "Subscrições Ativas",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "Estado do Sistema",
+      "mrrSubtitle": "Receita Recorrente Mensal",
+      "arrSubtitle": "Receita Recorrente Anual",
+      "newThisMonth_one": "+{{count}} este mês",
+      "newThisMonth_other": "+{{count}} este mês"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "Todos os sistemas operacionais",
+      "degraded": "Alguns sistemas degradados",
+      "offline": "Sistemas offline"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "Organizações",
+        "description": "Ver e gerir todas as organizações"
+      },
+      "moduleAnalytics": {
+        "label": "Análise de Módulos",
+        "description": "Subscritores, lugares e receita por módulo"
+      },
+      "revenueAnalytics": {
+        "label": "Análise de Receita",
+        "description": "MRR, ARR, tendências e principais clientes"
+      },
+      "subscriptionMetrics": {
+        "label": "Métricas de Subscrição",
+        "description": "Planos, utilização e ciclos de faturação"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Tendência da Receita"
+      },
+      "revenueByModule": {
+        "title": "Receita por Módulo"
+      },
+      "moduleAdoption": {
+        "title": "Adoção de Módulos"
+      },
+      "growthTrends": {
+        "title": "Tendências de Crescimento"
+      },
+      "viewDetails": "Ver detalhes",
+      "legend": {
+        "organizations": "Organizações",
+        "totalSeats": "Total de Lugares",
+        "newOrgs": "Novas Organizações",
+        "newUsers": "Novos Utilizadores"
+      }
+    },
+    "empty": {
+      "revenue": "Ainda não há dados de receita",
+      "adoption": "Ainda não há dados de adoção",
+      "growth": "Ainda não há dados de crescimento",
+      "activity": "Sem atividade recente"
+    },
+    "systemHealth": {
+      "title": "Estado do Sistema",
+      "badge": {
+        "allOperational": "Todos Operacionais",
+        "degraded": "Degradado",
+        "checking": "A verificar..."
+      },
+      "checkingModules": "A verificar o estado..."
+    },
+    "healthBadge": {
+      "healthy": "Saudável",
+      "down": "Indisponível"
+    },
+    "activity": {
+      "title": "Atividade Recente",
+      "systemActor": "Sistema"
+    }
   }
 }

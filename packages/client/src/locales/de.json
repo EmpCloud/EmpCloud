@@ -3145,5 +3145,231 @@
       "subscriptions_one": "{{count}} Abonnement",
       "subscriptions_other": "{{count}} Abonnements"
     }
+  },
+  "orgDetail": {
+    "loading": "Wird geladen...",
+    "error": {
+      "loadFailed": "Organisationsdetails konnten nicht geladen werden.",
+      "backToOrganizations": "Zurück zu den Organisationen"
+    },
+    "backToAll": "Zurück zu allen Organisationen",
+    "createdOn": "Erstellt",
+    "stats": {
+      "users": "Benutzer",
+      "activeSubscriptions": "Aktive Abonnements",
+      "monthlyRevenue": "Monatlicher Umsatz",
+      "totalSpend": "Gesamtausgaben"
+    },
+    "users": {
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "status": "Status",
+        "joined": "Beigetreten",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "active": "Aktiv",
+        "inactive": "Inaktiv"
+      },
+      "actions": {
+        "deactivate": "Benutzer deaktivieren",
+        "activate": "Benutzer aktivieren",
+        "resetPassword": "Passwort zurücksetzen",
+        "changeRole": "Rolle ändern"
+      },
+      "empty": "Keine Benutzer in dieser Organisation",
+      "heading_one": "Benutzer ({{count}})",
+      "heading_other": "Benutzer ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "Modul",
+        "plan": "Tarif",
+        "status": "Status",
+        "seats": "Lizenzen",
+        "pricePerSeat": "Preis/Lizenz",
+        "monthly": "Monatlich",
+        "billing": "Abrechnung",
+        "periodEnd": "Periodenende"
+      },
+      "empty": "Keine Abonnements",
+      "heading_one": "Abonnement ({{count}})",
+      "heading_other": "Abonnements ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "Aktion",
+        "entity": "Entität",
+        "ip": "IP",
+        "time": "Zeit"
+      },
+      "heading_one": "Audit-Protokoll (Letzte {{count}})",
+      "heading_other": "Audit-Protokoll (Letzte {{count}})"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "description": "Passwort für <strong>{{name}}</strong> ({{email}}) zurücksetzen.",
+      "newPasswordLabel": "Neues Passwort",
+      "newPasswordPlaceholder": "Mindestens 8 Zeichen",
+      "submitting": "Wird zurückgesetzt...",
+      "submit": "Passwort zurücksetzen"
+    },
+    "changeRole": {
+      "title": "Rolle ändern",
+      "description": "Rolle für <strong>{{name}}</strong> ändern.",
+      "currentRole": "Aktuelle Rolle: {{role}}",
+      "newRoleLabel": "Neue Rolle",
+      "submitting": "Wird aktualisiert...",
+      "submit": "Rolle aktualisieren"
+    },
+    "actions": {
+      "cancel": "Abbrechen"
+    },
+    "tabs": {
+      "users_one": "Benutzer ({{count}})",
+      "users_other": "Benutzer ({{count}})",
+      "subscriptions_one": "Abonnement ({{count}})",
+      "subscriptions_other": "Abonnements ({{count}})",
+      "auditLog_one": "Audit-Protokoll (Letzte {{count}})",
+      "auditLog_other": "Audit-Protokoll (Letzte {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "Alle Organisationen",
+    "createButton": "Organisation erstellen",
+    "modal": {
+      "title": "Neue Organisation erstellen",
+      "fields": {
+        "orgName": "Name der Organisation",
+        "firstName": "Vorname des Administrators",
+        "lastName": "Nachname des Administrators",
+        "email": "E-Mail des Administrators",
+        "password": "Passwort des Administrators",
+        "country": "Land",
+        "timezone": "Zeitzone"
+      },
+      "passwordHint": "Muss Großbuchstaben, Kleinbuchstaben, Ziffer und Sonderzeichen enthalten.",
+      "placeholders": {
+        "password": "Mind. 8 Zeichen, Großbuchstaben, Kleinbuchstaben, Ziffer, Sonderzeichen"
+      },
+      "cancel": "Abbrechen",
+      "submit": "Organisation erstellen",
+      "submitting": "Wird erstellt...",
+      "error": "Organisation konnte nicht erstellt werden. Bitte überprüfen Sie alle Felder."
+    },
+    "search": {
+      "placeholder": "Nach Name oder E-Mail suchen..."
+    },
+    "table": {
+      "headers": {
+        "organization": "Organisation",
+        "adminEmail": "E-Mail des Administrators",
+        "employees": "Mitarbeiter",
+        "activeModules": "Aktive Module",
+        "monthlySpend": "Monatliche Ausgaben",
+        "status": "Status",
+        "joined": "Beigetreten"
+      }
+    },
+    "status": {
+      "active": "aktiv"
+    },
+    "loading": "Wird geladen...",
+    "empty": "Keine Organisationen gefunden",
+    "pagination": {
+      "summary": "Seite {{page}} von {{totalPages}} ({{total}} insgesamt)"
+    },
+    "subtitle_one": "{{count}} Organisation auf der Plattform registriert.",
+    "subtitle_other": "{{count}} Organisationen auf der Plattform registriert."
+  },
+  "superAdminDashboard": {
+    "title": "Plattform-Dashboard",
+    "subtitle": "Echtzeit-Überblick über die gesamte EMP-Cloud-Plattform.",
+    "loading": "Plattformdaten werden geladen...",
+    "error": {
+      "title": "Dashboard-Daten konnten nicht geladen werden",
+      "retryHint": "Bitte aktualisieren Sie die Seite"
+    },
+    "stats": {
+      "totalOrganizations": "Organisationen gesamt",
+      "totalUsers": "Benutzer gesamt",
+      "activeSubscriptions": "Aktive Abonnements",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "Systemzustand",
+      "mrrSubtitle": "Monatlich wiederkehrender Erlös",
+      "arrSubtitle": "Jährlich wiederkehrender Erlös",
+      "newThisMonth_one": "+{{count}} diesen Monat",
+      "newThisMonth_other": "+{{count}} diesen Monat"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "Alle Systeme betriebsbereit",
+      "degraded": "Einige Systeme beeinträchtigt",
+      "offline": "Systeme offline"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "Organisationen",
+        "description": "Alle Organisationen anzeigen und verwalten"
+      },
+      "moduleAnalytics": {
+        "label": "Modul-Analysen",
+        "description": "Abonnenten, Lizenzen, Umsatz pro Modul"
+      },
+      "revenueAnalytics": {
+        "label": "Umsatzanalysen",
+        "description": "MRR, ARR, Trends, Top-Kunden"
+      },
+      "subscriptionMetrics": {
+        "label": "Abonnement-Kennzahlen",
+        "description": "Tarife, Auslastung, Abrechnungszyklen"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Umsatztrend"
+      },
+      "revenueByModule": {
+        "title": "Umsatz nach Modul"
+      },
+      "moduleAdoption": {
+        "title": "Modulnutzung"
+      },
+      "growthTrends": {
+        "title": "Wachstumstrends"
+      },
+      "viewDetails": "Details anzeigen",
+      "legend": {
+        "organizations": "Organisationen",
+        "totalSeats": "Lizenzen gesamt",
+        "newOrgs": "Neue Organisationen",
+        "newUsers": "Neue Benutzer"
+      }
+    },
+    "empty": {
+      "revenue": "Noch keine Umsatzdaten",
+      "adoption": "Noch keine Nutzungsdaten",
+      "growth": "Noch keine Wachstumsdaten",
+      "activity": "Keine aktuellen Aktivitäten"
+    },
+    "systemHealth": {
+      "title": "Systemzustand",
+      "badge": {
+        "allOperational": "Alle betriebsbereit",
+        "degraded": "Beeinträchtigt",
+        "checking": "Wird geprüft..."
+      },
+      "checkingModules": "Zustand wird geprüft..."
+    },
+    "healthBadge": {
+      "healthy": "In Ordnung",
+      "down": "Ausgefallen"
+    },
+    "activity": {
+      "title": "Aktuelle Aktivitäten",
+      "systemActor": "System"
+    }
   }
 }

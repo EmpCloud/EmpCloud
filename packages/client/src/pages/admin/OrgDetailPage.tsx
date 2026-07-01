@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
@@ -31,6 +32,7 @@ function formatINR(paise: number): string {
 const VALID_ROLES = ["employee", "manager", "hr_admin", "org_admin"];
 
 export default function OrgDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [resetPasswordModal, setResetPasswordModal] = useState<any>(null);
@@ -79,7 +81,7 @@ export default function OrgDetailPage() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-2">
           <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">Loading...</span>
+          <span className="text-sm text-gray-400">{t("orgDetail.loading")}</span>
         </div>
       </div>
     );
@@ -88,9 +90,9 @@ export default function OrgDetailPage() {
   if (error || !data) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <div className="text-red-500 text-sm">Failed to load organization details.</div>
+        <div className="text-red-500 text-sm">{t("orgDetail.error.loadFailed")}</div>
         <Link to="/admin/organizations" className="text-sm text-brand-600 hover:underline">
-          Back to organizations
+          {t("orgDetail.error.backToOrganizations")}
         </Link>
       </div>
     );
@@ -109,7 +111,7 @@ export default function OrgDetailPage() {
         className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to all organizations
+        {t("orgDetail.backToAll")}
       </Link>
 
       {/* Org Info Card */}
@@ -145,7 +147,7 @@ export default function OrgDetailPage() {
               )}
               <div className="flex items-center gap-1.5 text-sm text-gray-500">
                 <Calendar className="h-3.5 w-3.5" />
-                Created {new Date(org.created_at).toLocaleDateString()}
+                {t("orgDetail.createdOn")} {new Date(org.created_at).toLocaleDateString()}
               </div>
               {org.slug && (
                 <span className="text-xs text-gray-400 font-mono bg-gray-100 px-2 py-0.5 rounded">
@@ -163,7 +165,7 @@ export default function OrgDetailPage() {
               <Users className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Users</p>
+              <p className="text-sm text-gray-500">{t("orgDetail.stats.users")}</p>
               <p className="text-lg font-semibold text-gray-900">{users.length}</p>
             </div>
           </div>
@@ -172,7 +174,7 @@ export default function OrgDetailPage() {
               <CreditCard className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Active Subscriptions</p>
+              <p className="text-sm text-gray-500">{t("orgDetail.stats.activeSubscriptions")}</p>
               <p className="text-lg font-semibold text-gray-900">{activeSubCount}</p>
             </div>
           </div>
@@ -181,7 +183,7 @@ export default function OrgDetailPage() {
               <TrendingUp className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Monthly Revenue</p>
+              <p className="text-sm text-gray-500">{t("orgDetail.stats.monthlyRevenue")}</p>
               <p className="text-lg font-semibold text-gray-900">{formatINR(monthly_revenue)}</p>
             </div>
           </div>
@@ -190,7 +192,7 @@ export default function OrgDetailPage() {
               <DollarSign className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Spend</p>
+              <p className="text-sm text-gray-500">{t("orgDetail.stats.totalSpend")}</p>
               <p className="text-lg font-semibold text-gray-900">{formatINR(total_spend)}</p>
             </div>
           </div>
@@ -202,10 +204,10 @@ export default function OrgDetailPage() {
           visible while letting HR drill into the relevant detail. */}
       <div className="bg-white rounded-xl border border-gray-200 p-1.5 mb-6 inline-flex gap-1">
         {[
-          { id: "users", label: `Users (${users.length})`, icon: Users },
-          { id: "subscriptions", label: `Subscriptions (${subscriptions.length})`, icon: CreditCard },
+          { id: "users", label: t("orgDetail.tabs.users", { count: users.length }), icon: Users },
+          { id: "subscriptions", label: t("orgDetail.tabs.subscriptions", { count: subscriptions.length }), icon: CreditCard },
           ...(audit_logs && audit_logs.length > 0
-            ? [{ id: "audit", label: `Audit Log (Last ${audit_logs.length})`, icon: Shield }]
+            ? [{ id: "audit", label: t("orgDetail.tabs.auditLog", { count: audit_logs.length }), icon: Shield }]
             : []),
         ].map((tab) => (
           <button
@@ -227,18 +229,18 @@ export default function OrgDetailPage() {
       {activeTab === "users" && (
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Users ({users.length})
+          {t("orgDetail.users.heading", { count: users.length })}
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Name</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Email</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Role</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Joined</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.users.columns.name")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.users.columns.email")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.users.columns.role")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.users.columns.status")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.users.columns.joined")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("orgDetail.users.columns.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -280,7 +282,7 @@ export default function OrgDetailPage() {
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {isActive ? "Active" : "Inactive"}
+                        {isActive ? t("orgDetail.users.status.active") : t("orgDetail.users.status.inactive")}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-gray-600 text-xs">
@@ -293,7 +295,7 @@ export default function OrgDetailPage() {
                             onClick={() => deactivateUserMut.mutate(user.id)}
                             disabled={deactivateUserMut.isPending}
                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Deactivate user"
+                            title={t("orgDetail.users.actions.deactivate")}
                           >
                             <UserX className="h-4 w-4" />
                           </button>
@@ -302,7 +304,7 @@ export default function OrgDetailPage() {
                             onClick={() => activateUserMut.mutate(user.id)}
                             disabled={activateUserMut.isPending}
                             className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Activate user"
+                            title={t("orgDetail.users.actions.activate")}
                           >
                             <UserCheck className="h-4 w-4" />
                           </button>
@@ -313,7 +315,7 @@ export default function OrgDetailPage() {
                             setNewPassword("");
                           }}
                           className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                          title="Reset password"
+                          title={t("orgDetail.users.actions.resetPassword")}
                         >
                           <KeyRound className="h-4 w-4" />
                         </button>
@@ -323,7 +325,7 @@ export default function OrgDetailPage() {
                             setNewRole(user.role);
                           }}
                           className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Change role"
+                          title={t("orgDetail.users.actions.changeRole")}
                         >
                           <ShieldCheck className="h-4 w-4" />
                         </button>
@@ -335,7 +337,7 @@ export default function OrgDetailPage() {
               {users.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-400">
-                    No users in this organization
+                    {t("orgDetail.users.empty")}
                   </td>
                 </tr>
               )}
@@ -349,20 +351,20 @@ export default function OrgDetailPage() {
       {activeTab === "subscriptions" && (
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Subscriptions ({subscriptions.length})
+          {t("orgDetail.subscriptions.heading", { count: subscriptions.length })}
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Module</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Plan</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Seats</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Price/Seat</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Monthly</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Billing</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Period End</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.module")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.plan")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.status")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.seats")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.pricePerSeat")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.monthly")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.billing")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.subscriptions.columns.periodEnd")}</th>
               </tr>
             </thead>
             <tbody>
@@ -411,7 +413,7 @@ export default function OrgDetailPage() {
               {subscriptions.length === 0 && (
                 <tr>
                   <td colSpan={8} className="py-8 text-center text-gray-400">
-                    No subscriptions
+                    {t("orgDetail.subscriptions.empty")}
                   </td>
                 </tr>
               )}
@@ -427,17 +429,17 @@ export default function OrgDetailPage() {
           <div className="flex items-center gap-2 mb-4">
             <Shield className="h-5 w-5 text-gray-500" />
             <h2 className="text-lg font-semibold text-gray-900">
-              Audit Log (Last {audit_logs.length})
+              {t("orgDetail.audit.heading", { count: audit_logs.length })}
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Action</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Entity</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">IP</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Time</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.audit.columns.action")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.audit.columns.entity")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.audit.columns.ip")}</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgDetail.audit.columns.time")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -471,21 +473,28 @@ export default function OrgDetailPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Reset Password</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("orgDetail.resetPassword.title")}</h3>
               <button onClick={() => setResetPasswordModal(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Reset password for <strong>{resetPasswordModal.first_name} {resetPasswordModal.last_name}</strong> ({resetPasswordModal.email}).
+              <Trans
+                i18nKey="orgDetail.resetPassword.description"
+                values={{
+                  name: `${resetPasswordModal.first_name} ${resetPasswordModal.last_name}`,
+                  email: resetPasswordModal.email,
+                }}
+                components={{ strong: <strong /> }}
+              />
             </p>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgDetail.resetPassword.newPasswordLabel")}</label>
               <input
                 type="text"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Minimum 8 characters"
+                placeholder={t("orgDetail.resetPassword.newPasswordPlaceholder")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
               />
             </div>
@@ -494,14 +503,14 @@ export default function OrgDetailPage() {
                 onClick={() => setResetPasswordModal(null)}
                 className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Cancel
+                {t("orgDetail.actions.cancel")}
               </button>
               <button
                 onClick={() => resetPasswordMut.mutate({ userId: resetPasswordModal.id, new_password: newPassword })}
                 disabled={newPassword.length < 8 || resetPasswordMut.isPending}
                 className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors disabled:opacity-50"
               >
-                {resetPasswordMut.isPending ? "Resetting..." : "Reset Password"}
+                {resetPasswordMut.isPending ? t("orgDetail.resetPassword.submitting") : t("orgDetail.resetPassword.submit")}
               </button>
             </div>
           </div>
@@ -513,17 +522,21 @@ export default function OrgDetailPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Change Role</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("orgDetail.changeRole.title")}</h3>
               <button onClick={() => setChangeRoleModal(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Change role for <strong>{changeRoleModal.first_name} {changeRoleModal.last_name}</strong>.
-              Current role: <span className="font-medium">{changeRoleModal.role}</span>
+              <Trans
+                i18nKey="orgDetail.changeRole.description"
+                values={{ name: `${changeRoleModal.first_name} ${changeRoleModal.last_name}` }}
+                components={{ strong: <strong /> }}
+              />{" "}
+              <span className="font-medium">{t("orgDetail.changeRole.currentRole", { role: changeRoleModal.role })}</span>
             </p>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Role</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgDetail.changeRole.newRoleLabel")}</label>
               <select
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
@@ -539,14 +552,14 @@ export default function OrgDetailPage() {
                 onClick={() => setChangeRoleModal(null)}
                 className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Cancel
+                {t("orgDetail.actions.cancel")}
               </button>
               <button
                 onClick={() => changeRoleMut.mutate({ userId: changeRoleModal.id, role: newRole })}
                 disabled={!newRole || newRole === changeRoleModal.role || changeRoleMut.isPending}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
               >
-                {changeRoleMut.isPending ? "Updating..." : "Update Role"}
+                {changeRoleMut.isPending ? t("orgDetail.changeRole.submitting") : t("orgDetail.changeRole.submit")}
               </button>
             </div>
           </div>

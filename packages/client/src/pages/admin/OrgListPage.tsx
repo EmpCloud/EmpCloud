@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
@@ -26,6 +27,7 @@ function formatINR(paise: number): string {
 type SortField = "name" | "created_at" | "user_count" | "subscription_count" | "monthly_spend";
 
 export default function OrgListPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -63,7 +65,7 @@ export default function OrgListPage() {
     },
     onError: (err: any) => {
       setCreateError(
-        err?.response?.data?.error?.message || "Failed to create organization. Please check all fields."
+        err?.response?.data?.error?.message || t("orgList.modal.error")
       );
     },
   });
@@ -123,9 +125,9 @@ export default function OrgListPage() {
               <Building2 className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">All Organizations</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t("orgList.title")}</h1>
               <p className="text-gray-500 mt-0.5 text-sm">
-                {meta.total} organization{meta.total !== 1 ? "s" : ""} registered on the platform.
+                {t("orgList.subtitle", { count: meta.total })}
               </p>
             </div>
           </div>
@@ -133,7 +135,7 @@ export default function OrgListPage() {
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
           >
-            <PlusCircle className="h-4 w-4" /> Create Organization
+            <PlusCircle className="h-4 w-4" /> {t("orgList.createButton")}
           </button>
         </div>
       </div>
@@ -144,7 +146,7 @@ export default function OrgListPage() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowCreateModal(false)} />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 z-50">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Create New Organization</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("orgList.modal.title")}</h2>
               <button
                 onClick={() => { setShowCreateModal(false); setCreateError(""); }}
                 className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
@@ -161,7 +163,7 @@ export default function OrgListPage() {
               className="p-6 space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.orgName")} *</label>
                 <input
                   type="text"
                   value={createForm.org_name}
@@ -174,7 +176,7 @@ export default function OrgListPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Admin First Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.firstName")} *</label>
                   <input
                     type="text"
                     value={createForm.first_name}
@@ -185,7 +187,7 @@ export default function OrgListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Admin Last Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.lastName")} *</label>
                   <input
                     type="text"
                     value={createForm.last_name}
@@ -197,7 +199,7 @@ export default function OrgListPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Email *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.email")} *</label>
                 <input
                   type="email"
                   value={createForm.email}
@@ -208,21 +210,21 @@ export default function OrgListPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Password *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.password")} *</label>
                 <input
                   type="password"
                   value={createForm.password}
                   onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                  placeholder="Min 8 chars, uppercase, lowercase, digit, special"
+                  placeholder={t("orgList.modal.placeholders.password")}
                   required
                   minLength={8}
                 />
-                <p className="text-xs text-gray-400 mt-1">Must contain uppercase, lowercase, digit, and special character.</p>
+                <p className="text-xs text-gray-400 mt-1">{t("orgList.modal.passwordHint")}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.country")}</label>
                   <input
                     type="text"
                     value={createForm.org_country}
@@ -232,7 +234,7 @@ export default function OrgListPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("orgList.modal.fields.timezone")}</label>
                   <input
                     type="text"
                     value={createForm.org_timezone}
@@ -253,7 +255,7 @@ export default function OrgListPage() {
                   onClick={() => { setShowCreateModal(false); setCreateError(""); }}
                   className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("orgList.modal.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -261,7 +263,7 @@ export default function OrgListPage() {
                   className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
                 >
                   <Building2 className="h-4 w-4" />
-                  {createOrg.isPending ? "Creating..." : "Create Organization"}
+                  {createOrg.isPending ? t("orgList.modal.submitting") : t("orgList.modal.submit")}
                 </button>
               </div>
             </form>
@@ -277,7 +279,7 @@ export default function OrgListPage() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search by name or email..."
+            placeholder={t("orgList.search.placeholder")}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           />
         </div>
@@ -289,7 +291,7 @@ export default function OrgListPage() {
           <div className="flex items-center justify-center py-16 text-gray-400">
             <div className="flex flex-col items-center gap-2">
               <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-              <span className="text-sm">Loading...</span>
+              <span className="text-sm">{t("orgList.loading")}</span>
             </div>
           </div>
         ) : (
@@ -303,17 +305,17 @@ export default function OrgListPage() {
                       onClick={() => handleSort("name")}
                     >
                       <div className="flex items-center gap-1.5">
-                        Organization
+                        {t("orgList.table.headers.organization")}
                         <SortIcon field="name" />
                       </div>
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-500">Admin Email</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgList.table.headers.adminEmail")}</th>
                     <th
                       className="text-left py-3 px-4 font-medium text-gray-500 cursor-pointer hover:text-gray-700"
                       onClick={() => handleSort("user_count")}
                     >
                       <div className="flex items-center gap-1.5">
-                        Employees
+                        {t("orgList.table.headers.employees")}
                         <SortIcon field="user_count" />
                       </div>
                     </th>
@@ -322,7 +324,7 @@ export default function OrgListPage() {
                       onClick={() => handleSort("subscription_count")}
                     >
                       <div className="flex items-center gap-1.5">
-                        Active Modules
+                        {t("orgList.table.headers.activeModules")}
                         <SortIcon field="subscription_count" />
                       </div>
                     </th>
@@ -331,17 +333,17 @@ export default function OrgListPage() {
                       onClick={() => handleSort("monthly_spend")}
                     >
                       <div className="flex items-center gap-1.5">
-                        Monthly Spend
+                        {t("orgList.table.headers.monthlySpend")}
                         <SortIcon field="monthly_spend" />
                       </div>
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-500">{t("orgList.table.headers.status")}</th>
                     <th
                       className="text-left py-3 px-4 font-medium text-gray-500 cursor-pointer hover:text-gray-700"
                       onClick={() => handleSort("created_at")}
                     >
                       <div className="flex items-center gap-1.5">
-                        Joined
+                        {t("orgList.table.headers.joined")}
                         <SortIcon field="created_at" />
                       </div>
                     </th>
@@ -389,7 +391,7 @@ export default function OrgListPage() {
                               : "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          {org.status}
+                          {t(`orgList.status.${org.status}`, { defaultValue: org.status })}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-gray-600 text-xs">
@@ -408,7 +410,7 @@ export default function OrgListPage() {
                   {orgs.length === 0 && (
                     <tr>
                       <td colSpan={8} className="py-12 text-center text-gray-400">
-                        No organizations found
+                        {t("orgList.empty")}
                       </td>
                     </tr>
                   )}
@@ -420,7 +422,11 @@ export default function OrgListPage() {
             {meta.total_pages > 1 && (
               <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50/50">
                 <p className="text-sm text-gray-500">
-                  Page {meta.page} of {meta.total_pages} ({meta.total} total)
+                  {t("orgList.pagination.summary", {
+                    page: meta.page,
+                    totalPages: meta.total_pages,
+                    total: meta.total,
+                  })}
                 </p>
                 <div className="flex items-center gap-2">
                   <button

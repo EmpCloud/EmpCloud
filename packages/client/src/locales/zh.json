@@ -3145,5 +3145,231 @@
       "subscriptions_one": "{{count}} 个订阅",
       "subscriptions_other": "{{count}} 个订阅"
     }
+  },
+  "orgDetail": {
+    "loading": "加载中...",
+    "error": {
+      "loadFailed": "加载组织详情失败。",
+      "backToOrganizations": "返回组织列表"
+    },
+    "backToAll": "返回全部组织",
+    "createdOn": "创建于",
+    "stats": {
+      "users": "用户",
+      "activeSubscriptions": "有效订阅",
+      "monthlyRevenue": "月收入",
+      "totalSpend": "总支出"
+    },
+    "users": {
+      "columns": {
+        "name": "姓名",
+        "email": "邮箱",
+        "role": "角色",
+        "status": "状态",
+        "joined": "加入时间",
+        "actions": "操作"
+      },
+      "status": {
+        "active": "已激活",
+        "inactive": "未激活"
+      },
+      "actions": {
+        "deactivate": "停用用户",
+        "activate": "激活用户",
+        "resetPassword": "重置密码",
+        "changeRole": "更改角色"
+      },
+      "empty": "该组织暂无用户",
+      "heading_one": "用户 ({{count}})",
+      "heading_other": "用户 ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "模块",
+        "plan": "套餐",
+        "status": "状态",
+        "seats": "席位",
+        "pricePerSeat": "单席位价格",
+        "monthly": "月费",
+        "billing": "计费周期",
+        "periodEnd": "周期结束"
+      },
+      "empty": "暂无订阅",
+      "heading_one": "订阅 ({{count}})",
+      "heading_other": "订阅 ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "操作",
+        "entity": "实体",
+        "ip": "IP",
+        "time": "时间"
+      },
+      "heading_one": "审计日志（最近 {{count}} 条）",
+      "heading_other": "审计日志（最近 {{count}} 条）"
+    },
+    "resetPassword": {
+      "title": "重置密码",
+      "description": "为 <strong>{{name}}</strong>（{{email}}）重置密码。",
+      "newPasswordLabel": "新密码",
+      "newPasswordPlaceholder": "至少 8 个字符",
+      "submitting": "重置中...",
+      "submit": "重置密码"
+    },
+    "changeRole": {
+      "title": "更改角色",
+      "description": "为 <strong>{{name}}</strong> 更改角色。",
+      "currentRole": "当前角色：{{role}}",
+      "newRoleLabel": "新角色",
+      "submitting": "更新中...",
+      "submit": "更新角色"
+    },
+    "actions": {
+      "cancel": "取消"
+    },
+    "tabs": {
+      "users_one": "用户 ({{count}})",
+      "users_other": "用户 ({{count}})",
+      "subscriptions_one": "订阅 ({{count}})",
+      "subscriptions_other": "订阅 ({{count}})",
+      "auditLog_one": "审计日志（最近 {{count}} 条）",
+      "auditLog_other": "审计日志（最近 {{count}} 条）"
+    }
+  },
+  "orgList": {
+    "title": "所有组织",
+    "createButton": "创建组织",
+    "modal": {
+      "title": "创建新组织",
+      "fields": {
+        "orgName": "组织名称",
+        "firstName": "管理员名字",
+        "lastName": "管理员姓氏",
+        "email": "管理员邮箱",
+        "password": "管理员密码",
+        "country": "国家/地区",
+        "timezone": "时区"
+      },
+      "passwordHint": "必须包含大写字母、小写字母、数字和特殊字符。",
+      "placeholders": {
+        "password": "至少 8 个字符，含大写字母、小写字母、数字、特殊字符"
+      },
+      "cancel": "取消",
+      "submit": "创建组织",
+      "submitting": "正在创建...",
+      "error": "创建组织失败。请检查所有字段。"
+    },
+    "search": {
+      "placeholder": "按名称或邮箱搜索..."
+    },
+    "table": {
+      "headers": {
+        "organization": "组织",
+        "adminEmail": "管理员邮箱",
+        "employees": "员工数",
+        "activeModules": "已启用模块",
+        "monthlySpend": "月度支出",
+        "status": "状态",
+        "joined": "加入时间"
+      }
+    },
+    "status": {
+      "active": "活跃"
+    },
+    "loading": "加载中...",
+    "empty": "未找到组织",
+    "pagination": {
+      "summary": "第 {{page}} 页，共 {{totalPages}} 页（共 {{total}} 条）"
+    },
+    "subtitle_one": "平台上已注册 {{count}} 个组织。",
+    "subtitle_other": "平台上已注册 {{count}} 个组织。"
+  },
+  "superAdminDashboard": {
+    "title": "平台仪表盘",
+    "subtitle": "整个 EMP Cloud 平台的实时概览。",
+    "loading": "正在加载平台数据…",
+    "error": {
+      "title": "加载仪表盘数据失败",
+      "retryHint": "请尝试刷新页面"
+    },
+    "stats": {
+      "totalOrganizations": "组织总数",
+      "totalUsers": "用户总数",
+      "activeSubscriptions": "有效订阅数",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "系统健康状况",
+      "mrrSubtitle": "每月经常性收入",
+      "arrSubtitle": "年度经常性收入",
+      "newThisMonth_one": "本月新增 {{count}} 个",
+      "newThisMonth_other": "本月新增 {{count}} 个"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "所有系统运行正常",
+      "degraded": "部分系统性能下降",
+      "offline": "系统离线"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "组织",
+        "description": "查看和管理所有组织"
+      },
+      "moduleAnalytics": {
+        "label": "模块分析",
+        "description": "各模块的订阅者、席位和收入"
+      },
+      "revenueAnalytics": {
+        "label": "收入分析",
+        "description": "MRR、ARR、趋势和主要客户"
+      },
+      "subscriptionMetrics": {
+        "label": "订阅指标",
+        "description": "套餐、使用率和计费周期"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "收入趋势"
+      },
+      "revenueByModule": {
+        "title": "各模块收入"
+      },
+      "moduleAdoption": {
+        "title": "模块采用情况"
+      },
+      "growthTrends": {
+        "title": "增长趋势"
+      },
+      "viewDetails": "查看详情",
+      "legend": {
+        "organizations": "组织",
+        "totalSeats": "席位总数",
+        "newOrgs": "新增组织",
+        "newUsers": "新增用户"
+      }
+    },
+    "empty": {
+      "revenue": "暂无收入数据",
+      "adoption": "暂无采用数据",
+      "growth": "暂无增长数据",
+      "activity": "暂无近期活动"
+    },
+    "systemHealth": {
+      "title": "系统健康状况",
+      "badge": {
+        "allOperational": "全部正常运行",
+        "degraded": "性能下降",
+        "checking": "正在检查…"
+      },
+      "checkingModules": "正在检查健康状况…"
+    },
+    "healthBadge": {
+      "healthy": "健康",
+      "down": "宕机"
+    },
+    "activity": {
+      "title": "近期活动",
+      "systemActor": "系统"
+    }
   }
 }

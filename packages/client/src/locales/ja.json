@@ -3145,5 +3145,231 @@
       "subscriptions_one": "{{count}} 件のサブスクリプション",
       "subscriptions_other": "{{count}} 件のサブスクリプション"
     }
+  },
+  "orgDetail": {
+    "loading": "読み込み中...",
+    "error": {
+      "loadFailed": "組織の詳細を読み込めませんでした。",
+      "backToOrganizations": "組織一覧に戻る"
+    },
+    "backToAll": "すべての組織に戻る",
+    "createdOn": "作成日:",
+    "stats": {
+      "users": "ユーザー",
+      "activeSubscriptions": "有効なサブスクリプション",
+      "monthlyRevenue": "月間収益",
+      "totalSpend": "合計支出"
+    },
+    "users": {
+      "columns": {
+        "name": "名前",
+        "email": "メールアドレス",
+        "role": "ロール",
+        "status": "ステータス",
+        "joined": "参加日",
+        "actions": "操作"
+      },
+      "status": {
+        "active": "有効",
+        "inactive": "無効"
+      },
+      "actions": {
+        "deactivate": "ユーザーを無効化",
+        "activate": "ユーザーを有効化",
+        "resetPassword": "パスワードをリセット",
+        "changeRole": "ロールを変更"
+      },
+      "empty": "この組織にはユーザーがいません",
+      "heading_one": "ユーザー ({{count}})",
+      "heading_other": "ユーザー ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "モジュール",
+        "plan": "プラン",
+        "status": "ステータス",
+        "seats": "シート数",
+        "pricePerSeat": "シート単価",
+        "monthly": "月額",
+        "billing": "請求サイクル",
+        "periodEnd": "期間終了日"
+      },
+      "empty": "サブスクリプションはありません",
+      "heading_one": "サブスクリプション ({{count}})",
+      "heading_other": "サブスクリプション ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "ip": "IPアドレス",
+        "time": "日時"
+      },
+      "heading_one": "監査ログ (直近 {{count}} 件)",
+      "heading_other": "監査ログ (直近 {{count}} 件)"
+    },
+    "resetPassword": {
+      "title": "パスワードのリセット",
+      "description": "<strong>{{name}}</strong> ({{email}}) のパスワードをリセットします。",
+      "newPasswordLabel": "新しいパスワード",
+      "newPasswordPlaceholder": "8文字以上",
+      "submitting": "リセット中...",
+      "submit": "パスワードをリセット"
+    },
+    "changeRole": {
+      "title": "ロールの変更",
+      "description": "<strong>{{name}}</strong> のロールを変更します。",
+      "currentRole": "現在のロール: {{role}}",
+      "newRoleLabel": "新しいロール",
+      "submitting": "更新中...",
+      "submit": "ロールを更新"
+    },
+    "actions": {
+      "cancel": "キャンセル"
+    },
+    "tabs": {
+      "users_one": "ユーザー ({{count}})",
+      "users_other": "ユーザー ({{count}})",
+      "subscriptions_one": "サブスクリプション ({{count}})",
+      "subscriptions_other": "サブスクリプション ({{count}})",
+      "auditLog_one": "監査ログ (直近 {{count}} 件)",
+      "auditLog_other": "監査ログ (直近 {{count}} 件)"
+    }
+  },
+  "orgList": {
+    "title": "すべての組織",
+    "createButton": "組織を作成",
+    "modal": {
+      "title": "新しい組織を作成",
+      "fields": {
+        "orgName": "組織名",
+        "firstName": "管理者の名",
+        "lastName": "管理者の姓",
+        "email": "管理者のメールアドレス",
+        "password": "管理者のパスワード",
+        "country": "国",
+        "timezone": "タイムゾーン"
+      },
+      "passwordHint": "大文字、小文字、数字、特殊文字を含める必要があります。",
+      "placeholders": {
+        "password": "8文字以上、大文字・小文字・数字・特殊文字"
+      },
+      "cancel": "キャンセル",
+      "submit": "組織を作成",
+      "submitting": "作成中...",
+      "error": "組織の作成に失敗しました。すべての項目をご確認ください。"
+    },
+    "search": {
+      "placeholder": "名前またはメールアドレスで検索..."
+    },
+    "table": {
+      "headers": {
+        "organization": "組織",
+        "adminEmail": "管理者のメールアドレス",
+        "employees": "従業員数",
+        "activeModules": "有効なモジュール",
+        "monthlySpend": "月間支出",
+        "status": "ステータス",
+        "joined": "登録日"
+      }
+    },
+    "status": {
+      "active": "有効"
+    },
+    "loading": "読み込み中...",
+    "empty": "組織が見つかりません",
+    "pagination": {
+      "summary": "{{totalPages}} ページ中 {{page}} ページ目（全 {{total}} 件）"
+    },
+    "subtitle_one": "プラットフォームに {{count}} 件の組織が登録されています。",
+    "subtitle_other": "プラットフォームに {{count}} 件の組織が登録されています。"
+  },
+  "superAdminDashboard": {
+    "title": "プラットフォームダッシュボード",
+    "subtitle": "EMP Cloud プラットフォーム全体のリアルタイム概要。",
+    "loading": "プラットフォームデータを読み込んでいます...",
+    "error": {
+      "title": "ダッシュボードデータの読み込みに失敗しました",
+      "retryHint": "ページを再読み込みしてください"
+    },
+    "stats": {
+      "totalOrganizations": "組織総数",
+      "totalUsers": "ユーザー総数",
+      "activeSubscriptions": "有効なサブスクリプション",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "システム稼働状況",
+      "mrrSubtitle": "月間経常収益",
+      "arrSubtitle": "年間経常収益",
+      "newThisMonth_one": "今月 +{{count}} 件",
+      "newThisMonth_other": "今月 +{{count}} 件"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "すべてのシステムが正常に稼働中",
+      "degraded": "一部のシステムが低下しています",
+      "offline": "システムがオフラインです"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "組織",
+        "description": "すべての組織を表示・管理します"
+      },
+      "moduleAnalytics": {
+        "label": "モジュール分析",
+        "description": "モジュールごとの契約者数、シート数、収益"
+      },
+      "revenueAnalytics": {
+        "label": "収益分析",
+        "description": "MRR、ARR、トレンド、主要顧客"
+      },
+      "subscriptionMetrics": {
+        "label": "サブスクリプション指標",
+        "description": "プラン、利用率、請求サイクル"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "収益トレンド"
+      },
+      "revenueByModule": {
+        "title": "モジュール別収益"
+      },
+      "moduleAdoption": {
+        "title": "モジュール導入状況"
+      },
+      "growthTrends": {
+        "title": "成長トレンド"
+      },
+      "viewDetails": "詳細を表示",
+      "legend": {
+        "organizations": "組織",
+        "totalSeats": "シート総数",
+        "newOrgs": "新規組織",
+        "newUsers": "新規ユーザー"
+      }
+    },
+    "empty": {
+      "revenue": "収益データはまだありません",
+      "adoption": "導入データはまだありません",
+      "growth": "成長データはまだありません",
+      "activity": "最近のアクティビティはありません"
+    },
+    "systemHealth": {
+      "title": "システム稼働状況",
+      "badge": {
+        "allOperational": "すべて稼働中",
+        "degraded": "低下",
+        "checking": "確認中..."
+      },
+      "checkingModules": "稼働状況を確認中..."
+    },
+    "healthBadge": {
+      "healthy": "正常",
+      "down": "停止中"
+    },
+    "activity": {
+      "title": "最近のアクティビティ",
+      "systemActor": "システム"
+    }
   }
 }

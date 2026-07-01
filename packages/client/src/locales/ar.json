@@ -3229,5 +3229,263 @@
       "subscriptions_many": "{{count}} اشتراكًا",
       "subscriptions_other": "{{count}} اشتراك"
     }
+  },
+  "orgDetail": {
+    "loading": "جارٍ التحميل...",
+    "error": {
+      "loadFailed": "تعذّر تحميل تفاصيل المؤسسة.",
+      "backToOrganizations": "العودة إلى المؤسسات"
+    },
+    "backToAll": "العودة إلى جميع المؤسسات",
+    "createdOn": "تاريخ الإنشاء",
+    "stats": {
+      "users": "المستخدمون",
+      "activeSubscriptions": "الاشتراكات النشطة",
+      "monthlyRevenue": "الإيرادات الشهرية",
+      "totalSpend": "إجمالي الإنفاق"
+    },
+    "users": {
+      "columns": {
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "status": "الحالة",
+        "joined": "تاريخ الانضمام",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "actions": {
+        "deactivate": "إلغاء تنشيط المستخدم",
+        "activate": "تنشيط المستخدم",
+        "resetPassword": "إعادة تعيين كلمة المرور",
+        "changeRole": "تغيير الدور"
+      },
+      "empty": "لا يوجد مستخدمون في هذه المؤسسة",
+      "heading_zero": "لا مستخدمين ({{count}})",
+      "heading_one": "مستخدم ({{count}})",
+      "heading_two": "مستخدمان ({{count}})",
+      "heading_few": "مستخدمون ({{count}})",
+      "heading_many": "مستخدمًا ({{count}})",
+      "heading_other": "المستخدمون ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "الوحدة",
+        "plan": "الخطة",
+        "status": "الحالة",
+        "seats": "المقاعد",
+        "pricePerSeat": "السعر/المقعد",
+        "monthly": "الإجمالي الشهري",
+        "billing": "دورة الفوترة",
+        "periodEnd": "نهاية الفترة"
+      },
+      "empty": "لا توجد اشتراكات",
+      "heading_zero": "لا اشتراكات ({{count}})",
+      "heading_one": "اشتراك ({{count}})",
+      "heading_two": "اشتراكان ({{count}})",
+      "heading_few": "اشتراكات ({{count}})",
+      "heading_many": "اشتراكًا ({{count}})",
+      "heading_other": "الاشتراكات ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "الإجراء",
+        "entity": "الكيان",
+        "ip": "عنوان IP",
+        "time": "الوقت"
+      },
+      "heading_zero": "سجل التدقيق (آخر {{count}})",
+      "heading_one": "سجل التدقيق (آخر {{count}})",
+      "heading_two": "سجل التدقيق (آخر {{count}})",
+      "heading_few": "سجل التدقيق (آخر {{count}})",
+      "heading_many": "سجل التدقيق (آخر {{count}})",
+      "heading_other": "سجل التدقيق (آخر {{count}})"
+    },
+    "resetPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "description": "إعادة تعيين كلمة المرور لـ <strong>{{name}}</strong> ({{email}}).",
+      "newPasswordLabel": "كلمة المرور الجديدة",
+      "newPasswordPlaceholder": "8 أحرف كحد أدنى",
+      "submitting": "جارٍ إعادة التعيين...",
+      "submit": "إعادة تعيين كلمة المرور"
+    },
+    "changeRole": {
+      "title": "تغيير الدور",
+      "description": "تغيير الدور لـ <strong>{{name}}</strong>.",
+      "currentRole": "الدور الحالي: {{role}}",
+      "newRoleLabel": "الدور الجديد",
+      "submitting": "جارٍ التحديث...",
+      "submit": "تحديث الدور"
+    },
+    "actions": {
+      "cancel": "إلغاء"
+    },
+    "tabs": {
+      "users_zero": "لا مستخدمين ({{count}})",
+      "users_one": "مستخدم ({{count}})",
+      "users_two": "مستخدمان ({{count}})",
+      "users_few": "مستخدمون ({{count}})",
+      "users_many": "مستخدمًا ({{count}})",
+      "users_other": "المستخدمون ({{count}})",
+      "subscriptions_zero": "لا اشتراكات ({{count}})",
+      "subscriptions_one": "اشتراك ({{count}})",
+      "subscriptions_two": "اشتراكان ({{count}})",
+      "subscriptions_few": "اشتراكات ({{count}})",
+      "subscriptions_many": "اشتراكًا ({{count}})",
+      "subscriptions_other": "الاشتراكات ({{count}})",
+      "auditLog_zero": "سجل التدقيق (آخر {{count}})",
+      "auditLog_one": "سجل التدقيق (آخر {{count}})",
+      "auditLog_two": "سجل التدقيق (آخر {{count}})",
+      "auditLog_few": "سجل التدقيق (آخر {{count}})",
+      "auditLog_many": "سجل التدقيق (آخر {{count}})",
+      "auditLog_other": "سجل التدقيق (آخر {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "جميع المؤسسات",
+    "createButton": "إنشاء مؤسسة",
+    "modal": {
+      "title": "إنشاء مؤسسة جديدة",
+      "fields": {
+        "orgName": "اسم المؤسسة",
+        "firstName": "الاسم الأول للمسؤول",
+        "lastName": "اسم عائلة المسؤول",
+        "email": "البريد الإلكتروني للمسؤول",
+        "password": "كلمة مرور المسؤول",
+        "country": "الدولة",
+        "timezone": "المنطقة الزمنية"
+      },
+      "passwordHint": "يجب أن تحتوي على حرف كبير وحرف صغير ورقم ورمز خاص.",
+      "placeholders": {
+        "password": "8 أحرف على الأقل، حرف كبير، حرف صغير، رقم، رمز خاص"
+      },
+      "cancel": "إلغاء",
+      "submit": "إنشاء مؤسسة",
+      "submitting": "جارٍ الإنشاء...",
+      "error": "فشل إنشاء المؤسسة. يرجى التحقق من جميع الحقول."
+    },
+    "search": {
+      "placeholder": "البحث بالاسم أو البريد الإلكتروني..."
+    },
+    "table": {
+      "headers": {
+        "organization": "المؤسسة",
+        "adminEmail": "البريد الإلكتروني للمسؤول",
+        "employees": "الموظفون",
+        "activeModules": "الوحدات النشطة",
+        "monthlySpend": "الإنفاق الشهري",
+        "status": "الحالة",
+        "joined": "تاريخ الانضمام"
+      }
+    },
+    "status": {
+      "active": "نشطة"
+    },
+    "loading": "جارٍ التحميل...",
+    "empty": "لم يتم العثور على مؤسسات",
+    "pagination": {
+      "summary": "صفحة {{page}} من {{totalPages}} (الإجمالي {{total}})"
+    },
+    "subtitle_zero": "{{count}} مؤسسات مسجلة على المنصة.",
+    "subtitle_one": "{{count}} مؤسسات مسجلة على المنصة.",
+    "subtitle_two": "{{count}} مؤسسات مسجلة على المنصة.",
+    "subtitle_few": "{{count}} مؤسسات مسجلة على المنصة.",
+    "subtitle_many": "{{count}} مؤسسة مسجلة على المنصة.",
+    "subtitle_other": "{{count}} مؤسسة مسجلة على المنصة."
+  },
+  "superAdminDashboard": {
+    "title": "لوحة تحكم المنصة",
+    "subtitle": "نظرة عامة في الوقت الفعلي على منصة EMP Cloud بأكملها.",
+    "loading": "جارٍ تحميل بيانات المنصة...",
+    "error": {
+      "title": "فشل تحميل بيانات لوحة التحكم",
+      "retryHint": "يرجى محاولة تحديث الصفحة"
+    },
+    "stats": {
+      "totalOrganizations": "إجمالي المؤسسات",
+      "totalUsers": "إجمالي المستخدمين",
+      "activeSubscriptions": "الاشتراكات النشطة",
+      "mrr": "الإيرادات الشهرية",
+      "arr": "الإيرادات السنوية",
+      "systemHealth": "حالة النظام",
+      "mrrSubtitle": "الإيرادات الشهرية المتكررة",
+      "arrSubtitle": "الإيرادات السنوية المتكررة",
+      "newThisMonth_zero": "‏+{{count}} هذا الشهر",
+      "newThisMonth_one": "‏+{{count}} هذا الشهر",
+      "newThisMonth_two": "‏+{{count}} هذا الشهر",
+      "newThisMonth_few": "‏+{{count}} هذا الشهر",
+      "newThisMonth_many": "‏+{{count}} هذا الشهر",
+      "newThisMonth_other": "+{{count}} هذا الشهر"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "جميع الأنظمة تعمل",
+      "degraded": "بعض الأنظمة تعمل بأداء منخفض",
+      "offline": "الأنظمة غير متصلة"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "المؤسسات",
+        "description": "عرض جميع المؤسسات وإدارتها"
+      },
+      "moduleAnalytics": {
+        "label": "تحليلات الوحدات",
+        "description": "المشتركون والمقاعد والإيرادات لكل وحدة"
+      },
+      "revenueAnalytics": {
+        "label": "تحليلات الإيرادات",
+        "description": "الإيرادات الشهرية والسنوية المتكررة والاتجاهات وكبار العملاء"
+      },
+      "subscriptionMetrics": {
+        "label": "مقاييس الاشتراكات",
+        "description": "الخطط ومعدلات الاستخدام ودورات الفوترة"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "اتجاه الإيرادات"
+      },
+      "revenueByModule": {
+        "title": "الإيرادات حسب الوحدة"
+      },
+      "moduleAdoption": {
+        "title": "اعتماد الوحدات"
+      },
+      "growthTrends": {
+        "title": "اتجاهات النمو"
+      },
+      "viewDetails": "عرض التفاصيل",
+      "legend": {
+        "organizations": "المؤسسات",
+        "totalSeats": "إجمالي المقاعد",
+        "newOrgs": "مؤسسات جديدة",
+        "newUsers": "مستخدمون جدد"
+      }
+    },
+    "empty": {
+      "revenue": "لا توجد بيانات إيرادات بعد",
+      "adoption": "لا توجد بيانات اعتماد بعد",
+      "growth": "لا توجد بيانات نمو بعد",
+      "activity": "لا يوجد نشاط حديث"
+    },
+    "systemHealth": {
+      "title": "حالة النظام",
+      "badge": {
+        "allOperational": "الكل يعمل",
+        "degraded": "متدهور",
+        "checking": "جارٍ الفحص..."
+      },
+      "checkingModules": "جارٍ فحص الحالة..."
+    },
+    "healthBadge": {
+      "healthy": "سليم",
+      "down": "متوقف"
+    },
+    "activity": {
+      "title": "النشاط الحديث",
+      "systemActor": "النظام"
+    }
   }
 }

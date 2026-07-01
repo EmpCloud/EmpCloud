@@ -3145,5 +3145,231 @@
       "subscriptions_one": "{{count}} सब्सक्रिप्शन",
       "subscriptions_other": "{{count}} सब्सक्रिप्शन"
     }
+  },
+  "orgDetail": {
+    "loading": "लोड हो रहा है...",
+    "error": {
+      "loadFailed": "संगठन विवरण लोड करने में विफल।",
+      "backToOrganizations": "संगठनों पर वापस जाएँ"
+    },
+    "backToAll": "सभी संगठनों पर वापस जाएँ",
+    "createdOn": "बनाया गया",
+    "stats": {
+      "users": "उपयोगकर्ता",
+      "activeSubscriptions": "सक्रिय सदस्यताएँ",
+      "monthlyRevenue": "मासिक राजस्व",
+      "totalSpend": "कुल व्यय"
+    },
+    "users": {
+      "columns": {
+        "name": "नाम",
+        "email": "ईमेल",
+        "role": "भूमिका",
+        "status": "स्थिति",
+        "joined": "शामिल हुए",
+        "actions": "कार्रवाइयाँ"
+      },
+      "status": {
+        "active": "सक्रिय",
+        "inactive": "निष्क्रिय"
+      },
+      "actions": {
+        "deactivate": "उपयोगकर्ता को निष्क्रिय करें",
+        "activate": "उपयोगकर्ता को सक्रिय करें",
+        "resetPassword": "पासवर्ड रीसेट करें",
+        "changeRole": "भूमिका बदलें"
+      },
+      "empty": "इस संगठन में कोई उपयोगकर्ता नहीं है",
+      "heading_one": "उपयोगकर्ता ({{count}})",
+      "heading_other": "उपयोगकर्ता ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "मॉड्यूल",
+        "plan": "योजना",
+        "status": "स्थिति",
+        "seats": "सीटें",
+        "pricePerSeat": "मूल्य/सीट",
+        "monthly": "मासिक",
+        "billing": "बिलिंग",
+        "periodEnd": "अवधि समाप्ति तिथि"
+      },
+      "empty": "कोई सदस्यता नहीं",
+      "heading_one": "सदस्यता ({{count}})",
+      "heading_other": "सदस्यताएँ ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "कार्रवाई",
+        "entity": "एंटिटी",
+        "ip": "आईपी",
+        "time": "समय"
+      },
+      "heading_one": "ऑडिट लॉग (अंतिम {{count}})",
+      "heading_other": "ऑडिट लॉग (अंतिम {{count}})"
+    },
+    "resetPassword": {
+      "title": "पासवर्ड रीसेट करें",
+      "description": "<strong>{{name}}</strong> ({{email}}) के लिए पासवर्ड रीसेट करें।",
+      "newPasswordLabel": "नया पासवर्ड",
+      "newPasswordPlaceholder": "न्यूनतम 8 अक्षर",
+      "submitting": "रीसेट हो रहा है...",
+      "submit": "पासवर्ड रीसेट करें"
+    },
+    "changeRole": {
+      "title": "भूमिका बदलें",
+      "description": "<strong>{{name}}</strong> के लिए भूमिका बदलें।",
+      "currentRole": "वर्तमान भूमिका: {{role}}",
+      "newRoleLabel": "नई भूमिका",
+      "submitting": "अपडेट हो रहा है...",
+      "submit": "भूमिका अपडेट करें"
+    },
+    "actions": {
+      "cancel": "रद्द करें"
+    },
+    "tabs": {
+      "users_one": "उपयोगकर्ता ({{count}})",
+      "users_other": "उपयोगकर्ता ({{count}})",
+      "subscriptions_one": "सदस्यता ({{count}})",
+      "subscriptions_other": "सदस्यताएँ ({{count}})",
+      "auditLog_one": "ऑडिट लॉग (अंतिम {{count}})",
+      "auditLog_other": "ऑडिट लॉग (अंतिम {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "सभी संगठन",
+    "createButton": "संगठन बनाएँ",
+    "modal": {
+      "title": "नया संगठन बनाएँ",
+      "fields": {
+        "orgName": "संगठन का नाम",
+        "firstName": "एडमिन का पहला नाम",
+        "lastName": "एडमिन का अंतिम नाम",
+        "email": "एडमिन ईमेल",
+        "password": "एडमिन पासवर्ड",
+        "country": "देश",
+        "timezone": "समय क्षेत्र"
+      },
+      "passwordHint": "इसमें बड़े अक्षर, छोटे अक्षर, अंक और विशेष वर्ण होना आवश्यक है।",
+      "placeholders": {
+        "password": "न्यूनतम 8 वर्ण, बड़े अक्षर, छोटे अक्षर, अंक, विशेष वर्ण"
+      },
+      "cancel": "रद्द करें",
+      "submit": "संगठन बनाएँ",
+      "submitting": "बनाया जा रहा है...",
+      "error": "संगठन बनाने में विफल। कृपया सभी फ़ील्ड जाँचें।"
+    },
+    "search": {
+      "placeholder": "नाम या ईमेल से खोजें..."
+    },
+    "table": {
+      "headers": {
+        "organization": "संगठन",
+        "adminEmail": "एडमिन ईमेल",
+        "employees": "कर्मचारी",
+        "activeModules": "सक्रिय मॉड्यूल",
+        "monthlySpend": "मासिक व्यय",
+        "status": "स्थिति",
+        "joined": "शामिल होने की तिथि"
+      }
+    },
+    "status": {
+      "active": "सक्रिय"
+    },
+    "loading": "लोड हो रहा है...",
+    "empty": "कोई संगठन नहीं मिला",
+    "pagination": {
+      "summary": "पृष्ठ {{page}} / {{totalPages}} (कुल {{total}})"
+    },
+    "subtitle_one": "प्लेटफ़ॉर्म पर {{count}} संगठन पंजीकृत है।",
+    "subtitle_other": "प्लेटफ़ॉर्म पर {{count}} संगठन पंजीकृत हैं।"
+  },
+  "superAdminDashboard": {
+    "title": "प्लेटफ़ॉर्म डैशबोर्ड",
+    "subtitle": "संपूर्ण EMP Cloud प्लेटफ़ॉर्म का रीयल-टाइम अवलोकन।",
+    "loading": "प्लेटफ़ॉर्म डेटा लोड हो रहा है...",
+    "error": {
+      "title": "डैशबोर्ड डेटा लोड करने में विफल",
+      "retryHint": "कृपया पेज रीफ़्रेश करने का प्रयास करें"
+    },
+    "stats": {
+      "totalOrganizations": "कुल संगठन",
+      "totalUsers": "कुल उपयोगकर्ता",
+      "activeSubscriptions": "सक्रिय सदस्यताएँ",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "सिस्टम स्वास्थ्य",
+      "mrrSubtitle": "मासिक आवर्ती राजस्व",
+      "arrSubtitle": "वार्षिक आवर्ती राजस्व",
+      "newThisMonth_one": "+{{count}} इस माह",
+      "newThisMonth_other": "+{{count}} इस माह"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "सभी सिस्टम चालू हैं",
+      "degraded": "कुछ सिस्टम की कार्यक्षमता घटी हुई है",
+      "offline": "सिस्टम ऑफ़लाइन हैं"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "संगठन",
+        "description": "सभी संगठनों को देखें और प्रबंधित करें"
+      },
+      "moduleAnalytics": {
+        "label": "मॉड्यूल एनालिटिक्स",
+        "description": "प्रति मॉड्यूल सब्सक्राइबर, सीटें, राजस्व"
+      },
+      "revenueAnalytics": {
+        "label": "राजस्व एनालिटिक्स",
+        "description": "MRR, ARR, रुझान, शीर्ष ग्राहक"
+      },
+      "subscriptionMetrics": {
+        "label": "सदस्यता मेट्रिक्स",
+        "description": "प्लान, उपयोग, बिलिंग चक्र"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "राजस्व रुझान"
+      },
+      "revenueByModule": {
+        "title": "मॉड्यूल के अनुसार राजस्व"
+      },
+      "moduleAdoption": {
+        "title": "मॉड्यूल अंगीकरण"
+      },
+      "growthTrends": {
+        "title": "वृद्धि रुझान"
+      },
+      "viewDetails": "विवरण देखें",
+      "legend": {
+        "organizations": "संगठन",
+        "totalSeats": "कुल सीटें",
+        "newOrgs": "नए संगठन",
+        "newUsers": "नए उपयोगकर्ता"
+      }
+    },
+    "empty": {
+      "revenue": "अभी तक कोई राजस्व डेटा नहीं",
+      "adoption": "अभी तक कोई अंगीकरण डेटा नहीं",
+      "growth": "अभी तक कोई वृद्धि डेटा नहीं",
+      "activity": "कोई हालिया गतिविधि नहीं"
+    },
+    "systemHealth": {
+      "title": "सिस्टम स्वास्थ्य",
+      "badge": {
+        "allOperational": "सभी चालू",
+        "degraded": "कार्यक्षमता घटी हुई",
+        "checking": "जाँच हो रही है..."
+      },
+      "checkingModules": "स्वास्थ्य की जाँच हो रही है..."
+    },
+    "healthBadge": {
+      "healthy": "स्वस्थ",
+      "down": "बंद"
+    },
+    "activity": {
+      "title": "हालिया गतिविधि",
+      "systemActor": "सिस्टम"
+    }
   }
 }
