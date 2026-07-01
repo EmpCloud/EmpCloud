@@ -5755,5 +5755,633 @@
       "noOptions": "कोई विकल्प परिभाषित नहीं",
       "checkboxFallback": "चेकबॉक्स"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "हेल्पडेस्क डैशबोर्ड लोड हो रहा है...",
+    "title": "हेल्पडेस्क डैशबोर्ड",
+    "subtitle": "एचआर हेल्पडेस्क टिकट और SLA प्रदर्शन का अवलोकन।",
+    "viewAllTickets": "सभी टिकट देखें",
+    "stats": {
+      "totalOpen": "कुल खुले",
+      "inProgress": "प्रगति पर",
+      "overdue": "अतिदेय (SLA उल्लंघन)",
+      "resolvedToday": "आज हल किए गए"
+    },
+    "sla": {
+      "compliance": "SLA अनुपालन",
+      "resolvedWithinSla": "SLA के भीतर हल किए गए टिकट"
+    },
+    "metrics": {
+      "avgResolutionTime": "औसत समाधान समय",
+      "hours": "घंटे"
+    },
+    "satisfaction": {
+      "title": "संतुष्टि रेटिंग",
+      "notAvailable": "उपलब्ध नहीं",
+      "ratingCount_one": "{{count}} रेटिंग",
+      "ratingCount_other": "{{count}} रेटिंग"
+    },
+    "categoryBreakdown": {
+      "title": "श्रेणी अनुसार टिकट"
+    },
+    "recentTickets": {
+      "title": "हाल के टिकट"
+    },
+    "emptyState": {
+      "noTickets": "अभी तक कोई टिकट नहीं"
+    },
+    "category": {
+      "leave": "अवकाश",
+      "payroll": "वेतन",
+      "benefits": "लाभ",
+      "it": "आईटी",
+      "facilities": "सुविधाएं",
+      "onboarding": "ऑनबोर्डिंग",
+      "policy": "नीति",
+      "general": "सामान्य"
+    },
+    "priority": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "urgent": "अत्यावश्यक"
+    },
+    "status": {
+      "open": "खुला",
+      "in_progress": "प्रगति पर",
+      "awaiting_response": "प्रतिक्रिया की प्रतीक्षा में",
+      "resolved": "हल किया गया",
+      "closed": "बंद",
+      "reopened": "पुनः खोला गया"
+    }
+  },
+  "ticketDetail": {
+    "loading": "टिकट लोड हो रहा है...",
+    "backToTickets": "टिकट पर वापस जाएं",
+    "slaBreached": "SLA उल्लंघन",
+    "raisedBy": "द्वारा उठाया गया: {{name}}",
+    "created": "निर्मित: {{date}}",
+    "assignedTo": "को सौंपा गया: {{name}}",
+    "slaDeadlines": "SLA समय-सीमाएं",
+    "firstResponse": "पहली प्रतिक्रिया:",
+    "responded": "प्रतिक्रिया दी {{date}}",
+    "due": "देय {{date}}",
+    "resolution": "समाधान:",
+    "resolved": "हल किया गया {{date}}",
+    "action": {
+      "assign": "सौंपें",
+      "resolve": "हल करें",
+      "close": "बंद करें",
+      "reopen": "फिर से खोलें",
+      "rateService": "सेवा रेट करें"
+    },
+    "assign": {
+      "selectUser": "सौंपने के लिए उपयोगकर्ता चुनें..."
+    },
+    "rating": {
+      "prompt": "समाधान से आप कितने संतुष्ट हैं?",
+      "feedbackPlaceholder": "अतिरिक्त प्रतिक्रिया (वैकल्पिक)",
+      "submit": "रेटिंग सबमिट करें"
+    },
+    "satisfaction": "संतुष्टि:",
+    "conversation": "वार्तालाप",
+    "internalNote": "आंतरिक टिप्पणी",
+    "noComments": "अभी तक कोई टिप्पणी नहीं। नीचे वार्तालाप शुरू करें।",
+    "replyPlaceholder": "उत्तर लिखें...",
+    "internalNoteToggle": "आंतरिक टिप्पणी (कर्मचारी को दिखाई नहीं देती)",
+    "sending": "भेजा जा रहा है...",
+    "sendReply": "उत्तर भेजें",
+    "toast": {
+      "resolveSuccess": "टिकट को हल किए गए के रूप में चिह्नित किया गया।",
+      "resolveError": "टिकट हल करने में विफल।",
+      "closeSuccess": "टिकट बंद कर दिया गया।",
+      "closeError": "टिकट बंद करने में विफल।",
+      "reopenSuccess": "टिकट फिर से खोला गया।",
+      "reopenError": "टिकट फिर से खोलने में विफल।"
+    },
+    "priority": {
+      "low": "कम",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "urgent": "अत्यावश्यक"
+    },
+    "status": {
+      "open": "खुला",
+      "in_progress": "प्रगति पर",
+      "awaiting_response": "प्रतिक्रिया की प्रतीक्षा में",
+      "resolved": "हल किया गया",
+      "closed": "बंद",
+      "reopened": "फिर से खोला गया"
+    },
+    "category": {
+      "general": "सामान्य",
+      "technical": "तकनीकी",
+      "hr": "मानव संसाधन",
+      "payroll": "पेरोल",
+      "it": "आईटी",
+      "facilities": "सुविधाएं",
+      "other": "अन्य"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "मेरी प्रतिक्रिया",
+      "subtitle": "अपनी गुमनाम रूप से भेजी गई प्रतिक्रिया की स्थिति और HR की ओर से किसी भी प्रतिक्रिया को देखें।"
+    },
+    "status": {
+      "new": "नई",
+      "acknowledged": "स्वीकार किया गया",
+      "under_review": "समीक्षाधीन",
+      "resolved": "समाधानित",
+      "archived": "संग्रहीत"
+    },
+    "category": {
+      "workplace": "कार्यस्थल",
+      "management": "प्रबंधन",
+      "process": "प्रक्रिया",
+      "culture": "संस्कृति",
+      "harassment": "उत्पीड़न",
+      "safety": "सुरक्षा",
+      "suggestion": "सुझाव",
+      "other": "अन्य"
+    },
+    "empty": {
+      "title": "अभी तक कोई प्रतिक्रिया नहीं भेजी गई",
+      "description": "अपने विचार HR के साथ गुमनाम रूप से साझा करें।",
+      "submitCta": "प्रतिक्रिया भेजें"
+    },
+    "card": {
+      "urgentBadge": "अत्यावश्यक",
+      "editButton": "संपादित करें",
+      "hrResponseLabel": "HR प्रतिक्रिया",
+      "respondedOn": "{{date}} को उत्तर दिया गया"
+    },
+    "editModal": {
+      "title": "प्रतिक्रिया संपादित करें",
+      "categoryLabel": "श्रेणी",
+      "subjectLabel": "विषय",
+      "messageLabel": "संदेश",
+      "markUrgent": "अत्यावश्यक के रूप में चिह्नित करें",
+      "cancel": "रद्द करें",
+      "save": "परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "error": {
+      "updateFailed": "प्रतिक्रिया अपडेट करने में विफल"
+    },
+    "pagination": {
+      "summary": "{{totalPages}} में से पृष्ठ {{page}} (कुल {{total}})",
+      "previous": "पिछला",
+      "next": "अगला"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "फ़ीडबैक डैशबोर्ड",
+    "subtitle": "अनाम कर्मचारी फ़ीडबैक का अवलोकन।",
+    "loading": "डैशबोर्ड लोड हो रहा है...",
+    "stats": {
+      "totalFeedback": "कुल फ़ीडबैक",
+      "urgentItems": "अत्यावश्यक आइटम",
+      "responseRate": "प्रतिक्रिया दर",
+      "newUnread": "नया / अपठित"
+    },
+    "sections": {
+      "byCategory": "श्रेणी अनुसार",
+      "sentimentDistribution": "भावना वितरण",
+      "byStatus": "स्थिति अनुसार",
+      "recentFeedback": "हाल का फ़ीडबैक"
+    },
+    "empty": {
+      "noData": "अभी कोई डेटा नहीं।",
+      "noFeedback": "अभी कोई फ़ीडबैक नहीं।"
+    },
+    "status": {
+      "new": "नया",
+      "acknowledged": "अभिस्वीकृत",
+      "under_review": "समीक्षाधीन",
+      "resolved": "हल किया गया",
+      "archived": "संग्रहीत"
+    },
+    "category": {
+      "workplace": "कार्यस्थल",
+      "management": "प्रबंधन",
+      "process": "प्रक्रिया",
+      "culture": "संस्कृति",
+      "harassment": "उत्पीड़न",
+      "safety": "सुरक्षा",
+      "suggestion": "सुझाव",
+      "other": "अन्य"
+    },
+    "sentiment": {
+      "positive": "सकारात्मक",
+      "neutral": "तटस्थ",
+      "negative": "नकारात्मक",
+      "unset": "अनिर्धारित"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "फीडबैक सबमिट करें"
+    },
+    "success": {
+      "title": "फीडबैक सबमिट किया गया",
+      "description": "आपका फीडबैक गुमनाम रूप से सबमिट कर दिया गया है। आपकी पहचान न तो संग्रहीत की जाती है और न ही किसी को दिखाई देती है। आप अपने फीडबैक की स्थिति \"मेरा फीडबैक\" पेज पर देख सकते हैं।",
+      "submitAnother": "एक और सबमिट करें"
+    },
+    "anonymousBanner": {
+      "title": "आपका फीडबैक पूरी तरह गुमनाम है",
+      "description": "आपकी पहचान को हैश कर दिया जाता है और उसे आप तक वापस नहीं जोड़ा जा सकता। HR को फीडबैक की सामग्री दिखाई देगी, लेकिन आपका नाम या ईमेल कभी नहीं।"
+    },
+    "field": {
+      "category": "श्रेणी",
+      "subject": "विषय",
+      "message": "संदेश",
+      "subjectPlaceholder": "अपने फीडबैक का संक्षिप्त सारांश",
+      "messagePlaceholder": "अपने फीडबैक का विस्तार से वर्णन करें...",
+      "markUrgent": "अत्यावश्यक के रूप में चिह्नित करें"
+    },
+    "action": {
+      "submit": "गुमनाम रूप से सबमिट करें",
+      "submitting": "सबमिट हो रहा है..."
+    },
+    "error": {
+      "submitFailed": "फीडबैक सबमिट करने में विफल। कृपया पुनः प्रयास करें।"
+    },
+    "category": {
+      "workplace": "कार्यस्थल",
+      "management": "प्रबंधन",
+      "process": "प्रक्रिया",
+      "culture": "संस्कृति",
+      "harassment": "उत्पीड़न",
+      "safety": "सुरक्षा",
+      "suggestion": "सुझाव",
+      "other": "अन्य"
+    }
+  },
+  "assetDetail": {
+    "loading": "एसेट विवरण लोड हो रहा है...",
+    "status": {
+      "available": "उपलब्ध",
+      "assigned": "आवंटित",
+      "in_repair": "मरम्मत में",
+      "retired": "सेवामुक्त",
+      "lost": "खोया हुआ",
+      "damaged": "क्षतिग्रस्त"
+    },
+    "condition": {
+      "new": "नया",
+      "good": "अच्छा",
+      "fair": "ठीक-ठाक",
+      "poor": "खराब"
+    },
+    "action": {
+      "created": "बनाया गया",
+      "assigned": "आवंटित किया गया",
+      "returned": "वापस किया गया",
+      "sent_to_repair": "मरम्मत के लिए भेजा गया",
+      "repaired": "मरम्मत की गई",
+      "retired": "सेवामुक्त किया गया",
+      "lost": "खोया हुआ",
+      "found": "मिल गया",
+      "damaged": "क्षतिग्रस्त",
+      "updated": "अपडेट किया गया"
+    },
+    "buttons": {
+      "edit": "संपादित करें",
+      "assign": "आवंटित करें",
+      "return": "वापस करें",
+      "sendForRepair": "मरम्मत के लिए भेजें",
+      "repairComplete": "मरम्मत पूर्ण",
+      "retire": "सेवामुक्त करें",
+      "reportLost": "खोया दर्ज करें",
+      "markFound": "मिला हुआ चिह्नित करें"
+    },
+    "info": {
+      "heading": "एसेट जानकारी",
+      "assetTag": "एसेट टैग",
+      "category": "श्रेणी",
+      "uncategorized": "अवर्गीकृत",
+      "serialNumber": "सीरियल नंबर",
+      "brand": "ब्रांड",
+      "model": "मॉडल",
+      "location": "स्थान",
+      "purchaseDate": "खरीद तिथि",
+      "purchaseCost": "खरीद लागत",
+      "warrantyExpiry": "वारंटी समाप्ति",
+      "expiredSuffix": " (समाप्त)",
+      "description": "विवरण",
+      "notes": "टिप्पणियाँ"
+    },
+    "assignment": {
+      "heading": "वर्तमान में आवंटित",
+      "assignedTo": "आवंटित (किसे)",
+      "assignedAt": "आवंटन समय",
+      "assignedBy": "आवंटित (किसके द्वारा)"
+    },
+    "history": {
+      "heading": "इतिहास",
+      "to": "प्राप्तकर्ता: {{name}}",
+      "from": "प्रेषक: {{name}}",
+      "empty": "कोई इतिहास प्रविष्टि नहीं",
+      "deleteTitle": "इतिहास प्रविष्टि हटाएँ"
+    },
+    "assignModal": {
+      "title": "एसेट आवंटित करें",
+      "assignToLabel": "आवंटित करें (किसे) *",
+      "selectEmployee": "कर्मचारी चुनें",
+      "notesLabel": "टिप्पणियाँ",
+      "cancel": "रद्द करें",
+      "submit": "आवंटित करें",
+      "submitting": "आवंटित किया जा रहा है..."
+    },
+    "returnModal": {
+      "title": "एसेट वापस करें",
+      "conditionLabel": "वापसी पर स्थिति",
+      "notesLabel": "टिप्पणियाँ",
+      "cancel": "रद्द करें",
+      "submit": "एसेट वापस करें",
+      "submitting": "वापस किया जा रहा है..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "इस एसेट को सेवामुक्त करें?",
+        "body": "एसेट को सेवामुक्त करने पर वह सक्रिय इन्वेंट्री से बाहर हो जाता है। पिछले आवंटन रिकॉर्ड में बने रहते हैं, लेकिन एसेट को अब आवंटित नहीं किया जा सकता।",
+        "confirmLabel": "एसेट सेवामुक्त करें"
+      },
+      "lost": {
+        "title": "एसेट को खोया हुआ दर्ज करें?",
+        "body": "इससे एसेट को खोया हुआ चिह्नित किया जाएगा और ऑडिट इतिहास में दर्ज किया जाएगा। आप बाद में एसेट विवरण पृष्ठ से इसे मिला हुआ चिह्नित कर सकते हैं।",
+        "confirmLabel": "खोया दर्ज करें"
+      },
+      "found": {
+        "title": "एसेट को मिला हुआ चिह्नित करें?",
+        "body": "इससे एसेट उपलब्ध के रूप में सक्रिय इन्वेंट्री में वापस आ जाएगा, ताकि उसे पुनः आवंटित किया जा सके।",
+        "confirmLabel": "मिला हुआ चिह्नित करें"
+      },
+      "repairStart": {
+        "title": "एसेट को मरम्मत के लिए भेजें?",
+        "bodyAssigned": "इससे एसेट का आवंटन हट जाएगा और उसे 'मरम्मत में' ले जाया जाएगा। वर्तमान धारक इतिहास में दर्ज रहता है।",
+        "bodyDefault": "इससे एसेट 'मरम्मत में' चला जाएगा। मरम्मत पूर्ण होने तक इसे आवंटित नहीं किया जा सकेगा।",
+        "confirmLabel": "मरम्मत के लिए भेजें"
+      },
+      "repairComplete": {
+        "title": "मरम्मत को पूर्ण चिह्नित करें?",
+        "body": "इससे एसेट उपलब्ध के रूप में सक्रिय इन्वेंट्री में वापस आ जाएगा, ताकि उसे पुनः आवंटित किया जा सके।",
+        "confirmLabel": "मरम्मत पूर्ण चिह्नित करें"
+      },
+      "cancel": "रद्द करें",
+      "working": "कार्य जारी है..."
+    },
+    "editModal": {
+      "title": "एसेट संपादित करें",
+      "nameLabel": "नाम *",
+      "categoryLabel": "श्रेणी",
+      "uncategorized": "अवर्गीकृत",
+      "serialNumberLabel": "सीरियल नंबर",
+      "brandLabel": "ब्रांड",
+      "modelLabel": "मॉडल",
+      "conditionLabel": "स्थिति",
+      "purchaseDateLabel": "खरीद तिथि",
+      "purchaseCostLabel": "खरीद लागत",
+      "purchaseCostHint": "राशि पैसे में।",
+      "warrantyExpiryLabel": "वारंटी समाप्ति",
+      "locationLabel": "स्थान",
+      "descriptionLabel": "विवरण",
+      "notesLabel": "टिप्पणियाँ",
+      "cancel": "रद्द करें",
+      "save": "परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "conditionOptions": {
+      "new": "नया",
+      "good": "अच्छा",
+      "fair": "ठीक-ठाक",
+      "poor": "खराब"
+    },
+    "deleteHistory": {
+      "title": "इतिहास प्रविष्टि हटाएँ?",
+      "body": "इससे केवल यह लॉग पंक्ति हटती है। एसेट की वर्तमान स्थिति अपरिवर्तित रहती है — पिछले आवंटन या कार्य वापस नहीं होते।",
+      "cancel": "रद्द करें",
+      "confirm": "प्रविष्टि हटाएँ",
+      "deleting": "हटाया जा रहा है..."
+    },
+    "errors": {
+      "updateFailed": "एसेट अपडेट करने में विफल",
+      "deleteHistoryFailed": "इतिहास प्रविष्टि हटाने में विफल",
+      "warrantyBeforePurchase": "वारंटी समाप्ति खरीद तिथि से पहले नहीं हो सकती।",
+      "retireFailed": "एसेट सेवामुक्त करने में विफल",
+      "reportLostFailed": "एसेट को खोया हुआ दर्ज करने में विफल",
+      "markFoundFailed": "एसेट को मिला हुआ चिह्नित करने में विफल",
+      "sendToRepairFailed": "एसेट को मरम्मत के लिए भेजने में विफल",
+      "completeRepairFailed": "मरम्मत पूर्ण करने में विफल"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "एसेट श्रेणियाँ",
+      "subtitle": "एसेट को प्रकार के अनुसार व्यवस्थित करें"
+    },
+    "actions": {
+      "addCategory": "श्रेणी जोड़ें",
+      "edit": "संपादित करें",
+      "delete": "हटाएँ"
+    },
+    "list": {
+      "loading": "श्रेणियाँ लोड हो रही हैं...",
+      "empty": "अभी तक कोई श्रेणी नहीं। अपनी पहली श्रेणी बनाएँ।"
+    },
+    "table": {
+      "name": "नाम",
+      "description": "विवरण",
+      "actions": "कार्रवाइयाँ"
+    },
+    "form": {
+      "editTitle": "श्रेणी संपादित करें",
+      "newTitle": "नई श्रेणी",
+      "nameLabel": "नाम *",
+      "namePlaceholder": "जैसे लैपटॉप, मॉनिटर, फ़ोन",
+      "descriptionLabel": "विवरण",
+      "cancel": "रद्द करें",
+      "update": "अपडेट करें",
+      "create": "बनाएँ"
+    },
+    "delete": {
+      "title": "श्रेणी निष्क्रिय करें?",
+      "message": "{{name}} को निष्क्रिय करें? इस श्रेणी से टैग किए गए मौजूदा एसेट टैग बनाए रखेंगे, लेकिन इसे पुनर्स्थापित किए जाने तक यहाँ कोई नया एसेट नहीं रखा जा सकता।",
+      "cancel": "रद्द करें",
+      "confirm": "निष्क्रिय करें",
+      "inProgress": "निष्क्रिय किया जा रहा है..."
+    },
+    "errors": {
+      "deactivateFailed": "श्रेणी निष्क्रिय करने में विफल"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "मेरी संपत्तियां",
+      "subtitle": "आपको सौंपे गए उपकरण और संपत्तियां"
+    },
+    "empty": {
+      "title": "आपको कोई संपत्ति नहीं सौंपी गई",
+      "description": "जब आपका संगठन आपको उपकरण सौंपेगा, तो वे यहां दिखाई देंगे।"
+    },
+    "card": {
+      "serialNumber": "क्र.सं.: {{serial}}",
+      "assigned": "सौंपा गया {{date}}",
+      "warranty": "वारंटी: {{date}}",
+      "warrantyExpiredSuffix": "(समाप्त)"
+    },
+    "condition": {
+      "new": "नया",
+      "good": "अच्छा",
+      "fair": "ठीक-ठाक",
+      "poor": "खराब"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "निरस्त",
+      "expired": "समाप्त",
+      "active": "सक्रिय"
+    },
+    "toast": {
+      "createError": "API कुंजी बनाने में विफल",
+      "copyError": "कॉपी नहीं हो सका — चुनकर मैन्युअल रूप से कॉपी करें",
+      "revokeSuccess": "API कुंजी निरस्त की गई",
+      "revokeError": "कुंजी निरस्त करने में विफल"
+    },
+    "confirm": {
+      "revoke": "\"{{name}}\" को निरस्त करें? इसका उपयोग करने वाला कोई भी इंटीग्रेशन तुरंत काम करना बंद कर देगा।"
+    },
+    "heading": "API कुंजियाँ",
+    "newKeyButton": "नई कुंजी",
+    "description": "EmpCloud API तक प्रोग्रामेटिक पहुँच के लिए कुंजियाँ बनाएँ। एक ही कुंजी EmpCloud और Payroll मॉड्यूल में काम करती है, और उसे बनाने वाले एडमिन की अनुमतियाँ रखती है।",
+    "howTo": {
+      "title": "अपनी API कुंजी का उपयोग कैसे करें",
+      "intro": "बनाई गई कुंजी एक <strong>Bearer token</strong> है। इसे हर API अनुरोध में <code>Authorization</code> हेडर में भेजें — ठीक वैसे ही जैसे लॉग-इन सेशन टोकन:",
+      "bulletBothSystems": "<strong>दोनों सिस्टम में काम करती है।</strong> एक ही टोकन EmpCloud API और Payroll मॉड्यूल API दोनों के लिए प्रमाणीकरण करता है — किसी अलग लॉगिन या टोकन विनिमय की ज़रूरत नहीं।",
+      "bulletInheritsPermissions": "<strong>आपकी अनुमतियाँ विरासत में लेती है।</strong> कुंजी केवल वही कर सकती है जो उसे बनाने वाला एडमिन कर सकता है। यह हमेशा उस एडमिन की मौजूदा भूमिका को दर्शाती है — भूमिका बदलें और कुंजी की पहुँच भी उसके साथ बदल जाती है।",
+      "bulletShownOnce": "<strong>केवल एक बार दिखाई जाती है।</strong> पूरी कुंजी निर्माण के समय केवल एक बार प्रदर्शित होती है। इसे किसी सुरक्षित स्थान (सीक्रेट्स मैनेजर) में संग्रहीत करें — हम केवल एक हैश की गई प्रति रखते हैं और इसे दोबारा नहीं दिखा सकते।",
+      "bulletRevocable": "<strong>निरस्त और समाप्त की जा सकती है।</strong> वैकल्पिक समाप्ति सेट करें, या किसी भी समय कुंजी निरस्त करें। निरस्त या समाप्त कुंजियाँ हर जगह तुरंत काम करना बंद कर देती हैं। कुंजी को पासवर्ड की तरह मानें — जिसके पास यह है वह आपकी अनुमतियों के साथ कार्य कर सकता है।"
+    },
+    "reveal": {
+      "warning": "इस कुंजी को अभी कॉपी करें — यह दोबारा नहीं दिखाई जाएगी।",
+      "copied": "कॉपी हो गई",
+      "copy": "कॉपी करें",
+      "dismissAria": "बंद करें",
+      "bearerHint": "इसे Authorization हेडर में Bearer token के रूप में उपयोग करें:"
+    },
+    "form": {
+      "nameLabel": "कुंजी का नाम",
+      "namePlaceholder": "जैसे उपस्थिति निर्यात",
+      "expiresLabel": "समाप्ति (दिनों में)",
+      "expiresPlaceholder": "कभी नहीं",
+      "generating": "बनाई जा रही है…",
+      "generate": "कुंजी बनाएँ",
+      "cancel": "रद्द करें"
+    },
+    "list": {
+      "loading": "कुंजियाँ लोड हो रही हैं…",
+      "empty": "अभी तक कोई API कुंजी नहीं।"
+    },
+    "table": {
+      "name": "नाम",
+      "key": "कुंजी",
+      "status": "स्थिति",
+      "lastUsed": "अंतिम उपयोग",
+      "expires": "समाप्ति",
+      "created": "निर्मित",
+      "neverExpires": "कभी नहीं"
+    },
+    "revokeAction": "निरस्त करें"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "आज",
+      "yesterday": "कल",
+      "last7": "पिछले 7 दिन",
+      "last30": "पिछले 30 दिन",
+      "thisMonth": "इस महीने",
+      "lastMonth": "पिछले महीने",
+      "customRange": "कस्टम रेंज"
+    },
+    "trigger": {
+      "placeholder": "तिथि सीमा चुनें"
+    },
+    "dialog": {
+      "ariaLabel": "तिथि सीमा चुनें"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "साफ़ करें",
+      "cancel": "रद्द करें",
+      "apply": "लागू करें"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "CSV / Excel से एसेट बल्क इंपोर्ट करें"
+    },
+    "actions": {
+      "downloadTemplate": "टेम्पलेट डाउनलोड करें",
+      "close": "बंद करें",
+      "cancel": "रद्द करें"
+    },
+    "upload": {
+      "requiredHint": "आवश्यक: <0>name</0>. अन्य कॉलम वैकल्पिक हैं।",
+      "dropzoneTitle": "अपनी CSV या Excel फ़ाइल यहाँ खींचें और छोड़ें",
+      "dropzoneSubtitle": "या ब्राउज़ करने के लिए क्लिक करें",
+      "tipsHeading": "सुझाव:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> पैसे में राशि है (उदा. ₹1,500 के लिए 150000)।",
+        "conditionStatus": "<0>condition_status</0> इनमें से एक होना चाहिए: new, good, fair, poor.",
+        "categoryAutoCreate": "अज्ञात <0>category_name</0> मान स्वतः बन जाते हैं।",
+        "dateFormats": "तारीखों के लिए YYYY-MM-DD या Excel तारीख सेल स्वीकार्य हैं।"
+      }
+    },
+    "importing": {
+      "message": "एसेट इंपोर्ट हो रहे हैं... कृपया प्रतीक्षा करें।"
+    },
+    "done": {
+      "completeTitle": "इंपोर्ट पूर्ण",
+      "rowError": "पंक्ति {{row}}:",
+      "emptyFile": "अपलोड की गई फ़ाइल में कोई पंक्ति नहीं मिली।",
+      "importedCount_one": "{{count}} एसेट सफलतापूर्वक इंपोर्ट किया गया।",
+      "importedCount_other": "{{count}} एसेट सफलतापूर्वक इंपोर्ट किए गए।",
+      "createdCategoriesTitle_one": "नई श्रेणी बनाई गई ({{count}}):",
+      "createdCategoriesTitle_other": "नई श्रेणियाँ बनाई गईं ({{count}}):",
+      "skippedRows_one": "त्रुटियों के साथ {{count}} पंक्ति छोड़ी गई",
+      "skippedRows_other": "त्रुटियों के साथ {{count}} पंक्तियाँ छोड़ी गईं"
+    },
+    "errors": {
+      "bulkImportFailed": "बल्क इंपोर्ट विफल रहा"
+    }
+  },
+  "customRolesField": {
+    "label": "कस्टम रोल",
+    "loading": "लोड हो रहा है…",
+    "emptyReadonly": "कोई कस्टम रोल असाइन नहीं किया गया",
+    "helpText": "इस उपयोगकर्ता की प्राथमिक भूमिका के अतिरिक्त सूक्ष्म अनुमतियाँ प्रदान करने वाले अतिरिक्त रोल। रोल प्रबंधित करें",
+    "helpTextLink": "सेटिंग्स → रोल और अनुमतियाँ",
+    "removeAria": "{{name}} हटाएँ",
+    "placeholderEmpty": "कस्टम रोल असाइन करने के लिए क्लिक करें…",
+    "placeholderMore": "एक और रोल जोड़ें…",
+    "noneToAssign": "असाइन करने के लिए कोई कस्टम रोल नहीं है। सेटिंग्स → रोल और अनुमतियाँ में एक बनाएँ।",
+    "noMatches": "कोई मिलता-जुलता रोल नहीं",
+    "error": {
+      "requestFailed": "अनुरोध विफल रहा"
+    },
+    "assignedCount_one": "({{count}} असाइन किया गया)",
+    "assignedCount_other": "({{count}} असाइन किए गए)",
+    "permissionCount_one": "{{count}} अनुमति",
+    "permissionCount_other": "{{count}} अनुमतियाँ"
   }
 }

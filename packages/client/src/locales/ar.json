@@ -6103,5 +6103,657 @@
       "noOptions": "لا توجد خيارات معرّفة",
       "checkboxFallback": "مربع اختيار"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "جارٍ تحميل لوحة معلومات مكتب المساعدة...",
+    "title": "لوحة معلومات مكتب المساعدة",
+    "subtitle": "نظرة عامة على تذاكر مكتب المساعدة للموارد البشرية وأداء اتفاقية مستوى الخدمة.",
+    "viewAllTickets": "عرض كل التذاكر",
+    "stats": {
+      "totalOpen": "إجمالي المفتوحة",
+      "inProgress": "قيد المعالجة",
+      "overdue": "متأخرة (تجاوزت اتفاقية مستوى الخدمة)",
+      "resolvedToday": "تم حلها اليوم"
+    },
+    "sla": {
+      "compliance": "الالتزام باتفاقية مستوى الخدمة",
+      "resolvedWithinSla": "التذاكر التي تم حلها ضمن اتفاقية مستوى الخدمة"
+    },
+    "metrics": {
+      "avgResolutionTime": "متوسط وقت الحل",
+      "hours": "ساعة"
+    },
+    "satisfaction": {
+      "title": "تقييم الرضا",
+      "notAvailable": "غير متاح",
+      "ratingCount_zero": "{{count}} تقييمات",
+      "ratingCount_one": "{{count}} تقييمات",
+      "ratingCount_two": "{{count}} تقييمات",
+      "ratingCount_few": "{{count}} تقييمات",
+      "ratingCount_many": "{{count}} تقييمًا",
+      "ratingCount_other": "{{count}} تقييم"
+    },
+    "categoryBreakdown": {
+      "title": "التذاكر حسب الفئة"
+    },
+    "recentTickets": {
+      "title": "التذاكر الأخيرة"
+    },
+    "emptyState": {
+      "noTickets": "لا توجد تذاكر بعد"
+    },
+    "category": {
+      "leave": "الإجازات",
+      "payroll": "كشوف المرتبات",
+      "benefits": "المزايا",
+      "it": "تقنية المعلومات",
+      "facilities": "المرافق",
+      "onboarding": "التهيئة الوظيفية",
+      "policy": "السياسات",
+      "general": "عام"
+    },
+    "priority": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "urgent": "عاجلة"
+    },
+    "status": {
+      "open": "مفتوحة",
+      "in_progress": "قيد المعالجة",
+      "awaiting_response": "في انتظار الرد",
+      "resolved": "تم الحل",
+      "closed": "مغلقة",
+      "reopened": "أُعيد فتحها"
+    }
+  },
+  "ticketDetail": {
+    "loading": "جارٍ تحميل التذكرة...",
+    "backToTickets": "العودة إلى التذاكر",
+    "slaBreached": "تم تجاوز اتفاقية مستوى الخدمة",
+    "raisedBy": "مقدَّم من: {{name}}",
+    "created": "تاريخ الإنشاء: {{date}}",
+    "assignedTo": "مُسند إلى: {{name}}",
+    "slaDeadlines": "مواعيد اتفاقية مستوى الخدمة",
+    "firstResponse": "الاستجابة الأولى:",
+    "responded": "تمت الاستجابة {{date}}",
+    "due": "الاستحقاق {{date}}",
+    "resolution": "الحل:",
+    "resolved": "تم الحل {{date}}",
+    "action": {
+      "assign": "إسناد",
+      "resolve": "حل",
+      "close": "إغلاق",
+      "reopen": "إعادة فتح",
+      "rateService": "تقييم الخدمة"
+    },
+    "assign": {
+      "selectUser": "اختر مستخدمًا للإسناد..."
+    },
+    "rating": {
+      "prompt": "ما مدى رضاك عن الحل؟",
+      "feedbackPlaceholder": "ملاحظات إضافية (اختياري)",
+      "submit": "إرسال التقييم"
+    },
+    "satisfaction": "الرضا:",
+    "conversation": "المحادثة",
+    "internalNote": "ملاحظة داخلية",
+    "noComments": "لا توجد تعليقات بعد. ابدأ المحادثة أدناه.",
+    "replyPlaceholder": "اكتب ردًا...",
+    "internalNoteToggle": "ملاحظة داخلية (غير مرئية للموظف)",
+    "sending": "جارٍ الإرسال...",
+    "sendReply": "إرسال الرد",
+    "toast": {
+      "resolveSuccess": "تم وضع علامة على التذكرة كمحلولة.",
+      "resolveError": "تعذّر حل التذكرة.",
+      "closeSuccess": "تم إغلاق التذكرة.",
+      "closeError": "تعذّر إغلاق التذكرة.",
+      "reopenSuccess": "تمت إعادة فتح التذكرة.",
+      "reopenError": "تعذّر إعادة فتح التذكرة."
+    },
+    "priority": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "urgent": "عاجلة"
+    },
+    "status": {
+      "open": "مفتوحة",
+      "in_progress": "قيد المعالجة",
+      "awaiting_response": "بانتظار الرد",
+      "resolved": "تم الحل",
+      "closed": "مغلقة",
+      "reopened": "أُعيد فتحها"
+    },
+    "category": {
+      "general": "عام",
+      "technical": "تقني",
+      "hr": "الموارد البشرية",
+      "payroll": "الرواتب",
+      "it": "تقنية المعلومات",
+      "facilities": "المرافق",
+      "other": "أخرى"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "ملاحظاتي",
+      "subtitle": "اطّلع على حالة الملاحظات التي أرسلتها بشكل مجهول وأي ردود من الموارد البشرية."
+    },
+    "status": {
+      "new": "جديد",
+      "acknowledged": "تم الاستلام",
+      "under_review": "قيد المراجعة",
+      "resolved": "تم الحل",
+      "archived": "مؤرشف"
+    },
+    "category": {
+      "workplace": "بيئة العمل",
+      "management": "الإدارة",
+      "process": "الإجراءات",
+      "culture": "الثقافة",
+      "harassment": "التحرش",
+      "safety": "السلامة",
+      "suggestion": "اقتراح",
+      "other": "أخرى"
+    },
+    "empty": {
+      "title": "لم تُرسل أي ملاحظات بعد",
+      "description": "شارك آراءك مع الموارد البشرية بشكل مجهول.",
+      "submitCta": "إرسال ملاحظات"
+    },
+    "card": {
+      "urgentBadge": "عاجل",
+      "editButton": "تعديل",
+      "hrResponseLabel": "رد الموارد البشرية",
+      "respondedOn": "تم الرد في {{date}}"
+    },
+    "editModal": {
+      "title": "تعديل الملاحظة",
+      "categoryLabel": "الفئة",
+      "subjectLabel": "الموضوع",
+      "messageLabel": "الرسالة",
+      "markUrgent": "وضع علامة عاجل",
+      "cancel": "إلغاء",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ..."
+    },
+    "error": {
+      "updateFailed": "فشل تحديث الملاحظة"
+    },
+    "pagination": {
+      "summary": "الصفحة {{page}} من {{totalPages}} ({{total}} إجمالاً)",
+      "previous": "السابق",
+      "next": "التالي"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "لوحة معلومات الملاحظات",
+    "subtitle": "نظرة عامة على ملاحظات الموظفين المجهولة.",
+    "loading": "جارٍ تحميل لوحة المعلومات...",
+    "stats": {
+      "totalFeedback": "إجمالي الملاحظات",
+      "urgentItems": "العناصر العاجلة",
+      "responseRate": "معدل الاستجابة",
+      "newUnread": "جديدة / غير مقروءة"
+    },
+    "sections": {
+      "byCategory": "حسب الفئة",
+      "sentimentDistribution": "توزيع المشاعر",
+      "byStatus": "حسب الحالة",
+      "recentFeedback": "أحدث الملاحظات"
+    },
+    "empty": {
+      "noData": "لا توجد بيانات بعد.",
+      "noFeedback": "لا توجد ملاحظات بعد."
+    },
+    "status": {
+      "new": "جديدة",
+      "acknowledged": "تم الاطلاع",
+      "under_review": "قيد المراجعة",
+      "resolved": "تم الحل",
+      "archived": "مؤرشفة"
+    },
+    "category": {
+      "workplace": "بيئة العمل",
+      "management": "الإدارة",
+      "process": "العمليات",
+      "culture": "الثقافة",
+      "harassment": "التحرش",
+      "safety": "السلامة",
+      "suggestion": "اقتراح",
+      "other": "أخرى"
+    },
+    "sentiment": {
+      "positive": "إيجابي",
+      "neutral": "محايد",
+      "negative": "سلبي",
+      "unset": "غير محدد"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "إرسال ملاحظات"
+    },
+    "success": {
+      "title": "تم إرسال الملاحظات",
+      "description": "تم إرسال ملاحظاتك بشكل مجهول. لا يتم تخزين هويتك أو إظهارها لأي شخص. يمكنك التحقق من حالة ملاحظاتك في صفحة \"ملاحظاتي\".",
+      "submitAnother": "إرسال ملاحظات أخرى"
+    },
+    "anonymousBanner": {
+      "title": "ملاحظاتك مجهولة المصدر تمامًا",
+      "description": "يتم تشفير هويتك ولا يمكن تتبعها للوصول إليك. سيطّلع قسم الموارد البشرية على محتوى الملاحظات دون رؤية اسمك أو بريدك الإلكتروني أبدًا."
+    },
+    "field": {
+      "category": "الفئة",
+      "subject": "الموضوع",
+      "message": "الرسالة",
+      "subjectPlaceholder": "ملخص موجز لملاحظاتك",
+      "messagePlaceholder": "صف ملاحظاتك بالتفصيل...",
+      "markUrgent": "وضع علامة عاجل"
+    },
+    "action": {
+      "submit": "إرسال بشكل مجهول",
+      "submitting": "جارٍ الإرسال..."
+    },
+    "error": {
+      "submitFailed": "فشل إرسال الملاحظات. يرجى المحاولة مرة أخرى."
+    },
+    "category": {
+      "workplace": "مكان العمل",
+      "management": "الإدارة",
+      "process": "العمليات",
+      "culture": "الثقافة",
+      "harassment": "التحرش",
+      "safety": "السلامة",
+      "suggestion": "اقتراح",
+      "other": "أخرى"
+    }
+  },
+  "assetDetail": {
+    "loading": "جارٍ تحميل تفاصيل الأصل...",
+    "status": {
+      "available": "متاح",
+      "assigned": "مُسنَد",
+      "in_repair": "قيد الإصلاح",
+      "retired": "مسحوب من الخدمة",
+      "lost": "مفقود",
+      "damaged": "تالف"
+    },
+    "condition": {
+      "new": "جديد",
+      "good": "جيد",
+      "fair": "متوسط",
+      "poor": "ضعيف"
+    },
+    "action": {
+      "created": "تم الإنشاء",
+      "assigned": "تم الإسناد",
+      "returned": "تمت الإعادة",
+      "sent_to_repair": "أُرسل للإصلاح",
+      "repaired": "تم الإصلاح",
+      "retired": "تم السحب من الخدمة",
+      "lost": "فُقد",
+      "found": "تم العثور عليه",
+      "damaged": "تلف",
+      "updated": "تم التحديث"
+    },
+    "buttons": {
+      "edit": "تعديل",
+      "assign": "إسناد",
+      "return": "إعادة",
+      "sendForRepair": "إرسال للإصلاح",
+      "repairComplete": "اكتمال الإصلاح",
+      "retire": "سحب من الخدمة",
+      "reportLost": "الإبلاغ عن فقدان",
+      "markFound": "تحديد كموجود"
+    },
+    "info": {
+      "heading": "معلومات الأصل",
+      "assetTag": "وسم الأصل",
+      "category": "الفئة",
+      "uncategorized": "غير مصنَّف",
+      "serialNumber": "الرقم التسلسلي",
+      "brand": "العلامة التجارية",
+      "model": "الطراز",
+      "location": "الموقع",
+      "purchaseDate": "تاريخ الشراء",
+      "purchaseCost": "تكلفة الشراء",
+      "warrantyExpiry": "انتهاء الضمان",
+      "expiredSuffix": " (منتهٍ)",
+      "description": "الوصف",
+      "notes": "ملاحظات"
+    },
+    "assignment": {
+      "heading": "مُسنَد حاليًا",
+      "assignedTo": "مُسنَد إلى",
+      "assignedAt": "تاريخ الإسناد",
+      "assignedBy": "أسنده"
+    },
+    "history": {
+      "heading": "السجل",
+      "to": "إلى: {{name}}",
+      "from": "من: {{name}}",
+      "empty": "لا توجد إدخالات في السجل",
+      "deleteTitle": "حذف إدخال السجل"
+    },
+    "assignModal": {
+      "title": "إسناد الأصل",
+      "assignToLabel": "إسناد إلى *",
+      "selectEmployee": "اختر موظفًا",
+      "notesLabel": "ملاحظات",
+      "cancel": "إلغاء",
+      "submit": "إسناد",
+      "submitting": "جارٍ الإسناد..."
+    },
+    "returnModal": {
+      "title": "إعادة الأصل",
+      "conditionLabel": "الحالة عند الإعادة",
+      "notesLabel": "ملاحظات",
+      "cancel": "إلغاء",
+      "submit": "إعادة الأصل",
+      "submitting": "جارٍ الإعادة..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "سحب هذا الأصل من الخدمة؟",
+        "body": "يؤدي تقاعد الأصل إلى إخراجه من المخزون النشط. تبقى الإسنادات السابقة مسجلة لكن لا يمكن إسناد الأصل بعد ذلك.",
+        "confirmLabel": "سحب الأصل من الخدمة"
+      },
+      "lost": {
+        "title": "الإبلاغ عن الأصل كمفقود؟",
+        "body": "سيؤدي ذلك إلى تحديد الأصل كمفقود وتسجيله في سجل التدقيق. يمكنك تحديده كموجود لاحقًا من صفحة تفاصيل الأصل.",
+        "confirmLabel": "الإبلاغ كمفقود"
+      },
+      "found": {
+        "title": "تحديد الأصل كموجود؟",
+        "body": "سيؤدي ذلك إلى إعادة الأصل إلى المخزون النشط كمتاح، بحيث يمكن إعادة إسناده.",
+        "confirmLabel": "تحديد كموجود"
+      },
+      "repairStart": {
+        "title": "إرسال الأصل للإصلاح؟",
+        "bodyAssigned": "سيؤدي ذلك إلى إلغاء إسناد الأصل ونقله إلى 'قيد الإصلاح'. يبقى الحائز الحالي مسجلًا في السجل.",
+        "bodyDefault": "سيؤدي ذلك إلى نقل الأصل إلى 'قيد الإصلاح'. لن يكون قابلاً للإسناد حتى اكتمال الإصلاح.",
+        "confirmLabel": "إرسال للإصلاح"
+      },
+      "repairComplete": {
+        "title": "تحديد الإصلاح كمكتمل؟",
+        "body": "سيؤدي ذلك إلى إعادة الأصل إلى المخزون النشط كمتاح، بحيث يمكن إعادة إسناده.",
+        "confirmLabel": "تحديد كمُصلَح"
+      },
+      "cancel": "إلغاء",
+      "working": "جارٍ التنفيذ..."
+    },
+    "editModal": {
+      "title": "تعديل الأصل",
+      "nameLabel": "الاسم *",
+      "categoryLabel": "الفئة",
+      "uncategorized": "غير مصنَّف",
+      "serialNumberLabel": "الرقم التسلسلي",
+      "brandLabel": "العلامة التجارية",
+      "modelLabel": "الطراز",
+      "conditionLabel": "الحالة",
+      "purchaseDateLabel": "تاريخ الشراء",
+      "purchaseCostLabel": "تكلفة الشراء",
+      "purchaseCostHint": "المبلغ بالهللة.",
+      "warrantyExpiryLabel": "انتهاء الضمان",
+      "locationLabel": "الموقع",
+      "descriptionLabel": "الوصف",
+      "notesLabel": "ملاحظات",
+      "cancel": "إلغاء",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ..."
+    },
+    "conditionOptions": {
+      "new": "جديد",
+      "good": "جيد",
+      "fair": "متوسط",
+      "poor": "ضعيف"
+    },
+    "deleteHistory": {
+      "title": "حذف إدخال السجل؟",
+      "body": "يؤدي هذا إلى إزالة صف السجل هذا فقط. تبقى الحالة الحالية للأصل دون تغيير — ولا يتم التراجع عن الإسنادات أو الإجراءات السابقة.",
+      "cancel": "إلغاء",
+      "confirm": "حذف الإدخال",
+      "deleting": "جارٍ الحذف..."
+    },
+    "errors": {
+      "updateFailed": "فشل تحديث الأصل",
+      "deleteHistoryFailed": "فشل حذف إدخال السجل",
+      "warrantyBeforePurchase": "لا يمكن أن يكون تاريخ انتهاء الضمان قبل تاريخ الشراء.",
+      "retireFailed": "فشل تقاعد الأصل",
+      "reportLostFailed": "فشل الإبلاغ عن الأصل كمفقود",
+      "markFoundFailed": "فشل تحديد الأصل كموجود",
+      "sendToRepairFailed": "فشل إرسال الأصل للإصلاح",
+      "completeRepairFailed": "فشل إكمال الإصلاح"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "فئات الأصول",
+      "subtitle": "تنظيم الأصول حسب النوع"
+    },
+    "actions": {
+      "addCategory": "إضافة فئة",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "list": {
+      "loading": "جارٍ تحميل الفئات...",
+      "empty": "لا توجد فئات بعد. أنشئ أول فئة لك."
+    },
+    "table": {
+      "name": "الاسم",
+      "description": "الوصف",
+      "actions": "الإجراءات"
+    },
+    "form": {
+      "editTitle": "تعديل الفئة",
+      "newTitle": "فئة جديدة",
+      "nameLabel": "الاسم *",
+      "namePlaceholder": "مثال: حاسوب محمول، شاشة، هاتف",
+      "descriptionLabel": "الوصف",
+      "cancel": "إلغاء",
+      "update": "تحديث",
+      "create": "إنشاء"
+    },
+    "delete": {
+      "title": "إلغاء تنشيط الفئة؟",
+      "message": "إلغاء تنشيط {{name}}؟ تحتفظ الأصول الموجودة الموسومة بهذه الفئة بالوسم، لكن لا يمكن إضافة أصول جديدة إليها حتى تتم إعادة تنشيطها.",
+      "cancel": "إلغاء",
+      "confirm": "إلغاء التنشيط",
+      "inProgress": "جارٍ إلغاء التنشيط..."
+    },
+    "errors": {
+      "deactivateFailed": "فشل إلغاء تنشيط الفئة"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "أصولي",
+      "subtitle": "المعدات والأصول المخصصة لك"
+    },
+    "empty": {
+      "title": "لا توجد أصول مخصصة لك",
+      "description": "عندما تخصص لك مؤسستك معدات، ستظهر هنا."
+    },
+    "card": {
+      "serialNumber": "الرقم التسلسلي: {{serial}}",
+      "assigned": "تم التخصيص في {{date}}",
+      "warranty": "الضمان: {{date}}",
+      "warrantyExpiredSuffix": "(منتهٍ)"
+    },
+    "condition": {
+      "new": "جديد",
+      "good": "جيد",
+      "fair": "مقبول",
+      "poor": "ضعيف"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "ملغى",
+      "expired": "منتهي الصلاحية",
+      "active": "نشط"
+    },
+    "toast": {
+      "createError": "تعذر إنشاء مفتاح API",
+      "copyError": "تعذر النسخ — حدد وانسخ يدويًا",
+      "revokeSuccess": "تم إلغاء مفتاح API",
+      "revokeError": "تعذر إلغاء المفتاح"
+    },
+    "confirm": {
+      "revoke": "إلغاء \"{{name}}\"؟ سيتوقف أي تكامل يستخدمه عن العمل فورًا."
+    },
+    "heading": "مفاتيح API",
+    "newKeyButton": "مفتاح جديد",
+    "description": "أنشئ مفاتيح للوصول البرمجي إلى واجهات EmpCloud APIs. يعمل المفتاح الواحد عبر EmpCloud ووحدة Payroll، ويحمل صلاحيات المسؤول الذي أنشأه.",
+    "howTo": {
+      "title": "كيفية استخدام مفتاح API",
+      "intro": "المفتاح المُنشأ هو <strong>Bearer token</strong>. أرسله في ترويسة <code>Authorization</code> مع كل طلب API — تمامًا مثل رمز جلسة مستخدم مسجّل الدخول:",
+      "bulletBothSystems": "<strong>يعمل في كلا النظامين.</strong> يصادق الرمز نفسه على واجهات EmpCloud APIs وواجهات وحدة Payroll — دون الحاجة إلى تسجيل دخول منفصل أو تبادل رموز.",
+      "bulletInheritsPermissions": "<strong>يرث صلاحياتك.</strong> لا يمكن للمفتاح إلا ما يستطيع المسؤول الذي أنشأه فعله. ويعكس دائمًا الدور الحالي لذلك المسؤول — غيّر الدور فتتغير صلاحيات المفتاح تبعًا لذلك.",
+      "bulletShownOnce": "<strong>يُعرض مرة واحدة فقط.</strong> يُعرض المفتاح الكامل مرة واحدة عند الإنشاء. احفظه في مكان آمن (مدير أسرار) — فنحن نحتفظ بنسخة مجزّأة (hash) فقط ولا يمكننا عرضه مجددًا.",
+      "bulletRevocable": "<strong>قابل للإلغاء وانتهاء الصلاحية.</strong> عيّن تاريخ انتهاء اختياريًا، أو ألغِ المفتاح في أي وقت. تتوقف المفاتيح الملغاة أو منتهية الصلاحية عن العمل فورًا وفي كل مكان. تعامل مع المفتاح كأنه كلمة مرور — فأي شخص يمتلكه يمكنه التصرف بصلاحياتك."
+    },
+    "reveal": {
+      "warning": "انسخ هذا المفتاح الآن — لن يُعرض مجددًا.",
+      "copied": "تم النسخ",
+      "copy": "نسخ",
+      "dismissAria": "إغلاق",
+      "bearerHint": "استخدمه كـ Bearer token في ترويسة Authorization:"
+    },
+    "form": {
+      "nameLabel": "اسم المفتاح",
+      "namePlaceholder": "مثال: تصدير الحضور",
+      "expiresLabel": "ينتهي خلال (أيام)",
+      "expiresPlaceholder": "لا ينتهي",
+      "generating": "جارٍ الإنشاء…",
+      "generate": "إنشاء المفتاح",
+      "cancel": "إلغاء"
+    },
+    "list": {
+      "loading": "جارٍ تحميل المفاتيح…",
+      "empty": "لا توجد مفاتيح API بعد."
+    },
+    "table": {
+      "name": "الاسم",
+      "key": "المفتاح",
+      "status": "الحالة",
+      "lastUsed": "آخر استخدام",
+      "expires": "تنتهي الصلاحية",
+      "created": "تاريخ الإنشاء",
+      "neverExpires": "لا ينتهي"
+    },
+    "revokeAction": "إلغاء"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "اليوم",
+      "yesterday": "الأمس",
+      "last7": "آخر 7 أيام",
+      "last30": "آخر 30 يوماً",
+      "thisMonth": "هذا الشهر",
+      "lastMonth": "الشهر الماضي",
+      "customRange": "نطاق مخصص"
+    },
+    "trigger": {
+      "placeholder": "حدد النطاق الزمني"
+    },
+    "dialog": {
+      "ariaLabel": "اختر نطاقاً زمنياً"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "مسح",
+      "cancel": "إلغاء",
+      "apply": "تطبيق"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "استيراد الأصول بشكل مجمّع من CSV / Excel"
+    },
+    "actions": {
+      "downloadTemplate": "تنزيل القالب",
+      "close": "إغلاق",
+      "cancel": "إلغاء"
+    },
+    "upload": {
+      "requiredHint": "مطلوب: <0>name</0>. الأعمدة الأخرى اختيارية.",
+      "dropzoneTitle": "اسحب وأفلت ملف CSV أو Excel هنا",
+      "dropzoneSubtitle": "أو انقر للتصفح",
+      "tipsHeading": "نصائح:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> هو المبلغ بالبيسة (مثال: 150000 مقابل ₹1,500).",
+        "conditionStatus": "يجب أن يكون <0>condition_status</0> أحد القيم: new أو good أو fair أو poor.",
+        "categoryAutoCreate": "يتم إنشاء قيم <0>category_name</0> غير المعروفة تلقائيًا.",
+        "dateFormats": "تقبل التواريخ صيغة YYYY-MM-DD أو خلايا تاريخ Excel."
+      }
+    },
+    "importing": {
+      "message": "جارٍ استيراد الأصول... يُرجى الانتظار."
+    },
+    "done": {
+      "completeTitle": "اكتمل الاستيراد",
+      "rowError": "الصف {{row}}:",
+      "emptyFile": "لم يتم العثور على أي صفوف في الملف المُحمَّل.",
+      "importedCount_zero": "تم استيراد {{count}} أصول بنجاح.",
+      "importedCount_one": "تم استيراد {{count}} أصول بنجاح.",
+      "importedCount_two": "تم استيراد {{count}} أصول بنجاح.",
+      "importedCount_few": "تم استيراد {{count}} أصول بنجاح.",
+      "importedCount_many": "تم استيراد {{count}} أصلاً بنجاح.",
+      "importedCount_other": "تم استيراد {{count}} أصل بنجاح.",
+      "createdCategoriesTitle_zero": "{{count}} فئات جديدة تم إنشاؤها:",
+      "createdCategoriesTitle_one": "{{count}} فئات جديدة تم إنشاؤها:",
+      "createdCategoriesTitle_two": "{{count}} فئات جديدة تم إنشاؤها:",
+      "createdCategoriesTitle_few": "{{count}} فئات جديدة تم إنشاؤها:",
+      "createdCategoriesTitle_many": "{{count}} فئةً جديدةً تم إنشاؤها:",
+      "createdCategoriesTitle_other": "{{count}} فئة جديدة تم إنشاؤها:",
+      "skippedRows_zero": "تم تخطي {{count}} صفوف تحتوي على أخطاء",
+      "skippedRows_one": "تم تخطي {{count}} صفوف تحتوي على أخطاء",
+      "skippedRows_two": "تم تخطي {{count}} صفوف تحتوي على أخطاء",
+      "skippedRows_few": "تم تخطي {{count}} صفوف تحتوي على أخطاء",
+      "skippedRows_many": "تم تخطي {{count}} صفًا يحتوي على أخطاء",
+      "skippedRows_other": "تم تخطي {{count}} صف يحتوي على أخطاء"
+    },
+    "errors": {
+      "bulkImportFailed": "فشل الاستيراد المجمّع"
+    }
+  },
+  "customRolesField": {
+    "label": "الأدوار المخصصة",
+    "loading": "جارٍ التحميل…",
+    "emptyReadonly": "لا توجد أدوار مخصصة معيَّنة",
+    "helpText": "أدوار إضافية تمنح أذونات دقيقة إلى جانب الدور الأساسي لهذا المستخدم. أدِر الأدوار في",
+    "helpTextLink": "الإعدادات ← الأدوار والأذونات",
+    "removeAria": "إزالة {{name}}",
+    "placeholderEmpty": "انقر لتعيين دور مخصص…",
+    "placeholderMore": "إضافة دور آخر…",
+    "noneToAssign": "لا توجد أدوار مخصصة لتعيينها. أنشئ دورًا في الإعدادات ← الأدوار والأذونات.",
+    "noMatches": "لا توجد أدوار مطابقة",
+    "error": {
+      "requestFailed": "فشل الطلب"
+    },
+    "assignedCount_zero": "({{count}} معيَّن)",
+    "assignedCount_one": "({{count}} معيَّن)",
+    "assignedCount_two": "({{count}} معيَّن)",
+    "assignedCount_few": "({{count}} معيَّنة)",
+    "assignedCount_many": "({{count}} معيَّنًا)",
+    "assignedCount_other": "({{count}} معيَّن)",
+    "permissionCount_zero": "{{count}} إذن",
+    "permissionCount_one": "{{count}} إذن",
+    "permissionCount_two": "{{count}} إذن",
+    "permissionCount_few": "{{count}} أذونات",
+    "permissionCount_many": "{{count}} إذنًا",
+    "permissionCount_other": "{{count}} إذن"
   }
 }

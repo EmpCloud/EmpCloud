@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Headphones,
@@ -46,12 +47,15 @@ function useDashboard() {
 }
 
 export default function HelpdeskDashboardPage() {
+  const { t } = useTranslation();
   const { data: stats, isLoading } = useDashboard();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading helpdesk dashboard...</div>
+        <div className="text-gray-400">
+          {t("helpdeskDashboard.loading")}
+        </div>
       </div>
     );
   }
@@ -62,28 +66,28 @@ export default function HelpdeskDashboardPage() {
   // counts are clickable — fixes issue #1398.
   const statCards = [
     {
-      label: "Total Open",
+      label: t("helpdeskDashboard.stats.totalOpen"),
       value: stats.total_open,
       icon: Clock,
       color: "text-blue-600 bg-blue-50",
       href: "/helpdesk/tickets?status=open",
     },
     {
-      label: "In Progress",
+      label: t("helpdeskDashboard.stats.inProgress"),
       value: stats.in_progress + stats.awaiting_response,
       icon: Headphones,
       color: "text-yellow-600 bg-yellow-50",
       href: "/helpdesk/tickets?status=in_progress",
     },
     {
-      label: "Overdue (SLA Breached)",
+      label: t("helpdeskDashboard.stats.overdue"),
       value: stats.overdue,
       icon: AlertTriangle,
       color: "text-red-600 bg-red-50",
       href: "/helpdesk/tickets?sla=breached",
     },
     {
-      label: "Resolved Today",
+      label: t("helpdeskDashboard.stats.resolvedToday"),
       value: stats.resolved_today,
       icon: CheckCircle2,
       color: "text-green-600 bg-green-50",
@@ -100,16 +104,18 @@ export default function HelpdeskDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Helpdesk Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {t("helpdeskDashboard.title")}
+          </h1>
           <p className="text-gray-500 mt-1">
-            Overview of HR helpdesk tickets and SLA performance.
+            {t("helpdeskDashboard.subtitle")}
           </p>
         </div>
         <Link
           to="/helpdesk/tickets"
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          View All Tickets <ArrowRight className="h-4 w-4" />
+          {t("helpdeskDashboard.viewAllTickets")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
 
@@ -142,7 +148,7 @@ export default function HelpdeskDashboardPage() {
         {/* SLA Compliance */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" /> SLA Compliance
+            <BarChart3 className="h-4 w-4" /> {t("helpdeskDashboard.sla.compliance")}
           </h3>
           <div className="flex items-center justify-center">
             <div className="relative w-32 h-32">
@@ -174,21 +180,23 @@ export default function HelpdeskDashboardPage() {
             </div>
           </div>
           <p className="text-center text-xs text-gray-500 mt-3">
-            Tickets resolved within SLA
+            {t("helpdeskDashboard.sla.resolvedWithinSla")}
           </p>
         </div>
 
         {/* Avg Resolution Time */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <Clock className="h-4 w-4" /> Average Resolution Time
+            <Clock className="h-4 w-4" /> {t("helpdeskDashboard.metrics.avgResolutionTime")}
           </h3>
           <div className="flex items-center justify-center mt-4">
             <div className="text-center">
               <p className="text-4xl font-bold text-gray-900">
                 {stats.avg_resolution_hours}
               </p>
-              <p className="text-sm text-gray-500 mt-1">hours</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {t("helpdeskDashboard.metrics.hours")}
+              </p>
             </div>
           </div>
         </div>
@@ -196,7 +204,7 @@ export default function HelpdeskDashboardPage() {
         {/* Satisfaction */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <Star className="h-4 w-4" /> Satisfaction Rating
+            <Star className="h-4 w-4" /> {t("helpdeskDashboard.satisfaction.title")}
           </h3>
           <div className="flex items-center justify-center mt-4">
             <div className="text-center">
@@ -213,10 +221,12 @@ export default function HelpdeskDashboardPage() {
                 ))}
               </div>
               <p className="text-2xl font-bold text-gray-900">
-                {stats.avg_satisfaction ?? "N/A"}
+                {stats.avg_satisfaction ?? t("helpdeskDashboard.satisfaction.notAvailable")}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                {stats.rated_count} rating{stats.rated_count !== 1 ? "s" : ""}
+                {t("helpdeskDashboard.satisfaction.ratingCount", {
+                  count: stats.rated_count,
+                })}
               </p>
             </div>
           </div>
@@ -227,7 +237,7 @@ export default function HelpdeskDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">
-            Tickets by Category
+            {t("helpdeskDashboard.categoryBreakdown.title")}
           </h3>
           <div className="space-y-3">
             {stats.category_breakdown.map((cat: any) => (
@@ -237,7 +247,9 @@ export default function HelpdeskDashboardPage() {
                     CATEGORY_COLORS[cat.category] || "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {cat.category}
+                  {t(`helpdeskDashboard.category.${cat.category}`, {
+                    defaultValue: cat.category,
+                  })}
                 </span>
                 <div className="flex-1 bg-gray-100 rounded-full h-2">
                   <div
@@ -254,7 +266,7 @@ export default function HelpdeskDashboardPage() {
             ))}
             {stats.category_breakdown.length === 0 && (
               <p className="text-sm text-gray-400 text-center py-4">
-                No tickets yet
+                {t("helpdeskDashboard.emptyState.noTickets")}
               </p>
             )}
           </div>
@@ -263,45 +275,49 @@ export default function HelpdeskDashboardPage() {
         {/* Recent Tickets */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">
-            Recent Tickets
+            {t("helpdeskDashboard.recentTickets.title")}
           </h3>
           <div className="space-y-3">
-            {stats.recent_tickets.slice(0, 8).map((t: any) => (
+            {stats.recent_tickets.slice(0, 8).map((ticket: any) => (
               <Link
-                key={t.id}
-                to={`/helpdesk/tickets/${t.id}`}
+                key={ticket.id}
+                to={`/helpdesk/tickets/${ticket.id}`}
                 className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    #{t.id} {t.subject}
+                    #{ticket.id} {ticket.subject}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {t.raised_by_name} &middot;{" "}
-                    {new Date(t.created_at).toLocaleDateString()}
+                    {ticket.raised_by_name} &middot;{" "}
+                    {new Date(ticket.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 ml-3">
                   <span
                     className={`text-xs px-2 py-0.5 rounded font-medium ${
-                      PRIORITY_COLORS[t.priority] || ""
+                      PRIORITY_COLORS[ticket.priority] || ""
                     }`}
                   >
-                    {t.priority}
+                    {t(`helpdeskDashboard.priority.${ticket.priority}`, {
+                      defaultValue: ticket.priority,
+                    })}
                   </span>
                   <span
                     className={`text-xs px-2 py-0.5 rounded font-medium ${
-                      STATUS_COLORS[t.status] || ""
+                      STATUS_COLORS[ticket.status] || ""
                     }`}
                   >
-                    {t.status.replace("_", " ")}
+                    {t(`helpdeskDashboard.status.${ticket.status}`, {
+                      defaultValue: ticket.status.replace("_", " "),
+                    })}
                   </span>
                 </div>
               </Link>
             ))}
             {stats.recent_tickets.length === 0 && (
               <p className="text-sm text-gray-400 text-center py-4">
-                No tickets yet
+                {t("helpdeskDashboard.emptyState.noTickets")}
               </p>
             )}
           </div>

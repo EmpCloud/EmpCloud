@@ -5755,5 +5755,633 @@
       "noOptions": "Aucune option définie",
       "checkboxFallback": "Case à cocher"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "Chargement du tableau de bord du service d'assistance...",
+    "title": "Tableau de bord du service d'assistance",
+    "subtitle": "Vue d'ensemble des tickets du service d'assistance RH et des performances SLA.",
+    "viewAllTickets": "Voir tous les tickets",
+    "stats": {
+      "totalOpen": "Total ouverts",
+      "inProgress": "En cours",
+      "overdue": "En retard (SLA non respecté)",
+      "resolvedToday": "Résolus aujourd'hui"
+    },
+    "sla": {
+      "compliance": "Respect des SLA",
+      "resolvedWithinSla": "Tickets résolus dans les délais du SLA"
+    },
+    "metrics": {
+      "avgResolutionTime": "Temps de résolution moyen",
+      "hours": "heures"
+    },
+    "satisfaction": {
+      "title": "Note de satisfaction",
+      "notAvailable": "N/D",
+      "ratingCount_one": "{{count}} évaluation",
+      "ratingCount_other": "{{count}} évaluations"
+    },
+    "categoryBreakdown": {
+      "title": "Tickets par catégorie"
+    },
+    "recentTickets": {
+      "title": "Tickets récents"
+    },
+    "emptyState": {
+      "noTickets": "Aucun ticket pour le moment"
+    },
+    "category": {
+      "leave": "Congés",
+      "payroll": "Paie",
+      "benefits": "Avantages sociaux",
+      "it": "Informatique",
+      "facilities": "Locaux",
+      "onboarding": "Intégration",
+      "policy": "Politique",
+      "general": "Général"
+    },
+    "priority": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Ouvert",
+      "in_progress": "En cours",
+      "awaiting_response": "En attente de réponse",
+      "resolved": "Résolu",
+      "closed": "Fermé",
+      "reopened": "Rouvert"
+    }
+  },
+  "ticketDetail": {
+    "loading": "Chargement du ticket...",
+    "backToTickets": "Retour aux tickets",
+    "slaBreached": "SLA non respecté",
+    "raisedBy": "Créé par : {{name}}",
+    "created": "Créé le : {{date}}",
+    "assignedTo": "Assigné à : {{name}}",
+    "slaDeadlines": "Échéances SLA",
+    "firstResponse": "Première réponse :",
+    "responded": "Répondu le {{date}}",
+    "due": "Échéance {{date}}",
+    "resolution": "Résolution :",
+    "resolved": "Résolu le {{date}}",
+    "action": {
+      "assign": "Assigner",
+      "resolve": "Résoudre",
+      "close": "Fermer",
+      "reopen": "Rouvrir",
+      "rateService": "Évaluer le service"
+    },
+    "assign": {
+      "selectUser": "Sélectionner un utilisateur à assigner..."
+    },
+    "rating": {
+      "prompt": "Dans quelle mesure êtes-vous satisfait de la résolution ?",
+      "feedbackPlaceholder": "Commentaire supplémentaire (facultatif)",
+      "submit": "Envoyer l'évaluation"
+    },
+    "satisfaction": "Satisfaction :",
+    "conversation": "Conversation",
+    "internalNote": "Note interne",
+    "noComments": "Aucun commentaire pour le moment. Lancez la conversation ci-dessous.",
+    "replyPlaceholder": "Écrire une réponse...",
+    "internalNoteToggle": "Note interne (non visible par l'employé)",
+    "sending": "Envoi...",
+    "sendReply": "Envoyer la réponse",
+    "toast": {
+      "resolveSuccess": "Ticket marqué comme résolu.",
+      "resolveError": "Échec de la résolution du ticket.",
+      "closeSuccess": "Ticket fermé.",
+      "closeError": "Échec de la fermeture du ticket.",
+      "reopenSuccess": "Ticket rouvert.",
+      "reopenError": "Échec de la réouverture du ticket."
+    },
+    "priority": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Ouvert",
+      "in_progress": "En cours",
+      "awaiting_response": "En attente de réponse",
+      "resolved": "Résolu",
+      "closed": "Fermé",
+      "reopened": "Rouvert"
+    },
+    "category": {
+      "general": "Général",
+      "technical": "Technique",
+      "hr": "RH",
+      "payroll": "Paie",
+      "it": "Informatique",
+      "facilities": "Services généraux",
+      "other": "Autre"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "Mes retours",
+      "subtitle": "Consultez le statut de vos retours soumis anonymement ainsi que les réponses des RH."
+    },
+    "status": {
+      "new": "Nouveau",
+      "acknowledged": "Pris en compte",
+      "under_review": "En cours d'examen",
+      "resolved": "Résolu",
+      "archived": "Archivé"
+    },
+    "category": {
+      "workplace": "Environnement de travail",
+      "management": "Encadrement",
+      "process": "Processus",
+      "culture": "Culture",
+      "harassment": "Harcèlement",
+      "safety": "Sécurité",
+      "suggestion": "Suggestion",
+      "other": "Autre"
+    },
+    "empty": {
+      "title": "Aucun retour soumis pour le moment",
+      "description": "Partagez vos réflexions anonymement avec les RH.",
+      "submitCta": "Soumettre un retour"
+    },
+    "card": {
+      "urgentBadge": "Urgent",
+      "editButton": "Modifier",
+      "hrResponseLabel": "Réponse des RH",
+      "respondedOn": "Réponse envoyée le {{date}}"
+    },
+    "editModal": {
+      "title": "Modifier le retour",
+      "categoryLabel": "Catégorie",
+      "subjectLabel": "Objet",
+      "messageLabel": "Message",
+      "markUrgent": "Marquer comme urgent",
+      "cancel": "Annuler",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    },
+    "error": {
+      "updateFailed": "Échec de la mise à jour du retour"
+    },
+    "pagination": {
+      "summary": "Page {{page}} sur {{totalPages}} ({{total}} au total)",
+      "previous": "Précédent",
+      "next": "Suivant"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "Tableau de bord des retours",
+    "subtitle": "Aperçu des retours anonymes des employés.",
+    "loading": "Chargement du tableau de bord...",
+    "stats": {
+      "totalFeedback": "Total des retours",
+      "urgentItems": "Éléments urgents",
+      "responseRate": "Taux de réponse",
+      "newUnread": "Nouveaux / Non lus"
+    },
+    "sections": {
+      "byCategory": "Par catégorie",
+      "sentimentDistribution": "Répartition des sentiments",
+      "byStatus": "Par statut",
+      "recentFeedback": "Retours récents"
+    },
+    "empty": {
+      "noData": "Aucune donnée pour le moment.",
+      "noFeedback": "Aucun retour pour le moment."
+    },
+    "status": {
+      "new": "Nouveau",
+      "acknowledged": "Pris en compte",
+      "under_review": "En cours d'examen",
+      "resolved": "Résolu",
+      "archived": "Archivé"
+    },
+    "category": {
+      "workplace": "Lieu de travail",
+      "management": "Encadrement",
+      "process": "Processus",
+      "culture": "Culture",
+      "harassment": "Harcèlement",
+      "safety": "Sécurité",
+      "suggestion": "Suggestion",
+      "other": "Autre"
+    },
+    "sentiment": {
+      "positive": "Positif",
+      "neutral": "Neutre",
+      "negative": "Négatif",
+      "unset": "Non défini"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "Envoyer un commentaire"
+    },
+    "success": {
+      "title": "Commentaire envoyé",
+      "description": "Votre commentaire a été envoyé de manière anonyme. Votre identité n'est ni enregistrée ni visible par qui que ce soit. Vous pouvez suivre l'état de votre commentaire sur la page « Mes commentaires ».",
+      "submitAnother": "En envoyer un autre"
+    },
+    "anonymousBanner": {
+      "title": "Votre commentaire est entièrement anonyme",
+      "description": "Votre identité est hachée et ne peut pas être remontée jusqu'à vous. Les RH verront le contenu du commentaire, mais jamais votre nom ni votre e-mail."
+    },
+    "field": {
+      "category": "Catégorie",
+      "subject": "Objet",
+      "message": "Message",
+      "subjectPlaceholder": "Bref résumé de votre commentaire",
+      "messagePlaceholder": "Décrivez votre commentaire en détail...",
+      "markUrgent": "Marquer comme urgent"
+    },
+    "action": {
+      "submit": "Envoyer anonymement",
+      "submitting": "Envoi..."
+    },
+    "error": {
+      "submitFailed": "Échec de l'envoi du commentaire. Veuillez réessayer."
+    },
+    "category": {
+      "workplace": "Environnement de travail",
+      "management": "Direction",
+      "process": "Processus",
+      "culture": "Culture",
+      "harassment": "Harcèlement",
+      "safety": "Sécurité",
+      "suggestion": "Suggestion",
+      "other": "Autre"
+    }
+  },
+  "assetDetail": {
+    "loading": "Chargement des détails de l'actif...",
+    "status": {
+      "available": "Disponible",
+      "assigned": "Attribué",
+      "in_repair": "En réparation",
+      "retired": "Retiré",
+      "lost": "Perdu",
+      "damaged": "Endommagé"
+    },
+    "condition": {
+      "new": "Neuf",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Mauvais"
+    },
+    "action": {
+      "created": "Créé",
+      "assigned": "Attribué",
+      "returned": "Restitué",
+      "sent_to_repair": "Envoyé en réparation",
+      "repaired": "Réparé",
+      "retired": "Retiré",
+      "lost": "Perdu",
+      "found": "Retrouvé",
+      "damaged": "Endommagé",
+      "updated": "Mis à jour"
+    },
+    "buttons": {
+      "edit": "Modifier",
+      "assign": "Attribuer",
+      "return": "Restituer",
+      "sendForRepair": "Envoyer en réparation",
+      "repairComplete": "Réparation terminée",
+      "retire": "Retirer",
+      "reportLost": "Signaler perdu",
+      "markFound": "Marquer retrouvé"
+    },
+    "info": {
+      "heading": "Informations sur l'actif",
+      "assetTag": "Étiquette d'actif",
+      "category": "Catégorie",
+      "uncategorized": "Non catégorisé",
+      "serialNumber": "Numéro de série",
+      "brand": "Marque",
+      "model": "Modèle",
+      "location": "Emplacement",
+      "purchaseDate": "Date d'achat",
+      "purchaseCost": "Coût d'achat",
+      "warrantyExpiry": "Fin de garantie",
+      "expiredSuffix": " (Expirée)",
+      "description": "Description",
+      "notes": "Notes"
+    },
+    "assignment": {
+      "heading": "Actuellement attribué",
+      "assignedTo": "Attribué à",
+      "assignedAt": "Attribué le",
+      "assignedBy": "Attribué par"
+    },
+    "history": {
+      "heading": "Historique",
+      "to": "À : {{name}}",
+      "from": "De : {{name}}",
+      "empty": "Aucune entrée d'historique",
+      "deleteTitle": "Supprimer l'entrée d'historique"
+    },
+    "assignModal": {
+      "title": "Attribuer l'actif",
+      "assignToLabel": "Attribuer à *",
+      "selectEmployee": "Sélectionner un employé",
+      "notesLabel": "Notes",
+      "cancel": "Annuler",
+      "submit": "Attribuer",
+      "submitting": "Attribution..."
+    },
+    "returnModal": {
+      "title": "Restituer l'actif",
+      "conditionLabel": "État à la restitution",
+      "notesLabel": "Notes",
+      "cancel": "Annuler",
+      "submit": "Restituer l'actif",
+      "submitting": "Restitution..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "Retirer cet actif ?",
+        "body": "Retirer un actif le sort de l'inventaire actif. Les attributions passées restent enregistrées, mais l'actif ne peut plus être attribué.",
+        "confirmLabel": "Retirer l'actif"
+      },
+      "lost": {
+        "title": "Signaler l'actif comme perdu ?",
+        "body": "L'actif sera marqué comme perdu et enregistré dans l'historique d'audit. Vous pourrez le marquer comme retrouvé ultérieurement depuis la page de détail de l'actif.",
+        "confirmLabel": "Signaler comme perdu"
+      },
+      "found": {
+        "title": "Marquer l'actif comme retrouvé ?",
+        "body": "L'actif sera réintégré dans l'inventaire actif comme disponible, afin de pouvoir être réattribué.",
+        "confirmLabel": "Marquer comme retrouvé"
+      },
+      "repairStart": {
+        "title": "Envoyer l'actif en réparation ?",
+        "bodyAssigned": "L'attribution de l'actif sera annulée et son statut passera à « En réparation ». Le détenteur actuel reste enregistré dans l'historique.",
+        "bodyDefault": "Le statut de l'actif passera à « En réparation ». Il ne pourra pas être attribué tant que la réparation n'est pas terminée.",
+        "confirmLabel": "Envoyer en réparation"
+      },
+      "repairComplete": {
+        "title": "Marquer la réparation comme terminée ?",
+        "body": "L'actif sera réintégré dans l'inventaire actif comme disponible, afin de pouvoir être réattribué.",
+        "confirmLabel": "Marquer comme réparé"
+      },
+      "cancel": "Annuler",
+      "working": "Traitement..."
+    },
+    "editModal": {
+      "title": "Modifier l'actif",
+      "nameLabel": "Nom *",
+      "categoryLabel": "Catégorie",
+      "uncategorized": "Non catégorisé",
+      "serialNumberLabel": "Numéro de série",
+      "brandLabel": "Marque",
+      "modelLabel": "Modèle",
+      "conditionLabel": "État",
+      "purchaseDateLabel": "Date d'achat",
+      "purchaseCostLabel": "Coût d'achat",
+      "purchaseCostHint": "Montant en paise.",
+      "warrantyExpiryLabel": "Fin de garantie",
+      "locationLabel": "Emplacement",
+      "descriptionLabel": "Description",
+      "notesLabel": "Notes",
+      "cancel": "Annuler",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    },
+    "conditionOptions": {
+      "new": "Neuf",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Mauvais"
+    },
+    "deleteHistory": {
+      "title": "Supprimer l'entrée d'historique ?",
+      "body": "Cela supprime uniquement cette ligne de journal. Le statut actuel de l'actif reste inchangé — les attributions ou actions passées ne sont pas annulées.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer l'entrée",
+      "deleting": "Suppression..."
+    },
+    "errors": {
+      "updateFailed": "Échec de la mise à jour de l'actif",
+      "deleteHistoryFailed": "Échec de la suppression de l'entrée d'historique",
+      "warrantyBeforePurchase": "La fin de garantie ne peut pas être antérieure à la date d'achat.",
+      "retireFailed": "Échec du retrait de l'actif",
+      "reportLostFailed": "Échec du signalement de l'actif comme perdu",
+      "markFoundFailed": "Échec du marquage de l'actif comme retrouvé",
+      "sendToRepairFailed": "Échec de l'envoi de l'actif en réparation",
+      "completeRepairFailed": "Échec de la finalisation de la réparation"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "Catégories d'actifs",
+      "subtitle": "Organisez les actifs par type"
+    },
+    "actions": {
+      "addCategory": "Ajouter une catégorie",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "list": {
+      "loading": "Chargement des catégories...",
+      "empty": "Aucune catégorie pour le moment. Créez la première."
+    },
+    "table": {
+      "name": "Nom",
+      "description": "Description",
+      "actions": "Actions"
+    },
+    "form": {
+      "editTitle": "Modifier la catégorie",
+      "newTitle": "Nouvelle catégorie",
+      "nameLabel": "Nom *",
+      "namePlaceholder": "ex. Ordinateur portable, Écran, Téléphone",
+      "descriptionLabel": "Description",
+      "cancel": "Annuler",
+      "update": "Mettre à jour",
+      "create": "Créer"
+    },
+    "delete": {
+      "title": "Désactiver la catégorie ?",
+      "message": "Désactiver {{name}} ? Les actifs existants associés à cette catégorie conservent leur étiquette, mais aucun nouvel actif ne peut y être ajouté tant qu'elle n'est pas restaurée.",
+      "cancel": "Annuler",
+      "confirm": "Désactiver",
+      "inProgress": "Désactivation..."
+    },
+    "errors": {
+      "deactivateFailed": "Échec de la désactivation de la catégorie"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "Mes actifs",
+      "subtitle": "Équipements et actifs qui vous sont attribués"
+    },
+    "empty": {
+      "title": "Aucun actif ne vous est attribué",
+      "description": "Lorsque votre organisation vous attribuera des équipements, ils apparaîtront ici."
+    },
+    "card": {
+      "serialNumber": "N° de série : {{serial}}",
+      "assigned": "Attribué le {{date}}",
+      "warranty": "Garantie : {{date}}",
+      "warrantyExpiredSuffix": "(Expirée)"
+    },
+    "condition": {
+      "new": "Neuf",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Mauvais"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "Révoquée",
+      "expired": "Expirée",
+      "active": "Active"
+    },
+    "toast": {
+      "createError": "Échec de la création de la clé API",
+      "copyError": "Copie impossible — sélectionnez et copiez manuellement",
+      "revokeSuccess": "Clé API révoquée",
+      "revokeError": "Échec de la révocation de la clé"
+    },
+    "confirm": {
+      "revoke": "Révoquer « {{name}} » ? Toute intégration qui l'utilise cessera immédiatement de fonctionner."
+    },
+    "heading": "Clés API",
+    "newKeyButton": "Nouvelle clé",
+    "description": "Générez des clés pour un accès programmatique aux API EmpCloud. Une même clé fonctionne dans EmpCloud et le module Payroll, et hérite des autorisations de l'administrateur qui l'a créée.",
+    "howTo": {
+      "title": "Comment utiliser votre clé API",
+      "intro": "La clé générée est un <strong>jeton Bearer</strong>. Envoyez-la dans l'en-tête <code>Authorization</code> de chaque requête API — exactement comme un jeton de session authentifiée :",
+      "bulletBothSystems": "<strong>Fonctionne dans les deux systèmes.</strong> Le même jeton s'authentifie auprès des API EmpCloud et des API du module Payroll — aucune connexion ni échange de jeton distinct n'est nécessaire.",
+      "bulletInheritsPermissions": "<strong>Hérite de vos autorisations.</strong> Une clé ne peut faire que ce que l'administrateur qui l'a créée peut faire. Elle reflète toujours le rôle actuel de cet administrateur — modifiez le rôle et l'accès de la clé change en conséquence.",
+      "bulletShownOnce": "<strong>Affichée une seule fois.</strong> La clé complète n'est affichée qu'une seule fois, lors de sa création. Conservez-la en lieu sûr (un gestionnaire de secrets) — nous n'en gardons qu'une copie hachée et ne pouvons plus l'afficher.",
+      "bulletRevocable": "<strong>Révocable et expirable.</strong> Définissez une expiration facultative, ou révoquez une clé à tout moment. Les clés révoquées ou expirées cessent immédiatement de fonctionner, partout. Traitez une clé comme un mot de passe — quiconque la détient peut agir avec vos autorisations."
+    },
+    "reveal": {
+      "warning": "Copiez cette clé maintenant — elle ne sera plus affichée.",
+      "copied": "Copiée",
+      "copy": "Copier",
+      "dismissAria": "Fermer",
+      "bearerHint": "Utilisez-la comme jeton Bearer dans l'en-tête Authorization :"
+    },
+    "form": {
+      "nameLabel": "Nom de la clé",
+      "namePlaceholder": "ex. Export des présences",
+      "expiresLabel": "Expire dans (jours)",
+      "expiresPlaceholder": "Jamais",
+      "generating": "Génération…",
+      "generate": "Générer la clé",
+      "cancel": "Annuler"
+    },
+    "list": {
+      "loading": "Chargement des clés…",
+      "empty": "Aucune clé API pour l'instant."
+    },
+    "table": {
+      "name": "Nom",
+      "key": "Clé",
+      "status": "Statut",
+      "lastUsed": "Dernière utilisation",
+      "expires": "Expiration",
+      "created": "Créée le",
+      "neverExpires": "Jamais"
+    },
+    "revokeAction": "Révoquer"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "last7": "7 derniers jours",
+      "last30": "30 derniers jours",
+      "thisMonth": "Ce mois-ci",
+      "lastMonth": "Le mois dernier",
+      "customRange": "Plage personnalisée"
+    },
+    "trigger": {
+      "placeholder": "Sélectionner une plage de dates"
+    },
+    "dialog": {
+      "ariaLabel": "Choisir une plage de dates"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "Effacer",
+      "cancel": "Annuler",
+      "apply": "Appliquer"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "Importer des actifs en masse depuis CSV / Excel"
+    },
+    "actions": {
+      "downloadTemplate": "Télécharger le modèle",
+      "close": "Fermer",
+      "cancel": "Annuler"
+    },
+    "upload": {
+      "requiredHint": "Obligatoire : <0>name</0>. Les autres colonnes sont facultatives.",
+      "dropzoneTitle": "Glissez-déposez votre fichier CSV ou Excel ici",
+      "dropzoneSubtitle": "ou cliquez pour parcourir",
+      "tipsHeading": "Conseils :",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> correspond au montant en paise (par ex. 150000 pour 1 500 ₹).",
+        "conditionStatus": "<0>condition_status</0> doit être l'une des valeurs suivantes : new, good, fair, poor.",
+        "categoryAutoCreate": "Les valeurs <0>category_name</0> inconnues sont créées automatiquement.",
+        "dateFormats": "Les dates acceptent le format AAAA-MM-JJ ou les cellules de date Excel."
+      }
+    },
+    "importing": {
+      "message": "Importation des actifs... veuillez patienter."
+    },
+    "done": {
+      "completeTitle": "Importation terminée",
+      "rowError": "Ligne {{row}} :",
+      "emptyFile": "Aucune ligne trouvée dans le fichier téléversé.",
+      "importedCount_one": "{{count}} actif importé avec succès.",
+      "importedCount_other": "{{count}} actifs importés avec succès.",
+      "createdCategoriesTitle_one": "Nouvelle catégorie créée ({{count}}) :",
+      "createdCategoriesTitle_other": "Nouvelles catégories créées ({{count}}) :",
+      "skippedRows_one": "{{count}} ligne ignorée en raison d'erreurs",
+      "skippedRows_other": "{{count}} lignes ignorées en raison d'erreurs"
+    },
+    "errors": {
+      "bulkImportFailed": "Échec de l'importation en masse"
+    }
+  },
+  "customRolesField": {
+    "label": "Rôles personnalisés",
+    "loading": "Chargement…",
+    "emptyReadonly": "Aucun rôle personnalisé attribué",
+    "helpText": "Rôles supplémentaires qui accordent des autorisations précises en plus du rôle principal de cet utilisateur. Gérez les rôles dans",
+    "helpTextLink": "Paramètres → Rôles et autorisations",
+    "removeAria": "Supprimer {{name}}",
+    "placeholderEmpty": "Cliquez pour attribuer un rôle personnalisé…",
+    "placeholderMore": "Ajouter un autre rôle…",
+    "noneToAssign": "Aucun rôle personnalisé à attribuer. Créez-en un dans Paramètres → Rôles et autorisations.",
+    "noMatches": "Aucun rôle correspondant",
+    "error": {
+      "requestFailed": "Échec de la requête"
+    },
+    "assignedCount_one": "({{count}} attribué)",
+    "assignedCount_other": "({{count}} attribués)",
+    "permissionCount_one": "{{count}} autorisation",
+    "permissionCount_other": "{{count}} autorisations"
   }
 }

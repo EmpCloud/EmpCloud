@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
@@ -53,6 +54,7 @@ const ACTION_COLORS: Record<string, string> = {
 };
 
 export default function AssetDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
@@ -134,7 +136,7 @@ export default function AssetDetailPage() {
       setEditError(null);
     },
     onError: (err: any) =>
-      setEditError(err?.response?.data?.error?.message || "Failed to update asset"),
+      setEditError(err?.response?.data?.error?.message || t("assetDetail.errors.updateFailed")),
   });
 
   const deleteHistoryMutation = useMutation({
@@ -147,7 +149,7 @@ export default function AssetDetailPage() {
     },
     onError: (err: any) =>
       setHistoryDeleteError(
-        err?.response?.data?.error?.message || "Failed to delete history entry",
+        err?.response?.data?.error?.message || t("assetDetail.errors.deleteHistoryFailed"),
       ),
   });
 
@@ -186,7 +188,7 @@ export default function AssetDetailPage() {
       editForm.warranty_expiry &&
       editForm.warranty_expiry < editForm.purchase_date
     ) {
-      setEditError("Warranty expiry cannot be before the purchase date.");
+      setEditError(t("assetDetail.errors.warrantyBeforePurchase"));
       return;
     }
     updateMutation.mutate({
@@ -234,7 +236,7 @@ export default function AssetDetailPage() {
       setConfirmError(null);
     },
     onError: (err: any) =>
-      setConfirmError(err?.response?.data?.error?.message || "Failed to retire asset"),
+      setConfirmError(err?.response?.data?.error?.message || t("assetDetail.errors.retireFailed")),
   });
 
   const reportLostMutation = useMutation({
@@ -245,7 +247,7 @@ export default function AssetDetailPage() {
       setConfirmError(null);
     },
     onError: (err: any) =>
-      setConfirmError(err?.response?.data?.error?.message || "Failed to report asset as lost"),
+      setConfirmError(err?.response?.data?.error?.message || t("assetDetail.errors.reportLostFailed")),
   });
 
   const markFoundMutation = useMutation({
@@ -256,7 +258,7 @@ export default function AssetDetailPage() {
       setConfirmError(null);
     },
     onError: (err: any) =>
-      setConfirmError(err?.response?.data?.error?.message || "Failed to mark asset as found"),
+      setConfirmError(err?.response?.data?.error?.message || t("assetDetail.errors.markFoundFailed")),
   });
 
   const sendToRepairMutation = useMutation({
@@ -268,7 +270,7 @@ export default function AssetDetailPage() {
       setConfirmError(null);
     },
     onError: (err: any) =>
-      setConfirmError(err?.response?.data?.error?.message || "Failed to send asset to repair"),
+      setConfirmError(err?.response?.data?.error?.message || t("assetDetail.errors.sendToRepairFailed")),
   });
 
   const completeRepairMutation = useMutation({
@@ -280,13 +282,13 @@ export default function AssetDetailPage() {
       setConfirmError(null);
     },
     onError: (err: any) =>
-      setConfirmError(err?.response?.data?.error?.message || "Failed to complete repair"),
+      setConfirmError(err?.response?.data?.error?.message || t("assetDetail.errors.completeRepairFailed")),
   });
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading asset details...</div>
+        <div className="text-gray-400">{t("assetDetail.loading")}</div>
       </div>
     );
   }
@@ -305,10 +307,10 @@ export default function AssetDetailPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-gray-900">{asset.asset_tag}</h1>
             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_COLORS[asset.status] || "bg-gray-100"}`}>
-              {asset.status.replace(/_/g, " ")}
+              {t(`assetDetail.status.${asset.status}`, { defaultValue: asset.status.replace(/_/g, " ") })}
             </span>
             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-gray-100"}`}>
-              {asset.condition_status}
+              {t(`assetDetail.condition.${asset.condition_status}`, { defaultValue: asset.condition_status })}
             </span>
           </div>
           <p className="text-gray-500 mt-1">{asset.name}</p>
@@ -320,7 +322,7 @@ export default function AssetDetailPage() {
               className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
             >
               <Pencil className="h-4 w-4" />
-              Edit
+              {t("assetDetail.buttons.edit")}
             </button>
             {asset.status === "available" && (
               <button
@@ -328,7 +330,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
               >
                 <UserCheck className="h-4 w-4" />
-                Assign
+                {t("assetDetail.buttons.assign")}
               </button>
             )}
             {asset.status === "assigned" && (
@@ -337,7 +339,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium"
               >
                 <RotateCcw className="h-4 w-4" />
-                Return
+                {t("assetDetail.buttons.return")}
               </button>
             )}
             {(asset.status === "available" || asset.status === "assigned") && (
@@ -349,7 +351,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 border border-yellow-200 text-yellow-700 rounded-lg hover:bg-yellow-50 text-sm font-medium"
               >
                 <Wrench className="h-4 w-4" />
-                Send for Repair
+                {t("assetDetail.buttons.sendForRepair")}
               </button>
             )}
             {asset.status === "in_repair" && (
@@ -361,7 +363,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
               >
                 <CheckCircle className="h-4 w-4" />
-                Repair Complete
+                {t("assetDetail.buttons.repairComplete")}
               </button>
             )}
             {asset.status !== "retired" && asset.status !== "lost" && (
@@ -374,7 +376,7 @@ export default function AssetDetailPage() {
                   className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 text-sm font-medium"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Retire
+                  {t("assetDetail.buttons.retire")}
                 </button>
                 <button
                   onClick={() => {
@@ -384,7 +386,7 @@ export default function AssetDetailPage() {
                   className="inline-flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
                 >
                   <AlertTriangle className="h-4 w-4" />
-                  Report Lost
+                  {t("assetDetail.buttons.reportLost")}
                 </button>
               </>
             )}
@@ -397,7 +399,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
               >
                 <PackageCheck className="h-4 w-4" />
-                Mark Found
+                {t("assetDetail.buttons.markFound")}
               </button>
             )}
           </div>
@@ -408,43 +410,43 @@ export default function AssetDetailPage() {
         {/* Asset Details */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Asset Information</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("assetDetail.info.heading")}</h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-8">
               <div>
-                <p className="text-xs text-gray-500 mb-1">Asset Tag</p>
+                <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.assetTag")}</p>
                 <div className="flex items-center gap-2">
                   <Hash className="h-4 w-4 text-gray-400" />
                   <p className="text-sm font-medium text-gray-900">{asset.asset_tag}</p>
                 </div>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Category</p>
+                <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.category")}</p>
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4 text-gray-400" />
-                  <p className="text-sm text-gray-900">{asset.category_name || "Uncategorized"}</p>
+                  <p className="text-sm text-gray-900">{asset.category_name || t("assetDetail.info.uncategorized")}</p>
                 </div>
               </div>
               {asset.serial_number && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Serial Number</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.serialNumber")}</p>
                   <p className="text-sm text-gray-900">{asset.serial_number}</p>
                 </div>
               )}
               {asset.brand && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Brand</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.brand")}</p>
                   <p className="text-sm text-gray-900">{asset.brand}</p>
                 </div>
               )}
               {asset.model && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Model</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.model")}</p>
                   <p className="text-sm text-gray-900">{asset.model}</p>
                 </div>
               )}
               {asset.location_name && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Location</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.location")}</p>
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-gray-400" />
                     <p className="text-sm text-gray-900">{asset.location_name}</p>
@@ -453,7 +455,7 @@ export default function AssetDetailPage() {
               )}
               {asset.purchase_date && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Purchase Date</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.purchaseDate")}</p>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <p className="text-sm text-gray-900">{new Date(asset.purchase_date).toLocaleDateString()}</p>
@@ -462,7 +464,7 @@ export default function AssetDetailPage() {
               )}
               {asset.purchase_cost != null && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Purchase Cost</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.purchaseCost")}</p>
                   <p className="text-sm text-gray-900">
                     {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
                       Number(asset.purchase_cost) / 100,
@@ -472,12 +474,12 @@ export default function AssetDetailPage() {
               )}
               {asset.warranty_expiry && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Warranty Expiry</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.warrantyExpiry")}</p>
                   <div className="flex items-center gap-2">
                     <Shield className={`h-4 w-4 ${warrantyExpired ? "text-red-500" : "text-green-500"}`} />
                     <p className={`text-sm ${warrantyExpired ? "text-red-600 font-medium" : "text-gray-900"}`}>
                       {new Date(asset.warranty_expiry).toLocaleDateString()}
-                      {warrantyExpired && " (Expired)"}
+                      {warrantyExpired && t("assetDetail.info.expiredSuffix")}
                     </p>
                   </div>
                 </div>
@@ -485,13 +487,13 @@ export default function AssetDetailPage() {
             </div>
             {asset.description && (
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-1">Description</p>
+                <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.description")}</p>
                 <p className="text-sm text-gray-700">{asset.description}</p>
               </div>
             )}
             {asset.notes && (
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-1">Notes</p>
+                <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.notes")}</p>
                 <p className="text-sm text-gray-700">{asset.notes}</p>
               </div>
             )}
@@ -500,21 +502,21 @@ export default function AssetDetailPage() {
           {/* Assignment Info */}
           {asset.status === "assigned" && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-blue-900 mb-3">Currently Assigned</h2>
+              <h2 className="text-lg font-semibold text-blue-900 mb-3">{t("assetDetail.assignment.heading")}</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-blue-600 mb-1">Assigned To</p>
+                  <p className="text-xs text-blue-600 mb-1">{t("assetDetail.assignment.assignedTo")}</p>
                   <p className="text-sm font-medium text-blue-900">{asset.assigned_to_name}</p>
                 </div>
                 {asset.assigned_at && (
                   <div>
-                    <p className="text-xs text-blue-600 mb-1">Assigned At</p>
+                    <p className="text-xs text-blue-600 mb-1">{t("assetDetail.assignment.assignedAt")}</p>
                     <p className="text-sm text-blue-900">{new Date(asset.assigned_at).toLocaleString()}</p>
                   </div>
                 )}
                 {asset.assigned_by_name && (
                   <div>
-                    <p className="text-xs text-blue-600 mb-1">Assigned By</p>
+                    <p className="text-xs text-blue-600 mb-1">{t("assetDetail.assignment.assignedBy")}</p>
                     <p className="text-sm text-blue-900">{asset.assigned_by_name}</p>
                   </div>
                 )}
@@ -527,7 +529,7 @@ export default function AssetDetailPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">History</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("assetDetail.history.heading")}</h2>
           </div>
           {asset.history && asset.history.length > 0 ? (
             <div className="relative">
@@ -538,12 +540,12 @@ export default function AssetDetailPage() {
                     <div className={`absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border-2 border-white ${ACTION_COLORS[entry.action] || "bg-gray-400"}`} />
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 capitalize">{entry.action}</p>
+                        <p className="text-sm font-medium text-gray-900 capitalize">{t(`assetDetail.action.${entry.action}`, { defaultValue: entry.action })}</p>
                         {entry.to_user_name && (
-                          <p className="text-xs text-gray-600">To: {entry.to_user_name}</p>
+                          <p className="text-xs text-gray-600">{t("assetDetail.history.to", { name: entry.to_user_name })}</p>
                         )}
                         {entry.from_user_name && (
-                          <p className="text-xs text-gray-600">From: {entry.from_user_name}</p>
+                          <p className="text-xs text-gray-600">{t("assetDetail.history.from", { name: entry.from_user_name })}</p>
                         )}
                         {entry.notes && (
                           <p className="text-xs text-gray-500 mt-0.5">{entry.notes}</p>
@@ -563,8 +565,8 @@ export default function AssetDetailPage() {
                             setHistoryDeleteId(entry.id);
                             setHistoryDeleteError(null);
                           }}
-                          title="Delete history entry"
-                          aria-label="Delete history entry"
+                          title={t("assetDetail.history.deleteTitle")}
+                          aria-label={t("assetDetail.history.deleteTitle")}
                           className="p-1 rounded text-gray-400 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -576,7 +578,7 @@ export default function AssetDetailPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-400">No history entries</p>
+            <p className="text-sm text-gray-400">{t("assetDetail.history.empty")}</p>
           )}
         </div>
       </div>
@@ -586,7 +588,7 @@ export default function AssetDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Assign Asset</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("assetDetail.assignModal.title")}</h2>
               <button onClick={() => setShowAssignModal(false)} className="p-1 rounded hover:bg-gray-100">
                 <X className="h-5 w-5 text-gray-400" />
               </button>
@@ -602,14 +604,14 @@ export default function AssetDetailPage() {
               className="p-6 space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Assign To *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.assignModal.assignToLabel")}</label>
                 <select
                   required
                   value={assignUserId}
                   onChange={(e) => setAssignUserId(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  <option value="">Select employee</option>
+                  <option value="">{t("assetDetail.assignModal.selectEmployee")}</option>
                   {(users || []).map((u: any) => (
                     <option key={u.id} value={u.id}>
                       {u.first_name} {u.last_name} ({u.email})
@@ -618,7 +620,7 @@ export default function AssetDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.assignModal.notesLabel")}</label>
                 <textarea
                   value={assignNotes}
                   onChange={(e) => setAssignNotes(e.target.value)}
@@ -632,14 +634,14 @@ export default function AssetDetailPage() {
                   onClick={() => setShowAssignModal(false)}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("assetDetail.assignModal.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={assignMutation.isPending}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {assignMutation.isPending ? "Assigning..." : "Assign"}
+                  {assignMutation.isPending ? t("assetDetail.assignModal.submitting") : t("assetDetail.assignModal.submit")}
                 </button>
               </div>
             </form>
@@ -652,7 +654,7 @@ export default function AssetDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Return Asset</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("assetDetail.returnModal.title")}</h2>
               <button onClick={() => setShowReturnModal(false)} className="p-1 rounded hover:bg-gray-100">
                 <X className="h-5 w-5 text-gray-400" />
               </button>
@@ -668,20 +670,20 @@ export default function AssetDetailPage() {
               className="p-6 space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Condition on Return</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.returnModal.conditionLabel")}</label>
                 <select
                   value={returnCondition}
                   onChange={(e) => setReturnCondition(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  <option value="new">New</option>
-                  <option value="good">Good</option>
-                  <option value="fair">Fair</option>
-                  <option value="poor">Poor</option>
+                  <option value="new">{t("assetDetail.conditionOptions.new")}</option>
+                  <option value="good">{t("assetDetail.conditionOptions.good")}</option>
+                  <option value="fair">{t("assetDetail.conditionOptions.fair")}</option>
+                  <option value="poor">{t("assetDetail.conditionOptions.poor")}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.returnModal.notesLabel")}</label>
                 <textarea
                   value={returnNotes}
                   onChange={(e) => setReturnNotes(e.target.value)}
@@ -695,14 +697,14 @@ export default function AssetDetailPage() {
                   onClick={() => setShowReturnModal(false)}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("assetDetail.returnModal.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={returnMutation.isPending}
                   className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50"
                 >
-                  {returnMutation.isPending ? "Returning..." : "Return Asset"}
+                  {returnMutation.isPending ? t("assetDetail.returnModal.submitting") : t("assetDetail.returnModal.submit")}
                 </button>
               </div>
             </form>
@@ -715,48 +717,48 @@ export default function AssetDetailPage() {
         const CONFIG = {
           retire: {
             mutation: retireMutation,
-            title: "Retire this asset?",
-            body: "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.",
-            confirmLabel: "Retire Asset",
+            title: t("assetDetail.confirm.retire.title"),
+            body: t("assetDetail.confirm.retire.body"),
+            confirmLabel: t("assetDetail.confirm.retire.confirmLabel"),
             iconColor: "text-gray-600 bg-gray-100",
             confirmBtn: "bg-gray-900 hover:bg-black",
             Icon: Trash2,
           },
           lost: {
             mutation: reportLostMutation,
-            title: "Report asset as lost?",
-            body: "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page.",
-            confirmLabel: "Report as Lost",
+            title: t("assetDetail.confirm.lost.title"),
+            body: t("assetDetail.confirm.lost.body"),
+            confirmLabel: t("assetDetail.confirm.lost.confirmLabel"),
             iconColor: "text-red-600 bg-red-50",
             confirmBtn: "bg-red-600 hover:bg-red-700",
             Icon: AlertTriangle,
           },
           found: {
             mutation: markFoundMutation,
-            title: "Mark asset as found?",
-            body: "This will return the asset to active inventory as available, so it can be reassigned.",
-            confirmLabel: "Mark as Found",
+            title: t("assetDetail.confirm.found.title"),
+            body: t("assetDetail.confirm.found.body"),
+            confirmLabel: t("assetDetail.confirm.found.confirmLabel"),
             iconColor: "text-green-600 bg-green-50",
             confirmBtn: "bg-green-600 hover:bg-green-700",
             Icon: PackageCheck,
           },
           repair_start: {
             mutation: sendToRepairMutation,
-            title: "Send asset for repair?",
+            title: t("assetDetail.confirm.repairStart.title"),
             body:
               asset.status === "assigned"
-                ? "This will unassign the asset and move it to 'In Repair'. The current holder stays recorded in the history."
-                : "This will move the asset to 'In Repair'. It won't be assignable until repair is complete.",
-            confirmLabel: "Send for Repair",
+                ? t("assetDetail.confirm.repairStart.bodyAssigned")
+                : t("assetDetail.confirm.repairStart.bodyDefault"),
+            confirmLabel: t("assetDetail.confirm.repairStart.confirmLabel"),
             iconColor: "text-yellow-700 bg-yellow-50",
             confirmBtn: "bg-yellow-600 hover:bg-yellow-700",
             Icon: Wrench,
           },
           repair_complete: {
             mutation: completeRepairMutation,
-            title: "Mark repair as complete?",
-            body: "This will return the asset to active inventory as available, so it can be reassigned.",
-            confirmLabel: "Mark as Repaired",
+            title: t("assetDetail.confirm.repairComplete.title"),
+            body: t("assetDetail.confirm.repairComplete.body"),
+            confirmLabel: t("assetDetail.confirm.repairComplete.confirmLabel"),
             iconColor: "text-green-600 bg-green-50",
             confirmBtn: "bg-green-600 hover:bg-green-700",
             Icon: CheckCircle,
@@ -807,7 +809,7 @@ export default function AssetDetailPage() {
                   disabled={pending}
                   className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
                 >
-                  Cancel
+                  {t("assetDetail.confirm.cancel")}
                 </button>
                 <button
                   type="button"
@@ -817,7 +819,7 @@ export default function AssetDetailPage() {
                 >
                   {pending ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Working...
+                      <Loader2 className="h-4 w-4 animate-spin" /> {t("assetDetail.confirm.working")}
                     </>
                   ) : (
                     confirmLabel
@@ -840,7 +842,7 @@ export default function AssetDetailPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Edit Asset</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("assetDetail.editModal.title")}</h2>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="p-1 rounded hover:bg-gray-100"
@@ -851,7 +853,7 @@ export default function AssetDetailPage() {
             <form onSubmit={submitEdit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.nameLabel")}</label>
                   <input
                     type="text"
                     required
@@ -861,13 +863,13 @@ export default function AssetDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.categoryLabel")}</label>
                   <select
                     value={editForm.category_id}
                     onChange={(e) => setEditForm({ ...editForm, category_id: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="">Uncategorized</option>
+                    <option value="">{t("assetDetail.editModal.uncategorized")}</option>
                     {(categories || []).map((c: any) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
@@ -876,7 +878,7 @@ export default function AssetDetailPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.serialNumberLabel")}</label>
                   <input
                     type="text"
                     value={editForm.serial_number}
@@ -885,7 +887,7 @@ export default function AssetDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.brandLabel")}</label>
                   <input
                     type="text"
                     value={editForm.brand}
@@ -894,7 +896,7 @@ export default function AssetDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.modelLabel")}</label>
                   <input
                     type="text"
                     value={editForm.model}
@@ -903,7 +905,7 @@ export default function AssetDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.conditionLabel")}</label>
                   <select
                     value={editForm.condition_status}
                     onChange={(e) =>
@@ -911,14 +913,14 @@ export default function AssetDetailPage() {
                     }
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="new">New</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="poor">Poor</option>
+                    <option value="new">{t("assetDetail.conditionOptions.new")}</option>
+                    <option value="good">{t("assetDetail.conditionOptions.good")}</option>
+                    <option value="fair">{t("assetDetail.conditionOptions.fair")}</option>
+                    <option value="poor">{t("assetDetail.conditionOptions.poor")}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.purchaseDateLabel")}</label>
                   <input
                     type="date"
                     value={editForm.purchase_date}
@@ -927,7 +929,7 @@ export default function AssetDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Cost</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.purchaseCostLabel")}</label>
                   <div className="flex items-stretch">
                     <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-sm text-gray-600">
                       ₹ INR
@@ -941,10 +943,10 @@ export default function AssetDetailPage() {
                       className="flex-1 min-w-0 px-3 py-2 border border-gray-200 rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Amount in paise.</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("assetDetail.editModal.purchaseCostHint")}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Warranty Expiry</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.warrantyExpiryLabel")}</label>
                   <input
                     type="date"
                     value={editForm.warranty_expiry}
@@ -954,7 +956,7 @@ export default function AssetDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.locationLabel")}</label>
                   <input
                     type="text"
                     value={editForm.location_name}
@@ -964,7 +966,7 @@ export default function AssetDetailPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.descriptionLabel")}</label>
                 <textarea
                   value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
@@ -973,7 +975,7 @@ export default function AssetDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.notesLabel")}</label>
                 <textarea
                   value={editForm.notes}
                   onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
@@ -991,7 +993,7 @@ export default function AssetDetailPage() {
                   disabled={updateMutation.isPending}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                 >
-                  Cancel
+                  {t("assetDetail.editModal.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -1000,10 +1002,10 @@ export default function AssetDetailPage() {
                 >
                   {updateMutation.isPending ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                      <Loader2 className="h-4 w-4 animate-spin" /> {t("assetDetail.editModal.saving")}
                     </>
                   ) : (
-                    "Save Changes"
+                    t("assetDetail.editModal.save")
                   )}
                 </button>
               </div>
@@ -1028,10 +1030,9 @@ export default function AssetDetailPage() {
                   <Trash2 className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete history entry?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("assetDetail.deleteHistory.title")}</h3>
                   <p className="mt-2 text-sm text-gray-500">
-                    This removes just this log row. The asset's current status stays unchanged —
-                    past assignments or actions are not reverted.
+                    {t("assetDetail.deleteHistory.body")}
                   </p>
                 </div>
               </div>
@@ -1048,7 +1049,7 @@ export default function AssetDetailPage() {
                 disabled={deleteHistoryMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("assetDetail.deleteHistory.cancel")}
               </button>
               <button
                 type="button"
@@ -1058,10 +1059,10 @@ export default function AssetDetailPage() {
               >
                 {deleteHistoryMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("assetDetail.deleteHistory.deleting")}
                   </>
                 ) : (
-                  "Delete Entry"
+                  t("assetDetail.deleteHistory.confirm")
                 )}
               </button>
             </div>

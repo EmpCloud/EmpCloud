@@ -5761,5 +5761,633 @@
       "noOptions": "No options defined",
       "checkboxFallback": "Checkbox"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "Loading helpdesk dashboard...",
+    "title": "Helpdesk Dashboard",
+    "subtitle": "Overview of HR helpdesk tickets and SLA performance.",
+    "viewAllTickets": "View All Tickets",
+    "stats": {
+      "totalOpen": "Total Open",
+      "inProgress": "In Progress",
+      "overdue": "Overdue (SLA Breached)",
+      "resolvedToday": "Resolved Today"
+    },
+    "sla": {
+      "compliance": "SLA Compliance",
+      "resolvedWithinSla": "Tickets resolved within SLA"
+    },
+    "metrics": {
+      "avgResolutionTime": "Average Resolution Time",
+      "hours": "hours"
+    },
+    "satisfaction": {
+      "title": "Satisfaction Rating",
+      "notAvailable": "N/A",
+      "ratingCount_one": "{{count}} rating",
+      "ratingCount_other": "{{count}} ratings"
+    },
+    "categoryBreakdown": {
+      "title": "Tickets by Category"
+    },
+    "recentTickets": {
+      "title": "Recent Tickets"
+    },
+    "emptyState": {
+      "noTickets": "No tickets yet"
+    },
+    "category": {
+      "leave": "Leave",
+      "payroll": "Payroll",
+      "benefits": "Benefits",
+      "it": "IT",
+      "facilities": "Facilities",
+      "onboarding": "Onboarding",
+      "policy": "Policy",
+      "general": "General"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "awaiting_response": "Awaiting Response",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    }
+  },
+  "ticketDetail": {
+    "loading": "Loading ticket...",
+    "backToTickets": "Back to tickets",
+    "slaBreached": "SLA Breached",
+    "raisedBy": "Raised by: {{name}}",
+    "created": "Created: {{date}}",
+    "assignedTo": "Assigned to: {{name}}",
+    "slaDeadlines": "SLA Deadlines",
+    "firstResponse": "First Response:",
+    "responded": "Responded {{date}}",
+    "due": "Due {{date}}",
+    "resolution": "Resolution:",
+    "resolved": "Resolved {{date}}",
+    "action": {
+      "assign": "Assign",
+      "resolve": "Resolve",
+      "close": "Close",
+      "reopen": "Reopen",
+      "rateService": "Rate Service"
+    },
+    "assign": {
+      "selectUser": "Select a user to assign..."
+    },
+    "rating": {
+      "prompt": "How satisfied are you with the resolution?",
+      "feedbackPlaceholder": "Additional feedback (optional)",
+      "submit": "Submit Rating"
+    },
+    "satisfaction": "Satisfaction:",
+    "conversation": "Conversation",
+    "internalNote": "Internal Note",
+    "noComments": "No comments yet. Start the conversation below.",
+    "replyPlaceholder": "Write a reply...",
+    "internalNoteToggle": "Internal note (not visible to employee)",
+    "sending": "Sending...",
+    "sendReply": "Send Reply",
+    "toast": {
+      "resolveSuccess": "Ticket marked as resolved.",
+      "resolveError": "Failed to resolve ticket.",
+      "closeSuccess": "Ticket closed.",
+      "closeError": "Failed to close ticket.",
+      "reopenSuccess": "Ticket reopened.",
+      "reopenError": "Failed to reopen ticket."
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "awaiting_response": "Awaiting Response",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    },
+    "category": {
+      "general": "General",
+      "technical": "Technical",
+      "hr": "HR",
+      "payroll": "Payroll",
+      "it": "IT",
+      "facilities": "Facilities",
+      "other": "Other"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "My Feedback",
+      "subtitle": "View the status of your anonymously submitted feedback and any responses from HR."
+    },
+    "status": {
+      "new": "New",
+      "acknowledged": "Acknowledged",
+      "under_review": "Under Review",
+      "resolved": "Resolved",
+      "archived": "Archived"
+    },
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
+      "other": "Other"
+    },
+    "empty": {
+      "title": "No feedback submitted yet",
+      "description": "Share your thoughts anonymously with HR.",
+      "submitCta": "Submit Feedback"
+    },
+    "card": {
+      "urgentBadge": "Urgent",
+      "editButton": "Edit",
+      "hrResponseLabel": "HR Response",
+      "respondedOn": "Responded on {{date}}"
+    },
+    "editModal": {
+      "title": "Edit Feedback",
+      "categoryLabel": "Category",
+      "subjectLabel": "Subject",
+      "messageLabel": "Message",
+      "markUrgent": "Mark as urgent",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "error": {
+      "updateFailed": "Failed to update feedback"
+    },
+    "pagination": {
+      "summary": "Page {{page}} of {{totalPages}} ({{total}} total)",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "Feedback Dashboard",
+    "subtitle": "Overview of anonymous employee feedback.",
+    "loading": "Loading dashboard...",
+    "stats": {
+      "totalFeedback": "Total Feedback",
+      "urgentItems": "Urgent Items",
+      "responseRate": "Response Rate",
+      "newUnread": "New / Unread"
+    },
+    "sections": {
+      "byCategory": "By Category",
+      "sentimentDistribution": "Sentiment Distribution",
+      "byStatus": "By Status",
+      "recentFeedback": "Recent Feedback"
+    },
+    "empty": {
+      "noData": "No data yet.",
+      "noFeedback": "No feedback yet."
+    },
+    "status": {
+      "new": "New",
+      "acknowledged": "Acknowledged",
+      "under_review": "Under Review",
+      "resolved": "Resolved",
+      "archived": "Archived"
+    },
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
+      "other": "Other"
+    },
+    "sentiment": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative",
+      "unset": "Unset"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "Submit Feedback"
+    },
+    "success": {
+      "title": "Feedback Submitted",
+      "description": "Your feedback has been submitted anonymously. Your identity is not stored or visible to anyone. You can check the status of your feedback on the \"My Feedback\" page.",
+      "submitAnother": "Submit Another"
+    },
+    "anonymousBanner": {
+      "title": "Your feedback is completely anonymous",
+      "description": "Your identity is hashed and cannot be traced back to you. HR will see the feedback content but never your name or email."
+    },
+    "field": {
+      "category": "Category",
+      "subject": "Subject",
+      "message": "Message",
+      "subjectPlaceholder": "Brief summary of your feedback",
+      "messagePlaceholder": "Describe your feedback in detail...",
+      "markUrgent": "Mark as urgent"
+    },
+    "action": {
+      "submit": "Submit Anonymously",
+      "submitting": "Submitting..."
+    },
+    "error": {
+      "submitFailed": "Failed to submit feedback. Please try again."
+    },
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
+      "other": "Other"
+    }
+  },
+  "assetDetail": {
+    "loading": "Loading asset details...",
+    "status": {
+      "available": "Available",
+      "assigned": "Assigned",
+      "in_repair": "In Repair",
+      "retired": "Retired",
+      "lost": "Lost",
+      "damaged": "Damaged"
+    },
+    "condition": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "action": {
+      "created": "Created",
+      "assigned": "Assigned",
+      "returned": "Returned",
+      "sent_to_repair": "Sent to repair",
+      "repaired": "Repaired",
+      "retired": "Retired",
+      "lost": "Lost",
+      "found": "Found",
+      "damaged": "Damaged",
+      "updated": "Updated"
+    },
+    "buttons": {
+      "edit": "Edit",
+      "assign": "Assign",
+      "return": "Return",
+      "sendForRepair": "Send for Repair",
+      "repairComplete": "Repair Complete",
+      "retire": "Retire",
+      "reportLost": "Report Lost",
+      "markFound": "Mark Found"
+    },
+    "info": {
+      "heading": "Asset Information",
+      "assetTag": "Asset Tag",
+      "category": "Category",
+      "uncategorized": "Uncategorized",
+      "serialNumber": "Serial Number",
+      "brand": "Brand",
+      "model": "Model",
+      "location": "Location",
+      "purchaseDate": "Purchase Date",
+      "purchaseCost": "Purchase Cost",
+      "warrantyExpiry": "Warranty Expiry",
+      "expiredSuffix": " (Expired)",
+      "description": "Description",
+      "notes": "Notes"
+    },
+    "assignment": {
+      "heading": "Currently Assigned",
+      "assignedTo": "Assigned To",
+      "assignedAt": "Assigned At",
+      "assignedBy": "Assigned By"
+    },
+    "history": {
+      "heading": "History",
+      "to": "To: {{name}}",
+      "from": "From: {{name}}",
+      "empty": "No history entries",
+      "deleteTitle": "Delete history entry"
+    },
+    "assignModal": {
+      "title": "Assign Asset",
+      "assignToLabel": "Assign To *",
+      "selectEmployee": "Select employee",
+      "notesLabel": "Notes",
+      "cancel": "Cancel",
+      "submit": "Assign",
+      "submitting": "Assigning..."
+    },
+    "returnModal": {
+      "title": "Return Asset",
+      "conditionLabel": "Condition on Return",
+      "notesLabel": "Notes",
+      "cancel": "Cancel",
+      "submit": "Return Asset",
+      "submitting": "Returning..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "Retire this asset?",
+        "body": "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.",
+        "confirmLabel": "Retire Asset"
+      },
+      "lost": {
+        "title": "Report asset as lost?",
+        "body": "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page.",
+        "confirmLabel": "Report as Lost"
+      },
+      "found": {
+        "title": "Mark asset as found?",
+        "body": "This will return the asset to active inventory as available, so it can be reassigned.",
+        "confirmLabel": "Mark as Found"
+      },
+      "repairStart": {
+        "title": "Send asset for repair?",
+        "bodyAssigned": "This will unassign the asset and move it to 'In Repair'. The current holder stays recorded in the history.",
+        "bodyDefault": "This will move the asset to 'In Repair'. It won't be assignable until repair is complete.",
+        "confirmLabel": "Send for Repair"
+      },
+      "repairComplete": {
+        "title": "Mark repair as complete?",
+        "body": "This will return the asset to active inventory as available, so it can be reassigned.",
+        "confirmLabel": "Mark as Repaired"
+      },
+      "cancel": "Cancel",
+      "working": "Working..."
+    },
+    "editModal": {
+      "title": "Edit Asset",
+      "nameLabel": "Name *",
+      "categoryLabel": "Category",
+      "uncategorized": "Uncategorized",
+      "serialNumberLabel": "Serial Number",
+      "brandLabel": "Brand",
+      "modelLabel": "Model",
+      "conditionLabel": "Condition",
+      "purchaseDateLabel": "Purchase Date",
+      "purchaseCostLabel": "Purchase Cost",
+      "purchaseCostHint": "Amount in paise.",
+      "warrantyExpiryLabel": "Warranty Expiry",
+      "locationLabel": "Location",
+      "descriptionLabel": "Description",
+      "notesLabel": "Notes",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "conditionOptions": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "deleteHistory": {
+      "title": "Delete history entry?",
+      "body": "This removes just this log row. The asset's current status stays unchanged — past assignments or actions are not reverted.",
+      "cancel": "Cancel",
+      "confirm": "Delete Entry",
+      "deleting": "Deleting..."
+    },
+    "errors": {
+      "updateFailed": "Failed to update asset",
+      "deleteHistoryFailed": "Failed to delete history entry",
+      "warrantyBeforePurchase": "Warranty expiry cannot be before the purchase date.",
+      "retireFailed": "Failed to retire asset",
+      "reportLostFailed": "Failed to report asset as lost",
+      "markFoundFailed": "Failed to mark asset as found",
+      "sendToRepairFailed": "Failed to send asset to repair",
+      "completeRepairFailed": "Failed to complete repair"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "Asset Categories",
+      "subtitle": "Organize assets by type"
+    },
+    "actions": {
+      "addCategory": "Add Category",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "list": {
+      "loading": "Loading categories...",
+      "empty": "No categories yet. Create your first one."
+    },
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "actions": "Actions"
+    },
+    "form": {
+      "editTitle": "Edit Category",
+      "newTitle": "New Category",
+      "nameLabel": "Name *",
+      "namePlaceholder": "e.g. Laptop, Monitor, Phone",
+      "descriptionLabel": "Description",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create"
+    },
+    "delete": {
+      "title": "Deactivate category?",
+      "message": "Deactivate {{name}}? Existing assets tagged with this category keep the tag, but no new assets can be placed here until it's restored.",
+      "cancel": "Cancel",
+      "confirm": "Deactivate",
+      "inProgress": "Deactivating..."
+    },
+    "errors": {
+      "deactivateFailed": "Failed to deactivate category"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "My Assets",
+      "subtitle": "Equipment and assets assigned to you"
+    },
+    "empty": {
+      "title": "No assets assigned to you",
+      "description": "When your organization assigns equipment to you, it will appear here."
+    },
+    "card": {
+      "serialNumber": "S/N: {{serial}}",
+      "assigned": "Assigned {{date}}",
+      "warranty": "Warranty: {{date}}",
+      "warrantyExpiredSuffix": "(Expired)"
+    },
+    "condition": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "Revoked",
+      "expired": "Expired",
+      "active": "Active"
+    },
+    "toast": {
+      "createError": "Failed to create API key",
+      "copyError": "Couldn't copy — select and copy manually",
+      "revokeSuccess": "API key revoked",
+      "revokeError": "Failed to revoke key"
+    },
+    "confirm": {
+      "revoke": "Revoke \"{{name}}\"? Any integration using it will stop working immediately."
+    },
+    "heading": "API Keys",
+    "newKeyButton": "New Key",
+    "description": "Generate keys for programmatic access to the EmpCloud APIs. One key works across EmpCloud and the Payroll module, and carries the permissions of the admin who created it.",
+    "howTo": {
+      "title": "How to use your API key",
+      "intro": "The generated key is a <strong>Bearer token</strong>. Send it in the <code>Authorization</code> header on every API request — exactly like a logged-in session token:",
+      "bulletBothSystems": "<strong>Works in both systems.</strong> The same token authenticates against EmpCloud APIs and the Payroll module APIs — no separate login or token exchange needed.",
+      "bulletInheritsPermissions": "<strong>Inherits your permissions.</strong> A key can only do what the admin who created it can do. It always reflects that admin's current role — change the role and the key's access changes with it.",
+      "bulletShownOnce": "<strong>Shown only once.</strong> The full key is displayed a single time at creation. Store it somewhere safe (a secrets manager) — we keep only a hashed copy and can't show it again.",
+      "bulletRevocable": "<strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a password — anyone who has it can act with your permissions."
+    },
+    "reveal": {
+      "warning": "Copy this key now — it won't be shown again.",
+      "copied": "Copied",
+      "copy": "Copy",
+      "dismissAria": "Dismiss",
+      "bearerHint": "Use it as a Bearer token in the Authorization header:"
+    },
+    "form": {
+      "nameLabel": "Key name",
+      "namePlaceholder": "e.g. Attendance export",
+      "expiresLabel": "Expires in (days)",
+      "expiresPlaceholder": "Never",
+      "generating": "Generating…",
+      "generate": "Generate key",
+      "cancel": "Cancel"
+    },
+    "list": {
+      "loading": "Loading keys…",
+      "empty": "No API keys yet."
+    },
+    "table": {
+      "name": "Name",
+      "key": "Key",
+      "status": "Status",
+      "lastUsed": "Last used",
+      "expires": "Expires",
+      "created": "Created",
+      "neverExpires": "Never"
+    },
+    "revokeAction": "Revoke"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7": "Last 7 Days",
+      "last30": "Last 30 Days",
+      "thisMonth": "This Month",
+      "lastMonth": "Last Month",
+      "customRange": "Custom Range"
+    },
+    "trigger": {
+      "placeholder": "Select date range"
+    },
+    "dialog": {
+      "ariaLabel": "Pick a date range"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "Clear",
+      "cancel": "Cancel",
+      "apply": "Apply"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "Bulk Import Assets from CSV / Excel"
+    },
+    "actions": {
+      "downloadTemplate": "Download Template",
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "upload": {
+      "requiredHint": "Required: <0>name</0>. Other columns are optional.",
+      "dropzoneTitle": "Drag & drop your CSV or Excel file here",
+      "dropzoneSubtitle": "or click to browse",
+      "tipsHeading": "Tips:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> is the amount in paise (e.g. 150000 for ₹1,500).",
+        "conditionStatus": "<0>condition_status</0> must be one of: new, good, fair, poor.",
+        "categoryAutoCreate": "Unknown <0>category_name</0> values are auto-created.",
+        "dateFormats": "Dates accept YYYY-MM-DD or Excel date cells."
+      }
+    },
+    "importing": {
+      "message": "Importing assets... please wait."
+    },
+    "done": {
+      "completeTitle": "Import Complete",
+      "rowError": "Row {{row}}:",
+      "emptyFile": "No rows found in the uploaded file.",
+      "importedCount_one": "{{count}} asset imported successfully.",
+      "importedCount_other": "{{count}} assets imported successfully.",
+      "createdCategoriesTitle_one": "New category created ({{count}}):",
+      "createdCategoriesTitle_other": "New categories created ({{count}}):",
+      "skippedRows_one": "Skipped {{count}} row with errors",
+      "skippedRows_other": "Skipped {{count}} rows with errors"
+    },
+    "errors": {
+      "bulkImportFailed": "Bulk import failed"
+    }
+  },
+  "customRolesField": {
+    "label": "Custom Roles",
+    "loading": "Loading…",
+    "emptyReadonly": "No custom roles assigned",
+    "helpText": "Additional roles that grant fine-grained permissions on top of this user's primary role. Manage roles in",
+    "helpTextLink": "Settings → Roles & Permissions",
+    "removeAria": "Remove {{name}}",
+    "placeholderEmpty": "Click to assign a custom role…",
+    "placeholderMore": "Add another role…",
+    "noneToAssign": "No custom roles to assign. Create one in Settings → Roles & Permissions.",
+    "noMatches": "No matching roles",
+    "error": {
+      "requestFailed": "Request failed"
+    },
+    "assignedCount_one": "({{count}} assigned)",
+    "assignedCount_other": "({{count}} assigned)",
+    "permissionCount_one": "{{count}} permission",
+    "permissionCount_other": "{{count}} permissions"
   }
 }

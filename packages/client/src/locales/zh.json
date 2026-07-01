@@ -5755,5 +5755,633 @@
       "noOptions": "未定义任何选项",
       "checkboxFallback": "复选框"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "正在加载服务台仪表板...",
+    "title": "服务台仪表板",
+    "subtitle": "HR 服务台工单及 SLA 绩效概览。",
+    "viewAllTickets": "查看所有工单",
+    "stats": {
+      "totalOpen": "待处理总数",
+      "inProgress": "处理中",
+      "overdue": "已逾期（违反 SLA）",
+      "resolvedToday": "今日已解决"
+    },
+    "sla": {
+      "compliance": "SLA 达成率",
+      "resolvedWithinSla": "在 SLA 内解决的工单"
+    },
+    "metrics": {
+      "avgResolutionTime": "平均解决时长",
+      "hours": "小时"
+    },
+    "satisfaction": {
+      "title": "满意度评分",
+      "notAvailable": "不适用",
+      "ratingCount_one": "{{count}} 条评分",
+      "ratingCount_other": "{{count}} 条评分"
+    },
+    "categoryBreakdown": {
+      "title": "按类别统计工单"
+    },
+    "recentTickets": {
+      "title": "最近工单"
+    },
+    "emptyState": {
+      "noTickets": "暂无工单"
+    },
+    "category": {
+      "leave": "休假",
+      "payroll": "薪资",
+      "benefits": "福利",
+      "it": "IT",
+      "facilities": "后勤设施",
+      "onboarding": "入职",
+      "policy": "政策",
+      "general": "常规"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "紧急"
+    },
+    "status": {
+      "open": "待处理",
+      "in_progress": "处理中",
+      "awaiting_response": "等待回复",
+      "resolved": "已解决",
+      "closed": "已关闭",
+      "reopened": "已重新打开"
+    }
+  },
+  "ticketDetail": {
+    "loading": "正在加载工单...",
+    "backToTickets": "返回工单列表",
+    "slaBreached": "SLA 已违约",
+    "raisedBy": "提交人：{{name}}",
+    "created": "创建时间：{{date}}",
+    "assignedTo": "负责人：{{name}}",
+    "slaDeadlines": "SLA 截止时间",
+    "firstResponse": "首次响应：",
+    "responded": "已于 {{date}} 响应",
+    "due": "截止 {{date}}",
+    "resolution": "解决时限：",
+    "resolved": "已于 {{date}} 解决",
+    "action": {
+      "assign": "分配",
+      "resolve": "标记已解决",
+      "close": "关闭",
+      "reopen": "重新打开",
+      "rateService": "评价服务"
+    },
+    "assign": {
+      "selectUser": "选择要分配的用户..."
+    },
+    "rating": {
+      "prompt": "您对处理结果的满意度如何？",
+      "feedbackPlaceholder": "补充反馈（可选）",
+      "submit": "提交评价"
+    },
+    "satisfaction": "满意度：",
+    "conversation": "对话记录",
+    "internalNote": "内部备注",
+    "noComments": "暂无评论。在下方开始对话。",
+    "replyPlaceholder": "输入回复...",
+    "internalNoteToggle": "内部备注（员工不可见）",
+    "sending": "发送中...",
+    "sendReply": "发送回复",
+    "toast": {
+      "resolveSuccess": "工单已标记为已解决。",
+      "resolveError": "标记工单已解决失败。",
+      "closeSuccess": "工单已关闭。",
+      "closeError": "关闭工单失败。",
+      "reopenSuccess": "工单已重新打开。",
+      "reopenError": "重新打开工单失败。"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "紧急"
+    },
+    "status": {
+      "open": "待处理",
+      "in_progress": "处理中",
+      "awaiting_response": "等待回复",
+      "resolved": "已解决",
+      "closed": "已关闭",
+      "reopened": "已重新打开"
+    },
+    "category": {
+      "general": "一般",
+      "technical": "技术",
+      "hr": "人力资源",
+      "payroll": "薪资",
+      "it": "IT",
+      "facilities": "后勤",
+      "other": "其他"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "我的反馈",
+      "subtitle": "查看您匿名提交的反馈的状态以及人力资源部的任何回复。"
+    },
+    "status": {
+      "new": "新建",
+      "acknowledged": "已确认",
+      "under_review": "审核中",
+      "resolved": "已解决",
+      "archived": "已归档"
+    },
+    "category": {
+      "workplace": "工作场所",
+      "management": "管理",
+      "process": "流程",
+      "culture": "文化",
+      "harassment": "骚扰",
+      "safety": "安全",
+      "suggestion": "建议",
+      "other": "其他"
+    },
+    "empty": {
+      "title": "尚未提交任何反馈",
+      "description": "向人力资源部匿名分享您的想法。",
+      "submitCta": "提交反馈"
+    },
+    "card": {
+      "urgentBadge": "紧急",
+      "editButton": "编辑",
+      "hrResponseLabel": "人力资源部回复",
+      "respondedOn": "回复于 {{date}}"
+    },
+    "editModal": {
+      "title": "编辑反馈",
+      "categoryLabel": "类别",
+      "subjectLabel": "主题",
+      "messageLabel": "内容",
+      "markUrgent": "标记为紧急",
+      "cancel": "取消",
+      "save": "保存更改",
+      "saving": "保存中…"
+    },
+    "error": {
+      "updateFailed": "更新反馈失败"
+    },
+    "pagination": {
+      "summary": "第 {{page}} 页，共 {{totalPages}} 页（共 {{total}} 条）",
+      "previous": "上一页",
+      "next": "下一页"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "反馈仪表板",
+    "subtitle": "匿名员工反馈概览。",
+    "loading": "正在加载仪表板...",
+    "stats": {
+      "totalFeedback": "反馈总数",
+      "urgentItems": "紧急事项",
+      "responseRate": "响应率",
+      "newUnread": "新增／未读"
+    },
+    "sections": {
+      "byCategory": "按类别",
+      "sentimentDistribution": "情绪分布",
+      "byStatus": "按状态",
+      "recentFeedback": "最近反馈"
+    },
+    "empty": {
+      "noData": "暂无数据。",
+      "noFeedback": "暂无反馈。"
+    },
+    "status": {
+      "new": "新增",
+      "acknowledged": "已确认",
+      "under_review": "审核中",
+      "resolved": "已解决",
+      "archived": "已归档"
+    },
+    "category": {
+      "workplace": "工作场所",
+      "management": "管理",
+      "process": "流程",
+      "culture": "文化",
+      "harassment": "骚扰",
+      "safety": "安全",
+      "suggestion": "建议",
+      "other": "其他"
+    },
+    "sentiment": {
+      "positive": "正面",
+      "neutral": "中性",
+      "negative": "负面",
+      "unset": "未设置"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "提交反馈"
+    },
+    "success": {
+      "title": "反馈已提交",
+      "description": "您的反馈已匿名提交。您的身份不会被存储，任何人都无法查看。您可以在\"我的反馈\"页面查看反馈状态。",
+      "submitAnother": "再次提交"
+    },
+    "anonymousBanner": {
+      "title": "您的反馈完全匿名",
+      "description": "您的身份经过哈希处理，无法追溯到您本人。人力资源部门可以看到反馈内容，但绝不会看到您的姓名或电子邮箱。"
+    },
+    "field": {
+      "category": "类别",
+      "subject": "主题",
+      "message": "内容",
+      "subjectPlaceholder": "简要概述您的反馈",
+      "messagePlaceholder": "请详细描述您的反馈……",
+      "markUrgent": "标记为紧急"
+    },
+    "action": {
+      "submit": "匿名提交",
+      "submitting": "提交中……"
+    },
+    "error": {
+      "submitFailed": "反馈提交失败，请重试。"
+    },
+    "category": {
+      "workplace": "工作环境",
+      "management": "管理",
+      "process": "流程",
+      "culture": "文化",
+      "harassment": "骚扰",
+      "safety": "安全",
+      "suggestion": "建议",
+      "other": "其他"
+    }
+  },
+  "assetDetail": {
+    "loading": "正在加载资产详情...",
+    "status": {
+      "available": "可用",
+      "assigned": "已分配",
+      "in_repair": "维修中",
+      "retired": "已退役",
+      "lost": "已丢失",
+      "damaged": "已损坏"
+    },
+    "condition": {
+      "new": "全新",
+      "good": "良好",
+      "fair": "一般",
+      "poor": "较差"
+    },
+    "action": {
+      "created": "已创建",
+      "assigned": "已分配",
+      "returned": "已归还",
+      "sent_to_repair": "已送修",
+      "repaired": "已修复",
+      "retired": "已退役",
+      "lost": "已丢失",
+      "found": "已找回",
+      "damaged": "已损坏",
+      "updated": "已更新"
+    },
+    "buttons": {
+      "edit": "编辑",
+      "assign": "分配",
+      "return": "归还",
+      "sendForRepair": "送修",
+      "repairComplete": "维修完成",
+      "retire": "退役",
+      "reportLost": "报告丢失",
+      "markFound": "标记找回"
+    },
+    "info": {
+      "heading": "资产信息",
+      "assetTag": "资产标签",
+      "category": "类别",
+      "uncategorized": "未分类",
+      "serialNumber": "序列号",
+      "brand": "品牌",
+      "model": "型号",
+      "location": "位置",
+      "purchaseDate": "购买日期",
+      "purchaseCost": "购买成本",
+      "warrantyExpiry": "保修到期",
+      "expiredSuffix": "（已过期）",
+      "description": "描述",
+      "notes": "备注"
+    },
+    "assignment": {
+      "heading": "当前分配",
+      "assignedTo": "分配给",
+      "assignedAt": "分配时间",
+      "assignedBy": "分配人"
+    },
+    "history": {
+      "heading": "历史记录",
+      "to": "至：{{name}}",
+      "from": "来自：{{name}}",
+      "empty": "暂无历史记录",
+      "deleteTitle": "删除历史记录"
+    },
+    "assignModal": {
+      "title": "分配资产",
+      "assignToLabel": "分配给 *",
+      "selectEmployee": "选择员工",
+      "notesLabel": "备注",
+      "cancel": "取消",
+      "submit": "分配",
+      "submitting": "正在分配..."
+    },
+    "returnModal": {
+      "title": "归还资产",
+      "conditionLabel": "归还时状况",
+      "notesLabel": "备注",
+      "cancel": "取消",
+      "submit": "归还资产",
+      "submitting": "正在归还..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "退役此资产？",
+        "body": "退役资产会将其移出有效库存。以往的分配记录仍会保留，但该资产将无法再被分配。",
+        "confirmLabel": "退役资产"
+      },
+      "lost": {
+        "title": "将资产报告为丢失？",
+        "body": "此操作会将该资产标记为丢失并记录到审计历史中。稍后您可在资产详情页将其标记为找回。",
+        "confirmLabel": "报告丢失"
+      },
+      "found": {
+        "title": "将资产标记为找回？",
+        "body": "此操作会将该资产恢复为有效库存中的可用状态，以便重新分配。",
+        "confirmLabel": "标记找回"
+      },
+      "repairStart": {
+        "title": "将资产送修？",
+        "bodyAssigned": "此操作会取消该资产的分配并将其转为“维修中”。当前持有人仍会记录在历史中。",
+        "bodyDefault": "此操作会将该资产转为“维修中”。在维修完成前，该资产将无法分配。",
+        "confirmLabel": "送修"
+      },
+      "repairComplete": {
+        "title": "将维修标记为完成？",
+        "body": "此操作会将该资产恢复为有效库存中的可用状态，以便重新分配。",
+        "confirmLabel": "标记为已修复"
+      },
+      "cancel": "取消",
+      "working": "处理中..."
+    },
+    "editModal": {
+      "title": "编辑资产",
+      "nameLabel": "名称 *",
+      "categoryLabel": "类别",
+      "uncategorized": "未分类",
+      "serialNumberLabel": "序列号",
+      "brandLabel": "品牌",
+      "modelLabel": "型号",
+      "conditionLabel": "状况",
+      "purchaseDateLabel": "购买日期",
+      "purchaseCostLabel": "购买成本",
+      "purchaseCostHint": "金额（以派萨为单位）。",
+      "warrantyExpiryLabel": "保修到期",
+      "locationLabel": "位置",
+      "descriptionLabel": "描述",
+      "notesLabel": "备注",
+      "cancel": "取消",
+      "save": "保存更改",
+      "saving": "正在保存..."
+    },
+    "conditionOptions": {
+      "new": "全新",
+      "good": "良好",
+      "fair": "一般",
+      "poor": "较差"
+    },
+    "deleteHistory": {
+      "title": "删除历史记录？",
+      "body": "此操作仅删除这一条日志记录。资产的当前状态保持不变——以往的分配或操作不会被撤销。",
+      "cancel": "取消",
+      "confirm": "删除记录",
+      "deleting": "正在删除..."
+    },
+    "errors": {
+      "updateFailed": "更新资产失败",
+      "deleteHistoryFailed": "删除历史记录失败",
+      "warrantyBeforePurchase": "保修到期日期不能早于购买日期。",
+      "retireFailed": "退役资产失败",
+      "reportLostFailed": "报告资产丢失失败",
+      "markFoundFailed": "标记资产找回失败",
+      "sendToRepairFailed": "将资产送修失败",
+      "completeRepairFailed": "完成维修失败"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "资产类别",
+      "subtitle": "按类型整理资产"
+    },
+    "actions": {
+      "addCategory": "添加类别",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "list": {
+      "loading": "正在加载类别...",
+      "empty": "暂无类别。创建您的第一个类别。"
+    },
+    "table": {
+      "name": "名称",
+      "description": "描述",
+      "actions": "操作"
+    },
+    "form": {
+      "editTitle": "编辑类别",
+      "newTitle": "新建类别",
+      "nameLabel": "名称 *",
+      "namePlaceholder": "例如：笔记本电脑、显示器、手机",
+      "descriptionLabel": "描述",
+      "cancel": "取消",
+      "update": "更新",
+      "create": "创建"
+    },
+    "delete": {
+      "title": "停用类别？",
+      "message": "停用 {{name}}？已标记此类别的现有资产将保留标记，但在恢复之前无法将新资产归入此类别。",
+      "cancel": "取消",
+      "confirm": "停用",
+      "inProgress": "正在停用..."
+    },
+    "errors": {
+      "deactivateFailed": "停用类别失败"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "我的资产",
+      "subtitle": "分配给您的设备和资产"
+    },
+    "empty": {
+      "title": "尚未为您分配任何资产",
+      "description": "当您的组织为您分配设备后，将会在此处显示。"
+    },
+    "card": {
+      "serialNumber": "序列号：{{serial}}",
+      "assigned": "分配日期 {{date}}",
+      "warranty": "保修期至：{{date}}",
+      "warrantyExpiredSuffix": "（已过期）"
+    },
+    "condition": {
+      "new": "全新",
+      "good": "良好",
+      "fair": "一般",
+      "poor": "较差"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "已撤销",
+      "expired": "已过期",
+      "active": "有效"
+    },
+    "toast": {
+      "createError": "创建 API 密钥失败",
+      "copyError": "无法复制，请手动选择并复制",
+      "revokeSuccess": "API 密钥已撤销",
+      "revokeError": "撤销密钥失败"
+    },
+    "confirm": {
+      "revoke": "撤销\"{{name}}\"？任何正在使用它的集成将立即停止工作。"
+    },
+    "heading": "API 密钥",
+    "newKeyButton": "新建密钥",
+    "description": "生成用于以编程方式访问 EmpCloud API 的密钥。一个密钥可同时用于 EmpCloud 和 Payroll 模块，并继承创建它的管理员所拥有的权限。",
+    "howTo": {
+      "title": "如何使用您的 API 密钥",
+      "intro": "生成的密钥是<strong>Bearer 令牌</strong>。请在每个 API 请求的 <code>Authorization</code> 标头中发送它——与已登录的会话令牌完全相同：",
+      "bulletBothSystems": "<strong>两个系统通用。</strong>同一令牌可对 EmpCloud API 和 Payroll 模块 API 进行身份验证——无需单独登录或交换令牌。",
+      "bulletInheritsPermissions": "<strong>继承您的权限。</strong>密钥只能执行创建它的管理员所能执行的操作。它始终反映该管理员的当前角色——更改角色后，密钥的访问权限也随之变化。",
+      "bulletShownOnce": "<strong>仅显示一次。</strong>完整密钥在创建时仅显示一次。请将其妥善保存在安全的地方（如密钥管理器）——我们仅保留哈希副本，无法再次显示。",
+      "bulletRevocable": "<strong>可撤销、可过期。</strong>可设置可选的过期时间，或随时撤销密钥。已撤销或已过期的密钥将在所有地方立即停止工作。请像对待密码一样对待密钥——任何持有它的人都可以以您的权限执行操作。"
+    },
+    "reveal": {
+      "warning": "请立即复制此密钥——它将不会再次显示。",
+      "copied": "已复制",
+      "copy": "复制",
+      "dismissAria": "关闭",
+      "bearerHint": "在 Authorization 标头中将其用作 Bearer 令牌："
+    },
+    "form": {
+      "nameLabel": "密钥名称",
+      "namePlaceholder": "例如：考勤导出",
+      "expiresLabel": "有效期（天）",
+      "expiresPlaceholder": "永不过期",
+      "generating": "生成中…",
+      "generate": "生成密钥",
+      "cancel": "取消"
+    },
+    "list": {
+      "loading": "正在加载密钥…",
+      "empty": "暂无 API 密钥。"
+    },
+    "table": {
+      "name": "名称",
+      "key": "密钥",
+      "status": "状态",
+      "lastUsed": "最近使用",
+      "expires": "过期时间",
+      "created": "创建时间",
+      "neverExpires": "永不过期"
+    },
+    "revokeAction": "撤销"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "今天",
+      "yesterday": "昨天",
+      "last7": "最近 7 天",
+      "last30": "最近 30 天",
+      "thisMonth": "本月",
+      "lastMonth": "上月",
+      "customRange": "自定义范围"
+    },
+    "trigger": {
+      "placeholder": "选择日期范围"
+    },
+    "dialog": {
+      "ariaLabel": "选择日期范围"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "清除",
+      "cancel": "取消",
+      "apply": "应用"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "从 CSV / Excel 批量导入资产"
+    },
+    "actions": {
+      "downloadTemplate": "下载模板",
+      "close": "关闭",
+      "cancel": "取消"
+    },
+    "upload": {
+      "requiredHint": "必填：<0>name</0>。其他列为可选。",
+      "dropzoneTitle": "将 CSV 或 Excel 文件拖放到此处",
+      "dropzoneSubtitle": "或点击浏览",
+      "tipsHeading": "提示：",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> 为以派萨为单位的金额（例如 150000 表示 ₹1,500）。",
+        "conditionStatus": "<0>condition_status</0> 必须为以下之一：new、good、fair、poor。",
+        "categoryAutoCreate": "未知的 <0>category_name</0> 值将自动创建。",
+        "dateFormats": "日期支持 YYYY-MM-DD 格式或 Excel 日期单元格。"
+      }
+    },
+    "importing": {
+      "message": "正在导入资产……请稍候。"
+    },
+    "done": {
+      "completeTitle": "导入完成",
+      "rowError": "第 {{row}} 行：",
+      "emptyFile": "上传的文件中未找到任何数据行。",
+      "importedCount_one": "成功导入 {{count}} 项资产。",
+      "importedCount_other": "成功导入 {{count}} 项资产。",
+      "createdCategoriesTitle_one": "已创建新类别（{{count}}）：",
+      "createdCategoriesTitle_other": "已创建新类别（{{count}}）：",
+      "skippedRows_one": "已跳过 {{count}} 行出错记录",
+      "skippedRows_other": "已跳过 {{count}} 行出错记录"
+    },
+    "errors": {
+      "bulkImportFailed": "批量导入失败"
+    }
+  },
+  "customRolesField": {
+    "label": "自定义角色",
+    "loading": "加载中…",
+    "emptyReadonly": "未分配自定义角色",
+    "helpText": "在此用户主要角色的基础上授予更精细权限的附加角色。管理角色请前往",
+    "helpTextLink": "设置 → 角色与权限",
+    "removeAria": "移除 {{name}}",
+    "placeholderEmpty": "点击以分配自定义角色…",
+    "placeholderMore": "添加其他角色…",
+    "noneToAssign": "没有可分配的自定义角色。请在“设置 → 角色与权限”中创建。",
+    "noMatches": "无匹配的角色",
+    "error": {
+      "requestFailed": "请求失败"
+    },
+    "assignedCount_one": "(已分配 {{count}} 个)",
+    "assignedCount_other": "(已分配 {{count}} 个)",
+    "permissionCount_one": "{{count}} 项权限",
+    "permissionCount_other": "{{count}} 项权限"
   }
 }

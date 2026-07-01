@@ -5755,5 +5755,633 @@
       "noOptions": "No hay opciones definidas",
       "checkboxFallback": "Casilla de verificación"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "Cargando panel de soporte...",
+    "title": "Panel de soporte",
+    "subtitle": "Resumen de tickets de soporte de RR. HH. y cumplimiento de SLA.",
+    "viewAllTickets": "Ver todos los tickets",
+    "stats": {
+      "totalOpen": "Total abiertos",
+      "inProgress": "En progreso",
+      "overdue": "Vencidos (SLA incumplido)",
+      "resolvedToday": "Resueltos hoy"
+    },
+    "sla": {
+      "compliance": "Cumplimiento de SLA",
+      "resolvedWithinSla": "Tickets resueltos dentro del SLA"
+    },
+    "metrics": {
+      "avgResolutionTime": "Tiempo medio de resolución",
+      "hours": "horas"
+    },
+    "satisfaction": {
+      "title": "Valoración de satisfacción",
+      "notAvailable": "N/D",
+      "ratingCount_one": "{{count}} valoración",
+      "ratingCount_other": "{{count}} valoraciones"
+    },
+    "categoryBreakdown": {
+      "title": "Tickets por categoría"
+    },
+    "recentTickets": {
+      "title": "Tickets recientes"
+    },
+    "emptyState": {
+      "noTickets": "Aún no hay tickets"
+    },
+    "category": {
+      "leave": "Ausencias",
+      "payroll": "Nómina",
+      "benefits": "Beneficios",
+      "it": "TI",
+      "facilities": "Instalaciones",
+      "onboarding": "Incorporación",
+      "policy": "Políticas",
+      "general": "General"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Abierto",
+      "in_progress": "En curso",
+      "awaiting_response": "Esperando respuesta",
+      "resolved": "Resuelto",
+      "closed": "Cerrado",
+      "reopened": "Reabierto"
+    }
+  },
+  "ticketDetail": {
+    "loading": "Cargando ticket...",
+    "backToTickets": "Volver a tickets",
+    "slaBreached": "SLA incumplido",
+    "raisedBy": "Reportado por: {{name}}",
+    "created": "Creado: {{date}}",
+    "assignedTo": "Asignado a: {{name}}",
+    "slaDeadlines": "Plazos de SLA",
+    "firstResponse": "Primera respuesta:",
+    "responded": "Respondido {{date}}",
+    "due": "Vence {{date}}",
+    "resolution": "Resolución:",
+    "resolved": "Resuelto {{date}}",
+    "action": {
+      "assign": "Asignar",
+      "resolve": "Resolver",
+      "close": "Cerrar",
+      "reopen": "Reabrir",
+      "rateService": "Valorar servicio"
+    },
+    "assign": {
+      "selectUser": "Selecciona un usuario para asignar..."
+    },
+    "rating": {
+      "prompt": "¿Qué tan satisfecho estás con la resolución?",
+      "feedbackPlaceholder": "Comentarios adicionales (opcional)",
+      "submit": "Enviar valoración"
+    },
+    "satisfaction": "Satisfacción:",
+    "conversation": "Conversación",
+    "internalNote": "Nota interna",
+    "noComments": "Aún no hay comentarios. Inicia la conversación abajo.",
+    "replyPlaceholder": "Escribe una respuesta...",
+    "internalNoteToggle": "Nota interna (no visible para el empleado)",
+    "sending": "Enviando...",
+    "sendReply": "Enviar respuesta",
+    "toast": {
+      "resolveSuccess": "Ticket marcado como resuelto.",
+      "resolveError": "No se pudo resolver el ticket.",
+      "closeSuccess": "Ticket cerrado.",
+      "closeError": "No se pudo cerrar el ticket.",
+      "reopenSuccess": "Ticket reabierto.",
+      "reopenError": "No se pudo reabrir el ticket."
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Abierto",
+      "in_progress": "En curso",
+      "awaiting_response": "Esperando respuesta",
+      "resolved": "Resuelto",
+      "closed": "Cerrado",
+      "reopened": "Reabierto"
+    },
+    "category": {
+      "general": "General",
+      "technical": "Técnico",
+      "hr": "RR. HH.",
+      "payroll": "Nómina",
+      "it": "TI",
+      "facilities": "Instalaciones",
+      "other": "Otro"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "Mis comentarios",
+      "subtitle": "Consulta el estado de los comentarios que enviaste de forma anónima y las respuestas de RR. HH."
+    },
+    "status": {
+      "new": "Nuevo",
+      "acknowledged": "Confirmado",
+      "under_review": "En revisión",
+      "resolved": "Resuelto",
+      "archived": "Archivado"
+    },
+    "category": {
+      "workplace": "Entorno laboral",
+      "management": "Dirección",
+      "process": "Procesos",
+      "culture": "Cultura",
+      "harassment": "Acoso",
+      "safety": "Seguridad",
+      "suggestion": "Sugerencia",
+      "other": "Otro"
+    },
+    "empty": {
+      "title": "Aún no has enviado comentarios",
+      "description": "Comparte tus opiniones de forma anónima con RR. HH.",
+      "submitCta": "Enviar comentarios"
+    },
+    "card": {
+      "urgentBadge": "Urgente",
+      "editButton": "Editar",
+      "hrResponseLabel": "Respuesta de RR. HH.",
+      "respondedOn": "Respondido el {{date}}"
+    },
+    "editModal": {
+      "title": "Editar comentarios",
+      "categoryLabel": "Categoría",
+      "subjectLabel": "Asunto",
+      "messageLabel": "Mensaje",
+      "markUrgent": "Marcar como urgente",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
+    },
+    "error": {
+      "updateFailed": "No se pudieron actualizar los comentarios"
+    },
+    "pagination": {
+      "summary": "Página {{page}} de {{totalPages}} ({{total}} en total)",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "Panel de comentarios",
+    "subtitle": "Resumen de los comentarios anónimos de los empleados.",
+    "loading": "Cargando panel...",
+    "stats": {
+      "totalFeedback": "Comentarios totales",
+      "urgentItems": "Elementos urgentes",
+      "responseRate": "Tasa de respuesta",
+      "newUnread": "Nuevos / Sin leer"
+    },
+    "sections": {
+      "byCategory": "Por categoría",
+      "sentimentDistribution": "Distribución del sentimiento",
+      "byStatus": "Por estado",
+      "recentFeedback": "Comentarios recientes"
+    },
+    "empty": {
+      "noData": "Aún no hay datos.",
+      "noFeedback": "Aún no hay comentarios."
+    },
+    "status": {
+      "new": "Nuevo",
+      "acknowledged": "Recibido",
+      "under_review": "En revisión",
+      "resolved": "Resuelto",
+      "archived": "Archivado"
+    },
+    "category": {
+      "workplace": "Lugar de trabajo",
+      "management": "Dirección",
+      "process": "Proceso",
+      "culture": "Cultura",
+      "harassment": "Acoso",
+      "safety": "Seguridad",
+      "suggestion": "Sugerencia",
+      "other": "Otro"
+    },
+    "sentiment": {
+      "positive": "Positivo",
+      "neutral": "Neutral",
+      "negative": "Negativo",
+      "unset": "Sin definir"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "Enviar comentarios"
+    },
+    "success": {
+      "title": "Comentarios enviados",
+      "description": "Tus comentarios se han enviado de forma anónima. Tu identidad no se almacena ni es visible para nadie. Puedes consultar el estado de tus comentarios en la página \"Mis comentarios\".",
+      "submitAnother": "Enviar otro"
+    },
+    "anonymousBanner": {
+      "title": "Tus comentarios son completamente anónimos",
+      "description": "Tu identidad se convierte en un hash y no se puede rastrear hasta ti. RR. HH. verá el contenido de los comentarios, pero nunca tu nombre ni tu correo electrónico."
+    },
+    "field": {
+      "category": "Categoría",
+      "subject": "Asunto",
+      "message": "Mensaje",
+      "subjectPlaceholder": "Breve resumen de tus comentarios",
+      "messagePlaceholder": "Describe tus comentarios en detalle...",
+      "markUrgent": "Marcar como urgente"
+    },
+    "action": {
+      "submit": "Enviar de forma anónima",
+      "submitting": "Enviando..."
+    },
+    "error": {
+      "submitFailed": "No se pudieron enviar los comentarios. Inténtalo de nuevo."
+    },
+    "category": {
+      "workplace": "Entorno laboral",
+      "management": "Dirección",
+      "process": "Proceso",
+      "culture": "Cultura",
+      "harassment": "Acoso",
+      "safety": "Seguridad",
+      "suggestion": "Sugerencia",
+      "other": "Otro"
+    }
+  },
+  "assetDetail": {
+    "loading": "Cargando detalles del activo...",
+    "status": {
+      "available": "Disponible",
+      "assigned": "Asignado",
+      "in_repair": "En reparación",
+      "retired": "Retirado",
+      "lost": "Perdido",
+      "damaged": "Dañado"
+    },
+    "condition": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "fair": "Regular",
+      "poor": "Malo"
+    },
+    "action": {
+      "created": "Creado",
+      "assigned": "Asignado",
+      "returned": "Devuelto",
+      "sent_to_repair": "Enviado a reparación",
+      "repaired": "Reparado",
+      "retired": "Retirado",
+      "lost": "Perdido",
+      "found": "Encontrado",
+      "damaged": "Dañado",
+      "updated": "Actualizado"
+    },
+    "buttons": {
+      "edit": "Editar",
+      "assign": "Asignar",
+      "return": "Devolver",
+      "sendForRepair": "Enviar a reparación",
+      "repairComplete": "Reparación completada",
+      "retire": "Retirar",
+      "reportLost": "Reportar pérdida",
+      "markFound": "Marcar como encontrado"
+    },
+    "info": {
+      "heading": "Información del activo",
+      "assetTag": "Etiqueta del activo",
+      "category": "Categoría",
+      "uncategorized": "Sin categoría",
+      "serialNumber": "Número de serie",
+      "brand": "Marca",
+      "model": "Modelo",
+      "location": "Ubicación",
+      "purchaseDate": "Fecha de compra",
+      "purchaseCost": "Costo de compra",
+      "warrantyExpiry": "Vencimiento de garantía",
+      "expiredSuffix": " (Vencida)",
+      "description": "Descripción",
+      "notes": "Notas"
+    },
+    "assignment": {
+      "heading": "Asignado actualmente",
+      "assignedTo": "Asignado a",
+      "assignedAt": "Fecha de asignación",
+      "assignedBy": "Asignado por"
+    },
+    "history": {
+      "heading": "Historial",
+      "to": "Para: {{name}}",
+      "from": "De: {{name}}",
+      "empty": "No hay entradas en el historial",
+      "deleteTitle": "Eliminar entrada del historial"
+    },
+    "assignModal": {
+      "title": "Asignar activo",
+      "assignToLabel": "Asignar a *",
+      "selectEmployee": "Seleccionar empleado",
+      "notesLabel": "Notas",
+      "cancel": "Cancelar",
+      "submit": "Asignar",
+      "submitting": "Asignando..."
+    },
+    "returnModal": {
+      "title": "Devolver activo",
+      "conditionLabel": "Estado al devolver",
+      "notesLabel": "Notas",
+      "cancel": "Cancelar",
+      "submit": "Devolver activo",
+      "submitting": "Devolviendo..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "¿Retirar este activo?",
+        "body": "Retirar un activo lo elimina del inventario activo. Las asignaciones anteriores quedan registradas, pero el activo ya no podrá asignarse.",
+        "confirmLabel": "Retirar activo"
+      },
+      "lost": {
+        "title": "¿Reportar el activo como perdido?",
+        "body": "Esto marcará el activo como perdido y lo registrará en el historial de auditoría. Podrás marcarlo como encontrado más adelante desde la página de detalles del activo.",
+        "confirmLabel": "Reportar como perdido"
+      },
+      "found": {
+        "title": "¿Marcar el activo como encontrado?",
+        "body": "Esto devolverá el activo al inventario activo como disponible, para que pueda reasignarse.",
+        "confirmLabel": "Marcar como encontrado"
+      },
+      "repairStart": {
+        "title": "¿Enviar el activo a reparación?",
+        "bodyAssigned": "Esto desasignará el activo y lo pasará a 'En reparación'. El titular actual quedará registrado en el historial.",
+        "bodyDefault": "Esto pasará el activo a 'En reparación'. No podrá asignarse hasta que se complete la reparación.",
+        "confirmLabel": "Enviar a reparación"
+      },
+      "repairComplete": {
+        "title": "¿Marcar la reparación como completada?",
+        "body": "Esto devolverá el activo al inventario activo como disponible, para que pueda reasignarse.",
+        "confirmLabel": "Marcar como reparado"
+      },
+      "cancel": "Cancelar",
+      "working": "Procesando..."
+    },
+    "editModal": {
+      "title": "Editar activo",
+      "nameLabel": "Nombre *",
+      "categoryLabel": "Categoría",
+      "uncategorized": "Sin categoría",
+      "serialNumberLabel": "Número de serie",
+      "brandLabel": "Marca",
+      "modelLabel": "Modelo",
+      "conditionLabel": "Estado",
+      "purchaseDateLabel": "Fecha de compra",
+      "purchaseCostLabel": "Costo de compra",
+      "purchaseCostHint": "Importe en paise.",
+      "warrantyExpiryLabel": "Vencimiento de garantía",
+      "locationLabel": "Ubicación",
+      "descriptionLabel": "Descripción",
+      "notesLabel": "Notas",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
+    },
+    "conditionOptions": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "fair": "Regular",
+      "poor": "Malo"
+    },
+    "deleteHistory": {
+      "title": "¿Eliminar entrada del historial?",
+      "body": "Esto elimina únicamente esta fila del registro. El estado actual del activo permanece sin cambios: las asignaciones o acciones anteriores no se revierten.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar entrada",
+      "deleting": "Eliminando..."
+    },
+    "errors": {
+      "updateFailed": "No se pudo actualizar el activo",
+      "deleteHistoryFailed": "No se pudo eliminar la entrada del historial",
+      "warrantyBeforePurchase": "El vencimiento de la garantía no puede ser anterior a la fecha de compra.",
+      "retireFailed": "No se pudo retirar el activo",
+      "reportLostFailed": "No se pudo reportar el activo como perdido",
+      "markFoundFailed": "No se pudo marcar el activo como encontrado",
+      "sendToRepairFailed": "No se pudo enviar el activo a reparación",
+      "completeRepairFailed": "No se pudo completar la reparación"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "Categorías de activos",
+      "subtitle": "Organiza los activos por tipo"
+    },
+    "actions": {
+      "addCategory": "Añadir categoría",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "list": {
+      "loading": "Cargando categorías...",
+      "empty": "Aún no hay categorías. Crea la primera."
+    },
+    "table": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "actions": "Acciones"
+    },
+    "form": {
+      "editTitle": "Editar categoría",
+      "newTitle": "Nueva categoría",
+      "nameLabel": "Nombre *",
+      "namePlaceholder": "p. ej. Portátil, Monitor, Teléfono",
+      "descriptionLabel": "Descripción",
+      "cancel": "Cancelar",
+      "update": "Actualizar",
+      "create": "Crear"
+    },
+    "delete": {
+      "title": "¿Desactivar categoría?",
+      "message": "¿Desactivar {{name}}? Los activos existentes etiquetados con esta categoría conservan la etiqueta, pero no se pueden asignar nuevos activos aquí hasta que se restaure.",
+      "cancel": "Cancelar",
+      "confirm": "Desactivar",
+      "inProgress": "Desactivando..."
+    },
+    "errors": {
+      "deactivateFailed": "No se pudo desactivar la categoría"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "Mis activos",
+      "subtitle": "Equipos y activos asignados a ti"
+    },
+    "empty": {
+      "title": "No tienes activos asignados",
+      "description": "Cuando tu organización te asigne equipos, aparecerán aquí."
+    },
+    "card": {
+      "serialNumber": "N.º de serie: {{serial}}",
+      "assigned": "Asignado el {{date}}",
+      "warranty": "Garantía: {{date}}",
+      "warrantyExpiredSuffix": "(Vencida)"
+    },
+    "condition": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "fair": "Aceptable",
+      "poor": "Malo"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "Revocada",
+      "expired": "Caducada",
+      "active": "Activa"
+    },
+    "toast": {
+      "createError": "No se pudo crear la clave de API",
+      "copyError": "No se pudo copiar: selecciona y copia manualmente",
+      "revokeSuccess": "Clave de API revocada",
+      "revokeError": "No se pudo revocar la clave"
+    },
+    "confirm": {
+      "revoke": "¿Revocar «{{name}}»? Cualquier integración que la utilice dejará de funcionar de inmediato."
+    },
+    "heading": "Claves de API",
+    "newKeyButton": "Nueva clave",
+    "description": "Genera claves para el acceso programático a las API de EmpCloud. Una misma clave funciona en EmpCloud y en el módulo Payroll, y hereda los permisos del administrador que la creó.",
+    "howTo": {
+      "title": "Cómo usar tu clave de API",
+      "intro": "La clave generada es un <strong>token Bearer</strong>. Envíalo en la cabecera <code>Authorization</code> en cada solicitud a la API, igual que un token de sesión iniciada:",
+      "bulletBothSystems": "<strong>Funciona en ambos sistemas.</strong> El mismo token se autentica frente a las API de EmpCloud y las API del módulo Payroll, sin necesidad de un inicio de sesión o intercambio de tokens aparte.",
+      "bulletInheritsPermissions": "<strong>Hereda tus permisos.</strong> Una clave solo puede hacer lo que puede hacer el administrador que la creó. Siempre refleja el rol actual de ese administrador: si cambias el rol, el acceso de la clave cambia con él.",
+      "bulletShownOnce": "<strong>Se muestra una sola vez.</strong> La clave completa se muestra una única vez al crearla. Guárdala en un lugar seguro (un gestor de secretos); solo conservamos una copia cifrada y no podemos volver a mostrarla.",
+      "bulletRevocable": "<strong>Revocable y con caducidad.</strong> Establece una caducidad opcional o revoca una clave en cualquier momento. Las claves revocadas o caducadas dejan de funcionar de inmediato, en todas partes. Trata una clave como una contraseña: cualquiera que la tenga puede actuar con tus permisos."
+    },
+    "reveal": {
+      "warning": "Copia esta clave ahora; no se volverá a mostrar.",
+      "copied": "Copiada",
+      "copy": "Copiar",
+      "dismissAria": "Descartar",
+      "bearerHint": "Úsala como token Bearer en la cabecera Authorization:"
+    },
+    "form": {
+      "nameLabel": "Nombre de la clave",
+      "namePlaceholder": "p. ej. Exportación de asistencia",
+      "expiresLabel": "Caduca en (días)",
+      "expiresPlaceholder": "Nunca",
+      "generating": "Generando…",
+      "generate": "Generar clave",
+      "cancel": "Cancelar"
+    },
+    "list": {
+      "loading": "Cargando claves…",
+      "empty": "Aún no hay claves de API."
+    },
+    "table": {
+      "name": "Nombre",
+      "key": "Clave",
+      "status": "Estado",
+      "lastUsed": "Último uso",
+      "expires": "Caduca",
+      "created": "Creada",
+      "neverExpires": "Nunca"
+    },
+    "revokeAction": "Revocar"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "last7": "Últimos 7 días",
+      "last30": "Últimos 30 días",
+      "thisMonth": "Este mes",
+      "lastMonth": "Mes pasado",
+      "customRange": "Intervalo personalizado"
+    },
+    "trigger": {
+      "placeholder": "Seleccionar intervalo de fechas"
+    },
+    "dialog": {
+      "ariaLabel": "Elegir un intervalo de fechas"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "Borrar",
+      "cancel": "Cancelar",
+      "apply": "Aplicar"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "Importación masiva de activos desde CSV / Excel"
+    },
+    "actions": {
+      "downloadTemplate": "Descargar plantilla",
+      "close": "Cerrar",
+      "cancel": "Cancelar"
+    },
+    "upload": {
+      "requiredHint": "Obligatorio: <0>name</0>. Las demás columnas son opcionales.",
+      "dropzoneTitle": "Arrastra y suelta aquí tu archivo CSV o Excel",
+      "dropzoneSubtitle": "o haz clic para explorar",
+      "tipsHeading": "Consejos:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> es el importe en paise (p. ej., 150000 para ₹1500).",
+        "conditionStatus": "<0>condition_status</0> debe ser uno de: new, good, fair, poor.",
+        "categoryAutoCreate": "Los valores de <0>category_name</0> desconocidos se crean automáticamente.",
+        "dateFormats": "Las fechas admiten el formato YYYY-MM-DD o celdas de fecha de Excel."
+      }
+    },
+    "importing": {
+      "message": "Importando activos... espera un momento."
+    },
+    "done": {
+      "completeTitle": "Importación completada",
+      "rowError": "Fila {{row}}:",
+      "emptyFile": "No se encontraron filas en el archivo cargado.",
+      "importedCount_one": "{{count}} activo importado correctamente.",
+      "importedCount_other": "{{count}} activos importados correctamente.",
+      "createdCategoriesTitle_one": "Nueva categoría creada ({{count}}):",
+      "createdCategoriesTitle_other": "Nuevas categorías creadas ({{count}}):",
+      "skippedRows_one": "Se omitió {{count}} fila con errores",
+      "skippedRows_other": "Se omitieron {{count}} filas con errores"
+    },
+    "errors": {
+      "bulkImportFailed": "Error en la importación masiva"
+    }
+  },
+  "customRolesField": {
+    "label": "Roles personalizados",
+    "loading": "Cargando…",
+    "emptyReadonly": "No hay roles personalizados asignados",
+    "helpText": "Roles adicionales que otorgan permisos detallados además del rol principal de este usuario. Gestiona los roles en",
+    "helpTextLink": "Configuración → Roles y permisos",
+    "removeAria": "Eliminar {{name}}",
+    "placeholderEmpty": "Haz clic para asignar un rol personalizado…",
+    "placeholderMore": "Añadir otro rol…",
+    "noneToAssign": "No hay roles personalizados para asignar. Crea uno en Configuración → Roles y permisos.",
+    "noMatches": "No hay roles coincidentes",
+    "error": {
+      "requestFailed": "La solicitud falló"
+    },
+    "assignedCount_one": "({{count}} asignado)",
+    "assignedCount_other": "({{count}} asignados)",
+    "permissionCount_one": "{{count}} permiso",
+    "permissionCount_other": "{{count}} permisos"
   }
 }

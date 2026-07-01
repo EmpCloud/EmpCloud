@@ -5755,5 +5755,633 @@
       "noOptions": "選択肢が定義されていません",
       "checkboxFallback": "チェックボックス"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "ヘルプデスクダッシュボードを読み込んでいます...",
+    "title": "ヘルプデスクダッシュボード",
+    "subtitle": "人事ヘルプデスクのチケットとSLAパフォーマンスの概要。",
+    "viewAllTickets": "すべてのチケットを表示",
+    "stats": {
+      "totalOpen": "オープン合計",
+      "inProgress": "対応中",
+      "overdue": "期限超過（SLA違反）",
+      "resolvedToday": "本日解決済み"
+    },
+    "sla": {
+      "compliance": "SLA遵守率",
+      "resolvedWithinSla": "SLA内に解決したチケット"
+    },
+    "metrics": {
+      "avgResolutionTime": "平均解決時間",
+      "hours": "時間"
+    },
+    "satisfaction": {
+      "title": "満足度評価",
+      "notAvailable": "該当なし",
+      "ratingCount_one": "{{count}}件の評価",
+      "ratingCount_other": "{{count}}件の評価"
+    },
+    "categoryBreakdown": {
+      "title": "カテゴリ別チケット"
+    },
+    "recentTickets": {
+      "title": "最近のチケット"
+    },
+    "emptyState": {
+      "noTickets": "チケットはまだありません"
+    },
+    "category": {
+      "leave": "休暇",
+      "payroll": "給与",
+      "benefits": "福利厚生",
+      "it": "IT",
+      "facilities": "施設",
+      "onboarding": "オンボーディング",
+      "policy": "ポリシー",
+      "general": "一般"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "緊急"
+    },
+    "status": {
+      "open": "オープン",
+      "in_progress": "対応中",
+      "awaiting_response": "返信待ち",
+      "resolved": "解決済み",
+      "closed": "クローズ",
+      "reopened": "再オープン"
+    }
+  },
+  "ticketDetail": {
+    "loading": "チケットを読み込んでいます...",
+    "backToTickets": "チケット一覧に戻る",
+    "slaBreached": "SLA違反",
+    "raisedBy": "起票者: {{name}}",
+    "created": "作成日時: {{date}}",
+    "assignedTo": "担当者: {{name}}",
+    "slaDeadlines": "SLA期限",
+    "firstResponse": "初回応答:",
+    "responded": "{{date}} に応答済み",
+    "due": "期限 {{date}}",
+    "resolution": "解決期限:",
+    "resolved": "{{date}} に解決済み",
+    "action": {
+      "assign": "割り当て",
+      "resolve": "解決",
+      "close": "クローズ",
+      "reopen": "再オープン",
+      "rateService": "サービスを評価"
+    },
+    "assign": {
+      "selectUser": "割り当てるユーザーを選択..."
+    },
+    "rating": {
+      "prompt": "解決内容にどの程度満足されましたか？",
+      "feedbackPlaceholder": "追加のフィードバック（任意）",
+      "submit": "評価を送信"
+    },
+    "satisfaction": "満足度:",
+    "conversation": "やり取り",
+    "internalNote": "社内メモ",
+    "noComments": "コメントはまだありません。下から会話を始めましょう。",
+    "replyPlaceholder": "返信を入力...",
+    "internalNoteToggle": "社内メモ（従業員には非表示）",
+    "sending": "送信中...",
+    "sendReply": "返信を送信",
+    "toast": {
+      "resolveSuccess": "チケットを解決済みにしました。",
+      "resolveError": "チケットの解決に失敗しました。",
+      "closeSuccess": "チケットをクローズしました。",
+      "closeError": "チケットのクローズに失敗しました。",
+      "reopenSuccess": "チケットを再オープンしました。",
+      "reopenError": "チケットの再オープンに失敗しました。"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "緊急"
+    },
+    "status": {
+      "open": "未対応",
+      "in_progress": "対応中",
+      "awaiting_response": "応答待ち",
+      "resolved": "解決済み",
+      "closed": "クローズ済み",
+      "reopened": "再オープン済み"
+    },
+    "category": {
+      "general": "一般",
+      "technical": "技術",
+      "hr": "人事",
+      "payroll": "給与",
+      "it": "IT",
+      "facilities": "施設",
+      "other": "その他"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "マイフィードバック",
+      "subtitle": "匿名で送信したフィードバックのステータスと人事部からの回答を確認できます。"
+    },
+    "status": {
+      "new": "新規",
+      "acknowledged": "受付済み",
+      "under_review": "確認中",
+      "resolved": "解決済み",
+      "archived": "アーカイブ済み"
+    },
+    "category": {
+      "workplace": "職場環境",
+      "management": "マネジメント",
+      "process": "プロセス",
+      "culture": "企業文化",
+      "harassment": "ハラスメント",
+      "safety": "安全",
+      "suggestion": "提案",
+      "other": "その他"
+    },
+    "empty": {
+      "title": "送信済みのフィードバックはありません",
+      "description": "人事部に匿名で意見を共有しましょう。",
+      "submitCta": "フィードバックを送信"
+    },
+    "card": {
+      "urgentBadge": "緊急",
+      "editButton": "編集",
+      "hrResponseLabel": "人事部からの回答",
+      "respondedOn": "{{date}} に回答"
+    },
+    "editModal": {
+      "title": "フィードバックを編集",
+      "categoryLabel": "カテゴリ",
+      "subjectLabel": "件名",
+      "messageLabel": "メッセージ",
+      "markUrgent": "緊急としてマーク",
+      "cancel": "キャンセル",
+      "save": "変更を保存",
+      "saving": "保存中..."
+    },
+    "error": {
+      "updateFailed": "フィードバックの更新に失敗しました"
+    },
+    "pagination": {
+      "summary": "{{totalPages}} ページ中 {{page}} ページ目（全 {{total}} 件）",
+      "previous": "前へ",
+      "next": "次へ"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "フィードバックダッシュボード",
+    "subtitle": "匿名の従業員フィードバックの概要。",
+    "loading": "ダッシュボードを読み込み中...",
+    "stats": {
+      "totalFeedback": "フィードバック総数",
+      "urgentItems": "緊急項目",
+      "responseRate": "対応率",
+      "newUnread": "新規／未読"
+    },
+    "sections": {
+      "byCategory": "カテゴリ別",
+      "sentimentDistribution": "感情分布",
+      "byStatus": "ステータス別",
+      "recentFeedback": "最近のフィードバック"
+    },
+    "empty": {
+      "noData": "データがまだありません。",
+      "noFeedback": "フィードバックがまだありません。"
+    },
+    "status": {
+      "new": "新規",
+      "acknowledged": "確認済み",
+      "under_review": "審査中",
+      "resolved": "解決済み",
+      "archived": "アーカイブ済み"
+    },
+    "category": {
+      "workplace": "職場環境",
+      "management": "マネジメント",
+      "process": "プロセス",
+      "culture": "組織文化",
+      "harassment": "ハラスメント",
+      "safety": "安全",
+      "suggestion": "提案",
+      "other": "その他"
+    },
+    "sentiment": {
+      "positive": "ポジティブ",
+      "neutral": "ニュートラル",
+      "negative": "ネガティブ",
+      "unset": "未設定"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "フィードバックを送信"
+    },
+    "success": {
+      "title": "フィードバックを送信しました",
+      "description": "フィードバックは匿名で送信されました。あなたの身元は保存されず、誰にも表示されません。フィードバックのステータスは「マイフィードバック」ページで確認できます。",
+      "submitAnother": "別のフィードバックを送信"
+    },
+    "anonymousBanner": {
+      "title": "フィードバックは完全に匿名です",
+      "description": "あなたの身元はハッシュ化され、個人を特定することはできません。人事部はフィードバックの内容を確認できますが、氏名やメールアドレスは一切見られません。"
+    },
+    "field": {
+      "category": "カテゴリ",
+      "subject": "件名",
+      "message": "メッセージ",
+      "subjectPlaceholder": "フィードバックの簡単な概要",
+      "messagePlaceholder": "フィードバックの内容を詳しく入力してください...",
+      "markUrgent": "緊急としてマーク"
+    },
+    "action": {
+      "submit": "匿名で送信",
+      "submitting": "送信中..."
+    },
+    "error": {
+      "submitFailed": "フィードバックの送信に失敗しました。もう一度お試しください。"
+    },
+    "category": {
+      "workplace": "職場環境",
+      "management": "マネジメント",
+      "process": "業務プロセス",
+      "culture": "企業文化",
+      "harassment": "ハラスメント",
+      "safety": "安全",
+      "suggestion": "提案",
+      "other": "その他"
+    }
+  },
+  "assetDetail": {
+    "loading": "資産の詳細を読み込んでいます...",
+    "status": {
+      "available": "利用可能",
+      "assigned": "割り当て済み",
+      "in_repair": "修理中",
+      "retired": "廃棄済み",
+      "lost": "紛失",
+      "damaged": "破損"
+    },
+    "condition": {
+      "new": "新品",
+      "good": "良好",
+      "fair": "普通",
+      "poor": "不良"
+    },
+    "action": {
+      "created": "作成",
+      "assigned": "割り当て",
+      "returned": "返却",
+      "sent_to_repair": "修理に送付",
+      "repaired": "修理完了",
+      "retired": "廃棄",
+      "lost": "紛失",
+      "found": "発見",
+      "damaged": "破損",
+      "updated": "更新"
+    },
+    "buttons": {
+      "edit": "編集",
+      "assign": "割り当て",
+      "return": "返却",
+      "sendForRepair": "修理に出す",
+      "repairComplete": "修理完了",
+      "retire": "廃棄",
+      "reportLost": "紛失を報告",
+      "markFound": "発見済みにする"
+    },
+    "info": {
+      "heading": "資産情報",
+      "assetTag": "資産タグ",
+      "category": "カテゴリ",
+      "uncategorized": "未分類",
+      "serialNumber": "シリアル番号",
+      "brand": "ブランド",
+      "model": "モデル",
+      "location": "設置場所",
+      "purchaseDate": "購入日",
+      "purchaseCost": "購入金額",
+      "warrantyExpiry": "保証期限",
+      "expiredSuffix": "（期限切れ）",
+      "description": "説明",
+      "notes": "メモ"
+    },
+    "assignment": {
+      "heading": "現在の割り当て",
+      "assignedTo": "割り当て先",
+      "assignedAt": "割り当て日時",
+      "assignedBy": "割り当て者"
+    },
+    "history": {
+      "heading": "履歴",
+      "to": "割り当て先: {{name}}",
+      "from": "割り当て元: {{name}}",
+      "empty": "履歴はありません",
+      "deleteTitle": "履歴を削除"
+    },
+    "assignModal": {
+      "title": "資産を割り当て",
+      "assignToLabel": "割り当て先 *",
+      "selectEmployee": "従業員を選択",
+      "notesLabel": "メモ",
+      "cancel": "キャンセル",
+      "submit": "割り当て",
+      "submitting": "割り当て中..."
+    },
+    "returnModal": {
+      "title": "資産を返却",
+      "conditionLabel": "返却時の状態",
+      "notesLabel": "メモ",
+      "cancel": "キャンセル",
+      "submit": "資産を返却",
+      "submitting": "返却中..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "この資産を廃棄しますか？",
+        "body": "資産を廃棄すると、稼働中の在庫から除外されます。過去の割り当て記録は保持されますが、その資産を再度割り当てることはできません。",
+        "confirmLabel": "資産を廃棄"
+      },
+      "lost": {
+        "title": "資産を紛失として報告しますか？",
+        "body": "資産が紛失としてマークされ、監査履歴に記録されます。後で資産詳細ページから発見済みにすることができます。",
+        "confirmLabel": "紛失として報告"
+      },
+      "found": {
+        "title": "資産を発見済みにしますか？",
+        "body": "資産が利用可能な状態で稼働中の在庫に戻され、再割り当てが可能になります。",
+        "confirmLabel": "発見済みにする"
+      },
+      "repairStart": {
+        "title": "資産を修理に出しますか？",
+        "bodyAssigned": "資産の割り当てが解除され、「修理中」に移行します。現在の使用者は履歴に記録されます。",
+        "bodyDefault": "資産が「修理中」に移行します。修理が完了するまで割り当てはできません。",
+        "confirmLabel": "修理に出す"
+      },
+      "repairComplete": {
+        "title": "修理を完了しますか？",
+        "body": "資産が利用可能な状態で稼働中の在庫に戻され、再割り当てが可能になります。",
+        "confirmLabel": "修理完了にする"
+      },
+      "cancel": "キャンセル",
+      "working": "処理中..."
+    },
+    "editModal": {
+      "title": "資産を編集",
+      "nameLabel": "名称 *",
+      "categoryLabel": "カテゴリ",
+      "uncategorized": "未分類",
+      "serialNumberLabel": "シリアル番号",
+      "brandLabel": "ブランド",
+      "modelLabel": "モデル",
+      "conditionLabel": "状態",
+      "purchaseDateLabel": "購入日",
+      "purchaseCostLabel": "購入金額",
+      "purchaseCostHint": "金額（パイサ単位）。",
+      "warrantyExpiryLabel": "保証期限",
+      "locationLabel": "設置場所",
+      "descriptionLabel": "説明",
+      "notesLabel": "メモ",
+      "cancel": "キャンセル",
+      "save": "変更を保存",
+      "saving": "保存中..."
+    },
+    "conditionOptions": {
+      "new": "新品",
+      "good": "良好",
+      "fair": "普通",
+      "poor": "不良"
+    },
+    "deleteHistory": {
+      "title": "履歴を削除しますか？",
+      "body": "このログ行のみが削除されます。資産の現在のステータスは変更されず、過去の割り当てやアクションが取り消されることはありません。",
+      "cancel": "キャンセル",
+      "confirm": "履歴を削除",
+      "deleting": "削除中..."
+    },
+    "errors": {
+      "updateFailed": "資産の更新に失敗しました",
+      "deleteHistoryFailed": "履歴の削除に失敗しました",
+      "warrantyBeforePurchase": "保証期限を購入日より前に設定することはできません。",
+      "retireFailed": "資産の廃棄に失敗しました",
+      "reportLostFailed": "資産の紛失報告に失敗しました",
+      "markFoundFailed": "資産を発見済みにできませんでした",
+      "sendToRepairFailed": "資産を修理に送付できませんでした",
+      "completeRepairFailed": "修理の完了に失敗しました"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "資産カテゴリ",
+      "subtitle": "種別ごとに資産を整理"
+    },
+    "actions": {
+      "addCategory": "カテゴリを追加",
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "list": {
+      "loading": "カテゴリを読み込み中...",
+      "empty": "カテゴリがまだありません。最初のカテゴリを作成しましょう。"
+    },
+    "table": {
+      "name": "名前",
+      "description": "説明",
+      "actions": "操作"
+    },
+    "form": {
+      "editTitle": "カテゴリを編集",
+      "newTitle": "新規カテゴリ",
+      "nameLabel": "名前 *",
+      "namePlaceholder": "例：ノートPC、モニター、スマートフォン",
+      "descriptionLabel": "説明",
+      "cancel": "キャンセル",
+      "update": "更新",
+      "create": "作成"
+    },
+    "delete": {
+      "title": "カテゴリを無効化しますか？",
+      "message": "{{name}} を無効化しますか？このカテゴリが付与された既存の資産はタグを保持しますが、復元するまで新しい資産をここに登録できなくなります。",
+      "cancel": "キャンセル",
+      "confirm": "無効化",
+      "inProgress": "無効化中..."
+    },
+    "errors": {
+      "deactivateFailed": "カテゴリの無効化に失敗しました"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "マイ資産",
+      "subtitle": "あなたに割り当てられた機器と資産"
+    },
+    "empty": {
+      "title": "割り当てられた資産はありません",
+      "description": "組織から機器が割り当てられると、ここに表示されます。"
+    },
+    "card": {
+      "serialNumber": "S/N: {{serial}}",
+      "assigned": "割り当て日 {{date}}",
+      "warranty": "保証期限: {{date}}",
+      "warrantyExpiredSuffix": "(期限切れ)"
+    },
+    "condition": {
+      "new": "新品",
+      "good": "良好",
+      "fair": "普通",
+      "poor": "不良"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "失効済み",
+      "expired": "期限切れ",
+      "active": "有効"
+    },
+    "toast": {
+      "createError": "APIキーの作成に失敗しました",
+      "copyError": "コピーできませんでした。手動で選択してコピーしてください",
+      "revokeSuccess": "APIキーを失効しました",
+      "revokeError": "キーの失効に失敗しました"
+    },
+    "confirm": {
+      "revoke": "「{{name}}」を失効しますか？このキーを使用しているすべての連携が直ちに動作しなくなります。"
+    },
+    "heading": "APIキー",
+    "newKeyButton": "新規キー",
+    "description": "EmpCloud APIへのプログラムによるアクセス用のキーを生成します。1つのキーはEmpCloudとPayrollモジュールの両方で使用でき、作成した管理者の権限を引き継ぎます。",
+    "howTo": {
+      "title": "APIキーの使い方",
+      "intro": "生成されたキーは<strong>ベアラートークン</strong>です。ログイン済みのセッショントークンとまったく同じように、すべてのAPIリクエストの<code>Authorization</code>ヘッダーで送信してください：",
+      "bulletBothSystems": "<strong>両方のシステムで使用可能。</strong>同じトークンでEmpCloud APIとPayrollモジュールAPIの両方に認証できます。個別のログインやトークン交換は不要です。",
+      "bulletInheritsPermissions": "<strong>権限を引き継ぎます。</strong>キーは、作成した管理者ができる操作のみを実行できます。常にその管理者の現在のロールを反映し、ロールを変更するとキーのアクセス権も変わります。",
+      "bulletShownOnce": "<strong>表示は一度のみ。</strong>完全なキーは作成時に一度だけ表示されます。安全な場所（シークレットマネージャーなど）に保管してください。当社はハッシュ化したコピーのみを保持しており、再表示できません。",
+      "bulletRevocable": "<strong>失効・有効期限の設定が可能。</strong>任意の有効期限を設定するか、いつでもキーを失効できます。失効または期限切れのキーは、あらゆる場所で直ちに動作しなくなります。キーはパスワードと同様に扱ってください。所持する誰もがあなたの権限で操作できます。"
+    },
+    "reveal": {
+      "warning": "今すぐこのキーをコピーしてください。再表示されません。",
+      "copied": "コピー済み",
+      "copy": "コピー",
+      "dismissAria": "閉じる",
+      "bearerHint": "Authorizationヘッダーでベアラートークンとして使用します："
+    },
+    "form": {
+      "nameLabel": "キー名",
+      "namePlaceholder": "例：勤怠エクスポート",
+      "expiresLabel": "有効期限（日数）",
+      "expiresPlaceholder": "無期限",
+      "generating": "生成中…",
+      "generate": "キーを生成",
+      "cancel": "キャンセル"
+    },
+    "list": {
+      "loading": "キーを読み込み中…",
+      "empty": "APIキーはまだありません。"
+    },
+    "table": {
+      "name": "名前",
+      "key": "キー",
+      "status": "ステータス",
+      "lastUsed": "最終使用",
+      "expires": "有効期限",
+      "created": "作成日",
+      "neverExpires": "無期限"
+    },
+    "revokeAction": "失効"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "今日",
+      "yesterday": "昨日",
+      "last7": "過去7日間",
+      "last30": "過去30日間",
+      "thisMonth": "今月",
+      "lastMonth": "先月",
+      "customRange": "カスタム範囲"
+    },
+    "trigger": {
+      "placeholder": "期間を選択"
+    },
+    "dialog": {
+      "ariaLabel": "期間を選択"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "クリア",
+      "cancel": "キャンセル",
+      "apply": "適用"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "CSV / Excel から資産を一括インポート"
+    },
+    "actions": {
+      "downloadTemplate": "テンプレートをダウンロード",
+      "close": "閉じる",
+      "cancel": "キャンセル"
+    },
+    "upload": {
+      "requiredHint": "必須: <0>name</0>。その他の列は任意です。",
+      "dropzoneTitle": "CSV または Excel ファイルをここにドラッグ＆ドロップ",
+      "dropzoneSubtitle": "またはクリックして選択",
+      "tipsHeading": "ヒント:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> はパイサ単位の金額です（例: ₹1,500 の場合は 150000）。",
+        "conditionStatus": "<0>condition_status</0> は次のいずれかを指定してください: new、good、fair、poor。",
+        "categoryAutoCreate": "未登録の <0>category_name</0> の値は自動的に作成されます。",
+        "dateFormats": "日付は YYYY-MM-DD 形式または Excel の日付セルに対応しています。"
+      }
+    },
+    "importing": {
+      "message": "資産をインポートしています... しばらくお待ちください。"
+    },
+    "done": {
+      "completeTitle": "インポート完了",
+      "rowError": "{{row}} 行目:",
+      "emptyFile": "アップロードされたファイルに行が見つかりませんでした。",
+      "importedCount_one": "{{count}} 件の資産を正常にインポートしました。",
+      "importedCount_other": "{{count}} 件の資産を正常にインポートしました。",
+      "createdCategoriesTitle_one": "新しいカテゴリを作成しました（{{count}} 件）:",
+      "createdCategoriesTitle_other": "新しいカテゴリを作成しました（{{count}} 件）:",
+      "skippedRows_one": "エラーのため {{count}} 行をスキップしました",
+      "skippedRows_other": "エラーのため {{count}} 行をスキップしました"
+    },
+    "errors": {
+      "bulkImportFailed": "一括インポートに失敗しました"
+    }
+  },
+  "customRolesField": {
+    "label": "カスタムロール",
+    "loading": "読み込み中…",
+    "emptyReadonly": "カスタムロールは割り当てられていません",
+    "helpText": "このユーザーのプライマリロールに加えて、きめ細かな権限を付与する追加のロールです。ロールの管理は",
+    "helpTextLink": "設定 → ロールと権限",
+    "removeAria": "{{name}} を削除",
+    "placeholderEmpty": "クリックしてカスタムロールを割り当て…",
+    "placeholderMore": "別のロールを追加…",
+    "noneToAssign": "割り当て可能なカスタムロールがありません。設定 → ロールと権限 で作成してください。",
+    "noMatches": "一致するロールがありません",
+    "error": {
+      "requestFailed": "リクエストに失敗しました"
+    },
+    "assignedCount_one": "（{{count}}件割り当て済み）",
+    "assignedCount_other": "（{{count}}件割り当て済み）",
+    "permissionCount_one": "{{count}}件の権限",
+    "permissionCount_other": "{{count}}件の権限"
   }
 }

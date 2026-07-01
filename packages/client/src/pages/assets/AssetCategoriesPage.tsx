@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Plus,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 export default function AssetCategoriesPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -51,7 +53,7 @@ export default function AssetCategoriesPage() {
       setDeleteError(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to deactivate category"),
+      setDeleteError(err?.response?.data?.error?.message || t("assetCategories.errors.deactivateFailed")),
   });
 
   function resetForm() {
@@ -82,35 +84,35 @@ export default function AssetCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Asset Categories</h1>
-          <p className="text-sm text-gray-500 mt-1">Organize assets by type</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("assetCategories.header.title")}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t("assetCategories.header.subtitle")}</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
           className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
         >
           <Plus className="h-4 w-4" />
-          Add Category
+          {t("assetCategories.actions.addCategory")}
         </button>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="text-gray-400">Loading categories...</div>
+          <div className="text-gray-400">{t("assetCategories.list.loading")}</div>
         </div>
       ) : !categories || categories.length === 0 ? (
         <div className="text-center py-16">
           <FolderOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No categories yet. Create your first one.</p>
+          <p className="text-gray-500">{t("assetCategories.list.empty")}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Description</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-500">Actions</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assetCategories.table.name")}</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-500">{t("assetCategories.table.description")}</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-500">{t("assetCategories.table.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -123,7 +125,7 @@ export default function AssetCategoriesPage() {
                       <button
                         onClick={() => startEdit(cat)}
                         className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                        title="Edit"
+                        title={t("assetCategories.actions.edit")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
@@ -133,7 +135,7 @@ export default function AssetCategoriesPage() {
                           setDeleteError(null);
                         }}
                         className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-600"
-                        title="Delete"
+                        title={t("assetCategories.actions.delete")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -152,7 +154,7 @@ export default function AssetCategoriesPage() {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">
-                {editingId ? "Edit Category" : "New Category"}
+                {editingId ? t("assetCategories.form.editTitle") : t("assetCategories.form.newTitle")}
               </h2>
               <button onClick={resetForm} className="p-1 rounded hover:bg-gray-100">
                 <X className="h-5 w-5 text-gray-400" />
@@ -160,18 +162,18 @@ export default function AssetCategoriesPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetCategories.form.nameLabel")}</label>
                 <input
                   type="text"
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  placeholder="e.g. Laptop, Monitor, Phone"
+                  placeholder={t("assetCategories.form.namePlaceholder")}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetCategories.form.descriptionLabel")}</label>
                 <textarea
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
@@ -185,7 +187,7 @@ export default function AssetCategoriesPage() {
                   onClick={resetForm}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("assetCategories.form.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -193,7 +195,7 @@ export default function AssetCategoriesPage() {
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
                 >
                   <Check className="h-4 w-4" />
-                  {editingId ? "Update" : "Create"}
+                  {editingId ? t("assetCategories.form.update") : t("assetCategories.form.create")}
                 </button>
               </div>
             </form>
@@ -217,12 +219,9 @@ export default function AssetCategoriesPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Deactivate category?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("assetCategories.delete.title")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Deactivate{" "}
-                    <span className="font-medium text-gray-700">{deleteTarget.name}</span>? Existing
-                    assets tagged with this category keep the tag, but no new assets can be placed
-                    here until it's restored.
+                    {t("assetCategories.delete.message", { name: deleteTarget.name })}
                   </p>
                 </div>
               </div>
@@ -239,7 +238,7 @@ export default function AssetCategoriesPage() {
                 disabled={deleteCategory.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("assetCategories.delete.cancel")}
               </button>
               <button
                 type="button"
@@ -249,10 +248,10 @@ export default function AssetCategoriesPage() {
               >
                 {deleteCategory.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deactivating...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("assetCategories.delete.inProgress")}
                   </>
                 ) : (
-                  "Deactivate"
+                  t("assetCategories.delete.confirm")
                 )}
               </button>
             </div>

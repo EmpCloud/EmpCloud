@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Package,
@@ -17,6 +18,7 @@ const CONDITION_COLORS: Record<string, string> = {
 };
 
 export default function MyAssetsPage() {
+  const { t } = useTranslation();
   const { data: assets, isLoading } = useQuery({
     queryKey: ["my-assets"],
     queryFn: () => api.get("/assets/my").then((r) => r.data.data),
@@ -26,8 +28,8 @@ export default function MyAssetsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Assets</h1>
-          <p className="text-sm text-gray-500 mt-1">Equipment and assets assigned to you</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("myAssets.page.title")}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t("myAssets.page.subtitle")}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
@@ -53,15 +55,15 @@ export default function MyAssetsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Assets</h1>
-        <p className="text-sm text-gray-500 mt-1">Equipment and assets assigned to you</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("myAssets.page.title")}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t("myAssets.page.subtitle")}</p>
       </div>
 
       {!assets || assets.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
           <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-lg font-medium text-gray-500 mb-1">No assets assigned to you</p>
-          <p className="text-sm text-gray-400">When your organization assigns equipment to you, it will appear here.</p>
+          <p className="text-lg font-medium text-gray-500 mb-1">{t("myAssets.empty.title")}</p>
+          <p className="text-sm text-gray-400">{t("myAssets.empty.description")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -82,7 +84,7 @@ export default function MyAssetsPage() {
                     </div>
                   </div>
                   <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-gray-100"}`}>
-                    {asset.condition_status}
+                    {t(`myAssets.condition.${asset.condition_status}`, { defaultValue: asset.condition_status })}
                   </span>
                 </div>
 
@@ -99,12 +101,12 @@ export default function MyAssetsPage() {
                     </div>
                   )}
                   {asset.serial_number && (
-                    <div className="text-xs text-gray-400">S/N: {asset.serial_number}</div>
+                    <div className="text-xs text-gray-400">{t("myAssets.card.serialNumber", { serial: asset.serial_number })}</div>
                   )}
                   {asset.assigned_at && (
                     <div className="flex items-center gap-2 text-gray-500 text-xs">
                       <Calendar className="h-3 w-3" />
-                      Assigned {new Date(asset.assigned_at).toLocaleDateString()}
+                      {t("myAssets.card.assigned", { date: new Date(asset.assigned_at).toLocaleDateString() })}
                     </div>
                   )}
                   {asset.warranty_expiry && (
@@ -114,8 +116,8 @@ export default function MyAssetsPage() {
                       ) : (
                         <Shield className="h-3 w-3" />
                       )}
-                      Warranty: {new Date(asset.warranty_expiry).toLocaleDateString()}
-                      {warrantyExpired && " (Expired)"}
+                      {t("myAssets.card.warranty", { date: new Date(asset.warranty_expiry).toLocaleDateString() })}
+                      {warrantyExpired && ` ${t("myAssets.card.warrantyExpiredSuffix")}`}
                     </div>
                   )}
                 </div>

@@ -5755,5 +5755,633 @@
       "noOptions": "Keine Optionen definiert",
       "checkboxFallback": "Kontrollkästchen"
     }
+  },
+  "helpdeskDashboard": {
+    "loading": "Helpdesk-Dashboard wird geladen...",
+    "title": "Helpdesk-Dashboard",
+    "subtitle": "Überblick über HR-Helpdesk-Tickets und SLA-Leistung.",
+    "viewAllTickets": "Alle Tickets anzeigen",
+    "stats": {
+      "totalOpen": "Offen gesamt",
+      "inProgress": "In Bearbeitung",
+      "overdue": "Überfällig (SLA verletzt)",
+      "resolvedToday": "Heute gelöst"
+    },
+    "sla": {
+      "compliance": "SLA-Einhaltung",
+      "resolvedWithinSla": "Innerhalb des SLA gelöste Tickets"
+    },
+    "metrics": {
+      "avgResolutionTime": "Durchschnittliche Lösungszeit",
+      "hours": "Stunden"
+    },
+    "satisfaction": {
+      "title": "Zufriedenheitsbewertung",
+      "notAvailable": "N/V",
+      "ratingCount_one": "{{count}} Bewertung",
+      "ratingCount_other": "{{count}} Bewertungen"
+    },
+    "categoryBreakdown": {
+      "title": "Tickets nach Kategorie"
+    },
+    "recentTickets": {
+      "title": "Neueste Tickets"
+    },
+    "emptyState": {
+      "noTickets": "Noch keine Tickets"
+    },
+    "category": {
+      "leave": "Urlaub",
+      "payroll": "Gehaltsabrechnung",
+      "benefits": "Sozialleistungen",
+      "it": "IT",
+      "facilities": "Gebäude",
+      "onboarding": "Onboarding",
+      "policy": "Richtlinie",
+      "general": "Allgemein"
+    },
+    "priority": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    },
+    "status": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "awaiting_response": "Wartet auf Antwort",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen",
+      "reopened": "Wieder geöffnet"
+    }
+  },
+  "ticketDetail": {
+    "loading": "Ticket wird geladen...",
+    "backToTickets": "Zurück zu den Tickets",
+    "slaBreached": "SLA überschritten",
+    "raisedBy": "Erstellt von: {{name}}",
+    "created": "Erstellt: {{date}}",
+    "assignedTo": "Zugewiesen an: {{name}}",
+    "slaDeadlines": "SLA-Fristen",
+    "firstResponse": "Erste Reaktion:",
+    "responded": "Beantwortet {{date}}",
+    "due": "Fällig {{date}}",
+    "resolution": "Lösung:",
+    "resolved": "Gelöst {{date}}",
+    "action": {
+      "assign": "Zuweisen",
+      "resolve": "Lösen",
+      "close": "Schließen",
+      "reopen": "Erneut öffnen",
+      "rateService": "Service bewerten"
+    },
+    "assign": {
+      "selectUser": "Benutzer zum Zuweisen auswählen..."
+    },
+    "rating": {
+      "prompt": "Wie zufrieden sind Sie mit der Lösung?",
+      "feedbackPlaceholder": "Zusätzliches Feedback (optional)",
+      "submit": "Bewertung senden"
+    },
+    "satisfaction": "Zufriedenheit:",
+    "conversation": "Konversation",
+    "internalNote": "Interne Notiz",
+    "noComments": "Noch keine Kommentare. Starten Sie unten die Konversation.",
+    "replyPlaceholder": "Antwort schreiben...",
+    "internalNoteToggle": "Interne Notiz (für Mitarbeiter nicht sichtbar)",
+    "sending": "Wird gesendet...",
+    "sendReply": "Antwort senden",
+    "toast": {
+      "resolveSuccess": "Ticket als gelöst markiert.",
+      "resolveError": "Ticket konnte nicht gelöst werden.",
+      "closeSuccess": "Ticket geschlossen.",
+      "closeError": "Ticket konnte nicht geschlossen werden.",
+      "reopenSuccess": "Ticket erneut geöffnet.",
+      "reopenError": "Ticket konnte nicht erneut geöffnet werden."
+    },
+    "priority": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    },
+    "status": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "awaiting_response": "Wartet auf Antwort",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen",
+      "reopened": "Erneut geöffnet"
+    },
+    "category": {
+      "general": "Allgemein",
+      "technical": "Technisch",
+      "hr": "Personal",
+      "payroll": "Gehaltsabrechnung",
+      "it": "IT",
+      "facilities": "Gebäudemanagement",
+      "other": "Sonstiges"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "Mein Feedback",
+      "subtitle": "Sehen Sie den Status Ihres anonym eingereichten Feedbacks und etwaige Antworten der Personalabteilung."
+    },
+    "status": {
+      "new": "Neu",
+      "acknowledged": "Bestätigt",
+      "under_review": "In Prüfung",
+      "resolved": "Gelöst",
+      "archived": "Archiviert"
+    },
+    "category": {
+      "workplace": "Arbeitsplatz",
+      "management": "Management",
+      "process": "Prozess",
+      "culture": "Kultur",
+      "harassment": "Belästigung",
+      "safety": "Sicherheit",
+      "suggestion": "Vorschlag",
+      "other": "Sonstiges"
+    },
+    "empty": {
+      "title": "Noch kein Feedback eingereicht",
+      "description": "Teilen Sie Ihre Gedanken anonym mit der Personalabteilung.",
+      "submitCta": "Feedback einreichen"
+    },
+    "card": {
+      "urgentBadge": "Dringend",
+      "editButton": "Bearbeiten",
+      "hrResponseLabel": "Antwort der Personalabteilung",
+      "respondedOn": "Beantwortet am {{date}}"
+    },
+    "editModal": {
+      "title": "Feedback bearbeiten",
+      "categoryLabel": "Kategorie",
+      "subjectLabel": "Betreff",
+      "messageLabel": "Nachricht",
+      "markUrgent": "Als dringend markieren",
+      "cancel": "Abbrechen",
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert..."
+    },
+    "error": {
+      "updateFailed": "Feedback konnte nicht aktualisiert werden"
+    },
+    "pagination": {
+      "summary": "Seite {{page}} von {{totalPages}} ({{total}} insgesamt)",
+      "previous": "Zurück",
+      "next": "Weiter"
+    }
+  },
+  "feedbackDashboard": {
+    "title": "Feedback-Dashboard",
+    "subtitle": "Überblick über anonymes Mitarbeiter-Feedback.",
+    "loading": "Dashboard wird geladen...",
+    "stats": {
+      "totalFeedback": "Feedback gesamt",
+      "urgentItems": "Dringende Einträge",
+      "responseRate": "Antwortquote",
+      "newUnread": "Neu / Ungelesen"
+    },
+    "sections": {
+      "byCategory": "Nach Kategorie",
+      "sentimentDistribution": "Stimmungsverteilung",
+      "byStatus": "Nach Status",
+      "recentFeedback": "Aktuelles Feedback"
+    },
+    "empty": {
+      "noData": "Noch keine Daten.",
+      "noFeedback": "Noch kein Feedback."
+    },
+    "status": {
+      "new": "Neu",
+      "acknowledged": "Bestätigt",
+      "under_review": "In Prüfung",
+      "resolved": "Gelöst",
+      "archived": "Archiviert"
+    },
+    "category": {
+      "workplace": "Arbeitsplatz",
+      "management": "Management",
+      "process": "Prozess",
+      "culture": "Kultur",
+      "harassment": "Belästigung",
+      "safety": "Sicherheit",
+      "suggestion": "Vorschlag",
+      "other": "Sonstiges"
+    },
+    "sentiment": {
+      "positive": "Positiv",
+      "neutral": "Neutral",
+      "negative": "Negativ",
+      "unset": "Nicht festgelegt"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "Feedback senden"
+    },
+    "success": {
+      "title": "Feedback gesendet",
+      "description": "Ihr Feedback wurde anonym gesendet. Ihre Identität wird nicht gespeichert und ist für niemanden sichtbar. Den Status Ihres Feedbacks können Sie auf der Seite \"Mein Feedback\" einsehen.",
+      "submitAnother": "Weiteres senden"
+    },
+    "anonymousBanner": {
+      "title": "Ihr Feedback ist vollständig anonym",
+      "description": "Ihre Identität wird gehasht und kann nicht zu Ihnen zurückverfolgt werden. Die Personalabteilung sieht den Feedback-Inhalt, aber niemals Ihren Namen oder Ihre E-Mail-Adresse."
+    },
+    "field": {
+      "category": "Kategorie",
+      "subject": "Betreff",
+      "message": "Nachricht",
+      "subjectPlaceholder": "Kurze Zusammenfassung Ihres Feedbacks",
+      "messagePlaceholder": "Beschreiben Sie Ihr Feedback im Detail...",
+      "markUrgent": "Als dringend markieren"
+    },
+    "action": {
+      "submit": "Anonym senden",
+      "submitting": "Wird gesendet..."
+    },
+    "error": {
+      "submitFailed": "Feedback konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+    },
+    "category": {
+      "workplace": "Arbeitsplatz",
+      "management": "Management",
+      "process": "Prozess",
+      "culture": "Unternehmenskultur",
+      "harassment": "Belästigung",
+      "safety": "Sicherheit",
+      "suggestion": "Vorschlag",
+      "other": "Sonstiges"
+    }
+  },
+  "assetDetail": {
+    "loading": "Asset-Details werden geladen...",
+    "status": {
+      "available": "Verfügbar",
+      "assigned": "Zugewiesen",
+      "in_repair": "In Reparatur",
+      "retired": "Ausgemustert",
+      "lost": "Verloren",
+      "damaged": "Beschädigt"
+    },
+    "condition": {
+      "new": "Neu",
+      "good": "Gut",
+      "fair": "Mittelmäßig",
+      "poor": "Schlecht"
+    },
+    "action": {
+      "created": "Erstellt",
+      "assigned": "Zugewiesen",
+      "returned": "Zurückgegeben",
+      "sent_to_repair": "Zur Reparatur gesendet",
+      "repaired": "Repariert",
+      "retired": "Ausgemustert",
+      "lost": "Verloren",
+      "found": "Gefunden",
+      "damaged": "Beschädigt",
+      "updated": "Aktualisiert"
+    },
+    "buttons": {
+      "edit": "Bearbeiten",
+      "assign": "Zuweisen",
+      "return": "Zurückgeben",
+      "sendForRepair": "Zur Reparatur senden",
+      "repairComplete": "Reparatur abgeschlossen",
+      "retire": "Ausmustern",
+      "reportLost": "Als verloren melden",
+      "markFound": "Als gefunden markieren"
+    },
+    "info": {
+      "heading": "Asset-Informationen",
+      "assetTag": "Asset-Kennung",
+      "category": "Kategorie",
+      "uncategorized": "Nicht kategorisiert",
+      "serialNumber": "Seriennummer",
+      "brand": "Marke",
+      "model": "Modell",
+      "location": "Standort",
+      "purchaseDate": "Kaufdatum",
+      "purchaseCost": "Anschaffungskosten",
+      "warrantyExpiry": "Garantieablauf",
+      "expiredSuffix": " (Abgelaufen)",
+      "description": "Beschreibung",
+      "notes": "Notizen"
+    },
+    "assignment": {
+      "heading": "Aktuell zugewiesen",
+      "assignedTo": "Zugewiesen an",
+      "assignedAt": "Zugewiesen am",
+      "assignedBy": "Zugewiesen von"
+    },
+    "history": {
+      "heading": "Verlauf",
+      "to": "An: {{name}}",
+      "from": "Von: {{name}}",
+      "empty": "Keine Verlaufseinträge",
+      "deleteTitle": "Verlaufseintrag löschen"
+    },
+    "assignModal": {
+      "title": "Asset zuweisen",
+      "assignToLabel": "Zuweisen an *",
+      "selectEmployee": "Mitarbeiter auswählen",
+      "notesLabel": "Notizen",
+      "cancel": "Abbrechen",
+      "submit": "Zuweisen",
+      "submitting": "Wird zugewiesen..."
+    },
+    "returnModal": {
+      "title": "Asset zurückgeben",
+      "conditionLabel": "Zustand bei Rückgabe",
+      "notesLabel": "Notizen",
+      "cancel": "Abbrechen",
+      "submit": "Asset zurückgeben",
+      "submitting": "Wird zurückgegeben..."
+    },
+    "confirm": {
+      "retire": {
+        "title": "Dieses Asset ausmustern?",
+        "body": "Beim Ausmustern wird das Asset aus dem aktiven Bestand entfernt. Frühere Zuweisungen bleiben erfasst, das Asset kann jedoch nicht mehr zugewiesen werden.",
+        "confirmLabel": "Asset ausmustern"
+      },
+      "lost": {
+        "title": "Asset als verloren melden?",
+        "body": "Dadurch wird das Asset als verloren markiert und im Prüfverlauf erfasst. Sie können es später auf der Asset-Detailseite als gefunden markieren.",
+        "confirmLabel": "Als verloren melden"
+      },
+      "found": {
+        "title": "Asset als gefunden markieren?",
+        "body": "Dadurch wird das Asset als verfügbar in den aktiven Bestand zurückgeführt und kann erneut zugewiesen werden.",
+        "confirmLabel": "Als gefunden markieren"
+      },
+      "repairStart": {
+        "title": "Asset zur Reparatur senden?",
+        "bodyAssigned": "Dadurch wird die Zuweisung des Assets aufgehoben und es in den Status 'In Reparatur' versetzt. Der aktuelle Besitzer bleibt im Verlauf erfasst.",
+        "bodyDefault": "Dadurch wird das Asset in den Status 'In Reparatur' versetzt. Es kann erst nach Abschluss der Reparatur wieder zugewiesen werden.",
+        "confirmLabel": "Zur Reparatur senden"
+      },
+      "repairComplete": {
+        "title": "Reparatur als abgeschlossen markieren?",
+        "body": "Dadurch wird das Asset als verfügbar in den aktiven Bestand zurückgeführt und kann erneut zugewiesen werden.",
+        "confirmLabel": "Als repariert markieren"
+      },
+      "cancel": "Abbrechen",
+      "working": "Wird ausgeführt..."
+    },
+    "editModal": {
+      "title": "Asset bearbeiten",
+      "nameLabel": "Name *",
+      "categoryLabel": "Kategorie",
+      "uncategorized": "Nicht kategorisiert",
+      "serialNumberLabel": "Seriennummer",
+      "brandLabel": "Marke",
+      "modelLabel": "Modell",
+      "conditionLabel": "Zustand",
+      "purchaseDateLabel": "Kaufdatum",
+      "purchaseCostLabel": "Anschaffungskosten",
+      "purchaseCostHint": "Betrag in Paise.",
+      "warrantyExpiryLabel": "Garantieablauf",
+      "locationLabel": "Standort",
+      "descriptionLabel": "Beschreibung",
+      "notesLabel": "Notizen",
+      "cancel": "Abbrechen",
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert..."
+    },
+    "conditionOptions": {
+      "new": "Neu",
+      "good": "Gut",
+      "fair": "Mittelmäßig",
+      "poor": "Schlecht"
+    },
+    "deleteHistory": {
+      "title": "Verlaufseintrag löschen?",
+      "body": "Dadurch wird nur diese Protokollzeile entfernt. Der aktuelle Status des Assets bleibt unverändert – frühere Zuweisungen oder Aktionen werden nicht rückgängig gemacht.",
+      "cancel": "Abbrechen",
+      "confirm": "Eintrag löschen",
+      "deleting": "Wird gelöscht..."
+    },
+    "errors": {
+      "updateFailed": "Asset konnte nicht aktualisiert werden",
+      "deleteHistoryFailed": "Verlaufseintrag konnte nicht gelöscht werden",
+      "warrantyBeforePurchase": "Der Garantieablauf darf nicht vor dem Kaufdatum liegen.",
+      "retireFailed": "Asset konnte nicht ausgemustert werden",
+      "reportLostFailed": "Asset konnte nicht als verloren gemeldet werden",
+      "markFoundFailed": "Asset konnte nicht als gefunden markiert werden",
+      "sendToRepairFailed": "Asset konnte nicht zur Reparatur gesendet werden",
+      "completeRepairFailed": "Reparatur konnte nicht abgeschlossen werden"
+    }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "Anlagenkategorien",
+      "subtitle": "Anlagen nach Typ organisieren"
+    },
+    "actions": {
+      "addCategory": "Kategorie hinzufügen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "list": {
+      "loading": "Kategorien werden geladen...",
+      "empty": "Noch keine Kategorien. Erstellen Sie Ihre erste."
+    },
+    "table": {
+      "name": "Name",
+      "description": "Beschreibung",
+      "actions": "Aktionen"
+    },
+    "form": {
+      "editTitle": "Kategorie bearbeiten",
+      "newTitle": "Neue Kategorie",
+      "nameLabel": "Name *",
+      "namePlaceholder": "z. B. Laptop, Monitor, Telefon",
+      "descriptionLabel": "Beschreibung",
+      "cancel": "Abbrechen",
+      "update": "Aktualisieren",
+      "create": "Erstellen"
+    },
+    "delete": {
+      "title": "Kategorie deaktivieren?",
+      "message": "{{name}} deaktivieren? Bestehende Anlagen mit dieser Kategorie behalten die Zuordnung, aber es können keine neuen Anlagen hier abgelegt werden, bis sie wiederhergestellt ist.",
+      "cancel": "Abbrechen",
+      "confirm": "Deaktivieren",
+      "inProgress": "Wird deaktiviert..."
+    },
+    "errors": {
+      "deactivateFailed": "Kategorie konnte nicht deaktiviert werden"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "Meine Assets",
+      "subtitle": "Ihnen zugewiesene Geräte und Assets"
+    },
+    "empty": {
+      "title": "Keine Assets zugewiesen",
+      "description": "Sobald Ihre Organisation Ihnen Geräte zuweist, werden sie hier angezeigt."
+    },
+    "card": {
+      "serialNumber": "S/N: {{serial}}",
+      "assigned": "Zugewiesen am {{date}}",
+      "warranty": "Garantie: {{date}}",
+      "warrantyExpiredSuffix": "(Abgelaufen)"
+    },
+    "condition": {
+      "new": "Neu",
+      "good": "Gut",
+      "fair": "Mittelmäßig",
+      "poor": "Schlecht"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "Widerrufen",
+      "expired": "Abgelaufen",
+      "active": "Aktiv"
+    },
+    "toast": {
+      "createError": "API-Schlüssel konnte nicht erstellt werden",
+      "copyError": "Kopieren fehlgeschlagen – manuell markieren und kopieren",
+      "revokeSuccess": "API-Schlüssel widerrufen",
+      "revokeError": "Schlüssel konnte nicht widerrufen werden"
+    },
+    "confirm": {
+      "revoke": "„{{name}}“ widerrufen? Jede Integration, die ihn verwendet, funktioniert sofort nicht mehr."
+    },
+    "heading": "API-Schlüssel",
+    "newKeyButton": "Neuer Schlüssel",
+    "description": "Erstellen Sie Schlüssel für den programmatischen Zugriff auf die EmpCloud-APIs. Ein Schlüssel funktioniert in EmpCloud und im Payroll-Modul und trägt die Berechtigungen des Admins, der ihn erstellt hat.",
+    "howTo": {
+      "title": "So verwenden Sie Ihren API-Schlüssel",
+      "intro": "Der erzeugte Schlüssel ist ein <strong>Bearer-Token</strong>. Senden Sie ihn bei jeder API-Anfrage im <code>Authorization</code>-Header – genau wie ein Sitzungstoken eines angemeldeten Nutzers:",
+      "bulletBothSystems": "<strong>Funktioniert in beiden Systemen.</strong> Derselbe Token authentifiziert sich gegenüber den EmpCloud-APIs und den APIs des Payroll-Moduls – ohne separate Anmeldung oder Token-Austausch.",
+      "bulletInheritsPermissions": "<strong>Erbt Ihre Berechtigungen.</strong> Ein Schlüssel kann nur das tun, was der Admin darf, der ihn erstellt hat. Er spiegelt stets die aktuelle Rolle dieses Admins wider – ändert sich die Rolle, ändert sich der Zugriff des Schlüssels mit.",
+      "bulletShownOnce": "<strong>Nur einmal sichtbar.</strong> Der vollständige Schlüssel wird bei der Erstellung ein einziges Mal angezeigt. Bewahren Sie ihn sicher auf (z. B. in einem Secrets-Manager) – wir speichern nur eine gehashte Kopie und können ihn nicht erneut anzeigen.",
+      "bulletRevocable": "<strong>Widerrufbar & befristbar.</strong> Legen Sie ein optionales Ablaufdatum fest oder widerrufen Sie einen Schlüssel jederzeit. Widerrufene oder abgelaufene Schlüssel funktionieren überall sofort nicht mehr. Behandeln Sie einen Schlüssel wie ein Passwort – wer ihn besitzt, kann mit Ihren Berechtigungen handeln."
+    },
+    "reveal": {
+      "warning": "Kopieren Sie diesen Schlüssel jetzt – er wird nicht erneut angezeigt.",
+      "copied": "Kopiert",
+      "copy": "Kopieren",
+      "dismissAria": "Schließen",
+      "bearerHint": "Verwenden Sie ihn als Bearer-Token im Authorization-Header:"
+    },
+    "form": {
+      "nameLabel": "Schlüsselname",
+      "namePlaceholder": "z. B. Anwesenheitsexport",
+      "expiresLabel": "Ablauf in (Tagen)",
+      "expiresPlaceholder": "Nie",
+      "generating": "Wird generiert…",
+      "generate": "Schlüssel generieren",
+      "cancel": "Abbrechen"
+    },
+    "list": {
+      "loading": "Schlüssel werden geladen…",
+      "empty": "Noch keine API-Schlüssel."
+    },
+    "table": {
+      "name": "Name",
+      "key": "Schlüssel",
+      "status": "Status",
+      "lastUsed": "Zuletzt verwendet",
+      "expires": "Läuft ab",
+      "created": "Erstellt",
+      "neverExpires": "Nie"
+    },
+    "revokeAction": "Widerrufen"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "last7": "Letzte 7 Tage",
+      "last30": "Letzte 30 Tage",
+      "thisMonth": "Dieser Monat",
+      "lastMonth": "Letzter Monat",
+      "customRange": "Benutzerdefinierter Zeitraum"
+    },
+    "trigger": {
+      "placeholder": "Zeitraum auswählen"
+    },
+    "dialog": {
+      "ariaLabel": "Zeitraum auswählen"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "Löschen",
+      "cancel": "Abbrechen",
+      "apply": "Übernehmen"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "Anlagen per CSV / Excel importieren"
+    },
+    "actions": {
+      "downloadTemplate": "Vorlage herunterladen",
+      "close": "Schließen",
+      "cancel": "Abbrechen"
+    },
+    "upload": {
+      "requiredHint": "Erforderlich: <0>name</0>. Weitere Spalten sind optional.",
+      "dropzoneTitle": "CSV- oder Excel-Datei hierher ziehen und ablegen",
+      "dropzoneSubtitle": "oder zum Durchsuchen klicken",
+      "tipsHeading": "Tipps:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> ist der Betrag in Paise (z. B. 150000 für ₹1.500).",
+        "conditionStatus": "<0>condition_status</0> muss einer der folgenden Werte sein: new, good, fair, poor.",
+        "categoryAutoCreate": "Unbekannte <0>category_name</0>-Werte werden automatisch erstellt.",
+        "dateFormats": "Als Datumsformat werden JJJJ-MM-TT oder Excel-Datumszellen akzeptiert."
+      }
+    },
+    "importing": {
+      "message": "Anlagen werden importiert... bitte warten."
+    },
+    "done": {
+      "completeTitle": "Import abgeschlossen",
+      "rowError": "Zeile {{row}}:",
+      "emptyFile": "Keine Zeilen in der hochgeladenen Datei gefunden.",
+      "importedCount_one": "{{count}} Anlage erfolgreich importiert.",
+      "importedCount_other": "{{count}} Anlagen erfolgreich importiert.",
+      "createdCategoriesTitle_one": "Neue Kategorie erstellt ({{count}}):",
+      "createdCategoriesTitle_other": "Neue Kategorien erstellt ({{count}}):",
+      "skippedRows_one": "{{count}} Zeile mit Fehlern übersprungen",
+      "skippedRows_other": "{{count}} Zeilen mit Fehlern übersprungen"
+    },
+    "errors": {
+      "bulkImportFailed": "Massenimport fehlgeschlagen"
+    }
+  },
+  "customRolesField": {
+    "label": "Benutzerdefinierte Rollen",
+    "loading": "Wird geladen…",
+    "emptyReadonly": "Keine benutzerdefinierten Rollen zugewiesen",
+    "helpText": "Zusätzliche Rollen, die diesem Benutzer ergänzend zu seiner primären Rolle fein abgestufte Berechtigungen gewähren. Rollen verwalten in",
+    "helpTextLink": "Einstellungen → Rollen & Berechtigungen",
+    "removeAria": "{{name}} entfernen",
+    "placeholderEmpty": "Klicken, um eine benutzerdefinierte Rolle zuzuweisen…",
+    "placeholderMore": "Weitere Rolle hinzufügen…",
+    "noneToAssign": "Keine benutzerdefinierten Rollen zum Zuweisen. Erstellen Sie eine unter Einstellungen → Rollen & Berechtigungen.",
+    "noMatches": "Keine passenden Rollen",
+    "error": {
+      "requestFailed": "Anfrage fehlgeschlagen"
+    },
+    "assignedCount_one": "({{count}} zugewiesen)",
+    "assignedCount_other": "({{count}} zugewiesen)",
+    "permissionCount_one": "{{count}} Berechtigung",
+    "permissionCount_other": "{{count}} Berechtigungen"
   }
 }
