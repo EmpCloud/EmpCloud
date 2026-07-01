@@ -231,6 +231,15 @@ export async function updatePosition(
     }
   }
 
+  // Guard the headcount invariant: the budget can't be lowered below the number of
+  // people already assigned. Otherwise the position shows negative vacancies and the
+  // filled/active status that assign/remove maintain gets out of sync.
+  if (data.headcount_budget != null && data.headcount_budget < existing.headcount_filled) {
+    throw new ValidationError(
+      `Headcount budget (${data.headcount_budget}) cannot be less than the current filled headcount (${existing.headcount_filled})`
+    );
+  }
+
   await db("positions")
     .where({ id: positionId })
     .update({
