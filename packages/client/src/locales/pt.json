@@ -426,7 +426,8 @@
     "markAllRead": "Marcar tudo como lido",
     "noNotifications": "Nenhuma notificação ainda",
     "viewAll": "Ver tudo",
-    "review": "Revisar"
+    "review": "Revisar",
+    "cancelInvitationTooltip": "Cancelar este convite e remover o usuário não ativado"
   },
   "auth": {
     "signIn": "Entrar",
@@ -4808,6 +4809,951 @@
     "endAssignment": {
       "title": "Encerrar esta atribuição?",
       "confirmText": "Encerrar atribuição"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "Este link de convite é inválido, já foi usado ou expirou. Peça ao seu administrador para reenviar o convite.",
+      "genericFailure": "Não foi possível aceitar o convite. Tente novamente."
+    },
+    "validation": {
+      "firstNameRequired": "O nome é obrigatório.",
+      "lastNameRequired": "O sobrenome é obrigatório.",
+      "passwordsDoNotMatch": "As senhas não coincidem.",
+      "passwordTooShort_one": "A senha deve ter pelo menos {{count}} caractere.",
+      "passwordTooShort_other": "A senha deve ter pelo menos {{count}} caracteres."
+    },
+    "toast": {
+      "success": "Convite aceito. Agora você já pode entrar."
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "Aceite seu convite",
+    "subheading": "Defina seu nome e senha para ativar sua conta do EMP Cloud.",
+    "loadingInvitation": "Carregando convite…",
+    "form": {
+      "firstNameLabel": "Nome",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "Sobrenome",
+      "namesLockedNote": "Seu nome está registrado em {{org}}. Fale com o administrador de RH se precisar alterá-lo.",
+      "orgFallback": "sua organização",
+      "passwordLabel": "Senha",
+      "hidePasswordAria": "Ocultar senha",
+      "showPasswordAria": "Mostrar senha",
+      "confirmPasswordLabel": "Confirmar senha",
+      "confirmPasswordPlaceholder": "Digite a mesma senha novamente",
+      "submitting": "Ativando conta...",
+      "submit": "Aceitar convite e entrar",
+      "alreadyHaveAccount": "Já tem uma conta?",
+      "signInLink": "Entrar",
+      "passwordPlaceholder_one": "Pelo menos {{count}} caractere",
+      "passwordPlaceholder_other": "Pelo menos {{count}} caracteres"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "Silenciado",
+      "groupCreated": "Grupo criado",
+      "noMessagesYet": "Nenhuma mensagem ainda",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "A foto de perfil deve ser uma imagem.",
+      "photoUpdated": "Foto de perfil atualizada.",
+      "photoUploadFailed": "Não foi possível enviar a foto.",
+      "statusUpdateFailed": "Não foi possível atualizar seu status. Tente novamente.",
+      "openNotesFailed": "Não foi possível abrir suas notas."
+    },
+    "profile": {
+      "yourProfileTitle": "Seu perfil",
+      "changePhotoTitle": "Alterar sua foto de perfil",
+      "youFallback": "Você",
+      "statusLabel": "Status",
+      "statusPlaceholder": "Definir um status…",
+      "save": "Salvar",
+      "setStatusTitle": "Definir seu status",
+      "messageYourself": "Enviar mensagem para si (notas)"
+    },
+    "search": {
+      "placeholder": "Pesquisar conversas e mensagens…",
+      "messagesHeader": "Mensagens",
+      "noMessageMatch": "Nenhuma mensagem corresponde a “{{query}}”.",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "Nova conversa",
+      "backToChats": "← Voltar às conversas",
+      "archived": "Arquivadas",
+      "loadError": "Falha ao carregar as conversas. Tente novamente.",
+      "noSearchMatch": "Nenhuma conversa corresponde a \"{{query}}\".",
+      "noConversationsTitle": "Nenhuma conversa ainda",
+      "noConversationsHint": "Inicie uma com o botão \"Nova conversa\".",
+      "archivedWithCount_one": "Arquivada ({{count}})",
+      "archivedWithCount_other": "Arquivadas ({{count}})"
+    },
+    "empty": {
+      "yourMessagesTitle": "Suas mensagens",
+      "yourMessagesHint": "Selecione uma conversa à esquerda ou inicie uma nova conversa para começar a enviar mensagens."
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "Crie sua conta EMP Cloud",
+      "subtitle": "Configure sua organização em minutos"
+    },
+    "error": {
+      "registrationFailed": "Falha no cadastro"
+    },
+    "section": {
+      "organization": "Organização",
+      "adminAccount": "Conta de administrador"
+    },
+    "field": {
+      "companyName": {
+        "label": "Nome da empresa",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "País"
+      },
+      "state": {
+        "label": "Estado"
+      },
+      "firstName": {
+        "label": "Nome"
+      },
+      "lastName": {
+        "label": "Sobrenome"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "Senha",
+        "placeholder": "Mín. 8 caracteres, maiúscula, minúscula, dígito, especial"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "Ocultar senha",
+      "showAriaLabel": "Mostrar senha"
+    },
+    "submit": {
+      "creating": "Criando conta...",
+      "default": "Criar conta"
+    },
+    "footer": {
+      "alreadyHaveAccount": "Já tem uma conta?",
+      "signIn": "Entrar"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "Responder",
+      "forward": "Encaminhar",
+      "selectMessages": "Selecionar mensagens",
+      "messageInfo": "Informações da mensagem",
+      "copyText": "Copiar texto",
+      "copied": "Copiado",
+      "copyLink": "Copiar link",
+      "pin": "Fixar",
+      "unpin": "Desafixar",
+      "edit": "Editar",
+      "delete": "Excluir"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "Informações da mensagem"
+    },
+    "actions": {
+      "close": "Fechar"
+    },
+    "state": {
+      "loading": "Carregando…",
+      "error": "Não foi possível carregar as informações da mensagem.",
+      "noOtherMembers": "Nenhum outro membro."
+    },
+    "section": {
+      "readBy": "Lida por",
+      "deliveredTo": "Entregue para",
+      "pending": "Pendente"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "Alertas na área de trabalho ativados — você será notificado sobre novas mensagens.",
+      "blocked": "Alertas bloqueados. Você pode reativá-los nas configurações do site no seu navegador."
+    },
+    "confirmation": {
+      "title": "Alertas na área de trabalho ativados",
+      "body": "Você será notificado aqui quando uma nova mensagem chegar."
+    },
+    "description": "Seja notificado sobre novas mensagens mesmo enquanto trabalha em outro aplicativo.",
+    "button": {
+      "enabling": "Ativando…",
+      "enable": "Ativar alertas",
+      "dismissAriaLabel": "Dispensar"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "Abrir {{name}}"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "Enviando",
+      "sent": "Enviada",
+      "delivered": "Entregue",
+      "read": "Lida"
+    },
+    "failed": {
+      "title": "Falha no envio — toque para tentar novamente",
+      "ariaLabel": "Falha no envio, toque para tentar novamente",
+      "retry": "Tentar novamente"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "Carinhas",
+      "gestures": "Gestos",
+      "objects": "Objetos"
+    },
+    "button": {
+      "reactWithAriaLabel": "Reagir com {{emoji}}"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "Nova conversa"
+    },
+    "actions": {
+      "close": "Fechar",
+      "createGroup": "Criar grupo"
+    },
+    "mode": {
+      "direct": "Direta",
+      "group": "Grupo"
+    },
+    "group": {
+      "namePlaceholder": "Nome do grupo",
+      "enterNameHint": "Informe um nome de grupo para continuar",
+      "selectedNeedMore_one": "{{count}} selecionado · são necessários ≥ 2",
+      "selectedNeedMore_other": "{{count}} selecionados · são necessários ≥ 2",
+      "selectedCount_one": "{{count}} selecionado",
+      "selectedCount_other": "{{count}} selecionados"
+    },
+    "search": {
+      "placeholder": "Buscar colaboradores…"
+    },
+    "list": {
+      "loadError": "Falha ao carregar os colaboradores.",
+      "emptySearch": "Nenhum colaborador corresponde à sua busca.",
+      "empty": "Nenhum colaborador encontrado."
+    },
+    "direct": {
+      "starting": "Iniciando conversa…"
+    },
+    "toast": {
+      "directError": "Não foi possível iniciar essa conversa.",
+      "groupError": "Não foi possível criar o grupo."
+    },
+    "validation": {
+      "groupNameRequired": "Dê um nome ao grupo.",
+      "minTwoMembers": "Selecione pelo menos 2 pessoas para um grupo."
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "Não foi possível encaminhar. Tente novamente.",
+      "forwardSuccess_one": "{{count}} mensagem encaminhada para {{chatCount}} conversa.",
+      "forwardSuccess_other": "{{count}} mensagens encaminhadas para {{chatCount}} conversas."
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "Mensagem",
+      "multiple_one": "{{count}} mensagem",
+      "multiple_other": "{{count}} mensagens"
+    },
+    "heading": {
+      "title": "Encaminhar para…"
+    },
+    "section": {
+      "forwarding": "Encaminhando",
+      "chats": "Conversas",
+      "people": "Pessoas"
+    },
+    "search": {
+      "placeholder": "Buscar conversas e pessoas…"
+    },
+    "state": {
+      "loading": "Carregando…",
+      "noMatches": "Nenhum resultado para \"{{query}}\".",
+      "noTargets": "Ninguém para encaminhar."
+    },
+    "button": {
+      "forwarding": "Encaminhando…",
+      "forward": "Encaminhar"
+    },
+    "footer": {
+      "selectedCount_one": "{{count}} selecionado",
+      "selectedCount_other": "{{count}} selecionados"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "Adicionar membros",
+      "close": "Fechar"
+    },
+    "search": {
+      "placeholder": "Buscar funcionários…"
+    },
+    "list": {
+      "loading": "Carregando…",
+      "noMatches": "Nenhum resultado para \"{{search}}\".",
+      "allInGroup": "Todos já estão neste grupo."
+    },
+    "footer": {
+      "add": "Adicionar",
+      "adding": "Adicionando…",
+      "selectedCount_one": "{{count}} selecionado",
+      "selectedCount_other": "{{count}} selecionados"
+    },
+    "toast": {
+      "addFailed": "Não foi possível adicionar os membros. Tente novamente.",
+      "added_one": "{{count}} membro adicionado.",
+      "added_other": "{{count}} membros adicionados."
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "Pessoal",
+      "education": "Formação",
+      "experience": "Experiência",
+      "dependents": "Dependentes",
+      "addresses": "Endereços",
+      "custom": "Campos Personalizados"
+    },
+    "invalid": {
+      "title": "Funcionário Inválido",
+      "description": "O ID do funcionário na URL está ausente ou é inválido.",
+      "backToDirectory": "← Voltar ao Diretório de Funcionários"
+    },
+    "accessDenied": {
+      "title": "Acesso negado",
+      "description": "Você não tem permissão para visualizar este perfil.",
+      "backToDashboard": "← Voltar ao Painel"
+    },
+    "loading": "Carregando perfil...",
+    "notFound": "Funcionário não encontrado",
+    "header": {
+      "backToDirectory": "Voltar ao Diretório",
+      "biometricPhotoTooltip": "A foto é gerenciada pelo cadastro biométrico no quiosque",
+      "biometricFaceAlt": "Face biométrica",
+      "profilePhotoAlt": "Perfil",
+      "noDesignation": "Sem cargo",
+      "biometricHint": "Foto do cadastro biométrico — gerenciada pelo quiosque.",
+      "removingPhoto": "Removendo...",
+      "removePhoto": "Remover foto",
+      "empCode": "Cód. Funcionário: {{code}}",
+      "joined": "Admissão: {{date}}",
+      "cancel": "Cancelar",
+      "editMyInfo": "Editar Meus Dados",
+      "editProfile": "Editar Perfil"
+    },
+    "removePhotoDialog": {
+      "title": "Remover sua foto de perfil?",
+      "description": "Suas iniciais serão exibidas novamente.",
+      "confirm": "Remover foto"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "O PAN deve ter 5 letras + 4 dígitos + 1 letra (ex.: ABCDE1234F)",
+      "aadhar": "O Aadhaar deve ter 12 dígitos",
+      "uan": "O UAN deve ter 12 dígitos",
+      "passport": "O passaporte deve ter 1 letra + 7 dígitos (ex.: A1234567)"
+    },
+    "personal": {
+      "saveError": "Falha ao salvar",
+      "selfServiceNotice": "Você pode editar suas informações pessoais e de contato de emergência. Entre em contato com o RH para atualizar campos administrativos.",
+      "field": {
+        "personalEmail": "E-mail Pessoal",
+        "contactNumber": "Telefone de Contato",
+        "gender": "Gênero",
+        "dateOfBirth": "Data de Nascimento",
+        "bloodGroup": "Tipo Sanguíneo",
+        "maritalStatus": "Estado Civil",
+        "nationality": "Nacionalidade",
+        "aadharNumber": "Número Aadhaar",
+        "panNumber": "Número PAN",
+        "uanNumber": "Número UAN",
+        "passportNumber": "Número do Passaporte",
+        "passportExpiry": "Validade do Passaporte",
+        "visaStatus": "Status do Visto",
+        "visaExpiry": "Validade do Visto",
+        "emergencyContact": "Contato de Emergência",
+        "emergencyPhone": "Telefone de Emergência",
+        "emergencyRelation": "Parentesco de Emergência",
+        "noticePeriodDays": "Aviso Prévio (dias)",
+        "reportingManager": "Gestor Direto",
+        "department": "Departamento",
+        "shift": "Turno",
+        "designation": "Cargo",
+        "employeeCode": "Código do Funcionário",
+        "probationStart": "Início da Experiência",
+        "probationEnd": "Fim da Experiência",
+        "confirmationDate": "Data de Efetivação"
+      },
+      "select": {
+        "placeholder": "Selecionar"
+      },
+      "aadhar": {
+        "placeholder": "12 dígitos"
+      },
+      "uan": {
+        "placeholder": "12 dígitos"
+      },
+      "reportingManager": {
+        "none": "Sem Gestor",
+        "option": "{{name}} ({{role}}) - {{email}}"
+      },
+      "department": {
+        "none": "Sem departamento"
+      },
+      "shift": {
+        "none": "Sem turno"
+      },
+      "designation": {
+        "placeholderSelfService": "Contate o RH para alterar",
+        "placeholderHint": "ex.: Engenheiro Sênior"
+      },
+      "empCode": {
+        "placeholderSelfService": "Contate o RH para definir",
+        "placeholderHint": "ex.: EMP001"
+      },
+      "saving": "Salvando...",
+      "saveChanges": "Salvar Alterações",
+      "reportingManagerFallback": "Usuário #{{id}}",
+      "departmentFallback": "Depto #{{id}}",
+      "shiftFallback": "Turno #{{id}}"
+    },
+    "gender": {
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro"
+    },
+    "maritalStatus": {
+      "single": "Solteiro(a)",
+      "married": "Casado(a)",
+      "divorced": "Divorciado(a)",
+      "widowed": "Viúvo(a)"
+    },
+    "customRoles": {
+      "label": "Funções Personalizadas"
+    },
+    "additionalManagers": {
+      "label": "Gestores Adicionais",
+      "description": "Cogestores com o mesmo acesso de escopo de equipe que o Gestor Direto principal. Respeitados por todas as permissões com escopo de equipe.",
+      "loading": "Carregando…",
+      "empty": "Sem gestores adicionais",
+      "userFallback": "Usuário #{{id}}",
+      "removeAria": "Remover {{name}}",
+      "removeAriaFallback": "gestor",
+      "searchPlaceholderEmpty": "Pesquisar por nome ou e-mail…",
+      "searchPlaceholderMore": "Adicionar outro…",
+      "noMatches": "Nenhum usuário correspondente",
+      "allSelected": "Todos os usuários elegíveis já foram selecionados",
+      "saving": "Salvando…",
+      "save": "Salvar gestores adicionais",
+      "unsaved": "alterações não salvas",
+      "saved": "Salvo",
+      "selectedCount_one": "({{count}} selecionado)",
+      "selectedCount_other": "({{count}} selecionados)"
+    },
+    "apiError": {
+      "requestFailed": "Falha na solicitação"
+    },
+    "education": {
+      "add": "Adicionar Formação",
+      "editHeading": "Editar Formação",
+      "field": {
+        "degree": "Grau *",
+        "institution": "Instituição *",
+        "fieldOfStudy": "Área de Estudo",
+        "grade": "Conceito",
+        "startYear": "Ano de Início",
+        "endYear": "Ano de Término"
+      },
+      "degree": {
+        "placeholder": "ex.: Bacharelado"
+      },
+      "institution": {
+        "placeholder": "ex.: USP"
+      },
+      "validation": {
+        "required": "Grau e Instituição são obrigatórios",
+        "endYear": "O ano de término deve ser igual ou posterior ao ano de início"
+      },
+      "empty": "Nenhum registro de formação adicionado ainda.",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "Desde {{year}}",
+      "gradeSuffix": " | Nota: {{grade}}",
+      "deleteDialog": {
+        "title": "Excluir este registro de formação?"
+      }
+    },
+    "common": {
+      "save": "Salvar",
+      "saving": "Salvando...",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "delete": "Excluir"
+    },
+    "experience": {
+      "add": "Adicionar Experiência",
+      "editHeading": "Editar Experiência",
+      "field": {
+        "company": "Empresa *",
+        "designation": "Cargo *",
+        "startDate": "Data de Início *",
+        "endDate": "Data de Término",
+        "description": "Descrição"
+      },
+      "currentlyWorking": "Trabalho aqui atualmente",
+      "validation": {
+        "required": "Empresa, Cargo e Data de Início são obrigatórios"
+      },
+      "empty": "Nenhum registro de experiência profissional adicionado ainda.",
+      "currentBadge": "Atual",
+      "present": "Atual",
+      "deleteDialog": {
+        "title": "Excluir este registro de experiência?"
+      }
+    },
+    "dependents": {
+      "add": "Adicionar Dependente",
+      "editHeading": "Editar Dependente",
+      "field": {
+        "name": "Nome *",
+        "relationship": "Parentesco *",
+        "dateOfBirth": "Data de Nascimento",
+        "gender": "Gênero",
+        "nomineePercent": "% do Beneficiário"
+      },
+      "relationship": {
+        "placeholder": "ex.: Cônjuge, Filho(a), Pai/Mãe"
+      },
+      "isNominee": "É Beneficiário(a)",
+      "validation": {
+        "required": "Nome e Parentesco são obrigatórios"
+      },
+      "empty": "Nenhum dependente adicionado ainda.",
+      "column": {
+        "name": "Nome",
+        "relationship": "Parentesco",
+        "dob": "Nasc.",
+        "gender": "Gênero",
+        "nominee": "Beneficiário",
+        "actions": "Ações"
+      },
+      "nomineeYes": "Sim",
+      "nomineeYesPercent": "Sim ({{percent}}%)",
+      "nomineeNo": "Não",
+      "deleteDialog": {
+        "title": "Excluir este dependente?"
+      }
+    },
+    "addresses": {
+      "add": "Adicionar Endereço",
+      "editHeading": "Editar Endereço",
+      "field": {
+        "type": "Tipo *",
+        "country": "País",
+        "line1": "Endereço Linha 1 *",
+        "line2": "Endereço Linha 2",
+        "city": "Cidade *",
+        "state": "Estado *",
+        "zipcode": "CEP *"
+      },
+      "type": {
+        "current": "Atual",
+        "permanent": "Permanente"
+      },
+      "validation": {
+        "required": "Endereço linha 1, Cidade, Estado e CEP são obrigatórios"
+      },
+      "empty": "Nenhum endereço adicionado ainda.",
+      "deleteDialog": {
+        "title": "Excluir este endereço?"
+      }
+    },
+    "custom": {
+      "loading": "Carregando campos personalizados...",
+      "saveError": "Falha ao salvar campos personalizados",
+      "emptyTitle": "Nenhum campo personalizado foi definido para funcionários ainda.",
+      "emptyHint": "Os administradores de RH podem criar campos personalizados na página de configurações de Campos Personalizados.",
+      "heading": "Campos Personalizados",
+      "edit": "Editar",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "checkboxYes": "Sim",
+      "checkboxNo": "Não",
+      "select": {
+        "placeholder": "Selecionar..."
+      },
+      "file": {
+        "placeholder": "Referência ou caminho do arquivo"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "Importar funcionários",
+      "subtitle": "Envie um arquivo CSV para importar funcionários em massa para sua organização."
+    },
+    "success": {
+      "title": "Importação concluída",
+      "importMore": "Importar mais funcionários",
+      "message_one": "{{count}} funcionário importado com sucesso.",
+      "message_other": "{{count}} funcionários importados com sucesso."
+    },
+    "dropzone": {
+      "instructions": "Arraste e solte um arquivo CSV aqui ou clique para procurar",
+      "columnsHint": "Colunas obrigatórias: first_name, last_name, email. Opcionais: designation, department_name, emp_code, role, contact_number",
+      "chooseFile": "Escolher arquivo",
+      "selectedFile": "Selecionado: {{name}}"
+    },
+    "loading": {
+      "parsing": "Analisando e validando CSV..."
+    },
+    "summary": {
+      "totalRows": "Total de linhas",
+      "valid": "Válidas",
+      "errors": "Erros"
+    },
+    "validTable": {
+      "col": {
+        "name": "Nome",
+        "email": "E-mail",
+        "empCode": "Cód. func.",
+        "designation": "Cargo",
+        "department": "Departamento",
+        "status": "Status"
+      },
+      "emptyCell": "-",
+      "title_one": "Funcionário válido ({{count}})",
+      "title_other": "Funcionários válidos ({{count}})",
+      "andMore_one": "...e mais {{count}}",
+      "andMore_other": "...e mais {{count}}"
+    },
+    "errorTable": {
+      "col": {
+        "row": "Linha",
+        "name": "Nome",
+        "email": "E-mail",
+        "errors": "Erros"
+      },
+      "title_one": "Erro ({{count}})",
+      "title_other": "Erros ({{count}})"
+    },
+    "import": {
+      "importing": "Importando...",
+      "button_one": "Importar {{count}} funcionário válido",
+      "button_other": "Importar {{count}} funcionários válidos"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "Configurações da Plataforma",
+      "subtitle": "Veja a configuração atual da plataforma e as informações do sistema."
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "Informações da Plataforma"
+      },
+      "email": {
+        "title": "Configurações de E-mail / SMTP"
+      },
+      "security": {
+        "title": "Configurações de Segurança"
+      }
+    },
+    "fields": {
+      "serverVersion": "Versão do Servidor",
+      "nodeVersion": "Versão do Node.js",
+      "environment": "Ambiente",
+      "uptime": "Tempo de Atividade",
+      "smtpStatus": "Status do SMTP",
+      "smtpHost": "Host SMTP",
+      "fromAddress": "Endereço de Remetente",
+      "bcryptRounds": "Rodadas de Bcrypt",
+      "accessTokenExpiry": "Expiração do Token de Acesso",
+      "refreshTokenExpiry": "Expiração do Token de Atualização",
+      "authRateLimit": "Limite de Taxa de Autenticação",
+      "apiRateLimit": "Limite de Taxa da API"
+    },
+    "smtpStatus": {
+      "configured": "Configurado",
+      "notConfigured": "Não Configurado"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}}d {{hours}}h {{mins}}m",
+      "hoursMins": "{{hours}}h {{mins}}m",
+      "mins": "{{mins}}m"
+    },
+    "footer": {
+      "autoRefresh": "Atualiza automaticamente a cada 30 segundos"
+    }
+  },
+  "settingsPage": {
+    "loading": "Carregando configurações...",
+    "header": {
+      "title": "Configurações da organização",
+      "subtitle": "Gerencie os dados da empresa, departamentos e locais."
+    },
+    "company": {
+      "title": "Informações da empresa",
+      "editTitle": "Editar informações da empresa"
+    },
+    "actions": {
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "add": "Adicionar",
+      "saveChanges": "Salvar alterações"
+    },
+    "fields": {
+      "name": "Nome",
+      "legalName": "Razão social",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "country": "País",
+      "state": "Estado",
+      "city": "Cidade",
+      "timezone": "Fuso horário",
+      "language": "Idioma"
+    },
+    "form": {
+      "selectTimezone": "Selecione o fuso horário",
+      "selectTimezoneRequired": "Selecione o fuso horário *",
+      "selectCountry": "Selecione o país",
+      "noTimezone": "Sem fuso horário"
+    },
+    "validation": {
+      "email": "Insira um endereço de e-mail válido (ex.: user@example.com).",
+      "city": "A cidade deve conter apenas letras, espaços e hifens.",
+      "state": "O estado deve conter apenas letras, espaços e hifens.",
+      "timezoneRequired": "O fuso horário é obrigatório."
+    },
+    "errors": {
+      "updateOrg": "Falha ao atualizar. Tente novamente.",
+      "addDepartment": "Falha ao adicionar departamento.",
+      "renameDepartment": "Falha ao renomear departamento.",
+      "deleteDepartment": "Falha ao excluir departamento.",
+      "addLocation": "Falha ao adicionar local.",
+      "updateLocation": "Falha ao atualizar local.",
+      "deleteLocation": "Falha ao excluir local."
+    },
+    "departments": {
+      "namePlaceholder": "Nome do departamento",
+      "renameTitle": "Renomear departamento",
+      "deleteTitle": "Excluir departamento",
+      "title_one": "Departamentos ({{count}})",
+      "title_other": "Departamentos ({{count}})"
+    },
+    "locations": {
+      "namePlaceholder": "Nome do local",
+      "editTitle": "Editar local",
+      "deleteTitle": "Excluir local",
+      "title_one": "Locais ({{count}})",
+      "title_other": "Locais ({{count}})"
+    },
+    "rowActions": {
+      "save": "Salvar",
+      "cancel": "Cancelar"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "Carregando assinaturas...",
+    "header": {
+      "title": "Assinaturas",
+      "subtitle": "Gerencie suas assinaturas de módulos e faturamento."
+    },
+    "moduleFallback": "Módulo",
+    "billing": {
+      "viewInvoicesLink": "Ver faturas detalhadas e histórico de pagamentos",
+      "monthlyCostHeading": "Custo mensal",
+      "perMonthSuffix": " /mês"
+    },
+    "toast": {
+      "updated": "Assinatura atualizada com sucesso",
+      "cancelled": "Assinatura cancelada"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "Editar assinatura",
+        "cancel": "Cancelar assinatura"
+      },
+      "field": {
+        "plan": "Plano",
+        "seats": "Licenças",
+        "pricePerSeat": "Preço/Licença",
+        "billingCycle": "Ciclo de faturamento"
+      },
+      "seatsFull": "(esgotadas)"
+    },
+    "trial": {
+      "expired": "Teste expirado — convertendo para assinatura ativa em breve. A primeira fatura será emitida hoje.",
+      "endsIn_one": "O teste termina em {{count}} dia ({{date}})",
+      "endsIn_other": "O teste termina em {{count}} dias ({{date}})"
+    },
+    "cancelModal": {
+      "title": "Cancelar assinatura?",
+      "body": "Isso cancelará a assinatura e revogará o acesso de todas as licenças atribuídas. Esta ação não pode ser desfeita.",
+      "keep": "Manter",
+      "confirm": "Sim, cancelar",
+      "confirming": "Cancelando..."
+    },
+    "editModal": {
+      "title": "Editar assinatura",
+      "planTierLabel": "Nível do plano",
+      "totalSeatsLabel": "Total de licenças",
+      "currentlyUsing": "Usando atualmente {{seats}} licenças",
+      "cannotReduceBelow": "Não é possível reduzir abaixo de {{seats}} (em uso)",
+      "billingCycleLabel": "Ciclo de faturamento",
+      "changesHeading": "Alterações:",
+      "change": {
+        "plan": "Plano: {{from}} → {{to}}",
+        "seats": "Licenças: {{from}} → {{to}}",
+        "cycle": "Ciclo: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ Isso encerrará seu teste gratuito",
+        "reason": {
+          "seats": "Adicionar licenças",
+          "tier": "Fazer upgrade do nível do plano",
+          "cycle": "Mudar para um ciclo de faturamento mais longo"
+        },
+        "body": " durante o teste ativará a assinatura imediatamente. Uma fatura referente ao primeiro período de faturamento será gerada e vencerá hoje."
+      },
+      "cancel": "Cancelar",
+      "save": "Salvar alterações",
+      "saving": "Salvando..."
+    },
+    "planTier": {
+      "basic": "Básico",
+      "professional": "Profissional",
+      "enterprise": "Enterprise",
+      "free": "Gratuito"
+    },
+    "billingCycle": {
+      "monthly": "Mensal",
+      "quarterly": "Trimestral",
+      "semi_annual": "Semestral",
+      "annual": "Anual"
+    },
+    "status": {
+      "active": "Ativa",
+      "trial": "Teste",
+      "cancelled": "Cancelada",
+      "expired": "Expirada"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "Campos personalizados",
+      "subtitle": "Defina campos de dados personalizados para funcionários, departamentos e outras entidades"
+    },
+    "actions": {
+      "addField": "Adicionar campo"
+    },
+    "entityType": {
+      "employee": "Funcionário",
+      "department": "Departamento",
+      "location": "Local",
+      "project": "Projeto",
+      "document": "Documento"
+    },
+    "fieldType": {
+      "text": "Texto",
+      "textarea": "Área de texto",
+      "number": "Número",
+      "decimal": "Decimal",
+      "date": "Data",
+      "datetime": "Data e hora",
+      "dropdown": "Lista suspensa",
+      "multi_select": "Seleção múltipla",
+      "checkbox": "Caixa de seleção",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "url": "URL",
+      "file": "Arquivo"
+    },
+    "form": {
+      "editTitle": "Editar campo",
+      "newTitle": "Novo campo",
+      "hidePreview": "Ocultar prévia",
+      "preview": "Prévia",
+      "fieldNameLabel": "Nome do campo *",
+      "fieldNamePlaceholder": "ex.: Tamanho da camiseta",
+      "fieldTypeLabel": "Tipo de campo *",
+      "sectionLabel": "Seção",
+      "sectionPlaceholder": "Campos personalizados",
+      "placeholderLabel": "Texto de exemplo",
+      "defaultValueLabel": "Valor padrão",
+      "validationRegexLabel": "Regex de validação",
+      "minValueLabel": "Valor mínimo",
+      "maxValueLabel": "Valor máximo",
+      "helpTextLabel": "Texto de ajuda",
+      "helpTextPlaceholder": "Dica ou descrição exibida aos usuários",
+      "optionsLabel": "Opções",
+      "optionInputPlaceholder": "Digite a opção e pressione Enter",
+      "addOption": "Adicionar",
+      "requiredLabel": "Obrigatório",
+      "searchableLabel": "Pesquisável",
+      "fieldPreviewHeading": "Prévia do campo",
+      "saving": "Salvando...",
+      "updateField": "Atualizar campo",
+      "createField": "Criar campo",
+      "cancel": "Cancelar"
+    },
+    "error": {
+      "saveFailed": "Falha ao salvar o campo. Tente novamente."
+    },
+    "list": {
+      "loading": "Carregando campos...",
+      "emptyTitle": "Nenhum campo personalizado definido para {{name}}.",
+      "emptyHint": "Clique em \"Adicionar campo\" para criar seu primeiro campo personalizado."
+    },
+    "table": {
+      "fieldName": "Nome do campo",
+      "key": "Chave",
+      "type": "Tipo",
+      "required": "Obrigatório",
+      "searchable": "Pesquisável",
+      "actions": "Ações",
+      "yes": "Sim",
+      "no": "Não",
+      "editAria": "Editar campo",
+      "deleteAria": "Excluir campo",
+      "optionCount_one": "({{count}} opção)",
+      "optionCount_other": "({{count}} opções)"
+    },
+    "confirm": {
+      "titleNamed": "Desativar o campo \"{{name}}\"?",
+      "title": "Desativar campo?",
+      "description": "Os valores existentes serão preservados.",
+      "confirmText": "Desativar"
+    },
+    "preview": {
+      "defaultFieldName": "Nome do campo",
+      "enterValue": "Digite {{name}}",
+      "enterValueFallback": "o valor",
+      "selectOption": "Selecione {{name}}...",
+      "selectOptionFallback": "a opção",
+      "noOptions": "Nenhuma opção definida",
+      "checkboxFallback": "Caixa de seleção"
     }
   }
 }

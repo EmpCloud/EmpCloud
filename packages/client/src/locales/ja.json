@@ -426,7 +426,8 @@
     "markAllRead": "すべて既読にする",
     "noNotifications": "通知はまだありません",
     "viewAll": "すべて表示",
-    "review": "確認"
+    "review": "確認",
+    "cancelInvitationTooltip": "この招待をキャンセルし、未有効化のユーザーを削除します"
   },
   "auth": {
     "signIn": "サインイン",
@@ -4808,6 +4809,951 @@
     "endAssignment": {
       "title": "この割り当てを終了しますか？",
       "confirmText": "割り当てを終了"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "この招待リンクは無効か、すでに使用されているか、有効期限が切れています。管理者に招待の再送信を依頼してください。",
+      "genericFailure": "招待を承諾できませんでした。もう一度お試しください。"
+    },
+    "validation": {
+      "firstNameRequired": "名を入力してください。",
+      "lastNameRequired": "姓を入力してください。",
+      "passwordsDoNotMatch": "パスワードが一致しません。",
+      "passwordTooShort_one": "パスワードは{{count}}文字以上で入力してください。",
+      "passwordTooShort_other": "パスワードは{{count}}文字以上で入力してください。"
+    },
+    "toast": {
+      "success": "招待を承諾しました。サインインできます。"
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "招待を承諾",
+    "subheading": "名前とパスワードを設定して、EMP Cloudアカウントを有効化します。",
+    "loadingInvitation": "招待を読み込んでいます…",
+    "form": {
+      "firstNameLabel": "名",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "姓",
+      "namesLockedNote": "あなたの名前は{{org}}に登録されています。変更が必要な場合は、HR管理者にお問い合わせください。",
+      "orgFallback": "あなたの組織",
+      "passwordLabel": "パスワード",
+      "hidePasswordAria": "パスワードを非表示",
+      "showPasswordAria": "パスワードを表示",
+      "confirmPasswordLabel": "パスワードの確認",
+      "confirmPasswordPlaceholder": "同じパスワードをもう一度入力",
+      "submitting": "アカウントを有効化しています...",
+      "submit": "招待を承諾してサインイン",
+      "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+      "signInLink": "サインイン",
+      "passwordPlaceholder_one": "{{count}}文字以上",
+      "passwordPlaceholder_other": "{{count}}文字以上"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "ミュート中",
+      "groupCreated": "グループを作成しました",
+      "noMessagesYet": "メッセージはまだありません",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "プロフィール写真には画像ファイルを指定してください。",
+      "photoUpdated": "プロフィール写真を更新しました。",
+      "photoUploadFailed": "写真をアップロードできませんでした。",
+      "statusUpdateFailed": "ステータスを更新できませんでした。もう一度お試しください。",
+      "openNotesFailed": "メモを開けませんでした。"
+    },
+    "profile": {
+      "yourProfileTitle": "プロフィール",
+      "changePhotoTitle": "プロフィール写真を変更",
+      "youFallback": "あなた",
+      "statusLabel": "ステータス",
+      "statusPlaceholder": "ステータスを設定…",
+      "save": "保存",
+      "setStatusTitle": "ステータスを設定",
+      "messageYourself": "自分にメッセージ（メモ）"
+    },
+    "search": {
+      "placeholder": "チャットとメッセージを検索…",
+      "messagesHeader": "メッセージ",
+      "noMessageMatch": "「{{query}}」に一致するメッセージはありません。",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "新規チャット",
+      "backToChats": "← チャットに戻る",
+      "archived": "アーカイブ済み",
+      "loadError": "会話を読み込めませんでした。もう一度お試しください。",
+      "noSearchMatch": "「{{query}}」に一致する会話はありません。",
+      "noConversationsTitle": "会話はまだありません",
+      "noConversationsHint": "「新規チャット」ボタンから始めましょう。",
+      "archivedWithCount_one": "アーカイブ済み（{{count}}）",
+      "archivedWithCount_other": "アーカイブ済み（{{count}}）"
+    },
+    "empty": {
+      "yourMessagesTitle": "メッセージ",
+      "yourMessagesHint": "左側の会話を選択するか、新規チャットを開始してメッセージを始めましょう。"
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "EMP Cloud アカウントを作成",
+      "subtitle": "数分で組織のセットアップが完了します"
+    },
+    "error": {
+      "registrationFailed": "登録に失敗しました"
+    },
+    "section": {
+      "organization": "組織",
+      "adminAccount": "管理者アカウント"
+    },
+    "field": {
+      "companyName": {
+        "label": "会社名",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "国"
+      },
+      "state": {
+        "label": "都道府県"
+      },
+      "firstName": {
+        "label": "名"
+      },
+      "lastName": {
+        "label": "姓"
+      },
+      "email": {
+        "label": "メールアドレス",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "パスワード",
+        "placeholder": "8文字以上、大文字・小文字・数字・記号を含む"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "パスワードを非表示",
+      "showAriaLabel": "パスワードを表示"
+    },
+    "submit": {
+      "creating": "アカウントを作成中...",
+      "default": "アカウントを作成"
+    },
+    "footer": {
+      "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+      "signIn": "サインイン"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "返信",
+      "forward": "転送",
+      "selectMessages": "メッセージを選択",
+      "messageInfo": "メッセージ情報",
+      "copyText": "テキストをコピー",
+      "copied": "コピーしました",
+      "copyLink": "リンクをコピー",
+      "pin": "ピン留め",
+      "unpin": "ピン留めを解除",
+      "edit": "編集",
+      "delete": "削除"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "メッセージ情報"
+    },
+    "actions": {
+      "close": "閉じる"
+    },
+    "state": {
+      "loading": "読み込み中…",
+      "error": "メッセージ情報を読み込めませんでした。",
+      "noOtherMembers": "他のメンバーはいません。"
+    },
+    "section": {
+      "readBy": "既読",
+      "deliveredTo": "配信済み",
+      "pending": "保留中"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "デスクトップ通知を有効にしました。新着メッセージをお知らせします。",
+      "blocked": "通知がブロックされています。ブラウザのサイト設定から再度有効にできます。"
+    },
+    "confirmation": {
+      "title": "デスクトップ通知が有効です",
+      "body": "新着メッセージが届くと、ここに通知が表示されます。"
+    },
+    "description": "別のアプリで作業中でも、新着メッセージの通知を受け取れます。",
+    "button": {
+      "enabling": "有効にしています…",
+      "enable": "通知を有効にする",
+      "dismissAriaLabel": "閉じる"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "{{name}} を開く"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "送信中",
+      "sent": "送信済み",
+      "delivered": "配信済み",
+      "read": "既読"
+    },
+    "failed": {
+      "title": "送信できませんでした — タップして再試行",
+      "ariaLabel": "送信できませんでした。タップして再試行",
+      "retry": "再試行"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "スマイリー",
+      "gestures": "ジェスチャー",
+      "objects": "オブジェクト"
+    },
+    "button": {
+      "reactWithAriaLabel": "{{emoji}} でリアクション"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "新規チャット"
+    },
+    "actions": {
+      "close": "閉じる",
+      "createGroup": "グループを作成"
+    },
+    "mode": {
+      "direct": "ダイレクト",
+      "group": "グループ"
+    },
+    "group": {
+      "namePlaceholder": "グループ名",
+      "enterNameHint": "続けるにはグループ名を入力してください",
+      "selectedNeedMore_one": "{{count}}人を選択中・2人以上必要です",
+      "selectedNeedMore_other": "{{count}}人を選択中・2人以上必要です",
+      "selectedCount_one": "{{count}}人を選択中",
+      "selectedCount_other": "{{count}}人を選択中"
+    },
+    "search": {
+      "placeholder": "従業員を検索…"
+    },
+    "list": {
+      "loadError": "従業員の読み込みに失敗しました。",
+      "emptySearch": "検索条件に一致する従業員がいません。",
+      "empty": "従業員が見つかりません。"
+    },
+    "direct": {
+      "starting": "会話を開始しています…"
+    },
+    "toast": {
+      "directError": "会話を開始できませんでした。",
+      "groupError": "グループを作成できませんでした。"
+    },
+    "validation": {
+      "groupNameRequired": "グループ名を入力してください。",
+      "minTwoMembers": "グループには2人以上を選択してください。"
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "転送できませんでした。もう一度お試しください。",
+      "forwardSuccess_one": "{{count}} 件のメッセージを {{chatCount}} 件のチャットに転送しました。",
+      "forwardSuccess_other": "{{count}} 件のメッセージを {{chatCount}} 件のチャットに転送しました。"
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "メッセージ",
+      "multiple_one": "{{count}} 件のメッセージ",
+      "multiple_other": "{{count}} 件のメッセージ"
+    },
+    "heading": {
+      "title": "転送先…"
+    },
+    "section": {
+      "forwarding": "転送中",
+      "chats": "チャット",
+      "people": "連絡先"
+    },
+    "search": {
+      "placeholder": "チャットや連絡先を検索…"
+    },
+    "state": {
+      "loading": "読み込み中…",
+      "noMatches": "「{{query}}」に一致する項目はありません。",
+      "noTargets": "転送できる相手がいません。"
+    },
+    "button": {
+      "forwarding": "転送中…",
+      "forward": "転送"
+    },
+    "footer": {
+      "selectedCount_one": "{{count}} 件選択中",
+      "selectedCount_other": "{{count}} 件選択中"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "メンバーを追加",
+      "close": "閉じる"
+    },
+    "search": {
+      "placeholder": "従業員を検索…"
+    },
+    "list": {
+      "loading": "読み込み中…",
+      "noMatches": "「{{search}}」に一致する結果はありません。",
+      "allInGroup": "全員がすでにこのグループに参加しています。"
+    },
+    "footer": {
+      "add": "追加",
+      "adding": "追加中…",
+      "selectedCount_one": "{{count}}件選択中",
+      "selectedCount_other": "{{count}}件選択中"
+    },
+    "toast": {
+      "addFailed": "メンバーを追加できませんでした。もう一度お試しください。",
+      "added_one": "{{count}}人のメンバーを追加しました。",
+      "added_other": "{{count}}人のメンバーを追加しました。"
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "基本情報",
+      "education": "学歴",
+      "experience": "職歴",
+      "dependents": "扶養家族",
+      "addresses": "住所",
+      "custom": "カスタム項目"
+    },
+    "invalid": {
+      "title": "無効な従業員",
+      "description": "URLに含まれる従業員IDがないか、無効です。",
+      "backToDirectory": "← 従業員ディレクトリに戻る"
+    },
+    "accessDenied": {
+      "title": "アクセスが拒否されました",
+      "description": "このプロフィールを表示する権限がありません。",
+      "backToDashboard": "← ダッシュボードに戻る"
+    },
+    "loading": "プロフィールを読み込み中...",
+    "notFound": "従業員が見つかりません",
+    "header": {
+      "backToDirectory": "ディレクトリに戻る",
+      "biometricPhotoTooltip": "写真は生体認証キオスクの登録で管理されます",
+      "biometricFaceAlt": "生体認証の顔画像",
+      "profilePhotoAlt": "プロフィール",
+      "noDesignation": "役職なし",
+      "biometricHint": "生体認証登録による写真です。キオスクで管理されます。",
+      "removingPhoto": "削除中...",
+      "removePhoto": "写真を削除",
+      "empCode": "従業員コード: {{code}}",
+      "joined": "入社日: {{date}}",
+      "cancel": "キャンセル",
+      "editMyInfo": "自分の情報を編集",
+      "editProfile": "プロフィールを編集"
+    },
+    "removePhotoDialog": {
+      "title": "プロフィール写真を削除しますか？",
+      "description": "再びイニシャルが表示されます。",
+      "confirm": "写真を削除"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "PANは英字5文字＋数字4桁＋英字1文字で入力してください（例: ABCDE1234F）",
+      "aadhar": "Aadhaarは12桁で入力してください",
+      "uan": "UANは12桁で入力してください",
+      "passport": "パスポート番号は英字1文字＋数字7桁で入力してください（例: A1234567）"
+    },
+    "personal": {
+      "saveError": "保存に失敗しました",
+      "selfServiceNotice": "個人情報および緊急連絡先情報を編集できます。管理項目を更新するには人事にお問い合わせください。",
+      "field": {
+        "personalEmail": "個人メールアドレス",
+        "contactNumber": "連絡先電話番号",
+        "gender": "性別",
+        "dateOfBirth": "生年月日",
+        "bloodGroup": "血液型",
+        "maritalStatus": "婚姻状況",
+        "nationality": "国籍",
+        "aadharNumber": "Aadhaar番号",
+        "panNumber": "PAN番号",
+        "uanNumber": "UAN番号",
+        "passportNumber": "パスポート番号",
+        "passportExpiry": "パスポート有効期限",
+        "visaStatus": "ビザステータス",
+        "visaExpiry": "ビザ有効期限",
+        "emergencyContact": "緊急連絡先氏名",
+        "emergencyPhone": "緊急連絡先電話番号",
+        "emergencyRelation": "緊急連絡先との続柄",
+        "noticePeriodDays": "退職予告期間（日）",
+        "reportingManager": "直属の上司",
+        "department": "部署",
+        "shift": "シフト",
+        "designation": "役職",
+        "employeeCode": "従業員コード",
+        "probationStart": "試用期間開始日",
+        "probationEnd": "試用期間終了日",
+        "confirmationDate": "本採用日"
+      },
+      "select": {
+        "placeholder": "選択"
+      },
+      "aadhar": {
+        "placeholder": "12桁"
+      },
+      "uan": {
+        "placeholder": "12桁"
+      },
+      "reportingManager": {
+        "none": "上司なし",
+        "option": "{{name}}（{{role}}）- {{email}}"
+      },
+      "department": {
+        "none": "部署なし"
+      },
+      "shift": {
+        "none": "シフトなし"
+      },
+      "designation": {
+        "placeholderSelfService": "変更するには人事に連絡",
+        "placeholderHint": "例: シニアエンジニア"
+      },
+      "empCode": {
+        "placeholderSelfService": "設定するには人事に連絡",
+        "placeholderHint": "例: EMP001"
+      },
+      "saving": "保存中...",
+      "saveChanges": "変更を保存",
+      "reportingManagerFallback": "ユーザー #{{id}}",
+      "departmentFallback": "部署 #{{id}}",
+      "shiftFallback": "シフト #{{id}}"
+    },
+    "gender": {
+      "male": "男性",
+      "female": "女性",
+      "other": "その他"
+    },
+    "maritalStatus": {
+      "single": "未婚",
+      "married": "既婚",
+      "divorced": "離別",
+      "widowed": "死別"
+    },
+    "customRoles": {
+      "label": "カスタムロール"
+    },
+    "additionalManagers": {
+      "label": "追加マネージャー",
+      "description": "直属の上司と同じチームスコープのアクセス権を持つ共同マネージャーです。すべてのチームスコープ権限で有効になります。",
+      "loading": "読み込み中…",
+      "empty": "追加マネージャーはいません",
+      "userFallback": "ユーザー #{{id}}",
+      "removeAria": "{{name}}を削除",
+      "removeAriaFallback": "マネージャー",
+      "searchPlaceholderEmpty": "氏名またはメールアドレスで検索…",
+      "searchPlaceholderMore": "さらに追加…",
+      "noMatches": "該当するユーザーがいません",
+      "allSelected": "対象ユーザーはすべて選択済みです",
+      "saving": "保存中…",
+      "save": "追加マネージャーを保存",
+      "unsaved": "未保存の変更",
+      "saved": "保存しました",
+      "selectedCount_one": "（{{count}}件選択中）",
+      "selectedCount_other": "（{{count}}件選択中）"
+    },
+    "apiError": {
+      "requestFailed": "リクエストに失敗しました"
+    },
+    "education": {
+      "add": "学歴を追加",
+      "editHeading": "学歴を編集",
+      "field": {
+        "degree": "学位 *",
+        "institution": "教育機関 *",
+        "fieldOfStudy": "専攻分野",
+        "grade": "成績",
+        "startYear": "開始年",
+        "endYear": "終了年"
+      },
+      "degree": {
+        "placeholder": "例: B.Tech"
+      },
+      "institution": {
+        "placeholder": "例: IIT Delhi"
+      },
+      "validation": {
+        "required": "学位と教育機関は必須です",
+        "endYear": "終了年は開始年以降にしてください"
+      },
+      "empty": "学歴はまだ登録されていません。",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "{{year}}年から",
+      "gradeSuffix": " | 成績: {{grade}}",
+      "deleteDialog": {
+        "title": "この学歴を削除しますか？"
+      }
+    },
+    "common": {
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "キャンセル",
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "experience": {
+      "add": "職歴を追加",
+      "editHeading": "職歴を編集",
+      "field": {
+        "company": "会社名 *",
+        "designation": "役職 *",
+        "startDate": "開始日 *",
+        "endDate": "終了日",
+        "description": "説明"
+      },
+      "currentlyWorking": "現在も在職中",
+      "validation": {
+        "required": "会社名、役職、開始日は必須です"
+      },
+      "empty": "職歴はまだ登録されていません。",
+      "currentBadge": "現職",
+      "present": "現在",
+      "deleteDialog": {
+        "title": "この職歴を削除しますか？"
+      }
+    },
+    "dependents": {
+      "add": "扶養家族を追加",
+      "editHeading": "扶養家族を編集",
+      "field": {
+        "name": "氏名 *",
+        "relationship": "続柄 *",
+        "dateOfBirth": "生年月日",
+        "gender": "性別",
+        "nomineePercent": "受取割合（%）"
+      },
+      "relationship": {
+        "placeholder": "例: 配偶者、子、親"
+      },
+      "isNominee": "受取人に指定",
+      "validation": {
+        "required": "氏名と続柄は必須です"
+      },
+      "empty": "扶養家族はまだ登録されていません。",
+      "column": {
+        "name": "氏名",
+        "relationship": "続柄",
+        "dob": "生年月日",
+        "gender": "性別",
+        "nominee": "受取人",
+        "actions": "操作"
+      },
+      "nomineeYes": "はい",
+      "nomineeYesPercent": "はい（{{percent}}%）",
+      "nomineeNo": "いいえ",
+      "deleteDialog": {
+        "title": "この扶養家族を削除しますか？"
+      }
+    },
+    "addresses": {
+      "add": "住所を追加",
+      "editHeading": "住所を編集",
+      "field": {
+        "type": "種別 *",
+        "country": "国",
+        "line1": "住所1 *",
+        "line2": "住所2",
+        "city": "市区町村 *",
+        "state": "都道府県 *",
+        "zipcode": "郵便番号 *"
+      },
+      "type": {
+        "current": "現住所",
+        "permanent": "本籍地"
+      },
+      "validation": {
+        "required": "住所1、市区町村、都道府県、郵便番号は必須です"
+      },
+      "empty": "住所はまだ登録されていません。",
+      "deleteDialog": {
+        "title": "この住所を削除しますか？"
+      }
+    },
+    "custom": {
+      "loading": "カスタム項目を読み込み中...",
+      "saveError": "カスタム項目の保存に失敗しました",
+      "emptyTitle": "従業員向けのカスタム項目はまだ定義されていません。",
+      "emptyHint": "人事管理者はカスタム項目設定ページからカスタム項目を作成できます。",
+      "heading": "カスタム項目",
+      "edit": "編集",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "checkboxYes": "はい",
+      "checkboxNo": "いいえ",
+      "select": {
+        "placeholder": "選択..."
+      },
+      "file": {
+        "placeholder": "ファイル参照またはパス"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "従業員のインポート",
+      "subtitle": "CSVファイルをアップロードして、従業員を組織に一括インポートします。"
+    },
+    "success": {
+      "title": "インポート完了",
+      "importMore": "さらに従業員をインポート",
+      "message_one": "{{count}}名の従業員を正常にインポートしました。",
+      "message_other": "{{count}}名の従業員を正常にインポートしました。"
+    },
+    "dropzone": {
+      "instructions": "CSVファイルをここにドラッグ＆ドロップするか、クリックして選択してください",
+      "columnsHint": "必須列: first_name、last_name、email。任意列: designation、department_name、emp_code、role、contact_number",
+      "chooseFile": "ファイルを選択",
+      "selectedFile": "選択中: {{name}}"
+    },
+    "loading": {
+      "parsing": "CSVを解析・検証しています..."
+    },
+    "summary": {
+      "totalRows": "総行数",
+      "valid": "有効",
+      "errors": "エラー"
+    },
+    "validTable": {
+      "col": {
+        "name": "氏名",
+        "email": "メールアドレス",
+        "empCode": "従業員コード",
+        "designation": "役職",
+        "department": "部署",
+        "status": "ステータス"
+      },
+      "emptyCell": "-",
+      "title_one": "有効な従業員（{{count}}名）",
+      "title_other": "有効な従業員（{{count}}名）",
+      "andMore_one": "...他{{count}}件",
+      "andMore_other": "...他{{count}}件"
+    },
+    "errorTable": {
+      "col": {
+        "row": "行",
+        "name": "氏名",
+        "email": "メールアドレス",
+        "errors": "エラー"
+      },
+      "title_one": "エラー（{{count}}件）",
+      "title_other": "エラー（{{count}}件）"
+    },
+    "import": {
+      "importing": "インポート中...",
+      "button_one": "{{count}}名の有効な従業員をインポート",
+      "button_other": "{{count}}名の有効な従業員をインポート"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "プラットフォーム設定",
+      "subtitle": "現在のプラットフォーム構成とシステム情報を表示します。"
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "プラットフォーム情報"
+      },
+      "email": {
+        "title": "メール / SMTP 設定"
+      },
+      "security": {
+        "title": "セキュリティ設定"
+      }
+    },
+    "fields": {
+      "serverVersion": "サーバーバージョン",
+      "nodeVersion": "Node.js バージョン",
+      "environment": "環境",
+      "uptime": "稼働時間",
+      "smtpStatus": "SMTP ステータス",
+      "smtpHost": "SMTP ホスト",
+      "fromAddress": "送信元アドレス",
+      "bcryptRounds": "bcrypt ラウンド数",
+      "accessTokenExpiry": "アクセストークン有効期限",
+      "refreshTokenExpiry": "リフレッシュトークン有効期限",
+      "authRateLimit": "認証レート制限",
+      "apiRateLimit": "API レート制限"
+    },
+    "smtpStatus": {
+      "configured": "設定済み",
+      "notConfigured": "未設定"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}}日 {{hours}}時間 {{mins}}分",
+      "hoursMins": "{{hours}}時間 {{mins}}分",
+      "mins": "{{mins}}分"
+    },
+    "footer": {
+      "autoRefresh": "30秒ごとに自動更新されます"
+    }
+  },
+  "settingsPage": {
+    "loading": "設定を読み込んでいます...",
+    "header": {
+      "title": "組織設定",
+      "subtitle": "会社情報、部署、拠点を管理します。"
+    },
+    "company": {
+      "title": "会社情報",
+      "editTitle": "会社情報の編集"
+    },
+    "actions": {
+      "edit": "編集",
+      "cancel": "キャンセル",
+      "add": "追加",
+      "saveChanges": "変更を保存"
+    },
+    "fields": {
+      "name": "名称",
+      "legalName": "正式名称",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "country": "国",
+      "state": "都道府県",
+      "city": "市区町村",
+      "timezone": "タイムゾーン",
+      "language": "言語"
+    },
+    "form": {
+      "selectTimezone": "タイムゾーンを選択",
+      "selectTimezoneRequired": "タイムゾーンを選択 *",
+      "selectCountry": "国を選択",
+      "noTimezone": "タイムゾーンなし"
+    },
+    "validation": {
+      "email": "有効なメールアドレスを入力してください（例: user@example.com）。",
+      "city": "市区町村には英字、スペース、ハイフンのみを使用できます。",
+      "state": "都道府県には英字、スペース、ハイフンのみを使用できます。",
+      "timezoneRequired": "タイムゾーンは必須です。"
+    },
+    "errors": {
+      "updateOrg": "更新に失敗しました。もう一度お試しください。",
+      "addDepartment": "部署の追加に失敗しました。",
+      "renameDepartment": "部署名の変更に失敗しました。",
+      "deleteDepartment": "部署の削除に失敗しました。",
+      "addLocation": "拠点の追加に失敗しました。",
+      "updateLocation": "拠点の更新に失敗しました。",
+      "deleteLocation": "拠点の削除に失敗しました。"
+    },
+    "departments": {
+      "namePlaceholder": "部署名",
+      "renameTitle": "部署名を変更",
+      "deleteTitle": "部署を削除",
+      "title_one": "部署（{{count}}）",
+      "title_other": "部署（{{count}}）"
+    },
+    "locations": {
+      "namePlaceholder": "拠点名",
+      "editTitle": "拠点を編集",
+      "deleteTitle": "拠点を削除",
+      "title_one": "拠点（{{count}}）",
+      "title_other": "拠点（{{count}}）"
+    },
+    "rowActions": {
+      "save": "保存",
+      "cancel": "キャンセル"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "サブスクリプションを読み込み中...",
+    "header": {
+      "title": "サブスクリプション",
+      "subtitle": "モジュールのサブスクリプションと請求を管理します。"
+    },
+    "moduleFallback": "モジュール",
+    "billing": {
+      "viewInvoicesLink": "詳細な請求書と支払い履歴を表示",
+      "monthlyCostHeading": "月額料金",
+      "perMonthSuffix": " /月"
+    },
+    "toast": {
+      "updated": "サブスクリプションを更新しました",
+      "cancelled": "サブスクリプションを解約しました"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "サブスクリプションを編集",
+        "cancel": "サブスクリプションを解約"
+      },
+      "field": {
+        "plan": "プラン",
+        "seats": "シート数",
+        "pricePerSeat": "シート単価",
+        "billingCycle": "請求サイクル"
+      },
+      "seatsFull": "(満席)"
+    },
+    "trial": {
+      "expired": "トライアルが終了しました — まもなく有効なサブスクリプションに切り替わります。最初の請求書は本日発行されます。",
+      "endsIn_one": "トライアルはあと{{count}}日で終了します（{{date}}）",
+      "endsIn_other": "トライアルはあと{{count}}日で終了します（{{date}}）"
+    },
+    "cancelModal": {
+      "title": "サブスクリプションを解約しますか？",
+      "body": "サブスクリプションを解約し、割り当てられたすべてのシートのアクセスを取り消します。この操作は取り消せません。",
+      "keep": "維持",
+      "confirm": "はい、解約します",
+      "confirming": "解約中..."
+    },
+    "editModal": {
+      "title": "サブスクリプションの編集",
+      "planTierLabel": "プランティア",
+      "totalSeatsLabel": "合計シート数",
+      "currentlyUsing": "現在{{seats}}シートを使用中",
+      "cannotReduceBelow": "{{seats}}（使用中）より少なくすることはできません",
+      "billingCycleLabel": "請求サイクル",
+      "changesHeading": "変更内容:",
+      "change": {
+        "plan": "プラン: {{from}} → {{to}}",
+        "seats": "シート数: {{from}} → {{to}}",
+        "cycle": "サイクル: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ これにより無料トライアルが終了します",
+        "reason": {
+          "seats": "シートの追加",
+          "tier": "プランティアのアップグレード",
+          "cycle": "より長い請求サイクルへの切り替え"
+        },
+        "body": "をトライアル中に行うと、サブスクリプションが直ちに有効になります。最初の請求期間の請求書が生成され、本日が支払期限となります。"
+      },
+      "cancel": "キャンセル",
+      "save": "変更を保存",
+      "saving": "保存中..."
+    },
+    "planTier": {
+      "basic": "ベーシック",
+      "professional": "プロフェッショナル",
+      "enterprise": "エンタープライズ",
+      "free": "無料"
+    },
+    "billingCycle": {
+      "monthly": "月次",
+      "quarterly": "四半期",
+      "semi_annual": "半年ごと",
+      "annual": "年次"
+    },
+    "status": {
+      "active": "有効",
+      "trial": "トライアル",
+      "cancelled": "解約済み",
+      "expired": "期限切れ"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "カスタムフィールド",
+      "subtitle": "従業員、部門、その他のエンティティ向けにカスタムデータフィールドを定義します"
+    },
+    "actions": {
+      "addField": "フィールドを追加"
+    },
+    "entityType": {
+      "employee": "従業員",
+      "department": "部門",
+      "location": "拠点",
+      "project": "プロジェクト",
+      "document": "ドキュメント"
+    },
+    "fieldType": {
+      "text": "テキスト",
+      "textarea": "テキストエリア",
+      "number": "数値",
+      "decimal": "小数",
+      "date": "日付",
+      "datetime": "日時",
+      "dropdown": "ドロップダウン",
+      "multi_select": "複数選択",
+      "checkbox": "チェックボックス",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "url": "URL",
+      "file": "ファイル"
+    },
+    "form": {
+      "editTitle": "フィールドを編集",
+      "newTitle": "新規フィールド",
+      "hidePreview": "プレビューを非表示",
+      "preview": "プレビュー",
+      "fieldNameLabel": "フィールド名 *",
+      "fieldNamePlaceholder": "例: Tシャツのサイズ",
+      "fieldTypeLabel": "フィールドタイプ *",
+      "sectionLabel": "セクション",
+      "sectionPlaceholder": "カスタムフィールド",
+      "placeholderLabel": "プレースホルダー",
+      "defaultValueLabel": "デフォルト値",
+      "validationRegexLabel": "検証用正規表現",
+      "minValueLabel": "最小値",
+      "maxValueLabel": "最大値",
+      "helpTextLabel": "ヘルプテキスト",
+      "helpTextPlaceholder": "ユーザーに表示するツールチップまたは説明",
+      "optionsLabel": "選択肢",
+      "optionInputPlaceholder": "選択肢を入力してEnterキーを押してください",
+      "addOption": "追加",
+      "requiredLabel": "必須",
+      "searchableLabel": "検索可能",
+      "fieldPreviewHeading": "フィールドプレビュー",
+      "saving": "保存中...",
+      "updateField": "フィールドを更新",
+      "createField": "フィールドを作成",
+      "cancel": "キャンセル"
+    },
+    "error": {
+      "saveFailed": "フィールドの保存に失敗しました。もう一度お試しください。"
+    },
+    "list": {
+      "loading": "フィールドを読み込み中...",
+      "emptyTitle": "{{name}}にカスタムフィールドが定義されていません。",
+      "emptyHint": "「フィールドを追加」をクリックして最初のカスタムフィールドを作成してください。"
+    },
+    "table": {
+      "fieldName": "フィールド名",
+      "key": "キー",
+      "type": "タイプ",
+      "required": "必須",
+      "searchable": "検索可能",
+      "actions": "操作",
+      "yes": "はい",
+      "no": "いいえ",
+      "editAria": "フィールドを編集",
+      "deleteAria": "フィールドを削除",
+      "optionCount_one": "({{count}}件の選択肢)",
+      "optionCount_other": "({{count}}件の選択肢)"
+    },
+    "confirm": {
+      "titleNamed": "フィールド「{{name}}」を無効化しますか?",
+      "title": "フィールドを無効化しますか?",
+      "description": "既存の値は保持されます。",
+      "confirmText": "無効化"
+    },
+    "preview": {
+      "defaultFieldName": "フィールド名",
+      "enterValue": "{{name}}を入力",
+      "enterValueFallback": "値",
+      "selectOption": "{{name}}を選択...",
+      "selectOptionFallback": "選択肢",
+      "noOptions": "選択肢が定義されていません",
+      "checkboxFallback": "チェックボックス"
     }
   }
 }

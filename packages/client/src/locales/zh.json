@@ -426,7 +426,8 @@
     "markAllRead": "全部标记为已读",
     "noNotifications": "暂无通知",
     "viewAll": "查看全部",
-    "review": "查看"
+    "review": "查看",
+    "cancelInvitationTooltip": "取消此邀请并移除未激活的用户"
   },
   "auth": {
     "signIn": "登录",
@@ -4808,6 +4809,951 @@
     "endAssignment": {
       "title": "结束此任职？",
       "confirmText": "结束任职"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "此邀请链接无效、已被使用或已过期。请联系您的管理员重新发送邀请。",
+      "genericFailure": "无法接受邀请，请重试。"
+    },
+    "validation": {
+      "firstNameRequired": "名字为必填项。",
+      "lastNameRequired": "姓氏为必填项。",
+      "passwordsDoNotMatch": "两次输入的密码不一致。",
+      "passwordTooShort_one": "密码至少需包含 {{count}} 个字符。",
+      "passwordTooShort_other": "密码至少需包含 {{count}} 个字符。"
+    },
+    "toast": {
+      "success": "邀请已接受，您现在可以登录了。"
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "接受邀请",
+    "subheading": "设置您的姓名和密码以激活您的 EMP Cloud 账户。",
+    "loadingInvitation": "正在加载邀请…",
+    "form": {
+      "firstNameLabel": "名字",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "姓氏",
+      "namesLockedNote": "您的姓名已登记在 {{org}}。如需变更，请联系您的 HR 管理员。",
+      "orgFallback": "您的组织",
+      "passwordLabel": "密码",
+      "hidePasswordAria": "隐藏密码",
+      "showPasswordAria": "显示密码",
+      "confirmPasswordLabel": "确认密码",
+      "confirmPasswordPlaceholder": "请再次输入相同的密码",
+      "submitting": "正在激活账户...",
+      "submit": "接受邀请并登录",
+      "alreadyHaveAccount": "已有账户？",
+      "signInLink": "登录",
+      "passwordPlaceholder_one": "至少 {{count}} 个字符",
+      "passwordPlaceholder_other": "至少 {{count}} 个字符"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "已静音",
+      "groupCreated": "群组已创建",
+      "noMessagesYet": "暂无消息",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "个人头像必须是图片文件。",
+      "photoUpdated": "头像已更新。",
+      "photoUploadFailed": "无法上传照片。",
+      "statusUpdateFailed": "无法更新你的状态，请重试。",
+      "openNotesFailed": "无法打开你的笔记。"
+    },
+    "profile": {
+      "yourProfileTitle": "你的资料",
+      "changePhotoTitle": "更换头像",
+      "youFallback": "你",
+      "statusLabel": "状态",
+      "statusPlaceholder": "设置状态…",
+      "save": "保存",
+      "setStatusTitle": "设置你的状态",
+      "messageYourself": "给自己发消息（笔记）"
+    },
+    "search": {
+      "placeholder": "搜索聊天和消息…",
+      "messagesHeader": "消息",
+      "noMessageMatch": "没有与“{{query}}”匹配的消息。",
+      "senderPrefix": "{{name}}："
+    },
+    "list": {
+      "newChat": "新建聊天",
+      "backToChats": "← 返回聊天",
+      "archived": "已归档",
+      "loadError": "加载会话失败，请重试。",
+      "noSearchMatch": "没有与“{{query}}”匹配的会话。",
+      "noConversationsTitle": "暂无会话",
+      "noConversationsHint": "点击“新建聊天”按钮开始。",
+      "archivedWithCount_one": "已归档（{{count}}）",
+      "archivedWithCount_other": "已归档（{{count}}）"
+    },
+    "empty": {
+      "yourMessagesTitle": "你的消息",
+      "yourMessagesHint": "在左侧选择一个会话，或新建聊天开始发消息。"
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "创建您的 EMP Cloud 账户",
+      "subtitle": "几分钟内即可完成组织设置"
+    },
+    "error": {
+      "registrationFailed": "注册失败"
+    },
+    "section": {
+      "organization": "组织",
+      "adminAccount": "管理员账户"
+    },
+    "field": {
+      "companyName": {
+        "label": "公司名称",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "国家/地区"
+      },
+      "state": {
+        "label": "省/州"
+      },
+      "firstName": {
+        "label": "名字"
+      },
+      "lastName": {
+        "label": "姓氏"
+      },
+      "email": {
+        "label": "电子邮箱",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "密码",
+        "placeholder": "至少 8 个字符，含大写、小写、数字和特殊字符"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "隐藏密码",
+      "showAriaLabel": "显示密码"
+    },
+    "submit": {
+      "creating": "正在创建账户…",
+      "default": "创建账户"
+    },
+    "footer": {
+      "alreadyHaveAccount": "已有账户？",
+      "signIn": "登录"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "回复",
+      "forward": "转发",
+      "selectMessages": "选择消息",
+      "messageInfo": "消息信息",
+      "copyText": "复制文本",
+      "copied": "已复制",
+      "copyLink": "复制链接",
+      "pin": "置顶",
+      "unpin": "取消置顶",
+      "edit": "编辑",
+      "delete": "删除"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "消息信息"
+    },
+    "actions": {
+      "close": "关闭"
+    },
+    "state": {
+      "loading": "加载中…",
+      "error": "无法加载消息信息。",
+      "noOtherMembers": "没有其他成员。"
+    },
+    "section": {
+      "readBy": "已读",
+      "deliveredTo": "已送达",
+      "pending": "待处理"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "已启用桌面提醒 — 有新消息时将通知你。",
+      "blocked": "提醒已被屏蔽。你可以在浏览器的站点设置中重新启用。"
+    },
+    "confirmation": {
+      "title": "桌面提醒已开启",
+      "body": "有新消息时将在此通知你。"
+    },
+    "description": "即使你正在使用其他应用，也能收到新消息的通知。",
+    "button": {
+      "enabling": "正在启用…",
+      "enable": "启用提醒",
+      "dismissAriaLabel": "关闭"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "打开 {{name}}"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "发送中",
+      "sent": "已发送",
+      "delivered": "已送达",
+      "read": "已读"
+    },
+    "failed": {
+      "title": "发送失败 — 点按重试",
+      "ariaLabel": "发送失败，点按重试",
+      "retry": "重试"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "笑脸",
+      "gestures": "手势",
+      "objects": "物品"
+    },
+    "button": {
+      "reactWithAriaLabel": "用 {{emoji}} 回应"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "新建聊天"
+    },
+    "actions": {
+      "close": "关闭",
+      "createGroup": "创建群组"
+    },
+    "mode": {
+      "direct": "单聊",
+      "group": "群聊"
+    },
+    "group": {
+      "namePlaceholder": "群组名称",
+      "enterNameHint": "请输入群组名称以继续",
+      "selectedNeedMore_one": "已选择 {{count}} 人 · 至少需要 2 人",
+      "selectedNeedMore_other": "已选择 {{count}} 人 · 至少需要 2 人",
+      "selectedCount_one": "已选择 {{count}} 人",
+      "selectedCount_other": "已选择 {{count}} 人"
+    },
+    "search": {
+      "placeholder": "搜索员工…"
+    },
+    "list": {
+      "loadError": "加载员工失败。",
+      "emptySearch": "没有符合搜索条件的员工。",
+      "empty": "未找到员工。"
+    },
+    "direct": {
+      "starting": "正在发起会话…"
+    },
+    "toast": {
+      "directError": "无法发起该会话。",
+      "groupError": "无法创建群组。"
+    },
+    "validation": {
+      "groupNameRequired": "请为群组命名。",
+      "minTwoMembers": "群组至少需选择 2 人。"
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "转发失败，请重试。",
+      "forwardSuccess_one": "已将 {{count}} 条消息转发至 {{chatCount}} 个会话。",
+      "forwardSuccess_other": "已将 {{count}} 条消息转发至 {{chatCount}} 个会话。"
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "消息",
+      "multiple_one": "{{count}} 条消息",
+      "multiple_other": "{{count}} 条消息"
+    },
+    "heading": {
+      "title": "转发至…"
+    },
+    "section": {
+      "forwarding": "正在转发",
+      "chats": "会话",
+      "people": "联系人"
+    },
+    "search": {
+      "placeholder": "搜索会话和联系人…"
+    },
+    "state": {
+      "loading": "加载中…",
+      "noMatches": "未找到与“{{query}}”匹配的结果。",
+      "noTargets": "暂无可转发的对象。"
+    },
+    "button": {
+      "forwarding": "正在转发…",
+      "forward": "转发"
+    },
+    "footer": {
+      "selectedCount_one": "已选择 {{count}} 个",
+      "selectedCount_other": "已选择 {{count}} 个"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "添加成员",
+      "close": "关闭"
+    },
+    "search": {
+      "placeholder": "搜索员工…"
+    },
+    "list": {
+      "loading": "加载中…",
+      "noMatches": "未找到与“{{search}}”匹配的结果。",
+      "allInGroup": "所有人都已在此群组中。"
+    },
+    "footer": {
+      "add": "添加",
+      "adding": "添加中…",
+      "selectedCount_one": "已选择 {{count}} 人",
+      "selectedCount_other": "已选择 {{count}} 人"
+    },
+    "toast": {
+      "addFailed": "无法添加成员。请重试。",
+      "added_one": "已添加 {{count}} 名成员。",
+      "added_other": "已添加 {{count}} 名成员。"
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "个人信息",
+      "education": "教育经历",
+      "experience": "工作经历",
+      "dependents": "家属",
+      "addresses": "地址",
+      "custom": "自定义字段"
+    },
+    "invalid": {
+      "title": "无效的员工",
+      "description": "URL 中的员工 ID 缺失或无效。",
+      "backToDirectory": "← 返回员工目录"
+    },
+    "accessDenied": {
+      "title": "访问被拒绝",
+      "description": "您无权查看此档案。",
+      "backToDashboard": "← 返回仪表板"
+    },
+    "loading": "正在加载档案…",
+    "notFound": "未找到员工",
+    "header": {
+      "backToDirectory": "返回目录",
+      "biometricPhotoTooltip": "照片通过生物识别自助终端登记管理",
+      "biometricFaceAlt": "生物识别人脸",
+      "profilePhotoAlt": "档案",
+      "noDesignation": "无职位",
+      "biometricHint": "照片来自生物识别登记——通过自助终端管理。",
+      "removingPhoto": "正在移除…",
+      "removePhoto": "移除照片",
+      "empCode": "员工编号：{{code}}",
+      "joined": "入职日期：{{date}}",
+      "cancel": "取消",
+      "editMyInfo": "编辑我的信息",
+      "editProfile": "编辑档案"
+    },
+    "removePhotoDialog": {
+      "title": "移除您的档案照片？",
+      "description": "将再次显示姓名首字母。",
+      "confirm": "移除照片"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "PAN 必须为 5 个字母 + 4 位数字 + 1 个字母（例如 ABCDE1234F）",
+      "aadhar": "Aadhaar 必须为 12 位数字",
+      "uan": "UAN 必须为 12 位数字",
+      "passport": "护照号必须为 1 个字母 + 7 位数字（例如 A1234567）"
+    },
+    "personal": {
+      "saveError": "保存失败",
+      "selfServiceNotice": "您可以编辑个人信息和紧急联系人信息。如需更新管理类字段，请联系人力资源部。",
+      "field": {
+        "personalEmail": "个人邮箱",
+        "contactNumber": "联系电话",
+        "gender": "性别",
+        "dateOfBirth": "出生日期",
+        "bloodGroup": "血型",
+        "maritalStatus": "婚姻状况",
+        "nationality": "国籍",
+        "aadharNumber": "Aadhaar 号码",
+        "panNumber": "PAN 号码",
+        "uanNumber": "UAN 号码",
+        "passportNumber": "护照号码",
+        "passportExpiry": "护照有效期",
+        "visaStatus": "签证状态",
+        "visaExpiry": "签证有效期",
+        "emergencyContact": "紧急联系人",
+        "emergencyPhone": "紧急联系电话",
+        "emergencyRelation": "与紧急联系人关系",
+        "noticePeriodDays": "通知期（天）",
+        "reportingManager": "直属经理",
+        "department": "部门",
+        "shift": "班次",
+        "designation": "职位",
+        "employeeCode": "员工编号",
+        "probationStart": "试用期开始",
+        "probationEnd": "试用期结束",
+        "confirmationDate": "转正日期"
+      },
+      "select": {
+        "placeholder": "请选择"
+      },
+      "aadhar": {
+        "placeholder": "12 位数字"
+      },
+      "uan": {
+        "placeholder": "12 位数字"
+      },
+      "reportingManager": {
+        "none": "无经理",
+        "option": "{{name}}（{{role}}）- {{email}}"
+      },
+      "department": {
+        "none": "无部门"
+      },
+      "shift": {
+        "none": "无班次"
+      },
+      "designation": {
+        "placeholderSelfService": "如需更改请联系人力资源部",
+        "placeholderHint": "例如 高级工程师"
+      },
+      "empCode": {
+        "placeholderSelfService": "如需设置请联系人力资源部",
+        "placeholderHint": "例如 EMP001"
+      },
+      "saving": "正在保存…",
+      "saveChanges": "保存更改",
+      "reportingManagerFallback": "用户 #{{id}}",
+      "departmentFallback": "部门 #{{id}}",
+      "shiftFallback": "班次 #{{id}}"
+    },
+    "gender": {
+      "male": "男",
+      "female": "女",
+      "other": "其他"
+    },
+    "maritalStatus": {
+      "single": "未婚",
+      "married": "已婚",
+      "divorced": "离异",
+      "widowed": "丧偶"
+    },
+    "customRoles": {
+      "label": "自定义角色"
+    },
+    "additionalManagers": {
+      "label": "其他经理",
+      "description": "与直属经理拥有相同团队范围访问权限的协同管理者。所有团队范围的权限均予以认可。",
+      "loading": "正在加载…",
+      "empty": "无其他经理",
+      "userFallback": "用户 #{{id}}",
+      "removeAria": "移除 {{name}}",
+      "removeAriaFallback": "经理",
+      "searchPlaceholderEmpty": "按姓名或邮箱搜索…",
+      "searchPlaceholderMore": "添加其他…",
+      "noMatches": "无匹配用户",
+      "allSelected": "所有符合条件的用户均已选择",
+      "saving": "正在保存…",
+      "save": "保存其他经理",
+      "unsaved": "未保存的更改",
+      "saved": "已保存",
+      "selectedCount_one": "（已选 {{count}} 个）",
+      "selectedCount_other": "（已选 {{count}} 个）"
+    },
+    "apiError": {
+      "requestFailed": "请求失败"
+    },
+    "education": {
+      "add": "添加教育经历",
+      "editHeading": "编辑教育经历",
+      "field": {
+        "degree": "学位 *",
+        "institution": "院校 *",
+        "fieldOfStudy": "专业",
+        "grade": "成绩",
+        "startYear": "入学年份",
+        "endYear": "毕业年份"
+      },
+      "degree": {
+        "placeholder": "例如 B.Tech"
+      },
+      "institution": {
+        "placeholder": "例如 IIT Delhi"
+      },
+      "validation": {
+        "required": "学位和院校为必填项",
+        "endYear": "毕业年份必须不早于入学年份"
+      },
+      "empty": "尚未添加教育经历记录。",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "自 {{year}}",
+      "gradeSuffix": " | 成绩：{{grade}}",
+      "deleteDialog": {
+        "title": "删除此教育经历记录？"
+      }
+    },
+    "common": {
+      "save": "保存",
+      "saving": "正在保存…",
+      "cancel": "取消",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "experience": {
+      "add": "添加工作经历",
+      "editHeading": "编辑工作经历",
+      "field": {
+        "company": "公司 *",
+        "designation": "职位 *",
+        "startDate": "开始日期 *",
+        "endDate": "结束日期",
+        "description": "描述"
+      },
+      "currentlyWorking": "目前在职",
+      "validation": {
+        "required": "公司、职位和开始日期为必填项"
+      },
+      "empty": "尚未添加工作经历记录。",
+      "currentBadge": "当前",
+      "present": "至今",
+      "deleteDialog": {
+        "title": "删除此工作经历记录？"
+      }
+    },
+    "dependents": {
+      "add": "添加家属",
+      "editHeading": "编辑家属",
+      "field": {
+        "name": "姓名 *",
+        "relationship": "关系 *",
+        "dateOfBirth": "出生日期",
+        "gender": "性别",
+        "nomineePercent": "受益比例 %"
+      },
+      "relationship": {
+        "placeholder": "例如 配偶、子女、父母"
+      },
+      "isNominee": "设为受益人",
+      "validation": {
+        "required": "姓名和关系为必填项"
+      },
+      "empty": "尚未添加家属。",
+      "column": {
+        "name": "姓名",
+        "relationship": "关系",
+        "dob": "出生日期",
+        "gender": "性别",
+        "nominee": "受益人",
+        "actions": "操作"
+      },
+      "nomineeYes": "是",
+      "nomineeYesPercent": "是（{{percent}}%）",
+      "nomineeNo": "否",
+      "deleteDialog": {
+        "title": "删除此家属？"
+      }
+    },
+    "addresses": {
+      "add": "添加地址",
+      "editHeading": "编辑地址",
+      "field": {
+        "type": "类型 *",
+        "country": "国家/地区",
+        "line1": "地址行 1 *",
+        "line2": "地址行 2",
+        "city": "城市 *",
+        "state": "省/州 *",
+        "zipcode": "邮政编码 *"
+      },
+      "type": {
+        "current": "现居地址",
+        "permanent": "永久地址"
+      },
+      "validation": {
+        "required": "地址行 1、城市、省/州和邮政编码为必填项"
+      },
+      "empty": "尚未添加地址。",
+      "deleteDialog": {
+        "title": "删除此地址？"
+      }
+    },
+    "custom": {
+      "loading": "正在加载自定义字段…",
+      "saveError": "保存自定义字段失败",
+      "emptyTitle": "尚未为员工定义任何自定义字段。",
+      "emptyHint": "人力资源管理员可在自定义字段设置页面创建自定义字段。",
+      "heading": "自定义字段",
+      "edit": "编辑",
+      "save": "保存",
+      "cancel": "取消",
+      "checkboxYes": "是",
+      "checkboxNo": "否",
+      "select": {
+        "placeholder": "请选择…"
+      },
+      "file": {
+        "placeholder": "文件引用或路径"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "导入员工",
+      "subtitle": "上传 CSV 文件以批量将员工导入您的组织。"
+    },
+    "success": {
+      "title": "导入成功",
+      "importMore": "导入更多员工",
+      "message_one": "已成功导入 {{count}} 名员工。",
+      "message_other": "已成功导入 {{count}} 名员工。"
+    },
+    "dropzone": {
+      "instructions": "将 CSV 文件拖放到此处，或点击浏览",
+      "columnsHint": "必填列：first_name、last_name、email。可选列：designation、department_name、emp_code、role、contact_number",
+      "chooseFile": "选择文件",
+      "selectedFile": "已选择：{{name}}"
+    },
+    "loading": {
+      "parsing": "正在解析并验证 CSV..."
+    },
+    "summary": {
+      "totalRows": "总行数",
+      "valid": "有效",
+      "errors": "错误"
+    },
+    "validTable": {
+      "col": {
+        "name": "姓名",
+        "email": "邮箱",
+        "empCode": "员工编号",
+        "designation": "职位",
+        "department": "部门",
+        "status": "状态"
+      },
+      "emptyCell": "-",
+      "title_one": "有效员工（{{count}}）",
+      "title_other": "有效员工（{{count}}）",
+      "andMore_one": "...还有 {{count}} 条",
+      "andMore_other": "...还有 {{count}} 条"
+    },
+    "errorTable": {
+      "col": {
+        "row": "行",
+        "name": "姓名",
+        "email": "邮箱",
+        "errors": "错误"
+      },
+      "title_one": "错误（{{count}}）",
+      "title_other": "错误（{{count}}）"
+    },
+    "import": {
+      "importing": "正在导入...",
+      "button_one": "导入 {{count}} 名有效员工",
+      "button_other": "导入 {{count}} 名有效员工"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "平台设置",
+      "subtitle": "查看当前平台配置和系统信息。"
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "平台信息"
+      },
+      "email": {
+        "title": "邮件 / SMTP 设置"
+      },
+      "security": {
+        "title": "安全设置"
+      }
+    },
+    "fields": {
+      "serverVersion": "服务器版本",
+      "nodeVersion": "Node.js 版本",
+      "environment": "环境",
+      "uptime": "运行时长",
+      "smtpStatus": "SMTP 状态",
+      "smtpHost": "SMTP 主机",
+      "fromAddress": "发件地址",
+      "bcryptRounds": "Bcrypt 轮数",
+      "accessTokenExpiry": "访问令牌有效期",
+      "refreshTokenExpiry": "刷新令牌有效期",
+      "authRateLimit": "认证速率限制",
+      "apiRateLimit": "API 速率限制"
+    },
+    "smtpStatus": {
+      "configured": "已配置",
+      "notConfigured": "未配置"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}} 天 {{hours}} 小时 {{mins}} 分",
+      "hoursMins": "{{hours}} 小时 {{mins}} 分",
+      "mins": "{{mins}} 分"
+    },
+    "footer": {
+      "autoRefresh": "每 30 秒自动刷新"
+    }
+  },
+  "settingsPage": {
+    "loading": "正在加载设置...",
+    "header": {
+      "title": "组织设置",
+      "subtitle": "管理公司信息、部门和地点。"
+    },
+    "company": {
+      "title": "公司信息",
+      "editTitle": "编辑公司信息"
+    },
+    "actions": {
+      "edit": "编辑",
+      "cancel": "取消",
+      "add": "添加",
+      "saveChanges": "保存更改"
+    },
+    "fields": {
+      "name": "名称",
+      "legalName": "法定名称",
+      "email": "电子邮箱",
+      "phone": "电话",
+      "country": "国家/地区",
+      "state": "省/州",
+      "city": "城市",
+      "timezone": "时区",
+      "language": "语言"
+    },
+    "form": {
+      "selectTimezone": "选择时区",
+      "selectTimezoneRequired": "选择时区 *",
+      "selectCountry": "选择国家/地区",
+      "noTimezone": "无时区"
+    },
+    "validation": {
+      "email": "请输入有效的电子邮箱地址（例如 user@example.com）。",
+      "city": "城市只能包含字母、空格和连字符。",
+      "state": "省/州只能包含字母、空格和连字符。",
+      "timezoneRequired": "时区为必填项。"
+    },
+    "errors": {
+      "updateOrg": "更新失败，请重试。",
+      "addDepartment": "添加部门失败。",
+      "renameDepartment": "重命名部门失败。",
+      "deleteDepartment": "删除部门失败。",
+      "addLocation": "添加地点失败。",
+      "updateLocation": "更新地点失败。",
+      "deleteLocation": "删除地点失败。"
+    },
+    "departments": {
+      "namePlaceholder": "部门名称",
+      "renameTitle": "重命名部门",
+      "deleteTitle": "删除部门",
+      "title_one": "部门（{{count}}）",
+      "title_other": "部门（{{count}}）"
+    },
+    "locations": {
+      "namePlaceholder": "地点名称",
+      "editTitle": "编辑地点",
+      "deleteTitle": "删除地点",
+      "title_one": "地点（{{count}}）",
+      "title_other": "地点（{{count}}）"
+    },
+    "rowActions": {
+      "save": "保存",
+      "cancel": "取消"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "正在加载订阅...",
+    "header": {
+      "title": "订阅",
+      "subtitle": "管理您的模块订阅和账单。"
+    },
+    "moduleFallback": "模块",
+    "billing": {
+      "viewInvoicesLink": "查看详细发票和付款记录",
+      "monthlyCostHeading": "月度费用",
+      "perMonthSuffix": " /月"
+    },
+    "toast": {
+      "updated": "订阅更新成功",
+      "cancelled": "订阅已取消"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "编辑订阅",
+        "cancel": "取消订阅"
+      },
+      "field": {
+        "plan": "套餐",
+        "seats": "席位",
+        "pricePerSeat": "每席位价格",
+        "billingCycle": "计费周期"
+      },
+      "seatsFull": "（已满）"
+    },
+    "trial": {
+      "expired": "试用已过期——即将转为正式订阅。首张发票将于今日开具。",
+      "endsIn_one": "试用将在 {{count}} 天后结束（{{date}}）",
+      "endsIn_other": "试用将在 {{count}} 天后结束（{{date}}）"
+    },
+    "cancelModal": {
+      "title": "取消订阅？",
+      "body": "此操作将取消订阅并撤销所有已分配席位的访问权限。此操作无法撤销。",
+      "keep": "保留",
+      "confirm": "是的，取消",
+      "confirming": "正在取消..."
+    },
+    "editModal": {
+      "title": "编辑订阅",
+      "planTierLabel": "套餐等级",
+      "totalSeatsLabel": "席位总数",
+      "currentlyUsing": "当前使用 {{seats}} 个席位",
+      "cannotReduceBelow": "无法减少到 {{seats}}（使用中）以下",
+      "billingCycleLabel": "计费周期",
+      "changesHeading": "变更：",
+      "change": {
+        "plan": "套餐：{{from}} → {{to}}",
+        "seats": "席位：{{from}} → {{to}}",
+        "cycle": "周期：{{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ 此操作将结束您的免费试用",
+        "reason": {
+          "seats": "增加席位",
+          "tier": "升级您的套餐等级",
+          "cycle": "切换到更长的计费周期"
+        },
+        "body": "将在试用期间立即激活订阅。系统将生成首个计费周期的发票，并于今日到期。"
+      },
+      "cancel": "取消",
+      "save": "保存更改",
+      "saving": "正在保存..."
+    },
+    "planTier": {
+      "basic": "基础版",
+      "professional": "专业版",
+      "enterprise": "企业版",
+      "free": "免费版"
+    },
+    "billingCycle": {
+      "monthly": "按月",
+      "quarterly": "按季度",
+      "semi_annual": "半年",
+      "annual": "按年"
+    },
+    "status": {
+      "active": "有效",
+      "trial": "试用",
+      "cancelled": "已取消",
+      "expired": "已过期"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "自定义字段",
+      "subtitle": "为员工、部门及其他实体定义自定义数据字段"
+    },
+    "actions": {
+      "addField": "添加字段"
+    },
+    "entityType": {
+      "employee": "员工",
+      "department": "部门",
+      "location": "地点",
+      "project": "项目",
+      "document": "文档"
+    },
+    "fieldType": {
+      "text": "文本",
+      "textarea": "文本区",
+      "number": "数字",
+      "decimal": "小数",
+      "date": "日期",
+      "datetime": "日期和时间",
+      "dropdown": "下拉菜单",
+      "multi_select": "多选",
+      "checkbox": "复选框",
+      "email": "电子邮件",
+      "phone": "电话",
+      "url": "网址",
+      "file": "文件"
+    },
+    "form": {
+      "editTitle": "编辑字段",
+      "newTitle": "新建字段",
+      "hidePreview": "隐藏预览",
+      "preview": "预览",
+      "fieldNameLabel": "字段名称 *",
+      "fieldNamePlaceholder": "例如：T恤尺码",
+      "fieldTypeLabel": "字段类型 *",
+      "sectionLabel": "分区",
+      "sectionPlaceholder": "自定义字段",
+      "placeholderLabel": "占位提示",
+      "defaultValueLabel": "默认值",
+      "validationRegexLabel": "校验正则表达式",
+      "minValueLabel": "最小值",
+      "maxValueLabel": "最大值",
+      "helpTextLabel": "帮助文本",
+      "helpTextPlaceholder": "向用户显示的工具提示或说明",
+      "optionsLabel": "选项",
+      "optionInputPlaceholder": "输入选项后按回车键",
+      "addOption": "添加",
+      "requiredLabel": "必填",
+      "searchableLabel": "可搜索",
+      "fieldPreviewHeading": "字段预览",
+      "saving": "保存中…",
+      "updateField": "更新字段",
+      "createField": "创建字段",
+      "cancel": "取消"
+    },
+    "error": {
+      "saveFailed": "字段保存失败，请重试。"
+    },
+    "list": {
+      "loading": "正在加载字段…",
+      "emptyTitle": "尚未为{{name}}定义自定义字段。",
+      "emptyHint": "点击“添加字段”创建您的第一个自定义字段。"
+    },
+    "table": {
+      "fieldName": "字段名称",
+      "key": "键",
+      "type": "类型",
+      "required": "必填",
+      "searchable": "可搜索",
+      "actions": "操作",
+      "yes": "是",
+      "no": "否",
+      "editAria": "编辑字段",
+      "deleteAria": "删除字段",
+      "optionCount_one": "（{{count}} 个选项）",
+      "optionCount_other": "（{{count}} 个选项）"
+    },
+    "confirm": {
+      "titleNamed": "停用字段“{{name}}”？",
+      "title": "停用字段？",
+      "description": "现有值将会保留。",
+      "confirmText": "停用"
+    },
+    "preview": {
+      "defaultFieldName": "字段名称",
+      "enterValue": "请输入{{name}}",
+      "enterValueFallback": "值",
+      "selectOption": "请选择{{name}}…",
+      "selectOptionFallback": "选项",
+      "noOptions": "未定义任何选项",
+      "checkboxFallback": "复选框"
     }
   }
 }

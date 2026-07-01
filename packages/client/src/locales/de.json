@@ -426,7 +426,8 @@
     "markAllRead": "Alle als gelesen markieren",
     "noNotifications": "Noch keine Benachrichtigungen",
     "viewAll": "Alle anzeigen",
-    "review": "Prüfen"
+    "review": "Prüfen",
+    "cancelInvitationTooltip": "Diese Einladung stornieren und den nicht aktivierten Benutzer entfernen"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -4808,6 +4809,951 @@
     "endAssignment": {
       "title": "Diese Zuweisung beenden?",
       "confirmText": "Zuweisung beenden"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "Dieser Einladungslink ist ungültig, wurde bereits verwendet oder ist abgelaufen. Bitten Sie Ihren Administrator, die Einladung erneut zu senden.",
+      "genericFailure": "Einladung konnte nicht angenommen werden. Bitte versuchen Sie es erneut."
+    },
+    "validation": {
+      "firstNameRequired": "Vorname ist erforderlich.",
+      "lastNameRequired": "Nachname ist erforderlich.",
+      "passwordsDoNotMatch": "Die Passwörter stimmen nicht überein.",
+      "passwordTooShort_one": "Das Passwort muss mindestens {{count}} Zeichen lang sein.",
+      "passwordTooShort_other": "Das Passwort muss mindestens {{count}} Zeichen lang sein."
+    },
+    "toast": {
+      "success": "Einladung angenommen. Sie können sich jetzt anmelden."
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "Einladung annehmen",
+    "subheading": "Legen Sie Ihren Namen und Ihr Passwort fest, um Ihr EmpCloud-Konto zu aktivieren.",
+    "loadingInvitation": "Einladung wird geladen…",
+    "form": {
+      "firstNameLabel": "Vorname",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "Nachname",
+      "namesLockedNote": "Ihr Name ist bei {{org}} hinterlegt. Wenden Sie sich an Ihren HR-Administrator, wenn er geändert werden muss.",
+      "orgFallback": "Ihre Organisation",
+      "passwordLabel": "Passwort",
+      "hidePasswordAria": "Passwort ausblenden",
+      "showPasswordAria": "Passwort anzeigen",
+      "confirmPasswordLabel": "Passwort bestätigen",
+      "confirmPasswordPlaceholder": "Geben Sie dasselbe Passwort erneut ein",
+      "submitting": "Konto wird aktiviert...",
+      "submit": "Einladung annehmen & anmelden",
+      "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+      "signInLink": "Anmelden",
+      "passwordPlaceholder_one": "Mindestens {{count}} Zeichen",
+      "passwordPlaceholder_other": "Mindestens {{count}} Zeichen"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "Stummgeschaltet",
+      "groupCreated": "Gruppe erstellt",
+      "noMessagesYet": "Noch keine Nachrichten",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "Das Profilbild muss ein Bild sein.",
+      "photoUpdated": "Profilbild aktualisiert.",
+      "photoUploadFailed": "Das Foto konnte nicht hochgeladen werden.",
+      "statusUpdateFailed": "Dein Status konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+      "openNotesFailed": "Deine Notizen konnten nicht geöffnet werden."
+    },
+    "profile": {
+      "yourProfileTitle": "Dein Profil",
+      "changePhotoTitle": "Profilbild ändern",
+      "youFallback": "Du",
+      "statusLabel": "Status",
+      "statusPlaceholder": "Status festlegen…",
+      "save": "Speichern",
+      "setStatusTitle": "Status festlegen",
+      "messageYourself": "Dir selbst schreiben (Notizen)"
+    },
+    "search": {
+      "placeholder": "Chats & Nachrichten durchsuchen…",
+      "messagesHeader": "Nachrichten",
+      "noMessageMatch": "Keine Nachrichten für „{{query}}“.",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "Neuer Chat",
+      "backToChats": "← Zurück zu den Chats",
+      "archived": "Archiviert",
+      "loadError": "Konversationen konnten nicht geladen werden. Bitte versuche es erneut.",
+      "noSearchMatch": "Keine Konversationen für „{{query}}“.",
+      "noConversationsTitle": "Noch keine Konversationen",
+      "noConversationsHint": "Starte eine über die Schaltfläche „Neuer Chat“.",
+      "archivedWithCount_one": "Archiviert ({{count}})",
+      "archivedWithCount_other": "Archiviert ({{count}})"
+    },
+    "empty": {
+      "yourMessagesTitle": "Deine Nachrichten",
+      "yourMessagesHint": "Wähle links eine Konversation aus oder starte einen neuen Chat, um mit dem Schreiben zu beginnen."
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "Erstellen Sie Ihr EMP Cloud-Konto",
+      "subtitle": "Richten Sie Ihre Organisation in wenigen Minuten ein"
+    },
+    "error": {
+      "registrationFailed": "Registrierung fehlgeschlagen"
+    },
+    "section": {
+      "organization": "Organisation",
+      "adminAccount": "Administratorkonto"
+    },
+    "field": {
+      "companyName": {
+        "label": "Firmenname",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "Land"
+      },
+      "state": {
+        "label": "Bundesland"
+      },
+      "firstName": {
+        "label": "Vorname"
+      },
+      "lastName": {
+        "label": "Nachname"
+      },
+      "email": {
+        "label": "E-Mail",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "Passwort",
+        "placeholder": "Mind. 8 Zeichen, Groß-, Kleinbuchstabe, Ziffer, Sonderzeichen"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "Passwort verbergen",
+      "showAriaLabel": "Passwort anzeigen"
+    },
+    "submit": {
+      "creating": "Konto wird erstellt...",
+      "default": "Konto erstellen"
+    },
+    "footer": {
+      "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+      "signIn": "Anmelden"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "Antworten",
+      "forward": "Weiterleiten",
+      "selectMessages": "Nachrichten auswählen",
+      "messageInfo": "Nachrichteninfo",
+      "copyText": "Text kopieren",
+      "copied": "Kopiert",
+      "copyLink": "Link kopieren",
+      "pin": "Anpinnen",
+      "unpin": "Loslösen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "Nachrichteninfo"
+    },
+    "actions": {
+      "close": "Schließen"
+    },
+    "state": {
+      "loading": "Wird geladen…",
+      "error": "Nachrichteninfo konnte nicht geladen werden.",
+      "noOtherMembers": "Keine weiteren Mitglieder."
+    },
+    "section": {
+      "readBy": "Gelesen von",
+      "deliveredTo": "Zugestellt an",
+      "pending": "Ausstehend"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "Desktop-Benachrichtigungen aktiviert – du wirst über neue Nachrichten informiert.",
+      "blocked": "Benachrichtigungen blockiert. Du kannst sie in den Website-Einstellungen deines Browsers wieder aktivieren."
+    },
+    "confirmation": {
+      "title": "Desktop-Benachrichtigungen aktiviert",
+      "body": "Du wirst hier benachrichtigt, sobald eine neue Nachricht eintrifft."
+    },
+    "description": "Lass dich über neue Nachrichten benachrichtigen, auch wenn du gerade in einer anderen App arbeitest.",
+    "button": {
+      "enabling": "Wird aktiviert …",
+      "enable": "Benachrichtigungen aktivieren",
+      "dismissAriaLabel": "Schließen"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "{{name}} öffnen"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "Wird gesendet",
+      "sent": "Gesendet",
+      "delivered": "Zugestellt",
+      "read": "Gelesen"
+    },
+    "failed": {
+      "title": "Senden fehlgeschlagen – zum Wiederholen tippen",
+      "ariaLabel": "Senden fehlgeschlagen, zum Wiederholen tippen",
+      "retry": "Wiederholen"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "Smileys",
+      "gestures": "Gesten",
+      "objects": "Objekte"
+    },
+    "button": {
+      "reactWithAriaLabel": "Mit {{emoji}} reagieren"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "Neuer Chat"
+    },
+    "actions": {
+      "close": "Schließen",
+      "createGroup": "Gruppe erstellen"
+    },
+    "mode": {
+      "direct": "Direkt",
+      "group": "Gruppe"
+    },
+    "group": {
+      "namePlaceholder": "Gruppenname",
+      "enterNameHint": "Geben Sie einen Gruppennamen ein, um fortzufahren",
+      "selectedNeedMore_one": "{{count}} ausgewählt · mind. 2 erforderlich",
+      "selectedNeedMore_other": "{{count}} ausgewählt · mind. 2 erforderlich",
+      "selectedCount_one": "{{count}} ausgewählt",
+      "selectedCount_other": "{{count}} ausgewählt"
+    },
+    "search": {
+      "placeholder": "Mitarbeitende suchen…"
+    },
+    "list": {
+      "loadError": "Mitarbeitende konnten nicht geladen werden.",
+      "emptySearch": "Keine Mitarbeitenden entsprechen Ihrer Suche.",
+      "empty": "Keine Mitarbeitenden gefunden."
+    },
+    "direct": {
+      "starting": "Unterhaltung wird gestartet…"
+    },
+    "toast": {
+      "directError": "Unterhaltung konnte nicht gestartet werden.",
+      "groupError": "Gruppe konnte nicht erstellt werden."
+    },
+    "validation": {
+      "groupNameRequired": "Bitte geben Sie der Gruppe einen Namen.",
+      "minTwoMembers": "Wählen Sie mindestens 2 Personen für eine Gruppe aus."
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "Weiterleiten fehlgeschlagen. Bitte versuche es erneut.",
+      "forwardSuccess_one": "{{count}} Nachricht an {{chatCount}} Chat weitergeleitet.",
+      "forwardSuccess_other": "{{count}} Nachrichten an {{chatCount}} Chats weitergeleitet."
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "Nachricht",
+      "multiple_one": "{{count}} Nachricht",
+      "multiple_other": "{{count}} Nachrichten"
+    },
+    "heading": {
+      "title": "Weiterleiten an …"
+    },
+    "section": {
+      "forwarding": "Wird weitergeleitet",
+      "chats": "Chats",
+      "people": "Personen"
+    },
+    "search": {
+      "placeholder": "Chats & Personen suchen …"
+    },
+    "state": {
+      "loading": "Wird geladen …",
+      "noMatches": "Keine Treffer für \"{{query}}\".",
+      "noTargets": "Niemand zum Weiterleiten vorhanden."
+    },
+    "button": {
+      "forwarding": "Wird weitergeleitet …",
+      "forward": "Weiterleiten"
+    },
+    "footer": {
+      "selectedCount_one": "{{count}} ausgewählt",
+      "selectedCount_other": "{{count}} ausgewählt"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "Mitglieder hinzufügen",
+      "close": "Schließen"
+    },
+    "search": {
+      "placeholder": "Mitarbeiter suchen…"
+    },
+    "list": {
+      "loading": "Wird geladen…",
+      "noMatches": "Keine Treffer für \"{{search}}\".",
+      "allInGroup": "Alle sind bereits in dieser Gruppe."
+    },
+    "footer": {
+      "add": "Hinzufügen",
+      "adding": "Wird hinzugefügt…",
+      "selectedCount_one": "{{count}} ausgewählt",
+      "selectedCount_other": "{{count}} ausgewählt"
+    },
+    "toast": {
+      "addFailed": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+      "added_one": "{{count}} Mitglied hinzugefügt.",
+      "added_other": "{{count}} Mitglieder hinzugefügt."
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "Persönlich",
+      "education": "Ausbildung",
+      "experience": "Berufserfahrung",
+      "dependents": "Angehörige",
+      "addresses": "Adressen",
+      "custom": "Benutzerdefinierte Felder"
+    },
+    "invalid": {
+      "title": "Ungültiger Mitarbeiter",
+      "description": "Die Mitarbeiter-ID in der URL fehlt oder ist ungültig.",
+      "backToDirectory": "← Zurück zum Mitarbeiterverzeichnis"
+    },
+    "accessDenied": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, dieses Profil anzuzeigen.",
+      "backToDashboard": "← Zurück zum Dashboard"
+    },
+    "loading": "Profil wird geladen...",
+    "notFound": "Mitarbeiter nicht gefunden",
+    "header": {
+      "backToDirectory": "Zurück zum Verzeichnis",
+      "biometricPhotoTooltip": "Das Foto wird über die Registrierung am biometrischen Kiosk verwaltet",
+      "biometricFaceAlt": "Biometrisches Gesicht",
+      "profilePhotoAlt": "Profil",
+      "noDesignation": "Keine Position",
+      "biometricHint": "Foto aus der biometrischen Registrierung – über den Kiosk verwaltet.",
+      "removingPhoto": "Wird entfernt...",
+      "removePhoto": "Foto entfernen",
+      "empCode": "Mitarbeiter-Code: {{code}}",
+      "joined": "Eintritt: {{date}}",
+      "cancel": "Abbrechen",
+      "editMyInfo": "Meine Daten bearbeiten",
+      "editProfile": "Profil bearbeiten"
+    },
+    "removePhotoDialog": {
+      "title": "Profilfoto entfernen?",
+      "description": "Es werden wieder Ihre Initialen angezeigt.",
+      "confirm": "Foto entfernen"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "PAN muss aus 5 Buchstaben + 4 Ziffern + 1 Buchstaben bestehen (z. B. ABCDE1234F)",
+      "aadhar": "Aadhaar muss aus 12 Ziffern bestehen",
+      "uan": "UAN muss aus 12 Ziffern bestehen",
+      "passport": "Reisepass muss aus 1 Buchstaben + 7 Ziffern bestehen (z. B. A1234567)"
+    },
+    "personal": {
+      "saveError": "Speichern fehlgeschlagen",
+      "selfServiceNotice": "Sie können Ihre persönlichen Daten und Notfallkontaktdaten bearbeiten. Wenden Sie sich an die Personalabteilung, um administrative Felder zu aktualisieren.",
+      "field": {
+        "personalEmail": "Private E-Mail",
+        "contactNumber": "Telefonnummer",
+        "gender": "Geschlecht",
+        "dateOfBirth": "Geburtsdatum",
+        "bloodGroup": "Blutgruppe",
+        "maritalStatus": "Familienstand",
+        "nationality": "Nationalität",
+        "aadharNumber": "Aadhaar-Nummer",
+        "panNumber": "PAN-Nummer",
+        "uanNumber": "UAN-Nummer",
+        "passportNumber": "Reisepassnummer",
+        "passportExpiry": "Reisepass gültig bis",
+        "visaStatus": "Visastatus",
+        "visaExpiry": "Visum gültig bis",
+        "emergencyContact": "Notfallkontakt",
+        "emergencyPhone": "Notfalltelefon",
+        "emergencyRelation": "Beziehung (Notfall)",
+        "noticePeriodDays": "Kündigungsfrist (Tage)",
+        "reportingManager": "Vorgesetzte(r)",
+        "department": "Abteilung",
+        "shift": "Schicht",
+        "designation": "Position",
+        "employeeCode": "Mitarbeiter-Code",
+        "probationStart": "Beginn der Probezeit",
+        "probationEnd": "Ende der Probezeit",
+        "confirmationDate": "Datum der Festanstellung"
+      },
+      "select": {
+        "placeholder": "Auswählen"
+      },
+      "aadhar": {
+        "placeholder": "12 Ziffern"
+      },
+      "uan": {
+        "placeholder": "12 Ziffern"
+      },
+      "reportingManager": {
+        "none": "Kein(e) Vorgesetzte(r)",
+        "option": "{{name}} ({{role}}) - {{email}}"
+      },
+      "department": {
+        "none": "Keine Abteilung"
+      },
+      "shift": {
+        "none": "Keine Schicht"
+      },
+      "designation": {
+        "placeholderSelfService": "Zum Ändern an HR wenden",
+        "placeholderHint": "z. B. Senior Engineer"
+      },
+      "empCode": {
+        "placeholderSelfService": "Zum Festlegen an HR wenden",
+        "placeholderHint": "z. B. EMP001"
+      },
+      "saving": "Wird gespeichert...",
+      "saveChanges": "Änderungen speichern",
+      "reportingManagerFallback": "Benutzer #{{id}}",
+      "departmentFallback": "Abt. #{{id}}",
+      "shiftFallback": "Schicht #{{id}}"
+    },
+    "gender": {
+      "male": "Männlich",
+      "female": "Weiblich",
+      "other": "Divers"
+    },
+    "maritalStatus": {
+      "single": "Ledig",
+      "married": "Verheiratet",
+      "divorced": "Geschieden",
+      "widowed": "Verwitwet"
+    },
+    "customRoles": {
+      "label": "Benutzerdefinierte Rollen"
+    },
+    "additionalManagers": {
+      "label": "Weitere Vorgesetzte",
+      "description": "Mitverantwortliche mit demselben teambezogenen Zugriff wie der/die primäre Vorgesetzte. Wird von jeder teambezogenen Berechtigung berücksichtigt.",
+      "loading": "Wird geladen…",
+      "empty": "Keine weiteren Vorgesetzten",
+      "userFallback": "Benutzer #{{id}}",
+      "removeAria": "{{name}} entfernen",
+      "removeAriaFallback": "Vorgesetzte(r)",
+      "searchPlaceholderEmpty": "Nach Name oder E-Mail suchen…",
+      "searchPlaceholderMore": "Weitere hinzufügen…",
+      "noMatches": "Keine passenden Benutzer",
+      "allSelected": "Alle infrage kommenden Benutzer sind bereits ausgewählt",
+      "saving": "Wird gespeichert…",
+      "save": "Weitere Vorgesetzte speichern",
+      "unsaved": "nicht gespeicherte Änderungen",
+      "saved": "Gespeichert",
+      "selectedCount_one": "({{count}} ausgewählt)",
+      "selectedCount_other": "({{count}} ausgewählt)"
+    },
+    "apiError": {
+      "requestFailed": "Anfrage fehlgeschlagen"
+    },
+    "education": {
+      "add": "Ausbildung hinzufügen",
+      "editHeading": "Ausbildung bearbeiten",
+      "field": {
+        "degree": "Abschluss *",
+        "institution": "Bildungseinrichtung *",
+        "fieldOfStudy": "Fachrichtung",
+        "grade": "Note",
+        "startYear": "Startjahr",
+        "endYear": "Endjahr"
+      },
+      "degree": {
+        "placeholder": "z. B. B.Tech"
+      },
+      "institution": {
+        "placeholder": "z. B. IIT Delhi"
+      },
+      "validation": {
+        "required": "Abschluss und Bildungseinrichtung sind erforderlich",
+        "endYear": "Das Endjahr muss dem Startjahr entsprechen oder danach liegen"
+      },
+      "empty": "Noch keine Ausbildungsdaten hinzugefügt.",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "Ab {{year}}",
+      "gradeSuffix": " | Note: {{grade}}",
+      "deleteDialog": {
+        "title": "Diesen Ausbildungseintrag löschen?"
+      }
+    },
+    "common": {
+      "save": "Speichern",
+      "saving": "Wird gespeichert...",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "experience": {
+      "add": "Berufserfahrung hinzufügen",
+      "editHeading": "Berufserfahrung bearbeiten",
+      "field": {
+        "company": "Unternehmen *",
+        "designation": "Position *",
+        "startDate": "Startdatum *",
+        "endDate": "Enddatum",
+        "description": "Beschreibung"
+      },
+      "currentlyWorking": "Aktuell hier tätig",
+      "validation": {
+        "required": "Unternehmen, Position und Startdatum sind erforderlich"
+      },
+      "empty": "Noch keine Berufserfahrung hinzugefügt.",
+      "currentBadge": "Aktuell",
+      "present": "Heute",
+      "deleteDialog": {
+        "title": "Diesen Berufserfahrungseintrag löschen?"
+      }
+    },
+    "dependents": {
+      "add": "Angehörige(n) hinzufügen",
+      "editHeading": "Angehörige(n) bearbeiten",
+      "field": {
+        "name": "Name *",
+        "relationship": "Beziehung *",
+        "dateOfBirth": "Geburtsdatum",
+        "gender": "Geschlecht",
+        "nomineePercent": "Begünstigung %"
+      },
+      "relationship": {
+        "placeholder": "z. B. Ehepartner, Kind, Elternteil"
+      },
+      "isNominee": "Ist Begünstigte(r)",
+      "validation": {
+        "required": "Name und Beziehung sind erforderlich"
+      },
+      "empty": "Noch keine Angehörigen hinzugefügt.",
+      "column": {
+        "name": "Name",
+        "relationship": "Beziehung",
+        "dob": "Geb.-Datum",
+        "gender": "Geschlecht",
+        "nominee": "Begünstigte(r)",
+        "actions": "Aktionen"
+      },
+      "nomineeYes": "Ja",
+      "nomineeYesPercent": "Ja ({{percent}}%)",
+      "nomineeNo": "Nein",
+      "deleteDialog": {
+        "title": "Diese(n) Angehörige(n) löschen?"
+      }
+    },
+    "addresses": {
+      "add": "Adresse hinzufügen",
+      "editHeading": "Adresse bearbeiten",
+      "field": {
+        "type": "Typ *",
+        "country": "Land",
+        "line1": "Adresszeile 1 *",
+        "line2": "Adresszeile 2",
+        "city": "Stadt *",
+        "state": "Bundesland *",
+        "zipcode": "Postleitzahl *"
+      },
+      "type": {
+        "current": "Aktuell",
+        "permanent": "Ständig"
+      },
+      "validation": {
+        "required": "Adresszeile 1, Stadt, Bundesland und Postleitzahl sind erforderlich"
+      },
+      "empty": "Noch keine Adressen hinzugefügt.",
+      "deleteDialog": {
+        "title": "Diese Adresse löschen?"
+      }
+    },
+    "custom": {
+      "loading": "Benutzerdefinierte Felder werden geladen...",
+      "saveError": "Speichern der benutzerdefinierten Felder fehlgeschlagen",
+      "emptyTitle": "Für Mitarbeiter wurden noch keine benutzerdefinierten Felder definiert.",
+      "emptyHint": "HR-Administratoren können benutzerdefinierte Felder auf der Einstellungsseite für benutzerdefinierte Felder erstellen.",
+      "heading": "Benutzerdefinierte Felder",
+      "edit": "Bearbeiten",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "checkboxYes": "Ja",
+      "checkboxNo": "Nein",
+      "select": {
+        "placeholder": "Auswählen..."
+      },
+      "file": {
+        "placeholder": "Dateiverweis oder -pfad"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "Mitarbeiter importieren",
+      "subtitle": "Laden Sie eine CSV-Datei hoch, um Mitarbeiter per Massenimport in Ihre Organisation zu importieren."
+    },
+    "success": {
+      "title": "Import erfolgreich",
+      "importMore": "Weitere Mitarbeiter importieren",
+      "message_one": "{{count}} Mitarbeiter erfolgreich importiert.",
+      "message_other": "{{count}} Mitarbeiter erfolgreich importiert."
+    },
+    "dropzone": {
+      "instructions": "CSV-Datei hierher ziehen und ablegen oder zum Durchsuchen klicken",
+      "columnsHint": "Erforderliche Spalten: first_name, last_name, email. Optional: designation, department_name, emp_code, role, contact_number",
+      "chooseFile": "Datei auswählen",
+      "selectedFile": "Ausgewählt: {{name}}"
+    },
+    "loading": {
+      "parsing": "CSV wird eingelesen und validiert..."
+    },
+    "summary": {
+      "totalRows": "Zeilen gesamt",
+      "valid": "Gültig",
+      "errors": "Fehler"
+    },
+    "validTable": {
+      "col": {
+        "name": "Name",
+        "email": "E-Mail",
+        "empCode": "Mitarbeiter-Nr.",
+        "designation": "Position",
+        "department": "Abteilung",
+        "status": "Status"
+      },
+      "emptyCell": "-",
+      "title_one": "Gültige Mitarbeiter ({{count}})",
+      "title_other": "Gültige Mitarbeiter ({{count}})",
+      "andMore_one": "...und {{count}} weiterer",
+      "andMore_other": "...und {{count}} weitere"
+    },
+    "errorTable": {
+      "col": {
+        "row": "Zeile",
+        "name": "Name",
+        "email": "E-Mail",
+        "errors": "Fehler"
+      },
+      "title_one": "Fehler ({{count}})",
+      "title_other": "Fehler ({{count}})"
+    },
+    "import": {
+      "importing": "Wird importiert...",
+      "button_one": "{{count}} gültigen Mitarbeiter importieren",
+      "button_other": "{{count}} gültige Mitarbeiter importieren"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "Plattformeinstellungen",
+      "subtitle": "Aktuelle Plattformkonfiguration und Systeminformationen anzeigen."
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "Plattforminfo"
+      },
+      "email": {
+        "title": "E-Mail-/SMTP-Einstellungen"
+      },
+      "security": {
+        "title": "Sicherheitseinstellungen"
+      }
+    },
+    "fields": {
+      "serverVersion": "Serverversion",
+      "nodeVersion": "Node.js-Version",
+      "environment": "Umgebung",
+      "uptime": "Betriebszeit",
+      "smtpStatus": "SMTP-Status",
+      "smtpHost": "SMTP-Host",
+      "fromAddress": "Absenderadresse",
+      "bcryptRounds": "Bcrypt-Runden",
+      "accessTokenExpiry": "Ablauf des Access-Tokens",
+      "refreshTokenExpiry": "Ablauf des Refresh-Tokens",
+      "authRateLimit": "Auth-Ratenlimit",
+      "apiRateLimit": "API-Ratenlimit"
+    },
+    "smtpStatus": {
+      "configured": "Konfiguriert",
+      "notConfigured": "Nicht konfiguriert"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}} T {{hours}} Std. {{mins}} Min.",
+      "hoursMins": "{{hours}} Std. {{mins}} Min.",
+      "mins": "{{mins}} Min."
+    },
+    "footer": {
+      "autoRefresh": "Aktualisiert sich automatisch alle 30 Sekunden"
+    }
+  },
+  "settingsPage": {
+    "loading": "Einstellungen werden geladen...",
+    "header": {
+      "title": "Organisationseinstellungen",
+      "subtitle": "Verwalten Sie Ihre Unternehmensdaten, Abteilungen und Standorte."
+    },
+    "company": {
+      "title": "Unternehmensinformationen",
+      "editTitle": "Unternehmensinformationen bearbeiten"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "cancel": "Abbrechen",
+      "add": "Hinzufügen",
+      "saveChanges": "Änderungen speichern"
+    },
+    "fields": {
+      "name": "Name",
+      "legalName": "Offizieller Name",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "country": "Land",
+      "state": "Bundesland",
+      "city": "Stadt",
+      "timezone": "Zeitzone",
+      "language": "Sprache"
+    },
+    "form": {
+      "selectTimezone": "Zeitzone auswählen",
+      "selectTimezoneRequired": "Zeitzone auswählen *",
+      "selectCountry": "Land auswählen",
+      "noTimezone": "Keine Zeitzone"
+    },
+    "validation": {
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein (z. B. user@example.com).",
+      "city": "Die Stadt darf nur Buchstaben, Leerzeichen und Bindestriche enthalten.",
+      "state": "Das Bundesland darf nur Buchstaben, Leerzeichen und Bindestriche enthalten.",
+      "timezoneRequired": "Zeitzone ist erforderlich."
+    },
+    "errors": {
+      "updateOrg": "Aktualisierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "addDepartment": "Abteilung konnte nicht hinzugefügt werden.",
+      "renameDepartment": "Abteilung konnte nicht umbenannt werden.",
+      "deleteDepartment": "Abteilung konnte nicht gelöscht werden.",
+      "addLocation": "Standort konnte nicht hinzugefügt werden.",
+      "updateLocation": "Standort konnte nicht aktualisiert werden.",
+      "deleteLocation": "Standort konnte nicht gelöscht werden."
+    },
+    "departments": {
+      "namePlaceholder": "Abteilungsname",
+      "renameTitle": "Abteilung umbenennen",
+      "deleteTitle": "Abteilung löschen",
+      "title_one": "Abteilung ({{count}})",
+      "title_other": "Abteilungen ({{count}})"
+    },
+    "locations": {
+      "namePlaceholder": "Standortname",
+      "editTitle": "Standort bearbeiten",
+      "deleteTitle": "Standort löschen",
+      "title_one": "Standort ({{count}})",
+      "title_other": "Standorte ({{count}})"
+    },
+    "rowActions": {
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "Abonnements werden geladen...",
+    "header": {
+      "title": "Abonnements",
+      "subtitle": "Verwalten Sie Ihre Modul-Abonnements und Abrechnung."
+    },
+    "moduleFallback": "Modul",
+    "billing": {
+      "viewInvoicesLink": "Detaillierte Rechnungen und Zahlungsverlauf anzeigen",
+      "monthlyCostHeading": "Monatliche Kosten",
+      "perMonthSuffix": " /Monat"
+    },
+    "toast": {
+      "updated": "Abonnement erfolgreich aktualisiert",
+      "cancelled": "Abonnement gekündigt"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "Abonnement bearbeiten",
+        "cancel": "Abonnement kündigen"
+      },
+      "field": {
+        "plan": "Tarif",
+        "seats": "Lizenzen",
+        "pricePerSeat": "Preis/Lizenz",
+        "billingCycle": "Abrechnungszeitraum"
+      },
+      "seatsFull": "(voll)"
+    },
+    "trial": {
+      "expired": "Testphase abgelaufen — wird in Kürze in ein aktives Abonnement umgewandelt. Die erste Rechnung wird heute ausgestellt.",
+      "endsIn_one": "Testphase endet in {{count}} Tag ({{date}})",
+      "endsIn_other": "Testphase endet in {{count}} Tagen ({{date}})"
+    },
+    "cancelModal": {
+      "title": "Abonnement kündigen?",
+      "body": "Dadurch wird das Abonnement gekündigt und der Zugriff für alle zugewiesenen Lizenzen entzogen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "keep": "Behalten",
+      "confirm": "Ja, kündigen",
+      "confirming": "Wird gekündigt..."
+    },
+    "editModal": {
+      "title": "Abonnement bearbeiten",
+      "planTierLabel": "Tarifstufe",
+      "totalSeatsLabel": "Lizenzen insgesamt",
+      "currentlyUsing": "Derzeit werden {{seats}} Lizenzen genutzt",
+      "cannotReduceBelow": "Kann nicht unter {{seats}} reduziert werden (in Nutzung)",
+      "billingCycleLabel": "Abrechnungszeitraum",
+      "changesHeading": "Änderungen:",
+      "change": {
+        "plan": "Tarif: {{from}} → {{to}}",
+        "seats": "Lizenzen: {{from}} → {{to}}",
+        "cycle": "Zeitraum: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ Dadurch wird Ihre kostenlose Testphase beendet",
+        "reason": {
+          "seats": "Das Hinzufügen von Lizenzen",
+          "tier": "Das Upgrade Ihrer Tarifstufe",
+          "cycle": "Der Wechsel zu einem längeren Abrechnungszeitraum"
+        },
+        "body": " während der Testphase aktiviert das Abonnement sofort. Eine Rechnung für den ersten Abrechnungszeitraum wird erstellt und ist heute fällig."
+      },
+      "cancel": "Abbrechen",
+      "save": "Änderungen speichern",
+      "saving": "Wird gespeichert..."
+    },
+    "planTier": {
+      "basic": "Basic",
+      "professional": "Professional",
+      "enterprise": "Enterprise",
+      "free": "Free"
+    },
+    "billingCycle": {
+      "monthly": "Monatlich",
+      "quarterly": "Vierteljährlich",
+      "semi_annual": "Halbjährlich",
+      "annual": "Jährlich"
+    },
+    "status": {
+      "active": "Aktiv",
+      "trial": "Testphase",
+      "cancelled": "Gekündigt",
+      "expired": "Abgelaufen"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "Benutzerdefinierte Felder",
+      "subtitle": "Definieren Sie benutzerdefinierte Datenfelder für Mitarbeiter, Abteilungen und andere Entitäten"
+    },
+    "actions": {
+      "addField": "Feld hinzufügen"
+    },
+    "entityType": {
+      "employee": "Mitarbeiter",
+      "department": "Abteilung",
+      "location": "Standort",
+      "project": "Projekt",
+      "document": "Dokument"
+    },
+    "fieldType": {
+      "text": "Text",
+      "textarea": "Textbereich",
+      "number": "Zahl",
+      "decimal": "Dezimalzahl",
+      "date": "Datum",
+      "datetime": "Datum & Uhrzeit",
+      "dropdown": "Dropdown",
+      "multi_select": "Mehrfachauswahl",
+      "checkbox": "Kontrollkästchen",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "url": "URL",
+      "file": "Datei"
+    },
+    "form": {
+      "editTitle": "Feld bearbeiten",
+      "newTitle": "Neues Feld",
+      "hidePreview": "Vorschau ausblenden",
+      "preview": "Vorschau",
+      "fieldNameLabel": "Feldname *",
+      "fieldNamePlaceholder": "z. B. T-Shirt-Größe",
+      "fieldTypeLabel": "Feldtyp *",
+      "sectionLabel": "Abschnitt",
+      "sectionPlaceholder": "Benutzerdefinierte Felder",
+      "placeholderLabel": "Platzhalter",
+      "defaultValueLabel": "Standardwert",
+      "validationRegexLabel": "Validierungs-Regex",
+      "minValueLabel": "Mindestwert",
+      "maxValueLabel": "Höchstwert",
+      "helpTextLabel": "Hilfetext",
+      "helpTextPlaceholder": "Tooltip oder Beschreibung für Benutzer",
+      "optionsLabel": "Optionen",
+      "optionInputPlaceholder": "Option eingeben und Enter drücken",
+      "addOption": "Hinzufügen",
+      "requiredLabel": "Erforderlich",
+      "searchableLabel": "Durchsuchbar",
+      "fieldPreviewHeading": "Feldvorschau",
+      "saving": "Wird gespeichert...",
+      "updateField": "Feld aktualisieren",
+      "createField": "Feld erstellen",
+      "cancel": "Abbrechen"
+    },
+    "error": {
+      "saveFailed": "Feld konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
+    },
+    "list": {
+      "loading": "Felder werden geladen...",
+      "emptyTitle": "Keine benutzerdefinierten Felder für {{name}} definiert.",
+      "emptyHint": "Klicken Sie auf \"Feld hinzufügen\", um Ihr erstes benutzerdefiniertes Feld zu erstellen."
+    },
+    "table": {
+      "fieldName": "Feldname",
+      "key": "Schlüssel",
+      "type": "Typ",
+      "required": "Erforderlich",
+      "searchable": "Durchsuchbar",
+      "actions": "Aktionen",
+      "yes": "Ja",
+      "no": "Nein",
+      "editAria": "Feld bearbeiten",
+      "deleteAria": "Feld löschen",
+      "optionCount_one": "({{count}} Option)",
+      "optionCount_other": "({{count}} Optionen)"
+    },
+    "confirm": {
+      "titleNamed": "Feld \"{{name}}\" deaktivieren?",
+      "title": "Feld deaktivieren?",
+      "description": "Vorhandene Werte bleiben erhalten.",
+      "confirmText": "Deaktivieren"
+    },
+    "preview": {
+      "defaultFieldName": "Feldname",
+      "enterValue": "{{name}} eingeben",
+      "enterValueFallback": "Wert",
+      "selectOption": "{{name}} auswählen...",
+      "selectOptionFallback": "Option",
+      "noOptions": "Keine Optionen definiert",
+      "checkboxFallback": "Kontrollkästchen"
     }
   }
 }

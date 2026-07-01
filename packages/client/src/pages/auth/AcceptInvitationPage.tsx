@@ -12,6 +12,7 @@
 // =============================================================================
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -29,6 +30,7 @@ interface InvitationInfo {
 }
 
 export default function AcceptInvitationPage() {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const token = params.get("token") || "";
@@ -69,9 +71,7 @@ export default function AcceptInvitationPage() {
         const status = err?.response?.status;
         const msg = err?.response?.data?.error?.message || "";
         if (status === 404 || /invitation/i.test(msg)) {
-          setError(
-            "This invitation link is invalid, has already been used, or has expired. Please ask your administrator to resend the invitation.",
-          );
+          setError(t("acceptInvitation.errors.invalidToken"));
         }
       })
       .finally(() => setInfoLoading(false));
@@ -91,12 +91,12 @@ export default function AcceptInvitationPage() {
   const lastNameLocked = !!info?.is_existing_user && !!info.last_name;
 
   function validate(): string | null {
-    if (!firstName.trim()) return "First name is required.";
-    if (!lastName.trim()) return "Last name is required.";
+    if (!firstName.trim()) return t("acceptInvitation.validation.firstNameRequired");
+    if (!lastName.trim()) return t("acceptInvitation.validation.lastNameRequired");
     if (password.length < PASSWORD_MIN) {
-      return `Password must be at least ${PASSWORD_MIN} characters.`;
+      return t("acceptInvitation.validation.passwordTooShort", { count: PASSWORD_MIN });
     }
-    if (password !== confirm) return "Passwords do not match.";
+    if (password !== confirm) return t("acceptInvitation.validation.passwordsDoNotMatch");
     return null;
   }
 
@@ -124,7 +124,7 @@ export default function AcceptInvitationPage() {
         last_name: lastName.trim(),
         password,
       });
-      showToast("success", "Invitation accepted. You can now sign in.");
+      showToast("success", t("acceptInvitation.toast.success"));
       navigate("/login", { replace: true });
     } catch (err: any) {
       const status = err?.response?.status;
@@ -132,11 +132,9 @@ export default function AcceptInvitationPage() {
       // The backend returns NotFoundError with 'Invitation' or 'Invitation
       // has expired' messages. Translate those into something a user can act on.
       if (status === 404 || /invitation/i.test(msg || "")) {
-        setError(
-          "This invitation link is invalid, has already been used, or has expired. Please ask your administrator to resend the invitation.",
-        );
+        setError(t("acceptInvitation.errors.invalidToken"));
       } else {
-        setError(msg || "Could not accept invitation. Please try again.");
+        setError(msg || t("acceptInvitation.errors.genericFailure"));
       }
     } finally {
       setSubmitting(false);
@@ -150,10 +148,10 @@ export default function AcceptInvitationPage() {
       </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">Accept your invitation</h1>
+          <img src="/empcloud-logo.png" alt={t("acceptInvitation.logoAlt")} className="h-12 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900">{t("acceptInvitation.heading")}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Set your name and password to activate your EMP Cloud account.
+            {t("acceptInvitation.subheading")}
           </p>
         </div>
 
@@ -167,13 +165,13 @@ export default function AcceptInvitationPage() {
 
           {infoLoading && (
             <p className="text-xs text-gray-400 flex items-center gap-2">
-              <Loader2 className="h-3 w-3 animate-spin" /> Loading invitation…
+              <Loader2 className="h-3 w-3 animate-spin" /> {t("acceptInvitation.loadingInvitation")}
             </p>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.firstNameLabel")}</label>
               <input
                 type="text"
                 value={firstName}
@@ -182,11 +180,11 @@ export default function AcceptInvitationPage() {
                 autoFocus={!namesLocked}
                 disabled={namesLocked}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                placeholder="Ada"
+                placeholder={t("acceptInvitation.form.firstNamePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.lastNameLabel")}</label>
               <input
                 type="text"
                 value={lastName}
@@ -199,12 +197,14 @@ export default function AcceptInvitationPage() {
           </div>
           {namesLocked && (
             <p className="text-xs text-gray-500">
-              Your name is on file with {info?.org_name || "your organization"}. Contact your HR admin if it needs to change.
+              {t("acceptInvitation.form.namesLockedNote", {
+                org: info?.org_name || t("acceptInvitation.form.orgFallback"),
+              })}
             </p>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.passwordLabel")}</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -212,13 +212,13 @@ export default function AcceptInvitationPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
-                placeholder={`At least ${PASSWORD_MIN} characters`}
+                placeholder={t("acceptInvitation.form.passwordPlaceholder", { count: PASSWORD_MIN })}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? t("acceptInvitation.form.hidePasswordAria") : t("acceptInvitation.form.showPasswordAria")}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -226,14 +226,14 @@ export default function AcceptInvitationPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.confirmPasswordLabel")}</label>
             <input
               type={showPassword ? "text" : "password"}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
-              placeholder="Type the same password again"
+              placeholder={t("acceptInvitation.form.confirmPasswordPlaceholder")}
             />
           </div>
 
@@ -243,11 +243,11 @@ export default function AcceptInvitationPage() {
             className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg disabled:opacity-50"
           >
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-            {submitting ? "Activating account..." : "Accept invitation & sign in"}
+            {submitting ? t("acceptInvitation.form.submitting") : t("acceptInvitation.form.submit")}
           </button>
 
           <p className="text-xs text-gray-500 text-center">
-            Already have an account? <Link to="/login" className="text-brand-600 hover:underline">Sign in</Link>
+            {t("acceptInvitation.form.alreadyHaveAccount")} <Link to="/login" className="text-brand-600 hover:underline">{t("acceptInvitation.form.signInLink")}</Link>
           </p>
         </form>
       </div>

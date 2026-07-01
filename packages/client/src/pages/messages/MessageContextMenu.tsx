@@ -7,6 +7,7 @@
 // positions itself at the cursor and stays inside the viewport.
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Reply, Forward, Pencil, Trash2, Copy, Check, CheckSquare, Eye, Link as LinkIcon, Pin } from "lucide-react";
 import { QUICK_REACTIONS } from "./MessageReactions";
 
@@ -35,6 +36,7 @@ export function MessageContextMenu({
   actions: MessageMenuActions;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ left: x, top: y });
   const [copied, setCopied] = useState(false);
@@ -115,28 +117,32 @@ export function MessageContextMenu({
         ))}
       </div>
 
-      <Item icon={<Reply className="h-4 w-4" />} label="Reply" onClick={() => run(actions.onReply)} />
+      <Item
+        icon={<Reply className="h-4 w-4" />}
+        label={t("messageContextMenu.actions.reply")}
+        onClick={() => run(actions.onReply)}
+      />
       <Item
         icon={<Forward className="h-4 w-4" />}
-        label="Forward"
+        label={t("messageContextMenu.actions.forward")}
         onClick={() => run(actions.onForward)}
       />
       <Item
         icon={<CheckSquare className="h-4 w-4" />}
-        label="Select messages"
+        label={t("messageContextMenu.actions.selectMessages")}
         onClick={() => run(actions.onSelect)}
       />
       {actions.onInfo && (
         <Item
           icon={<Eye className="h-4 w-4" />}
-          label="Message info"
+          label={t("messageContextMenu.actions.messageInfo")}
           onClick={() => run(actions.onInfo)}
         />
       )}
       {actions.onCopy && (
         <Item
           icon={copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-          label={copied ? "Copied" : "Copy text"}
+          label={copied ? t("messageContextMenu.actions.copied") : t("messageContextMenu.actions.copyText")}
           onClick={() => {
             actions.onCopy?.();
             setCopied(true);
@@ -147,24 +153,28 @@ export function MessageContextMenu({
       {actions.onCopyLink && (
         <Item
           icon={<LinkIcon className="h-4 w-4" />}
-          label="Copy link"
+          label={t("messageContextMenu.actions.copyLink")}
           onClick={() => run(actions.onCopyLink)}
         />
       )}
       {actions.onTogglePin && (
         <Item
           icon={<Pin className="h-4 w-4" />}
-          label={actions.isPinned ? "Unpin" : "Pin"}
+          label={actions.isPinned ? t("messageContextMenu.actions.unpin") : t("messageContextMenu.actions.pin")}
           onClick={() => run(actions.onTogglePin)}
         />
       )}
       {actions.onEdit && (
-        <Item icon={<Pencil className="h-4 w-4" />} label="Edit" onClick={() => run(actions.onEdit)} />
+        <Item
+          icon={<Pencil className="h-4 w-4" />}
+          label={t("messageContextMenu.actions.edit")}
+          onClick={() => run(actions.onEdit)}
+        />
       )}
       {actions.onDelete && (
         <Item
           icon={<Trash2 className="h-4 w-4" />}
-          label="Delete"
+          label={t("messageContextMenu.actions.delete")}
           danger
           onClick={() => run(actions.onDelete)}
         />

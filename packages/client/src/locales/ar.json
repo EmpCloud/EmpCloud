@@ -426,7 +426,8 @@
     "markAllRead": "تعيين الكل كمقروء",
     "noNotifications": "لا توجد إشعارات بعد",
     "viewAll": "عرض الكل",
-    "review": "مراجعة"
+    "review": "مراجعة",
+    "cancelInvitationTooltip": "إلغاء هذه الدعوة وإزالة المستخدم غير المُفعّل"
   },
   "auth": {
     "signIn": "تسجيل الدخول",
@@ -5076,6 +5077,1031 @@
     "endAssignment": {
       "title": "إنهاء هذا التعيين؟",
       "confirmText": "إنهاء التعيين"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "رابط الدعوة هذا غير صالح أو سبق استخدامه أو انتهت صلاحيته. يُرجى الطلب من المسؤول إعادة إرسال الدعوة.",
+      "genericFailure": "تعذّر قبول الدعوة. يُرجى المحاولة مرة أخرى."
+    },
+    "validation": {
+      "firstNameRequired": "الاسم الأول مطلوب.",
+      "lastNameRequired": "اسم العائلة مطلوب.",
+      "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
+      "passwordTooShort_zero": "يجب ألا تقل كلمة المرور عن {{count}} حرف.",
+      "passwordTooShort_one": "يجب ألا تقل كلمة المرور عن {{count}} حرف.",
+      "passwordTooShort_two": "يجب ألا تقل كلمة المرور عن {{count}} حرفين.",
+      "passwordTooShort_few": "يجب ألا تقل كلمة المرور عن {{count}} أحرف.",
+      "passwordTooShort_many": "يجب ألا تقل كلمة المرور عن {{count}} حرفًا.",
+      "passwordTooShort_other": "يجب ألا تقل كلمة المرور عن {{count}} حرف."
+    },
+    "toast": {
+      "success": "تم قبول الدعوة. يمكنك الآن تسجيل الدخول."
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "اقبل دعوتك",
+    "subheading": "عيّن اسمك وكلمة المرور لتفعيل حسابك في EMP Cloud.",
+    "loadingInvitation": "جارٍ تحميل الدعوة…",
+    "form": {
+      "firstNameLabel": "الاسم الأول",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "اسم العائلة",
+      "namesLockedNote": "اسمك مسجّل لدى {{org}}. تواصل مع مسؤول الموارد البشرية إذا كان بحاجة إلى تغيير.",
+      "orgFallback": "مؤسستك",
+      "passwordLabel": "كلمة المرور",
+      "hidePasswordAria": "إخفاء كلمة المرور",
+      "showPasswordAria": "إظهار كلمة المرور",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أعد كتابة كلمة المرور نفسها",
+      "submitting": "جارٍ تفعيل الحساب...",
+      "submit": "قبول الدعوة وتسجيل الدخول",
+      "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+      "signInLink": "تسجيل الدخول",
+      "passwordPlaceholder_zero": "{{count}} حرف على الأقل",
+      "passwordPlaceholder_one": "{{count}} حرف على الأقل",
+      "passwordPlaceholder_two": "{{count}} حرفين على الأقل",
+      "passwordPlaceholder_few": "{{count}} أحرف على الأقل",
+      "passwordPlaceholder_many": "{{count}} حرفًا على الأقل",
+      "passwordPlaceholder_other": "{{count}} حرف على الأقل"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "مكتوم",
+      "groupCreated": "تم إنشاء المجموعة",
+      "noMessagesYet": "لا توجد رسائل بعد",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "يجب أن تكون صورة الملف الشخصي صورة.",
+      "photoUpdated": "تم تحديث صورة الملف الشخصي.",
+      "photoUploadFailed": "تعذّر رفع الصورة.",
+      "statusUpdateFailed": "تعذّر تحديث حالتك. يرجى المحاولة مرة أخرى.",
+      "openNotesFailed": "تعذّر فتح ملاحظاتك."
+    },
+    "profile": {
+      "yourProfileTitle": "ملفك الشخصي",
+      "changePhotoTitle": "تغيير صورة ملفك الشخصي",
+      "youFallback": "أنت",
+      "statusLabel": "الحالة",
+      "statusPlaceholder": "تعيين حالة…",
+      "save": "حفظ",
+      "setStatusTitle": "تعيين حالتك",
+      "messageYourself": "راسل نفسك (ملاحظات)"
+    },
+    "search": {
+      "placeholder": "البحث في المحادثات والرسائل…",
+      "messagesHeader": "الرسائل",
+      "noMessageMatch": "لا توجد رسائل تطابق “{{query}}”.",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "محادثة جديدة",
+      "backToChats": "← العودة إلى المحادثات",
+      "archived": "المؤرشفة",
+      "loadError": "فشل تحميل المحادثات. يرجى المحاولة مرة أخرى.",
+      "noSearchMatch": "لا توجد محادثات تطابق \"{{query}}\".",
+      "noConversationsTitle": "لا توجد محادثات بعد",
+      "noConversationsHint": "ابدأ محادثة باستخدام زر \"محادثة جديدة\".",
+      "archivedWithCount_zero": "المؤرشفة ({{count}})",
+      "archivedWithCount_one": "المؤرشفة ({{count}})",
+      "archivedWithCount_two": "المؤرشفة ({{count}})",
+      "archivedWithCount_few": "المؤرشفة ({{count}})",
+      "archivedWithCount_many": "المؤرشفة ({{count}})",
+      "archivedWithCount_other": "المؤرشفة ({{count}})"
+    },
+    "empty": {
+      "yourMessagesTitle": "رسائلك",
+      "yourMessagesHint": "اختر محادثة على اليمين، أو ابدأ محادثة جديدة لبدء المراسلة."
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "أنشئ حساب EMP Cloud الخاص بك",
+      "subtitle": "قم بإعداد مؤسستك في دقائق"
+    },
+    "error": {
+      "registrationFailed": "فشل التسجيل"
+    },
+    "section": {
+      "organization": "المؤسسة",
+      "adminAccount": "حساب المسؤول"
+    },
+    "field": {
+      "companyName": {
+        "label": "اسم الشركة",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "الدولة"
+      },
+      "state": {
+        "label": "المنطقة/المحافظة"
+      },
+      "firstName": {
+        "label": "الاسم الأول"
+      },
+      "lastName": {
+        "label": "اسم العائلة"
+      },
+      "email": {
+        "label": "البريد الإلكتروني",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "كلمة المرور",
+        "placeholder": "8 أحرف على الأقل، حرف كبير وصغير ورقم ورمز خاص"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "إخفاء كلمة المرور",
+      "showAriaLabel": "إظهار كلمة المرور"
+    },
+    "submit": {
+      "creating": "جارٍ إنشاء الحساب...",
+      "default": "إنشاء حساب"
+    },
+    "footer": {
+      "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "رد",
+      "forward": "إعادة توجيه",
+      "selectMessages": "تحديد الرسائل",
+      "messageInfo": "معلومات الرسالة",
+      "copyText": "نسخ النص",
+      "copied": "تم النسخ",
+      "copyLink": "نسخ الرابط",
+      "pin": "تثبيت",
+      "unpin": "إلغاء التثبيت",
+      "edit": "تعديل",
+      "delete": "حذف"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "معلومات الرسالة"
+    },
+    "actions": {
+      "close": "إغلاق"
+    },
+    "state": {
+      "loading": "جارٍ التحميل…",
+      "error": "تعذّر تحميل معلومات الرسالة.",
+      "noOtherMembers": "لا يوجد أعضاء آخرون."
+    },
+    "section": {
+      "readBy": "قرأها",
+      "deliveredTo": "تم التسليم إلى",
+      "pending": "قيد الانتظار"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "تم تفعيل تنبيهات سطح المكتب — سيتم إعلامك بالرسائل الجديدة.",
+      "blocked": "التنبيهات محظورة. يمكنك إعادة تفعيلها من إعدادات الموقع في متصفحك."
+    },
+    "confirmation": {
+      "title": "تنبيهات سطح المكتب مفعّلة",
+      "body": "سيتم إعلامك هنا عند وصول رسالة جديدة."
+    },
+    "description": "احصل على إشعارات بالرسائل الجديدة حتى أثناء عملك في تطبيق آخر.",
+    "button": {
+      "enabling": "جارٍ التفعيل…",
+      "enable": "تفعيل التنبيهات",
+      "dismissAriaLabel": "إغلاق"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "فتح {{name}}"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "جارٍ الإرسال",
+      "sent": "تم الإرسال",
+      "delivered": "تم التسليم",
+      "read": "تمت القراءة"
+    },
+    "failed": {
+      "title": "فشل الإرسال — اضغط لإعادة المحاولة",
+      "ariaLabel": "فشل الإرسال، اضغط لإعادة المحاولة",
+      "retry": "إعادة المحاولة"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "الوجوه الضاحكة",
+      "gestures": "الإيماءات",
+      "objects": "الأشياء"
+    },
+    "button": {
+      "reactWithAriaLabel": "تفاعل بـ {{emoji}}"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "محادثة جديدة"
+    },
+    "actions": {
+      "close": "إغلاق",
+      "createGroup": "إنشاء مجموعة"
+    },
+    "mode": {
+      "direct": "مباشرة",
+      "group": "مجموعة"
+    },
+    "group": {
+      "namePlaceholder": "اسم المجموعة",
+      "enterNameHint": "أدخل اسمًا للمجموعة للمتابعة",
+      "selectedNeedMore_zero": "{{count}} محدد · يلزم شخصان على الأقل",
+      "selectedNeedMore_one": "{{count}} محدد · يلزم شخصان على الأقل",
+      "selectedNeedMore_two": "{{count}} محددان · يلزم شخصان على الأقل",
+      "selectedNeedMore_few": "{{count}} محدداً · يلزم شخصان على الأقل",
+      "selectedNeedMore_many": "{{count}} محددًا · يلزم شخصان على الأقل",
+      "selectedNeedMore_other": "{{count}} محدد · يلزم شخصان على الأقل",
+      "selectedCount_zero": "{{count}} محدد",
+      "selectedCount_one": "{{count}} محدد",
+      "selectedCount_two": "{{count}} محددان",
+      "selectedCount_few": "{{count}} محدداً",
+      "selectedCount_many": "{{count}} محددًا",
+      "selectedCount_other": "{{count}} محدد"
+    },
+    "search": {
+      "placeholder": "البحث عن الموظفين…"
+    },
+    "list": {
+      "loadError": "تعذّر تحميل الموظفين.",
+      "emptySearch": "لا يوجد موظفون مطابقون لبحثك.",
+      "empty": "لم يتم العثور على موظفين."
+    },
+    "direct": {
+      "starting": "جارٍ بدء المحادثة…"
+    },
+    "toast": {
+      "directError": "تعذّر بدء تلك المحادثة.",
+      "groupError": "تعذّر إنشاء المجموعة."
+    },
+    "validation": {
+      "groupNameRequired": "يرجى إدخال اسم للمجموعة.",
+      "minTwoMembers": "حدّد شخصين على الأقل للمجموعة."
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "تعذّرت إعادة التوجيه. يُرجى المحاولة مرة أخرى.",
+      "forwardSuccess_zero": "تمت إعادة توجيه {{count}} رسالة إلى {{chatCount}} محادثة.",
+      "forwardSuccess_one": "تمت إعادة توجيه {{count}} رسالة إلى {{chatCount}} محادثة.",
+      "forwardSuccess_two": "تمت إعادة توجيه {{count}} رسالة إلى {{chatCount}} محادثة.",
+      "forwardSuccess_few": "تمت إعادة توجيه {{count}} رسائل إلى {{chatCount}} محادثة.",
+      "forwardSuccess_many": "تمت إعادة توجيه {{count}} رسالة إلى {{chatCount}} محادثة.",
+      "forwardSuccess_other": "تمت إعادة توجيه {{count}} رسالة إلى {{chatCount}} محادثة."
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "رسالة",
+      "multiple_zero": "{{count}} رسالة",
+      "multiple_one": "{{count}} رسالة",
+      "multiple_two": "{{count}} رسالة",
+      "multiple_few": "{{count}} رسائل",
+      "multiple_many": "{{count}} رسالة",
+      "multiple_other": "{{count}} رسالة"
+    },
+    "heading": {
+      "title": "إعادة التوجيه إلى…"
+    },
+    "section": {
+      "forwarding": "جارٍ إعادة التوجيه",
+      "chats": "المحادثات",
+      "people": "الأشخاص"
+    },
+    "search": {
+      "placeholder": "ابحث في المحادثات والأشخاص…"
+    },
+    "state": {
+      "loading": "جارٍ التحميل…",
+      "noMatches": "لا توجد نتائج مطابقة لـ \"{{query}}\".",
+      "noTargets": "لا يوجد أحد لإعادة التوجيه إليه."
+    },
+    "button": {
+      "forwarding": "جارٍ إعادة التوجيه…",
+      "forward": "إعادة توجيه"
+    },
+    "footer": {
+      "selectedCount_zero": "{{count}} عناصر محددة",
+      "selectedCount_one": "{{count}} عناصر محددة",
+      "selectedCount_two": "{{count}} عناصر محددة",
+      "selectedCount_few": "{{count}} عناصر محددة",
+      "selectedCount_many": "{{count}} عنصرًا محددًا",
+      "selectedCount_other": "{{count}} عنصرًا محددًا"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "إضافة أعضاء",
+      "close": "إغلاق"
+    },
+    "search": {
+      "placeholder": "البحث عن موظفين…"
+    },
+    "list": {
+      "loading": "جارٍ التحميل…",
+      "noMatches": "لا توجد نتائج مطابقة لـ \"{{search}}\".",
+      "allInGroup": "الجميع موجودون بالفعل في هذه المجموعة."
+    },
+    "footer": {
+      "add": "إضافة",
+      "adding": "جارٍ الإضافة…",
+      "selectedCount_zero": "تم تحديد {{count}} أعضاء",
+      "selectedCount_one": "تم تحديد {{count}} أعضاء",
+      "selectedCount_two": "تم تحديد {{count}} أعضاء",
+      "selectedCount_few": "تم تحديد {{count}} أعضاء",
+      "selectedCount_many": "تم تحديد {{count}} عضوًا",
+      "selectedCount_other": "تم تحديد {{count}} عضو"
+    },
+    "toast": {
+      "addFailed": "تعذّرت إضافة الأعضاء. يُرجى المحاولة مرة أخرى.",
+      "added_zero": "تمت إضافة {{count}} أعضاء.",
+      "added_one": "تمت إضافة {{count}} أعضاء.",
+      "added_two": "تمت إضافة {{count}} أعضاء.",
+      "added_few": "تمت إضافة {{count}} أعضاء.",
+      "added_many": "تمت إضافة {{count}} عضوًا.",
+      "added_other": "تمت إضافة {{count}} عضو."
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "شخصي",
+      "education": "التعليم",
+      "experience": "الخبرة",
+      "dependents": "المعالون",
+      "addresses": "العناوين",
+      "custom": "الحقول المخصصة"
+    },
+    "invalid": {
+      "title": "موظف غير صالح",
+      "description": "معرّف الموظف في الرابط مفقود أو غير صالح.",
+      "backToDirectory": "← العودة إلى دليل الموظفين"
+    },
+    "accessDenied": {
+      "title": "تم رفض الوصول",
+      "description": "ليس لديك إذن لعرض هذا الملف الشخصي.",
+      "backToDashboard": "← العودة إلى لوحة التحكم"
+    },
+    "loading": "جارٍ تحميل الملف الشخصي...",
+    "notFound": "لم يتم العثور على الموظف",
+    "header": {
+      "backToDirectory": "العودة إلى الدليل",
+      "biometricPhotoTooltip": "تتم إدارة الصورة عبر التسجيل في جهاز البصمة الحيوية",
+      "biometricFaceAlt": "صورة الوجه الحيوية",
+      "profilePhotoAlt": "الملف الشخصي",
+      "noDesignation": "لا يوجد مسمى وظيفي",
+      "biometricHint": "الصورة من التسجيل الحيوي — تتم إدارتها عبر جهاز البصمة.",
+      "removingPhoto": "جارٍ الإزالة...",
+      "removePhoto": "إزالة الصورة",
+      "empCode": "رمز الموظف: {{code}}",
+      "joined": "تاريخ الالتحاق: {{date}}",
+      "cancel": "إلغاء",
+      "editMyInfo": "تعديل معلوماتي",
+      "editProfile": "تعديل الملف الشخصي"
+    },
+    "removePhotoDialog": {
+      "title": "إزالة صورة ملفك الشخصي؟",
+      "description": "ستظهر الأحرف الأولى مرة أخرى.",
+      "confirm": "إزالة الصورة"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "يجب أن يتكون رقم PAN من 5 أحرف + 4 أرقام + حرف واحد (مثال: ABCDE1234F)",
+      "aadhar": "يجب أن يتكون رقم Aadhaar من 12 رقمًا",
+      "uan": "يجب أن يتكون رقم UAN من 12 رقمًا",
+      "passport": "يجب أن يتكون رقم جواز السفر من حرف واحد + 7 أرقام (مثال: A1234567)"
+    },
+    "personal": {
+      "saveError": "فشل الحفظ",
+      "selfServiceNotice": "يمكنك تعديل معلوماتك الشخصية ومعلومات جهة الاتصال في حالات الطوارئ. تواصل مع الموارد البشرية لتحديث الحقول الإدارية.",
+      "field": {
+        "personalEmail": "البريد الإلكتروني الشخصي",
+        "contactNumber": "رقم الاتصال",
+        "gender": "الجنس",
+        "dateOfBirth": "تاريخ الميلاد",
+        "bloodGroup": "فصيلة الدم",
+        "maritalStatus": "الحالة الاجتماعية",
+        "nationality": "الجنسية",
+        "aadharNumber": "رقم Aadhaar",
+        "panNumber": "رقم PAN",
+        "uanNumber": "رقم UAN",
+        "passportNumber": "رقم جواز السفر",
+        "passportExpiry": "انتهاء صلاحية جواز السفر",
+        "visaStatus": "حالة التأشيرة",
+        "visaExpiry": "انتهاء صلاحية التأشيرة",
+        "emergencyContact": "جهة الاتصال في حالات الطوارئ",
+        "emergencyPhone": "هاتف الطوارئ",
+        "emergencyRelation": "صلة القرابة في حالات الطوارئ",
+        "noticePeriodDays": "فترة الإشعار (بالأيام)",
+        "reportingManager": "المدير المباشر",
+        "department": "القسم",
+        "shift": "الوردية",
+        "designation": "المسمى الوظيفي",
+        "employeeCode": "رمز الموظف",
+        "probationStart": "بداية فترة الاختبار",
+        "probationEnd": "نهاية فترة الاختبار",
+        "confirmationDate": "تاريخ التثبيت"
+      },
+      "select": {
+        "placeholder": "اختر"
+      },
+      "aadhar": {
+        "placeholder": "12 رقمًا"
+      },
+      "uan": {
+        "placeholder": "12 رقمًا"
+      },
+      "reportingManager": {
+        "none": "بدون مدير",
+        "option": "{{name}} ({{role}}) - {{email}}"
+      },
+      "department": {
+        "none": "بدون قسم"
+      },
+      "shift": {
+        "none": "بدون وردية"
+      },
+      "designation": {
+        "placeholderSelfService": "تواصل مع الموارد البشرية للتغيير",
+        "placeholderHint": "مثال: مهندس أول"
+      },
+      "empCode": {
+        "placeholderSelfService": "تواصل مع الموارد البشرية للتعيين",
+        "placeholderHint": "مثال: EMP001"
+      },
+      "saving": "جارٍ الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "reportingManagerFallback": "المستخدم رقم {{id}}",
+      "departmentFallback": "القسم رقم {{id}}",
+      "shiftFallback": "الوردية رقم {{id}}"
+    },
+    "gender": {
+      "male": "ذكر",
+      "female": "أنثى",
+      "other": "آخر"
+    },
+    "maritalStatus": {
+      "single": "أعزب",
+      "married": "متزوج",
+      "divorced": "مطلّق",
+      "widowed": "أرمل"
+    },
+    "customRoles": {
+      "label": "الأدوار المخصصة"
+    },
+    "additionalManagers": {
+      "label": "مديرون إضافيون",
+      "description": "مديرون مشاركون بنفس نطاق الوصول إلى الفريق كالمدير المباشر الأساسي. تُحترم من قبل كل إذن مرتبط بنطاق الفريق.",
+      "loading": "جارٍ التحميل…",
+      "empty": "لا يوجد مديرون إضافيون",
+      "userFallback": "المستخدم رقم {{id}}",
+      "removeAria": "إزالة {{name}}",
+      "removeAriaFallback": "المدير",
+      "searchPlaceholderEmpty": "ابحث بالاسم أو البريد الإلكتروني…",
+      "searchPlaceholderMore": "إضافة آخر…",
+      "noMatches": "لا يوجد مستخدمون مطابقون",
+      "allSelected": "تم تحديد جميع المستخدمين المؤهلين بالفعل",
+      "saving": "جارٍ الحفظ…",
+      "save": "حفظ المديرين الإضافيين",
+      "unsaved": "تغييرات غير محفوظة",
+      "saved": "تم الحفظ",
+      "selectedCount_zero": "({{count}} محدد)",
+      "selectedCount_one": "({{count}} محدد)",
+      "selectedCount_two": "({{count}} محددان)",
+      "selectedCount_few": "({{count}} محددين)",
+      "selectedCount_many": "({{count}} محددًا)",
+      "selectedCount_other": "({{count}} محدد)"
+    },
+    "apiError": {
+      "requestFailed": "فشل الطلب"
+    },
+    "education": {
+      "add": "إضافة تعليم",
+      "editHeading": "تعديل التعليم",
+      "field": {
+        "degree": "الدرجة العلمية *",
+        "institution": "المؤسسة التعليمية *",
+        "fieldOfStudy": "مجال الدراسة",
+        "grade": "التقدير",
+        "startYear": "سنة البداية",
+        "endYear": "سنة النهاية"
+      },
+      "degree": {
+        "placeholder": "مثال: بكالوريوس هندسة"
+      },
+      "institution": {
+        "placeholder": "مثال: جامعة الملك سعود"
+      },
+      "validation": {
+        "required": "الدرجة العلمية والمؤسسة التعليمية مطلوبان",
+        "endYear": "يجب أن تكون سنة النهاية في سنة البداية أو بعدها"
+      },
+      "empty": "لم تتم إضافة أي سجلات تعليمية بعد.",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "من {{year}}",
+      "gradeSuffix": " | التقدير: {{grade}}",
+      "deleteDialog": {
+        "title": "حذف هذا السجل التعليمي؟"
+      }
+    },
+    "common": {
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "cancel": "إلغاء",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "experience": {
+      "add": "إضافة خبرة",
+      "editHeading": "تعديل الخبرة",
+      "field": {
+        "company": "الشركة *",
+        "designation": "المسمى الوظيفي *",
+        "startDate": "تاريخ البداية *",
+        "endDate": "تاريخ النهاية",
+        "description": "الوصف"
+      },
+      "currentlyWorking": "أعمل هنا حاليًا",
+      "validation": {
+        "required": "الشركة والمسمى الوظيفي وتاريخ البداية مطلوبة"
+      },
+      "empty": "لم تتم إضافة أي سجلات خبرة عملية بعد.",
+      "currentBadge": "حالي",
+      "present": "حتى الآن",
+      "deleteDialog": {
+        "title": "حذف سجل الخبرة هذا؟"
+      }
+    },
+    "dependents": {
+      "add": "إضافة معال",
+      "editHeading": "تعديل المعال",
+      "field": {
+        "name": "الاسم *",
+        "relationship": "صلة القرابة *",
+        "dateOfBirth": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "nomineePercent": "نسبة المستفيد %"
+      },
+      "relationship": {
+        "placeholder": "مثال: زوج/زوجة، ابن، والد"
+      },
+      "isNominee": "مستفيد (وريث)",
+      "validation": {
+        "required": "الاسم وصلة القرابة مطلوبان"
+      },
+      "empty": "لم تتم إضافة أي معالين بعد.",
+      "column": {
+        "name": "الاسم",
+        "relationship": "صلة القرابة",
+        "dob": "تاريخ الميلاد",
+        "gender": "الجنس",
+        "nominee": "المستفيد",
+        "actions": "الإجراءات"
+      },
+      "nomineeYes": "نعم",
+      "nomineeYesPercent": "نعم ({{percent}}%)",
+      "nomineeNo": "لا",
+      "deleteDialog": {
+        "title": "حذف هذا المعال؟"
+      }
+    },
+    "addresses": {
+      "add": "إضافة عنوان",
+      "editHeading": "تعديل العنوان",
+      "field": {
+        "type": "النوع *",
+        "country": "الدولة",
+        "line1": "العنوان، السطر 1 *",
+        "line2": "العنوان، السطر 2",
+        "city": "المدينة *",
+        "state": "المنطقة/الولاية *",
+        "zipcode": "الرمز البريدي *"
+      },
+      "type": {
+        "current": "الحالي",
+        "permanent": "الدائم"
+      },
+      "validation": {
+        "required": "العنوان السطر 1 والمدينة والمحافظة والرمز البريدي مطلوبة"
+      },
+      "empty": "لم تتم إضافة أي عناوين بعد.",
+      "deleteDialog": {
+        "title": "حذف هذا العنوان؟"
+      }
+    },
+    "custom": {
+      "loading": "جارٍ تحميل الحقول المخصصة...",
+      "saveError": "فشل حفظ الحقول المخصصة",
+      "emptyTitle": "لم يتم تعريف أي حقول مخصصة للموظفين بعد.",
+      "emptyHint": "يمكن لمسؤولي الموارد البشرية إنشاء حقول مخصصة من صفحة إعدادات الحقول المخصصة.",
+      "heading": "الحقول المخصصة",
+      "edit": "تعديل",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "checkboxYes": "نعم",
+      "checkboxNo": "لا",
+      "select": {
+        "placeholder": "اختر..."
+      },
+      "file": {
+        "placeholder": "مرجع الملف أو المسار"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "استيراد الموظفين",
+      "subtitle": "قم بتحميل ملف CSV لاستيراد الموظفين بشكل مجمّع إلى مؤسستك."
+    },
+    "success": {
+      "title": "تم الاستيراد بنجاح",
+      "importMore": "استيراد المزيد من الموظفين",
+      "message_zero": "تم استيراد {{count}} موظفين بنجاح.",
+      "message_one": "تم استيراد {{count}} موظفين بنجاح.",
+      "message_two": "تم استيراد {{count}} موظفين بنجاح.",
+      "message_few": "تم استيراد {{count}} موظفين بنجاح.",
+      "message_many": "تم استيراد {{count}} موظفًا بنجاح.",
+      "message_other": "تم استيراد {{count}} موظف بنجاح."
+    },
+    "dropzone": {
+      "instructions": "اسحب ملف CSV وأفلته هنا، أو انقر للتصفح",
+      "columnsHint": "الأعمدة المطلوبة: first_name، last_name، email. الاختيارية: designation، department_name، emp_code، role، contact_number",
+      "chooseFile": "اختيار ملف",
+      "selectedFile": "المحدد: {{name}}"
+    },
+    "loading": {
+      "parsing": "جارٍ تحليل ملف CSV والتحقق منه..."
+    },
+    "summary": {
+      "totalRows": "إجمالي الصفوف",
+      "valid": "صالحة",
+      "errors": "أخطاء"
+    },
+    "validTable": {
+      "col": {
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "empCode": "رمز الموظف",
+        "designation": "المسمى الوظيفي",
+        "department": "القسم",
+        "status": "الحالة"
+      },
+      "emptyCell": "-",
+      "title_zero": "الموظفون الصالحون ({{count}})",
+      "title_one": "الموظفون الصالحون ({{count}})",
+      "title_two": "الموظفون الصالحون ({{count}})",
+      "title_few": "الموظفون الصالحون ({{count}})",
+      "title_many": "الموظفون الصالحون ({{count}})",
+      "title_other": "الموظفون الصالحون ({{count}})",
+      "andMore_zero": "...و{{count}} غير ذلك",
+      "andMore_one": "...و{{count}} غير ذلك",
+      "andMore_two": "...و{{count}} غير ذلك",
+      "andMore_few": "...و{{count}} آخرين",
+      "andMore_many": "...و{{count}} آخر",
+      "andMore_other": "...و{{count}} آخر"
+    },
+    "errorTable": {
+      "col": {
+        "row": "الصف",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "errors": "الأخطاء"
+      },
+      "title_zero": "الأخطاء ({{count}})",
+      "title_one": "الأخطاء ({{count}})",
+      "title_two": "الأخطاء ({{count}})",
+      "title_few": "الأخطاء ({{count}})",
+      "title_many": "الأخطاء ({{count}})",
+      "title_other": "الأخطاء ({{count}})"
+    },
+    "import": {
+      "importing": "جارٍ الاستيراد...",
+      "button_zero": "استيراد {{count}} موظف صالح",
+      "button_one": "استيراد {{count}} موظف صالح",
+      "button_two": "استيراد {{count}} موظف صالح",
+      "button_few": "استيراد {{count}} موظفين صالحين",
+      "button_many": "استيراد {{count}} موظفًا صالحًا",
+      "button_other": "استيراد {{count}} موظف صالح"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "إعدادات المنصة",
+      "subtitle": "عرض التكوين الحالي للمنصة ومعلومات النظام."
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "معلومات المنصة"
+      },
+      "email": {
+        "title": "إعدادات البريد الإلكتروني / SMTP"
+      },
+      "security": {
+        "title": "إعدادات الأمان"
+      }
+    },
+    "fields": {
+      "serverVersion": "إصدار الخادم",
+      "nodeVersion": "إصدار Node.js",
+      "environment": "البيئة",
+      "uptime": "مدة التشغيل",
+      "smtpStatus": "حالة SMTP",
+      "smtpHost": "مضيف SMTP",
+      "fromAddress": "عنوان المُرسِل",
+      "bcryptRounds": "جولات Bcrypt",
+      "accessTokenExpiry": "انتهاء صلاحية رمز الوصول",
+      "refreshTokenExpiry": "انتهاء صلاحية رمز التحديث",
+      "authRateLimit": "حد معدل المصادقة",
+      "apiRateLimit": "حد معدل واجهة API"
+    },
+    "smtpStatus": {
+      "configured": "مُهيّأ",
+      "notConfigured": "غير مُهيّأ"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}} ي {{hours}} س {{mins}} د",
+      "hoursMins": "{{hours}} س {{mins}} د",
+      "mins": "{{mins}} د"
+    },
+    "footer": {
+      "autoRefresh": "يتم التحديث تلقائيًا كل 30 ثانية"
+    }
+  },
+  "settingsPage": {
+    "loading": "جارٍ تحميل الإعدادات...",
+    "header": {
+      "title": "إعدادات المؤسسة",
+      "subtitle": "إدارة تفاصيل شركتك وأقسامها ومواقعها."
+    },
+    "company": {
+      "title": "معلومات الشركة",
+      "editTitle": "تعديل معلومات الشركة"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "add": "إضافة",
+      "saveChanges": "حفظ التغييرات"
+    },
+    "fields": {
+      "name": "الاسم",
+      "legalName": "الاسم القانوني",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "country": "الدولة",
+      "state": "الولاية",
+      "city": "المدينة",
+      "timezone": "المنطقة الزمنية",
+      "language": "اللغة"
+    },
+    "form": {
+      "selectTimezone": "اختر المنطقة الزمنية",
+      "selectTimezoneRequired": "اختر المنطقة الزمنية *",
+      "selectCountry": "اختر الدولة",
+      "noTimezone": "بدون منطقة زمنية"
+    },
+    "validation": {
+      "email": "يُرجى إدخال عنوان بريد إلكتروني صالح (مثال: user@example.com).",
+      "city": "يجب أن تحتوي المدينة على أحرف ومسافات وشرطات فقط.",
+      "state": "يجب أن تحتوي الولاية على أحرف ومسافات وشرطات فقط.",
+      "timezoneRequired": "المنطقة الزمنية مطلوبة."
+    },
+    "errors": {
+      "updateOrg": "فشل التحديث. يُرجى المحاولة مرة أخرى.",
+      "addDepartment": "فشلت إضافة القسم.",
+      "renameDepartment": "فشلت إعادة تسمية القسم.",
+      "deleteDepartment": "فشل حذف القسم.",
+      "addLocation": "فشلت إضافة الموقع.",
+      "updateLocation": "فشل تحديث الموقع.",
+      "deleteLocation": "فشل حذف الموقع."
+    },
+    "departments": {
+      "namePlaceholder": "اسم القسم",
+      "renameTitle": "إعادة تسمية القسم",
+      "deleteTitle": "حذف القسم",
+      "title_zero": "الأقسام ({{count}})",
+      "title_one": "الأقسام ({{count}})",
+      "title_two": "الأقسام ({{count}})",
+      "title_few": "الأقسام ({{count}})",
+      "title_many": "الأقسام ({{count}})",
+      "title_other": "الأقسام ({{count}})"
+    },
+    "locations": {
+      "namePlaceholder": "اسم الموقع",
+      "editTitle": "تعديل الموقع",
+      "deleteTitle": "حذف الموقع",
+      "title_zero": "المواقع ({{count}})",
+      "title_one": "المواقع ({{count}})",
+      "title_two": "المواقع ({{count}})",
+      "title_few": "المواقع ({{count}})",
+      "title_many": "المواقع ({{count}})",
+      "title_other": "المواقع ({{count}})"
+    },
+    "rowActions": {
+      "save": "حفظ",
+      "cancel": "إلغاء"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "جارٍ تحميل الاشتراكات...",
+    "header": {
+      "title": "الاشتراكات",
+      "subtitle": "إدارة اشتراكات الوحدات والفوترة."
+    },
+    "moduleFallback": "وحدة",
+    "billing": {
+      "viewInvoicesLink": "عرض الفواتير التفصيلية وسجل المدفوعات",
+      "monthlyCostHeading": "التكلفة الشهرية",
+      "perMonthSuffix": " /شهر"
+    },
+    "toast": {
+      "updated": "تم تحديث الاشتراك بنجاح",
+      "cancelled": "تم إلغاء الاشتراك"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "تعديل الاشتراك",
+        "cancel": "إلغاء الاشتراك"
+      },
+      "field": {
+        "plan": "الخطة",
+        "seats": "المقاعد",
+        "pricePerSeat": "السعر/المقعد",
+        "billingCycle": "دورة الفوترة"
+      },
+      "seatsFull": "(مكتملة)"
+    },
+    "trial": {
+      "expired": "انتهت الفترة التجريبية — سيتم التحويل إلى اشتراك نشط قريبًا. سيتم إصدار أول فاتورة اليوم.",
+      "endsIn_zero": "تنتهي الفترة التجريبية خلال {{count}} يوم ({{date}})",
+      "endsIn_one": "تنتهي الفترة التجريبية خلال {{count}} يوم ({{date}})",
+      "endsIn_two": "تنتهي الفترة التجريبية خلال {{count}} يومين ({{date}})",
+      "endsIn_few": "تنتهي الفترة التجريبية خلال {{count}} أيام ({{date}})",
+      "endsIn_many": "تنتهي الفترة التجريبية خلال {{count}} يومًا ({{date}})",
+      "endsIn_other": "تنتهي الفترة التجريبية خلال {{count}} يوم ({{date}})"
+    },
+    "cancelModal": {
+      "title": "إلغاء الاشتراك؟",
+      "body": "سيؤدي هذا إلى إلغاء الاشتراك وإلغاء الوصول لجميع المقاعد المخصصة. لا يمكن التراجع عن هذا الإجراء.",
+      "keep": "احتفاظ",
+      "confirm": "نعم، إلغاء",
+      "confirming": "جارٍ الإلغاء..."
+    },
+    "editModal": {
+      "title": "تعديل الاشتراك",
+      "planTierLabel": "مستوى الخطة",
+      "totalSeatsLabel": "إجمالي المقاعد",
+      "currentlyUsing": "قيد الاستخدام حاليًا {{seats}} مقعد",
+      "cannotReduceBelow": "لا يمكن التقليل إلى أقل من {{seats}} (قيد الاستخدام)",
+      "billingCycleLabel": "دورة الفوترة",
+      "changesHeading": "التغييرات:",
+      "change": {
+        "plan": "الخطة: {{from}} → {{to}}",
+        "seats": "المقاعد: {{from}} → {{to}}",
+        "cycle": "الدورة: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ سيؤدي هذا إلى إنهاء فترتك التجريبية المجانية",
+        "reason": {
+          "seats": "إضافة مقاعد",
+          "tier": "ترقية مستوى خطتك",
+          "cycle": "التبديل إلى دورة فوترة أطول"
+        },
+        "body": " خلال الفترة التجريبية سيؤدي إلى تفعيل الاشتراك فورًا. سيتم إنشاء فاتورة لأول فترة فوترة وتكون مستحقة اليوم."
+      },
+      "cancel": "إلغاء",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ..."
+    },
+    "planTier": {
+      "basic": "أساسي",
+      "professional": "احترافي",
+      "enterprise": "مؤسسي",
+      "free": "مجاني"
+    },
+    "billingCycle": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "semi_annual": "نصف سنوي",
+      "annual": "سنوي"
+    },
+    "status": {
+      "active": "نشط",
+      "trial": "تجريبي",
+      "cancelled": "ملغى",
+      "expired": "منتهٍ"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "الحقول المخصصة",
+      "subtitle": "حدد حقول بيانات مخصصة للموظفين والأقسام والكيانات الأخرى"
+    },
+    "actions": {
+      "addField": "إضافة حقل"
+    },
+    "entityType": {
+      "employee": "موظف",
+      "department": "قسم",
+      "location": "موقع",
+      "project": "مشروع",
+      "document": "مستند"
+    },
+    "fieldType": {
+      "text": "نص",
+      "textarea": "منطقة نص",
+      "number": "رقم",
+      "decimal": "عدد عشري",
+      "date": "تاريخ",
+      "datetime": "التاريخ والوقت",
+      "dropdown": "قائمة منسدلة",
+      "multi_select": "تحديد متعدد",
+      "checkbox": "مربع اختيار",
+      "email": "بريد إلكتروني",
+      "phone": "هاتف",
+      "url": "رابط",
+      "file": "ملف"
+    },
+    "form": {
+      "editTitle": "تعديل الحقل",
+      "newTitle": "حقل جديد",
+      "hidePreview": "إخفاء المعاينة",
+      "preview": "معاينة",
+      "fieldNameLabel": "اسم الحقل *",
+      "fieldNamePlaceholder": "مثال: مقاس القميص",
+      "fieldTypeLabel": "نوع الحقل *",
+      "sectionLabel": "القسم",
+      "sectionPlaceholder": "الحقول المخصصة",
+      "placeholderLabel": "نص توضيحي",
+      "defaultValueLabel": "القيمة الافتراضية",
+      "validationRegexLabel": "نمط التحقق (Regex)",
+      "minValueLabel": "الحد الأدنى للقيمة",
+      "maxValueLabel": "الحد الأقصى للقيمة",
+      "helpTextLabel": "نص المساعدة",
+      "helpTextPlaceholder": "تلميح أو وصف يظهر للمستخدمين",
+      "optionsLabel": "الخيارات",
+      "optionInputPlaceholder": "اكتب الخيار واضغط Enter",
+      "addOption": "إضافة",
+      "requiredLabel": "مطلوب",
+      "searchableLabel": "قابل للبحث",
+      "fieldPreviewHeading": "معاينة الحقل",
+      "saving": "جارٍ الحفظ...",
+      "updateField": "تحديث الحقل",
+      "createField": "إنشاء الحقل",
+      "cancel": "إلغاء"
+    },
+    "error": {
+      "saveFailed": "تعذّر حفظ الحقل. يرجى المحاولة مرة أخرى."
+    },
+    "list": {
+      "loading": "جارٍ تحميل الحقول...",
+      "emptyTitle": "لا توجد حقول مخصصة معرّفة لـ {{name}}.",
+      "emptyHint": "انقر على \"إضافة حقل\" لإنشاء أول حقل مخصص."
+    },
+    "table": {
+      "fieldName": "اسم الحقل",
+      "key": "المفتاح",
+      "type": "النوع",
+      "required": "مطلوب",
+      "searchable": "قابل للبحث",
+      "actions": "الإجراءات",
+      "yes": "نعم",
+      "no": "لا",
+      "editAria": "تعديل الحقل",
+      "deleteAria": "حذف الحقل",
+      "optionCount_zero": "({{count}} خيار)",
+      "optionCount_one": "({{count}} خيار)",
+      "optionCount_two": "({{count}} خيار)",
+      "optionCount_few": "({{count}} خيارات)",
+      "optionCount_many": "({{count}} خيارًا)",
+      "optionCount_other": "({{count}} خيار)"
+    },
+    "confirm": {
+      "titleNamed": "إلغاء تنشيط الحقل \"{{name}}\"؟",
+      "title": "إلغاء تنشيط الحقل؟",
+      "description": "سيتم الاحتفاظ بالقيم الحالية.",
+      "confirmText": "إلغاء التنشيط"
+    },
+    "preview": {
+      "defaultFieldName": "اسم الحقل",
+      "enterValue": "أدخل {{name}}",
+      "enterValueFallback": "القيمة",
+      "selectOption": "اختر {{name}}...",
+      "selectOptionFallback": "خيار",
+      "noOptions": "لا توجد خيارات معرّفة",
+      "checkboxFallback": "مربع اختيار"
     }
   }
 }

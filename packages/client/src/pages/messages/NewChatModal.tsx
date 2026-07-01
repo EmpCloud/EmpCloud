@@ -10,6 +10,7 @@
 // debounced on search. The current user is excluded.
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ConversationSummary } from "@empcloud/shared";
 import api from "@/api/client";
@@ -105,6 +106,7 @@ export default function NewChatModal({
   onClose: () => void;
   onCreated: (conv: ConversationSummary) => void;
 }) {
+  const { t } = useTranslation();
   const me = useAuthStore((s) => s.user);
   const [mode, setMode] = useState<"direct" | "group">("direct");
   const [rawSearch, setRawSearch] = useState("");
@@ -115,8 +117,8 @@ export default function NewChatModal({
 
   // Debounce the search input (300ms) before it hits the API.
   useEffect(() => {
-    const t = setTimeout(() => setSearch(rawSearch.trim()), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setSearch(rawSearch.trim()), 300);
+    return () => clearTimeout(timer);
   }, [rawSearch]);
 
   // Close on Escape.
@@ -144,7 +146,7 @@ export default function NewChatModal({
       const res = await api.post("/chat/conversations/direct", { user_id: userId });
       onCreated(res.data.data as ConversationSummary);
     } catch {
-      showToast("error", "Couldn't start that conversation.");
+      showToast("error", t("newChatModal.toast.directError"));
       setSubmitting(false);
     }
   };
@@ -152,11 +154,11 @@ export default function NewChatModal({
   const createGroup = async () => {
     const name = groupName.trim();
     if (!name) {
-      showToast("error", "Please give the group a name.");
+      showToast("error", t("newChatModal.validation.groupNameRequired"));
       return;
     }
     if (selectedIds.length < 2) {
-      showToast("error", "Select at least 2 people for a group.");
+      showToast("error", t("newChatModal.validation.minTwoMembers"));
       return;
     }
     if (submitting) return;
@@ -168,7 +170,7 @@ export default function NewChatModal({
       });
       onCreated(res.data.data as ConversationSummary);
     } catch {
-      showToast("error", "Couldn't create the group.");
+      showToast("error", t("newChatModal.toast.groupError"));
       setSubmitting(false);
     }
   };
@@ -184,11 +186,11 @@ export default function NewChatModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
-          <h2 className="text-lg font-bold text-gray-900">New chat</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t("newChatModal.header.title")}</h2>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
-            aria-label="Close"
+            aria-label={t("newChatModal.actions.close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -205,7 +207,7 @@ export default function NewChatModal({
                   mode === m ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                {m === "group" ? "Group" : "Direct"}
+                {m === "group" ? t("newChatModal.mode.group") : t("newChatModal.mode.direct")}
               </button>
             ))}
           </div>
@@ -218,7 +220,7 @@ export default function NewChatModal({
               type="text"
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              placeholder="Group name"
+              placeholder={t("newChatModal.group.namePlaceholder")}
               maxLength={120}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
             />
@@ -233,7 +235,7 @@ export default function NewChatModal({
               type="text"
               value={rawSearch}
               onChange={(e) => setRawSearch(e.target.value)}
-              placeholder="Search employees…"
+              placeholder={t("newChatModal.search.placeholder")}
               autoFocus
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
             />
@@ -248,11 +250,11 @@ export default function NewChatModal({
             </div>
           ) : isError ? (
             <div className="py-10 text-center text-sm text-red-500">
-              Failed to load employees.
+              {t("newChatModal.list.loadError")}
             </div>
           ) : list.length === 0 ? (
             <div className="py-10 text-center text-sm text-gray-400">
-              {search ? "No employees match your search." : "No employees found."}
+              {search ? t("newChatModal.list.emptySearch") : t("newChatModal.list.empty")}
             </div>
           ) : (
             <div className="space-y-0.5">
@@ -276,11 +278,13 @@ export default function NewChatModal({
           <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
             <span className="text-xs text-gray-500">
               {!groupName.trim() ? (
-                <span className="text-amber-600">Enter a group name to continue</span>
+                <span className="text-amber-600">{t("newChatModal.group.enterNameHint")}</span>
               ) : selectedIds.length < 2 ? (
-                <span className="text-amber-600">{selectedIds.length} selected · need ≥ 2</span>
+                <span className="text-amber-600">
+                  {t("newChatModal.group.selectedNeedMore", { count: selectedIds.length })}
+                </span>
               ) : (
-                `${selectedIds.length} selected`
+                t("newChatModal.group.selectedCount", { count: selectedIds.length })
               )}
             </span>
             <button
@@ -289,14 +293,14 @@ export default function NewChatModal({
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
-              Create group
+              {t("newChatModal.actions.createGroup")}
             </button>
           </div>
         )}
 
         {mode === "direct" && submitting && (
           <div className="px-5 py-3 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
-            <Loader2 className="h-4 w-4 animate-spin" /> Starting conversation…
+            <Loader2 className="h-4 w-4 animate-spin" /> {t("newChatModal.direct.starting")}
           </div>
         )}
       </div>

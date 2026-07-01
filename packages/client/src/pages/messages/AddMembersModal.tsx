@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
@@ -36,6 +37,7 @@ export function AddMembersModal({
   onClose: () => void;
   onAdded: () => void;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [saving, setSaving] = useState(false);
@@ -67,10 +69,10 @@ export function AddMembersModal({
       await api.post(`/chat/conversations/${conversationId}/members`, {
         member_ids: [...selected],
       });
-      showToast("success", `Added ${selected.size} member${selected.size > 1 ? "s" : ""}.`);
+      showToast("success", t("addMembersModal.toast.added", { count: selected.size }));
       onAdded();
     } catch {
-      showToast("error", "Couldn't add members. Please try again.");
+      showToast("error", t("addMembersModal.toast.addFailed"));
     } finally {
       setSaving(false);
     }
@@ -83,8 +85,12 @@ export function AddMembersModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900">Add members</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
+          <h2 className="text-base font-semibold text-gray-900">{t("addMembersModal.header.title")}</h2>
+          <button
+            onClick={onClose}
+            aria-label={t("addMembersModal.header.close")}
+            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -96,7 +102,7 @@ export function AddMembersModal({
               autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search employees…"
+              placeholder={t("addMembersModal.search.placeholder")}
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             />
           </div>
@@ -104,10 +110,12 @@ export function AddMembersModal({
 
         <div className="flex-1 overflow-y-auto p-2">
           {isLoading ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">Loading…</p>
+            <p className="px-3 py-6 text-center text-sm text-gray-400">{t("addMembersModal.list.loading")}</p>
           ) : candidates.length === 0 ? (
             <p className="px-3 py-6 text-center text-sm text-gray-400">
-              {search ? `No matches for "${search}".` : "Everyone is already in this group."}
+              {search
+                ? t("addMembersModal.list.noMatches", { search })
+                : t("addMembersModal.list.allInGroup")}
             </p>
           ) : (
             candidates.map((emp) => {
@@ -149,14 +157,16 @@ export function AddMembersModal({
         </div>
 
         <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-100">
-          <span className="text-xs text-gray-400">{selected.size} selected</span>
+          <span className="text-xs text-gray-400">
+            {t("addMembersModal.footer.selectedCount", { count: selected.size })}
+          </span>
           <button
             onClick={handleAdd}
             disabled={selected.size === 0 || saving}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
             <UserPlus className="h-4 w-4" />
-            {saving ? "Adding…" : "Add"}
+            {saving ? t("addMembersModal.footer.adding") : t("addMembersModal.footer.add")}
           </button>
         </div>
       </div>

@@ -7,10 +7,11 @@
 // shipping a multi-hundred-KB emoji library.
 
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
-const CATEGORIES: { label: string; emojis: string[] }[] = [
+const CATEGORIES: { labelKey: string; emojis: string[] }[] = [
   {
-    label: "Smileys",
+    labelKey: "category.smileys",
     emojis: [
       "😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃",
       "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😗", "😚", "😙",
@@ -19,7 +20,7 @@ const CATEGORIES: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Gestures",
+    labelKey: "category.gestures",
     emojis: [
       "👍", "👎", "👌", "🤌", "✌️", "🤞", "🤟", "🤙", "👈", "👉",
       "👆", "👇", "☝️", "👋", "🤚", "🖐️", "✋", "🙌", "👏", "🙏",
@@ -27,7 +28,7 @@ const CATEGORIES: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Objects",
+    labelKey: "category.objects",
     emojis: [
       "✅", "❌", "⚠️", "❓", "❗", "💡", "📌", "📎", "📁", "📅",
       "⏰", "📞", "💬", "📝", "📊", "💼", "🚀", "⭐", "🏆", "☕",
@@ -42,6 +43,7 @@ export function EmojiPicker({
   onPick: (emoji: string) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
 
   // Close on outside click / Escape.
@@ -66,16 +68,16 @@ export function EmojiPicker({
       className="absolute bottom-full right-0 mb-2 w-72 max-h-72 overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-xl z-30 p-2"
     >
       {CATEGORIES.map((cat) => (
-        <div key={cat.label} className="mb-1">
+        <div key={cat.labelKey} className="mb-1">
           <p className="px-1.5 pt-1.5 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-            {cat.label}
+            {t(`emojiPicker.${cat.labelKey}`)}
           </p>
           <div className="grid grid-cols-8 gap-0.5">
             {cat.emojis.map((e) => (
               <button
                 key={e}
                 type="button"
-                aria-label={`React with ${e}`}
+                aria-label={t("emojiPicker.button.reactWithAriaLabel", { emoji: e })}
                 // onMouseDown (with preventDefault) keeps the textarea focused for
                 // mouse use; onKeyDown handles keyboard activation (Enter/Space)
                 // since the preventDefault would otherwise swallow the click.
