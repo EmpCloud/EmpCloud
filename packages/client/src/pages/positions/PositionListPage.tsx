@@ -23,6 +23,7 @@ export default function PositionListPage() {
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
   const [status, setStatus] = useState<string>(initialStatus);
+  const [criticalOnly, setCriticalOnly] = useState(false);
   const [employmentType, setEmploymentType] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
@@ -71,7 +72,17 @@ export default function PositionListPage() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["positions", { page, search, department_id: departmentId, status, employment_type: employmentType }],
+    queryKey: [
+      "positions",
+      {
+        page,
+        search,
+        department_id: departmentId,
+        status,
+        is_critical: criticalOnly,
+        employment_type: employmentType,
+      },
+    ],
     queryFn: () =>
       api
         .get("/positions", {
@@ -81,6 +92,7 @@ export default function PositionListPage() {
             ...(search ? { search } : {}),
             ...(departmentId ? { department_id: departmentId } : {}),
             ...(status ? { status } : {}),
+            ...(criticalOnly ? { is_critical: true } : {}),
             ...(employmentType ? { employment_type: employmentType } : {}),
           },
         })
@@ -325,6 +337,15 @@ export default function PositionListPage() {
           <option value="contract">{tx("contract")}</option>
           <option value="intern">{tx("intern")}</option>
         </select>
+        <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 cursor-pointer whitespace-nowrap">
+          <input
+            type="checkbox"
+            checked={criticalOnly}
+            onChange={(e) => { setCriticalOnly(e.target.checked); setPage(1); }}
+            className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+          />
+          {tx("criticalOnly")}
+        </label>
       </div>
 
       {/* Table */}

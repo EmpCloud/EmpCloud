@@ -1759,6 +1759,7 @@
       "searchPlaceholder": "Search by title or code...",
       "allDepartments": "All Departments",
       "allStatuses": "All Statuses",
+      "criticalOnly": "Critical only",
       "allTypes": "All Types",
       "statusActive": "Active",
       "statusFilled": "Filled",
