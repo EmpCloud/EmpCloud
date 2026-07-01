@@ -16,6 +16,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { showToast } from "@/components/ui/Toast";
+import { useTranslation } from "react-i18next";
 
 const MOOD_EMOJI: Record<string, string> = {
   great: "😄",
@@ -43,6 +44,7 @@ const GOAL_TYPES = [
 ];
 
 export default function MyWellnessPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showGoalForm, setShowGoalForm] = useState(false);
   // #1458 — filter tab for enrolled programs: active (default) vs completed.
@@ -127,7 +129,7 @@ export default function MyWellnessPage() {
   const handleCreateGoal = (e: React.FormEvent) => {
     e.preventDefault();
     if (goalForm.start_date && goalForm.end_date && goalForm.end_date < goalForm.start_date) {
-      showToast("error", "End date cannot be before the start date.");
+      showToast("error", t("myWellness.goalModal.errorEndBeforeStart"));
       return;
     }
     createGoalMutation.mutate({
@@ -145,8 +147,8 @@ export default function MyWellnessPage() {
     return (
       <div className="max-w-7xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Wellness</h1>
-          <p className="text-gray-500 mt-1">Track your health journey and personal goals</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("myWellness.header.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("myWellness.header.subtitle")}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -170,11 +172,11 @@ export default function MyWellnessPage() {
     return (
       <div className="max-w-7xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Wellness</h1>
-          <p className="text-gray-500 mt-1">Track your health journey and personal goals</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("myWellness.header.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("myWellness.header.subtitle")}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-          <p className="text-gray-500">Failed to load wellness data. Please try again later.</p>
+          <p className="text-gray-500">{t("myWellness.error.loadFailed")}</p>
         </div>
       </div>
     );
@@ -189,14 +191,14 @@ export default function MyWellnessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Wellness</h1>
-          <p className="text-gray-500 mt-1">Track your health journey and personal goals</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("myWellness.header.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("myWellness.header.subtitle")}</p>
         </div>
         <Link
           to="/wellness/check-in"
           className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
         >
-          Daily Check-in
+          {t("myWellness.header.dailyCheckIn")}
         </Link>
       </div>
 
@@ -205,29 +207,29 @@ export default function MyWellnessPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
           <Flame className="h-6 w-6 text-orange-500 mx-auto mb-1" />
           <p className="text-2xl font-bold text-gray-900">{s.checkin_streak || 0}</p>
-          <p className="text-xs text-gray-500">Day Streak</p>
+          <p className="text-xs text-gray-500">{t("myWellness.stats.dayStreak")}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
           <Heart className="h-6 w-6 text-red-500 mx-auto mb-1" />
           <p className="text-2xl font-bold text-gray-900">{s.total_checkins || 0}</p>
-          <p className="text-xs text-gray-500">Total Check-ins</p>
+          <p className="text-xs text-gray-500">{t("myWellness.stats.totalCheckIns")}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
           <Zap className="h-6 w-6 text-yellow-500 mx-auto mb-1" />
           <p className="text-2xl font-bold text-gray-900">{s.avg_energy_level || "---"}</p>
-          <p className="text-xs text-gray-500">Avg Energy</p>
+          <p className="text-xs text-gray-500">{t("myWellness.stats.avgEnergy")}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
           <Trophy className="h-6 w-6 text-amber-500 mx-auto mb-1" />
           <p className="text-2xl font-bold text-gray-900">{s.completed_goals_count || 0}</p>
-          <p className="text-xs text-gray-500">Goals Done</p>
+          <p className="text-xs text-gray-500">{t("myWellness.stats.goalsDone")}</p>
         </div>
       </div>
 
       {/* Mood Trend */}
       {s.mood_trend && s.mood_trend.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Mood Trend (Last 14 Days)</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("myWellness.moodTrend.title")}</h3>
           <div className="flex gap-2 overflow-x-auto pb-2">
             {[...s.mood_trend].reverse().map((day: any, idx: number) => (
               <div
@@ -238,7 +240,7 @@ export default function MyWellnessPage() {
                 style={{ minWidth: "64px" }}
               >
                 <span className="text-2xl">{MOOD_EMOJI[day.mood] || "?"}</span>
-                <span className="text-xs font-medium capitalize">{day.mood}</span>
+                <span className="text-xs font-medium capitalize">{t(`myWellness.mood.${day.mood}`, { defaultValue: day.mood })}</span>
                 <span className="text-xs text-gray-500">
                   {new Date(day.date).toLocaleDateString("en-US", {
                     month: "short",
@@ -257,18 +259,18 @@ export default function MyWellnessPage() {
       {/* Goals */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">My Goals</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t("myWellness.goals.title")}</h3>
           <button
             onClick={() => setShowGoalForm(true)}
             className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
           >
-            <Plus className="h-4 w-4" /> Add Goal
+            <Plus className="h-4 w-4" /> {t("myWellness.goals.addGoal")}
           </button>
         </div>
 
         {goals.length === 0 ? (
           <p className="text-sm text-gray-400 text-center py-4">
-            No goals yet. Create your first wellness goal!
+            {t("myWellness.goals.empty")}
           </p>
         ) : (
           <div className="space-y-4">
@@ -292,7 +294,7 @@ export default function MyWellnessPage() {
                             : "bg-blue-100 text-blue-700"
                         }`}
                       >
-                        {goal.status}
+                        {t(`myWellness.goalStatus.${goal.status}`, { defaultValue: goal.status })}
                       </span>
                     </div>
                     {goal.status === "active" && (
@@ -305,7 +307,7 @@ export default function MyWellnessPage() {
                           className="text-xs px-2 py-1 bg-brand-50 text-brand-600 rounded hover:bg-brand-100"
                         >
                           <ArrowUpRight className="h-3 w-3 inline mr-1" />
-                          Update
+                          {t("myWellness.goals.update")}
                         </button>
                       </div>
                     )}
@@ -324,8 +326,8 @@ export default function MyWellnessPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
-                    <span className="capitalize">{goal.frequency}</span>
-                    <span>{goal.goal_type.replace("_", " ")}</span>
+                    <span className="capitalize">{t(`myWellness.goalFrequency.${goal.frequency}`, { defaultValue: goal.frequency })}</span>
+                    <span>{t(`myWellness.goalType.${goal.goal_type}`, { defaultValue: goal.goal_type.replace("_", " ") })}</span>
                   </div>
                 </div>
               );
@@ -350,7 +352,7 @@ export default function MyWellnessPage() {
         return (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">My Programs</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("myWellness.programs.title")}</h3>
             <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setProgramsTab("active")}
@@ -360,7 +362,7 @@ export default function MyWellnessPage() {
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                Active ({activeCount})
+                {t("myWellness.programs.tabActive", { count: activeCount })}
               </button>
               <button
                 onClick={() => setProgramsTab("completed")}
@@ -370,15 +372,15 @@ export default function MyWellnessPage() {
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                Completed ({completedCount})
+                {t("myWellness.programs.tabCompleted", { count: completedCount })}
               </button>
             </div>
           </div>
           {visiblePrograms.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-4">
               {programsTab === "completed"
-                ? "No completed programs yet. Keep going!"
-                : "No active programs."}
+                ? t("myWellness.programs.emptyCompleted")
+                : t("myWellness.programs.emptyActive")}
             </p>
           ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -388,7 +390,9 @@ export default function MyWellnessPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">{ep.title}</h4>
                     <p className="text-xs text-gray-500 capitalize">
-                      {ep.program_type.replace("_", " ")}
+                      {t(`wellnessDashboard.programType.${ep.program_type}`, {
+                        defaultValue: ep.program_type.replace("_", " "),
+                      })}
                     </p>
                   </div>
                   <span
@@ -398,7 +402,7 @@ export default function MyWellnessPage() {
                         : "bg-blue-100 text-blue-700"
                     }`}
                   >
-                    {ep.enrollment_status}
+                    {t(`myWellness.programStatus.${ep.enrollment_status}`, { defaultValue: ep.enrollment_status })}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 mt-3">
@@ -416,11 +420,11 @@ export default function MyWellnessPage() {
                     disabled={completeProgramMutation.isPending}
                     className="mt-3 flex items-center gap-1 text-xs text-green-600 hover:text-green-700 font-medium"
                   >
-                    <CheckCircle className="h-3 w-3" /> Mark Complete
+                    <CheckCircle className="h-3 w-3" /> {t("myWellness.programs.markComplete")}
                   </button>
                 )}
                 {ep.points_reward > 0 && (
-                  <p className="text-xs text-amber-600 mt-1">+{ep.points_reward} points on completion</p>
+                  <p className="text-xs text-amber-600 mt-1">{t("myWellness.programs.pointsReward", { points: ep.points_reward })}</p>
                 )}
               </div>
             ))}
@@ -433,16 +437,16 @@ export default function MyWellnessPage() {
       {/* Recent Check-ins */}
       {checkIns.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Check-ins</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("myWellness.checkIns.title")}</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 text-gray-500 font-medium">Date</th>
-                  <th className="text-center py-2 text-gray-500 font-medium">Mood</th>
-                  <th className="text-center py-2 text-gray-500 font-medium">Energy</th>
-                  <th className="text-center py-2 text-gray-500 font-medium">Sleep</th>
-                  <th className="text-center py-2 text-gray-500 font-medium">Exercise</th>
+                  <th className="text-left py-2 text-gray-500 font-medium">{t("myWellness.checkIns.colDate")}</th>
+                  <th className="text-center py-2 text-gray-500 font-medium">{t("myWellness.checkIns.colMood")}</th>
+                  <th className="text-center py-2 text-gray-500 font-medium">{t("myWellness.checkIns.colEnergy")}</th>
+                  <th className="text-center py-2 text-gray-500 font-medium">{t("myWellness.checkIns.colSleep")}</th>
+                  <th className="text-center py-2 text-gray-500 font-medium">{t("myWellness.checkIns.colExercise")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -502,61 +506,61 @@ export default function MyWellnessPage() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowGoalForm(false)} />
           <div className="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Create Wellness Goal</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("myWellness.goalModal.title")}</h2>
               <button onClick={() => setShowGoalForm(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleCreateGoal} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelTitle")}</label>
                 <input
                   type="text"
                   value={goalForm.title}
                   onChange={(e) => setGoalForm({ ...goalForm, title: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  placeholder="e.g., Walk 10,000 steps daily"
+                  placeholder={t("myWellness.goalModal.placeholderTitle")}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Goal Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelGoalType")}</label>
                   <select
                     value={goalForm.goal_type}
                     onChange={(e) => {
-                      const t = GOAL_TYPES.find((g) => g.value === e.target.value);
+                      const gt = GOAL_TYPES.find((g) => g.value === e.target.value);
                       setGoalForm({
                         ...goalForm,
                         goal_type: e.target.value,
-                        unit: t?.unit || goalForm.unit,
+                        unit: gt?.unit || goalForm.unit,
                       });
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
                   >
-                    {GOAL_TYPES.map((t) => (
-                      <option key={t.value} value={t.value}>
-                        {t.label}
+                    {GOAL_TYPES.map((gt) => (
+                      <option key={gt.value} value={gt.value}>
+                        {t(`myWellness.goalType.${gt.value}`, { defaultValue: gt.label })}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelFrequency")}</label>
                   <select
                     value={goalForm.frequency}
                     onChange={(e) => setGoalForm({ ...goalForm, frequency: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
                   >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
+                    <option value="daily">{t("myWellness.goalFrequency.daily")}</option>
+                    <option value="weekly">{t("myWellness.goalFrequency.weekly")}</option>
+                    <option value="monthly">{t("myWellness.goalFrequency.monthly")}</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Target Value *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelTargetValue")}</label>
                   <input
                     type="number"
                     value={goalForm.target_value}
@@ -564,24 +568,24 @@ export default function MyWellnessPage() {
                     required
                     min="1"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    placeholder="e.g., 10000"
+                    placeholder={t("myWellness.goalModal.placeholderTargetValue")}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Unit *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelUnit")}</label>
                   <input
                     type="text"
                     value={goalForm.unit}
                     onChange={(e) => setGoalForm({ ...goalForm, unit: e.target.value })}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    placeholder="e.g., steps, minutes"
+                    placeholder={t("myWellness.goalModal.placeholderUnit")}
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelStartDate")}</label>
                   <input
                     type="date"
                     value={goalForm.start_date}
@@ -591,7 +595,7 @@ export default function MyWellnessPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("myWellness.goalModal.labelEndDate")}</label>
                   <input
                     type="date"
                     value={goalForm.end_date}
@@ -603,7 +607,7 @@ export default function MyWellnessPage() {
               </div>
               {createGoalMutation.isError && (
                 <p className="text-sm text-red-600">
-                  {(createGoalMutation.error as any)?.response?.data?.error?.message || "Failed to create goal"}
+                  {(createGoalMutation.error as any)?.response?.data?.error?.message || t("myWellness.goalModal.errorCreateFailed")}
                 </p>
               )}
               <div className="flex items-center justify-end gap-3 pt-2">
@@ -612,14 +616,14 @@ export default function MyWellnessPage() {
                   onClick={() => setShowGoalForm(false)}
                   className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm"
                 >
-                  Cancel
+                  {t("myWellness.goalModal.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={createGoalMutation.isPending}
                   className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 text-sm font-medium disabled:opacity-50"
                 >
-                  {createGoalMutation.isPending ? "Creating..." : "Create Goal"}
+                  {createGoalMutation.isPending ? t("myWellness.goalModal.creating") : t("myWellness.goalModal.submit")}
                 </button>
               </div>
             </form>
@@ -636,10 +640,10 @@ export default function MyWellnessPage() {
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
               <ArrowUpRight className="h-5 w-5 text-brand-600" />
-              Update Progress
+              {t("myWellness.progressModal.title")}
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              Add progress (current: {progressTarget.current_value} {progressTarget.unit}):
+              {t("myWellness.progressModal.prompt", { current: progressTarget.current_value, unit: progressTarget.unit })}
             </p>
             <input
               autoFocus
@@ -647,7 +651,7 @@ export default function MyWellnessPage() {
               value={progressInput}
               onChange={(e) => setProgressInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") confirmProgress(); }}
-              placeholder={`Amount to add in ${progressTarget.unit}`}
+              placeholder={t("myWellness.progressModal.placeholder", { unit: progressTarget.unit })}
               className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             <div className="mt-4 flex justify-end gap-2">
@@ -657,7 +661,7 @@ export default function MyWellnessPage() {
                 disabled={updateGoalMutation.isPending}
                 className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
               >
-                Cancel
+                {t("myWellness.progressModal.cancel")}
               </button>
               <button
                 type="button"
@@ -665,7 +669,7 @@ export default function MyWellnessPage() {
                 disabled={updateGoalMutation.isPending || !progressInput.trim()}
                 className="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50"
               >
-                {updateGoalMutation.isPending ? "Saving..." : "Update"}
+                {updateGoalMutation.isPending ? t("myWellness.progressModal.saving") : t("myWellness.progressModal.submit")}
               </button>
             </div>
           </div>

@@ -4276,5 +4276,468 @@
       "multiple_choice": "اختيار متعدد",
       "text": "نص"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "تم الإرسال",
+      "under_investigation": "قيد التحقيق",
+      "escalated": "تم التصعيد",
+      "resolved": "تمت المعالجة",
+      "dismissed": "مرفوض",
+      "closed": "مغلق"
+    },
+    "severity": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "critical": "حرجة"
+    },
+    "reportInfo": {
+      "categoryLabel": "الفئة:",
+      "anonymousLabel": "مجهول الهوية:",
+      "anonymousYes": "نعم",
+      "anonymousNo": "لا",
+      "reporterLabel": "مقدّم البلاغ:",
+      "evidenceFilesLabel": "ملفات الأدلة:"
+    },
+    "timeline": {
+      "heading": "المسار الزمني للتحقيق",
+      "visibleToReporterBadge": "مرئي لمقدّم البلاغ",
+      "systemAuthor": "النظام",
+      "empty": "لا توجد تحديثات بعد"
+    },
+    "addUpdate": {
+      "heading": "إضافة تحديث",
+      "typeNote": "ملاحظة داخلية",
+      "typeResponseToReporter": "رد على مقدّم البلاغ",
+      "typeStatusChange": "ملاحظة تغيير الحالة",
+      "visibleToReporterCheckbox": "مرئي لمقدّم البلاغ",
+      "contentPlaceholder": "اكتب تحديثًا أو ملاحظة...",
+      "submitSending": "جارٍ الإرسال...",
+      "submit": "إضافة تحديث"
+    },
+    "info": {
+      "submittedLabel": "تاريخ الإرسال:",
+      "investigatorLabel": "المحقّق:",
+      "escalatedToLabel": "تم التصعيد إلى:",
+      "resolvedLabel": "تاريخ المعالجة:",
+      "resolutionLabel": "المعالجة:"
+    },
+    "assign": {
+      "heading": "تعيين محقّق",
+      "loadUsersError": "تعذّر تحميل المستخدمين. يُرجى تحديث الصفحة.",
+      "optionLoading": "جارٍ تحميل المستخدمين...",
+      "optionError": "خطأ في تحميل المستخدمين",
+      "optionSelect": "اختر محقّقًا...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "تعذّر تعيين المحقّق. يُرجى المحاولة مرة أخرى.",
+      "success": "تم تعيين المحقّق بنجاح."
+    },
+    "changeStatus": {
+      "heading": "تغيير الحالة",
+      "optionSelect": "اختر الحالة...",
+      "resolutionPlaceholder": "ملاحظات المعالجة...",
+      "submitUpdating": "جارٍ التحديث...",
+      "submit": "تحديث الحالة"
+    },
+    "escalate": {
+      "heading": "التصعيد خارجيًا",
+      "placeholder": "جهة أو سلطة خارجية",
+      "submitEscalating": "جارٍ الإحالة...",
+      "submit": "تصعيد البلاغ"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "تم إرسال البلاغ",
+      "description": "تم إرسال بلاغك بنجاح. يُرجى حفظ رقم القضية الخاص بك لتتمكن من متابعة حالة بلاغك.",
+      "caseNumberLabel": "رقم القضية الخاص بك",
+      "importantLabel": "هام:",
+      "saveCaseNumber": "احتفظ بهذا الرقم في مكان آمن. فهو الوسيلة الوحيدة لمتابعة بلاغك.",
+      "identityAnonymous": "هويتك مجهولة تمامًا ولا يمكن الكشف عنها.",
+      "identityAttached": "هويتك مرفقة بهذا البلاغ.",
+      "trackReportHint": "استخدم صفحة \"متابعة البلاغ\" للاطّلاع على المستجدّات.",
+      "submitAnother": "إرسال بلاغ آخر"
+    },
+    "header": {
+      "title": "تقديم بلاغ عن مخالفة",
+      "subtitle": "أبلِغ عن سوء السلوك بأمان وسرّية تامّة (التوجيه الأوروبي 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "بلاغ مجهول الهوية",
+      "identifiedTitle": "بلاغ معرّف الهوية",
+      "anonymousDescription": "لن يتمّ تخزين هويتك أو الإفصاح عنها لأيّ جهة.",
+      "identifiedDescription": "ستكون هويتك مرئية للمحقّقين."
+    },
+    "form": {
+      "categoryLabel": "الفئة",
+      "required": "*",
+      "categoryPlaceholder": "اختر فئة...",
+      "severityLabel": "درجة الخطورة",
+      "subjectLabel": "الموضوع",
+      "subjectPlaceholder": "ملخّص موجز للمشكلة",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "قدّم أكبر قدر ممكن من التفاصيل: ماذا حدث، ومتى، وأين، ومن كان متورّطًا، وأيّ أدلّة لديك."
+    },
+    "actions": {
+      "submit": "إرسال البلاغ",
+      "submitting": "جارٍ الإرسال..."
+    },
+    "error": {
+      "submitFailed": "تعذّر إرسال البلاغ. يُرجى المحاولة مرّة أخرى."
+    },
+    "category": {
+      "fraud": "احتيال",
+      "corruption": "فساد",
+      "harassment": "تحرّش",
+      "discrimination": "تمييز",
+      "safety_violation": "انتهاك للسلامة",
+      "data_breach": "اختراق للبيانات",
+      "financial_misconduct": "مخالفة مالية",
+      "environmental": "مخالفة بيئية",
+      "retaliation": "انتقام",
+      "other": "أخرى"
+    },
+    "severity": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "critical": "حرجة"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "لوحة الإبلاغ عن المخالفات",
+      "subtitle": "نظرة عامة على الامتثال لتوجيه الاتحاد الأوروبي 2019/1937",
+      "viewAllReports": "عرض كل البلاغات"
+    },
+    "stats": {
+      "totalReports": "إجمالي البلاغات",
+      "open": "مفتوحة",
+      "resolved": "تمت المعالجة",
+      "avgResolution": "متوسط مدة المعالجة",
+      "avgResolutionDays": "{{count}} يوم",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "حسب الخطورة",
+      "byCategory": "حسب الفئة",
+      "recentReports": "أحدث البلاغات"
+    },
+    "empty": {
+      "noData": "لا توجد بيانات بعد",
+      "noReports": "لا توجد بلاغات بعد"
+    },
+    "table": {
+      "caseNumber": "رقم الحالة",
+      "category": "الفئة",
+      "severity": "الخطورة",
+      "subject": "الموضوع",
+      "status": "الحالة",
+      "date": "التاريخ"
+    },
+    "severity": {
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "critical": "حرجة"
+    },
+    "status": {
+      "submitted": "تم الإرسال",
+      "under_investigation": "قيد التحقيق",
+      "escalated": "تم التصعيد",
+      "resolved": "تمت المعالجة",
+      "dismissed": "تم الرفض",
+      "closed": "مغلقة"
+    },
+    "category": {
+      "harassment": "المضايقة",
+      "discrimination": "التمييز",
+      "fraud": "الاحتيال",
+      "corruption": "الفساد",
+      "safety_violation": "مخالفة السلامة",
+      "data_breach": "اختراق البيانات",
+      "financial_misconduct": "سوء السلوك المالي",
+      "other": "أخرى"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "صحتي وعافيتي",
+      "subtitle": "تابع رحلتك الصحية وأهدافك الشخصية",
+      "dailyCheckIn": "تسجيل الحالة اليومي"
+    },
+    "error": {
+      "loadFailed": "تعذّر تحميل بيانات العافية. يُرجى المحاولة مرة أخرى لاحقًا."
+    },
+    "stats": {
+      "dayStreak": "أيام متتالية",
+      "totalCheckIns": "إجمالي التسجيلات",
+      "avgEnergy": "متوسط الطاقة",
+      "goalsDone": "الأهداف المنجزة"
+    },
+    "moodTrend": {
+      "title": "اتجاه المزاج (آخر 14 يومًا)"
+    },
+    "mood": {
+      "great": "ممتاز",
+      "good": "جيد",
+      "okay": "مقبول",
+      "low": "منخفض",
+      "stressed": "متوتر"
+    },
+    "goals": {
+      "title": "أهدافي",
+      "addGoal": "إضافة هدف",
+      "empty": "لا توجد أهداف بعد. أنشئ أول هدف للعافية!",
+      "update": "تحديث"
+    },
+    "goalStatus": {
+      "completed": "مكتمل",
+      "abandoned": "متروك",
+      "active": "نشط"
+    },
+    "goalFrequency": {
+      "daily": "يومي",
+      "weekly": "أسبوعي",
+      "monthly": "شهري"
+    },
+    "goalType": {
+      "steps": "الخطوات",
+      "exercise": "التمارين",
+      "meditation": "التأمل",
+      "water": "شرب الماء",
+      "sleep": "النوم",
+      "custom": "مخصص"
+    },
+    "programs": {
+      "title": "برامجي",
+      "emptyCompleted": "لا توجد برامج مكتملة بعد. واصل التقدم!",
+      "emptyActive": "لا توجد برامج نشطة.",
+      "markComplete": "وضع علامة كمكتمل",
+      "pointsReward": "‎+{{points}} نقطة عند الإتمام",
+      "tabActive_zero": "نشط ({{count}})",
+      "tabActive_one": "نشط ({{count}})",
+      "tabActive_two": "نشط ({{count}})",
+      "tabActive_few": "نشط ({{count}})",
+      "tabActive_many": "نشط ({{count}})",
+      "tabActive_other": "نشط ({{count}})",
+      "tabCompleted_zero": "مكتمل ({{count}})",
+      "tabCompleted_one": "مكتمل ({{count}})",
+      "tabCompleted_two": "مكتمل ({{count}})",
+      "tabCompleted_few": "مكتمل ({{count}})",
+      "tabCompleted_many": "مكتمل ({{count}})",
+      "tabCompleted_other": "مكتمل ({{count}})"
+    },
+    "programStatus": {
+      "completed": "مكتمل",
+      "active": "نشط"
+    },
+    "checkIns": {
+      "title": "التسجيلات الأخيرة",
+      "colDate": "التاريخ",
+      "colMood": "المزاج",
+      "colEnergy": "الطاقة",
+      "colSleep": "النوم",
+      "colExercise": "التمارين"
+    },
+    "goalModal": {
+      "title": "إنشاء هدف للعافية",
+      "labelTitle": "العنوان *",
+      "placeholderTitle": "مثال: المشي 10,000 خطوة يوميًا",
+      "labelGoalType": "نوع الهدف",
+      "labelFrequency": "التكرار",
+      "labelTargetValue": "القيمة المستهدفة *",
+      "placeholderTargetValue": "مثال: 10000",
+      "labelUnit": "الوحدة *",
+      "placeholderUnit": "مثال: خطوات، دقائق",
+      "labelStartDate": "تاريخ البدء *",
+      "labelEndDate": "تاريخ الانتهاء",
+      "errorCreateFailed": "تعذّر إنشاء الهدف",
+      "cancel": "إلغاء",
+      "creating": "جارٍ الإنشاء...",
+      "submit": "إنشاء الهدف",
+      "errorEndBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
+    },
+    "progressModal": {
+      "title": "تحديث التقدم",
+      "prompt": "أضف تقدمًا (الحالي: {{current}} {{unit}}):",
+      "placeholder": "المقدار المراد إضافته بـ {{unit}}",
+      "cancel": "إلغاء",
+      "saving": "جارٍ الحفظ...",
+      "submit": "تحديث"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "ممتاز",
+      "good": "جيد",
+      "okay": "مقبول",
+      "low": "منخفض",
+      "stressed": "متوتر",
+      "title": "توزيع الحالة المزاجية (30 يومًا)",
+      "noData": "لا توجد بيانات تسجيل حتى الآن",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "اللياقة البدنية",
+      "mental_health": "الصحة النفسية",
+      "nutrition": "التغذية",
+      "meditation": "التأمل",
+      "yoga": "اليوغا",
+      "team_activity": "نشاط جماعي",
+      "health_checkup": "الفحص الصحي",
+      "other": "أخرى"
+    },
+    "loading": "جارٍ تحميل لوحة معلومات العافية...",
+    "error": {
+      "load": "تعذر تحميل لوحة معلومات العافية. يُرجى المحاولة مرة أخرى لاحقًا.",
+      "createProgram": "تعذر إنشاء البرنامج"
+    },
+    "header": {
+      "title": "لوحة معلومات العافية",
+      "subtitle": "مقاييس العافية على مستوى المؤسسة وإدارة البرامج",
+      "createProgram": "إنشاء برنامج"
+    },
+    "kpi": {
+      "wellnessScore": "درجة العافية",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "البرامج النشطة",
+      "activeParticipants": "المشاركون النشطون",
+      "goalCompletion": "إنجاز الأهداف",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} أهداف",
+      "totalPrograms_zero": "لا توجد برامج ({{count}})",
+      "totalPrograms_one": "لا توجد برامج ({{count}})",
+      "totalPrograms_two": "لا توجد برامج ({{count}})",
+      "totalPrograms_few": "{{count}} برامج إجمالاً",
+      "totalPrograms_many": "{{count}} برنامجًا إجمالاً",
+      "totalPrograms_other": "{{count}} برنامج إجمالاً",
+      "checkins30d_zero": "لا توجد تسجيلات ({{count}}) (30 يومًا)",
+      "checkins30d_one": "لا توجد تسجيلات ({{count}}) (30 يومًا)",
+      "checkins30d_two": "لا توجد تسجيلات ({{count}}) (30 يومًا)",
+      "checkins30d_few": "{{count}} تسجيلات (30 يومًا)",
+      "checkins30d_many": "{{count}} تسجيلاً (30 يومًا)",
+      "checkins30d_other": "{{count}} تسجيل (30 يومًا)"
+    },
+    "metrics": {
+      "title": "متوسط المقاييس (30 يومًا)",
+      "avgEnergyLevel": "متوسط مستوى الطاقة",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "متوسط دقائق التمارين",
+      "avgExerciseMinutesValue": "{{value}} دقيقة",
+      "totalEnrollments": "إجمالي التسجيلات",
+      "completedEnrollments_zero": "اكتمل {{count}}",
+      "completedEnrollments_one": "اكتمل {{count}}",
+      "completedEnrollments_two": "اكتمل {{count}}",
+      "completedEnrollments_few": "اكتمل {{count}}",
+      "completedEnrollments_many": "اكتمل {{count}}",
+      "completedEnrollments_other": "اكتمل {{count}}"
+    },
+    "topPrograms": {
+      "title": "أفضل البرامج حسب التسجيل",
+      "colProgram": "البرنامج",
+      "colType": "النوع",
+      "colEnrolled": "المسجَّلون",
+      "colPoints": "النقاط",
+      "colStatus": "الحالة",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "modal": {
+      "title": "إنشاء برنامج عافية",
+      "fieldTitle": "العنوان *",
+      "titlePlaceholder": "مثال: تحدي اليوغا لمدة 30 يومًا",
+      "fieldDescription": "الوصف",
+      "descriptionPlaceholder": "وصف البرنامج...",
+      "fieldType": "النوع",
+      "fieldMaxParticipants": "الحد الأقصى للمشاركين",
+      "maxParticipantsPlaceholder": "غير محدود",
+      "fieldStartDate": "تاريخ البدء",
+      "fieldEndDate": "تاريخ الانتهاء",
+      "fieldPointsReward": "مكافأة النقاط",
+      "cancel": "إلغاء",
+      "submit": "إنشاء برنامج",
+      "submitting": "جارٍ الإنشاء..."
+    },
+    "toast": {
+      "endBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "اللياقة البدنية",
+      "mental_health": "الصحة النفسية",
+      "nutrition": "التغذية",
+      "meditation": "التأمل",
+      "yoga": "اليوغا",
+      "team_activity": "نشاط جماعي",
+      "health_checkup": "الفحص الصحي",
+      "other": "أخرى"
+    },
+    "enroll": {
+      "success": "تم التسجيل في البرنامج بنجاح",
+      "error": "تعذّر التسجيل في البرنامج"
+    },
+    "header": {
+      "title": "برامج العافية",
+      "subtitle": "استكشف البرامج، وتابع صحتك النفسية والبدنية، وحقّق أهدافك الصحية"
+    },
+    "actions": {
+      "dailyCheckIn": "تسجيل الحضور اليومي",
+      "myWellness": "عافيتي"
+    },
+    "stats": {
+      "checkInStreak": "سلسلة تسجيل الحضور",
+      "activePrograms": "البرامج النشطة",
+      "goalsCompleted": "الأهداف المنجزة",
+      "latestMood": "آخر حالة مزاجية",
+      "moodEmpty": "---",
+      "checkInStreakValue_zero": "{{count}} يوم",
+      "checkInStreakValue_one": "{{count}} يوم",
+      "checkInStreakValue_two": "{{count}} يوم",
+      "checkInStreakValue_few": "{{count}} أيام",
+      "checkInStreakValue_many": "{{count}} يومًا",
+      "checkInStreakValue_other": "{{count}} يوم"
+    },
+    "filter": {
+      "allTypes": "جميع الأنواع",
+      "programsAvailable_zero": "{{count}} برامج متاحة",
+      "programsAvailable_one": "{{count}} برامج متاحة",
+      "programsAvailable_two": "{{count}} برامج متاحة",
+      "programsAvailable_few": "{{count}} برامج متاحة",
+      "programsAvailable_many": "{{count}} برنامجًا متاحًا",
+      "programsAvailable_other": "{{count}} برنامج متاح"
+    },
+    "list": {
+      "loading": "جارٍ تحميل البرامج...",
+      "empty": "لا توجد برامج عافية متاحة بعد"
+    },
+    "card": {
+      "ongoing": "مستمر",
+      "enrolledButton": "مسجَّل",
+      "enrollNow": "سجّل الآن",
+      "pointsReward_zero": "+{{count}} نقطة",
+      "pointsReward_one": "+{{count}} نقطة",
+      "pointsReward_two": "+{{count}} نقطتان",
+      "pointsReward_few": "+{{count}} نقاط",
+      "pointsReward_many": "+{{count}} نقطة",
+      "pointsReward_other": "+{{count}} نقطة",
+      "enrolledCount_zero": "{{count}} مسجّلين",
+      "enrolledCount_one": "{{count}} مسجّلين",
+      "enrolledCount_two": "{{count}} مسجّلين",
+      "enrolledCount_few": "{{count}} مسجّلين",
+      "enrolledCount_many": "{{count}} مسجّلًا",
+      "enrolledCount_other": "{{count}} مسجّل"
+    },
+    "pagination": {
+      "pageOf": "الصفحة {{page}} من {{totalPages}}"
+    }
   }
 }

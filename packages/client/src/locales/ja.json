@@ -4088,5 +4088,432 @@
       "multiple_choice": "複数選択",
       "text": "テキスト"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "提出済み",
+      "under_investigation": "調査中",
+      "escalated": "エスカレーション済み",
+      "resolved": "解決済み",
+      "dismissed": "却下",
+      "closed": "クローズ"
+    },
+    "severity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "重大"
+    },
+    "reportInfo": {
+      "categoryLabel": "カテゴリ:",
+      "anonymousLabel": "匿名:",
+      "anonymousYes": "はい",
+      "anonymousNo": "いいえ",
+      "reporterLabel": "報告者:",
+      "evidenceFilesLabel": "証拠ファイル:"
+    },
+    "timeline": {
+      "heading": "調査タイムライン",
+      "visibleToReporterBadge": "報告者に表示",
+      "systemAuthor": "システム",
+      "empty": "まだ更新はありません"
+    },
+    "addUpdate": {
+      "heading": "更新を追加",
+      "typeNote": "内部メモ",
+      "typeResponseToReporter": "報告者への返信",
+      "typeStatusChange": "ステータス変更メモ",
+      "visibleToReporterCheckbox": "報告者に表示する",
+      "contentPlaceholder": "更新内容やメモを入力してください...",
+      "submitSending": "送信中...",
+      "submit": "更新を追加"
+    },
+    "info": {
+      "submittedLabel": "提出日:",
+      "investigatorLabel": "調査担当者:",
+      "escalatedToLabel": "エスカレーション先:",
+      "resolvedLabel": "解決日:",
+      "resolutionLabel": "解決内容:"
+    },
+    "assign": {
+      "heading": "調査担当者を割り当て",
+      "loadUsersError": "ユーザーの読み込みに失敗しました。ページを再読み込みしてください。",
+      "optionLoading": "ユーザーを読み込み中...",
+      "optionError": "ユーザーの読み込みエラー",
+      "optionSelect": "調査担当者を選択...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "調査担当者の割り当てに失敗しました。もう一度お試しください。",
+      "success": "調査担当者を割り当てました。"
+    },
+    "changeStatus": {
+      "heading": "ステータスを変更",
+      "optionSelect": "ステータスを選択...",
+      "resolutionPlaceholder": "解決に関するメモ...",
+      "submitUpdating": "更新中...",
+      "submit": "ステータスを更新"
+    },
+    "escalate": {
+      "heading": "外部へエスカレーション",
+      "placeholder": "外部機関または当局",
+      "submitEscalating": "エスカレーション中...",
+      "submit": "報告をエスカレーション"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "報告を送信しました",
+      "description": "報告が正常に送信されました。報告の状況を確認するため、ケース番号を保存してください。",
+      "caseNumberLabel": "ケース番号",
+      "importantLabel": "重要:",
+      "saveCaseNumber": "このケース番号を安全に保管してください。報告状況を確認できる唯一の手段です。",
+      "identityAnonymous": "あなたの身元は完全に匿名であり、開示されることはありません。",
+      "identityAttached": "あなたの身元はこの報告に紐づけられています。",
+      "trackReportHint": "最新の状況を確認するには「報告の追跡」ページをご利用ください。",
+      "submitAnother": "別の報告を送信"
+    },
+    "header": {
+      "title": "内部通報を送信",
+      "subtitle": "不正行為を安全かつ機密に報告してください（EU指令2019/1937）"
+    },
+    "anonymous": {
+      "anonymousTitle": "匿名での報告",
+      "identifiedTitle": "記名での報告",
+      "anonymousDescription": "あなたの身元が保存されたり、誰かに開示されることはありません。",
+      "identifiedDescription": "あなたの身元は調査担当者に表示されます。"
+    },
+    "form": {
+      "categoryLabel": "カテゴリー",
+      "required": "*",
+      "categoryPlaceholder": "カテゴリーを選択...",
+      "severityLabel": "深刻度",
+      "subjectLabel": "件名",
+      "subjectPlaceholder": "問題の簡単な概要",
+      "descriptionLabel": "詳細",
+      "descriptionPlaceholder": "できる限り詳しくご記入ください：何が、いつ、どこで起き、誰が関与し、どのような証拠があるか。"
+    },
+    "actions": {
+      "submit": "報告を送信",
+      "submitting": "送信中..."
+    },
+    "error": {
+      "submitFailed": "報告の送信に失敗しました。もう一度お試しください。"
+    },
+    "category": {
+      "fraud": "詐欺",
+      "corruption": "汚職",
+      "harassment": "ハラスメント",
+      "discrimination": "差別",
+      "safety_violation": "安全規則違反",
+      "data_breach": "データ漏洩",
+      "financial_misconduct": "財務不正",
+      "environmental": "環境問題",
+      "retaliation": "報復",
+      "other": "その他"
+    },
+    "severity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "重大"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "内部通報ダッシュボード",
+      "subtitle": "EU指令2019/1937 コンプライアンス概要",
+      "viewAllReports": "すべての通報を表示"
+    },
+    "stats": {
+      "totalReports": "通報件数",
+      "open": "未対応",
+      "resolved": "解決済み",
+      "avgResolution": "平均解決期間",
+      "avgResolutionDays": "{{count}}日",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "深刻度別",
+      "byCategory": "カテゴリー別",
+      "recentReports": "最近の通報"
+    },
+    "empty": {
+      "noData": "データがありません",
+      "noReports": "通報はありません"
+    },
+    "table": {
+      "caseNumber": "案件番号",
+      "category": "カテゴリー",
+      "severity": "深刻度",
+      "subject": "件名",
+      "status": "ステータス",
+      "date": "日付"
+    },
+    "severity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "重大"
+    },
+    "status": {
+      "submitted": "受付済み",
+      "under_investigation": "調査中",
+      "escalated": "エスカレーション済み",
+      "resolved": "解決済み",
+      "dismissed": "却下",
+      "closed": "終了"
+    },
+    "category": {
+      "harassment": "ハラスメント",
+      "discrimination": "差別",
+      "fraud": "詐欺",
+      "corruption": "汚職",
+      "safety_violation": "安全規定違反",
+      "data_breach": "データ漏洩",
+      "financial_misconduct": "財務不正",
+      "other": "その他"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "マイウェルネス",
+      "subtitle": "ご自身の健康の歩みと個人目標を記録しましょう",
+      "dailyCheckIn": "デイリーチェックイン"
+    },
+    "error": {
+      "loadFailed": "ウェルネスデータを読み込めませんでした。しばらくしてからもう一度お試しください。"
+    },
+    "stats": {
+      "dayStreak": "連続日数",
+      "totalCheckIns": "チェックイン合計",
+      "avgEnergy": "平均活力",
+      "goalsDone": "達成した目標"
+    },
+    "moodTrend": {
+      "title": "気分の推移（過去14日間）"
+    },
+    "mood": {
+      "great": "とても良い",
+      "good": "良い",
+      "okay": "まあまあ",
+      "low": "低調",
+      "stressed": "ストレスあり"
+    },
+    "goals": {
+      "title": "マイ目標",
+      "addGoal": "目標を追加",
+      "empty": "目標はまだありません。最初のウェルネス目標を作成しましょう。",
+      "update": "更新"
+    },
+    "goalStatus": {
+      "completed": "達成済み",
+      "abandoned": "中止",
+      "active": "進行中"
+    },
+    "goalFrequency": {
+      "daily": "毎日",
+      "weekly": "毎週",
+      "monthly": "毎月"
+    },
+    "goalType": {
+      "steps": "歩数",
+      "exercise": "運動",
+      "meditation": "瞑想",
+      "water": "水分摂取",
+      "sleep": "睡眠",
+      "custom": "カスタム"
+    },
+    "programs": {
+      "title": "マイプログラム",
+      "emptyCompleted": "完了したプログラムはまだありません。この調子で続けましょう。",
+      "emptyActive": "進行中のプログラムはありません。",
+      "markComplete": "完了にする",
+      "pointsReward": "完了時に+{{points}}ポイント",
+      "tabActive_one": "進行中（{{count}}）",
+      "tabActive_other": "進行中（{{count}}）",
+      "tabCompleted_one": "完了（{{count}}）",
+      "tabCompleted_other": "完了（{{count}}）"
+    },
+    "programStatus": {
+      "completed": "完了",
+      "active": "進行中"
+    },
+    "checkIns": {
+      "title": "最近のチェックイン",
+      "colDate": "日付",
+      "colMood": "気分",
+      "colEnergy": "エネルギー",
+      "colSleep": "睡眠",
+      "colExercise": "運動"
+    },
+    "goalModal": {
+      "title": "ウェルネス目標の作成",
+      "labelTitle": "タイトル *",
+      "placeholderTitle": "例：毎日10,000歩歩く",
+      "labelGoalType": "目標の種類",
+      "labelFrequency": "頻度",
+      "labelTargetValue": "目標値 *",
+      "placeholderTargetValue": "例：10000",
+      "labelUnit": "単位 *",
+      "placeholderUnit": "例：歩、分",
+      "labelStartDate": "開始日 *",
+      "labelEndDate": "終了日",
+      "errorCreateFailed": "目標を作成できませんでした",
+      "cancel": "キャンセル",
+      "creating": "作成中...",
+      "submit": "目標を作成",
+      "errorEndBeforeStart": "終了日は開始日より前に設定できません。"
+    },
+    "progressModal": {
+      "title": "進捗の更新",
+      "prompt": "進捗を追加（現在：{{current}} {{unit}}）：",
+      "placeholder": "追加する量（{{unit}}）",
+      "cancel": "キャンセル",
+      "saving": "保存中...",
+      "submit": "更新"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "とても良い",
+      "good": "良い",
+      "okay": "普通",
+      "low": "優れない",
+      "stressed": "ストレスを感じる",
+      "title": "気分の分布（30日間）",
+      "noData": "チェックインデータはまだありません",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "フィットネス",
+      "mental_health": "メンタルヘルス",
+      "nutrition": "栄養",
+      "meditation": "瞑想",
+      "yoga": "ヨガ",
+      "team_activity": "チームアクティビティ",
+      "health_checkup": "健康診断",
+      "other": "その他"
+    },
+    "loading": "ウェルネスダッシュボードを読み込んでいます...",
+    "error": {
+      "load": "ウェルネスダッシュボードの読み込みに失敗しました。後ほど再度お試しください。",
+      "createProgram": "プログラムの作成に失敗しました"
+    },
+    "header": {
+      "title": "ウェルネスダッシュボード",
+      "subtitle": "組織全体のウェルネス指標とプログラム管理",
+      "createProgram": "プログラムを作成"
+    },
+    "kpi": {
+      "wellnessScore": "ウェルネススコア",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "実施中のプログラム",
+      "activeParticipants": "参加中の従業員",
+      "goalCompletion": "目標達成率",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} 件の目標",
+      "totalPrograms_one": "合計 {{count}} 件のプログラム",
+      "totalPrograms_other": "合計 {{count}} 件のプログラム",
+      "checkins30d_one": "{{count}} 件のチェックイン（30日間）",
+      "checkins30d_other": "{{count}} 件のチェックイン（30日間）"
+    },
+    "metrics": {
+      "title": "平均指標（30日間）",
+      "avgEnergyLevel": "平均エネルギーレベル",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "平均運動時間",
+      "avgExerciseMinutesValue": "{{value}} 分",
+      "totalEnrollments": "総登録数",
+      "completedEnrollments_one": "{{count}} 件完了",
+      "completedEnrollments_other": "{{count}} 件完了"
+    },
+    "topPrograms": {
+      "title": "登録数の多いプログラム",
+      "colProgram": "プログラム",
+      "colType": "種別",
+      "colEnrolled": "登録者数",
+      "colPoints": "ポイント",
+      "colStatus": "ステータス",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "実施中",
+      "inactive": "停止中"
+    },
+    "modal": {
+      "title": "ウェルネスプログラムを作成",
+      "fieldTitle": "タイトル *",
+      "titlePlaceholder": "例：30日間ヨガチャレンジ",
+      "fieldDescription": "説明",
+      "descriptionPlaceholder": "プログラムの説明...",
+      "fieldType": "種別",
+      "fieldMaxParticipants": "最大参加人数",
+      "maxParticipantsPlaceholder": "無制限",
+      "fieldStartDate": "開始日",
+      "fieldEndDate": "終了日",
+      "fieldPointsReward": "獲得ポイント",
+      "cancel": "キャンセル",
+      "submit": "プログラムを作成",
+      "submitting": "作成中..."
+    },
+    "toast": {
+      "endBeforeStart": "終了日は開始日より前に設定できません。"
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "フィットネス",
+      "mental_health": "メンタルヘルス",
+      "nutrition": "栄養",
+      "meditation": "瞑想",
+      "yoga": "ヨガ",
+      "team_activity": "チーム活動",
+      "health_checkup": "健康診断",
+      "other": "その他"
+    },
+    "enroll": {
+      "success": "プログラムに登録しました",
+      "error": "プログラムへの登録に失敗しました"
+    },
+    "header": {
+      "title": "ウェルネスプログラム",
+      "subtitle": "プログラムを探し、心身の健康を記録し、健康目標を達成しましょう"
+    },
+    "actions": {
+      "dailyCheckIn": "デイリーチェックイン",
+      "myWellness": "マイウェルネス"
+    },
+    "stats": {
+      "checkInStreak": "連続チェックイン",
+      "activePrograms": "参加中のプログラム",
+      "goalsCompleted": "達成した目標",
+      "latestMood": "最新の気分",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}}日",
+      "checkInStreakValue_other": "{{count}}日"
+    },
+    "filter": {
+      "allTypes": "すべての種類",
+      "programsAvailable_one": "{{count}}件のプログラムがあります",
+      "programsAvailable_other": "{{count}}件のプログラムがあります"
+    },
+    "list": {
+      "loading": "プログラムを読み込んでいます...",
+      "empty": "利用可能なウェルネスプログラムはまだありません"
+    },
+    "card": {
+      "ongoing": "継続中",
+      "enrolledButton": "参加済み",
+      "enrollNow": "今すぐ参加",
+      "pointsReward_one": "+{{count}}pt",
+      "pointsReward_other": "+{{count}}pt",
+      "enrolledCount_one": "{{count}}名が参加",
+      "enrolledCount_other": "{{count}}名が参加"
+    },
+    "pagination": {
+      "pageOf": "{{page}}/{{totalPages}}ページ"
+    }
   }
 }

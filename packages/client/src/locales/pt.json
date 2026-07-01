@@ -4088,5 +4088,432 @@
       "multiple_choice": "Múltipla escolha",
       "text": "Texto"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "Enviado",
+      "under_investigation": "Em investigação",
+      "escalated": "Encaminhado",
+      "resolved": "Resolvido",
+      "dismissed": "Arquivado",
+      "closed": "Encerrado"
+    },
+    "severity": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "reportInfo": {
+      "categoryLabel": "Categoria:",
+      "anonymousLabel": "Anônimo:",
+      "anonymousYes": "Sim",
+      "anonymousNo": "Não",
+      "reporterLabel": "Denunciante:",
+      "evidenceFilesLabel": "Arquivos de evidência:"
+    },
+    "timeline": {
+      "heading": "Histórico da investigação",
+      "visibleToReporterBadge": "Visível ao denunciante",
+      "systemAuthor": "Sistema",
+      "empty": "Nenhuma atualização ainda"
+    },
+    "addUpdate": {
+      "heading": "Adicionar atualização",
+      "typeNote": "Nota interna",
+      "typeResponseToReporter": "Resposta ao denunciante",
+      "typeStatusChange": "Nota de mudança de status",
+      "visibleToReporterCheckbox": "Visível ao denunciante",
+      "contentPlaceholder": "Escreva uma atualização ou nota...",
+      "submitSending": "Enviando...",
+      "submit": "Adicionar atualização"
+    },
+    "info": {
+      "submittedLabel": "Enviado:",
+      "investigatorLabel": "Investigador:",
+      "escalatedToLabel": "Encaminhado a:",
+      "resolvedLabel": "Resolvido:",
+      "resolutionLabel": "Resolução:"
+    },
+    "assign": {
+      "heading": "Atribuir investigador",
+      "loadUsersError": "Falha ao carregar os usuários. Atualize a página.",
+      "optionLoading": "Carregando usuários...",
+      "optionError": "Erro ao carregar usuários",
+      "optionSelect": "Selecione um investigador...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "Falha ao atribuir o investigador. Tente novamente.",
+      "success": "Investigador atribuído com sucesso."
+    },
+    "changeStatus": {
+      "heading": "Alterar status",
+      "optionSelect": "Selecione um status...",
+      "resolutionPlaceholder": "Notas de resolução...",
+      "submitUpdating": "Atualizando...",
+      "submit": "Atualizar status"
+    },
+    "escalate": {
+      "heading": "Encaminhar externamente",
+      "placeholder": "Órgão ou autoridade externa",
+      "submitEscalating": "Encaminhando...",
+      "submit": "Encaminhar denúncia"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "Denúncia enviada",
+      "description": "Sua denúncia foi enviada com sucesso. Guarde o número do seu caso para acompanhar o status da denúncia.",
+      "caseNumberLabel": "Número do seu caso",
+      "importantLabel": "Importante:",
+      "saveCaseNumber": "Guarde este número de caso em local seguro. É a única forma de acompanhar sua denúncia.",
+      "identityAnonymous": "Sua identidade é totalmente anônima e não pode ser revelada.",
+      "identityAttached": "Sua identidade está vinculada a esta denúncia.",
+      "trackReportHint": "Use a página \"Acompanhar denúncia\" para verificar atualizações.",
+      "submitAnother": "Enviar outra denúncia"
+    },
+    "header": {
+      "title": "Enviar uma denúncia",
+      "subtitle": "Denuncie condutas irregulares de forma segura e confidencial (Diretiva UE 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "Denúncia anônima",
+      "identifiedTitle": "Denúncia identificada",
+      "anonymousDescription": "Sua identidade não será armazenada nem divulgada a ninguém.",
+      "identifiedDescription": "Sua identidade ficará visível para os investigadores."
+    },
+    "form": {
+      "categoryLabel": "Categoria",
+      "required": "*",
+      "categoryPlaceholder": "Selecione uma categoria...",
+      "severityLabel": "Gravidade",
+      "subjectLabel": "Assunto",
+      "subjectPlaceholder": "Breve resumo do problema",
+      "descriptionLabel": "Descrição",
+      "descriptionPlaceholder": "Forneça o máximo de detalhes possível: o que aconteceu, quando, onde, quem esteve envolvido e quaisquer evidências que você tenha."
+    },
+    "actions": {
+      "submit": "Enviar denúncia",
+      "submitting": "Enviando..."
+    },
+    "error": {
+      "submitFailed": "Falha ao enviar a denúncia. Tente novamente."
+    },
+    "category": {
+      "fraud": "Fraude",
+      "corruption": "Corrupção",
+      "harassment": "Assédio",
+      "discrimination": "Discriminação",
+      "safety_violation": "Violação de segurança",
+      "data_breach": "Violação de dados",
+      "financial_misconduct": "Má conduta financeira",
+      "environmental": "Ambiental",
+      "retaliation": "Retaliação",
+      "other": "Outro"
+    },
+    "severity": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "critical": "Crítica"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "Painel de Denúncias",
+      "subtitle": "Visão geral de conformidade com a Diretiva UE 2019/1937",
+      "viewAllReports": "Ver todas as denúncias"
+    },
+    "stats": {
+      "totalReports": "Total de denúncias",
+      "open": "Em aberto",
+      "resolved": "Resolvidas",
+      "avgResolution": "Resolução média",
+      "avgResolutionDays": "{{count}}d",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "Por gravidade",
+      "byCategory": "Por categoria",
+      "recentReports": "Denúncias recentes"
+    },
+    "empty": {
+      "noData": "Ainda sem dados",
+      "noReports": "Ainda sem denúncias"
+    },
+    "table": {
+      "caseNumber": "Caso nº",
+      "category": "Categoria",
+      "severity": "Gravidade",
+      "subject": "Assunto",
+      "status": "Status",
+      "date": "Data"
+    },
+    "severity": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "status": {
+      "submitted": "Enviada",
+      "under_investigation": "Em investigação",
+      "escalated": "Encaminhada",
+      "resolved": "Resolvida",
+      "dismissed": "Rejeitada",
+      "closed": "Encerrada"
+    },
+    "category": {
+      "harassment": "Assédio",
+      "discrimination": "Discriminação",
+      "fraud": "Fraude",
+      "corruption": "Corrupção",
+      "safety_violation": "Violação de segurança",
+      "data_breach": "Violação de dados",
+      "financial_misconduct": "Má conduta financeira",
+      "other": "Outro"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "Meu Bem-Estar",
+      "subtitle": "Acompanhe sua jornada de saúde e suas metas pessoais",
+      "dailyCheckIn": "Check-in Diário"
+    },
+    "error": {
+      "loadFailed": "Falha ao carregar os dados de bem-estar. Tente novamente mais tarde."
+    },
+    "stats": {
+      "dayStreak": "Sequência de Dias",
+      "totalCheckIns": "Total de Check-ins",
+      "avgEnergy": "Energia Média",
+      "goalsDone": "Metas Concluídas"
+    },
+    "moodTrend": {
+      "title": "Tendência de Humor (Últimos 14 Dias)"
+    },
+    "mood": {
+      "great": "Ótimo",
+      "good": "Bom",
+      "okay": "Neutro",
+      "low": "Baixo",
+      "stressed": "Estressado"
+    },
+    "goals": {
+      "title": "Minhas Metas",
+      "addGoal": "Adicionar Meta",
+      "empty": "Nenhuma meta ainda. Crie sua primeira meta de bem-estar!",
+      "update": "Atualizar"
+    },
+    "goalStatus": {
+      "completed": "Concluída",
+      "abandoned": "Abandonada",
+      "active": "Ativa"
+    },
+    "goalFrequency": {
+      "daily": "Diária",
+      "weekly": "Semanal",
+      "monthly": "Mensal"
+    },
+    "goalType": {
+      "steps": "Passos",
+      "exercise": "Exercício",
+      "meditation": "Meditação",
+      "water": "Ingestão de Água",
+      "sleep": "Sono",
+      "custom": "Personalizada"
+    },
+    "programs": {
+      "title": "Meus Programas",
+      "emptyCompleted": "Nenhum programa concluído ainda. Continue assim!",
+      "emptyActive": "Nenhum programa ativo.",
+      "markComplete": "Marcar como Concluído",
+      "pointsReward": "+{{points}} pontos ao concluir",
+      "tabActive_one": "Ativo ({{count}})",
+      "tabActive_other": "Ativos ({{count}})",
+      "tabCompleted_one": "Concluído ({{count}})",
+      "tabCompleted_other": "Concluídos ({{count}})"
+    },
+    "programStatus": {
+      "completed": "Concluído",
+      "active": "Ativo"
+    },
+    "checkIns": {
+      "title": "Check-ins Recentes",
+      "colDate": "Data",
+      "colMood": "Humor",
+      "colEnergy": "Energia",
+      "colSleep": "Sono",
+      "colExercise": "Exercício"
+    },
+    "goalModal": {
+      "title": "Criar Meta de Bem-Estar",
+      "labelTitle": "Título *",
+      "placeholderTitle": "ex.: Caminhar 10.000 passos por dia",
+      "labelGoalType": "Tipo de Meta",
+      "labelFrequency": "Frequência",
+      "labelTargetValue": "Valor Alvo *",
+      "placeholderTargetValue": "ex.: 10000",
+      "labelUnit": "Unidade *",
+      "placeholderUnit": "ex.: passos, minutos",
+      "labelStartDate": "Data de Início *",
+      "labelEndDate": "Data de Término",
+      "errorCreateFailed": "Falha ao criar a meta",
+      "cancel": "Cancelar",
+      "creating": "Criando...",
+      "submit": "Criar Meta",
+      "errorEndBeforeStart": "A data de término não pode ser anterior à data de início."
+    },
+    "progressModal": {
+      "title": "Atualizar Progresso",
+      "prompt": "Adicionar progresso (atual: {{current}} {{unit}}):",
+      "placeholder": "Quantidade a adicionar em {{unit}}",
+      "cancel": "Cancelar",
+      "saving": "Salvando...",
+      "submit": "Atualizar"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "Ótimo",
+      "good": "Bom",
+      "okay": "Regular",
+      "low": "Baixo",
+      "stressed": "Estressado",
+      "title": "Distribuição de Humor (30 dias)",
+      "noData": "Ainda não há dados de check-in",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "Atividade Física",
+      "mental_health": "Saúde Mental",
+      "nutrition": "Nutrição",
+      "meditation": "Meditação",
+      "yoga": "Yoga",
+      "team_activity": "Atividade em Equipe",
+      "health_checkup": "Check-up de Saúde",
+      "other": "Outro"
+    },
+    "loading": "Carregando painel de bem-estar...",
+    "error": {
+      "load": "Falha ao carregar o painel de bem-estar. Tente novamente mais tarde.",
+      "createProgram": "Falha ao criar o programa"
+    },
+    "header": {
+      "title": "Painel de Bem-Estar",
+      "subtitle": "Métricas de bem-estar e gestão de programas em toda a organização",
+      "createProgram": "Criar Programa"
+    },
+    "kpi": {
+      "wellnessScore": "Índice de Bem-Estar",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "Programas Ativos",
+      "activeParticipants": "Participantes Ativos",
+      "goalCompletion": "Conclusão de Metas",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} metas",
+      "totalPrograms_one": "{{count}} programa no total",
+      "totalPrograms_other": "{{count}} programas no total",
+      "checkins30d_one": "{{count}} check-in (30 dias)",
+      "checkins30d_other": "{{count}} check-ins (30 dias)"
+    },
+    "metrics": {
+      "title": "Métricas Médias (30 dias)",
+      "avgEnergyLevel": "Nível Médio de Energia",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "Média de Minutos de Exercício",
+      "avgExerciseMinutesValue": "{{value}} min",
+      "totalEnrollments": "Total de Inscrições",
+      "completedEnrollments_one": "{{count}} concluída",
+      "completedEnrollments_other": "{{count}} concluídas"
+    },
+    "topPrograms": {
+      "title": "Principais Programas por Inscrições",
+      "colProgram": "Programa",
+      "colType": "Tipo",
+      "colEnrolled": "Inscritos",
+      "colPoints": "Pontos",
+      "colStatus": "Status",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "modal": {
+      "title": "Criar Programa de Bem-Estar",
+      "fieldTitle": "Título *",
+      "titlePlaceholder": "ex.: Desafio de Yoga de 30 Dias",
+      "fieldDescription": "Descrição",
+      "descriptionPlaceholder": "Descrição do programa...",
+      "fieldType": "Tipo",
+      "fieldMaxParticipants": "Máx. de Participantes",
+      "maxParticipantsPlaceholder": "Ilimitado",
+      "fieldStartDate": "Data de Início",
+      "fieldEndDate": "Data de Término",
+      "fieldPointsReward": "Pontos de Recompensa",
+      "cancel": "Cancelar",
+      "submit": "Criar Programa",
+      "submitting": "Criando..."
+    },
+    "toast": {
+      "endBeforeStart": "A data de término não pode ser anterior à data de início."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "Atividade Física",
+      "mental_health": "Saúde Mental",
+      "nutrition": "Nutrição",
+      "meditation": "Meditação",
+      "yoga": "Yoga",
+      "team_activity": "Atividade em Equipe",
+      "health_checkup": "Check-up de Saúde",
+      "other": "Outro"
+    },
+    "enroll": {
+      "success": "Inscrição no programa realizada com sucesso",
+      "error": "Não foi possível se inscrever no programa"
+    },
+    "header": {
+      "title": "Programas de Bem-Estar",
+      "subtitle": "Explore programas, acompanhe seu bem-estar e alcance suas metas de saúde"
+    },
+    "actions": {
+      "dailyCheckIn": "Check-in Diário",
+      "myWellness": "Meu Bem-Estar"
+    },
+    "stats": {
+      "checkInStreak": "Sequência de Check-ins",
+      "activePrograms": "Programas Ativos",
+      "goalsCompleted": "Metas Concluídas",
+      "latestMood": "Humor Mais Recente",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} dia",
+      "checkInStreakValue_other": "{{count}} dias"
+    },
+    "filter": {
+      "allTypes": "Todos os Tipos",
+      "programsAvailable_one": "{{count}} programa disponível",
+      "programsAvailable_other": "{{count}} programas disponíveis"
+    },
+    "list": {
+      "loading": "Carregando programas...",
+      "empty": "Ainda não há programas de bem-estar disponíveis"
+    },
+    "card": {
+      "ongoing": "Em andamento",
+      "enrolledButton": "Inscrito",
+      "enrollNow": "Inscrever-se",
+      "pointsReward_one": "+{{count}} pt",
+      "pointsReward_other": "+{{count}} pts",
+      "enrolledCount_one": "{{count}} inscrito",
+      "enrolledCount_other": "{{count}} inscritos"
+    },
+    "pagination": {
+      "pageOf": "Página {{page}} de {{totalPages}}"
+    }
   }
 }

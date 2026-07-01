@@ -4088,5 +4088,432 @@
       "multiple_choice": "बहुविकल्पीय",
       "text": "पाठ"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "प्रस्तुत",
+      "under_investigation": "जांच के अंतर्गत",
+      "escalated": "आगे बढ़ाया गया",
+      "resolved": "समाधानित",
+      "dismissed": "खारिज",
+      "closed": "बंद"
+    },
+    "severity": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "critical": "गंभीर"
+    },
+    "reportInfo": {
+      "categoryLabel": "श्रेणी:",
+      "anonymousLabel": "गुमनाम:",
+      "anonymousYes": "हां",
+      "anonymousNo": "नहीं",
+      "reporterLabel": "रिपोर्टकर्ता:",
+      "evidenceFilesLabel": "साक्ष्य फ़ाइलें:"
+    },
+    "timeline": {
+      "heading": "जांच समयरेखा",
+      "visibleToReporterBadge": "रिपोर्टकर्ता को दृश्यमान",
+      "systemAuthor": "सिस्टम",
+      "empty": "अभी तक कोई अपडेट नहीं"
+    },
+    "addUpdate": {
+      "heading": "अपडेट जोड़ें",
+      "typeNote": "आंतरिक टिप्पणी",
+      "typeResponseToReporter": "रिपोर्टकर्ता को उत्तर",
+      "typeStatusChange": "स्थिति परिवर्तन टिप्पणी",
+      "visibleToReporterCheckbox": "रिपोर्टकर्ता को दृश्यमान",
+      "contentPlaceholder": "एक अपडेट या टिप्पणी लिखें...",
+      "submitSending": "भेजा जा रहा है...",
+      "submit": "अपडेट जोड़ें"
+    },
+    "info": {
+      "submittedLabel": "प्रस्तुत:",
+      "investigatorLabel": "जांचकर्ता:",
+      "escalatedToLabel": "आगे बढ़ाया गया:",
+      "resolvedLabel": "समाधानित:",
+      "resolutionLabel": "समाधान:"
+    },
+    "assign": {
+      "heading": "जांचकर्ता नियुक्त करें",
+      "loadUsersError": "उपयोगकर्ता लोड करने में विफल। कृपया पृष्ठ को रीफ़्रेश करें।",
+      "optionLoading": "उपयोगकर्ता लोड हो रहे हैं...",
+      "optionError": "उपयोगकर्ता लोड करने में त्रुटि",
+      "optionSelect": "जांचकर्ता चुनें...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "जांचकर्ता नियुक्त करने में विफल। कृपया पुनः प्रयास करें।",
+      "success": "जांचकर्ता सफलतापूर्वक नियुक्त किया गया।"
+    },
+    "changeStatus": {
+      "heading": "स्थिति बदलें",
+      "optionSelect": "स्थिति चुनें...",
+      "resolutionPlaceholder": "समाधान टिप्पणियां...",
+      "submitUpdating": "अपडेट हो रहा है...",
+      "submit": "स्थिति अपडेट करें"
+    },
+    "escalate": {
+      "heading": "बाहरी रूप से आगे बढ़ाएं",
+      "placeholder": "बाहरी निकाय या प्राधिकरण",
+      "submitEscalating": "आगे बढ़ाया जा रहा है...",
+      "submit": "रिपोर्ट आगे बढ़ाएं"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "रिपोर्ट सबमिट की गई",
+      "description": "आपकी रिपोर्ट सफलतापूर्वक सबमिट कर दी गई है। कृपया अपनी रिपोर्ट की स्थिति ट्रैक करने के लिए अपना केस नंबर सहेज लें।",
+      "caseNumberLabel": "आपका केस नंबर",
+      "importantLabel": "महत्वपूर्ण:",
+      "saveCaseNumber": "इस केस नंबर को सुरक्षित रूप से सहेज लें। अपनी रिपोर्ट को ट्रैक करने का यही एकमात्र तरीका है।",
+      "identityAnonymous": "आपकी पहचान पूरी तरह गुमनाम है और इसे उजागर नहीं किया जा सकता।",
+      "identityAttached": "आपकी पहचान इस रिपोर्ट से जुड़ी हुई है।",
+      "trackReportHint": "अपडेट देखने के लिए \"रिपोर्ट ट्रैक करें\" पेज का उपयोग करें।",
+      "submitAnother": "एक और रिपोर्ट सबमिट करें"
+    },
+    "header": {
+      "title": "व्हिसलब्लोइंग रिपोर्ट सबमिट करें",
+      "subtitle": "कदाचार की रिपोर्ट सुरक्षित और गोपनीय रूप से करें (EU Directive 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "गुमनाम रिपोर्ट",
+      "identifiedTitle": "पहचान सहित रिपोर्ट",
+      "anonymousDescription": "आपकी पहचान न तो संग्रहीत की जाएगी और न ही किसी को बताई जाएगी।",
+      "identifiedDescription": "आपकी पहचान जाँचकर्ताओं को दिखाई देगी।"
+    },
+    "form": {
+      "categoryLabel": "श्रेणी",
+      "required": "*",
+      "categoryPlaceholder": "एक श्रेणी चुनें...",
+      "severityLabel": "गंभीरता",
+      "subjectLabel": "विषय",
+      "subjectPlaceholder": "समस्या का संक्षिप्त सारांश",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "यथासंभव अधिक विवरण दें: क्या हुआ, कब, कहाँ, कौन शामिल था, और आपके पास कोई साक्ष्य।"
+    },
+    "actions": {
+      "submit": "रिपोर्ट सबमिट करें",
+      "submitting": "सबमिट किया जा रहा है..."
+    },
+    "error": {
+      "submitFailed": "रिपोर्ट सबमिट करने में विफल। कृपया फिर से प्रयास करें।"
+    },
+    "category": {
+      "fraud": "धोखाधड़ी",
+      "corruption": "भ्रष्टाचार",
+      "harassment": "उत्पीड़न",
+      "discrimination": "भेदभाव",
+      "safety_violation": "सुरक्षा उल्लंघन",
+      "data_breach": "डेटा उल्लंघन",
+      "financial_misconduct": "वित्तीय कदाचार",
+      "environmental": "पर्यावरणीय",
+      "retaliation": "प्रतिशोधात्मक कार्रवाई",
+      "other": "अन्य"
+    },
+    "severity": {
+      "low": "कम",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "critical": "गंभीर"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "व्हिसलब्लोइंग डैशबोर्ड",
+      "subtitle": "EU Directive 2019/1937 अनुपालन अवलोकन",
+      "viewAllReports": "सभी रिपोर्ट देखें"
+    },
+    "stats": {
+      "totalReports": "कुल रिपोर्ट",
+      "open": "खुले",
+      "resolved": "समाधानित",
+      "avgResolution": "औसत समाधान",
+      "avgResolutionDays": "{{count}} दिन",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "गंभीरता अनुसार",
+      "byCategory": "श्रेणी अनुसार",
+      "recentReports": "हाल की रिपोर्ट"
+    },
+    "empty": {
+      "noData": "अभी कोई डेटा नहीं",
+      "noReports": "अभी कोई रिपोर्ट नहीं"
+    },
+    "table": {
+      "caseNumber": "केस #",
+      "category": "श्रेणी",
+      "severity": "गंभीरता",
+      "subject": "विषय",
+      "status": "स्थिति",
+      "date": "दिनांक"
+    },
+    "severity": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "critical": "गंभीर"
+    },
+    "status": {
+      "submitted": "प्रस्तुत",
+      "under_investigation": "जांच के अधीन",
+      "escalated": "आगे बढ़ाया गया",
+      "resolved": "समाधानित",
+      "dismissed": "खारिज",
+      "closed": "बंद"
+    },
+    "category": {
+      "harassment": "उत्पीड़न",
+      "discrimination": "भेदभाव",
+      "fraud": "धोखाधड़ी",
+      "corruption": "भ्रष्टाचार",
+      "safety_violation": "सुरक्षा उल्लंघन",
+      "data_breach": "डेटा उल्लंघन",
+      "financial_misconduct": "वित्तीय कदाचार",
+      "other": "अन्य"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "मेरी सेहत",
+      "subtitle": "अपनी स्वास्थ्य यात्रा और व्यक्तिगत लक्ष्यों को ट्रैक करें",
+      "dailyCheckIn": "दैनिक चेक-इन"
+    },
+    "error": {
+      "loadFailed": "सेहत डेटा लोड नहीं हो सका। कृपया बाद में पुनः प्रयास करें।"
+    },
+    "stats": {
+      "dayStreak": "दिनों की श्रृंखला",
+      "totalCheckIns": "कुल चेक-इन",
+      "avgEnergy": "औसत ऊर्जा",
+      "goalsDone": "पूर्ण लक्ष्य"
+    },
+    "moodTrend": {
+      "title": "मनोदशा का रुझान (पिछले 14 दिन)"
+    },
+    "mood": {
+      "great": "बहुत अच्छा",
+      "good": "अच्छा",
+      "okay": "ठीक-ठाक",
+      "low": "निम्न",
+      "stressed": "तनावग्रस्त"
+    },
+    "goals": {
+      "title": "मेरे लक्ष्य",
+      "addGoal": "लक्ष्य जोड़ें",
+      "empty": "अभी तक कोई लक्ष्य नहीं। अपना पहला सेहत लक्ष्य बनाएं!",
+      "update": "अपडेट करें"
+    },
+    "goalStatus": {
+      "completed": "पूर्ण",
+      "abandoned": "छोड़ा गया",
+      "active": "सक्रिय"
+    },
+    "goalFrequency": {
+      "daily": "दैनिक",
+      "weekly": "साप्ताहिक",
+      "monthly": "मासिक"
+    },
+    "goalType": {
+      "steps": "कदम",
+      "exercise": "व्यायाम",
+      "meditation": "ध्यान",
+      "water": "पानी का सेवन",
+      "sleep": "नींद",
+      "custom": "कस्टम"
+    },
+    "programs": {
+      "title": "मेरे कार्यक्रम",
+      "emptyCompleted": "अभी तक कोई पूर्ण कार्यक्रम नहीं। जारी रखें!",
+      "emptyActive": "कोई सक्रिय कार्यक्रम नहीं।",
+      "markComplete": "पूर्ण के रूप में चिह्नित करें",
+      "pointsReward": "पूर्ण होने पर +{{points}} अंक",
+      "tabActive_one": "सक्रिय ({{count}})",
+      "tabActive_other": "सक्रिय ({{count}})",
+      "tabCompleted_one": "पूर्ण ({{count}})",
+      "tabCompleted_other": "पूर्ण ({{count}})"
+    },
+    "programStatus": {
+      "completed": "पूर्ण",
+      "active": "सक्रिय"
+    },
+    "checkIns": {
+      "title": "हाल के चेक-इन",
+      "colDate": "दिनांक",
+      "colMood": "मनोदशा",
+      "colEnergy": "ऊर्जा",
+      "colSleep": "नींद",
+      "colExercise": "व्यायाम"
+    },
+    "goalModal": {
+      "title": "सेहत लक्ष्य बनाएं",
+      "labelTitle": "शीर्षक *",
+      "placeholderTitle": "उदा., रोज़ 10,000 कदम चलें",
+      "labelGoalType": "लक्ष्य प्रकार",
+      "labelFrequency": "आवृत्ति",
+      "labelTargetValue": "लक्ष्य मान *",
+      "placeholderTargetValue": "उदा., 10000",
+      "labelUnit": "इकाई *",
+      "placeholderUnit": "उदा., कदम, मिनट",
+      "labelStartDate": "आरंभ तिथि *",
+      "labelEndDate": "समाप्ति तिथि",
+      "errorCreateFailed": "लक्ष्य बनाने में विफल",
+      "cancel": "रद्द करें",
+      "creating": "बनाया जा रहा है...",
+      "submit": "लक्ष्य बनाएं",
+      "errorEndBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+    },
+    "progressModal": {
+      "title": "प्रगति अपडेट करें",
+      "prompt": "प्रगति जोड़ें (वर्तमान: {{current}} {{unit}}):",
+      "placeholder": "{{unit}} में जोड़ने की मात्रा",
+      "cancel": "रद्द करें",
+      "saving": "सहेजा जा रहा है...",
+      "submit": "अपडेट करें"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "बहुत बढ़िया",
+      "good": "अच्छा",
+      "okay": "ठीक-ठाक",
+      "low": "उदास",
+      "stressed": "तनावग्रस्त",
+      "title": "मूड वितरण (30 दिन)",
+      "noData": "अभी तक कोई चेक-इन डेटा नहीं",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "फ़िटनेस",
+      "mental_health": "मानसिक स्वास्थ्य",
+      "nutrition": "पोषण",
+      "meditation": "ध्यान",
+      "yoga": "योग",
+      "team_activity": "टीम गतिविधि",
+      "health_checkup": "स्वास्थ्य जाँच",
+      "other": "अन्य"
+    },
+    "loading": "वेलनेस डैशबोर्ड लोड हो रहा है...",
+    "error": {
+      "load": "वेलनेस डैशबोर्ड लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
+      "createProgram": "प्रोग्राम बनाने में विफल"
+    },
+    "header": {
+      "title": "वेलनेस डैशबोर्ड",
+      "subtitle": "संगठन-व्यापी वेलनेस मेट्रिक्स और प्रोग्राम प्रबंधन",
+      "createProgram": "प्रोग्राम बनाएँ"
+    },
+    "kpi": {
+      "wellnessScore": "वेलनेस स्कोर",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "सक्रिय प्रोग्राम",
+      "activeParticipants": "सक्रिय प्रतिभागी",
+      "goalCompletion": "लक्ष्य पूर्णता",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} लक्ष्य",
+      "totalPrograms_one": "कुल {{count}} प्रोग्राम",
+      "totalPrograms_other": "कुल {{count}} प्रोग्राम",
+      "checkins30d_one": "{{count}} चेक-इन (30 दिन)",
+      "checkins30d_other": "{{count}} चेक-इन (30 दिन)"
+    },
+    "metrics": {
+      "title": "औसत मेट्रिक्स (30 दिन)",
+      "avgEnergyLevel": "औसत ऊर्जा स्तर",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "औसत व्यायाम मिनट",
+      "avgExerciseMinutesValue": "{{value}} मिनट",
+      "totalEnrollments": "कुल नामांकन",
+      "completedEnrollments_one": "{{count}} पूर्ण",
+      "completedEnrollments_other": "{{count}} पूर्ण"
+    },
+    "topPrograms": {
+      "title": "नामांकन के आधार पर शीर्ष प्रोग्राम",
+      "colProgram": "प्रोग्राम",
+      "colType": "प्रकार",
+      "colEnrolled": "नामांकित",
+      "colPoints": "अंक",
+      "colStatus": "स्थिति",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय"
+    },
+    "modal": {
+      "title": "वेलनेस प्रोग्राम बनाएँ",
+      "fieldTitle": "शीर्षक *",
+      "titlePlaceholder": "उदा., 30-दिवसीय योग चुनौती",
+      "fieldDescription": "विवरण",
+      "descriptionPlaceholder": "प्रोग्राम विवरण...",
+      "fieldType": "प्रकार",
+      "fieldMaxParticipants": "अधिकतम प्रतिभागी",
+      "maxParticipantsPlaceholder": "असीमित",
+      "fieldStartDate": "प्रारंभ तिथि",
+      "fieldEndDate": "समाप्ति तिथि",
+      "fieldPointsReward": "अंक पुरस्कार",
+      "cancel": "रद्द करें",
+      "submit": "प्रोग्राम बनाएँ",
+      "submitting": "बना रहे हैं..."
+    },
+    "toast": {
+      "endBeforeStart": "समाप्ति तिथि प्रारंभ तिथि से पहले नहीं हो सकती।"
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "फिटनेस",
+      "mental_health": "मानसिक स्वास्थ्य",
+      "nutrition": "पोषण",
+      "meditation": "ध्यान",
+      "yoga": "योग",
+      "team_activity": "टीम गतिविधि",
+      "health_checkup": "स्वास्थ्य जांच",
+      "other": "अन्य"
+    },
+    "enroll": {
+      "success": "कार्यक्रम में सफलतापूर्वक नामांकित",
+      "error": "कार्यक्रम में नामांकन विफल रहा"
+    },
+    "header": {
+      "title": "वेलनेस कार्यक्रम",
+      "subtitle": "कार्यक्रमों का पता लगाएं, अपनी सेहत पर नज़र रखें, और अपने स्वास्थ्य लक्ष्यों को प्राप्त करें"
+    },
+    "actions": {
+      "dailyCheckIn": "दैनिक चेक-इन",
+      "myWellness": "मेरी वेलनेस"
+    },
+    "stats": {
+      "checkInStreak": "चेक-इन सिलसिला",
+      "activePrograms": "सक्रिय कार्यक्रम",
+      "goalsCompleted": "पूरे किए गए लक्ष्य",
+      "latestMood": "नवीनतम मनोदशा",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} दिन",
+      "checkInStreakValue_other": "{{count}} दिन"
+    },
+    "filter": {
+      "allTypes": "सभी प्रकार",
+      "programsAvailable_one": "{{count}} कार्यक्रम उपलब्ध",
+      "programsAvailable_other": "{{count}} कार्यक्रम उपलब्ध"
+    },
+    "list": {
+      "loading": "कार्यक्रम लोड हो रहे हैं...",
+      "empty": "अभी तक कोई वेलनेस कार्यक्रम उपलब्ध नहीं है"
+    },
+    "card": {
+      "ongoing": "जारी",
+      "enrolledButton": "नामांकित",
+      "enrollNow": "अभी नामांकन करें",
+      "pointsReward_one": "+{{count}} अंक",
+      "pointsReward_other": "+{{count}} अंक",
+      "enrolledCount_one": "{{count}} नामांकित",
+      "enrolledCount_other": "{{count}} नामांकित"
+    },
+    "pagination": {
+      "pageOf": "पृष्ठ {{page}} / {{totalPages}}"
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/api/client";
 import { ShieldAlert, Eye, EyeOff, CheckCircle } from "lucide-react";
@@ -24,6 +25,7 @@ const SEVERITIES = [
 ];
 
 export default function SubmitReportPage() {
+  const { t } = useTranslation();
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [category, setCategory] = useState("");
   const [severity, setSeverity] = useState("medium");
@@ -49,20 +51,20 @@ export default function SubmitReportPage() {
       <div className="max-w-2xl mx-auto py-12">
         <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Report Submitted</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("submitReport.success.title")}</h2>
           <p className="text-gray-600 mb-6">
-            Your report has been submitted successfully. Please save your case number to track the status of your report.
+            {t("submitReport.success.description")}
           </p>
           <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6">
-            <p className="text-sm text-gray-500 mb-1">Your Case Number</p>
+            <p className="text-sm text-gray-500 mb-1">{t("submitReport.success.caseNumberLabel")}</p>
             <p className="text-3xl font-mono font-bold text-brand-700">{submittedCase}</p>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-left">
-            <p className="text-sm text-amber-800 font-medium">Important:</p>
+            <p className="text-sm text-amber-800 font-medium">{t("submitReport.success.importantLabel")}</p>
             <ul className="text-sm text-amber-700 mt-1 list-disc list-inside space-y-1">
-              <li>Save this case number securely. It is the only way to track your report.</li>
-              <li>Your identity is {isAnonymous ? "fully anonymous and cannot be revealed" : "attached to this report"}.</li>
-              <li>Use the "Track Report" page to check for updates.</li>
+              <li>{t("submitReport.success.saveCaseNumber")}</li>
+              <li>{isAnonymous ? t("submitReport.success.identityAnonymous") : t("submitReport.success.identityAttached")}</li>
+              <li>{t("submitReport.success.trackReportHint")}</li>
             </ul>
           </div>
           <button
@@ -75,7 +77,7 @@ export default function SubmitReportPage() {
             }}
             className="mt-6 px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition"
           >
-            Submit Another Report
+            {t("submitReport.success.submitAnother")}
           </button>
         </div>
       </div>
@@ -87,9 +89,9 @@ export default function SubmitReportPage() {
       <div className="flex items-center gap-3 mb-6">
         <ShieldAlert className="h-7 w-7 text-brand-600" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Submit a Whistleblowing Report</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("submitReport.header.title")}</h1>
           <p className="text-sm text-gray-500">
-            Report misconduct safely and confidentially (EU Directive 2019/1937)
+            {t("submitReport.header.subtitle")}
           </p>
         </div>
       </div>
@@ -105,12 +107,12 @@ export default function SubmitReportPage() {
             )}
             <div>
               <p className="font-medium text-gray-900">
-                {isAnonymous ? "Anonymous Report" : "Identified Report"}
+                {isAnonymous ? t("submitReport.anonymous.anonymousTitle") : t("submitReport.anonymous.identifiedTitle")}
               </p>
               <p className="text-sm text-gray-500">
                 {isAnonymous
-                  ? "Your identity will not be stored or disclosed to anyone."
-                  : "Your identity will be visible to investigators."}
+                  ? t("submitReport.anonymous.anonymousDescription")
+                  : t("submitReport.anonymous.identifiedDescription")}
               </p>
             </div>
           </div>
@@ -132,17 +134,17 @@ export default function SubmitReportPage() {
         {/* Category */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Category <span className="text-red-500">*</span>
+            {t("submitReport.form.categoryLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           >
-            <option value="">Select a category...</option>
+            <option value="">{t("submitReport.form.categoryPlaceholder")}</option>
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
-                {c.label}
+                {t(`submitReport.category.${c.value}`, { defaultValue: c.label })}
               </option>
             ))}
           </select>
@@ -151,7 +153,7 @@ export default function SubmitReportPage() {
         {/* Severity */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Severity <span className="text-red-500">*</span>
+            {t("submitReport.form.severityLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <div className="flex gap-3">
             {SEVERITIES.map((s) => (
@@ -165,7 +167,7 @@ export default function SubmitReportPage() {
                     : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
                 }`}
               >
-                {s.label}
+                {t(`submitReport.severity.${s.value}`, { defaultValue: s.label })}
               </button>
             ))}
           </div>
@@ -174,13 +176,13 @@ export default function SubmitReportPage() {
         {/* Subject */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Subject <span className="text-red-500">*</span>
+            {t("submitReport.form.subjectLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            placeholder="Brief summary of the issue"
+            placeholder={t("submitReport.form.subjectPlaceholder")}
             maxLength={255}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           />
@@ -189,13 +191,13 @@ export default function SubmitReportPage() {
         {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description <span className="text-red-500">*</span>
+            {t("submitReport.form.descriptionLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={6}
-            placeholder="Provide as much detail as possible: what happened, when, where, who was involved, and any evidence you have."
+            placeholder={t("submitReport.form.descriptionPlaceholder")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           />
         </div>
@@ -215,13 +217,13 @@ export default function SubmitReportPage() {
             disabled={!category || !subject || !description || submitMutation.isPending}
             className="px-6 py-2.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
           >
-            {submitMutation.isPending ? "Submitting..." : "Submit Report"}
+            {submitMutation.isPending ? t("submitReport.actions.submitting") : t("submitReport.actions.submit")}
           </button>
         </div>
 
         {submitMutation.isError && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-            Failed to submit report. Please try again.
+            {t("submitReport.error.submitFailed")}
           </div>
         )}
       </div>

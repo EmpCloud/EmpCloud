@@ -4088,5 +4088,432 @@
       "multiple_choice": "Choix multiple",
       "text": "Texte"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "Soumis",
+      "under_investigation": "En cours d'enquête",
+      "escalated": "Transmis",
+      "resolved": "Résolu",
+      "dismissed": "Classé sans suite",
+      "closed": "Clôturé"
+    },
+    "severity": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "critical": "Critique"
+    },
+    "reportInfo": {
+      "categoryLabel": "Catégorie :",
+      "anonymousLabel": "Anonyme :",
+      "anonymousYes": "Oui",
+      "anonymousNo": "Non",
+      "reporterLabel": "Auteur du signalement :",
+      "evidenceFilesLabel": "Pièces justificatives :"
+    },
+    "timeline": {
+      "heading": "Chronologie de l'enquête",
+      "visibleToReporterBadge": "Visible par l'auteur du signalement",
+      "systemAuthor": "Système",
+      "empty": "Aucune mise à jour pour le moment"
+    },
+    "addUpdate": {
+      "heading": "Ajouter une mise à jour",
+      "typeNote": "Note interne",
+      "typeResponseToReporter": "Réponse à l'auteur du signalement",
+      "typeStatusChange": "Note de changement de statut",
+      "visibleToReporterCheckbox": "Visible par l'auteur du signalement",
+      "contentPlaceholder": "Rédigez une mise à jour ou une note...",
+      "submitSending": "Envoi en cours...",
+      "submit": "Ajouter une mise à jour"
+    },
+    "info": {
+      "submittedLabel": "Soumis le :",
+      "investigatorLabel": "Enquêteur :",
+      "escalatedToLabel": "Transmis à :",
+      "resolvedLabel": "Résolu le :",
+      "resolutionLabel": "Résolution :"
+    },
+    "assign": {
+      "heading": "Assigner un enquêteur",
+      "loadUsersError": "Échec du chargement des utilisateurs. Veuillez actualiser la page.",
+      "optionLoading": "Chargement des utilisateurs...",
+      "optionError": "Erreur lors du chargement des utilisateurs",
+      "optionSelect": "Sélectionner un enquêteur...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "Échec de l'assignation de l'enquêteur. Veuillez réessayer.",
+      "success": "Enquêteur assigné avec succès."
+    },
+    "changeStatus": {
+      "heading": "Modifier le statut",
+      "optionSelect": "Sélectionner un statut...",
+      "resolutionPlaceholder": "Notes de résolution...",
+      "submitUpdating": "Mise à jour en cours...",
+      "submit": "Mettre à jour le statut"
+    },
+    "escalate": {
+      "heading": "Transmettre en externe",
+      "placeholder": "Organisme ou autorité externe",
+      "submitEscalating": "Transmission en cours...",
+      "submit": "Transmettre le signalement"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "Signalement envoyé",
+      "description": "Votre signalement a bien été envoyé. Veuillez conserver votre numéro de dossier pour suivre l'état de votre signalement.",
+      "caseNumberLabel": "Votre numéro de dossier",
+      "importantLabel": "Important :",
+      "saveCaseNumber": "Conservez ce numéro de dossier en lieu sûr. C'est le seul moyen de suivre votre signalement.",
+      "identityAnonymous": "Votre identité est entièrement anonyme et ne peut pas être révélée.",
+      "identityAttached": "Votre identité est associée à ce signalement.",
+      "trackReportHint": "Utilisez la page « Suivre un signalement » pour consulter les mises à jour.",
+      "submitAnother": "Envoyer un autre signalement"
+    },
+    "header": {
+      "title": "Soumettre un signalement d'alerte",
+      "subtitle": "Signalez un manquement en toute sécurité et confidentialité (directive UE 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "Signalement anonyme",
+      "identifiedTitle": "Signalement identifié",
+      "anonymousDescription": "Votre identité ne sera ni conservée ni divulguée à quiconque.",
+      "identifiedDescription": "Votre identité sera visible par les enquêteurs."
+    },
+    "form": {
+      "categoryLabel": "Catégorie",
+      "required": "*",
+      "categoryPlaceholder": "Sélectionnez une catégorie...",
+      "severityLabel": "Gravité",
+      "subjectLabel": "Objet",
+      "subjectPlaceholder": "Bref résumé du problème",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Fournissez autant de détails que possible : ce qui s'est passé, quand, où, qui était impliqué et toute preuve dont vous disposez."
+    },
+    "actions": {
+      "submit": "Envoyer le signalement",
+      "submitting": "Envoi en cours..."
+    },
+    "error": {
+      "submitFailed": "Échec de l'envoi du signalement. Veuillez réessayer."
+    },
+    "category": {
+      "fraud": "Fraude",
+      "corruption": "Corruption",
+      "harassment": "Harcèlement",
+      "discrimination": "Discrimination",
+      "safety_violation": "Manquement à la sécurité",
+      "data_breach": "Violation de données",
+      "financial_misconduct": "Faute financière",
+      "environmental": "Environnement",
+      "retaliation": "Représailles",
+      "other": "Autre"
+    },
+    "severity": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "critical": "Critique"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "Tableau de bord des alertes",
+      "subtitle": "Aperçu de la conformité à la directive UE 2019/1937",
+      "viewAllReports": "Voir tous les signalements"
+    },
+    "stats": {
+      "totalReports": "Total des signalements",
+      "open": "Ouverts",
+      "resolved": "Résolus",
+      "avgResolution": "Résolution moy.",
+      "avgResolutionDays": "{{count}} j",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "Par gravité",
+      "byCategory": "Par catégorie",
+      "recentReports": "Signalements récents"
+    },
+    "empty": {
+      "noData": "Aucune donnée pour le moment",
+      "noReports": "Aucun signalement pour le moment"
+    },
+    "table": {
+      "caseNumber": "N° de dossier",
+      "category": "Catégorie",
+      "severity": "Gravité",
+      "subject": "Objet",
+      "status": "Statut",
+      "date": "Date"
+    },
+    "severity": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "critical": "Critique"
+    },
+    "status": {
+      "submitted": "Soumis",
+      "under_investigation": "En cours d'enquête",
+      "escalated": "Escaladé",
+      "resolved": "Résolu",
+      "dismissed": "Rejeté",
+      "closed": "Clôturé"
+    },
+    "category": {
+      "harassment": "Harcèlement",
+      "discrimination": "Discrimination",
+      "fraud": "Fraude",
+      "corruption": "Corruption",
+      "safety_violation": "Manquement à la sécurité",
+      "data_breach": "Violation de données",
+      "financial_misconduct": "Faute financière",
+      "other": "Autre"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "Mon bien-être",
+      "subtitle": "Suivez votre parcours de santé et vos objectifs personnels",
+      "dailyCheckIn": "Bilan quotidien"
+    },
+    "error": {
+      "loadFailed": "Échec du chargement des données de bien-être. Veuillez réessayer plus tard."
+    },
+    "stats": {
+      "dayStreak": "Jours consécutifs",
+      "totalCheckIns": "Total des bilans",
+      "avgEnergy": "Énergie moy.",
+      "goalsDone": "Objectifs atteints"
+    },
+    "moodTrend": {
+      "title": "Tendance de l'humeur (14 derniers jours)"
+    },
+    "mood": {
+      "great": "Excellente",
+      "good": "Bonne",
+      "okay": "Correcte",
+      "low": "Basse",
+      "stressed": "Stressée"
+    },
+    "goals": {
+      "title": "Mes objectifs",
+      "addGoal": "Ajouter un objectif",
+      "empty": "Aucun objectif pour le moment. Créez votre premier objectif de bien-être !",
+      "update": "Mettre à jour"
+    },
+    "goalStatus": {
+      "completed": "Atteint",
+      "abandoned": "Abandonné",
+      "active": "En cours"
+    },
+    "goalFrequency": {
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel"
+    },
+    "goalType": {
+      "steps": "Pas",
+      "exercise": "Exercice",
+      "meditation": "Méditation",
+      "water": "Hydratation",
+      "sleep": "Sommeil",
+      "custom": "Personnalisé"
+    },
+    "programs": {
+      "title": "Mes programmes",
+      "emptyCompleted": "Aucun programme terminé pour le moment. Continuez ainsi !",
+      "emptyActive": "Aucun programme en cours.",
+      "markComplete": "Marquer comme terminé",
+      "pointsReward": "+{{points}} points à l'achèvement",
+      "tabActive_one": "En cours ({{count}})",
+      "tabActive_other": "En cours ({{count}})",
+      "tabCompleted_one": "Terminé ({{count}})",
+      "tabCompleted_other": "Terminés ({{count}})"
+    },
+    "programStatus": {
+      "completed": "Terminé",
+      "active": "En cours"
+    },
+    "checkIns": {
+      "title": "Bilans récents",
+      "colDate": "Date",
+      "colMood": "Humeur",
+      "colEnergy": "Énergie",
+      "colSleep": "Sommeil",
+      "colExercise": "Exercice"
+    },
+    "goalModal": {
+      "title": "Créer un objectif de bien-être",
+      "labelTitle": "Titre *",
+      "placeholderTitle": "ex. : Marcher 10 000 pas par jour",
+      "labelGoalType": "Type d'objectif",
+      "labelFrequency": "Fréquence",
+      "labelTargetValue": "Valeur cible *",
+      "placeholderTargetValue": "ex. : 10000",
+      "labelUnit": "Unité *",
+      "placeholderUnit": "ex. : pas, minutes",
+      "labelStartDate": "Date de début *",
+      "labelEndDate": "Date de fin",
+      "errorCreateFailed": "Échec de la création de l'objectif",
+      "cancel": "Annuler",
+      "creating": "Création...",
+      "submit": "Créer l'objectif",
+      "errorEndBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
+    },
+    "progressModal": {
+      "title": "Mettre à jour la progression",
+      "prompt": "Ajouter à la progression (actuel : {{current}} {{unit}}) :",
+      "placeholder": "Quantité à ajouter en {{unit}}",
+      "cancel": "Annuler",
+      "saving": "Enregistrement...",
+      "submit": "Mettre à jour"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "Excellent",
+      "good": "Bien",
+      "okay": "Correct",
+      "low": "Bas",
+      "stressed": "Stressé(e)",
+      "title": "Répartition de l'humeur (30 jours)",
+      "noData": "Aucune donnée de bilan pour le moment",
+      "percent": "{{pct}} %"
+    },
+    "programType": {
+      "fitness": "Remise en forme",
+      "mental_health": "Santé mentale",
+      "nutrition": "Nutrition",
+      "meditation": "Méditation",
+      "yoga": "Yoga",
+      "team_activity": "Activité d'équipe",
+      "health_checkup": "Bilan de santé",
+      "other": "Autre"
+    },
+    "loading": "Chargement du tableau de bord bien-être...",
+    "error": {
+      "load": "Échec du chargement du tableau de bord bien-être. Veuillez réessayer plus tard.",
+      "createProgram": "Échec de la création du programme"
+    },
+    "header": {
+      "title": "Tableau de bord bien-être",
+      "subtitle": "Indicateurs de bien-être et gestion des programmes à l'échelle de l'organisation",
+      "createProgram": "Créer un programme"
+    },
+    "kpi": {
+      "wellnessScore": "Score de bien-être",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "Programmes actifs",
+      "activeParticipants": "Participants actifs",
+      "goalCompletion": "Réalisation des objectifs",
+      "goalCompletionValue": "{{rate}} %",
+      "goalsProgress": "{{completed}} / {{total}} objectifs",
+      "totalPrograms_one": "{{count}} programme au total",
+      "totalPrograms_other": "{{count}} programmes au total",
+      "checkins30d_one": "{{count}} bilan (30 j)",
+      "checkins30d_other": "{{count}} bilans (30 j)"
+    },
+    "metrics": {
+      "title": "Indicateurs moyens (30 jours)",
+      "avgEnergyLevel": "Niveau d'énergie moyen",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "Minutes d'exercice moyennes",
+      "avgExerciseMinutesValue": "{{value}} min",
+      "totalEnrollments": "Total des inscriptions",
+      "completedEnrollments_one": "{{count}} terminée",
+      "completedEnrollments_other": "{{count}} terminées"
+    },
+    "topPrograms": {
+      "title": "Meilleurs programmes par inscription",
+      "colProgram": "Programme",
+      "colType": "Type",
+      "colEnrolled": "Inscrits",
+      "colPoints": "Points",
+      "colStatus": "Statut",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "modal": {
+      "title": "Créer un programme de bien-être",
+      "fieldTitle": "Titre *",
+      "titlePlaceholder": "ex. : Défi yoga de 30 jours",
+      "fieldDescription": "Description",
+      "descriptionPlaceholder": "Description du programme...",
+      "fieldType": "Type",
+      "fieldMaxParticipants": "Participants max.",
+      "maxParticipantsPlaceholder": "Illimité",
+      "fieldStartDate": "Date de début",
+      "fieldEndDate": "Date de fin",
+      "fieldPointsReward": "Points de récompense",
+      "cancel": "Annuler",
+      "submit": "Créer un programme",
+      "submitting": "Création..."
+    },
+    "toast": {
+      "endBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Santé mentale",
+      "nutrition": "Nutrition",
+      "meditation": "Méditation",
+      "yoga": "Yoga",
+      "team_activity": "Activité d'équipe",
+      "health_checkup": "Bilan de santé",
+      "other": "Autre"
+    },
+    "enroll": {
+      "success": "Inscription au programme réussie",
+      "error": "Échec de l'inscription au programme"
+    },
+    "header": {
+      "title": "Programmes de bien-être",
+      "subtitle": "Explorez les programmes, suivez votre bien-être et atteignez vos objectifs de santé"
+    },
+    "actions": {
+      "dailyCheckIn": "Point quotidien",
+      "myWellness": "Mon bien-être"
+    },
+    "stats": {
+      "checkInStreak": "Série de check-ins",
+      "activePrograms": "Programmes actifs",
+      "goalsCompleted": "Objectifs atteints",
+      "latestMood": "Humeur récente",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} jour",
+      "checkInStreakValue_other": "{{count}} jours"
+    },
+    "filter": {
+      "allTypes": "Tous les types",
+      "programsAvailable_one": "{{count}} programme disponible",
+      "programsAvailable_other": "{{count}} programmes disponibles"
+    },
+    "list": {
+      "loading": "Chargement des programmes...",
+      "empty": "Aucun programme de bien-être disponible pour le moment"
+    },
+    "card": {
+      "ongoing": "En cours",
+      "enrolledButton": "Inscrit",
+      "enrollNow": "S'inscrire",
+      "pointsReward_one": "+{{count}} pt",
+      "pointsReward_other": "+{{count}} pts",
+      "enrolledCount_one": "{{count}} inscrit",
+      "enrolledCount_other": "{{count}} inscrits"
+    },
+    "pagination": {
+      "pageOf": "Page {{page}} sur {{totalPages}}"
+    }
   }
 }

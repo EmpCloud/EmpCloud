@@ -4088,5 +4088,432 @@
       "multiple_choice": "多项选择",
       "text": "文本"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "已提交",
+      "under_investigation": "调查中",
+      "escalated": "已升级",
+      "resolved": "已解决",
+      "dismissed": "已驳回",
+      "closed": "已关闭"
+    },
+    "severity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "严重"
+    },
+    "reportInfo": {
+      "categoryLabel": "类别：",
+      "anonymousLabel": "匿名：",
+      "anonymousYes": "是",
+      "anonymousNo": "否",
+      "reporterLabel": "举报人：",
+      "evidenceFilesLabel": "证据文件："
+    },
+    "timeline": {
+      "heading": "调查时间线",
+      "visibleToReporterBadge": "举报人可见",
+      "systemAuthor": "系统",
+      "empty": "暂无更新"
+    },
+    "addUpdate": {
+      "heading": "添加更新",
+      "typeNote": "内部备注",
+      "typeResponseToReporter": "回复举报人",
+      "typeStatusChange": "状态变更备注",
+      "visibleToReporterCheckbox": "举报人可见",
+      "contentPlaceholder": "撰写更新或备注……",
+      "submitSending": "发送中……",
+      "submit": "添加更新"
+    },
+    "info": {
+      "submittedLabel": "提交时间：",
+      "investigatorLabel": "调查员：",
+      "escalatedToLabel": "升级至：",
+      "resolvedLabel": "解决时间：",
+      "resolutionLabel": "处理结果："
+    },
+    "assign": {
+      "heading": "指派调查员",
+      "loadUsersError": "加载用户失败，请刷新页面。",
+      "optionLoading": "正在加载用户……",
+      "optionError": "加载用户出错",
+      "optionSelect": "请选择调查员……",
+      "userOption": "{{firstName}} {{lastName}}（{{email}}）",
+      "error": "指派调查员失败，请重试。",
+      "success": "调查员指派成功。"
+    },
+    "changeStatus": {
+      "heading": "变更状态",
+      "optionSelect": "请选择状态……",
+      "resolutionPlaceholder": "处理结果说明……",
+      "submitUpdating": "更新中……",
+      "submit": "更新状态"
+    },
+    "escalate": {
+      "heading": "对外升级",
+      "placeholder": "外部机构或主管部门",
+      "submitEscalating": "升级中……",
+      "submit": "升级举报"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "举报已提交",
+      "description": "您的举报已成功提交。请妥善保存您的案件编号，以便跟踪举报处理状态。",
+      "caseNumberLabel": "您的案件编号",
+      "importantLabel": "重要提示：",
+      "saveCaseNumber": "请安全保存此案件编号。这是跟踪您举报的唯一方式。",
+      "identityAnonymous": "您的身份完全匿名，无法被披露。",
+      "identityAttached": "您的身份已附加在此举报中。",
+      "trackReportHint": "请使用“跟踪举报”页面查看最新进展。",
+      "submitAnother": "提交另一份举报"
+    },
+    "header": {
+      "title": "提交举报（检举）",
+      "subtitle": "安全、保密地举报不当行为（欧盟指令 2019/1937）"
+    },
+    "anonymous": {
+      "anonymousTitle": "匿名举报",
+      "identifiedTitle": "实名举报",
+      "anonymousDescription": "您的身份不会被存储，也不会向任何人透露。",
+      "identifiedDescription": "您的身份将对调查人员可见。"
+    },
+    "form": {
+      "categoryLabel": "类别",
+      "required": "*",
+      "categoryPlaceholder": "请选择类别…",
+      "severityLabel": "严重程度",
+      "subjectLabel": "主题",
+      "subjectPlaceholder": "问题简要概述",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "请尽可能详细地提供信息：发生了什么、时间、地点、涉及人员，以及您掌握的任何证据。"
+    },
+    "actions": {
+      "submit": "提交举报",
+      "submitting": "提交中…"
+    },
+    "error": {
+      "submitFailed": "举报提交失败。请重试。"
+    },
+    "category": {
+      "fraud": "欺诈",
+      "corruption": "腐败",
+      "harassment": "骚扰",
+      "discrimination": "歧视",
+      "safety_violation": "安全违规",
+      "data_breach": "数据泄露",
+      "financial_misconduct": "财务不当行为",
+      "environmental": "环境问题",
+      "retaliation": "报复",
+      "other": "其他"
+    },
+    "severity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "严重"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "举报仪表板",
+      "subtitle": "欧盟指令 2019/1937 合规概览",
+      "viewAllReports": "查看全部举报"
+    },
+    "stats": {
+      "totalReports": "举报总数",
+      "open": "待处理",
+      "resolved": "已解决",
+      "avgResolution": "平均处理时长",
+      "avgResolutionDays": "{{count}}天",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "按严重程度",
+      "byCategory": "按类别",
+      "recentReports": "近期举报"
+    },
+    "empty": {
+      "noData": "暂无数据",
+      "noReports": "暂无举报"
+    },
+    "table": {
+      "caseNumber": "案件编号",
+      "category": "类别",
+      "severity": "严重程度",
+      "subject": "主题",
+      "status": "状态",
+      "date": "日期"
+    },
+    "severity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "critical": "严重"
+    },
+    "status": {
+      "submitted": "已提交",
+      "under_investigation": "调查中",
+      "escalated": "已升级",
+      "resolved": "已解决",
+      "dismissed": "已驳回",
+      "closed": "已关闭"
+    },
+    "category": {
+      "harassment": "骚扰",
+      "discrimination": "歧视",
+      "fraud": "欺诈",
+      "corruption": "腐败",
+      "safety_violation": "安全违规",
+      "data_breach": "数据泄露",
+      "financial_misconduct": "财务不当行为",
+      "other": "其他"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "我的健康",
+      "subtitle": "记录您的健康历程与个人目标",
+      "dailyCheckIn": "每日签到"
+    },
+    "error": {
+      "loadFailed": "无法加载健康数据，请稍后重试。"
+    },
+    "stats": {
+      "dayStreak": "连续天数",
+      "totalCheckIns": "签到总数",
+      "avgEnergy": "平均精力",
+      "goalsDone": "已完成目标"
+    },
+    "moodTrend": {
+      "title": "情绪趋势（最近 14 天）"
+    },
+    "mood": {
+      "great": "很好",
+      "good": "良好",
+      "okay": "一般",
+      "low": "低落",
+      "stressed": "压力大"
+    },
+    "goals": {
+      "title": "我的目标",
+      "addGoal": "添加目标",
+      "empty": "暂无目标。创建您的第一个健康目标吧！",
+      "update": "更新"
+    },
+    "goalStatus": {
+      "completed": "已完成",
+      "abandoned": "已放弃",
+      "active": "进行中"
+    },
+    "goalFrequency": {
+      "daily": "每日",
+      "weekly": "每周",
+      "monthly": "每月"
+    },
+    "goalType": {
+      "steps": "步数",
+      "exercise": "运动",
+      "meditation": "冥想",
+      "water": "饮水量",
+      "sleep": "睡眠",
+      "custom": "自定义"
+    },
+    "programs": {
+      "title": "我的计划",
+      "emptyCompleted": "尚未完成任何计划。继续加油！",
+      "emptyActive": "暂无进行中的计划。",
+      "markComplete": "标记为完成",
+      "pointsReward": "完成后获得 +{{points}} 积分",
+      "tabActive_one": "进行中（{{count}}）",
+      "tabActive_other": "进行中（{{count}}）",
+      "tabCompleted_one": "已完成（{{count}}）",
+      "tabCompleted_other": "已完成（{{count}}）"
+    },
+    "programStatus": {
+      "completed": "已完成",
+      "active": "进行中"
+    },
+    "checkIns": {
+      "title": "最近签到",
+      "colDate": "日期",
+      "colMood": "情绪",
+      "colEnergy": "精力",
+      "colSleep": "睡眠",
+      "colExercise": "运动"
+    },
+    "goalModal": {
+      "title": "创建健康目标",
+      "labelTitle": "标题 *",
+      "placeholderTitle": "例如：每天步行 10,000 步",
+      "labelGoalType": "目标类型",
+      "labelFrequency": "频率",
+      "labelTargetValue": "目标值 *",
+      "placeholderTargetValue": "例如：10000",
+      "labelUnit": "单位 *",
+      "placeholderUnit": "例如：步、分钟",
+      "labelStartDate": "开始日期 *",
+      "labelEndDate": "结束日期",
+      "errorCreateFailed": "创建目标失败",
+      "cancel": "取消",
+      "creating": "创建中...",
+      "submit": "创建目标",
+      "errorEndBeforeStart": "结束日期不能早于开始日期。"
+    },
+    "progressModal": {
+      "title": "更新进度",
+      "prompt": "添加进度（当前：{{current}} {{unit}}）：",
+      "placeholder": "要添加的数量（{{unit}}）",
+      "cancel": "取消",
+      "saving": "保存中...",
+      "submit": "更新"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "非常好",
+      "good": "良好",
+      "okay": "一般",
+      "low": "低落",
+      "stressed": "压力大",
+      "title": "情绪分布（30天）",
+      "noData": "暂无签到数据",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "健身",
+      "mental_health": "心理健康",
+      "nutrition": "营养",
+      "meditation": "冥想",
+      "yoga": "瑜伽",
+      "team_activity": "团队活动",
+      "health_checkup": "健康检查",
+      "other": "其他"
+    },
+    "loading": "正在加载健康仪表板……",
+    "error": {
+      "load": "健康仪表板加载失败，请稍后重试。",
+      "createProgram": "创建项目失败"
+    },
+    "header": {
+      "title": "健康仪表板",
+      "subtitle": "全组织健康指标与项目管理",
+      "createProgram": "创建项目"
+    },
+    "kpi": {
+      "wellnessScore": "健康评分",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "进行中项目",
+      "activeParticipants": "活跃参与者",
+      "goalCompletion": "目标完成率",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} 个目标",
+      "totalPrograms_one": "共 {{count}} 个项目",
+      "totalPrograms_other": "共 {{count}} 个项目",
+      "checkins30d_one": "{{count}} 次签到（30天）",
+      "checkins30d_other": "{{count}} 次签到（30天）"
+    },
+    "metrics": {
+      "title": "平均指标（30天）",
+      "avgEnergyLevel": "平均精力水平",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "平均运动时长",
+      "avgExerciseMinutesValue": "{{value}} 分钟",
+      "totalEnrollments": "总报名人数",
+      "completedEnrollments_one": "已完成 {{count}} 人",
+      "completedEnrollments_other": "已完成 {{count}} 人"
+    },
+    "topPrograms": {
+      "title": "报名人数最多的项目",
+      "colProgram": "项目",
+      "colType": "类型",
+      "colEnrolled": "已报名",
+      "colPoints": "积分",
+      "colStatus": "状态",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "进行中",
+      "inactive": "未启用"
+    },
+    "modal": {
+      "title": "创建健康项目",
+      "fieldTitle": "标题 *",
+      "titlePlaceholder": "例如：30天瑜伽挑战",
+      "fieldDescription": "描述",
+      "descriptionPlaceholder": "项目描述……",
+      "fieldType": "类型",
+      "fieldMaxParticipants": "最大参与人数",
+      "maxParticipantsPlaceholder": "不限",
+      "fieldStartDate": "开始日期",
+      "fieldEndDate": "结束日期",
+      "fieldPointsReward": "积分奖励",
+      "cancel": "取消",
+      "submit": "创建项目",
+      "submitting": "正在创建……"
+    },
+    "toast": {
+      "endBeforeStart": "结束日期不能早于开始日期。"
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "健身",
+      "mental_health": "心理健康",
+      "nutrition": "营养",
+      "meditation": "冥想",
+      "yoga": "瑜伽",
+      "team_activity": "团队活动",
+      "health_checkup": "健康检查",
+      "other": "其他"
+    },
+    "enroll": {
+      "success": "已成功报名参加项目",
+      "error": "报名参加项目失败"
+    },
+    "header": {
+      "title": "健康关怀项目",
+      "subtitle": "探索项目、追踪您的身心状态并实现您的健康目标"
+    },
+    "actions": {
+      "dailyCheckIn": "每日打卡",
+      "myWellness": "我的健康"
+    },
+    "stats": {
+      "checkInStreak": "连续打卡",
+      "activePrograms": "进行中的项目",
+      "goalsCompleted": "已完成目标",
+      "latestMood": "最近心情",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} 天",
+      "checkInStreakValue_other": "{{count}} 天"
+    },
+    "filter": {
+      "allTypes": "全部类型",
+      "programsAvailable_one": "有 {{count}} 个可参加的项目",
+      "programsAvailable_other": "有 {{count}} 个可参加的项目"
+    },
+    "list": {
+      "loading": "正在加载项目...",
+      "empty": "暂无可参加的健康关怀项目"
+    },
+    "card": {
+      "ongoing": "持续进行",
+      "enrolledButton": "已报名",
+      "enrollNow": "立即报名",
+      "pointsReward_one": "+{{count}} 积分",
+      "pointsReward_other": "+{{count}} 积分",
+      "enrolledCount_one": "{{count}} 人已报名",
+      "enrolledCount_other": "{{count}} 人已报名"
+    },
+    "pagination": {
+      "pageOf": "第 {{page}} 页，共 {{totalPages}} 页"
+    }
   }
 }

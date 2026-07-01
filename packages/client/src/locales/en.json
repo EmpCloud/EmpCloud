@@ -4094,5 +4094,432 @@
       "multiple_choice": "Multiple Choice",
       "text": "Text"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "Submitted",
+      "under_investigation": "Under Investigation",
+      "escalated": "Escalated",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed",
+      "closed": "Closed"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "reportInfo": {
+      "categoryLabel": "Category:",
+      "anonymousLabel": "Anonymous:",
+      "anonymousYes": "Yes",
+      "anonymousNo": "No",
+      "reporterLabel": "Reporter:",
+      "evidenceFilesLabel": "Evidence Files:"
+    },
+    "timeline": {
+      "heading": "Investigation Timeline",
+      "visibleToReporterBadge": "Visible to Reporter",
+      "systemAuthor": "System",
+      "empty": "No updates yet"
+    },
+    "addUpdate": {
+      "heading": "Add Update",
+      "typeNote": "Internal Note",
+      "typeResponseToReporter": "Response to Reporter",
+      "typeStatusChange": "Status Change Note",
+      "visibleToReporterCheckbox": "Visible to reporter",
+      "contentPlaceholder": "Write an update or note...",
+      "submitSending": "Sending...",
+      "submit": "Add Update"
+    },
+    "info": {
+      "submittedLabel": "Submitted:",
+      "investigatorLabel": "Investigator:",
+      "escalatedToLabel": "Escalated to:",
+      "resolvedLabel": "Resolved:",
+      "resolutionLabel": "Resolution:"
+    },
+    "assign": {
+      "heading": "Assign Investigator",
+      "loadUsersError": "Failed to load users. Please refresh the page.",
+      "optionLoading": "Loading users...",
+      "optionError": "Error loading users",
+      "optionSelect": "Select investigator...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "Failed to assign investigator. Please try again.",
+      "success": "Investigator assigned successfully."
+    },
+    "changeStatus": {
+      "heading": "Change Status",
+      "optionSelect": "Select status...",
+      "resolutionPlaceholder": "Resolution notes...",
+      "submitUpdating": "Updating...",
+      "submit": "Update Status"
+    },
+    "escalate": {
+      "heading": "Escalate Externally",
+      "placeholder": "External body or authority",
+      "submitEscalating": "Escalating...",
+      "submit": "Escalate Report"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "Report Submitted",
+      "description": "Your report has been submitted successfully. Please save your case number to track the status of your report.",
+      "caseNumberLabel": "Your Case Number",
+      "importantLabel": "Important:",
+      "saveCaseNumber": "Save this case number securely. It is the only way to track your report.",
+      "identityAnonymous": "Your identity is fully anonymous and cannot be revealed.",
+      "identityAttached": "Your identity is attached to this report.",
+      "trackReportHint": "Use the \"Track Report\" page to check for updates.",
+      "submitAnother": "Submit Another Report"
+    },
+    "header": {
+      "title": "Submit a Whistleblowing Report",
+      "subtitle": "Report misconduct safely and confidentially (EU Directive 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "Anonymous Report",
+      "identifiedTitle": "Identified Report",
+      "anonymousDescription": "Your identity will not be stored or disclosed to anyone.",
+      "identifiedDescription": "Your identity will be visible to investigators."
+    },
+    "form": {
+      "categoryLabel": "Category",
+      "required": "*",
+      "categoryPlaceholder": "Select a category...",
+      "severityLabel": "Severity",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Brief summary of the issue",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Provide as much detail as possible: what happened, when, where, who was involved, and any evidence you have."
+    },
+    "actions": {
+      "submit": "Submit Report",
+      "submitting": "Submitting..."
+    },
+    "error": {
+      "submitFailed": "Failed to submit report. Please try again."
+    },
+    "category": {
+      "fraud": "Fraud",
+      "corruption": "Corruption",
+      "harassment": "Harassment",
+      "discrimination": "Discrimination",
+      "safety_violation": "Safety Violation",
+      "data_breach": "Data Breach",
+      "financial_misconduct": "Financial Misconduct",
+      "environmental": "Environmental",
+      "retaliation": "Retaliation",
+      "other": "Other"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "Whistleblowing Dashboard",
+      "subtitle": "EU Directive 2019/1937 compliance overview",
+      "viewAllReports": "View All Reports"
+    },
+    "stats": {
+      "totalReports": "Total Reports",
+      "open": "Open",
+      "resolved": "Resolved",
+      "avgResolution": "Avg. Resolution",
+      "avgResolutionDays": "{{count}}d",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "By Severity",
+      "byCategory": "By Category",
+      "recentReports": "Recent Reports"
+    },
+    "empty": {
+      "noData": "No data yet",
+      "noReports": "No reports yet"
+    },
+    "table": {
+      "caseNumber": "Case #",
+      "category": "Category",
+      "severity": "Severity",
+      "subject": "Subject",
+      "status": "Status",
+      "date": "Date"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "status": {
+      "submitted": "Submitted",
+      "under_investigation": "Under Investigation",
+      "escalated": "Escalated",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed",
+      "closed": "Closed"
+    },
+    "category": {
+      "harassment": "Harassment",
+      "discrimination": "Discrimination",
+      "fraud": "Fraud",
+      "corruption": "Corruption",
+      "safety_violation": "Safety Violation",
+      "data_breach": "Data Breach",
+      "financial_misconduct": "Financial Misconduct",
+      "other": "Other"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "My Wellness",
+      "subtitle": "Track your health journey and personal goals",
+      "dailyCheckIn": "Daily Check-in"
+    },
+    "error": {
+      "loadFailed": "Failed to load wellness data. Please try again later."
+    },
+    "stats": {
+      "dayStreak": "Day Streak",
+      "totalCheckIns": "Total Check-ins",
+      "avgEnergy": "Avg Energy",
+      "goalsDone": "Goals Done"
+    },
+    "moodTrend": {
+      "title": "Mood Trend (Last 14 Days)"
+    },
+    "mood": {
+      "great": "Great",
+      "good": "Good",
+      "okay": "Okay",
+      "low": "Low",
+      "stressed": "Stressed"
+    },
+    "goals": {
+      "title": "My Goals",
+      "addGoal": "Add Goal",
+      "empty": "No goals yet. Create your first wellness goal!",
+      "update": "Update"
+    },
+    "goalStatus": {
+      "completed": "Completed",
+      "abandoned": "Abandoned",
+      "active": "Active"
+    },
+    "goalFrequency": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "goalType": {
+      "steps": "Steps",
+      "exercise": "Exercise",
+      "meditation": "Meditation",
+      "water": "Water Intake",
+      "sleep": "Sleep",
+      "custom": "Custom"
+    },
+    "programs": {
+      "title": "My Programs",
+      "emptyCompleted": "No completed programs yet. Keep going!",
+      "emptyActive": "No active programs.",
+      "markComplete": "Mark Complete",
+      "pointsReward": "+{{points}} points on completion",
+      "tabActive_one": "Active ({{count}})",
+      "tabActive_other": "Active ({{count}})",
+      "tabCompleted_one": "Completed ({{count}})",
+      "tabCompleted_other": "Completed ({{count}})"
+    },
+    "programStatus": {
+      "completed": "Completed",
+      "active": "Active"
+    },
+    "checkIns": {
+      "title": "Recent Check-ins",
+      "colDate": "Date",
+      "colMood": "Mood",
+      "colEnergy": "Energy",
+      "colSleep": "Sleep",
+      "colExercise": "Exercise"
+    },
+    "goalModal": {
+      "title": "Create Wellness Goal",
+      "labelTitle": "Title *",
+      "placeholderTitle": "e.g., Walk 10,000 steps daily",
+      "labelGoalType": "Goal Type",
+      "labelFrequency": "Frequency",
+      "labelTargetValue": "Target Value *",
+      "placeholderTargetValue": "e.g., 10000",
+      "labelUnit": "Unit *",
+      "placeholderUnit": "e.g., steps, minutes",
+      "labelStartDate": "Start Date *",
+      "labelEndDate": "End Date",
+      "errorCreateFailed": "Failed to create goal",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "submit": "Create Goal",
+      "errorEndBeforeStart": "End date cannot be before the start date."
+    },
+    "progressModal": {
+      "title": "Update Progress",
+      "prompt": "Add progress (current: {{current}} {{unit}}):",
+      "placeholder": "Amount to add in {{unit}}",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "submit": "Update"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "Great",
+      "good": "Good",
+      "okay": "Okay",
+      "low": "Low",
+      "stressed": "Stressed",
+      "title": "Mood Distribution (30 days)",
+      "noData": "No check-in data yet",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Mental Health",
+      "nutrition": "Nutrition",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "team_activity": "Team Activity",
+      "health_checkup": "Health Checkup",
+      "other": "Other"
+    },
+    "loading": "Loading wellness dashboard...",
+    "error": {
+      "load": "Failed to load wellness dashboard. Please try again later.",
+      "createProgram": "Failed to create program"
+    },
+    "header": {
+      "title": "Wellness Dashboard",
+      "subtitle": "Organization-wide wellness metrics and program management",
+      "createProgram": "Create Program"
+    },
+    "kpi": {
+      "wellnessScore": "Wellness Score",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "Active Programs",
+      "activeParticipants": "Active Participants",
+      "goalCompletion": "Goal Completion",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} goals",
+      "totalPrograms_one": "{{count}} total program",
+      "totalPrograms_other": "{{count}} total programs",
+      "checkins30d_one": "{{count}} check-in (30d)",
+      "checkins30d_other": "{{count}} check-ins (30d)"
+    },
+    "metrics": {
+      "title": "Average Metrics (30 days)",
+      "avgEnergyLevel": "Avg Energy Level",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "Avg Exercise Minutes",
+      "avgExerciseMinutesValue": "{{value}} min",
+      "totalEnrollments": "Total Enrollments",
+      "completedEnrollments_one": "{{count}} completed",
+      "completedEnrollments_other": "{{count}} completed"
+    },
+    "topPrograms": {
+      "title": "Top Programs by Enrollment",
+      "colProgram": "Program",
+      "colType": "Type",
+      "colEnrolled": "Enrolled",
+      "colPoints": "Points",
+      "colStatus": "Status",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "modal": {
+      "title": "Create Wellness Program",
+      "fieldTitle": "Title *",
+      "titlePlaceholder": "e.g., 30-Day Yoga Challenge",
+      "fieldDescription": "Description",
+      "descriptionPlaceholder": "Program description...",
+      "fieldType": "Type",
+      "fieldMaxParticipants": "Max Participants",
+      "maxParticipantsPlaceholder": "Unlimited",
+      "fieldStartDate": "Start Date",
+      "fieldEndDate": "End Date",
+      "fieldPointsReward": "Points Reward",
+      "cancel": "Cancel",
+      "submit": "Create Program",
+      "submitting": "Creating..."
+    },
+    "toast": {
+      "endBeforeStart": "End date cannot be before the start date."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Mental Health",
+      "nutrition": "Nutrition",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "team_activity": "Team Activity",
+      "health_checkup": "Health Checkup",
+      "other": "Other"
+    },
+    "enroll": {
+      "success": "Successfully enrolled in program",
+      "error": "Failed to enroll in program"
+    },
+    "header": {
+      "title": "Wellness Programs",
+      "subtitle": "Explore programs, track your well-being, and achieve your health goals"
+    },
+    "actions": {
+      "dailyCheckIn": "Daily Check-in",
+      "myWellness": "My Wellness"
+    },
+    "stats": {
+      "checkInStreak": "Check-in Streak",
+      "activePrograms": "Active Programs",
+      "goalsCompleted": "Goals Completed",
+      "latestMood": "Latest Mood",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} day",
+      "checkInStreakValue_other": "{{count}} days"
+    },
+    "filter": {
+      "allTypes": "All Types",
+      "programsAvailable_one": "{{count}} program available",
+      "programsAvailable_other": "{{count}} programs available"
+    },
+    "list": {
+      "loading": "Loading programs...",
+      "empty": "No wellness programs available yet"
+    },
+    "card": {
+      "ongoing": "Ongoing",
+      "enrolledButton": "Enrolled",
+      "enrollNow": "Enroll Now",
+      "pointsReward_one": "+{{count}} pts",
+      "pointsReward_other": "+{{count}} pts",
+      "enrolledCount_one": "{{count}} enrolled",
+      "enrolledCount_other": "{{count}} enrolled"
+    },
+    "pagination": {
+      "pageOf": "Page {{page}} of {{totalPages}}"
+    }
   }
 }

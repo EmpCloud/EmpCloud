@@ -4088,5 +4088,432 @@
       "multiple_choice": "Multiple Choice",
       "text": "Text"
     }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "Eingereicht",
+      "under_investigation": "In Prüfung",
+      "escalated": "Eskaliert",
+      "resolved": "Geklärt",
+      "dismissed": "Abgewiesen",
+      "closed": "Geschlossen"
+    },
+    "severity": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "critical": "Kritisch"
+    },
+    "reportInfo": {
+      "categoryLabel": "Kategorie:",
+      "anonymousLabel": "Anonym:",
+      "anonymousYes": "Ja",
+      "anonymousNo": "Nein",
+      "reporterLabel": "Meldende Person:",
+      "evidenceFilesLabel": "Beweisdateien:"
+    },
+    "timeline": {
+      "heading": "Verlauf der Untersuchung",
+      "visibleToReporterBadge": "Für meldende Person sichtbar",
+      "systemAuthor": "System",
+      "empty": "Noch keine Aktualisierungen"
+    },
+    "addUpdate": {
+      "heading": "Aktualisierung hinzufügen",
+      "typeNote": "Interne Notiz",
+      "typeResponseToReporter": "Antwort an meldende Person",
+      "typeStatusChange": "Notiz zur Statusänderung",
+      "visibleToReporterCheckbox": "Für meldende Person sichtbar",
+      "contentPlaceholder": "Aktualisierung oder Notiz verfassen ...",
+      "submitSending": "Wird gesendet ...",
+      "submit": "Aktualisierung hinzufügen"
+    },
+    "info": {
+      "submittedLabel": "Eingereicht:",
+      "investigatorLabel": "Ermittler/in:",
+      "escalatedToLabel": "Eskaliert an:",
+      "resolvedLabel": "Geklärt:",
+      "resolutionLabel": "Klärung:"
+    },
+    "assign": {
+      "heading": "Ermittler/in zuweisen",
+      "loadUsersError": "Benutzer konnten nicht geladen werden. Bitte laden Sie die Seite neu.",
+      "optionLoading": "Benutzer werden geladen ...",
+      "optionError": "Fehler beim Laden der Benutzer",
+      "optionSelect": "Ermittler/in auswählen ...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "Ermittler/in konnte nicht zugewiesen werden. Bitte versuchen Sie es erneut.",
+      "success": "Ermittler/in erfolgreich zugewiesen."
+    },
+    "changeStatus": {
+      "heading": "Status ändern",
+      "optionSelect": "Status auswählen ...",
+      "resolutionPlaceholder": "Notizen zur Klärung ...",
+      "submitUpdating": "Wird aktualisiert ...",
+      "submit": "Status aktualisieren"
+    },
+    "escalate": {
+      "heading": "Extern eskalieren",
+      "placeholder": "Externe Stelle oder Behörde",
+      "submitEscalating": "Wird eskaliert ...",
+      "submit": "Meldung eskalieren"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "Meldung eingereicht",
+      "description": "Ihre Meldung wurde erfolgreich eingereicht. Bitte speichern Sie Ihre Fallnummer, um den Status Ihrer Meldung verfolgen zu können.",
+      "caseNumberLabel": "Ihre Fallnummer",
+      "importantLabel": "Wichtig:",
+      "saveCaseNumber": "Bewahren Sie diese Fallnummer sicher auf. Sie ist die einzige Möglichkeit, Ihre Meldung zu verfolgen.",
+      "identityAnonymous": "Ihre Identität ist vollständig anonym und kann nicht offengelegt werden.",
+      "identityAttached": "Ihre Identität ist mit dieser Meldung verknüpft.",
+      "trackReportHint": "Verwenden Sie die Seite „Meldung verfolgen“, um nach Aktualisierungen zu suchen.",
+      "submitAnother": "Weitere Meldung einreichen"
+    },
+    "header": {
+      "title": "Whistleblowing-Meldung einreichen",
+      "subtitle": "Melden Sie Fehlverhalten sicher und vertraulich (EU-Richtlinie 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "Anonyme Meldung",
+      "identifiedTitle": "Identifizierte Meldung",
+      "anonymousDescription": "Ihre Identität wird nicht gespeichert oder an irgendjemanden weitergegeben.",
+      "identifiedDescription": "Ihre Identität ist für die Ermittler sichtbar."
+    },
+    "form": {
+      "categoryLabel": "Kategorie",
+      "required": "*",
+      "categoryPlaceholder": "Kategorie auswählen …",
+      "severityLabel": "Schweregrad",
+      "subjectLabel": "Betreff",
+      "subjectPlaceholder": "Kurze Zusammenfassung des Anliegens",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Geben Sie so viele Details wie möglich an: was geschehen ist, wann, wo, wer beteiligt war und welche Beweise Sie haben."
+    },
+    "actions": {
+      "submit": "Meldung einreichen",
+      "submitting": "Wird eingereicht …"
+    },
+    "error": {
+      "submitFailed": "Meldung konnte nicht eingereicht werden. Bitte versuchen Sie es erneut."
+    },
+    "category": {
+      "fraud": "Betrug",
+      "corruption": "Korruption",
+      "harassment": "Belästigung",
+      "discrimination": "Diskriminierung",
+      "safety_violation": "Sicherheitsverstoß",
+      "data_breach": "Datenschutzverletzung",
+      "financial_misconduct": "Finanzielles Fehlverhalten",
+      "environmental": "Umwelt",
+      "retaliation": "Repressalien",
+      "other": "Sonstiges"
+    },
+    "severity": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "critical": "Kritisch"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "Hinweisgeber-Dashboard",
+      "subtitle": "Compliance-Überblick zur EU-Richtlinie 2019/1937",
+      "viewAllReports": "Alle Meldungen anzeigen"
+    },
+    "stats": {
+      "totalReports": "Meldungen gesamt",
+      "open": "Offen",
+      "resolved": "Erledigt",
+      "avgResolution": "Ø Bearbeitungszeit",
+      "avgResolutionDays": "{{count}} T",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "Nach Schweregrad",
+      "byCategory": "Nach Kategorie",
+      "recentReports": "Neueste Meldungen"
+    },
+    "empty": {
+      "noData": "Noch keine Daten",
+      "noReports": "Noch keine Meldungen"
+    },
+    "table": {
+      "caseNumber": "Fall-Nr.",
+      "category": "Kategorie",
+      "severity": "Schweregrad",
+      "subject": "Betreff",
+      "status": "Status",
+      "date": "Datum"
+    },
+    "severity": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "critical": "Kritisch"
+    },
+    "status": {
+      "submitted": "Eingereicht",
+      "under_investigation": "In Prüfung",
+      "escalated": "Eskaliert",
+      "resolved": "Erledigt",
+      "dismissed": "Abgewiesen",
+      "closed": "Geschlossen"
+    },
+    "category": {
+      "harassment": "Belästigung",
+      "discrimination": "Diskriminierung",
+      "fraud": "Betrug",
+      "corruption": "Korruption",
+      "safety_violation": "Sicherheitsverstoß",
+      "data_breach": "Datenpanne",
+      "financial_misconduct": "Finanzielles Fehlverhalten",
+      "other": "Sonstiges"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "Mein Wohlbefinden",
+      "subtitle": "Verfolgen Sie Ihren Gesundheitsweg und Ihre persönlichen Ziele",
+      "dailyCheckIn": "Täglicher Check-in"
+    },
+    "error": {
+      "loadFailed": "Wohlbefinden-Daten konnten nicht geladen werden. Bitte versuchen Sie es später erneut."
+    },
+    "stats": {
+      "dayStreak": "Tage in Folge",
+      "totalCheckIns": "Check-ins gesamt",
+      "avgEnergy": "Ø Energie",
+      "goalsDone": "Erreichte Ziele"
+    },
+    "moodTrend": {
+      "title": "Stimmungsverlauf (letzte 14 Tage)"
+    },
+    "mood": {
+      "great": "Ausgezeichnet",
+      "good": "Gut",
+      "okay": "Okay",
+      "low": "Niedrig",
+      "stressed": "Gestresst"
+    },
+    "goals": {
+      "title": "Meine Ziele",
+      "addGoal": "Ziel hinzufügen",
+      "empty": "Noch keine Ziele. Erstellen Sie Ihr erstes Wohlbefinden-Ziel!",
+      "update": "Aktualisieren"
+    },
+    "goalStatus": {
+      "completed": "Abgeschlossen",
+      "abandoned": "Abgebrochen",
+      "active": "Aktiv"
+    },
+    "goalFrequency": {
+      "daily": "Täglich",
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich"
+    },
+    "goalType": {
+      "steps": "Schritte",
+      "exercise": "Bewegung",
+      "meditation": "Meditation",
+      "water": "Wasseraufnahme",
+      "sleep": "Schlaf",
+      "custom": "Benutzerdefiniert"
+    },
+    "programs": {
+      "title": "Meine Programme",
+      "emptyCompleted": "Noch keine abgeschlossenen Programme. Bleiben Sie dran!",
+      "emptyActive": "Keine aktiven Programme.",
+      "markComplete": "Als abgeschlossen markieren",
+      "pointsReward": "+{{points}} Punkte bei Abschluss",
+      "tabActive_one": "Aktiv ({{count}})",
+      "tabActive_other": "Aktiv ({{count}})",
+      "tabCompleted_one": "Abgeschlossen ({{count}})",
+      "tabCompleted_other": "Abgeschlossen ({{count}})"
+    },
+    "programStatus": {
+      "completed": "Abgeschlossen",
+      "active": "Aktiv"
+    },
+    "checkIns": {
+      "title": "Letzte Check-ins",
+      "colDate": "Datum",
+      "colMood": "Stimmung",
+      "colEnergy": "Energie",
+      "colSleep": "Schlaf",
+      "colExercise": "Bewegung"
+    },
+    "goalModal": {
+      "title": "Wohlbefinden-Ziel erstellen",
+      "labelTitle": "Titel *",
+      "placeholderTitle": "z. B. Täglich 10.000 Schritte gehen",
+      "labelGoalType": "Zieltyp",
+      "labelFrequency": "Häufigkeit",
+      "labelTargetValue": "Zielwert *",
+      "placeholderTargetValue": "z. B. 10000",
+      "labelUnit": "Einheit *",
+      "placeholderUnit": "z. B. Schritte, Minuten",
+      "labelStartDate": "Startdatum *",
+      "labelEndDate": "Enddatum",
+      "errorCreateFailed": "Ziel konnte nicht erstellt werden",
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt ...",
+      "submit": "Ziel erstellen",
+      "errorEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen."
+    },
+    "progressModal": {
+      "title": "Fortschritt aktualisieren",
+      "prompt": "Fortschritt hinzufügen (aktuell: {{current}} {{unit}}):",
+      "placeholder": "Hinzuzufügender Wert in {{unit}}",
+      "cancel": "Abbrechen",
+      "saving": "Wird gespeichert ...",
+      "submit": "Aktualisieren"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "Sehr gut",
+      "good": "Gut",
+      "okay": "Okay",
+      "low": "Niedergeschlagen",
+      "stressed": "Gestresst",
+      "title": "Stimmungsverteilung (30 Tage)",
+      "noData": "Noch keine Check-in-Daten",
+      "percent": "{{pct}} %"
+    },
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Psychische Gesundheit",
+      "nutrition": "Ernährung",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "team_activity": "Teamaktivität",
+      "health_checkup": "Gesundheitscheck",
+      "other": "Sonstiges"
+    },
+    "loading": "Wellness-Dashboard wird geladen...",
+    "error": {
+      "load": "Wellness-Dashboard konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+      "createProgram": "Programm konnte nicht erstellt werden"
+    },
+    "header": {
+      "title": "Wellness-Dashboard",
+      "subtitle": "Unternehmensweite Wellness-Kennzahlen und Programmverwaltung",
+      "createProgram": "Programm erstellen"
+    },
+    "kpi": {
+      "wellnessScore": "Wellness-Score",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "Aktive Programme",
+      "activeParticipants": "Aktive Teilnehmende",
+      "goalCompletion": "Zielerreichung",
+      "goalCompletionValue": "{{rate}} %",
+      "goalsProgress": "{{completed}} / {{total}} Ziele",
+      "totalPrograms_one": "{{count}} Programm gesamt",
+      "totalPrograms_other": "{{count}} Programme gesamt",
+      "checkins30d_one": "{{count}} Check-in (30 Tage)",
+      "checkins30d_other": "{{count}} Check-ins (30 Tage)"
+    },
+    "metrics": {
+      "title": "Durchschnittliche Kennzahlen (30 Tage)",
+      "avgEnergyLevel": "Durchschn. Energielevel",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "Durchschn. Bewegungsminuten",
+      "avgExerciseMinutesValue": "{{value}} Min.",
+      "totalEnrollments": "Anmeldungen gesamt",
+      "completedEnrollments_one": "{{count}} abgeschlossen",
+      "completedEnrollments_other": "{{count}} abgeschlossen"
+    },
+    "topPrograms": {
+      "title": "Top-Programme nach Anmeldungen",
+      "colProgram": "Programm",
+      "colType": "Typ",
+      "colEnrolled": "Angemeldet",
+      "colPoints": "Punkte",
+      "colStatus": "Status",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "modal": {
+      "title": "Wellness-Programm erstellen",
+      "fieldTitle": "Titel *",
+      "titlePlaceholder": "z. B. 30-Tage-Yoga-Challenge",
+      "fieldDescription": "Beschreibung",
+      "descriptionPlaceholder": "Programmbeschreibung...",
+      "fieldType": "Typ",
+      "fieldMaxParticipants": "Max. Teilnehmende",
+      "maxParticipantsPlaceholder": "Unbegrenzt",
+      "fieldStartDate": "Startdatum",
+      "fieldEndDate": "Enddatum",
+      "fieldPointsReward": "Punktebelohnung",
+      "cancel": "Abbrechen",
+      "submit": "Programm erstellen",
+      "submitting": "Wird erstellt..."
+    },
+    "toast": {
+      "endBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Psychische Gesundheit",
+      "nutrition": "Ernährung",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "team_activity": "Teamaktivität",
+      "health_checkup": "Gesundheitscheck",
+      "other": "Sonstiges"
+    },
+    "enroll": {
+      "success": "Erfolgreich für das Programm angemeldet",
+      "error": "Anmeldung für das Programm fehlgeschlagen"
+    },
+    "header": {
+      "title": "Wellness-Programme",
+      "subtitle": "Entdecken Sie Programme, verfolgen Sie Ihr Wohlbefinden und erreichen Sie Ihre Gesundheitsziele"
+    },
+    "actions": {
+      "dailyCheckIn": "Täglicher Check-in",
+      "myWellness": "Mein Wohlbefinden"
+    },
+    "stats": {
+      "checkInStreak": "Check-in-Serie",
+      "activePrograms": "Aktive Programme",
+      "goalsCompleted": "Erreichte Ziele",
+      "latestMood": "Aktuelle Stimmung",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} Tag",
+      "checkInStreakValue_other": "{{count}} Tage"
+    },
+    "filter": {
+      "allTypes": "Alle Typen",
+      "programsAvailable_one": "{{count}} Programm verfügbar",
+      "programsAvailable_other": "{{count}} Programme verfügbar"
+    },
+    "list": {
+      "loading": "Programme werden geladen...",
+      "empty": "Noch keine Wellness-Programme verfügbar"
+    },
+    "card": {
+      "ongoing": "Laufend",
+      "enrolledButton": "Angemeldet",
+      "enrollNow": "Jetzt anmelden",
+      "pointsReward_one": "+{{count}} Pkt.",
+      "pointsReward_other": "+{{count}} Pkt.",
+      "enrolledCount_one": "{{count}} angemeldet",
+      "enrolledCount_other": "{{count}} angemeldet"
+    },
+    "pagination": {
+      "pageOf": "Seite {{page}} von {{totalPages}}"
+    }
   }
 }
