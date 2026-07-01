@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrg, useDepartments, useLocations } from "@/api/hooks";
 import api from "@/api/client";
@@ -55,18 +56,19 @@ const TIMEZONES = [
 ];
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const { data: org, isLoading } = useOrg();
   const { data: departments } = useDepartments();
   const { data: locations } = useLocations();
   const [editingOrg, setEditingOrg] = useState(false);
 
-  if (isLoading) return <div className="text-gray-500">Loading settings...</div>;
+  if (isLoading) return <div className="text-gray-500">{t("orgSettings.loading")}</div>;
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Organization Settings</h1>
-        <p className="text-gray-500 mt-1">Manage your company details, departments, and locations.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("orgSettings.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("orgSettings.subtitle")}</p>
       </div>
 
       {/* Organization info */}
@@ -77,29 +79,29 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-brand-600" />
-              <h2 className="font-semibold text-gray-900">Company Information</h2>
+              <h2 className="font-semibold text-gray-900">{t("orgSettings.companyInfo")}</h2>
             </div>
             <button
               onClick={() => setEditingOrg(true)}
               className="flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium"
             >
-              <Pencil className="h-3.5 w-3.5" /> Edit
+              <Pencil className="h-3.5 w-3.5" /> {t("orgSettings.edit")}
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              ["Name", org?.name],
-              ["Legal Name", org?.legal_name],
-              ["Email", org?.email],
-              ["Phone", org?.contact_number],
-              ["Country", org?.country],
-              ["State", org?.state],
-              ["City", org?.city],
-              ["Timezone", org?.timezone],
-              ["Language", org?.language],
-            ].map(([label, value]) => (
-              <div key={label as string}>
-                <p className="text-xs text-gray-500">{label}</p>
+              ["name", org?.name],
+              ["legalName", org?.legal_name],
+              ["email", org?.email],
+              ["phone", org?.contact_number],
+              ["country", org?.country],
+              ["state", org?.state],
+              ["city", org?.city],
+              ["timezone", org?.timezone],
+              ["language", org?.language],
+            ].map(([labelKey, value]) => (
+              <div key={labelKey as string}>
+                <p className="text-xs text-gray-500">{t(`orgSettings.field.${labelKey}`)}</p>
                 <p className="text-sm font-medium text-gray-900">{value || "\u2014"}</p>
               </div>
             ))}
@@ -134,6 +136,7 @@ export default function SettingsPage() {
 // ---------------------------------------------------------------------------
 
 function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [form, setForm] = useState({
     name: org?.name || "",
@@ -162,13 +165,13 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
     e.preventDefault();
     const errors: Record<string, string> = {};
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = "Please enter a valid email address (e.g., user@example.com).";
+      errors.email = t("orgSettings.errEmail");
     }
     if (form.city && !NAME_ONLY_RE.test(form.city)) {
-      errors.city = "City must only contain letters, spaces, and hyphens.";
+      errors.city = t("orgSettings.errCity");
     }
     if (form.state && !NAME_ONLY_RE.test(form.state)) {
-      errors.state = "State must only contain letters, spaces, and hyphens.";
+      errors.state = t("orgSettings.errState");
     }
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -179,15 +182,15 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
   };
 
   const fields: [string, keyof typeof form][] = [
-    ["Name", "name"],
-    ["Legal Name", "legal_name"],
-    ["Email", "email"],
-    ["Phone", "contact_number"],
-    ["Country", "country"],
-    ["State", "state"],
-    ["City", "city"],
-    ["Timezone", "timezone"],
-    ["Language", "language"],
+    ["name", "name"],
+    ["legalName", "legal_name"],
+    ["email", "email"],
+    ["phone", "contact_number"],
+    ["country", "country"],
+    ["state", "state"],
+    ["city", "city"],
+    ["timezone", "timezone"],
+    ["language", "language"],
   ];
 
   return (
@@ -195,7 +198,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Building2 className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">Edit Company Information</h2>
+          <h2 className="font-semibold text-gray-900">{t("orgSettings.editCompanyInfo")}</h2>
         </div>
         <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
           <X className="h-5 w-5" />
@@ -204,14 +207,14 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {fields.map(([label, key]) => (
           <div key={key}>
-            <label className="block text-xs text-gray-500 mb-1">{label}</label>
+            <label className="block text-xs text-gray-500 mb-1">{t(`orgSettings.field.${label}`)}</label>
             {key === "timezone" ? (
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
               >
-                <option value="">Select timezone</option>
+                <option value="">{t("orgSettings.selectTimezone")}</option>
                 {TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>{tz}</option>
                 ))}
@@ -222,7 +225,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
               >
-                <option value="">Select country</option>
+                <option value="">{t("orgSettings.selectCountry")}</option>
                 {COUNTRIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -254,18 +257,18 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
           onClick={onClose}
           className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
         >
-          Cancel
+          {t("orgSettings.cancel")}
         </button>
         <button
           type="submit"
           disabled={updateOrg.isPending}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
-          <Save className="h-4 w-4" /> Save Changes
+          <Save className="h-4 w-4" /> {t("orgSettings.saveChanges")}
         </button>
       </div>
       {updateOrg.isError && (
-        <p className="mt-3 text-sm text-red-600">Failed to update. Please try again.</p>
+        <p className="mt-3 text-sm text-red-600">{t("orgSettings.updateError")}</p>
       )}
     </form>
   );
@@ -276,6 +279,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
 // ---------------------------------------------------------------------------
 
 function DepartmentsCard({ departments }: { departments: any[] }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [newName, setNewName] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -295,7 +299,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || "Failed to add department.");
+      setAddError(err?.response?.data?.error?.message || t("orgSettings.addDeptError"));
     },
   });
 
@@ -311,7 +315,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setEditError("");
     },
     onError: (err: any) => {
-      setEditError(err?.response?.data?.error?.message || "Failed to rename department.");
+      setEditError(err?.response?.data?.error?.message || t("orgSettings.renameDeptError"));
     },
   });
 
@@ -325,7 +329,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setDeleteError("");
     },
     onError: (err: any) => {
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete department.");
+      setDeleteError(err?.response?.data?.error?.message || t("orgSettings.deleteDeptError"));
     },
   });
 
@@ -351,13 +355,13 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Briefcase className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">Departments ({departments.length})</h2>
+          <h2 className="font-semibold text-gray-900">{t("orgSettings.departments", { count: departments.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
         >
-          <Plus className="h-3.5 w-3.5" /> Add
+          <Plus className="h-3.5 w-3.5" /> {t("orgSettings.add")}
         </button>
       </div>
       {showAdd && (
@@ -374,7 +378,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               type="text"
               value={newName}
               onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
-              placeholder="Department name"
+              placeholder={t("orgSettings.departmentName")}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
               required
             />
@@ -383,7 +387,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               disabled={addDept.isPending}
               className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              Add
+              {t("orgSettings.add")}
             </button>
           </form>
           {addError && <p className="text-xs text-red-500 mt-1">{addError}</p>}
@@ -418,7 +422,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   type="submit"
                   disabled={updateDept.isPending || !editName.trim()}
                   className="text-green-600 hover:text-green-700 disabled:opacity-50"
-                  title="Save"
+                  title={t("orgSettings.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
                 </button>
@@ -426,7 +430,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   type="button"
                   onClick={cancelEdit}
                   className="text-gray-400 hover:text-gray-600"
-                  title="Cancel"
+                  title={t("orgSettings.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -438,7 +442,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   <button
                     onClick={() => startEdit(d)}
                     className="text-gray-400 hover:text-brand-600"
-                    title="Rename department"
+                    title={t("orgSettings.renameDepartment")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -448,7 +452,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                       deleteDept.mutate(d.id);
                     }}
                     className="text-gray-400 hover:text-red-500"
-                    title="Delete department"
+                    title={t("orgSettings.deleteDepartment")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -469,6 +473,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
 // ---------------------------------------------------------------------------
 
 function LocationsCard({ locations }: { locations: any[] }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [locForm, setLocForm] = useState({ name: "", timezone: "" });
@@ -489,7 +494,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || "Failed to add location.");
+      setAddError(err?.response?.data?.error?.message || t("orgSettings.addLocError"));
     },
   });
 
@@ -508,7 +513,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setEditError("");
     },
     onError: (err: any) => {
-      setEditError(err?.response?.data?.error?.message || "Failed to update location.");
+      setEditError(err?.response?.data?.error?.message || t("orgSettings.updateLocError"));
     },
   });
 
@@ -520,7 +525,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setDeleteError("");
     },
     onError: (err: any) => {
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete location.");
+      setDeleteError(err?.response?.data?.error?.message || t("orgSettings.deleteLocError"));
     },
   });
 
@@ -546,13 +551,13 @@ function LocationsCard({ locations }: { locations: any[] }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <MapPin className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">Locations ({locations.length})</h2>
+          <h2 className="font-semibold text-gray-900">{t("orgSettings.locations", { count: locations.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
         >
-          <Plus className="h-3.5 w-3.5" /> Add
+          <Plus className="h-3.5 w-3.5" /> {t("orgSettings.add")}
         </button>
       </div>
       {showAdd && (
@@ -565,7 +570,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             const timezone = locForm.timezone.trim();
             if (!name) return;
             if (!timezone) {
-              setAddError("Timezone is required.");
+              setAddError(t("orgSettings.timezoneRequired"));
               return;
             }
             addLoc.mutate({ name, timezone });
@@ -576,7 +581,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             type="text"
             value={locForm.name}
             onChange={(e) => { setLocForm({ ...locForm, name: e.target.value }); setAddError(""); }}
-            placeholder="Location name"
+            placeholder={t("orgSettings.locationName")}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             required
           />
@@ -587,7 +592,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             required
             aria-required="true"
           >
-            <option value="">Select timezone *</option>
+            <option value="">{t("orgSettings.selectTimezoneRequired")}</option>
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
             ))}
@@ -625,7 +630,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                     setEditError("");
                   }}
                   autoFocus
-                  placeholder="Location name"
+                  placeholder={t("orgSettings.locationName")}
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
                   required
                 />
@@ -634,7 +639,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   onChange={(e) => setEditForm({ ...editForm, timezone: e.target.value })}
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm bg-white"
                 >
-                  <option value="">No timezone</option>
+                  <option value="">{t("orgSettings.noTimezone")}</option>
                   {TIMEZONES.map((tz) => (
                     <option key={tz} value={tz}>
                       {tz}
@@ -645,7 +650,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   type="submit"
                   disabled={updateLoc.isPending || !editForm.name.trim()}
                   className="text-green-600 hover:text-green-700 disabled:opacity-50"
-                  title="Save"
+                  title={t("orgSettings.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
                 </button>
@@ -653,7 +658,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   type="button"
                   onClick={cancelEdit}
                   className="text-gray-400 hover:text-gray-600"
-                  title="Cancel"
+                  title={t("orgSettings.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -666,7 +671,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   <button
                     onClick={() => startEdit(l)}
                     className="text-gray-400 hover:text-brand-600"
-                    title="Edit location"
+                    title={t("orgSettings.editLocation")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -676,7 +681,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                       deleteLoc.mutate(l.id);
                     }}
                     className="text-gray-400 hover:text-red-500"
-                    title="Delete location"
+                    title={t("orgSettings.deleteLocation")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
