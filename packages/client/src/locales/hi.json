@@ -4515,5 +4515,299 @@
     "pagination": {
       "pageOf": "पृष्ठ {{page}} / {{totalPages}}"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "दस्तावेज़ श्रेणियाँ",
+      "subtitle": "अपने संगठन के लिए दस्तावेज़ श्रेणियाँ प्रबंधित करें।"
+    },
+    "actions": {
+      "newCategory": "नई श्रेणी",
+      "cancel": "रद्द करें",
+      "update": "अपडेट करें",
+      "create": "बनाएँ",
+      "edit": "संपादित करें",
+      "delete": "हटाएँ"
+    },
+    "form": {
+      "editTitle": "श्रेणी संपादित करें",
+      "createTitle": "श्रेणी बनाएँ",
+      "nameLabel": "नाम *",
+      "namePlaceholder": "जैसे आधार कार्ड",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "वैकल्पिक विवरण",
+      "mandatoryLabel": "सभी कर्मचारियों के लिए अनिवार्य"
+    },
+    "table": {
+      "categoryHeader": "श्रेणी",
+      "descriptionHeader": "विवरण",
+      "documentsHeader": "दस्तावेज़",
+      "mandatoryHeader": "अनिवार्य",
+      "actionsHeader": "कार्रवाइयाँ",
+      "loading": "लोड हो रहा है...",
+      "empty": "अभी कोई श्रेणी नहीं है। आरंभ करने के लिए एक बनाएँ।",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "आवश्यक",
+      "optional": "वैकल्पिक"
+    },
+    "deactivate": {
+      "titleNamed": "श्रेणी \"{{name}}\" को निष्क्रिय करें?",
+      "title": "श्रेणी निष्क्रिय करें?",
+      "description": "इस श्रेणी के दस्तावेज़ बने रहेंगे।",
+      "confirm": "निष्क्रिय करें"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "मेरे दस्तावेज़",
+      "subtitle": "अपने दस्तावेज़ अपलोड करें, देखें और उनकी स्थिति ट्रैक करें।"
+    },
+    "actions": {
+      "uploadDocument": "दस्तावेज़ अपलोड करें"
+    },
+    "upload": {
+      "heading": "दस्तावेज़ अपलोड करें",
+      "fileLabel": "फ़ाइल *",
+      "nameLabel": "दस्तावेज़ का नाम",
+      "namePlaceholder": "वैकल्पिक - डिफ़ॉल्ट रूप से फ़ाइल का नाम",
+      "categoryLabel": "श्रेणी *",
+      "categoryPlaceholder": "श्रेणी चुनें",
+      "expiryLabel": "समाप्ति तिथि",
+      "submit": "अपलोड करें",
+      "submitting": "अपलोड हो रहा है..."
+    },
+    "list": {
+      "loading": "आपके दस्तावेज़ लोड हो रहे हैं...",
+      "empty": "आपने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है।",
+      "uploadFirst": "अपना पहला दस्तावेज़ अपलोड करें"
+    },
+    "expiry": {
+      "expired": "समाप्त",
+      "expiringSoon": "जल्द समाप्त हो रहा है",
+      "expires": "समाप्ति"
+    },
+    "doc": {
+      "rejectionReason": "अस्वीकृति का कारण: {{reason}}",
+      "download": "डाउनलोड करें",
+      "reupload": "पुनः अपलोड करें"
+    },
+    "status": {
+      "verified": "सत्यापित",
+      "rejected": "अस्वीकृत",
+      "pending": "लंबित"
+    },
+    "toast": {
+      "downloadFailed": "दस्तावेज़ डाउनलोड करने में विफल।"
+    },
+    "pagination": {
+      "previous": "पिछला",
+      "next": "अगला",
+      "summary_one": "पृष्ठ {{page}} / {{totalPages}} (कुल {{count}})",
+      "summary_other": "पृष्ठ {{page}} / {{totalPages}} (कुल {{count}})"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "अभी",
+      "minutesAgo_one": "{{count}} मिनट पहले",
+      "minutesAgo_other": "{{count}} मिनट पहले",
+      "hoursAgo_one": "{{count}} घंटे पहले",
+      "hoursAgo_other": "{{count}} घंटे पहले",
+      "daysAgo_one": "{{count}} दिन पहले",
+      "daysAgo_other": "{{count}} दिन पहले"
+    },
+    "header": {
+      "defaultCategoryName": "श्रेणी",
+      "newPost": "नई पोस्ट"
+    },
+    "filters": {
+      "allTypes": "सभी प्रकार",
+      "discussions": "चर्चाएँ",
+      "questions": "प्रश्न",
+      "ideas": "विचार",
+      "polls": "पोल"
+    },
+    "sort": {
+      "recent": "हाल की",
+      "popular": "लोकप्रिय",
+      "active": "सक्रिय",
+      "mostViewed": "सर्वाधिक देखी गई"
+    },
+    "list": {
+      "loading": "पोस्ट लोड हो रही हैं...",
+      "empty": "इस श्रेणी में अभी तक कोई पोस्ट नहीं है। बातचीत शुरू करें!"
+    },
+    "postType": {
+      "discussion": "चर्चा",
+      "question": "प्रश्न",
+      "idea": "विचार",
+      "poll": "पोल"
+    },
+    "badge": {
+      "pinned": "पिन की गई",
+      "locked": "लॉक की गई"
+    },
+    "pagination": {
+      "previous": "पिछला",
+      "next": "अगला",
+      "pageInfo_one": "{{totalPages}} में से पृष्ठ {{page}} (कुल {{count}})",
+      "pageInfo_other": "{{totalPages}} में से पृष्ठ {{page}} (कुल {{count}})"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "चर्चा",
+      "question": "प्रश्न",
+      "idea": "विचार",
+      "poll": "पोल"
+    },
+    "time": {
+      "justNow": "अभी",
+      "minutesAgo_one": "{{count}} मिनट पहले",
+      "minutesAgo_other": "{{count}} मिनट पहले",
+      "hoursAgo_one": "{{count}} घंटे पहले",
+      "hoursAgo_other": "{{count}} घंटे पहले",
+      "daysAgo_one": "{{count}} दिन पहले",
+      "daysAgo_other": "{{count}} दिन पहले"
+    },
+    "loading": "पोस्ट लोड हो रही है...",
+    "notFound": "पोस्ट नहीं मिली",
+    "reply": {
+      "acceptedAnswer": "स्वीकृत उत्तर",
+      "replyAction": "जवाब दें",
+      "acceptAnswer": "उत्तर स्वीकार करें"
+    },
+    "badge": {
+      "pinned": "पिन किया गया",
+      "locked": "लॉक किया गया"
+    },
+    "action": {
+      "like": "पसंद",
+      "unpin": "अनपिन करें",
+      "pin": "पिन करें",
+      "unlock": "अनलॉक करें",
+      "lock": "लॉक करें",
+      "delete": "हटाएं"
+    },
+    "replies": {
+      "empty": "अभी तक कोई जवाब नहीं। जवाब देने वाले पहले व्यक्ति बनें!",
+      "heading_one": "{{count}} जवाब",
+      "heading_other": "{{count}} जवाब"
+    },
+    "form": {
+      "replyingTo": "{{name}} को जवाब दे रहे हैं",
+      "cancel": "रद्द करें",
+      "placeholder": "जवाब लिखें...",
+      "posting": "पोस्ट हो रहा है...",
+      "submit": "जवाब दें"
+    },
+    "locked": {
+      "message": "यह पोस्ट लॉक है। नए जवाब की अनुमति नहीं है।"
+    },
+    "deleteReply": {
+      "title": "इस जवाब को हटाएं?",
+      "confirm": "हटाएं"
+    },
+    "deletePost": {
+      "title": "इस पोस्ट और इसके सभी जवाब हटाएं?",
+      "description": "इसे पूर्ववत नहीं किया जा सकता।",
+      "confirm": "हटाएं"
+    },
+    "replyCount_one": "{{count}} जवाब",
+    "replyCount_other": "{{count}} जवाब"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "कर्मचारी को इस पद पर असाइन करने में विफल।",
+      "saveChangesFailed": "पद के बदलाव सहेजने में विफल।",
+      "deleteFailed": "पद हटाने में विफल"
+    },
+    "loading": "लोड हो रहा है...",
+    "notFound": "पद नहीं मिला",
+    "backToPositions": "पदों पर वापस जाएँ",
+    "action": {
+      "edit": "संपादित करें",
+      "delete": "हटाएँ",
+      "assignEmployee": "कर्मचारी असाइन करें"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "filled": "भरा हुआ",
+      "frozen": "फ़्रोज़न",
+      "closed": "बंद"
+    },
+    "assignForm": {
+      "heading": "पद पर कर्मचारी असाइन करें",
+      "employeeLabel": "कर्मचारी *",
+      "searchPlaceholder": "उपयोगकर्ता खोजने के लिए टाइप करें...",
+      "noUsersMatch": "कोई उपयोगकर्ता मेल नहीं खाता",
+      "startDateLabel": "आरंभ तिथि *",
+      "primaryPosition": "प्राथमिक पद",
+      "assigning": "असाइन हो रहा है...",
+      "assign": "असाइन करें",
+      "assignFailedInline": "असाइन करने में विफल"
+    },
+    "common": {
+      "cancel": "रद्द करें"
+    },
+    "editForm": {
+      "heading": "पद संपादित करें",
+      "titleLabel": "शीर्षक *",
+      "departmentLabel": "विभाग",
+      "departmentNone": "कोई नहीं",
+      "employmentTypeLabel": "रोज़गार प्रकार",
+      "headcountBudgetLabel": "नियुक्ति बजट",
+      "minSalaryLabel": "न्यूनतम वेतन (पैसे/सेंट)",
+      "maxSalaryLabel": "अधिकतम वेतन (पैसे/सेंट)",
+      "jobDescriptionLabel": "कार्य विवरण",
+      "criticalRole": "महत्वपूर्ण भूमिका",
+      "headcountMinError": "नियुक्ति बजट कम से कम 1 होना चाहिए।",
+      "saving": "सहेज रहा है...",
+      "saveChanges": "बदलाव सहेजें",
+      "updateFailedInline": "पद अपडेट करने में विफल"
+    },
+    "employmentType": {
+      "full_time": "पूर्णकालिक",
+      "part_time": "अंशकालिक",
+      "contract": "अनुबंध",
+      "intern": "प्रशिक्षु"
+    },
+    "details": {
+      "heading": "पद विवरण",
+      "employmentType": "रोज़गार प्रकार",
+      "headcount": "नियुक्ति संख्या",
+      "salaryRange": "वेतन सीमा",
+      "reportsTo": "रिपोर्ट करता है"
+    },
+    "jobDescription": {
+      "heading": "कार्य विवरण"
+    },
+    "requirements": {
+      "heading": "आवश्यकताएँ"
+    },
+    "assignees": {
+      "noneAssigned": "कोई नियुक्त नहीं",
+      "since": "{{date}} से",
+      "actingInterim": "कार्यवाहक/अंतरिम",
+      "endAssignmentTitle": "नियुक्ति समाप्त करें",
+      "heading_one": "वर्तमान नियुक्त ({{count}})",
+      "heading_other": "वर्तमान नियुक्त ({{count}})"
+    },
+    "history": {
+      "heading": "नियुक्ति इतिहास",
+      "dateRangeNA": "लागू नहीं"
+    },
+    "delete": {
+      "heading": "पद हटाएँ?",
+      "body": "{{name}} को हटाएँ? सक्रिय नियुक्तियाँ समाप्त कर दी जाएँगी और पद बंद कर दिया जाएगा। यह पूर्ववत नहीं किया जा सकता।",
+      "deleting": "हटाया जा रहा है...",
+      "confirm": "हटाएँ"
+    },
+    "endAssignment": {
+      "title": "यह नियुक्ति समाप्त करें?",
+      "confirmText": "नियुक्ति समाप्त करें"
+    }
   }
 }

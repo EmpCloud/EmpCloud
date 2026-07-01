@@ -4521,5 +4521,299 @@
     "pagination": {
       "pageOf": "Page {{page}} of {{totalPages}}"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "Document Categories",
+      "subtitle": "Manage document categories for your organization."
+    },
+    "actions": {
+      "newCategory": "New Category",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "editTitle": "Edit Category",
+      "createTitle": "Create Category",
+      "nameLabel": "Name *",
+      "namePlaceholder": "e.g. Aadhaar Card",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional description",
+      "mandatoryLabel": "Mandatory for all employees"
+    },
+    "table": {
+      "categoryHeader": "Category",
+      "descriptionHeader": "Description",
+      "documentsHeader": "Documents",
+      "mandatoryHeader": "Mandatory",
+      "actionsHeader": "Actions",
+      "loading": "Loading...",
+      "empty": "No categories yet. Create one to get started.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "Required",
+      "optional": "Optional"
+    },
+    "deactivate": {
+      "titleNamed": "Deactivate category \"{{name}}\"?",
+      "title": "Deactivate category?",
+      "description": "Documents in this category will remain.",
+      "confirm": "Deactivate"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "My Documents",
+      "subtitle": "Upload, view, and track the status of your documents."
+    },
+    "actions": {
+      "uploadDocument": "Upload Document"
+    },
+    "upload": {
+      "heading": "Upload Document",
+      "fileLabel": "File *",
+      "nameLabel": "Document Name",
+      "namePlaceholder": "Optional - defaults to file name",
+      "categoryLabel": "Category *",
+      "categoryPlaceholder": "Select category",
+      "expiryLabel": "Expiry Date",
+      "submit": "Upload",
+      "submitting": "Uploading..."
+    },
+    "list": {
+      "loading": "Loading your documents...",
+      "empty": "You haven't uploaded any documents yet.",
+      "uploadFirst": "Upload your first document"
+    },
+    "expiry": {
+      "expired": "Expired",
+      "expiringSoon": "Expiring soon",
+      "expires": "Expires"
+    },
+    "doc": {
+      "rejectionReason": "Rejection reason: {{reason}}",
+      "download": "Download",
+      "reupload": "Re-upload"
+    },
+    "status": {
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "pending": "Pending"
+    },
+    "toast": {
+      "downloadFailed": "Failed to download document."
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "summary_one": "Page {{page}} of {{totalPages}} ({{count}} total)",
+      "summary_other": "Page {{page}} of {{totalPages}} ({{count}} total)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "just now",
+      "minutesAgo_one": "{{count}}m ago",
+      "minutesAgo_other": "{{count}}m ago",
+      "hoursAgo_one": "{{count}}h ago",
+      "hoursAgo_other": "{{count}}h ago",
+      "daysAgo_one": "{{count}}d ago",
+      "daysAgo_other": "{{count}}d ago"
+    },
+    "header": {
+      "defaultCategoryName": "Category",
+      "newPost": "New Post"
+    },
+    "filters": {
+      "allTypes": "All Types",
+      "discussions": "Discussions",
+      "questions": "Questions",
+      "ideas": "Ideas",
+      "polls": "Polls"
+    },
+    "sort": {
+      "recent": "Recent",
+      "popular": "Popular",
+      "active": "Active",
+      "mostViewed": "Most Viewed"
+    },
+    "list": {
+      "loading": "Loading posts...",
+      "empty": "No posts in this category yet. Start the conversation!"
+    },
+    "postType": {
+      "discussion": "Discussion",
+      "question": "Question",
+      "idea": "Idea",
+      "poll": "Poll"
+    },
+    "badge": {
+      "pinned": "Pinned",
+      "locked": "Locked"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "pageInfo_one": "Page {{page}} of {{totalPages}} ({{count}} total)",
+      "pageInfo_other": "Page {{page}} of {{totalPages}} ({{count}} total)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "Discussion",
+      "question": "Question",
+      "idea": "Idea",
+      "poll": "Poll"
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo_one": "{{count}}m ago",
+      "minutesAgo_other": "{{count}}m ago",
+      "hoursAgo_one": "{{count}}h ago",
+      "hoursAgo_other": "{{count}}h ago",
+      "daysAgo_one": "{{count}}d ago",
+      "daysAgo_other": "{{count}}d ago"
+    },
+    "loading": "Loading post...",
+    "notFound": "Post not found",
+    "reply": {
+      "acceptedAnswer": "Accepted Answer",
+      "replyAction": "Reply",
+      "acceptAnswer": "Accept Answer"
+    },
+    "badge": {
+      "pinned": "Pinned",
+      "locked": "Locked"
+    },
+    "action": {
+      "like": "Like",
+      "unpin": "Unpin",
+      "pin": "Pin",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
+    },
+    "replies": {
+      "empty": "No replies yet. Be the first to respond!",
+      "heading_one": "{{count}} Reply",
+      "heading_other": "{{count}} Replies"
+    },
+    "form": {
+      "replyingTo": "Replying to {{name}}",
+      "cancel": "Cancel",
+      "placeholder": "Write a reply...",
+      "posting": "Posting...",
+      "submit": "Reply"
+    },
+    "locked": {
+      "message": "This post is locked. No new replies allowed."
+    },
+    "deleteReply": {
+      "title": "Delete this reply?",
+      "confirm": "Delete"
+    },
+    "deletePost": {
+      "title": "Delete this post and all its replies?",
+      "description": "This cannot be undone.",
+      "confirm": "Delete"
+    },
+    "replyCount_one": "{{count}} reply",
+    "replyCount_other": "{{count}} replies"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "Failed to assign employee to this position.",
+      "saveChangesFailed": "Failed to save position changes.",
+      "deleteFailed": "Failed to delete position"
+    },
+    "loading": "Loading...",
+    "notFound": "Position not found",
+    "backToPositions": "Back to Positions",
+    "action": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "assignEmployee": "Assign Employee"
+    },
+    "status": {
+      "active": "Active",
+      "filled": "Filled",
+      "frozen": "Frozen",
+      "closed": "Closed"
+    },
+    "assignForm": {
+      "heading": "Assign Employee to Position",
+      "employeeLabel": "Employee *",
+      "searchPlaceholder": "Start typing to search users...",
+      "noUsersMatch": "No users match",
+      "startDateLabel": "Start Date *",
+      "primaryPosition": "Primary Position",
+      "assigning": "Assigning...",
+      "assign": "Assign",
+      "assignFailedInline": "Failed to assign"
+    },
+    "common": {
+      "cancel": "Cancel"
+    },
+    "editForm": {
+      "heading": "Edit Position",
+      "titleLabel": "Title *",
+      "departmentLabel": "Department",
+      "departmentNone": "None",
+      "employmentTypeLabel": "Employment Type",
+      "headcountBudgetLabel": "Headcount Budget",
+      "minSalaryLabel": "Min Salary (paise/cents)",
+      "maxSalaryLabel": "Max Salary (paise/cents)",
+      "jobDescriptionLabel": "Job Description",
+      "criticalRole": "Critical Role",
+      "headcountMinError": "Headcount Budget must be at least 1.",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "updateFailedInline": "Failed to update position"
+    },
+    "employmentType": {
+      "full_time": "Full Time",
+      "part_time": "Part Time",
+      "contract": "Contract",
+      "intern": "Intern"
+    },
+    "details": {
+      "heading": "Position Details",
+      "employmentType": "Employment Type",
+      "headcount": "Headcount",
+      "salaryRange": "Salary Range",
+      "reportsTo": "Reports To"
+    },
+    "jobDescription": {
+      "heading": "Job Description"
+    },
+    "requirements": {
+      "heading": "Requirements"
+    },
+    "assignees": {
+      "noneAssigned": "No one assigned",
+      "since": "Since {{date}}",
+      "actingInterim": "Acting/Interim",
+      "endAssignmentTitle": "End assignment",
+      "heading_one": "Current Assignees ({{count}})",
+      "heading_other": "Current Assignees ({{count}})"
+    },
+    "history": {
+      "heading": "Assignment History",
+      "dateRangeNA": "N/A"
+    },
+    "delete": {
+      "heading": "Delete position?",
+      "body": "Delete {{name}}? Active assignments are ended and the position is closed. This cannot be undone.",
+      "deleting": "Deleting...",
+      "confirm": "Delete"
+    },
+    "endAssignment": {
+      "title": "End this assignment?",
+      "confirmText": "End assignment"
+    }
   }
 }

@@ -4515,5 +4515,299 @@
     "pagination": {
       "pageOf": "Seite {{page}} von {{totalPages}}"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "Dokumentkategorien",
+      "subtitle": "Verwalten Sie die Dokumentkategorien für Ihre Organisation."
+    },
+    "actions": {
+      "newCategory": "Neue Kategorie",
+      "cancel": "Abbrechen",
+      "update": "Aktualisieren",
+      "create": "Erstellen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "form": {
+      "editTitle": "Kategorie bearbeiten",
+      "createTitle": "Kategorie erstellen",
+      "nameLabel": "Name *",
+      "namePlaceholder": "z. B. Aadhaar Card",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "mandatoryLabel": "Für alle Mitarbeiter verpflichtend"
+    },
+    "table": {
+      "categoryHeader": "Kategorie",
+      "descriptionHeader": "Beschreibung",
+      "documentsHeader": "Dokumente",
+      "mandatoryHeader": "Verpflichtend",
+      "actionsHeader": "Aktionen",
+      "loading": "Wird geladen...",
+      "empty": "Noch keine Kategorien. Erstellen Sie eine, um zu beginnen.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "Erforderlich",
+      "optional": "Optional"
+    },
+    "deactivate": {
+      "titleNamed": "Kategorie \"{{name}}\" deaktivieren?",
+      "title": "Kategorie deaktivieren?",
+      "description": "Dokumente in dieser Kategorie bleiben erhalten.",
+      "confirm": "Deaktivieren"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "Meine Dokumente",
+      "subtitle": "Laden Sie Ihre Dokumente hoch, sehen Sie sie ein und verfolgen Sie deren Status."
+    },
+    "actions": {
+      "uploadDocument": "Dokument hochladen"
+    },
+    "upload": {
+      "heading": "Dokument hochladen",
+      "fileLabel": "Datei *",
+      "nameLabel": "Dokumentname",
+      "namePlaceholder": "Optional – Standard ist der Dateiname",
+      "categoryLabel": "Kategorie *",
+      "categoryPlaceholder": "Kategorie auswählen",
+      "expiryLabel": "Ablaufdatum",
+      "submit": "Hochladen",
+      "submitting": "Wird hochgeladen …"
+    },
+    "list": {
+      "loading": "Ihre Dokumente werden geladen …",
+      "empty": "Sie haben noch keine Dokumente hochgeladen.",
+      "uploadFirst": "Erstes Dokument hochladen"
+    },
+    "expiry": {
+      "expired": "Abgelaufen",
+      "expiringSoon": "Läuft bald ab",
+      "expires": "Läuft ab"
+    },
+    "doc": {
+      "rejectionReason": "Ablehnungsgrund: {{reason}}",
+      "download": "Herunterladen",
+      "reupload": "Erneut hochladen"
+    },
+    "status": {
+      "verified": "Verifiziert",
+      "rejected": "Abgelehnt",
+      "pending": "Ausstehend"
+    },
+    "toast": {
+      "downloadFailed": "Dokument konnte nicht heruntergeladen werden."
+    },
+    "pagination": {
+      "previous": "Zurück",
+      "next": "Weiter",
+      "summary_one": "Seite {{page}} von {{totalPages}} ({{count}} insgesamt)",
+      "summary_other": "Seite {{page}} von {{totalPages}} ({{count}} insgesamt)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "gerade eben",
+      "minutesAgo_one": "vor {{count}} Min.",
+      "minutesAgo_other": "vor {{count}} Min.",
+      "hoursAgo_one": "vor {{count}} Std.",
+      "hoursAgo_other": "vor {{count}} Std.",
+      "daysAgo_one": "vor {{count}} Tag",
+      "daysAgo_other": "vor {{count}} Tagen"
+    },
+    "header": {
+      "defaultCategoryName": "Kategorie",
+      "newPost": "Neuer Beitrag"
+    },
+    "filters": {
+      "allTypes": "Alle Typen",
+      "discussions": "Diskussionen",
+      "questions": "Fragen",
+      "ideas": "Ideen",
+      "polls": "Umfragen"
+    },
+    "sort": {
+      "recent": "Neueste",
+      "popular": "Beliebt",
+      "active": "Aktiv",
+      "mostViewed": "Meistaufgerufen"
+    },
+    "list": {
+      "loading": "Beiträge werden geladen ...",
+      "empty": "Noch keine Beiträge in dieser Kategorie. Starten Sie die Unterhaltung!"
+    },
+    "postType": {
+      "discussion": "Diskussion",
+      "question": "Frage",
+      "idea": "Idee",
+      "poll": "Umfrage"
+    },
+    "badge": {
+      "pinned": "Angeheftet",
+      "locked": "Gesperrt"
+    },
+    "pagination": {
+      "previous": "Zurück",
+      "next": "Weiter",
+      "pageInfo_one": "Seite {{page}} von {{totalPages}} ({{count}} gesamt)",
+      "pageInfo_other": "Seite {{page}} von {{totalPages}} ({{count}} gesamt)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "Diskussion",
+      "question": "Frage",
+      "idea": "Idee",
+      "poll": "Umfrage"
+    },
+    "time": {
+      "justNow": "gerade eben",
+      "minutesAgo_one": "vor {{count}} Min.",
+      "minutesAgo_other": "vor {{count}} Min.",
+      "hoursAgo_one": "vor {{count}} Std.",
+      "hoursAgo_other": "vor {{count}} Std.",
+      "daysAgo_one": "vor {{count}} T.",
+      "daysAgo_other": "vor {{count}} T."
+    },
+    "loading": "Beitrag wird geladen ...",
+    "notFound": "Beitrag nicht gefunden",
+    "reply": {
+      "acceptedAnswer": "Akzeptierte Antwort",
+      "replyAction": "Antworten",
+      "acceptAnswer": "Antwort akzeptieren"
+    },
+    "badge": {
+      "pinned": "Angeheftet",
+      "locked": "Gesperrt"
+    },
+    "action": {
+      "like": "Gefällt mir",
+      "unpin": "Loslösen",
+      "pin": "Anheften",
+      "unlock": "Entsperren",
+      "lock": "Sperren",
+      "delete": "Löschen"
+    },
+    "replies": {
+      "empty": "Noch keine Antworten. Seien Sie der Erste, der antwortet!",
+      "heading_one": "{{count}} Antwort",
+      "heading_other": "{{count}} Antworten"
+    },
+    "form": {
+      "replyingTo": "Antwort an {{name}}",
+      "cancel": "Abbrechen",
+      "placeholder": "Antwort schreiben ...",
+      "posting": "Wird gesendet ...",
+      "submit": "Antworten"
+    },
+    "locked": {
+      "message": "Dieser Beitrag ist gesperrt. Keine neuen Antworten möglich."
+    },
+    "deleteReply": {
+      "title": "Diese Antwort löschen?",
+      "confirm": "Löschen"
+    },
+    "deletePost": {
+      "title": "Diesen Beitrag und alle Antworten löschen?",
+      "description": "Dies kann nicht rückgängig gemacht werden.",
+      "confirm": "Löschen"
+    },
+    "replyCount_one": "{{count}} Antwort",
+    "replyCount_other": "{{count}} Antworten"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "Mitarbeiter konnte dieser Position nicht zugewiesen werden.",
+      "saveChangesFailed": "Positionsänderungen konnten nicht gespeichert werden.",
+      "deleteFailed": "Position konnte nicht gelöscht werden"
+    },
+    "loading": "Wird geladen...",
+    "notFound": "Position nicht gefunden",
+    "backToPositions": "Zurück zu den Positionen",
+    "action": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "assignEmployee": "Mitarbeiter zuweisen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "filled": "Besetzt",
+      "frozen": "Eingefroren",
+      "closed": "Geschlossen"
+    },
+    "assignForm": {
+      "heading": "Mitarbeiter der Position zuweisen",
+      "employeeLabel": "Mitarbeiter *",
+      "searchPlaceholder": "Zum Suchen tippen...",
+      "noUsersMatch": "Keine Benutzer gefunden",
+      "startDateLabel": "Startdatum *",
+      "primaryPosition": "Hauptposition",
+      "assigning": "Wird zugewiesen...",
+      "assign": "Zuweisen",
+      "assignFailedInline": "Zuweisung fehlgeschlagen"
+    },
+    "common": {
+      "cancel": "Abbrechen"
+    },
+    "editForm": {
+      "heading": "Position bearbeiten",
+      "titleLabel": "Titel *",
+      "departmentLabel": "Abteilung",
+      "departmentNone": "Keine",
+      "employmentTypeLabel": "Beschäftigungsart",
+      "headcountBudgetLabel": "Stellenbudget",
+      "minSalaryLabel": "Mindestgehalt (Paise/Cent)",
+      "maxSalaryLabel": "Höchstgehalt (Paise/Cent)",
+      "jobDescriptionLabel": "Stellenbeschreibung",
+      "criticalRole": "Kritische Rolle",
+      "headcountMinError": "Das Stellenbudget muss mindestens 1 betragen.",
+      "saving": "Wird gespeichert...",
+      "saveChanges": "Änderungen speichern",
+      "updateFailedInline": "Position konnte nicht aktualisiert werden"
+    },
+    "employmentType": {
+      "full_time": "Vollzeit",
+      "part_time": "Teilzeit",
+      "contract": "Befristet",
+      "intern": "Praktikant"
+    },
+    "details": {
+      "heading": "Positionsdetails",
+      "employmentType": "Beschäftigungsart",
+      "headcount": "Stellenanzahl",
+      "salaryRange": "Gehaltsspanne",
+      "reportsTo": "Berichtet an"
+    },
+    "jobDescription": {
+      "heading": "Stellenbeschreibung"
+    },
+    "requirements": {
+      "heading": "Anforderungen"
+    },
+    "assignees": {
+      "noneAssigned": "Niemand zugewiesen",
+      "since": "Seit {{date}}",
+      "actingInterim": "Kommissarisch",
+      "endAssignmentTitle": "Zuweisung beenden",
+      "heading_one": "Aktuelle Zuweisung ({{count}})",
+      "heading_other": "Aktuelle Zuweisungen ({{count}})"
+    },
+    "history": {
+      "heading": "Zuweisungsverlauf",
+      "dateRangeNA": "K. A."
+    },
+    "delete": {
+      "heading": "Position löschen?",
+      "body": "{{name}} löschen? Aktive Zuweisungen werden beendet und die Position wird geschlossen. Dies kann nicht rückgängig gemacht werden.",
+      "deleting": "Wird gelöscht...",
+      "confirm": "Löschen"
+    },
+    "endAssignment": {
+      "title": "Diese Zuweisung beenden?",
+      "confirmText": "Zuweisung beenden"
+    }
   }
 }

@@ -4515,5 +4515,299 @@
     "pagination": {
       "pageOf": "第 {{page}} 页，共 {{totalPages}} 页"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "文档分类",
+      "subtitle": "管理贵组织的文档分类。"
+    },
+    "actions": {
+      "newCategory": "新建分类",
+      "cancel": "取消",
+      "update": "更新",
+      "create": "创建",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "form": {
+      "editTitle": "编辑分类",
+      "createTitle": "创建分类",
+      "nameLabel": "名称 *",
+      "namePlaceholder": "例如：Aadhaar Card",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "可选描述",
+      "mandatoryLabel": "所有员工必填"
+    },
+    "table": {
+      "categoryHeader": "分类",
+      "descriptionHeader": "描述",
+      "documentsHeader": "文档",
+      "mandatoryHeader": "必填",
+      "actionsHeader": "操作",
+      "loading": "加载中...",
+      "empty": "暂无分类。请创建一个以开始使用。",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "必填",
+      "optional": "可选"
+    },
+    "deactivate": {
+      "titleNamed": "停用分类“{{name}}”？",
+      "title": "停用分类？",
+      "description": "此分类下的文档将予以保留。",
+      "confirm": "停用"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "我的文档",
+      "subtitle": "上传、查看并跟踪文档状态。"
+    },
+    "actions": {
+      "uploadDocument": "上传文档"
+    },
+    "upload": {
+      "heading": "上传文档",
+      "fileLabel": "文件 *",
+      "nameLabel": "文档名称",
+      "namePlaceholder": "可选 - 默认使用文件名",
+      "categoryLabel": "类别 *",
+      "categoryPlaceholder": "选择类别",
+      "expiryLabel": "到期日期",
+      "submit": "上传",
+      "submitting": "上传中..."
+    },
+    "list": {
+      "loading": "正在加载您的文档...",
+      "empty": "您尚未上传任何文档。",
+      "uploadFirst": "上传您的第一个文档"
+    },
+    "expiry": {
+      "expired": "已过期",
+      "expiringSoon": "即将到期",
+      "expires": "将于"
+    },
+    "doc": {
+      "rejectionReason": "拒绝原因：{{reason}}",
+      "download": "下载",
+      "reupload": "重新上传"
+    },
+    "status": {
+      "verified": "已验证",
+      "rejected": "已拒绝",
+      "pending": "待处理"
+    },
+    "toast": {
+      "downloadFailed": "文档下载失败。"
+    },
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "summary_one": "第 {{page}} 页，共 {{totalPages}} 页（共 {{count}} 项）",
+      "summary_other": "第 {{page}} 页，共 {{totalPages}} 页（共 {{count}} 项）"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo_one": "{{count}} 分钟前",
+      "minutesAgo_other": "{{count}} 分钟前",
+      "hoursAgo_one": "{{count}} 小时前",
+      "hoursAgo_other": "{{count}} 小时前",
+      "daysAgo_one": "{{count}} 天前",
+      "daysAgo_other": "{{count}} 天前"
+    },
+    "header": {
+      "defaultCategoryName": "分类",
+      "newPost": "发布帖子"
+    },
+    "filters": {
+      "allTypes": "全部类型",
+      "discussions": "讨论",
+      "questions": "问题",
+      "ideas": "想法",
+      "polls": "投票"
+    },
+    "sort": {
+      "recent": "最新",
+      "popular": "热门",
+      "active": "活跃",
+      "mostViewed": "最多浏览"
+    },
+    "list": {
+      "loading": "正在加载帖子…",
+      "empty": "该分类还没有帖子，快来发起讨论吧！"
+    },
+    "postType": {
+      "discussion": "讨论",
+      "question": "问题",
+      "idea": "想法",
+      "poll": "投票"
+    },
+    "badge": {
+      "pinned": "置顶",
+      "locked": "已锁定"
+    },
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "pageInfo_one": "第 {{page}} / {{totalPages}} 页（共 {{count}} 条）",
+      "pageInfo_other": "第 {{page}} / {{totalPages}} 页（共 {{count}} 条）"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "讨论",
+      "question": "问题",
+      "idea": "想法",
+      "poll": "投票"
+    },
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo_one": "{{count}} 分钟前",
+      "minutesAgo_other": "{{count}} 分钟前",
+      "hoursAgo_one": "{{count}} 小时前",
+      "hoursAgo_other": "{{count}} 小时前",
+      "daysAgo_one": "{{count}} 天前",
+      "daysAgo_other": "{{count}} 天前"
+    },
+    "loading": "正在加载帖子...",
+    "notFound": "未找到帖子",
+    "reply": {
+      "acceptedAnswer": "已采纳答案",
+      "replyAction": "回复",
+      "acceptAnswer": "采纳答案"
+    },
+    "badge": {
+      "pinned": "已置顶",
+      "locked": "已锁定"
+    },
+    "action": {
+      "like": "点赞",
+      "unpin": "取消置顶",
+      "pin": "置顶",
+      "unlock": "解锁",
+      "lock": "锁定",
+      "delete": "删除"
+    },
+    "replies": {
+      "empty": "暂无回复。快来抢先回复吧！",
+      "heading_one": "{{count}} 条回复",
+      "heading_other": "{{count}} 条回复"
+    },
+    "form": {
+      "replyingTo": "正在回复 {{name}}",
+      "cancel": "取消",
+      "placeholder": "写下回复...",
+      "posting": "发布中...",
+      "submit": "回复"
+    },
+    "locked": {
+      "message": "此帖子已锁定，无法发表新回复。"
+    },
+    "deleteReply": {
+      "title": "删除此回复？",
+      "confirm": "删除"
+    },
+    "deletePost": {
+      "title": "删除此帖子及其所有回复？",
+      "description": "此操作无法撤销。",
+      "confirm": "删除"
+    },
+    "replyCount_one": "{{count}} 条回复",
+    "replyCount_other": "{{count}} 条回复"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "无法将员工分配到此职位。",
+      "saveChangesFailed": "无法保存职位更改。",
+      "deleteFailed": "删除职位失败"
+    },
+    "loading": "加载中...",
+    "notFound": "未找到职位",
+    "backToPositions": "返回职位列表",
+    "action": {
+      "edit": "编辑",
+      "delete": "删除",
+      "assignEmployee": "分配员工"
+    },
+    "status": {
+      "active": "启用",
+      "filled": "已招满",
+      "frozen": "已冻结",
+      "closed": "已关闭"
+    },
+    "assignForm": {
+      "heading": "分配员工至职位",
+      "employeeLabel": "员工 *",
+      "searchPlaceholder": "开始输入以搜索用户...",
+      "noUsersMatch": "无匹配用户",
+      "startDateLabel": "开始日期 *",
+      "primaryPosition": "主要职位",
+      "assigning": "分配中...",
+      "assign": "分配",
+      "assignFailedInline": "分配失败"
+    },
+    "common": {
+      "cancel": "取消"
+    },
+    "editForm": {
+      "heading": "编辑职位",
+      "titleLabel": "职位名称 *",
+      "departmentLabel": "部门",
+      "departmentNone": "无",
+      "employmentTypeLabel": "雇佣类型",
+      "headcountBudgetLabel": "编制人数",
+      "minSalaryLabel": "最低薪资（分）",
+      "maxSalaryLabel": "最高薪资（分）",
+      "jobDescriptionLabel": "职位描述",
+      "criticalRole": "关键岗位",
+      "headcountMinError": "编制人数至少为 1。",
+      "saving": "保存中...",
+      "saveChanges": "保存更改",
+      "updateFailedInline": "更新职位失败"
+    },
+    "employmentType": {
+      "full_time": "全职",
+      "part_time": "兼职",
+      "contract": "合同工",
+      "intern": "实习"
+    },
+    "details": {
+      "heading": "职位详情",
+      "employmentType": "雇佣类型",
+      "headcount": "编制人数",
+      "salaryRange": "薪资范围",
+      "reportsTo": "汇报对象"
+    },
+    "jobDescription": {
+      "heading": "职位描述"
+    },
+    "requirements": {
+      "heading": "任职要求"
+    },
+    "assignees": {
+      "noneAssigned": "暂无任职人员",
+      "since": "自 {{date}} 起",
+      "actingInterim": "代理/临时",
+      "endAssignmentTitle": "结束任职",
+      "heading_one": "当前任职人员（{{count}}）",
+      "heading_other": "当前任职人员（{{count}}）"
+    },
+    "history": {
+      "heading": "任职历史",
+      "dateRangeNA": "无"
+    },
+    "delete": {
+      "heading": "删除职位？",
+      "body": "删除 {{name}}？现有任职将被结束，且该职位将被关闭。此操作无法撤销。",
+      "deleting": "删除中...",
+      "confirm": "删除"
+    },
+    "endAssignment": {
+      "title": "结束此任职？",
+      "confirmText": "结束任职"
+    }
   }
 }

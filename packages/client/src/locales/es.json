@@ -4515,5 +4515,299 @@
     "pagination": {
       "pageOf": "Página {{page}} de {{totalPages}}"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "Categorías de documentos",
+      "subtitle": "Gestiona las categorías de documentos de tu organización."
+    },
+    "actions": {
+      "newCategory": "Nueva categoría",
+      "cancel": "Cancelar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "editTitle": "Editar categoría",
+      "createTitle": "Crear categoría",
+      "nameLabel": "Nombre *",
+      "namePlaceholder": "p. ej. Documento de identidad",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Descripción opcional",
+      "mandatoryLabel": "Obligatorio para todos los empleados"
+    },
+    "table": {
+      "categoryHeader": "Categoría",
+      "descriptionHeader": "Descripción",
+      "documentsHeader": "Documentos",
+      "mandatoryHeader": "Obligatorio",
+      "actionsHeader": "Acciones",
+      "loading": "Cargando...",
+      "empty": "Aún no hay categorías. Crea una para empezar.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "Obligatorio",
+      "optional": "Opcional"
+    },
+    "deactivate": {
+      "titleNamed": "¿Desactivar la categoría \"{{name}}\"?",
+      "title": "¿Desactivar la categoría?",
+      "description": "Los documentos de esta categoría se conservarán.",
+      "confirm": "Desactivar"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "Mis documentos",
+      "subtitle": "Sube, consulta y controla el estado de tus documentos."
+    },
+    "actions": {
+      "uploadDocument": "Subir documento"
+    },
+    "upload": {
+      "heading": "Subir documento",
+      "fileLabel": "Archivo *",
+      "nameLabel": "Nombre del documento",
+      "namePlaceholder": "Opcional: se usará el nombre del archivo",
+      "categoryLabel": "Categoría *",
+      "categoryPlaceholder": "Selecciona una categoría",
+      "expiryLabel": "Fecha de vencimiento",
+      "submit": "Subir",
+      "submitting": "Subiendo..."
+    },
+    "list": {
+      "loading": "Cargando tus documentos...",
+      "empty": "Aún no has subido ningún documento.",
+      "uploadFirst": "Sube tu primer documento"
+    },
+    "expiry": {
+      "expired": "Vencido",
+      "expiringSoon": "Vence pronto",
+      "expires": "Vence"
+    },
+    "doc": {
+      "rejectionReason": "Motivo del rechazo: {{reason}}",
+      "download": "Descargar",
+      "reupload": "Volver a subir"
+    },
+    "status": {
+      "verified": "Verificado",
+      "rejected": "Rechazado",
+      "pending": "Pendiente"
+    },
+    "toast": {
+      "downloadFailed": "No se pudo descargar el documento."
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "summary_one": "Página {{page}} de {{totalPages}} ({{count}} en total)",
+      "summary_other": "Página {{page}} de {{totalPages}} ({{count}} en total)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo_one": "hace {{count}} min",
+      "minutesAgo_other": "hace {{count}} min",
+      "hoursAgo_one": "hace {{count}} h",
+      "hoursAgo_other": "hace {{count}} h",
+      "daysAgo_one": "hace {{count}} d",
+      "daysAgo_other": "hace {{count}} d"
+    },
+    "header": {
+      "defaultCategoryName": "Categoría",
+      "newPost": "Nueva publicación"
+    },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "discussions": "Debates",
+      "questions": "Preguntas",
+      "ideas": "Ideas",
+      "polls": "Encuestas"
+    },
+    "sort": {
+      "recent": "Recientes",
+      "popular": "Populares",
+      "active": "Activos",
+      "mostViewed": "Más vistos"
+    },
+    "list": {
+      "loading": "Cargando publicaciones...",
+      "empty": "Aún no hay publicaciones en esta categoría. ¡Inicia la conversación!"
+    },
+    "postType": {
+      "discussion": "Debate",
+      "question": "Pregunta",
+      "idea": "Idea",
+      "poll": "Encuesta"
+    },
+    "badge": {
+      "pinned": "Fijado",
+      "locked": "Bloqueado"
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageInfo_one": "Página {{page}} de {{totalPages}} ({{count}} en total)",
+      "pageInfo_other": "Página {{page}} de {{totalPages}} ({{count}} en total)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "Debate",
+      "question": "Pregunta",
+      "idea": "Idea",
+      "poll": "Encuesta"
+    },
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo_one": "hace {{count}} min",
+      "minutesAgo_other": "hace {{count}} min",
+      "hoursAgo_one": "hace {{count}} h",
+      "hoursAgo_other": "hace {{count}} h",
+      "daysAgo_one": "hace {{count}} d",
+      "daysAgo_other": "hace {{count}} d"
+    },
+    "loading": "Cargando publicación...",
+    "notFound": "Publicación no encontrada",
+    "reply": {
+      "acceptedAnswer": "Respuesta aceptada",
+      "replyAction": "Responder",
+      "acceptAnswer": "Aceptar respuesta"
+    },
+    "badge": {
+      "pinned": "Fijada",
+      "locked": "Bloqueada"
+    },
+    "action": {
+      "like": "Me gusta",
+      "unpin": "Dejar de fijar",
+      "pin": "Fijar",
+      "unlock": "Desbloquear",
+      "lock": "Bloquear",
+      "delete": "Eliminar"
+    },
+    "replies": {
+      "empty": "Aún no hay respuestas. ¡Sé el primero en responder!",
+      "heading_one": "{{count}} respuesta",
+      "heading_other": "{{count}} respuestas"
+    },
+    "form": {
+      "replyingTo": "Respondiendo a {{name}}",
+      "cancel": "Cancelar",
+      "placeholder": "Escribe una respuesta...",
+      "posting": "Publicando...",
+      "submit": "Responder"
+    },
+    "locked": {
+      "message": "Esta publicación está bloqueada. No se permiten nuevas respuestas."
+    },
+    "deleteReply": {
+      "title": "¿Eliminar esta respuesta?",
+      "confirm": "Eliminar"
+    },
+    "deletePost": {
+      "title": "¿Eliminar esta publicación y todas sus respuestas?",
+      "description": "Esta acción no se puede deshacer.",
+      "confirm": "Eliminar"
+    },
+    "replyCount_one": "{{count}} respuesta",
+    "replyCount_other": "{{count}} respuestas"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "No se pudo asignar al empleado a este puesto.",
+      "saveChangesFailed": "No se pudieron guardar los cambios del puesto.",
+      "deleteFailed": "No se pudo eliminar el puesto"
+    },
+    "loading": "Cargando...",
+    "notFound": "Puesto no encontrado",
+    "backToPositions": "Volver a Puestos",
+    "action": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "assignEmployee": "Asignar empleado"
+    },
+    "status": {
+      "active": "Activo",
+      "filled": "Cubierto",
+      "frozen": "Congelado",
+      "closed": "Cerrado"
+    },
+    "assignForm": {
+      "heading": "Asignar empleado al puesto",
+      "employeeLabel": "Empleado *",
+      "searchPlaceholder": "Empieza a escribir para buscar usuarios...",
+      "noUsersMatch": "Ningún usuario coincide",
+      "startDateLabel": "Fecha de inicio *",
+      "primaryPosition": "Puesto principal",
+      "assigning": "Asignando...",
+      "assign": "Asignar",
+      "assignFailedInline": "No se pudo asignar"
+    },
+    "common": {
+      "cancel": "Cancelar"
+    },
+    "editForm": {
+      "heading": "Editar puesto",
+      "titleLabel": "Título *",
+      "departmentLabel": "Departamento",
+      "departmentNone": "Ninguno",
+      "employmentTypeLabel": "Tipo de empleo",
+      "headcountBudgetLabel": "Plantilla presupuestada",
+      "minSalaryLabel": "Salario mín. (paise/céntimos)",
+      "maxSalaryLabel": "Salario máx. (paise/céntimos)",
+      "jobDescriptionLabel": "Descripción del puesto",
+      "criticalRole": "Rol crítico",
+      "headcountMinError": "La plantilla presupuestada debe ser al menos 1.",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "updateFailedInline": "No se pudo actualizar el puesto"
+    },
+    "employmentType": {
+      "full_time": "Tiempo completo",
+      "part_time": "Tiempo parcial",
+      "contract": "Contrato",
+      "intern": "Becario"
+    },
+    "details": {
+      "heading": "Detalles del puesto",
+      "employmentType": "Tipo de empleo",
+      "headcount": "Plantilla",
+      "salaryRange": "Rango salarial",
+      "reportsTo": "Reporta a"
+    },
+    "jobDescription": {
+      "heading": "Descripción del puesto"
+    },
+    "requirements": {
+      "heading": "Requisitos"
+    },
+    "assignees": {
+      "noneAssigned": "Nadie asignado",
+      "since": "Desde {{date}}",
+      "actingInterim": "En funciones/interino",
+      "endAssignmentTitle": "Finalizar asignación",
+      "heading_one": "Asignado actual ({{count}})",
+      "heading_other": "Asignados actuales ({{count}})"
+    },
+    "history": {
+      "heading": "Historial de asignaciones",
+      "dateRangeNA": "N/D"
+    },
+    "delete": {
+      "heading": "¿Eliminar puesto?",
+      "body": "¿Eliminar {{name}}? Las asignaciones activas se finalizan y el puesto se cierra. Esto no se puede deshacer.",
+      "deleting": "Eliminando...",
+      "confirm": "Eliminar"
+    },
+    "endAssignment": {
+      "title": "¿Finalizar esta asignación?",
+      "confirmText": "Finalizar asignación"
+    }
   }
 }

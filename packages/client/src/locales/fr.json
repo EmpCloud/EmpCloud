@@ -4515,5 +4515,299 @@
     "pagination": {
       "pageOf": "Page {{page}} sur {{totalPages}}"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "Catégories de documents",
+      "subtitle": "Gérez les catégories de documents de votre organisation."
+    },
+    "actions": {
+      "newCategory": "Nouvelle catégorie",
+      "cancel": "Annuler",
+      "update": "Mettre à jour",
+      "create": "Créer",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "form": {
+      "editTitle": "Modifier la catégorie",
+      "createTitle": "Créer une catégorie",
+      "nameLabel": "Nom *",
+      "namePlaceholder": "ex. Carte Aadhaar",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Description facultative",
+      "mandatoryLabel": "Obligatoire pour tous les employés"
+    },
+    "table": {
+      "categoryHeader": "Catégorie",
+      "descriptionHeader": "Description",
+      "documentsHeader": "Documents",
+      "mandatoryHeader": "Obligatoire",
+      "actionsHeader": "Actions",
+      "loading": "Chargement...",
+      "empty": "Aucune catégorie pour le moment. Créez-en une pour commencer.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "Obligatoire",
+      "optional": "Facultatif"
+    },
+    "deactivate": {
+      "titleNamed": "Désactiver la catégorie « {{name}} » ?",
+      "title": "Désactiver la catégorie ?",
+      "description": "Les documents de cette catégorie seront conservés.",
+      "confirm": "Désactiver"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "Mes documents",
+      "subtitle": "Téléchargez, consultez et suivez le statut de vos documents."
+    },
+    "actions": {
+      "uploadDocument": "Téléverser un document"
+    },
+    "upload": {
+      "heading": "Téléverser un document",
+      "fileLabel": "Fichier *",
+      "nameLabel": "Nom du document",
+      "namePlaceholder": "Facultatif - nom du fichier par défaut",
+      "categoryLabel": "Catégorie *",
+      "categoryPlaceholder": "Sélectionner une catégorie",
+      "expiryLabel": "Date d'expiration",
+      "submit": "Téléverser",
+      "submitting": "Téléversement..."
+    },
+    "list": {
+      "loading": "Chargement de vos documents...",
+      "empty": "Vous n'avez encore téléversé aucun document.",
+      "uploadFirst": "Téléverser votre premier document"
+    },
+    "expiry": {
+      "expired": "Expiré",
+      "expiringSoon": "Expire bientôt",
+      "expires": "Expire le"
+    },
+    "doc": {
+      "rejectionReason": "Motif du rejet : {{reason}}",
+      "download": "Télécharger",
+      "reupload": "Téléverser à nouveau"
+    },
+    "status": {
+      "verified": "Vérifié",
+      "rejected": "Rejeté",
+      "pending": "En attente"
+    },
+    "toast": {
+      "downloadFailed": "Échec du téléchargement du document."
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "summary_one": "Page {{page}} sur {{totalPages}} ({{count}} au total)",
+      "summary_other": "Page {{page}} sur {{totalPages}} ({{count}} au total)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "à l'instant",
+      "minutesAgo_one": "il y a {{count}} min",
+      "minutesAgo_other": "il y a {{count}} min",
+      "hoursAgo_one": "il y a {{count}} h",
+      "hoursAgo_other": "il y a {{count}} h",
+      "daysAgo_one": "il y a {{count}} j",
+      "daysAgo_other": "il y a {{count}} j"
+    },
+    "header": {
+      "defaultCategoryName": "Catégorie",
+      "newPost": "Nouvelle publication"
+    },
+    "filters": {
+      "allTypes": "Tous les types",
+      "discussions": "Discussions",
+      "questions": "Questions",
+      "ideas": "Idées",
+      "polls": "Sondages"
+    },
+    "sort": {
+      "recent": "Récent",
+      "popular": "Populaire",
+      "active": "Actif",
+      "mostViewed": "Les plus vus"
+    },
+    "list": {
+      "loading": "Chargement des publications...",
+      "empty": "Aucune publication dans cette catégorie pour le moment. Lancez la conversation !"
+    },
+    "postType": {
+      "discussion": "Discussion",
+      "question": "Question",
+      "idea": "Idée",
+      "poll": "Sondage"
+    },
+    "badge": {
+      "pinned": "Épinglé",
+      "locked": "Verrouillé"
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageInfo_one": "Page {{page}} sur {{totalPages}} ({{count}} au total)",
+      "pageInfo_other": "Page {{page}} sur {{totalPages}} ({{count}} au total)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "Discussion",
+      "question": "Question",
+      "idea": "Idée",
+      "poll": "Sondage"
+    },
+    "time": {
+      "justNow": "à l'instant",
+      "minutesAgo_one": "il y a {{count}} min",
+      "minutesAgo_other": "il y a {{count}} min",
+      "hoursAgo_one": "il y a {{count}} h",
+      "hoursAgo_other": "il y a {{count}} h",
+      "daysAgo_one": "il y a {{count}} j",
+      "daysAgo_other": "il y a {{count}} j"
+    },
+    "loading": "Chargement de la publication...",
+    "notFound": "Publication introuvable",
+    "reply": {
+      "acceptedAnswer": "Réponse acceptée",
+      "replyAction": "Répondre",
+      "acceptAnswer": "Accepter la réponse"
+    },
+    "badge": {
+      "pinned": "Épinglé",
+      "locked": "Verrouillé"
+    },
+    "action": {
+      "like": "J'aime",
+      "unpin": "Désépingler",
+      "pin": "Épingler",
+      "unlock": "Déverrouiller",
+      "lock": "Verrouiller",
+      "delete": "Supprimer"
+    },
+    "replies": {
+      "empty": "Aucune réponse pour le moment. Soyez le premier à répondre !",
+      "heading_one": "{{count}} réponse",
+      "heading_other": "{{count}} réponses"
+    },
+    "form": {
+      "replyingTo": "En réponse à {{name}}",
+      "cancel": "Annuler",
+      "placeholder": "Écrire une réponse...",
+      "posting": "Publication...",
+      "submit": "Répondre"
+    },
+    "locked": {
+      "message": "Cette publication est verrouillée. Aucune nouvelle réponse autorisée."
+    },
+    "deleteReply": {
+      "title": "Supprimer cette réponse ?",
+      "confirm": "Supprimer"
+    },
+    "deletePost": {
+      "title": "Supprimer cette publication et toutes ses réponses ?",
+      "description": "Cette action est irréversible.",
+      "confirm": "Supprimer"
+    },
+    "replyCount_one": "{{count}} réponse",
+    "replyCount_other": "{{count}} réponses"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "Échec de l'affectation de l'employé à ce poste.",
+      "saveChangesFailed": "Échec de l'enregistrement des modifications du poste.",
+      "deleteFailed": "Échec de la suppression du poste"
+    },
+    "loading": "Chargement...",
+    "notFound": "Poste introuvable",
+    "backToPositions": "Retour aux postes",
+    "action": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "assignEmployee": "Affecter un employé"
+    },
+    "status": {
+      "active": "Actif",
+      "filled": "Pourvu",
+      "frozen": "Gelé",
+      "closed": "Fermé"
+    },
+    "assignForm": {
+      "heading": "Affecter un employé au poste",
+      "employeeLabel": "Employé *",
+      "searchPlaceholder": "Commencez à taper pour rechercher des utilisateurs...",
+      "noUsersMatch": "Aucun utilisateur correspondant",
+      "startDateLabel": "Date de début *",
+      "primaryPosition": "Poste principal",
+      "assigning": "Affectation...",
+      "assign": "Affecter",
+      "assignFailedInline": "Échec de l'affectation"
+    },
+    "common": {
+      "cancel": "Annuler"
+    },
+    "editForm": {
+      "heading": "Modifier le poste",
+      "titleLabel": "Intitulé *",
+      "departmentLabel": "Département",
+      "departmentNone": "Aucun",
+      "employmentTypeLabel": "Type de contrat",
+      "headcountBudgetLabel": "Effectif budgété",
+      "minSalaryLabel": "Salaire min (paise/centimes)",
+      "maxSalaryLabel": "Salaire max (paise/centimes)",
+      "jobDescriptionLabel": "Description du poste",
+      "criticalRole": "Rôle critique",
+      "headcountMinError": "L'effectif budgété doit être d'au moins 1.",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications",
+      "updateFailedInline": "Échec de la mise à jour du poste"
+    },
+    "employmentType": {
+      "full_time": "Temps plein",
+      "part_time": "Temps partiel",
+      "contract": "Contractuel",
+      "intern": "Stagiaire"
+    },
+    "details": {
+      "heading": "Détails du poste",
+      "employmentType": "Type de contrat",
+      "headcount": "Effectif",
+      "salaryRange": "Fourchette salariale",
+      "reportsTo": "Rattaché à"
+    },
+    "jobDescription": {
+      "heading": "Description du poste"
+    },
+    "requirements": {
+      "heading": "Exigences"
+    },
+    "assignees": {
+      "noneAssigned": "Personne n'est affecté",
+      "since": "Depuis le {{date}}",
+      "actingInterim": "Par intérim",
+      "endAssignmentTitle": "Mettre fin à l'affectation",
+      "heading_one": "Titulaire actuel ({{count}})",
+      "heading_other": "Titulaires actuels ({{count}})"
+    },
+    "history": {
+      "heading": "Historique des affectations",
+      "dateRangeNA": "N/D"
+    },
+    "delete": {
+      "heading": "Supprimer le poste ?",
+      "body": "Supprimer {{name}} ? Les affectations actives prennent fin et le poste est fermé. Cette action est irréversible.",
+      "deleting": "Suppression...",
+      "confirm": "Supprimer"
+    },
+    "endAssignment": {
+      "title": "Mettre fin à cette affectation ?",
+      "confirmText": "Mettre fin à l'affectation"
+    }
   }
 }

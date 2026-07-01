@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save, Loader2 } from "lucide-react";
@@ -8,6 +9,7 @@ import { showToast } from "@/components/ui/Toast";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 export default function PositionDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -63,7 +65,7 @@ export default function PositionDetailPage() {
       const msg =
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
-        "Failed to assign employee to this position.";
+        t("positionDetail.error.assignFailed");
       showToast("error", msg);
     },
   });
@@ -104,7 +106,7 @@ export default function PositionDetailPage() {
       const msg =
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
-        "Failed to save position changes.";
+        t("positionDetail.error.saveChangesFailed");
       showToast("error", msg);
     },
   });
@@ -122,16 +124,16 @@ export default function PositionDetailPage() {
       navigate("/positions/list");
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete position"),
+      setDeleteError(err?.response?.data?.error?.message || t("positionDetail.error.deleteFailed")),
   });
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64"><div className="text-gray-400">Loading...</div></div>;
+    return <div className="flex items-center justify-center h-64"><div className="text-gray-400">{t("positionDetail.loading")}</div></div>;
   }
 
   const pos = data;
   if (!pos) {
-    return <div className="text-center py-12 text-gray-400">Position not found</div>;
+    return <div className="text-center py-12 text-gray-400">{t("positionDetail.notFound")}</div>;
   }
 
   const activeAssignments = (pos.assignments || []).filter((a: any) => a.status === "active");
@@ -149,7 +151,7 @@ export default function PositionDetailPage() {
   return (
     <div>
       <Link to="/positions/list" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4">
-        <ArrowLeft className="h-4 w-4" /> Back to Positions
+        <ArrowLeft className="h-4 w-4" /> {t("positionDetail.backToPositions")}
       </Link>
 
       <div className="flex items-start justify-between mb-6">
@@ -179,10 +181,10 @@ export default function PositionDetailPage() {
                 "bg-gray-100 text-gray-500"
               }`}
             >
-              <option value="active">Active</option>
-              <option value="filled">Filled</option>
-              <option value="frozen">Frozen</option>
-              <option value="closed">Closed</option>
+              <option value="active">{t("positionDetail.status.active")}</option>
+              <option value="filled">{t("positionDetail.status.filled")}</option>
+              <option value="frozen">{t("positionDetail.status.frozen")}</option>
+              <option value="closed">{t("positionDetail.status.closed")}</option>
             </select>
           </div>
         </div>
@@ -205,7 +207,7 @@ export default function PositionDetailPage() {
             className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
           >
             <Pencil className="h-4 w-4" />
-            Edit
+            {t("positionDetail.action.edit")}
           </button>
           <button
             onClick={() => {
@@ -215,7 +217,7 @@ export default function PositionDetailPage() {
             className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50"
           >
             <Trash2 className="h-4 w-4" />
-            Delete
+            {t("positionDetail.action.delete")}
           </button>
           {(pos.status === "active" || pos.status === "filled") && pos.headcount_filled < pos.headcount_budget && (
             <button
@@ -223,7 +225,7 @@ export default function PositionDetailPage() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700"
             >
               <UserPlus className="h-4 w-4" />
-              Assign Employee
+              {t("positionDetail.action.assignEmployee")}
             </button>
           )}
         </div>
@@ -232,10 +234,10 @@ export default function PositionDetailPage() {
       {/* Assign Form */}
       {showAssign && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Assign Employee to Position</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("positionDetail.assignForm.heading")}</h3>
           <form onSubmit={handleAssign} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employee *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.assignForm.employeeLabel")}</label>
               <input
                 type="text"
                 value={userSearch}
@@ -246,7 +248,7 @@ export default function PositionDetailPage() {
                   // filter.
                   if (assignForm.user_id) setAssignForm({ ...assignForm, user_id: "" });
                 }}
-                placeholder="Start typing to search users..."
+                placeholder={t("positionDetail.assignForm.searchPlaceholder")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-2"
               />
               {/* #1547 — The user list was previously always rendered with every
@@ -257,7 +259,7 @@ export default function PositionDetailPage() {
               {(userSearch.trim().length > 0 || assignForm.user_id) && (
                 <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg text-sm bg-white">
                   {(usersData || []).length === 0 ? (
-                    <div className="px-3 py-2 text-gray-400">No users match</div>
+                    <div className="px-3 py-2 text-gray-400">{t("positionDetail.assignForm.noUsersMatch")}</div>
                   ) : (
                     (usersData || []).map((u: any) => {
                       const selected = String(u.id) === String(assignForm.user_id);
@@ -282,7 +284,7 @@ export default function PositionDetailPage() {
               <input type="hidden" value={assignForm.user_id} required readOnly />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.assignForm.startDateLabel")}</label>
               <input
                 type="date"
                 value={assignForm.start_date}
@@ -299,7 +301,7 @@ export default function PositionDetailPage() {
                   onChange={(e) => setAssignForm({ ...assignForm, is_primary: e.target.checked })}
                   className="h-4 w-4 text-brand-600 border-gray-300 rounded"
                 />
-                Primary Position
+                {t("positionDetail.assignForm.primaryPosition")}
               </label>
             </div>
             <div className="col-span-full flex gap-3">
@@ -308,15 +310,15 @@ export default function PositionDetailPage() {
                 disabled={assignMutation.isPending}
                 className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
               >
-                {assignMutation.isPending ? "Assigning..." : "Assign"}
+                {assignMutation.isPending ? t("positionDetail.assignForm.assigning") : t("positionDetail.assignForm.assign")}
               </button>
               <button type="button" onClick={() => setShowAssign(false)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
-                Cancel
+                {t("positionDetail.common.cancel")}
               </button>
             </div>
             {assignMutation.isError && (
               <p className="col-span-full text-sm text-red-600">
-                {(assignMutation.error as any)?.response?.data?.error?.message || "Failed to assign"}
+                {(assignMutation.error as any)?.response?.data?.error?.message || t("positionDetail.assignForm.assignFailedInline")}
               </p>
             )}
           </form>
@@ -326,13 +328,13 @@ export default function PositionDetailPage() {
       {/* Edit Form */}
       {showEdit && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Position</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("positionDetail.editForm.heading")}</h3>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               const budget = parseInt(editForm.headcount_budget, 10);
               if (!Number.isFinite(budget) || budget < 1) {
-                showToast("error", "Headcount Budget must be at least 1.");
+                showToast("error", t("positionDetail.editForm.headcountMinError"));
                 return;
               }
               updateMutation.mutate({
@@ -350,7 +352,7 @@ export default function PositionDetailPage() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.titleLabel")}</label>
               <input
                 type="text"
                 value={editForm.title}
@@ -360,33 +362,33 @@ export default function PositionDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.departmentLabel")}</label>
               <select
                 value={editForm.department_id}
                 onChange={(e) => setEditForm({ ...editForm, department_id: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                <option value="">None</option>
+                <option value="">{t("positionDetail.editForm.departmentNone")}</option>
                 {(departments || []).map((d: any) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.employmentTypeLabel")}</label>
               <select
                 value={editForm.employment_type}
                 onChange={(e) => setEditForm({ ...editForm, employment_type: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                <option value="full_time">Full Time</option>
-                <option value="part_time">Part Time</option>
-                <option value="contract">Contract</option>
-                <option value="intern">Intern</option>
+                <option value="full_time">{t("positionDetail.employmentType.full_time")}</option>
+                <option value="part_time">{t("positionDetail.employmentType.part_time")}</option>
+                <option value="contract">{t("positionDetail.employmentType.contract")}</option>
+                <option value="intern">{t("positionDetail.employmentType.intern")}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Headcount Budget</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.headcountBudgetLabel")}</label>
               <input
                 type="number"
                 value={editForm.headcount_budget}
@@ -396,7 +398,7 @@ export default function PositionDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Min Salary (paise/cents)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.minSalaryLabel")}</label>
               <input
                 type="number"
                 value={editForm.min_salary}
@@ -405,7 +407,7 @@ export default function PositionDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Salary (paise/cents)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.maxSalaryLabel")}</label>
               <input
                 type="number"
                 value={editForm.max_salary}
@@ -414,7 +416,7 @@ export default function PositionDetailPage() {
               />
             </div>
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.jobDescriptionLabel")}</label>
               <textarea
                 value={editForm.job_description}
                 onChange={(e) => setEditForm({ ...editForm, job_description: e.target.value })}
@@ -430,7 +432,7 @@ export default function PositionDetailPage() {
                 onChange={(e) => setEditForm({ ...editForm, is_critical: e.target.checked })}
                 className="h-4 w-4 text-brand-600 border-gray-300 rounded"
               />
-              <label htmlFor="edit_is_critical" className="text-sm text-gray-700">Critical Role</label>
+              <label htmlFor="edit_is_critical" className="text-sm text-gray-700">{t("positionDetail.editForm.criticalRole")}</label>
             </div>
             <div className="col-span-full flex gap-3">
               <button
@@ -439,19 +441,19 @@ export default function PositionDetailPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? t("positionDetail.editForm.saving") : t("positionDetail.editForm.saveChanges")}
               </button>
               <button
                 type="button"
                 onClick={() => setShowEdit(false)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t("positionDetail.common.cancel")}
               </button>
             </div>
             {updateMutation.isError && (
               <p className="col-span-full text-sm text-red-600">
-                {(updateMutation.error as any)?.response?.data?.error?.message || "Failed to update position"}
+                {(updateMutation.error as any)?.response?.data?.error?.message || t("positionDetail.editForm.updateFailedInline")}
               </p>
             )}
           </form>
@@ -463,19 +465,19 @@ export default function PositionDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Info */}
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Position Details</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("positionDetail.details.heading")}</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-500">Employment Type</span>
-                <p className="font-medium text-gray-900 capitalize mt-1">{(pos.employment_type || "").replace("_", " ")}</p>
+                <span className="text-gray-500">{t("positionDetail.details.employmentType")}</span>
+                <p className="font-medium text-gray-900 capitalize mt-1">{t(`positionDetail.employmentType.${pos.employment_type}`, { defaultValue: (pos.employment_type || "").replace("_", " ") })}</p>
               </div>
               <div>
-                <span className="text-gray-500">Headcount</span>
+                <span className="text-gray-500">{t("positionDetail.details.headcount")}</span>
                 <p className="font-medium text-gray-900 mt-1">{pos.headcount_filled} / {pos.headcount_budget}</p>
               </div>
               {(pos.min_salary || pos.max_salary) && (
                 <div>
-                  <span className="text-gray-500">Salary Range</span>
+                  <span className="text-gray-500">{t("positionDetail.details.salaryRange")}</span>
                   <p className="font-medium text-gray-900 mt-1">
                     {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
                   </p>
@@ -483,7 +485,7 @@ export default function PositionDetailPage() {
               )}
               {pos.reports_to && (
                 <div>
-                  <span className="text-gray-500">Reports To</span>
+                  <span className="text-gray-500">{t("positionDetail.details.reportsTo")}</span>
                   <p className="font-medium text-gray-900 mt-1">
                     <Link to={`/positions/${pos.reports_to.id}`} className="text-brand-600 hover:underline">
                       {pos.reports_to.title} ({pos.reports_to.code})
@@ -497,7 +499,7 @@ export default function PositionDetailPage() {
           {/* Job Description */}
           {pos.job_description && (
             <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t("positionDetail.jobDescription.heading")}</h3>
               <p className="text-sm text-gray-600 whitespace-pre-wrap">{pos.job_description}</p>
             </div>
           )}
@@ -505,7 +507,7 @@ export default function PositionDetailPage() {
           {/* Requirements */}
           {pos.requirements && (
             <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t("positionDetail.requirements.heading")}</h3>
               <p className="text-sm text-gray-600 whitespace-pre-wrap">{pos.requirements}</p>
             </div>
           )}
@@ -516,10 +518,10 @@ export default function PositionDetailPage() {
           {/* Current Assignees */}
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Current Assignees ({activeAssignments.length})
+              {t("positionDetail.assignees.heading", { count: activeAssignments.length })}
             </h3>
             {activeAssignments.length === 0 ? (
-              <p className="text-sm text-gray-400">No one assigned</p>
+              <p className="text-sm text-gray-400">{t("positionDetail.assignees.noneAssigned")}</p>
             ) : (
               <div className="space-y-3">
                 {activeAssignments.map((a: any) => (
@@ -532,14 +534,14 @@ export default function PositionDetailPage() {
                         <Link to={`/employees/${a.user_id}`} className="text-sm font-medium text-gray-900 hover:text-brand-600">
                           {a.first_name} {a.last_name}
                         </Link>
-                        <p className="text-xs text-gray-500">Since {new Date(a.start_date).toLocaleDateString()}</p>
-                        {!a.is_primary && <span className="text-xs text-amber-600">Acting/Interim</span>}
+                        <p className="text-xs text-gray-500">{t("positionDetail.assignees.since", { date: new Date(a.start_date).toLocaleDateString() })}</p>
+                        {!a.is_primary && <span className="text-xs text-amber-600">{t("positionDetail.assignees.actingInterim")}</span>}
                       </div>
                     </div>
                     <button
                       onClick={() => setEndAssignmentId(a.id)}
                       className="text-gray-400 hover:text-red-500"
-                      title="End assignment"
+                      title={t("positionDetail.assignees.endAssignmentTitle")}
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -552,13 +554,13 @@ export default function PositionDetailPage() {
           {/* Past Assignments */}
           {pastAssignments.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Assignment History</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">{t("positionDetail.history.heading")}</h3>
               <div className="space-y-2">
                 {pastAssignments.map((a: any) => (
                   <div key={a.id} className="text-sm text-gray-500 flex items-center gap-2">
                     <Briefcase className="h-3 w-3" />
                     <span>
-                      {a.first_name} {a.last_name} ({new Date(a.start_date).toLocaleDateString()} - {a.end_date ? new Date(a.end_date).toLocaleDateString() : "N/A"})
+                      {a.first_name} {a.last_name} ({new Date(a.start_date).toLocaleDateString()} - {a.end_date ? new Date(a.end_date).toLocaleDateString() : t("positionDetail.history.dateRangeNA")})
                     </span>
                   </div>
                 ))}
@@ -584,11 +586,9 @@ export default function PositionDetailPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete position?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("positionDetail.delete.heading")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{pos.title}</span>?
-                    Active assignments are ended and the position is closed. This cannot be undone.
+                    {t("positionDetail.delete.body", { name: pos.title })}
                   </p>
                 </div>
               </div>
@@ -605,7 +605,7 @@ export default function PositionDetailPage() {
                 disabled={deleteMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("positionDetail.common.cancel")}
               </button>
               <button
                 type="button"
@@ -615,10 +615,10 @@ export default function PositionDetailPage() {
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("positionDetail.delete.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("positionDetail.delete.confirm")
                 )}
               </button>
             </div>
@@ -628,8 +628,8 @@ export default function PositionDetailPage() {
 
       <ConfirmDialog
         open={endAssignmentId !== null}
-        title="End this assignment?"
-        confirmText="End assignment"
+        title={t("positionDetail.endAssignment.title")}
+        confirmText={t("positionDetail.endAssignment.confirmText")}
         variant="danger"
         loading={removeMutation.isPending}
         onConfirm={() => endAssignmentId !== null && removeMutation.mutate(endAssignmentId)}

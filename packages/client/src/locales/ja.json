@@ -4515,5 +4515,299 @@
     "pagination": {
       "pageOf": "{{page}}/{{totalPages}}ページ"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "書類カテゴリ",
+      "subtitle": "組織の書類カテゴリを管理します。"
+    },
+    "actions": {
+      "newCategory": "新規カテゴリ",
+      "cancel": "キャンセル",
+      "update": "更新",
+      "create": "作成",
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "form": {
+      "editTitle": "カテゴリを編集",
+      "createTitle": "カテゴリを作成",
+      "nameLabel": "名称 *",
+      "namePlaceholder": "例：Aadhaar Card",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "説明（任意）",
+      "mandatoryLabel": "全従業員に必須"
+    },
+    "table": {
+      "categoryHeader": "カテゴリ",
+      "descriptionHeader": "説明",
+      "documentsHeader": "書類",
+      "mandatoryHeader": "必須",
+      "actionsHeader": "操作",
+      "loading": "読み込み中...",
+      "empty": "カテゴリがまだありません。作成して始めましょう。",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "必須",
+      "optional": "任意"
+    },
+    "deactivate": {
+      "titleNamed": "カテゴリ「{{name}}」を無効化しますか？",
+      "title": "カテゴリを無効化しますか？",
+      "description": "このカテゴリ内の書類は保持されます。",
+      "confirm": "無効化"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "マイドキュメント",
+      "subtitle": "ドキュメントのアップロード、表示、ステータス確認ができます。"
+    },
+    "actions": {
+      "uploadDocument": "ドキュメントをアップロード"
+    },
+    "upload": {
+      "heading": "ドキュメントをアップロード",
+      "fileLabel": "ファイル *",
+      "nameLabel": "ドキュメント名",
+      "namePlaceholder": "任意 - 未入力時はファイル名を使用",
+      "categoryLabel": "カテゴリ *",
+      "categoryPlaceholder": "カテゴリを選択",
+      "expiryLabel": "有効期限",
+      "submit": "アップロード",
+      "submitting": "アップロード中..."
+    },
+    "list": {
+      "loading": "ドキュメントを読み込んでいます...",
+      "empty": "アップロードされたドキュメントはまだありません。",
+      "uploadFirst": "最初のドキュメントをアップロード"
+    },
+    "expiry": {
+      "expired": "期限切れ",
+      "expiringSoon": "まもなく期限切れ",
+      "expires": "有効期限"
+    },
+    "doc": {
+      "rejectionReason": "却下理由: {{reason}}",
+      "download": "ダウンロード",
+      "reupload": "再アップロード"
+    },
+    "status": {
+      "verified": "承認済み",
+      "rejected": "却下",
+      "pending": "保留中"
+    },
+    "toast": {
+      "downloadFailed": "ドキュメントのダウンロードに失敗しました。"
+    },
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "summary_one": "{{totalPages}} ページ中 {{page}} ページ目（全 {{count}} 件）",
+      "summary_other": "{{totalPages}} ページ中 {{page}} ページ目（全 {{count}} 件）"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "たった今",
+      "minutesAgo_one": "{{count}}分前",
+      "minutesAgo_other": "{{count}}分前",
+      "hoursAgo_one": "{{count}}時間前",
+      "hoursAgo_other": "{{count}}時間前",
+      "daysAgo_one": "{{count}}日前",
+      "daysAgo_other": "{{count}}日前"
+    },
+    "header": {
+      "defaultCategoryName": "カテゴリ",
+      "newPost": "新規投稿"
+    },
+    "filters": {
+      "allTypes": "すべてのタイプ",
+      "discussions": "ディスカッション",
+      "questions": "質問",
+      "ideas": "アイデア",
+      "polls": "投票"
+    },
+    "sort": {
+      "recent": "新着",
+      "popular": "人気",
+      "active": "アクティブ",
+      "mostViewed": "閲覧数順"
+    },
+    "list": {
+      "loading": "投稿を読み込み中...",
+      "empty": "このカテゴリにはまだ投稿がありません。会話を始めましょう！"
+    },
+    "postType": {
+      "discussion": "ディスカッション",
+      "question": "質問",
+      "idea": "アイデア",
+      "poll": "投票"
+    },
+    "badge": {
+      "pinned": "固定",
+      "locked": "ロック"
+    },
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "pageInfo_one": "{{totalPages}}ページ中{{page}}ページ目（全{{count}}件）",
+      "pageInfo_other": "{{totalPages}}ページ中{{page}}ページ目（全{{count}}件）"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "ディスカッション",
+      "question": "質問",
+      "idea": "アイデア",
+      "poll": "投票"
+    },
+    "time": {
+      "justNow": "たった今",
+      "minutesAgo_one": "{{count}}分前",
+      "minutesAgo_other": "{{count}}分前",
+      "hoursAgo_one": "{{count}}時間前",
+      "hoursAgo_other": "{{count}}時間前",
+      "daysAgo_one": "{{count}}日前",
+      "daysAgo_other": "{{count}}日前"
+    },
+    "loading": "投稿を読み込み中...",
+    "notFound": "投稿が見つかりません",
+    "reply": {
+      "acceptedAnswer": "ベストアンサー",
+      "replyAction": "返信",
+      "acceptAnswer": "回答を採用"
+    },
+    "badge": {
+      "pinned": "固定",
+      "locked": "ロック中"
+    },
+    "action": {
+      "like": "いいね",
+      "unpin": "固定解除",
+      "pin": "固定",
+      "unlock": "ロック解除",
+      "lock": "ロック",
+      "delete": "削除"
+    },
+    "replies": {
+      "empty": "まだ返信はありません。最初のコメントを投稿しましょう。",
+      "heading_one": "{{count}}件の返信",
+      "heading_other": "{{count}}件の返信"
+    },
+    "form": {
+      "replyingTo": "{{name}}さんへの返信",
+      "cancel": "キャンセル",
+      "placeholder": "返信を入力...",
+      "posting": "投稿中...",
+      "submit": "返信"
+    },
+    "locked": {
+      "message": "この投稿はロックされています。新しい返信はできません。"
+    },
+    "deleteReply": {
+      "title": "この返信を削除しますか?",
+      "confirm": "削除"
+    },
+    "deletePost": {
+      "title": "この投稿とすべての返信を削除しますか?",
+      "description": "この操作は取り消せません。",
+      "confirm": "削除"
+    },
+    "replyCount_one": "{{count}}件の返信",
+    "replyCount_other": "{{count}}件の返信"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "従業員をこのポジションに割り当てられませんでした。",
+      "saveChangesFailed": "ポジションの変更を保存できませんでした。",
+      "deleteFailed": "ポジションを削除できませんでした"
+    },
+    "loading": "読み込み中...",
+    "notFound": "ポジションが見つかりません",
+    "backToPositions": "ポジション一覧に戻る",
+    "action": {
+      "edit": "編集",
+      "delete": "削除",
+      "assignEmployee": "従業員を割り当て"
+    },
+    "status": {
+      "active": "有効",
+      "filled": "充足済み",
+      "frozen": "凍結中",
+      "closed": "終了"
+    },
+    "assignForm": {
+      "heading": "ポジションへの従業員の割り当て",
+      "employeeLabel": "従業員 *",
+      "searchPlaceholder": "入力してユーザーを検索...",
+      "noUsersMatch": "該当するユーザーがいません",
+      "startDateLabel": "開始日 *",
+      "primaryPosition": "主ポジション",
+      "assigning": "割り当て中...",
+      "assign": "割り当て",
+      "assignFailedInline": "割り当てに失敗しました"
+    },
+    "common": {
+      "cancel": "キャンセル"
+    },
+    "editForm": {
+      "heading": "ポジションの編集",
+      "titleLabel": "タイトル *",
+      "departmentLabel": "部署",
+      "departmentNone": "なし",
+      "employmentTypeLabel": "雇用形態",
+      "headcountBudgetLabel": "定員数",
+      "minSalaryLabel": "最低給与（paise/セント）",
+      "maxSalaryLabel": "最高給与（paise/セント）",
+      "jobDescriptionLabel": "職務内容",
+      "criticalRole": "重要な役割",
+      "headcountMinError": "定員数は1以上である必要があります。",
+      "saving": "保存中...",
+      "saveChanges": "変更を保存",
+      "updateFailedInline": "ポジションを更新できませんでした"
+    },
+    "employmentType": {
+      "full_time": "正社員",
+      "part_time": "パートタイム",
+      "contract": "契約",
+      "intern": "インターン"
+    },
+    "details": {
+      "heading": "ポジションの詳細",
+      "employmentType": "雇用形態",
+      "headcount": "人員数",
+      "salaryRange": "給与レンジ",
+      "reportsTo": "報告先"
+    },
+    "jobDescription": {
+      "heading": "職務内容"
+    },
+    "requirements": {
+      "heading": "要件"
+    },
+    "assignees": {
+      "noneAssigned": "担当者なし",
+      "since": "{{date}}から",
+      "actingInterim": "代行/暫定",
+      "endAssignmentTitle": "割り当てを終了",
+      "heading_one": "現在の担当者（{{count}}名）",
+      "heading_other": "現在の担当者（{{count}}名）"
+    },
+    "history": {
+      "heading": "割り当て履歴",
+      "dateRangeNA": "該当なし"
+    },
+    "delete": {
+      "heading": "ポジションを削除しますか？",
+      "body": "{{name}}を削除しますか？有効な割り当ては終了し、ポジションは終了状態になります。この操作は取り消せません。",
+      "deleting": "削除中...",
+      "confirm": "削除"
+    },
+    "endAssignment": {
+      "title": "この割り当てを終了しますか？",
+      "confirmText": "割り当てを終了"
+    }
   }
 }

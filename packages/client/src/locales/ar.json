@@ -4739,5 +4739,343 @@
     "pagination": {
       "pageOf": "الصفحة {{page}} من {{totalPages}}"
     }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "فئات المستندات",
+      "subtitle": "إدارة فئات المستندات الخاصة بمؤسستك."
+    },
+    "actions": {
+      "newCategory": "فئة جديدة",
+      "cancel": "إلغاء",
+      "update": "تحديث",
+      "create": "إنشاء",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "form": {
+      "editTitle": "تعديل الفئة",
+      "createTitle": "إنشاء فئة",
+      "nameLabel": "الاسم *",
+      "namePlaceholder": "مثال: بطاقة أدهار",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "وصف اختياري",
+      "mandatoryLabel": "إلزامي لجميع الموظفين"
+    },
+    "table": {
+      "categoryHeader": "الفئة",
+      "descriptionHeader": "الوصف",
+      "documentsHeader": "المستندات",
+      "mandatoryHeader": "إلزامي",
+      "actionsHeader": "الإجراءات",
+      "loading": "جارٍ التحميل...",
+      "empty": "لا توجد فئات بعد. أنشئ فئة للبدء.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "مطلوب",
+      "optional": "اختياري"
+    },
+    "deactivate": {
+      "titleNamed": "إلغاء تنشيط الفئة \"{{name}}\"؟",
+      "title": "إلغاء تنشيط الفئة؟",
+      "description": "ستبقى المستندات الموجودة في هذه الفئة.",
+      "confirm": "إلغاء التنشيط"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "مستنداتي",
+      "subtitle": "قم برفع مستنداتك وعرضها وتتبع حالتها."
+    },
+    "actions": {
+      "uploadDocument": "رفع مستند"
+    },
+    "upload": {
+      "heading": "رفع مستند",
+      "fileLabel": "الملف *",
+      "nameLabel": "اسم المستند",
+      "namePlaceholder": "اختياري - يُستخدم اسم الملف افتراضيًا",
+      "categoryLabel": "الفئة *",
+      "categoryPlaceholder": "اختر الفئة",
+      "expiryLabel": "تاريخ الانتهاء",
+      "submit": "رفع",
+      "submitting": "جارٍ الرفع..."
+    },
+    "list": {
+      "loading": "جارٍ تحميل مستنداتك...",
+      "empty": "لم تقم برفع أي مستندات بعد.",
+      "uploadFirst": "ارفع مستندك الأول"
+    },
+    "expiry": {
+      "expired": "منتهي الصلاحية",
+      "expiringSoon": "قارب على الانتهاء",
+      "expires": "ينتهي في"
+    },
+    "doc": {
+      "rejectionReason": "سبب الرفض: {{reason}}",
+      "download": "تنزيل",
+      "reupload": "إعادة الرفع"
+    },
+    "status": {
+      "verified": "موثّق",
+      "rejected": "مرفوض",
+      "pending": "قيد الانتظار"
+    },
+    "toast": {
+      "downloadFailed": "تعذّر تنزيل المستند."
+    },
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "summary_zero": "الصفحة {{page}} من {{totalPages}} ({{count}} مستندات إجمالًا)",
+      "summary_one": "الصفحة {{page}} من {{totalPages}} ({{count}} مستندات إجمالًا)",
+      "summary_two": "الصفحة {{page}} من {{totalPages}} ({{count}} مستندات إجمالًا)",
+      "summary_few": "الصفحة {{page}} من {{totalPages}} ({{count}} مستندات إجمالًا)",
+      "summary_many": "الصفحة {{page}} من {{totalPages}} ({{count}} مستندًا إجمالًا)",
+      "summary_other": "الصفحة {{page}} من {{totalPages}} ({{count}} مستند إجمالًا)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "الآن",
+      "minutesAgo_zero": "منذ {{count}} دقيقة",
+      "minutesAgo_one": "منذ {{count}} دقيقة",
+      "minutesAgo_two": "منذ {{count}} دقيقة",
+      "minutesAgo_few": "منذ {{count}} دقائق",
+      "minutesAgo_many": "منذ {{count}} دقيقةً",
+      "minutesAgo_other": "منذ {{count}} دقيقة",
+      "hoursAgo_zero": "منذ {{count}} ساعة",
+      "hoursAgo_one": "منذ {{count}} ساعة",
+      "hoursAgo_two": "منذ {{count}} ساعة",
+      "hoursAgo_few": "منذ {{count}} ساعات",
+      "hoursAgo_many": "منذ {{count}} ساعةً",
+      "hoursAgo_other": "منذ {{count}} ساعة",
+      "daysAgo_zero": "منذ {{count}} يوم",
+      "daysAgo_one": "منذ {{count}} يوم",
+      "daysAgo_two": "منذ {{count}} يوم",
+      "daysAgo_few": "منذ {{count}} أيام",
+      "daysAgo_many": "منذ {{count}} يومًا",
+      "daysAgo_other": "منذ {{count}} يوم"
+    },
+    "header": {
+      "defaultCategoryName": "الفئة",
+      "newPost": "منشور جديد"
+    },
+    "filters": {
+      "allTypes": "جميع الأنواع",
+      "discussions": "المناقشات",
+      "questions": "الأسئلة",
+      "ideas": "الأفكار",
+      "polls": "الاستطلاعات"
+    },
+    "sort": {
+      "recent": "الأحدث",
+      "popular": "الأكثر رواجًا",
+      "active": "النشط",
+      "mostViewed": "الأكثر مشاهدة"
+    },
+    "list": {
+      "loading": "جارٍ تحميل المنشورات...",
+      "empty": "لا توجد منشورات في هذه الفئة بعد. ابدأ المحادثة!"
+    },
+    "postType": {
+      "discussion": "مناقشة",
+      "question": "سؤال",
+      "idea": "فكرة",
+      "poll": "استطلاع"
+    },
+    "badge": {
+      "pinned": "مثبّت",
+      "locked": "مقفل"
+    },
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "pageInfo_zero": "الصفحة {{page}} من {{totalPages}} ({{count}} إجمالاً)",
+      "pageInfo_one": "الصفحة {{page}} من {{totalPages}} ({{count}} إجمالاً)",
+      "pageInfo_two": "الصفحة {{page}} من {{totalPages}} ({{count}} إجمالاً)",
+      "pageInfo_few": "الصفحة {{page}} من {{totalPages}} ({{count}} إجمالاً)",
+      "pageInfo_many": "الصفحة {{page}} من {{totalPages}} ({{count}} إجمالاً)",
+      "pageInfo_other": "الصفحة {{page}} من {{totalPages}} ({{count}} إجمالاً)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "نقاش",
+      "question": "سؤال",
+      "idea": "فكرة",
+      "poll": "استطلاع"
+    },
+    "time": {
+      "justNow": "الآن",
+      "minutesAgo_zero": "قبل {{count}} دقيقة",
+      "minutesAgo_one": "قبل {{count}} دقيقة",
+      "minutesAgo_two": "قبل {{count}} دقيقة",
+      "minutesAgo_few": "قبل {{count}} دقائق",
+      "minutesAgo_many": "قبل {{count}} دقيقة",
+      "minutesAgo_other": "قبل {{count}} دقيقة",
+      "hoursAgo_zero": "قبل {{count}} ساعة",
+      "hoursAgo_one": "قبل {{count}} ساعة",
+      "hoursAgo_two": "قبل {{count}} ساعة",
+      "hoursAgo_few": "قبل {{count}} ساعات",
+      "hoursAgo_many": "قبل {{count}} ساعة",
+      "hoursAgo_other": "قبل {{count}} ساعة",
+      "daysAgo_zero": "قبل {{count}} يوم",
+      "daysAgo_one": "قبل {{count}} يوم",
+      "daysAgo_two": "قبل {{count}} يوم",
+      "daysAgo_few": "قبل {{count}} أيام",
+      "daysAgo_many": "قبل {{count}} يوماً",
+      "daysAgo_other": "قبل {{count}} يوم"
+    },
+    "loading": "جارٍ تحميل المنشور...",
+    "notFound": "المنشور غير موجود",
+    "reply": {
+      "acceptedAnswer": "الإجابة المقبولة",
+      "replyAction": "رد",
+      "acceptAnswer": "قبول الإجابة"
+    },
+    "badge": {
+      "pinned": "مثبّت",
+      "locked": "مقفل"
+    },
+    "action": {
+      "like": "إعجاب",
+      "unpin": "إلغاء التثبيت",
+      "pin": "تثبيت",
+      "unlock": "إلغاء القفل",
+      "lock": "قفل",
+      "delete": "حذف"
+    },
+    "replies": {
+      "empty": "لا توجد ردود بعد. كن أول من يرد!",
+      "heading_zero": "{{count}} رد",
+      "heading_one": "{{count}} رد",
+      "heading_two": "{{count}} رد",
+      "heading_few": "{{count}} ردود",
+      "heading_many": "{{count}} رداً",
+      "heading_other": "{{count}} رد"
+    },
+    "form": {
+      "replyingTo": "الرد على {{name}}",
+      "cancel": "إلغاء",
+      "placeholder": "اكتب رداً...",
+      "posting": "جارٍ النشر...",
+      "submit": "رد"
+    },
+    "locked": {
+      "message": "هذا المنشور مقفل. لا يُسمح بردود جديدة."
+    },
+    "deleteReply": {
+      "title": "حذف هذا الرد؟",
+      "confirm": "حذف"
+    },
+    "deletePost": {
+      "title": "حذف هذا المنشور وجميع ردوده؟",
+      "description": "لا يمكن التراجع عن هذا الإجراء.",
+      "confirm": "حذف"
+    },
+    "replyCount_zero": "{{count}} رد",
+    "replyCount_one": "{{count}} رد",
+    "replyCount_two": "{{count}} رد",
+    "replyCount_few": "{{count}} ردود",
+    "replyCount_many": "{{count}} رداً",
+    "replyCount_other": "{{count}} رد"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "تعذّر تعيين الموظف في هذا المنصب.",
+      "saveChangesFailed": "تعذّر حفظ تغييرات المنصب.",
+      "deleteFailed": "تعذّر حذف المنصب"
+    },
+    "loading": "جارٍ التحميل...",
+    "notFound": "المنصب غير موجود",
+    "backToPositions": "العودة إلى المناصب",
+    "action": {
+      "edit": "تعديل",
+      "delete": "حذف",
+      "assignEmployee": "تعيين موظف"
+    },
+    "status": {
+      "active": "نشط",
+      "filled": "مشغول",
+      "frozen": "مجمّد",
+      "closed": "مغلق"
+    },
+    "assignForm": {
+      "heading": "تعيين موظف في المنصب",
+      "employeeLabel": "الموظف *",
+      "searchPlaceholder": "ابدأ الكتابة للبحث عن المستخدمين...",
+      "noUsersMatch": "لا يوجد مستخدمون مطابقون",
+      "startDateLabel": "تاريخ البدء *",
+      "primaryPosition": "المنصب الأساسي",
+      "assigning": "جارٍ التعيين...",
+      "assign": "تعيين",
+      "assignFailedInline": "تعذّر التعيين"
+    },
+    "common": {
+      "cancel": "إلغاء"
+    },
+    "editForm": {
+      "heading": "تعديل المنصب",
+      "titleLabel": "المسمّى *",
+      "departmentLabel": "القسم",
+      "departmentNone": "لا شيء",
+      "employmentTypeLabel": "نوع التوظيف",
+      "headcountBudgetLabel": "عدد الوظائف المخطّط",
+      "minSalaryLabel": "الحد الأدنى للراتب (بأصغر وحدة)",
+      "maxSalaryLabel": "الحد الأقصى للراتب (بأصغر وحدة)",
+      "jobDescriptionLabel": "الوصف الوظيفي",
+      "criticalRole": "دور حيوي",
+      "headcountMinError": "يجب ألا يقل عدد الوظائف المخطّط عن 1.",
+      "saving": "جارٍ الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "updateFailedInline": "تعذّر تحديث المنصب"
+    },
+    "employmentType": {
+      "full_time": "دوام كامل",
+      "part_time": "دوام جزئي",
+      "contract": "عقد",
+      "intern": "تدريب"
+    },
+    "details": {
+      "heading": "تفاصيل المنصب",
+      "employmentType": "نوع التوظيف",
+      "headcount": "عدد الوظائف",
+      "salaryRange": "نطاق الراتب",
+      "reportsTo": "يرفع تقاريره إلى"
+    },
+    "jobDescription": {
+      "heading": "الوصف الوظيفي"
+    },
+    "requirements": {
+      "heading": "المتطلبات"
+    },
+    "assignees": {
+      "noneAssigned": "لا يوجد موظف معيّن",
+      "since": "منذ {{date}}",
+      "actingInterim": "بالإنابة/مؤقت",
+      "endAssignmentTitle": "إنهاء التعيين",
+      "heading_zero": "الموظفون الحاليون ({{count}})",
+      "heading_one": "الموظفون الحاليون ({{count}})",
+      "heading_two": "الموظفون الحاليون ({{count}})",
+      "heading_few": "الموظفون الحاليون ({{count}})",
+      "heading_many": "الموظفون الحاليون ({{count}})",
+      "heading_other": "الموظفون الحاليون ({{count}})"
+    },
+    "history": {
+      "heading": "سجل التعيينات",
+      "dateRangeNA": "غير متوفر"
+    },
+    "delete": {
+      "heading": "حذف المنصب؟",
+      "body": "حذف {{name}}؟ سيتم إنهاء التعيينات النشطة وإغلاق المنصب. لا يمكن التراجع عن ذلك.",
+      "deleting": "جارٍ الحذف...",
+      "confirm": "حذف"
+    },
+    "endAssignment": {
+      "title": "إنهاء هذا التعيين؟",
+      "confirmText": "إنهاء التعيين"
+    }
   }
 }
