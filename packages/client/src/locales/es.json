@@ -2783,5 +2783,32 @@
       "closed": "Cerrado",
       "reopened": "Reabierto"
     }
+  },
+  "submitFeedback": {
+    "title": "Enviar comentarios",
+    "successHeading": "Comentarios enviados",
+    "successMessage": "Tus comentarios se enviaron de forma anónima. Tu identidad no se almacena ni es visible para nadie. Puedes consultar el estado de tus comentarios en la página \"Mis comentarios\".",
+    "submitAnother": "Enviar otro",
+    "bannerTitle": "Tus comentarios son completamente anónimos",
+    "bannerBody": "Tu identidad se cifra de forma irreversible y no se puede rastrear hasta ti. RR. HH. verá el contenido de los comentarios, pero nunca tu nombre ni tu correo electrónico.",
+    "categoryLabel": "Categoría",
+    "subjectLabel": "Asunto",
+    "messageLabel": "Mensaje",
+    "subjectPlaceholder": "Breve resumen de tus comentarios",
+    "messagePlaceholder": "Describe tus comentarios en detalle...",
+    "markUrgent": "Marcar como urgente",
+    "submitAnon": "Enviar de forma anónima",
+    "submitting": "Enviando...",
+    "submitError": "No se pudieron enviar los comentarios. Inténtalo de nuevo.",
+    "category": {
+      "workplace": "Entorno laboral",
+      "management": "Dirección",
+      "process": "Procesos",
+      "culture": "Cultura",
+      "harassment": "Acoso",
+      "safety": "Seguridad",
+      "suggestion": "Sugerencia",
+      "other": "Otro"
+    }
   }
 }

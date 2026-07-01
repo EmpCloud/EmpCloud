@@ -2783,5 +2783,32 @@
       "closed": "クローズ",
       "reopened": "再オープン"
     }
+  },
+  "submitFeedback": {
+    "title": "フィードバックを送信",
+    "successHeading": "フィードバックを送信しました",
+    "successMessage": "フィードバックは匿名で送信されました。あなたの身元は保存されず、誰にも知られることはありません。送信したフィードバックの状況は「マイフィードバック」ページで確認できます。",
+    "submitAnother": "別のフィードバックを送信",
+    "bannerTitle": "フィードバックは完全に匿名です",
+    "bannerBody": "あなたの身元はハッシュ化され、あなたを特定することはできません。人事部はフィードバックの内容のみを確認でき、氏名やメールアドレスが見られることはありません。",
+    "categoryLabel": "カテゴリー",
+    "subjectLabel": "件名",
+    "messageLabel": "本文",
+    "subjectPlaceholder": "フィードバックの概要を簡潔に",
+    "messagePlaceholder": "フィードバックの内容を詳しくご記入ください...",
+    "markUrgent": "緊急としてマークする",
+    "submitAnon": "匿名で送信",
+    "submitting": "送信中...",
+    "submitError": "フィードバックの送信に失敗しました。もう一度お試しください。",
+    "category": {
+      "workplace": "職場環境",
+      "management": "マネジメント",
+      "process": "業務プロセス",
+      "culture": "企業文化",
+      "harassment": "ハラスメント",
+      "safety": "安全",
+      "suggestion": "提案",
+      "other": "その他"
+    }
   }
 }

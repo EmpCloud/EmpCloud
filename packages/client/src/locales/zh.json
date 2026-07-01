@@ -2783,5 +2783,32 @@
       "closed": "已关闭",
       "reopened": "已重新打开"
     }
+  },
+  "submitFeedback": {
+    "title": "提交反馈",
+    "successHeading": "反馈已提交",
+    "successMessage": "您的反馈已匿名提交。我们不会存储您的身份信息，任何人都无法看到。您可以在“我的反馈”页面查看反馈的处理进度。",
+    "submitAnother": "再次提交",
+    "bannerTitle": "您的反馈完全匿名",
+    "bannerBody": "您的身份信息经过哈希处理，无法追溯到您本人。人力资源部门只能看到反馈内容，绝不会看到您的姓名或邮箱。",
+    "categoryLabel": "类别",
+    "subjectLabel": "主题",
+    "messageLabel": "内容",
+    "subjectPlaceholder": "简要概括您的反馈",
+    "messagePlaceholder": "请详细描述您的反馈……",
+    "markUrgent": "标记为紧急",
+    "submitAnon": "匿名提交",
+    "submitting": "提交中……",
+    "submitError": "反馈提交失败，请重试。",
+    "category": {
+      "workplace": "工作环境",
+      "management": "管理层",
+      "process": "流程",
+      "culture": "企业文化",
+      "harassment": "骚扰",
+      "safety": "安全",
+      "suggestion": "建议",
+      "other": "其他"
+    }
   }
 }

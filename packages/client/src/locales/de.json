@@ -2783,5 +2783,32 @@
       "closed": "Geschlossen",
       "reopened": "Wieder geöffnet"
     }
+  },
+  "submitFeedback": {
+    "title": "Feedback einreichen",
+    "successHeading": "Feedback eingereicht",
+    "successMessage": "Ihr Feedback wurde anonym eingereicht. Ihre Identität wird nicht gespeichert und ist für niemanden sichtbar. Den Status Ihres Feedbacks können Sie auf der Seite „Mein Feedback“ einsehen.",
+    "submitAnother": "Weiteres Feedback einreichen",
+    "bannerTitle": "Ihr Feedback ist vollständig anonym",
+    "bannerBody": "Ihre Identität wird in einen anonymen Hashwert umgewandelt und kann nicht zu Ihnen zurückverfolgt werden. Die Personalabteilung sieht den Inhalt Ihres Feedbacks, aber niemals Ihren Namen oder Ihre E-Mail-Adresse.",
+    "categoryLabel": "Kategorie",
+    "subjectLabel": "Betreff",
+    "messageLabel": "Nachricht",
+    "subjectPlaceholder": "Kurze Zusammenfassung Ihres Feedbacks",
+    "messagePlaceholder": "Beschreiben Sie Ihr Feedback im Detail …",
+    "markUrgent": "Als dringend markieren",
+    "submitAnon": "Anonym einreichen",
+    "submitting": "Wird eingereicht …",
+    "submitError": "Feedback konnte nicht eingereicht werden. Bitte versuchen Sie es erneut.",
+    "category": {
+      "workplace": "Arbeitsplatz",
+      "management": "Führung",
+      "process": "Prozesse",
+      "culture": "Unternehmenskultur",
+      "harassment": "Belästigung",
+      "safety": "Sicherheit",
+      "suggestion": "Vorschlag",
+      "other": "Sonstiges"
+    }
   }
 }

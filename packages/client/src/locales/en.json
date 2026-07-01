@@ -2796,5 +2796,32 @@
       "closed": "Closed",
       "reopened": "Reopened"
     }
+  },
+  "submitFeedback": {
+    "title": "Submit Feedback",
+    "successHeading": "Feedback Submitted",
+    "successMessage": "Your feedback has been submitted anonymously. Your identity is not stored or visible to anyone. You can check the status of your feedback on the \"My Feedback\" page.",
+    "submitAnother": "Submit Another",
+    "bannerTitle": "Your feedback is completely anonymous",
+    "bannerBody": "Your identity is hashed and cannot be traced back to you. HR will see the feedback content but never your name or email.",
+    "categoryLabel": "Category",
+    "subjectLabel": "Subject",
+    "messageLabel": "Message",
+    "subjectPlaceholder": "Brief summary of your feedback",
+    "messagePlaceholder": "Describe your feedback in detail...",
+    "markUrgent": "Mark as urgent",
+    "submitAnon": "Submit Anonymously",
+    "submitting": "Submitting...",
+    "submitError": "Failed to submit feedback. Please try again.",
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
+      "other": "Other"
+    }
   }
 }

@@ -2783,5 +2783,32 @@
       "closed": "Fechado",
       "reopened": "Reaberto"
     }
+  },
+  "submitFeedback": {
+    "title": "Enviar feedback",
+    "successHeading": "Feedback enviado",
+    "successMessage": "O seu feedback foi enviado de forma anónima. A sua identidade não é guardada nem visível para ninguém. Pode acompanhar o estado do seu feedback na página \"O meu feedback\".",
+    "submitAnother": "Enviar outro",
+    "bannerTitle": "O seu feedback é totalmente anónimo",
+    "bannerBody": "A sua identidade é convertida num código irreversível e não pode ser associada a si. O RH verá o conteúdo do feedback, mas nunca o seu nome ou e-mail.",
+    "categoryLabel": "Categoria",
+    "subjectLabel": "Assunto",
+    "messageLabel": "Mensagem",
+    "subjectPlaceholder": "Breve resumo do seu feedback",
+    "messagePlaceholder": "Descreva o seu feedback em detalhe...",
+    "markUrgent": "Marcar como urgente",
+    "submitAnon": "Enviar anonimamente",
+    "submitting": "A enviar...",
+    "submitError": "Não foi possível enviar o feedback. Tente novamente.",
+    "category": {
+      "workplace": "Ambiente de trabalho",
+      "management": "Gestão",
+      "process": "Processos",
+      "culture": "Cultura",
+      "harassment": "Assédio",
+      "safety": "Segurança",
+      "suggestion": "Sugestão",
+      "other": "Outro"
+    }
   }
 }
