@@ -95,6 +95,9 @@ export default function HeadcountPlanPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
     },
+    onError: (err: any) => {
+      showToast("error", err?.response?.data?.error?.message || (tx("failedApprove") as string));
+    },
   });
 
   const rejectMutation = useMutation({
@@ -104,6 +107,9 @@ export default function HeadcountPlanPage() {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
       setRejectTarget(null);
       setRejectReason("");
+    },
+    onError: (err: any) => {
+      showToast("error", err?.response?.data?.error?.message || (tx("failedReject") as string));
     },
   });
 
@@ -117,6 +123,9 @@ export default function HeadcountPlanPage() {
       api.put(`/positions/headcount-plans/${planId}`, { status: "submitted" }).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+    },
+    onError: (err: any) => {
+      showToast("error", err?.response?.data?.error?.message || (tx("failedSubmit") as string));
     },
   });
 
