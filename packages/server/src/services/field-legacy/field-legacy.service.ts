@@ -386,6 +386,7 @@ export async function getAttendanceSheet(body: {
   date?: unknown;
   start_date?: unknown;
   end_date?: unknown;
+  search?: String;
 }) {
   const orgId = Number(body.organization_id);
   if (!orgId) throw new ValidationError("organization_id is required");
@@ -419,6 +420,19 @@ export async function getAttendanceSheet(body: {
     .where("u.organization_id", orgId)
     .whereNot("u.role", "super_admin");
   if (body.employee_id) empQuery = empQuery.where("u.id", Number(body.employee_id));
+  if (body.search?.trim()) {
+    const search = `%${body.search.trim()}%`;
+
+    empQuery = empQuery.andWhere(function () {
+        this.where("u.first_name", "like", search)
+            .orWhere("u.last_name", "like", search)
+            .orWhereRaw(
+                "CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?",
+                [search]
+            )
+            .orWhere("u.emp_code", "like", search);
+    });
+  }
   const employees = await empQuery
     .orderBy("u.first_name", "asc")
     .select(
