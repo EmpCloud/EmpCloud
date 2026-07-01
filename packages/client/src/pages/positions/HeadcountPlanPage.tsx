@@ -131,8 +131,10 @@ export default function HeadcountPlanPage() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    const planned = parseInt(form.planned_headcount, 10);
-    const current = parseInt(form.current_headcount, 10);
+    // Blank headcount fields are optional — the server defaults them to 0. Treat an
+    // empty input as 0 rather than parsing "" to NaN and rejecting it.
+    const planned = form.planned_headcount.trim() === "" ? 0 : parseInt(form.planned_headcount, 10);
+    const current = form.current_headcount.trim() === "" ? 0 : parseInt(form.current_headcount, 10);
     if (!Number.isFinite(planned) || planned < 0) {
       showToast("error", tx("alertPlannedInvalid") as string);
       return;
