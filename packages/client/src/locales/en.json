@@ -3082,5 +3082,155 @@
       "selectPlaceholder": "Select...",
       "filePlaceholder": "File reference or path"
     }
+  },
+  "assetDetail": {
+    "loading": "Loading asset details...",
+    "status": {
+      "available": "Available",
+      "assigned": "Assigned",
+      "in_repair": "In Repair",
+      "retired": "Retired",
+      "lost": "Lost",
+      "damaged": "Damaged"
+    },
+    "condition": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "action": {
+      "created": "Created",
+      "assigned": "Assigned",
+      "returned": "Returned",
+      "sent_to_repair": "Sent To Repair",
+      "repaired": "Repaired",
+      "retired": "Retired",
+      "lost": "Lost",
+      "found": "Found",
+      "damaged": "Damaged",
+      "updated": "Updated"
+    },
+    "actions": {
+      "edit": "Edit",
+      "assign": "Assign",
+      "return": "Return",
+      "sendForRepair": "Send for Repair",
+      "repairComplete": "Repair Complete",
+      "retire": "Retire",
+      "reportLost": "Report Lost",
+      "markFound": "Mark Found"
+    },
+    "info": {
+      "title": "Asset Information",
+      "assetTag": "Asset Tag",
+      "category": "Category",
+      "uncategorized": "Uncategorized",
+      "serialNumber": "Serial Number",
+      "brand": "Brand",
+      "model": "Model",
+      "location": "Location",
+      "purchaseDate": "Purchase Date",
+      "purchaseCost": "Purchase Cost",
+      "warrantyExpiry": "Warranty Expiry",
+      "expired": "(Expired)",
+      "description": "Description",
+      "notes": "Notes"
+    },
+    "assignment": {
+      "title": "Currently Assigned",
+      "assignedTo": "Assigned To",
+      "assignedAt": "Assigned At",
+      "assignedBy": "Assigned By"
+    },
+    "history": {
+      "title": "History",
+      "toUser": "To: {{name}}",
+      "fromUser": "From: {{name}}",
+      "empty": "No history entries",
+      "deleteEntry": "Delete history entry"
+    },
+    "assignModal": {
+      "title": "Assign Asset",
+      "assignToLabel": "Assign To",
+      "selectEmployee": "Select employee",
+      "notesLabel": "Notes",
+      "submitting": "Assigning...",
+      "submit": "Assign"
+    },
+    "common": {
+      "cancel": "Cancel"
+    },
+    "returnModal": {
+      "title": "Return Asset",
+      "conditionLabel": "Condition on Return",
+      "notesLabel": "Notes",
+      "submitting": "Returning...",
+      "submit": "Return Asset"
+    },
+    "confirm": {
+      "retire": {
+        "title": "Retire this asset?",
+        "body": "Retiring an asset takes it out of active inventory. Past assignments stay on record but the asset can no longer be assigned.",
+        "confirmLabel": "Retire Asset"
+      },
+      "lost": {
+        "title": "Report asset as lost?",
+        "body": "This will mark the asset as lost and record it in the audit history. You can mark it found later from the asset detail page.",
+        "confirmLabel": "Report as Lost"
+      },
+      "found": {
+        "title": "Mark asset as found?",
+        "body": "This will return the asset to active inventory as available, so it can be reassigned.",
+        "confirmLabel": "Mark as Found"
+      },
+      "repairStart": {
+        "title": "Send asset for repair?",
+        "bodyAssigned": "This will unassign the asset and move it to 'In Repair'. The current holder stays recorded in the history.",
+        "bodyUnassigned": "This will move the asset to 'In Repair'. It won't be assignable until repair is complete.",
+        "confirmLabel": "Send for Repair"
+      },
+      "repairComplete": {
+        "title": "Mark repair as complete?",
+        "body": "This will return the asset to active inventory as available, so it can be reassigned.",
+        "confirmLabel": "Mark as Repaired"
+      },
+      "working": "Working..."
+    },
+    "editModal": {
+      "title": "Edit Asset",
+      "nameLabel": "Name",
+      "categoryLabel": "Category",
+      "serialNumberLabel": "Serial Number",
+      "brandLabel": "Brand",
+      "modelLabel": "Model",
+      "conditionLabel": "Condition",
+      "purchaseDateLabel": "Purchase Date",
+      "purchaseCostLabel": "Purchase Cost",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "Amount in paise.",
+      "warrantyExpiryLabel": "Warranty Expiry",
+      "locationLabel": "Location",
+      "descriptionLabel": "Description",
+      "notesLabel": "Notes",
+      "saving": "Saving...",
+      "save": "Save Changes"
+    },
+    "historyDelete": {
+      "title": "Delete history entry?",
+      "body": "This removes just this log row. The asset's current status stays unchanged — past assignments or actions are not reverted.",
+      "deleting": "Deleting...",
+      "confirm": "Delete Entry"
+    },
+    "errors": {
+      "updateFailed": "Failed to update asset",
+      "deleteHistoryFailed": "Failed to delete history entry",
+      "warrantyBeforePurchase": "Warranty expiry cannot be before the purchase date.",
+      "retireFailed": "Failed to retire asset",
+      "reportLostFailed": "Failed to report asset as lost",
+      "markFoundFailed": "Failed to mark asset as found",
+      "sendToRepairFailed": "Failed to send asset to repair",
+      "completeRepairFailed": "Failed to complete repair"
+    }
   }
 }

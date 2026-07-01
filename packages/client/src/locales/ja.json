@@ -3075,5 +3075,155 @@
       "selectPlaceholder": "選択...",
       "filePlaceholder": "ファイル参照またはパス"
     }
+  },
+  "assetDetail": {
+    "loading": "資産の詳細を読み込んでいます...",
+    "status": {
+      "available": "利用可能",
+      "assigned": "割り当て済み",
+      "in_repair": "修理中",
+      "retired": "廃棄済み",
+      "lost": "紛失",
+      "damaged": "破損"
+    },
+    "condition": {
+      "new": "新品",
+      "good": "良好",
+      "fair": "普通",
+      "poor": "不良"
+    },
+    "action": {
+      "created": "作成",
+      "assigned": "割り当て",
+      "returned": "返却",
+      "sent_to_repair": "修理に送付",
+      "repaired": "修理完了",
+      "retired": "廃棄",
+      "lost": "紛失",
+      "found": "発見",
+      "damaged": "破損",
+      "updated": "更新"
+    },
+    "actions": {
+      "edit": "編集",
+      "assign": "割り当て",
+      "return": "返却",
+      "sendForRepair": "修理に出す",
+      "repairComplete": "修理完了",
+      "retire": "廃棄",
+      "reportLost": "紛失を報告",
+      "markFound": "発見済みにする"
+    },
+    "info": {
+      "title": "資産情報",
+      "assetTag": "資産タグ",
+      "category": "カテゴリ",
+      "uncategorized": "未分類",
+      "serialNumber": "シリアル番号",
+      "brand": "ブランド",
+      "model": "モデル",
+      "location": "場所",
+      "purchaseDate": "購入日",
+      "purchaseCost": "購入費用",
+      "warrantyExpiry": "保証期限",
+      "expired": "(期限切れ)",
+      "description": "説明",
+      "notes": "メモ"
+    },
+    "assignment": {
+      "title": "現在の割り当て",
+      "assignedTo": "割り当て先",
+      "assignedAt": "割り当て日時",
+      "assignedBy": "割り当て者"
+    },
+    "history": {
+      "title": "履歴",
+      "toUser": "宛先: {{name}}",
+      "fromUser": "返却元: {{name}}",
+      "empty": "履歴がありません",
+      "deleteEntry": "履歴を削除"
+    },
+    "assignModal": {
+      "title": "資産を割り当て",
+      "assignToLabel": "割り当て先",
+      "selectEmployee": "従業員を選択",
+      "notesLabel": "メモ",
+      "submitting": "割り当て中...",
+      "submit": "割り当て"
+    },
+    "common": {
+      "cancel": "キャンセル"
+    },
+    "returnModal": {
+      "title": "資産を返却",
+      "conditionLabel": "返却時の状態",
+      "notesLabel": "メモ",
+      "submitting": "返却中...",
+      "submit": "資産を返却"
+    },
+    "confirm": {
+      "retire": {
+        "title": "この資産を廃棄しますか?",
+        "body": "資産を廃棄すると、稼働中の在庫から除外されます。過去の割り当て記録は残りますが、資産を割り当てることはできなくなります。",
+        "confirmLabel": "資産を廃棄"
+      },
+      "lost": {
+        "title": "資産を紛失として報告しますか?",
+        "body": "資産を紛失としてマークし、監査履歴に記録します。後で資産の詳細ページから発見済みにすることができます。",
+        "confirmLabel": "紛失を報告"
+      },
+      "found": {
+        "title": "資産を発見済みにしますか?",
+        "body": "資産を利用可能として稼働中の在庫に戻し、再度割り当てできるようにします。",
+        "confirmLabel": "発見済みにする"
+      },
+      "repairStart": {
+        "title": "資産を修理に出しますか?",
+        "bodyAssigned": "資産の割り当てを解除し、「修理中」に移行します。現在の保有者は履歴に記録されたまま残ります。",
+        "bodyUnassigned": "資産を「修理中」に移行します。修理が完了するまで割り当てはできません。",
+        "confirmLabel": "修理に出す"
+      },
+      "repairComplete": {
+        "title": "修理を完了としてマークしますか?",
+        "body": "資産を利用可能として稼働中の在庫に戻し、再度割り当てできるようにします。",
+        "confirmLabel": "修理完了にする"
+      },
+      "working": "処理中..."
+    },
+    "editModal": {
+      "title": "資産を編集",
+      "nameLabel": "名前",
+      "categoryLabel": "カテゴリ",
+      "serialNumberLabel": "シリアル番号",
+      "brandLabel": "ブランド",
+      "modelLabel": "モデル",
+      "conditionLabel": "状態",
+      "purchaseDateLabel": "購入日",
+      "purchaseCostLabel": "購入費用",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "金額はパイサ単位。",
+      "warrantyExpiryLabel": "保証期限",
+      "locationLabel": "場所",
+      "descriptionLabel": "説明",
+      "notesLabel": "メモ",
+      "saving": "保存中...",
+      "save": "変更を保存"
+    },
+    "historyDelete": {
+      "title": "履歴を削除しますか?",
+      "body": "このログ行のみを削除します。資産の現在のステータスは変更されず、過去の割り当てや操作は元に戻りません。",
+      "deleting": "削除中...",
+      "confirm": "履歴を削除"
+    },
+    "errors": {
+      "updateFailed": "資産の更新に失敗しました",
+      "deleteHistoryFailed": "履歴の削除に失敗しました",
+      "warrantyBeforePurchase": "保証期限を購入日より前に設定することはできません。",
+      "retireFailed": "資産の廃棄に失敗しました",
+      "reportLostFailed": "資産の紛失報告に失敗しました",
+      "markFoundFailed": "資産を発見済みにできませんでした",
+      "sendToRepairFailed": "資産を修理に送付できませんでした",
+      "completeRepairFailed": "修理の完了に失敗しました"
+    }
   }
 }

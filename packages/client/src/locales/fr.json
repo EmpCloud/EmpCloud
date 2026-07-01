@@ -3075,5 +3075,155 @@
       "selectPlaceholder": "Sélectionner...",
       "filePlaceholder": "Référence ou chemin du fichier"
     }
+  },
+  "assetDetail": {
+    "loading": "Chargement des détails du bien...",
+    "status": {
+      "available": "Disponible",
+      "assigned": "Attribué",
+      "in_repair": "En réparation",
+      "retired": "Retiré",
+      "lost": "Perdu",
+      "damaged": "Endommagé"
+    },
+    "condition": {
+      "new": "Neuf",
+      "good": "Bon",
+      "fair": "Moyen",
+      "poor": "Mauvais"
+    },
+    "action": {
+      "created": "Créé",
+      "assigned": "Attribué",
+      "returned": "Retourné",
+      "sent_to_repair": "Envoyé en réparation",
+      "repaired": "Réparé",
+      "retired": "Retiré",
+      "lost": "Perdu",
+      "found": "Retrouvé",
+      "damaged": "Endommagé",
+      "updated": "Mis à jour"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "assign": "Attribuer",
+      "return": "Retourner",
+      "sendForRepair": "Envoyer en réparation",
+      "repairComplete": "Réparation terminée",
+      "retire": "Retirer",
+      "reportLost": "Signaler comme perdu",
+      "markFound": "Marquer comme retrouvé"
+    },
+    "info": {
+      "title": "Informations sur le bien",
+      "assetTag": "Étiquette du bien",
+      "category": "Catégorie",
+      "uncategorized": "Non catégorisé",
+      "serialNumber": "Numéro de série",
+      "brand": "Marque",
+      "model": "Modèle",
+      "location": "Emplacement",
+      "purchaseDate": "Date d'achat",
+      "purchaseCost": "Coût d'achat",
+      "warrantyExpiry": "Expiration de la garantie",
+      "expired": "(Expirée)",
+      "description": "Description",
+      "notes": "Notes"
+    },
+    "assignment": {
+      "title": "Actuellement attribué",
+      "assignedTo": "Attribué à",
+      "assignedAt": "Attribué le",
+      "assignedBy": "Attribué par"
+    },
+    "history": {
+      "title": "Historique",
+      "toUser": "À : {{name}}",
+      "fromUser": "De : {{name}}",
+      "empty": "Aucune entrée d'historique",
+      "deleteEntry": "Supprimer l'entrée d'historique"
+    },
+    "assignModal": {
+      "title": "Attribuer le bien",
+      "assignToLabel": "Attribuer à",
+      "selectEmployee": "Sélectionner un employé",
+      "notesLabel": "Notes",
+      "submitting": "Attribution...",
+      "submit": "Attribuer"
+    },
+    "common": {
+      "cancel": "Annuler"
+    },
+    "returnModal": {
+      "title": "Retourner le bien",
+      "conditionLabel": "État au retour",
+      "notesLabel": "Notes",
+      "submitting": "Retour...",
+      "submit": "Retourner le bien"
+    },
+    "confirm": {
+      "retire": {
+        "title": "Retirer ce bien ?",
+        "body": "Retirer un bien le sort de l'inventaire actif. Les attributions passées restent enregistrées, mais le bien ne peut plus être attribué.",
+        "confirmLabel": "Retirer le bien"
+      },
+      "lost": {
+        "title": "Signaler le bien comme perdu ?",
+        "body": "Cela marquera le bien comme perdu et l'enregistrera dans l'historique d'audit. Vous pourrez le marquer comme retrouvé plus tard depuis la page de détail du bien.",
+        "confirmLabel": "Signaler comme perdu"
+      },
+      "found": {
+        "title": "Marquer le bien comme retrouvé ?",
+        "body": "Cela remettra le bien dans l'inventaire actif comme disponible, afin qu'il puisse être réattribué.",
+        "confirmLabel": "Marquer comme retrouvé"
+      },
+      "repairStart": {
+        "title": "Envoyer le bien en réparation ?",
+        "bodyAssigned": "Cela annulera l'attribution du bien et le placera « En réparation ». Le détenteur actuel reste enregistré dans l'historique.",
+        "bodyUnassigned": "Cela placera le bien « En réparation ». Il ne pourra pas être attribué tant que la réparation n'est pas terminée.",
+        "confirmLabel": "Envoyer en réparation"
+      },
+      "repairComplete": {
+        "title": "Marquer la réparation comme terminée ?",
+        "body": "Cela remettra le bien dans l'inventaire actif comme disponible, afin qu'il puisse être réattribué.",
+        "confirmLabel": "Marquer comme réparé"
+      },
+      "working": "Traitement..."
+    },
+    "editModal": {
+      "title": "Modifier le bien",
+      "nameLabel": "Nom",
+      "categoryLabel": "Catégorie",
+      "serialNumberLabel": "Numéro de série",
+      "brandLabel": "Marque",
+      "modelLabel": "Modèle",
+      "conditionLabel": "État",
+      "purchaseDateLabel": "Date d'achat",
+      "purchaseCostLabel": "Coût d'achat",
+      "currencyPrefix": "₹ INR",
+      "purchaseCostHint": "Montant en paise.",
+      "warrantyExpiryLabel": "Expiration de la garantie",
+      "locationLabel": "Emplacement",
+      "descriptionLabel": "Description",
+      "notesLabel": "Notes",
+      "saving": "Enregistrement...",
+      "save": "Enregistrer les modifications"
+    },
+    "historyDelete": {
+      "title": "Supprimer l'entrée d'historique ?",
+      "body": "Cela supprime uniquement cette ligne de journal. Le statut actuel du bien reste inchangé : les attributions ou actions passées ne sont pas annulées.",
+      "deleting": "Suppression...",
+      "confirm": "Supprimer l'entrée"
+    },
+    "errors": {
+      "updateFailed": "Échec de la mise à jour du bien",
+      "deleteHistoryFailed": "Échec de la suppression de l'entrée d'historique",
+      "warrantyBeforePurchase": "L'expiration de la garantie ne peut pas être antérieure à la date d'achat.",
+      "retireFailed": "Échec du retrait du bien",
+      "reportLostFailed": "Échec du signalement du bien comme perdu",
+      "markFoundFailed": "Échec du marquage du bien comme retrouvé",
+      "sendToRepairFailed": "Échec de l'envoi du bien en réparation",
+      "completeRepairFailed": "Échec de la finalisation de la réparation"
+    }
   }
 }
