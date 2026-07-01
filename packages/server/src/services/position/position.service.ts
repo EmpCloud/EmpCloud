@@ -566,6 +566,16 @@ export async function updateHeadcountPlan(
     throw new ValidationError("Cannot update an approved headcount plan");
   }
 
+  // Approval/rejection must go through the dedicated approve/reject endpoints, which
+  // set approved_headcount/approved_by and write audit logs. A plain update may only
+  // move a plan between draft and submitted (the Submit action PUTs status:"submitted");
+  // block it from jumping straight to approved/rejected, which would skip that workflow.
+  if (data.status && data.status !== "draft" && data.status !== "submitted") {
+    throw new ValidationError(
+      `Cannot set status "${data.status}" via update; use the approve or reject action instead`
+    );
+  }
+
   await db("headcount_plans")
     .where({ id: planId })
     .update({
