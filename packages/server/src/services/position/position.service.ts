@@ -105,6 +105,7 @@ export async function listPositions(
     page?: number;
     perPage?: number;
     department_id?: number;
+    location_id?: number;
     status?: string;
     employment_type?: string;
     search?: string;
@@ -123,6 +124,9 @@ export async function listPositions(
   }
   if (params?.department_id) {
     query = query.where({ "positions.department_id": params.department_id });
+  }
+  if (params?.location_id) {
+    query = query.where({ "positions.location_id": params.location_id });
   }
   if (params?.employment_type) {
     query = query.where({ "positions.employment_type": params.employment_type });
