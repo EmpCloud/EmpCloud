@@ -23,6 +23,7 @@ export default function PositionListPage() {
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
   const [status, setStatus] = useState<string>(initialStatus);
+  const [employmentType, setEmploymentType] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -70,7 +71,7 @@ export default function PositionListPage() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["positions", { page, search, department_id: departmentId, status }],
+    queryKey: ["positions", { page, search, department_id: departmentId, status, employment_type: employmentType }],
     queryFn: () =>
       api
         .get("/positions", {
@@ -80,6 +81,7 @@ export default function PositionListPage() {
             ...(search ? { search } : {}),
             ...(departmentId ? { department_id: departmentId } : {}),
             ...(status ? { status } : {}),
+            ...(employmentType ? { employment_type: employmentType } : {}),
           },
         })
         .then((r) => r.data),
@@ -311,6 +313,17 @@ export default function PositionListPage() {
           <option value="filled">{tx("statusFilled")}</option>
           <option value="frozen">{tx("statusFrozen")}</option>
           <option value="closed">{tx("statusClosed")}</option>
+        </select>
+        <select
+          value={employmentType}
+          onChange={(e) => { setEmploymentType(e.target.value); setPage(1); }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        >
+          <option value="">{tx("allTypes")}</option>
+          <option value="full_time">{tx("fullTime")}</option>
+          <option value="part_time">{tx("partTime")}</option>
+          <option value="contract">{tx("contract")}</option>
+          <option value="intern">{tx("intern")}</option>
         </select>
       </div>
 
