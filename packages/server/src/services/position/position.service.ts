@@ -277,63 +277,70 @@ export async function assignUserToPosition(
 ) {
   const db = getDB();
 
-  const position = await db("positions")
-    .where({ id: positionId, organization_id: orgId, status: "active" })
-    .first();
+  // Run the budget check + insert + increment inside a single transaction with a
+  // row lock (SELECT ... FOR UPDATE) on the position. Without the lock, two
+  // concurrent assigns can both read headcount_filled < headcount_budget before
+  // either writes, and the position ends up over-filled. The lock serializes the
+  // assigns so the second one sees the incremented count and is rejected when full.
+  return db.transaction(async (trx) => {
+    const position = await trx("positions")
+      .where({ id: positionId, organization_id: orgId, status: "active" })
+      .forUpdate()
+      .first();
 
-  if (!position) throw new NotFoundError("Position");
+    if (!position) throw new NotFoundError("Position");
 
-  // Verify user belongs to org
-  const user = await db("users")
-    .where({ id: userId, organization_id: orgId })
-    .first();
-  if (!user) throw new NotFoundError("User");
+    // Verify user belongs to org
+    const user = await trx("users")
+      .where({ id: userId, organization_id: orgId })
+      .first();
+    if (!user) throw new NotFoundError("User");
 
-  // Check if user already has an active assignment for this position
-  const existingAssignment = await db("position_assignments")
-    .where({ position_id: positionId, user_id: userId, status: "active" })
-    .first();
-  if (existingAssignment) {
-    throw new ValidationError("User is already assigned to this position");
-  }
+    // Check if user already has an active assignment for this position
+    const existingAssignment = await trx("position_assignments")
+      .where({ position_id: positionId, user_id: userId, status: "active" })
+      .first();
+    if (existingAssignment) {
+      throw new ValidationError("User is already assigned to this position");
+    }
 
-  // Check headcount budget
-  if (position.headcount_filled >= position.headcount_budget) {
-    throw new ValidationError(
-      `Position headcount budget is full (${position.headcount_filled}/${position.headcount_budget})`
-    );
-  }
+    // Check headcount budget — race-safe now that the position row is locked
+    if (position.headcount_filled >= position.headcount_budget) {
+      throw new ValidationError(
+        `Position headcount budget is full (${position.headcount_filled}/${position.headcount_budget})`
+      );
+    }
 
-  const [id] = await db("position_assignments").insert({
-    position_id: positionId,
-    organization_id: orgId,
-    user_id: userId,
-    start_date: data.start_date,
-    end_date: data.end_date || null,
-    is_primary: data.is_primary ?? true,
-    status: "active",
-    created_at: new Date(),
-    updated_at: new Date(),
-  });
-
-  // Increment headcount_filled and update timestamp
-  await db("positions")
-    .where({ id: positionId })
-    .update({
-      headcount_filled: db.raw("headcount_filled + 1"),
+    const [id] = await trx("position_assignments").insert({
+      position_id: positionId,
+      organization_id: orgId,
+      user_id: userId,
+      start_date: data.start_date,
+      end_date: data.end_date || null,
+      is_primary: data.is_primary ?? true,
+      status: "active",
+      created_at: new Date(),
       updated_at: new Date(),
     });
 
-  // Auto-update status to "filled" when headcount_filled reaches headcount_budget
-  const updated = await db("positions").where({ id: positionId }).first();
-  if (updated && updated.headcount_filled >= updated.headcount_budget) {
-    await db("positions")
+    // Increment headcount_filled and update timestamp
+    await trx("positions")
       .where({ id: positionId })
-      .update({ status: "filled", updated_at: new Date() });
-  }
+      .update({
+        headcount_filled: trx.raw("headcount_filled + 1"),
+        updated_at: new Date(),
+      });
 
-  const assignment = await db("position_assignments").where({ id }).first();
-  return assignment;
+    // Auto-update status to "filled" when headcount reaches budget. We hold the
+    // lock and just incremented by 1, so the new value is headcount_filled + 1.
+    if (position.headcount_filled + 1 >= position.headcount_budget) {
+      await trx("positions")
+        .where({ id: positionId })
+        .update({ status: "filled", updated_at: new Date() });
+    }
+
+    return trx("position_assignments").where({ id }).first();
+  });
 }
 
 // ---------------------------------------------------------------------------
