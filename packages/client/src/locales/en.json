@@ -1688,6 +1688,8 @@
       "close": "Close",
       "failedCreate": "Failed to create plan",
       "allStatuses": "All Statuses",
+      "allDepartments": "All Departments",
+      "allYears": "All Years",
       "statusDraft": "Draft",
       "statusSubmitted": "Submitted",
       "statusApproved": "Approved",
