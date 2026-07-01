@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import api from "@/api/client";
 import { Settings, Server, Shield, Mail, Clock } from "lucide-react";
 
@@ -23,16 +25,17 @@ interface PlatformInfo {
   };
 }
 
-function formatUptime(seconds: number): string {
+function formatUptime(seconds: number, t: TFunction): string {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
-  if (days > 0) return `${days}d ${hours}h ${mins}m`;
-  if (hours > 0) return `${hours}h ${mins}m`;
-  return `${mins}m`;
+  if (days > 0) return t("platformSettings.uptime.daysHoursMins", { days, hours, mins });
+  if (hours > 0) return t("platformSettings.uptime.hoursMins", { hours, mins });
+  return t("platformSettings.uptime.mins", { mins });
 }
 
 export default function PlatformSettingsPage() {
+  const { t } = useTranslation();
   const { data: info, isLoading } = useQuery<PlatformInfo>({
     queryKey: ["platform-info"],
     queryFn: () => api.get("/admin/platform-info").then((r) => r.data.data),
@@ -41,45 +44,47 @@ export default function PlatformSettingsPage() {
 
   const sections = [
     {
-      title: "Platform Info",
+      title: t("platformSettings.sections.platformInfo.title"),
       icon: Server,
       color: "bg-blue-50 text-blue-600",
       items: info
         ? [
-            { label: "Server Version", value: info.server.version },
-            { label: "Node.js Version", value: info.server.node_version },
-            { label: "Environment", value: info.server.environment },
-            { label: "Uptime", value: formatUptime(info.server.uptime_seconds) },
+            { label: t("platformSettings.fields.serverVersion"), value: info.server.version },
+            { label: t("platformSettings.fields.nodeVersion"), value: info.server.node_version },
+            { label: t("platformSettings.fields.environment"), value: info.server.environment },
+            { label: t("platformSettings.fields.uptime"), value: formatUptime(info.server.uptime_seconds, t) },
           ]
         : [],
     },
     {
-      title: "Email / SMTP Settings",
+      title: t("platformSettings.sections.email.title"),
       icon: Mail,
       color: "bg-green-50 text-green-600",
       items: info
         ? [
             {
-              label: "SMTP Status",
-              value: info.email.configured ? "Configured" : "Not Configured",
+              label: t("platformSettings.fields.smtpStatus"),
+              value: info.email.configured
+                ? t("platformSettings.smtpStatus.configured")
+                : t("platformSettings.smtpStatus.notConfigured"),
               badge: info.email.configured,
             },
-            { label: "SMTP Host", value: info.email.host || "-" },
-            { label: "From Address", value: info.email.from || "-" },
+            { label: t("platformSettings.fields.smtpHost"), value: info.email.host || "-" },
+            { label: t("platformSettings.fields.fromAddress"), value: info.email.from || "-" },
           ]
         : [],
     },
     {
-      title: "Security Settings",
+      title: t("platformSettings.sections.security.title"),
       icon: Shield,
       color: "bg-amber-50 text-amber-600",
       items: info
         ? [
-            { label: "Bcrypt Rounds", value: String(info.security.bcrypt_rounds) },
-            { label: "Access Token Expiry", value: info.security.access_token_expiry },
-            { label: "Refresh Token Expiry", value: info.security.refresh_token_expiry },
-            { label: "Auth Rate Limit", value: info.security.rate_limit_auth },
-            { label: "API Rate Limit", value: info.security.rate_limit_api },
+            { label: t("platformSettings.fields.bcryptRounds"), value: String(info.security.bcrypt_rounds) },
+            { label: t("platformSettings.fields.accessTokenExpiry"), value: info.security.access_token_expiry },
+            { label: t("platformSettings.fields.refreshTokenExpiry"), value: info.security.refresh_token_expiry },
+            { label: t("platformSettings.fields.authRateLimit"), value: info.security.rate_limit_auth },
+            { label: t("platformSettings.fields.apiRateLimit"), value: info.security.rate_limit_api },
           ]
         : [],
     },
@@ -93,9 +98,9 @@ export default function PlatformSettingsPage() {
             <Settings className="h-5 w-5 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Platform Settings</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("platformSettings.header.title")}</h1>
             <p className="text-gray-500 mt-0.5 text-sm">
-              View current platform configuration and system information.
+              {t("platformSettings.header.subtitle")}
             </p>
           </div>
         </div>
@@ -158,7 +163,7 @@ export default function PlatformSettingsPage() {
 
       <div className="mt-6 flex items-center gap-2 text-xs text-gray-400">
         <Clock className="h-3.5 w-3.5" />
-        <span>Auto-refreshes every 30 seconds</span>
+        <span>{t("platformSettings.footer.autoRefresh")}</span>
       </div>
     </div>
   );
