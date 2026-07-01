@@ -23,6 +23,8 @@ export default function PositionListPage() {
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
   const [status, setStatus] = useState<string>(initialStatus);
+  const [criticalOnly, setCriticalOnly] = useState(false);
+  const [employmentType, setEmploymentType] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -70,7 +72,17 @@ export default function PositionListPage() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["positions", { page, search, department_id: departmentId, status }],
+    queryKey: [
+      "positions",
+      {
+        page,
+        search,
+        department_id: departmentId,
+        status,
+        is_critical: criticalOnly,
+        employment_type: employmentType,
+      },
+    ],
     queryFn: () =>
       api
         .get("/positions", {
@@ -80,6 +92,8 @@ export default function PositionListPage() {
             ...(search ? { search } : {}),
             ...(departmentId ? { department_id: departmentId } : {}),
             ...(status ? { status } : {}),
+            ...(criticalOnly ? { is_critical: true } : {}),
+            ...(employmentType ? { employment_type: employmentType } : {}),
           },
         })
         .then((r) => r.data),
@@ -312,6 +326,26 @@ export default function PositionListPage() {
           <option value="frozen">{tx("statusFrozen")}</option>
           <option value="closed">{tx("statusClosed")}</option>
         </select>
+        <select
+          value={employmentType}
+          onChange={(e) => { setEmploymentType(e.target.value); setPage(1); }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        >
+          <option value="">{tx("allTypes")}</option>
+          <option value="full_time">{tx("fullTime")}</option>
+          <option value="part_time">{tx("partTime")}</option>
+          <option value="contract">{tx("contract")}</option>
+          <option value="intern">{tx("intern")}</option>
+        </select>
+        <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 cursor-pointer whitespace-nowrap">
+          <input
+            type="checkbox"
+            checked={criticalOnly}
+            onChange={(e) => { setCriticalOnly(e.target.checked); setPage(1); }}
+            className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+          />
+          {tx("criticalOnly")}
+        </label>
       </div>
 
       {/* Table */}

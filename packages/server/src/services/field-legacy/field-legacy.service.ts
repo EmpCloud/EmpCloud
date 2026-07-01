@@ -386,6 +386,7 @@ export async function getAttendanceSheet(body: {
   date?: unknown;
   start_date?: unknown;
   end_date?: unknown;
+  search?: String;
 }) {
   const orgId = Number(body.organization_id);
   if (!orgId) throw new ValidationError("organization_id is required");
@@ -419,6 +420,28 @@ export async function getAttendanceSheet(body: {
     .where("u.organization_id", orgId)
     .whereNot("u.role", "super_admin");
   if (body.employee_id) empQuery = empQuery.where("u.id", Number(body.employee_id));
+  if (body.search?.trim()) {
+    // Match on each whitespace-separated token independently (AND of per-token
+    // OR-clauses) instead of one literal LIKE on the whole string. Without this,
+    // "Priya  Patel" (extra space) or "Patel Priya" (reversed) matches nothing,
+    // because the CONCAT(first,' ',last) has a single space in a fixed order.
+    // A single token still works — it just runs as one clause.
+    const tokens = String(body.search).trim().split(/\s+/).filter(Boolean);
+    empQuery = empQuery.andWhere(function () {
+      for (const token of tokens) {
+        const like = `%${token}%`;
+        this.andWhere(function () {
+          this.where("u.first_name", "like", like)
+            .orWhere("u.last_name", "like", like)
+            .orWhereRaw(
+              "CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) LIKE ?",
+              [like],
+            )
+            .orWhere("u.emp_code", "like", like);
+        });
+      }
+    });
+  }
   const employees = await empQuery
     .orderBy("u.first_name", "asc")
     .select(
