@@ -87,6 +87,17 @@ export default function PositionDetailPage() {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
     },
+    onError: (err: any) => {
+      // Without this the inline status <select> silently keeps the value the user
+      // picked even when the change was rejected, so it looks like it worked.
+      // The query invalidation on settle snaps it back to the true status.
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to update position status.";
+      showToast("error", msg);
+      queryClient.invalidateQueries({ queryKey: ["position", id] });
+    },
   });
 
   // #1544 — surface server-side validation errors. The form was previously
