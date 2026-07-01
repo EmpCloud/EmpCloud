@@ -3371,5 +3371,447 @@
       "title": "हालिया गतिविधि",
       "systemActor": "सिस्टम"
     }
+  },
+  "healthDashboard": {
+    "title": "सेवा स्वास्थ्य",
+    "subtitle": "सभी EMP Cloud इकोसिस्टम सेवाओं की रीयल-टाइम स्वास्थ्य स्थिति",
+    "refreshing": "रिफ़्रेश हो रहा है...",
+    "actions": {
+      "checking": "जाँच हो रही है...",
+      "checkNow": "अभी जाँचें"
+    },
+    "loading": "स्वास्थ्य जाँच चल रही है...",
+    "overall": {
+      "operational": {
+        "title": "सभी सिस्टम चालू हैं",
+        "subtitle": "हर सेवा सामान्य रूप से चल रही है।"
+      },
+      "degraded": {
+        "title": "सिस्टम में आंशिक गिरावट",
+        "subtitle": "एक या अधिक सेवाओं में समस्याएँ आ रही हैं।"
+      },
+      "majorOutage": {
+        "title": "बड़ा व्यवधान",
+        "subtitle": "कई सेवाएँ इस समय अनुपलब्ध हैं।"
+      },
+      "unknown": {
+        "title": "स्थिति जाँची जा रही है...",
+        "subtitle": "प्रारंभिक स्वास्थ्य जाँच की जा रही है।"
+      },
+      "lastChecked": "अंतिम बार जाँचा गया"
+    },
+    "status": {
+      "healthy": "स्वस्थ",
+      "degraded": "सीमित",
+      "down": "बंद"
+    },
+    "module": {
+      "port": "पोर्ट {{port}}",
+      "responseTime": "रिस्पॉन्स समय",
+      "version": "संस्करण",
+      "uptime": "अपटाइम",
+      "lastCheck": "अंतिम जाँच"
+    },
+    "infra": {
+      "fallbackType": "इंफ्रास्ट्रक्चर",
+      "connected": "कनेक्टेड",
+      "disconnected": "डिस्कनेक्टेड",
+      "responseTime": "रिस्पॉन्स समय",
+      "version": "संस्करण",
+      "database": "डेटाबेस",
+      "threads": "थ्रेड्स",
+      "uptime": "अपटाइम"
+    },
+    "endpoints": {
+      "title": "API एंडपॉइंट स्थिति",
+      "description": "प्रत्येक मॉड्यूल के लिए स्वास्थ्य जाँच एंडपॉइंट",
+      "columns": {
+        "module": "मॉड्यूल",
+        "endpoint": "एंडपॉइंट",
+        "method": "मेथड",
+        "status": "स्थिति",
+        "response": "रिस्पॉन्स",
+        "httpCode": "HTTP कोड",
+        "lastChecked": "अंतिम बार जाँचा गया"
+      },
+      "status": {
+        "ok": "ठीक",
+        "down": "बंद"
+      }
+    },
+    "stats": {
+      "totalServices": "कुल सेवाएँ",
+      "healthy": "स्वस्थ",
+      "degraded": "सीमित",
+      "down": "बंद"
+    },
+    "sections": {
+      "moduleServices": "मॉड्यूल सेवाएँ",
+      "infrastructure": "इंफ्रास्ट्रक्चर"
+    },
+    "footer": {
+      "note": "हर 30 सेकंड में अपने-आप रिफ़्रेश होता है। बैकग्राउंड जाँच हर 60 सेकंड में चलती है।"
+    }
+  },
+  "aiConfig": {
+    "title": "AI कॉन्फ़िगरेशन",
+    "subtitle": "HR चैटबॉट असिस्टेंट के लिए AI प्रोवाइडर कॉन्फ़िगर करें। यहाँ सेट की गई कीज़ एनवायरनमेंट वेरिएबल्स को ओवरराइड करती हैं।",
+    "status": {
+      "active": "सक्रिय",
+      "configured": "कॉन्फ़िगर किया गया",
+      "notConfigured": "कॉन्फ़िगर नहीं किया गया"
+    },
+    "field": {
+      "apiKey": "API कुंजी",
+      "baseUrl": "बेस URL",
+      "model": "मॉडल",
+      "maxTokens": "मैक्स टोकन: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "वर्तमान: {{value}}",
+      "apiKeyEnter": "API की दर्ज करें...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "मॉडल नाम दर्ज करें (जैसे, my-model)"
+    },
+    "testResult": {
+      "latency": "विलंबता: {{ms}}ms",
+      "requestFailed": "टेस्ट अनुरोध विफल रहा"
+    },
+    "button": {
+      "testConnection": "कनेक्शन टेस्ट करें",
+      "active": "सक्रिय",
+      "saveActivate": "सहेजें और सक्रिय करें",
+      "deactivate": "निष्क्रिय करें",
+      "saveMaxTokens": "मैक्स टोकन सहेजें"
+    },
+    "banner": {
+      "aiPoweredMode": "AI-संचालित मोड",
+      "aiPoweredModeProvider": "AI-संचालित मोड ({{provider}})",
+      "basicMode": "बेसिक मोड (कोई AI प्रोवाइडर सक्रिय नहीं)",
+      "modelStatus": "मॉडल: {{model}} | स्थिति: {{status}}",
+      "basicModeHint": "चैटबॉट नियम-आधारित मोड में चल रहा है। AI-संचालित प्रतिक्रियाएँ सक्षम करने के लिए नीचे कोई प्रोवाइडर सक्रिय करें।"
+    },
+    "section": {
+      "providers": "प्रोवाइडर",
+      "generalSettings": "सामान्य सेटिंग्स"
+    },
+    "info": {
+      "title": "यह कैसे काम करता है",
+      "encryption": "API कीज़ को AES-256-GCM का उपयोग करके निष्क्रिय अवस्था में एन्क्रिप्ट किया जाता है और कभी भी अनमास्क करके नहीं लौटाया जाता",
+      "overrideEnv": "यहाँ संग्रहीत सेटिंग्स एनवायरनमेंट वेरिएबल्स (.env) को ओवरराइड करती हैं",
+      "singleActive": "एक समय में केवल एक प्रोवाइडर सक्रिय हो सकता है। प्रोवाइडर बदलना तुरंत प्रभावी होता है।",
+      "testFirst": "सक्रिय करने से पहले अपनी API की और मॉडल सत्यापित करने के लिए \"कनेक्शन टेस्ट करें\" का उपयोग करें"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "मॉड्यूल विश्लेषण",
+    "subtitle": "पूरे प्लेटफ़ॉर्म पर प्रत्येक मॉड्यूल के विस्तृत मेट्रिक्स।",
+    "loading": "लोड हो रहा है...",
+    "stats": {
+      "activeModules": "सक्रिय मॉड्यूल",
+      "totalSubscribers": "कुल सब्सक्राइबर",
+      "totalSeats": "कुल सीटें",
+      "totalModuleRevenue": "कुल मॉड्यूल राजस्व"
+    },
+    "charts": {
+      "revenueByModule": "मॉड्यूल के अनुसार राजस्व",
+      "revenueSeries": "राजस्व",
+      "noRevenueData": "कोई राजस्व डेटा नहीं",
+      "subscriberDistribution": "सब्सक्राइबर वितरण",
+      "noSubscriberData": "कोई सब्सक्राइबर डेटा नहीं"
+    },
+    "details": {
+      "heading": "मॉड्यूल विवरण",
+      "noSubscribers": "कोई सब्सक्राइबर नहीं",
+      "disableModule": "मॉड्यूल अक्षम करें",
+      "subscribers": "सब्सक्राइबर",
+      "seats": "सीटें",
+      "revenue": "राजस्व",
+      "seatUtilization": "सीट उपयोग दर",
+      "planDistribution": "प्लान वितरण",
+      "orgCount_one": "{{count}} संगठन",
+      "orgCount_other": "{{count}} संगठन"
+    },
+    "table": {
+      "heading": "विस्तृत मेट्रिक्स",
+      "module": "मॉड्यूल",
+      "slug": "स्लग",
+      "subscribers": "सब्सक्राइबर",
+      "totalSeats": "कुल सीटें",
+      "usedSeats": "उपयोग की गई सीटें",
+      "utilization": "उपयोग दर",
+      "revenue": "राजस्व",
+      "status": "स्थिति"
+    },
+    "status": {
+      "active": "सक्रिय"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "सब्सक्रिप्शन मेट्रिक्स",
+    "subtitle": "प्लान वितरण, सीट उपयोग और बिलिंग मेट्रिक्स।",
+    "loading": "लोड हो रहा है...",
+    "stats": {
+      "totalSeats": "कुल सीटें",
+      "usedSeats": "उपयोग की गई सीटें",
+      "seatUtilization": "सीट उपयोग",
+      "activeUsers": "सक्रिय उपयोगकर्ता",
+      "inactive_one": "{{count}} निष्क्रिय",
+      "inactive_other": "{{count}} निष्क्रिय"
+    },
+    "charts": {
+      "planTierDistribution": "प्लान टियर वितरण",
+      "subscriptionStatus": "सब्सक्रिप्शन स्थिति",
+      "billingCycle": "बिलिंग चक्र",
+      "seatUtilizationByTier": "प्लान टियर के अनुसार सीट उपयोग",
+      "subscriptionChurn": "सब्सक्रिप्शन चर्न"
+    },
+    "churn": {
+      "cancelledSeries": "रद्द किए गए"
+    },
+    "seats": "{{used}} / {{total}} सीटें",
+    "empty": {
+      "noData": "कोई डेटा नहीं",
+      "noTierData": "कोई टियर डेटा नहीं"
+    }
+  },
+  "systemNotifications": {
+    "title": "सिस्टम सूचनाएं",
+    "subtitle": "सभी संगठनों या विशिष्ट संगठनों को प्लेटफ़ॉर्म-व्यापी घोषणाएं भेजें।",
+    "newNotification": "नई सूचना",
+    "form": {
+      "heading": "सूचना भेजें",
+      "titleLabel": "शीर्षक",
+      "titlePlaceholder": "सूचना शीर्षक",
+      "typeLabel": "प्रकार",
+      "messageLabel": "संदेश",
+      "messagePlaceholder": "सूचना संदेश...",
+      "targetLabel": "लक्ष्य",
+      "allOrgs": "सभी संगठन",
+      "specificOrg": "विशिष्ट संगठन",
+      "organizationLabel": "संगठन",
+      "selectOrgPlaceholder": "संगठन चुनें...",
+      "send": "सूचना भेजें",
+      "sending": "भेजा जा रहा है..."
+    },
+    "type": {
+      "info": "जानकारी",
+      "warning": "चेतावनी",
+      "maintenance": "रखरखाव",
+      "release": "फ़ीचर रिलीज़"
+    },
+    "list": {
+      "empty": "अभी तक कोई सिस्टम सूचना नहीं भेजी गई है।",
+      "heading_one": "सभी सूचनाएं ({{count}})",
+      "heading_other": "सभी सूचनाएं ({{count}})"
+    },
+    "item": {
+      "deactivated": "निष्क्रिय",
+      "targetAll": "सभी संगठन",
+      "targetPrefix": "लक्ष्य:",
+      "byPrefix": "द्वारा:",
+      "systemAuthor": "सिस्टम",
+      "orgFallback": "संगठन #{{id}}",
+      "deactivate": "निष्क्रिय करें"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "राजस्व एनालिटिक्स",
+    "subtitle": "वित्तीय अवलोकन और राजस्व विवरण।",
+    "loading": "लोड हो रहा है...",
+    "stats": {
+      "mrr": "मासिक आवर्ती राजस्व",
+      "arr": "वार्षिक आवर्ती राजस्व",
+      "seatUtilization": "सीट उपयोग",
+      "seats": "{{used}} / {{total}} सीटें",
+      "payingCustomers": "भुगतान करने वाले ग्राहक"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "राजस्व रुझान (पिछले 12 महीने)",
+        "empty": "अभी तक कोई रुझान डेटा नहीं"
+      },
+      "revenueByModule": {
+        "title": "मॉड्यूल के अनुसार राजस्व",
+        "series": "राजस्व"
+      },
+      "empty": "कोई डेटा नहीं",
+      "revenueByTier": {
+        "title": "प्लान टियर के अनुसार राजस्व",
+        "subsLabel_one": "{{count}} सब्सक्रिप्शन - {{revenue}}",
+        "subsLabel_other": "{{count}} सब्सक्रिप्शन - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "बिलिंग चक्र वितरण",
+        "percentOfSubscriptions": "सब्सक्रिप्शन का {{percent}}%",
+        "subs_one": "{{count}} सब्सक्रिप्शन",
+        "subs_other": "{{count}} सब्सक्रिप्शन"
+      }
+    },
+    "topCustomers": {
+      "title": "राजस्व के अनुसार शीर्ष 10 ग्राहक",
+      "columns": {
+        "rank": "#",
+        "organization": "संगठन",
+        "email": "ईमेल",
+        "subscriptions": "सब्सक्रिप्शन",
+        "monthlySpend": "मासिक व्यय"
+      },
+      "empty": "अभी तक कोई ग्राहक डेटा नहीं"
+    }
+  },
+  "logDashboard": {
+    "title": "लॉग डैशबोर्ड",
+    "subtitle": "सभी EMP Cloud मॉड्यूल में रीयल-टाइम मॉनिटरिंग",
+    "actions": {
+      "refresh": "रिफ़्रेश करें"
+    },
+    "tabs": {
+      "overview": "अवलोकन",
+      "errors": "एरर",
+      "slow": "धीमी क्वेरी",
+      "auth": "ऑथ इवेंट",
+      "health": "मॉड्यूल हेल्थ"
+    },
+    "stats": {
+      "auditEvents": "ऑडिट इवेंट (24 घंटे)",
+      "fileErrors": "फ़ाइल एरर (24 घंटे)",
+      "slowQueries": "धीमी क्वेरी",
+      "healthyModules": "स्वस्थ मॉड्यूल"
+    },
+    "sections": {
+      "errorsByAction": "एक्शन के अनुसार एरर (24 घंटे)",
+      "errorsPerModule": "प्रति मॉड्यूल एरर (लॉग फ़ाइलों से)",
+      "moduleHealth": "मॉड्यूल हेल्थ"
+    },
+    "errors": {
+      "title": "हाल के एरर",
+      "subtitle": "सभी मॉड्यूल में PM2 एरर लॉग और फ्रंटएंड क्लाइंट एरर से",
+      "badge": {
+        "frontend": "फ्रंटएंड"
+      },
+      "detail": {
+        "page": "पेज:",
+        "component": "कंपोनेंट:"
+      },
+      "empty": "कोई एरर नहीं मिला।"
+    },
+    "slow": {
+      "title": "धीमी क्वेरी",
+      "subtitle": "1 सेकंड से अधिक समय लेने वाली डेटाबेस क्वेरी",
+      "columns": {
+        "module": "मॉड्यूल",
+        "duration": "अवधि",
+        "sql": "SQL",
+        "time": "समय"
+      },
+      "empty": "कोई धीमी क्वेरी नहीं पाई गई।"
+    },
+    "auth": {
+      "title": "ऑथ इवेंट",
+      "subtitle": "लॉगिन, लॉगआउट, पासवर्ड परिवर्तन, टोकन इवेंट (पिछले 24 घंटे)",
+      "user": "उपयोगकर्ता #{{id}}",
+      "ip": "IP: {{ip}}",
+      "notAvailable": "N/A",
+      "empty": "पिछले 24 घंटों में कोई ऑथ इवेंट नहीं।"
+    },
+    "healthTab": {
+      "status": "स्थिति: {{status}}",
+      "restarts": "रीस्टार्ट: {{count}}",
+      "recentErrors": "हाल के एरर: {{count}}",
+      "lastActivity": "अंतिम गतिविधि: {{time}}",
+      "loading": "मॉड्यूल हेल्थ लोड हो रहा है...",
+      "empty": "कोई मॉड्यूल हेल्थ डेटा उपलब्ध नहीं है।"
+    },
+    "status": {
+      "healthy": "स्वस्थ",
+      "warning": "चेतावनी",
+      "critical": "गंभीर",
+      "unknown": "अज्ञात"
+    },
+    "pagination": {
+      "status": "पेज {{page}} / {{totalPages}} (कुल {{total}})",
+      "prev": "पिछला",
+      "next": "अगला"
+    },
+    "health": {
+      "restarts_one": "{{count}} रीस्टार्ट",
+      "restarts_other": "{{count}} रीस्टार्ट",
+      "recentErrors_one": "{{count}} एरर",
+      "recentErrors_other": "{{count}} एरर"
+    }
+  },
+  "dataSanity": {
+    "title": "डेटा सैनिटी चेकर",
+    "subtitle": "क्रॉस-मॉड्यूल डेटा संगतता सत्यापन",
+    "overall": {
+      "healthy": {
+        "title": "सभी सिस्टम स्वस्थ हैं",
+        "subtitle": "सभी क्रॉस-मॉड्यूल डेटा संगतता जाँचें उत्तीर्ण हो गईं।"
+      },
+      "warnings": {
+        "title": "चेतावनियाँ पाई गईं",
+        "subtitle": "कुछ डेटा असंगतियाँ पाई गईं जिन पर ध्यान देने की आवश्यकता हो सकती है।"
+      },
+      "critical": {
+        "title": "गंभीर समस्याएँ पाई गईं",
+        "subtitle": "डेटा अखंडता की समस्याएँ पाई गईं जिनके लिए तत्काल कार्रवाई आवश्यक है।"
+      }
+    },
+    "status": {
+      "pass": "उत्तीर्ण",
+      "warn": "चेतावनी",
+      "fail": "विफल"
+    },
+    "check": {
+      "noIssues": "कोई समस्या नहीं पाई गई।",
+      "issuesFound_one": "{{count}} समस्या पाई गई",
+      "issuesFound_other": "{{count}} समस्याएँ पाई गईं",
+      "showingCount_one": "({{count}} दिखाया जा रहा है)",
+      "showingCount_other": "({{count}} दिखाए जा रहे हैं)"
+    },
+    "confirmFix": {
+      "title": "ऑटो-फिक्स की पुष्टि करें",
+      "intro": "इससे निम्नलिखित सुधार स्वचालित रूप से लागू हो जाएँगे:",
+      "fix": {
+        "syncOrgUserCounts": "संगठन उपयोगकर्ता संख्या सिंक करें",
+        "syncSeatCounts": "सब्सक्रिप्शन सीट संख्या सिंक करें",
+        "fixNegativeLeave": "ऋणात्मक अवकाश शेष ठीक करें (0 तक सीमित करें)",
+        "removeOrphaned": "अनाथ रिकॉर्ड हटाएँ (अवकाश, उपस्थिति, हेल्पडेस्क, घोषणाएँ)"
+      },
+      "warning": "इन परिवर्तनों को पूर्ववत नहीं किया जा सकता। सुनिश्चित करें कि आपके पास डेटाबेस बैकअप है।",
+      "cancel": "रद्द करें",
+      "apply": "सुधार लागू करें",
+      "applying": "ठीक किया जा रहा है..."
+    },
+    "fixResults": {
+      "none": "किसी सुधार की आवश्यकता नहीं थी। सब कुछ साफ़ दिख रहा है।",
+      "title_one": "ऑटो-फिक्स परिणाम (कुल {{count}} परिवर्तन)",
+      "title_other": "ऑटो-फिक्स परिणाम (कुल {{count}} परिवर्तन)"
+    },
+    "button": {
+      "autoFix": "ऑटो-फिक्स",
+      "runCheck": "जाँच चलाएँ",
+      "running": "चल रहा है..."
+    },
+    "loading": {
+      "title": "सैनिटी जाँचें चल रही हैं...",
+      "subtitle": "सभी मॉड्यूल डेटाबेस में डेटा संगतता की जाँच की जा रही है। इसमें कुछ समय लग सकता है।"
+    },
+    "empty": {
+      "title": "अभी तक कोई रिपोर्ट नहीं",
+      "subtitle": "सभी मॉड्यूल डेटाबेस में डेटा संगतता सत्यापित करने के लिए \"जाँच चलाएँ\" पर क्लिक करें।",
+      "runButton": "सैनिटी जाँच चलाएँ"
+    },
+    "summary": {
+      "totalChecks": "कुल जाँचें",
+      "passed": "उत्तीर्ण",
+      "warnings": "चेतावनियाँ",
+      "failures": "विफलताएँ"
+    },
+    "lastRun": "अंतिम बार चलाया गया:",
+    "checkResults": {
+      "heading": "जाँच परिणाम"
+    }
   }
 }

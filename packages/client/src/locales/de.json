@@ -3371,5 +3371,447 @@
       "title": "Aktuelle Aktivitäten",
       "systemActor": "System"
     }
+  },
+  "healthDashboard": {
+    "title": "Servicezustand",
+    "subtitle": "Echtzeit-Statusübersicht aller Dienste des EMP-Cloud-Ökosystems",
+    "refreshing": "Wird aktualisiert ...",
+    "actions": {
+      "checking": "Wird geprüft ...",
+      "checkNow": "Jetzt prüfen"
+    },
+    "loading": "Zustandsprüfungen werden ausgeführt ...",
+    "overall": {
+      "operational": {
+        "title": "Alle Systeme in Betrieb",
+        "subtitle": "Jeder Dienst läuft normal."
+      },
+      "degraded": {
+        "title": "Teilweise Systembeeinträchtigung",
+        "subtitle": "Ein oder mehrere Dienste weisen Probleme auf."
+      },
+      "majorOutage": {
+        "title": "Schwerwiegende Störung",
+        "subtitle": "Mehrere Dienste sind derzeit nicht verfügbar."
+      },
+      "unknown": {
+        "title": "Status wird geprüft ...",
+        "subtitle": "Erste Zustandsprüfung wird durchgeführt."
+      },
+      "lastChecked": "Zuletzt geprüft"
+    },
+    "status": {
+      "healthy": "Betriebsbereit",
+      "degraded": "Beeinträchtigt",
+      "down": "Ausgefallen"
+    },
+    "module": {
+      "port": "Port {{port}}",
+      "responseTime": "Antwortzeit",
+      "version": "Version",
+      "uptime": "Betriebszeit",
+      "lastCheck": "Letzte Prüfung"
+    },
+    "infra": {
+      "fallbackType": "Infrastruktur",
+      "connected": "Verbunden",
+      "disconnected": "Getrennt",
+      "responseTime": "Antwortzeit",
+      "version": "Version",
+      "database": "Datenbank",
+      "threads": "Threads",
+      "uptime": "Betriebszeit"
+    },
+    "endpoints": {
+      "title": "Status der API-Endpunkte",
+      "description": "Endpunkte zur Zustandsprüfung für jedes Modul",
+      "columns": {
+        "module": "Modul",
+        "endpoint": "Endpunkt",
+        "method": "Methode",
+        "status": "Status",
+        "response": "Antwort",
+        "httpCode": "HTTP-Code",
+        "lastChecked": "Zuletzt geprüft"
+      },
+      "status": {
+        "ok": "OK",
+        "down": "Ausgefallen"
+      }
+    },
+    "stats": {
+      "totalServices": "Dienste gesamt",
+      "healthy": "Betriebsbereit",
+      "degraded": "Beeinträchtigt",
+      "down": "Ausgefallen"
+    },
+    "sections": {
+      "moduleServices": "Moduldienste",
+      "infrastructure": "Infrastruktur"
+    },
+    "footer": {
+      "note": "Automatische Aktualisierung alle 30 Sekunden. Hintergrundprüfungen laufen alle 60 Sekunden."
+    }
+  },
+  "aiConfig": {
+    "title": "KI-Konfiguration",
+    "subtitle": "Konfigurieren Sie KI-Anbieter für den HR-Chatbot-Assistenten. Hier festgelegte Schlüssel überschreiben Umgebungsvariablen.",
+    "status": {
+      "active": "Aktiv",
+      "configured": "Konfiguriert",
+      "notConfigured": "Nicht konfiguriert"
+    },
+    "field": {
+      "apiKey": "API-Schlüssel",
+      "baseUrl": "Basis-URL",
+      "model": "Modell",
+      "maxTokens": "Max. Tokens: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "Aktuell: {{value}}",
+      "apiKeyEnter": "API-Schlüssel eingeben...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "Modellname eingeben (z. B. my-model)"
+    },
+    "testResult": {
+      "latency": "Latenz: {{ms}} ms",
+      "requestFailed": "Testanfrage fehlgeschlagen"
+    },
+    "button": {
+      "testConnection": "Verbindung testen",
+      "active": "Aktiv",
+      "saveActivate": "Speichern & aktivieren",
+      "deactivate": "Deaktivieren",
+      "saveMaxTokens": "Max. Tokens speichern"
+    },
+    "banner": {
+      "aiPoweredMode": "KI-gestützter Modus",
+      "aiPoweredModeProvider": "KI-gestützter Modus ({{provider}})",
+      "basicMode": "Basismodus (kein KI-Anbieter aktiv)",
+      "modelStatus": "Modell: {{model}} | Status: {{status}}",
+      "basicModeHint": "Der Chatbot läuft im regelbasierten Modus. Aktivieren Sie unten einen Anbieter, um KI-gestützte Antworten zu ermöglichen."
+    },
+    "section": {
+      "providers": "Anbieter",
+      "generalSettings": "Allgemeine Einstellungen"
+    },
+    "info": {
+      "title": "So funktioniert es",
+      "encryption": "API-Schlüssel werden im Ruhezustand mit AES-256-GCM verschlüsselt und niemals unmaskiert zurückgegeben",
+      "overrideEnv": "Hier gespeicherte Einstellungen überschreiben Umgebungsvariablen (.env)",
+      "singleActive": "Es kann immer nur ein Anbieter gleichzeitig aktiv sein. Der Wechsel des Anbieters wird sofort wirksam.",
+      "testFirst": "Verwenden Sie „Verbindung testen“, um Ihren API-Schlüssel und Ihr Modell vor der Aktivierung zu überprüfen"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "Modul-Analysen",
+    "subtitle": "Detaillierte Metriken für jedes Modul plattformübergreifend.",
+    "loading": "Wird geladen...",
+    "stats": {
+      "activeModules": "Aktive Module",
+      "totalSubscribers": "Abonnenten gesamt",
+      "totalSeats": "Plätze gesamt",
+      "totalModuleRevenue": "Modulumsatz gesamt"
+    },
+    "charts": {
+      "revenueByModule": "Umsatz nach Modul",
+      "revenueSeries": "Umsatz",
+      "noRevenueData": "Keine Umsatzdaten",
+      "subscriberDistribution": "Abonnentenverteilung",
+      "noSubscriberData": "Keine Abonnentendaten"
+    },
+    "details": {
+      "heading": "Moduldetails",
+      "noSubscribers": "Keine Abonnenten",
+      "disableModule": "Modul deaktivieren",
+      "subscribers": "Abonnenten",
+      "seats": "Plätze",
+      "revenue": "Umsatz",
+      "seatUtilization": "Platzauslastung",
+      "planDistribution": "Tarifverteilung",
+      "orgCount_one": "{{count}} Organisation",
+      "orgCount_other": "{{count}} Organisationen"
+    },
+    "table": {
+      "heading": "Detaillierte Metriken",
+      "module": "Modul",
+      "slug": "Slug",
+      "subscribers": "Abonnenten",
+      "totalSeats": "Plätze gesamt",
+      "usedSeats": "Belegte Plätze",
+      "utilization": "Auslastung",
+      "revenue": "Umsatz",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Aktiv"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "Abonnement-Metriken",
+    "subtitle": "Tarifverteilung, Platzauslastung und Abrechnungsmetriken.",
+    "loading": "Wird geladen...",
+    "stats": {
+      "totalSeats": "Plätze gesamt",
+      "usedSeats": "Belegte Plätze",
+      "seatUtilization": "Platzauslastung",
+      "activeUsers": "Aktive Benutzer",
+      "inactive_one": "{{count}} inaktiv",
+      "inactive_other": "{{count}} inaktiv"
+    },
+    "charts": {
+      "planTierDistribution": "Verteilung der Tarifstufen",
+      "subscriptionStatus": "Abonnementstatus",
+      "billingCycle": "Abrechnungszyklus",
+      "seatUtilizationByTier": "Platzauslastung nach Tarifstufe",
+      "subscriptionChurn": "Abonnement-Abwanderung"
+    },
+    "churn": {
+      "cancelledSeries": "Gekündigt"
+    },
+    "seats": "{{used}} / {{total}} Plätze",
+    "empty": {
+      "noData": "Keine Daten",
+      "noTierData": "Keine Tarifstufendaten"
+    }
+  },
+  "systemNotifications": {
+    "title": "Systembenachrichtigungen",
+    "subtitle": "Senden Sie plattformweite Ankündigungen an alle Organisationen oder an bestimmte.",
+    "newNotification": "Neue Benachrichtigung",
+    "form": {
+      "heading": "Benachrichtigung senden",
+      "titleLabel": "Titel",
+      "titlePlaceholder": "Benachrichtigungstitel",
+      "typeLabel": "Typ",
+      "messageLabel": "Nachricht",
+      "messagePlaceholder": "Benachrichtigungstext...",
+      "targetLabel": "Ziel",
+      "allOrgs": "Alle Organisationen",
+      "specificOrg": "Bestimmte Organisation",
+      "organizationLabel": "Organisation",
+      "selectOrgPlaceholder": "Organisation auswählen...",
+      "send": "Benachrichtigung senden",
+      "sending": "Wird gesendet..."
+    },
+    "type": {
+      "info": "Info",
+      "warning": "Warnung",
+      "maintenance": "Wartung",
+      "release": "Neue Funktion"
+    },
+    "list": {
+      "empty": "Bisher wurden keine Systembenachrichtigungen gesendet.",
+      "heading_one": "Alle Benachrichtigungen ({{count}})",
+      "heading_other": "Alle Benachrichtigungen ({{count}})"
+    },
+    "item": {
+      "deactivated": "Deaktiviert",
+      "targetAll": "Alle Organisationen",
+      "targetPrefix": "Ziel:",
+      "byPrefix": "Von:",
+      "systemAuthor": "System",
+      "orgFallback": "Organisation #{{id}}",
+      "deactivate": "Deaktivieren"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "Umsatzanalyse",
+    "subtitle": "Finanzübersicht und Umsatzaufschlüsselung.",
+    "loading": "Wird geladen...",
+    "stats": {
+      "mrr": "Monatlich wiederkehrender Umsatz",
+      "arr": "Jährlich wiederkehrender Umsatz",
+      "seatUtilization": "Lizenzauslastung",
+      "seats": "{{used}} / {{total}} Lizenzen",
+      "payingCustomers": "Zahlende Kunden"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Umsatztrend (letzte 12 Monate)",
+        "empty": "Noch keine Trenddaten"
+      },
+      "revenueByModule": {
+        "title": "Umsatz nach Modul",
+        "series": "Umsatz"
+      },
+      "empty": "Keine Daten",
+      "revenueByTier": {
+        "title": "Umsatz nach Tarifstufe",
+        "subsLabel_one": "{{count}} Abo - {{revenue}}",
+        "subsLabel_other": "{{count}} Abos - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "Verteilung der Abrechnungszyklen",
+        "percentOfSubscriptions": "{{percent}} % der Abonnements",
+        "subs_one": "{{count}} Abo",
+        "subs_other": "{{count}} Abos"
+      }
+    },
+    "topCustomers": {
+      "title": "Top 10 Kunden nach Umsatz",
+      "columns": {
+        "rank": "#",
+        "organization": "Organisation",
+        "email": "E-Mail",
+        "subscriptions": "Abonnements",
+        "monthlySpend": "Monatliche Ausgaben"
+      },
+      "empty": "Noch keine Kundendaten"
+    }
+  },
+  "logDashboard": {
+    "title": "Log-Dashboard",
+    "subtitle": "Echtzeit-Überwachung über alle EMP-Cloud-Module hinweg",
+    "actions": {
+      "refresh": "Aktualisieren"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "errors": "Fehler",
+      "slow": "Langsame Abfragen",
+      "auth": "Auth-Ereignisse",
+      "health": "Modulzustand"
+    },
+    "stats": {
+      "auditEvents": "Audit-Ereignisse (24 Std.)",
+      "fileErrors": "Dateifehler (24 Std.)",
+      "slowQueries": "Langsame Abfragen",
+      "healthyModules": "Fehlerfreie Module"
+    },
+    "sections": {
+      "errorsByAction": "Fehler nach Aktion (24 Std.)",
+      "errorsPerModule": "Fehler pro Modul (aus Log-Dateien)",
+      "moduleHealth": "Modulzustand"
+    },
+    "errors": {
+      "title": "Aktuelle Fehler",
+      "subtitle": "Aus PM2-Fehlerprotokollen und Frontend-Client-Fehlern über alle Module hinweg",
+      "badge": {
+        "frontend": "Frontend"
+      },
+      "detail": {
+        "page": "Seite:",
+        "component": "Komponente:"
+      },
+      "empty": "Keine Fehler gefunden."
+    },
+    "slow": {
+      "title": "Langsame Abfragen",
+      "subtitle": "Datenbankabfragen, die 1 Sekunde überschreiten",
+      "columns": {
+        "module": "Modul",
+        "duration": "Dauer",
+        "sql": "SQL",
+        "time": "Zeit"
+      },
+      "empty": "Keine langsamen Abfragen erkannt."
+    },
+    "auth": {
+      "title": "Auth-Ereignisse",
+      "subtitle": "Anmeldung, Abmeldung, Passwortänderungen, Token-Ereignisse (letzte 24 Std.)",
+      "user": "Benutzer #{{id}}",
+      "ip": "IP: {{ip}}",
+      "notAvailable": "k. A.",
+      "empty": "Keine Auth-Ereignisse in den letzten 24 Stunden."
+    },
+    "healthTab": {
+      "status": "Status: {{status}}",
+      "restarts": "Neustarts: {{count}}",
+      "recentErrors": "Aktuelle Fehler: {{count}}",
+      "lastActivity": "Letzte Aktivität: {{time}}",
+      "loading": "Modulzustand wird geladen...",
+      "empty": "Keine Modulzustandsdaten verfügbar."
+    },
+    "status": {
+      "healthy": "OK",
+      "warning": "Warnung",
+      "critical": "Kritisch",
+      "unknown": "Unbekannt"
+    },
+    "pagination": {
+      "status": "Seite {{page}} von {{totalPages}} ({{total}} insgesamt)",
+      "prev": "Zurück",
+      "next": "Weiter"
+    },
+    "health": {
+      "restarts_one": "{{count}} Neustart",
+      "restarts_other": "{{count}} Neustarts",
+      "recentErrors_one": "{{count}} Fehler",
+      "recentErrors_other": "{{count}} Fehler"
+    }
+  },
+  "dataSanity": {
+    "title": "Datenintegritätsprüfung",
+    "subtitle": "Modulübergreifende Prüfung der Datenkonsistenz",
+    "overall": {
+      "healthy": {
+        "title": "Alle Systeme in Ordnung",
+        "subtitle": "Alle modulübergreifenden Datenkonsistenzprüfungen wurden bestanden."
+      },
+      "warnings": {
+        "title": "Warnungen erkannt",
+        "subtitle": "Es wurden einige Dateninkonsistenzen gefunden, die möglicherweise Aufmerksamkeit erfordern."
+      },
+      "critical": {
+        "title": "Kritische Probleme gefunden",
+        "subtitle": "Es wurden Probleme mit der Datenintegrität erkannt, die sofortiges Handeln erfordern."
+      }
+    },
+    "status": {
+      "pass": "Bestanden",
+      "warn": "Warnung",
+      "fail": "Fehlgeschlagen"
+    },
+    "check": {
+      "noIssues": "Keine Probleme erkannt.",
+      "issuesFound_one": "{{count}} Problem gefunden",
+      "issuesFound_other": "{{count}} Probleme gefunden",
+      "showingCount_one": "({{count}} angezeigt)",
+      "showingCount_other": "({{count}} angezeigt)"
+    },
+    "confirmFix": {
+      "title": "Automatische Korrektur bestätigen",
+      "intro": "Dadurch werden die folgenden Korrekturen automatisch angewendet:",
+      "fix": {
+        "syncOrgUserCounts": "Benutzeranzahl der Organisationen synchronisieren",
+        "syncSeatCounts": "Anzahl der Abonnement-Plätze synchronisieren",
+        "fixNegativeLeave": "Negative Urlaubsguthaben korrigieren (auf 0 begrenzen)",
+        "removeOrphaned": "Verwaiste Datensätze entfernen (Urlaub, Anwesenheit, Helpdesk, Ankündigungen)"
+      },
+      "warning": "Diese Änderungen können nicht rückgängig gemacht werden. Stellen Sie sicher, dass Sie eine Datenbanksicherung haben.",
+      "cancel": "Abbrechen",
+      "apply": "Korrekturen anwenden",
+      "applying": "Wird korrigiert..."
+    },
+    "fixResults": {
+      "none": "Es waren keine Korrekturen erforderlich. Alles sieht sauber aus.",
+      "title_one": "Ergebnisse der automatischen Korrektur ({{count}} Änderung insgesamt)",
+      "title_other": "Ergebnisse der automatischen Korrektur ({{count}} Änderungen insgesamt)"
+    },
+    "button": {
+      "autoFix": "Automatisch korrigieren",
+      "runCheck": "Prüfung ausführen",
+      "running": "Wird ausgeführt..."
+    },
+    "loading": {
+      "title": "Integritätsprüfungen werden ausgeführt...",
+      "subtitle": "Datenkonsistenz über alle Moduldatenbanken hinweg wird geprüft. Dies kann einen Moment dauern."
+    },
+    "empty": {
+      "title": "Noch kein Bericht",
+      "subtitle": "Klicken Sie auf \"Prüfung ausführen\", um die Datenkonsistenz über alle Moduldatenbanken hinweg zu überprüfen.",
+      "runButton": "Integritätsprüfung ausführen"
+    },
+    "summary": {
+      "totalChecks": "Prüfungen gesamt",
+      "passed": "Bestanden",
+      "warnings": "Warnungen",
+      "failures": "Fehlgeschlagen"
+    },
+    "lastRun": "Letzte Ausführung:",
+    "checkResults": {
+      "heading": "Prüfergebnisse"
+    }
   }
 }

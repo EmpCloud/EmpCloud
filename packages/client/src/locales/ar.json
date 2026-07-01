@@ -3487,5 +3487,487 @@
       "title": "النشاط الحديث",
       "systemActor": "النظام"
     }
+  },
+  "healthDashboard": {
+    "title": "حالة الخدمات",
+    "subtitle": "حالة صحة جميع خدمات نظام EMP Cloud في الوقت الفعلي",
+    "refreshing": "جارٍ التحديث...",
+    "actions": {
+      "checking": "جارٍ الفحص...",
+      "checkNow": "افحص الآن"
+    },
+    "loading": "جارٍ إجراء فحوصات الحالة...",
+    "overall": {
+      "operational": {
+        "title": "جميع الأنظمة تعمل",
+        "subtitle": "جميع الخدمات تعمل بشكل طبيعي."
+      },
+      "degraded": {
+        "title": "تدهور جزئي في النظام",
+        "subtitle": "خدمة واحدة أو أكثر تواجه مشكلات."
+      },
+      "majorOutage": {
+        "title": "انقطاع كبير",
+        "subtitle": "عدة خدمات غير متاحة حاليًا."
+      },
+      "unknown": {
+        "title": "جارٍ التحقق من الحالة...",
+        "subtitle": "جارٍ إجراء فحص الحالة الأولي."
+      },
+      "lastChecked": "آخر فحص"
+    },
+    "status": {
+      "healthy": "سليم",
+      "degraded": "متدهور",
+      "down": "متوقف"
+    },
+    "module": {
+      "port": "المنفذ {{port}}",
+      "responseTime": "زمن الاستجابة",
+      "version": "الإصدار",
+      "uptime": "مدة التشغيل",
+      "lastCheck": "آخر فحص"
+    },
+    "infra": {
+      "fallbackType": "البنية التحتية",
+      "connected": "متصل",
+      "disconnected": "غير متصل",
+      "responseTime": "زمن الاستجابة",
+      "version": "الإصدار",
+      "database": "قاعدة البيانات",
+      "threads": "سلاسل التنفيذ",
+      "uptime": "مدة التشغيل"
+    },
+    "endpoints": {
+      "title": "حالة نقاط نهاية API",
+      "description": "نقاط نهاية فحص الحالة لكل وحدة",
+      "columns": {
+        "module": "الوحدة",
+        "endpoint": "نقطة النهاية",
+        "method": "الطريقة",
+        "status": "الحالة",
+        "response": "الاستجابة",
+        "httpCode": "رمز HTTP",
+        "lastChecked": "آخر فحص"
+      },
+      "status": {
+        "ok": "ناجح",
+        "down": "متوقف"
+      }
+    },
+    "stats": {
+      "totalServices": "إجمالي الخدمات",
+      "healthy": "سليم",
+      "degraded": "متدهور",
+      "down": "متوقف"
+    },
+    "sections": {
+      "moduleServices": "خدمات الوحدات",
+      "infrastructure": "البنية التحتية"
+    },
+    "footer": {
+      "note": "يتم التحديث تلقائيًا كل 30 ثانية. تعمل الفحوصات في الخلفية كل 60 ثانية."
+    }
+  },
+  "aiConfig": {
+    "title": "إعدادات الذكاء الاصطناعي",
+    "subtitle": "قم بتكوين مزوّدي الذكاء الاصطناعي لمساعد روبوت الدردشة الخاص بالموارد البشرية. تتجاوز المفاتيح المحددة هنا متغيرات البيئة.",
+    "status": {
+      "active": "نشط",
+      "configured": "مُكوَّن",
+      "notConfigured": "غير مُكوَّن"
+    },
+    "field": {
+      "apiKey": "مفتاح API",
+      "baseUrl": "عنوان URL الأساسي",
+      "model": "النموذج",
+      "maxTokens": "الحد الأقصى للتوكنات: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "الحالي: {{value}}",
+      "apiKeyEnter": "أدخل مفتاح API...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "أدخل اسم النموذج (مثال: my-model)"
+    },
+    "testResult": {
+      "latency": "زمن الاستجابة: {{ms}} ميلي ثانية",
+      "requestFailed": "فشل طلب الاختبار"
+    },
+    "button": {
+      "testConnection": "اختبار الاتصال",
+      "active": "نشط",
+      "saveActivate": "حفظ وتفعيل",
+      "deactivate": "إلغاء التفعيل",
+      "saveMaxTokens": "حفظ الحد الأقصى للتوكنات"
+    },
+    "banner": {
+      "aiPoweredMode": "وضع مدعوم بالذكاء الاصطناعي",
+      "aiPoweredModeProvider": "وضع مدعوم بالذكاء الاصطناعي ({{provider}})",
+      "basicMode": "الوضع الأساسي (لا يوجد مزوّد ذكاء اصطناعي نشط)",
+      "modelStatus": "النموذج: {{model}} | الحالة: {{status}}",
+      "basicModeHint": "يعمل روبوت الدردشة في الوضع القائم على القواعد. فعّل مزوّدًا أدناه لتمكين الردود المدعومة بالذكاء الاصطناعي."
+    },
+    "section": {
+      "providers": "المزوّدون",
+      "generalSettings": "الإعدادات العامة"
+    },
+    "info": {
+      "title": "كيفية العمل",
+      "encryption": "يتم تشفير مفاتيح API أثناء التخزين باستخدام AES-256-GCM ولا تُعاد أبدًا غير مُقنَّعة",
+      "overrideEnv": "تتجاوز الإعدادات المخزّنة هنا متغيرات البيئة (.env)",
+      "singleActive": "يمكن تفعيل مزوّد واحد فقط في كل مرة. يسري تبديل المزوّدين على الفور.",
+      "testFirst": "استخدم \"اختبار الاتصال\" للتحقق من مفتاح API والنموذج قبل التفعيل"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "تحليلات الوحدات",
+    "subtitle": "مقاييس تفصيلية لكل وحدة عبر المنصة.",
+    "loading": "جاري التحميل...",
+    "stats": {
+      "activeModules": "الوحدات النشطة",
+      "totalSubscribers": "إجمالي المشتركين",
+      "totalSeats": "إجمالي المقاعد",
+      "totalModuleRevenue": "إجمالي إيرادات الوحدات"
+    },
+    "charts": {
+      "revenueByModule": "الإيرادات حسب الوحدة",
+      "revenueSeries": "الإيرادات",
+      "noRevenueData": "لا توجد بيانات إيرادات",
+      "subscriberDistribution": "توزيع المشتركين",
+      "noSubscriberData": "لا توجد بيانات مشتركين"
+    },
+    "details": {
+      "heading": "تفاصيل الوحدات",
+      "noSubscribers": "لا يوجد مشتركون",
+      "disableModule": "تعطيل الوحدة",
+      "subscribers": "المشتركون",
+      "seats": "المقاعد",
+      "revenue": "الإيرادات",
+      "seatUtilization": "استخدام المقاعد",
+      "planDistribution": "توزيع الخطط",
+      "orgCount_zero": "{{count}} مؤسسات",
+      "orgCount_one": "{{count}} مؤسسات",
+      "orgCount_two": "{{count}} مؤسسات",
+      "orgCount_few": "{{count}} مؤسسات",
+      "orgCount_many": "{{count}} مؤسسة",
+      "orgCount_other": "{{count}} مؤسسة"
+    },
+    "table": {
+      "heading": "المقاييس التفصيلية",
+      "module": "الوحدة",
+      "slug": "المُعرِّف (Slug)",
+      "subscribers": "المشتركون",
+      "totalSeats": "إجمالي المقاعد",
+      "usedSeats": "المقاعد المستخدمة",
+      "utilization": "معدل الاستخدام",
+      "revenue": "الإيرادات",
+      "status": "الحالة"
+    },
+    "status": {
+      "active": "نشط"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "مقاييس الاشتراكات",
+    "subtitle": "توزيع الخطط واستغلال المقاعد ومقاييس الفوترة.",
+    "loading": "جارٍ التحميل...",
+    "stats": {
+      "totalSeats": "إجمالي المقاعد",
+      "usedSeats": "المقاعد المستخدمة",
+      "seatUtilization": "استغلال المقاعد",
+      "activeUsers": "المستخدمون النشطون",
+      "inactive_zero": "{{count}} غير نشط",
+      "inactive_one": "{{count}} غير نشط",
+      "inactive_two": "{{count}} غير نشط",
+      "inactive_few": "{{count}} غير نشطين",
+      "inactive_many": "{{count}} غير نشط",
+      "inactive_other": "{{count}} غير نشط"
+    },
+    "charts": {
+      "planTierDistribution": "توزيع مستويات الخطط",
+      "subscriptionStatus": "حالة الاشتراك",
+      "billingCycle": "دورة الفوترة",
+      "seatUtilizationByTier": "استغلال المقاعد حسب مستوى الخطة",
+      "subscriptionChurn": "تسرّب الاشتراكات"
+    },
+    "churn": {
+      "cancelledSeries": "الملغاة"
+    },
+    "seats": "{{used}} / {{total}} مقعد",
+    "empty": {
+      "noData": "لا توجد بيانات",
+      "noTierData": "لا توجد بيانات للمستويات"
+    }
+  },
+  "systemNotifications": {
+    "title": "إشعارات النظام",
+    "subtitle": "أرسل إعلانات على مستوى المنصة إلى جميع المؤسسات أو مؤسسات محددة.",
+    "newNotification": "إشعار جديد",
+    "form": {
+      "heading": "إرسال إشعار",
+      "titleLabel": "العنوان",
+      "titlePlaceholder": "عنوان الإشعار",
+      "typeLabel": "النوع",
+      "messageLabel": "الرسالة",
+      "messagePlaceholder": "نص الإشعار...",
+      "targetLabel": "الجهة المستهدفة",
+      "allOrgs": "جميع المؤسسات",
+      "specificOrg": "مؤسسة محددة",
+      "organizationLabel": "المؤسسة",
+      "selectOrgPlaceholder": "اختر المؤسسة...",
+      "send": "إرسال الإشعار",
+      "sending": "جارٍ الإرسال..."
+    },
+    "type": {
+      "info": "معلومة",
+      "warning": "تحذير",
+      "maintenance": "صيانة",
+      "release": "إصدار جديد"
+    },
+    "list": {
+      "empty": "لم يتم إرسال أي إشعارات نظام بعد.",
+      "heading_zero": "جميع الإشعارات ({{count}})",
+      "heading_one": "جميع الإشعارات ({{count}})",
+      "heading_two": "جميع الإشعارات ({{count}})",
+      "heading_few": "جميع الإشعارات ({{count}})",
+      "heading_many": "جميع الإشعارات ({{count}})",
+      "heading_other": "جميع الإشعارات ({{count}})"
+    },
+    "item": {
+      "deactivated": "معطّل",
+      "targetAll": "جميع المؤسسات",
+      "targetPrefix": "الجهة المستهدفة:",
+      "byPrefix": "بواسطة:",
+      "systemAuthor": "النظام",
+      "orgFallback": "المؤسسة رقم {{id}}",
+      "deactivate": "إلغاء التفعيل"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "تحليلات الإيرادات",
+    "subtitle": "نظرة عامة مالية وتفصيل الإيرادات.",
+    "loading": "جارٍ التحميل...",
+    "stats": {
+      "mrr": "الإيرادات الشهرية المتكررة (MRR)",
+      "arr": "الإيرادات السنوية المتكررة (ARR)",
+      "seatUtilization": "معدل استخدام المقاعد",
+      "seats": "{{used}} / {{total}} مقاعد",
+      "payingCustomers": "العملاء الدافعون"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "اتجاه الإيرادات (آخر 12 شهرًا)",
+        "empty": "لا توجد بيانات اتجاه بعد"
+      },
+      "revenueByModule": {
+        "title": "الإيرادات حسب الوحدة",
+        "series": "الإيرادات"
+      },
+      "empty": "لا توجد بيانات",
+      "revenueByTier": {
+        "title": "الإيرادات حسب فئة الخطة",
+        "subsLabel_zero": "{{count}} اشتراك — {{revenue}}",
+        "subsLabel_one": "{{count}} اشتراك — {{revenue}}",
+        "subsLabel_two": "{{count}} اشتراك — {{revenue}}",
+        "subsLabel_few": "{{count}} اشتراك — {{revenue}}",
+        "subsLabel_many": "{{count}} اشتراك — {{revenue}}",
+        "subsLabel_other": "{{count}} اشتراك — {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "توزيع دورة الفوترة",
+        "percentOfSubscriptions": "{{percent}}% من الاشتراكات",
+        "subs_zero": "{{count}} اشتراك",
+        "subs_one": "{{count}} اشتراك",
+        "subs_two": "{{count}} اشتراك",
+        "subs_few": "{{count}} اشتراك",
+        "subs_many": "{{count}} اشتراك",
+        "subs_other": "{{count}} اشتراك"
+      }
+    },
+    "topCustomers": {
+      "title": "أفضل 10 عملاء حسب الإيرادات",
+      "columns": {
+        "rank": "#",
+        "organization": "المؤسسة",
+        "email": "البريد الإلكتروني",
+        "subscriptions": "الاشتراكات",
+        "monthlySpend": "الإنفاق الشهري"
+      },
+      "empty": "لا توجد بيانات عملاء بعد"
+    }
+  },
+  "logDashboard": {
+    "title": "لوحة السجلات",
+    "subtitle": "مراقبة فورية عبر جميع وحدات EMP Cloud",
+    "actions": {
+      "refresh": "تحديث"
+    },
+    "tabs": {
+      "overview": "نظرة عامة",
+      "errors": "الأخطاء",
+      "slow": "الاستعلامات البطيئة",
+      "auth": "أحداث المصادقة",
+      "health": "حالة الوحدات"
+    },
+    "stats": {
+      "auditEvents": "أحداث التدقيق (24 ساعة)",
+      "fileErrors": "أخطاء الملفات (24 ساعة)",
+      "slowQueries": "الاستعلامات البطيئة",
+      "healthyModules": "الوحدات السليمة"
+    },
+    "sections": {
+      "errorsByAction": "الأخطاء حسب الإجراء (24 ساعة)",
+      "errorsPerModule": "الأخطاء لكل وحدة (من ملفات السجلات)",
+      "moduleHealth": "حالة الوحدات"
+    },
+    "errors": {
+      "title": "الأخطاء الأخيرة",
+      "subtitle": "من سجلات أخطاء PM2 وأخطاء الواجهة الأمامية للعميل عبر جميع الوحدات",
+      "badge": {
+        "frontend": "الواجهة الأمامية"
+      },
+      "detail": {
+        "page": "الصفحة:",
+        "component": "المكوّن:"
+      },
+      "empty": "لم يتم العثور على أخطاء."
+    },
+    "slow": {
+      "title": "الاستعلامات البطيئة",
+      "subtitle": "استعلامات قاعدة البيانات التي تتجاوز ثانية واحدة",
+      "columns": {
+        "module": "الوحدة",
+        "duration": "المدة",
+        "sql": "SQL",
+        "time": "الوقت"
+      },
+      "empty": "لم يتم اكتشاف استعلامات بطيئة."
+    },
+    "auth": {
+      "title": "أحداث المصادقة",
+      "subtitle": "تسجيل الدخول، تسجيل الخروج، تغييرات كلمة المرور، أحداث الرموز المميزة (آخر 24 ساعة)",
+      "user": "المستخدم رقم {{id}}",
+      "ip": "عنوان IP: {{ip}}",
+      "notAvailable": "غير متوفر",
+      "empty": "لا توجد أحداث مصادقة في آخر 24 ساعة."
+    },
+    "healthTab": {
+      "status": "الحالة: {{status}}",
+      "restarts": "عمليات إعادة التشغيل: {{count}}",
+      "recentErrors": "الأخطاء الأخيرة: {{count}}",
+      "lastActivity": "آخر نشاط: {{time}}",
+      "loading": "جارٍ تحميل حالة الوحدات...",
+      "empty": "لا تتوفر بيانات عن حالة الوحدات."
+    },
+    "status": {
+      "healthy": "سليم",
+      "warning": "تحذير",
+      "critical": "حرج",
+      "unknown": "غير معروف"
+    },
+    "pagination": {
+      "status": "الصفحة {{page}} من {{totalPages}} ({{total}} إجمالاً)",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "health": {
+      "restarts_zero": "{{count}} عمليات إعادة تشغيل",
+      "restarts_one": "{{count}} عمليات إعادة تشغيل",
+      "restarts_two": "{{count}} عمليات إعادة تشغيل",
+      "restarts_few": "{{count}} عمليات إعادة تشغيل",
+      "restarts_many": "{{count}} عملية إعادة تشغيل",
+      "restarts_other": "{{count}} عملية إعادة تشغيل",
+      "recentErrors_zero": "{{count}} أخطاء",
+      "recentErrors_one": "{{count}} أخطاء",
+      "recentErrors_two": "{{count}} أخطاء",
+      "recentErrors_few": "{{count}} أخطاء",
+      "recentErrors_many": "{{count}} خطأً",
+      "recentErrors_other": "{{count}} خطأ"
+    }
+  },
+  "dataSanity": {
+    "title": "أداة فحص سلامة البيانات",
+    "subtitle": "التحقق من اتساق البيانات عبر الوحدات",
+    "overall": {
+      "healthy": {
+        "title": "جميع الأنظمة سليمة",
+        "subtitle": "نجحت جميع عمليات فحص اتساق البيانات عبر الوحدات."
+      },
+      "warnings": {
+        "title": "تم اكتشاف تحذيرات",
+        "subtitle": "تم العثور على بعض حالات عدم اتساق البيانات التي قد تتطلب الانتباه."
+      },
+      "critical": {
+        "title": "تم العثور على مشكلات حرجة",
+        "subtitle": "تم اكتشاف مشكلات في سلامة البيانات تتطلب إجراءً فورياً."
+      }
+    },
+    "status": {
+      "pass": "ناجح",
+      "warn": "تحذير",
+      "fail": "فشل"
+    },
+    "check": {
+      "noIssues": "لم يتم اكتشاف أي مشكلات.",
+      "issuesFound_zero": "تم العثور على {{count}} مشكلات",
+      "issuesFound_one": "تم العثور على {{count}} مشكلات",
+      "issuesFound_two": "تم العثور على {{count}} مشكلات",
+      "issuesFound_few": "تم العثور على {{count}} مشكلات",
+      "issuesFound_many": "تم العثور على {{count}} مشكلة",
+      "issuesFound_other": "تم العثور على {{count}} مشكلة",
+      "showingCount_zero": "(عرض {{count}})",
+      "showingCount_one": "(عرض {{count}})",
+      "showingCount_two": "(عرض {{count}})",
+      "showingCount_few": "(عرض {{count}})",
+      "showingCount_many": "(عرض {{count}})",
+      "showingCount_other": "(عرض {{count}})"
+    },
+    "confirmFix": {
+      "title": "تأكيد الإصلاح التلقائي",
+      "intro": "سيؤدي هذا إلى تطبيق الإصلاحات التالية تلقائياً:",
+      "fix": {
+        "syncOrgUserCounts": "مزامنة أعداد مستخدمي المؤسسة",
+        "syncSeatCounts": "مزامنة أعداد مقاعد الاشتراك",
+        "fixNegativeLeave": "إصلاح أرصدة الإجازات السالبة (تثبيتها عند 0)",
+        "removeOrphaned": "إزالة السجلات المعزولة (الإجازات، الحضور، مكتب المساعدة، الإعلانات)"
+      },
+      "warning": "لا يمكن التراجع عن هذه التغييرات. تأكد من وجود نسخة احتياطية لقاعدة البيانات.",
+      "cancel": "إلغاء",
+      "apply": "تطبيق الإصلاحات",
+      "applying": "جارٍ الإصلاح..."
+    },
+    "fixResults": {
+      "none": "لم تكن هناك حاجة لأي إصلاحات. كل شيء يبدو سليماً.",
+      "title_zero": "نتائج الإصلاح التلقائي ({{count}} تغييرات إجمالاً)",
+      "title_one": "نتائج الإصلاح التلقائي ({{count}} تغييرات إجمالاً)",
+      "title_two": "نتائج الإصلاح التلقائي ({{count}} تغييرات إجمالاً)",
+      "title_few": "نتائج الإصلاح التلقائي ({{count}} تغييرات إجمالاً)",
+      "title_many": "نتائج الإصلاح التلقائي ({{count}} تغييراً إجمالاً)",
+      "title_other": "نتائج الإصلاح التلقائي ({{count}} تغيير إجمالاً)"
+    },
+    "button": {
+      "autoFix": "إصلاح تلقائي",
+      "runCheck": "تشغيل الفحص",
+      "running": "جارٍ التشغيل..."
+    },
+    "loading": {
+      "title": "جارٍ تشغيل فحوصات السلامة...",
+      "subtitle": "جارٍ التحقق من اتساق البيانات عبر جميع قواعد بيانات الوحدات. قد يستغرق هذا بعض الوقت."
+    },
+    "empty": {
+      "title": "لا يوجد تقرير بعد",
+      "subtitle": "انقر على \"تشغيل الفحص\" للتحقق من اتساق البيانات عبر جميع قواعد بيانات الوحدات.",
+      "runButton": "تشغيل فحص السلامة"
+    },
+    "summary": {
+      "totalChecks": "إجمالي الفحوصات",
+      "passed": "ناجح",
+      "warnings": "تحذيرات",
+      "failures": "إخفاقات"
+    },
+    "lastRun": "آخر تشغيل:",
+    "checkResults": {
+      "heading": "نتائج الفحص"
+    }
   }
 }

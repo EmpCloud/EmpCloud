@@ -3377,5 +3377,447 @@
       "title": "Recent Activity",
       "systemActor": "System"
     }
+  },
+  "healthDashboard": {
+    "title": "Service Health",
+    "subtitle": "Real-time health status of all EMP Cloud ecosystem services",
+    "refreshing": "Refreshing...",
+    "actions": {
+      "checking": "Checking...",
+      "checkNow": "Check Now"
+    },
+    "loading": "Running health checks...",
+    "overall": {
+      "operational": {
+        "title": "All Systems Operational",
+        "subtitle": "Every service is running normally."
+      },
+      "degraded": {
+        "title": "Partial System Degradation",
+        "subtitle": "One or more services are experiencing issues."
+      },
+      "majorOutage": {
+        "title": "Major Outage",
+        "subtitle": "Multiple services are currently unavailable."
+      },
+      "unknown": {
+        "title": "Checking Status...",
+        "subtitle": "Performing initial health check."
+      },
+      "lastChecked": "Last checked"
+    },
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "down": "Down"
+    },
+    "module": {
+      "port": "Port {{port}}",
+      "responseTime": "Response Time",
+      "version": "Version",
+      "uptime": "Uptime",
+      "lastCheck": "Last Check"
+    },
+    "infra": {
+      "fallbackType": "Infrastructure",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "responseTime": "Response Time",
+      "version": "Version",
+      "database": "Database",
+      "threads": "Threads",
+      "uptime": "Uptime"
+    },
+    "endpoints": {
+      "title": "API Endpoints Status",
+      "description": "Health check endpoints for each module",
+      "columns": {
+        "module": "Module",
+        "endpoint": "Endpoint",
+        "method": "Method",
+        "status": "Status",
+        "response": "Response",
+        "httpCode": "HTTP Code",
+        "lastChecked": "Last Checked"
+      },
+      "status": {
+        "ok": "OK",
+        "down": "Down"
+      }
+    },
+    "stats": {
+      "totalServices": "Total Services",
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "down": "Down"
+    },
+    "sections": {
+      "moduleServices": "Module Services",
+      "infrastructure": "Infrastructure"
+    },
+    "footer": {
+      "note": "Auto-refreshes every 30 seconds. Background checks run every 60 seconds."
+    }
+  },
+  "aiConfig": {
+    "title": "AI Configuration",
+    "subtitle": "Configure AI providers for the HR chatbot assistant. Keys set here override environment variables.",
+    "status": {
+      "active": "Active",
+      "configured": "Configured",
+      "notConfigured": "Not configured"
+    },
+    "field": {
+      "apiKey": "API Key",
+      "baseUrl": "Base URL",
+      "model": "Model",
+      "maxTokens": "Max Tokens: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "Current: {{value}}",
+      "apiKeyEnter": "Enter API key...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "Enter model name (e.g., my-model)"
+    },
+    "testResult": {
+      "latency": "Latency: {{ms}}ms",
+      "requestFailed": "Test request failed"
+    },
+    "button": {
+      "testConnection": "Test Connection",
+      "active": "Active",
+      "saveActivate": "Save & Activate",
+      "deactivate": "Deactivate",
+      "saveMaxTokens": "Save Max Tokens"
+    },
+    "banner": {
+      "aiPoweredMode": "AI-Powered Mode",
+      "aiPoweredModeProvider": "AI-Powered Mode ({{provider}})",
+      "basicMode": "Basic Mode (No AI Provider Active)",
+      "modelStatus": "Model: {{model}} | Status: {{status}}",
+      "basicModeHint": "The chatbot is running in rule-based mode. Activate a provider below to enable AI-powered responses."
+    },
+    "section": {
+      "providers": "Providers",
+      "generalSettings": "General Settings"
+    },
+    "info": {
+      "title": "How it works",
+      "encryption": "API keys are encrypted at rest using AES-256-GCM and never returned unmasked",
+      "overrideEnv": "Settings stored here override environment variables (.env)",
+      "singleActive": "Only one provider can be active at a time. Switching providers takes effect immediately.",
+      "testFirst": "Use \"Test Connection\" to verify your API key and model before activating"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "Module Analytics",
+    "subtitle": "Detailed metrics for each module across the platform.",
+    "loading": "Loading...",
+    "stats": {
+      "activeModules": "Active Modules",
+      "totalSubscribers": "Total Subscribers",
+      "totalSeats": "Total Seats",
+      "totalModuleRevenue": "Total Module Revenue"
+    },
+    "charts": {
+      "revenueByModule": "Revenue by Module",
+      "revenueSeries": "Revenue",
+      "noRevenueData": "No revenue data",
+      "subscriberDistribution": "Subscriber Distribution",
+      "noSubscriberData": "No subscriber data"
+    },
+    "details": {
+      "heading": "Module Details",
+      "noSubscribers": "No subscribers",
+      "disableModule": "Disable module",
+      "subscribers": "Subscribers",
+      "seats": "Seats",
+      "revenue": "Revenue",
+      "seatUtilization": "Seat Utilization",
+      "planDistribution": "Plan Distribution",
+      "orgCount_one": "{{count}} org",
+      "orgCount_other": "{{count}} orgs"
+    },
+    "table": {
+      "heading": "Detailed Metrics",
+      "module": "Module",
+      "slug": "Slug",
+      "subscribers": "Subscribers",
+      "totalSeats": "Total Seats",
+      "usedSeats": "Used Seats",
+      "utilization": "Utilization",
+      "revenue": "Revenue",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "Subscription Metrics",
+    "subtitle": "Plan distribution, seat utilization, and billing metrics.",
+    "loading": "Loading...",
+    "stats": {
+      "totalSeats": "Total Seats",
+      "usedSeats": "Used Seats",
+      "seatUtilization": "Seat Utilization",
+      "activeUsers": "Active Users",
+      "inactive_one": "{{count}} inactive",
+      "inactive_other": "{{count}} inactive"
+    },
+    "charts": {
+      "planTierDistribution": "Plan Tier Distribution",
+      "subscriptionStatus": "Subscription Status",
+      "billingCycle": "Billing Cycle",
+      "seatUtilizationByTier": "Seat Utilization by Plan Tier",
+      "subscriptionChurn": "Subscription Churn"
+    },
+    "churn": {
+      "cancelledSeries": "Cancelled"
+    },
+    "seats": "{{used}} / {{total}} seats",
+    "empty": {
+      "noData": "No data",
+      "noTierData": "No tier data"
+    }
+  },
+  "systemNotifications": {
+    "title": "System Notifications",
+    "subtitle": "Send platform-wide announcements to all organizations or specific ones.",
+    "newNotification": "New Notification",
+    "form": {
+      "heading": "Send Notification",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Notification title",
+      "typeLabel": "Type",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Notification message...",
+      "targetLabel": "Target",
+      "allOrgs": "All Orgs",
+      "specificOrg": "Specific Org",
+      "organizationLabel": "Organization",
+      "selectOrgPlaceholder": "Select organization...",
+      "send": "Send Notification",
+      "sending": "Sending..."
+    },
+    "type": {
+      "info": "Info",
+      "warning": "Warning",
+      "maintenance": "Maintenance",
+      "release": "Feature Release"
+    },
+    "list": {
+      "empty": "No system notifications sent yet.",
+      "heading_one": "All Notifications ({{count}})",
+      "heading_other": "All Notifications ({{count}})"
+    },
+    "item": {
+      "deactivated": "Deactivated",
+      "targetAll": "All organizations",
+      "targetPrefix": "Target:",
+      "byPrefix": "By:",
+      "systemAuthor": "System",
+      "orgFallback": "Org #{{id}}",
+      "deactivate": "Deactivate"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "Revenue Analytics",
+    "subtitle": "Financial overview and revenue breakdown.",
+    "loading": "Loading...",
+    "stats": {
+      "mrr": "Monthly Recurring Revenue",
+      "arr": "Annual Recurring Revenue",
+      "seatUtilization": "Seat Utilization",
+      "seats": "{{used}} / {{total}} seats",
+      "payingCustomers": "Paying Customers"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Revenue Trend (Last 12 Months)",
+        "empty": "No trend data yet"
+      },
+      "revenueByModule": {
+        "title": "Revenue by Module",
+        "series": "Revenue"
+      },
+      "empty": "No data",
+      "revenueByTier": {
+        "title": "Revenue by Plan Tier",
+        "subsLabel_one": "{{count}} sub - {{revenue}}",
+        "subsLabel_other": "{{count}} subs - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "Billing Cycle Distribution",
+        "percentOfSubscriptions": "{{percent}}% of subscriptions",
+        "subs_one": "{{count}} sub",
+        "subs_other": "{{count}} subs"
+      }
+    },
+    "topCustomers": {
+      "title": "Top 10 Customers by Revenue",
+      "columns": {
+        "rank": "#",
+        "organization": "Organization",
+        "email": "Email",
+        "subscriptions": "Subscriptions",
+        "monthlySpend": "Monthly Spend"
+      },
+      "empty": "No customer data yet"
+    }
+  },
+  "logDashboard": {
+    "title": "Log Dashboard",
+    "subtitle": "Real-time monitoring across all EMP Cloud modules",
+    "actions": {
+      "refresh": "Refresh"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "errors": "Errors",
+      "slow": "Slow Queries",
+      "auth": "Auth Events",
+      "health": "Module Health"
+    },
+    "stats": {
+      "auditEvents": "Audit Events (24h)",
+      "fileErrors": "File Errors (24h)",
+      "slowQueries": "Slow Queries",
+      "healthyModules": "Healthy Modules"
+    },
+    "sections": {
+      "errorsByAction": "Errors by Action (24h)",
+      "errorsPerModule": "Errors per Module (from log files)",
+      "moduleHealth": "Module Health"
+    },
+    "errors": {
+      "title": "Recent Errors",
+      "subtitle": "From PM2 error logs and frontend client errors across all modules",
+      "badge": {
+        "frontend": "Frontend"
+      },
+      "detail": {
+        "page": "Page:",
+        "component": "Component:"
+      },
+      "empty": "No errors found."
+    },
+    "slow": {
+      "title": "Slow Queries",
+      "subtitle": "Database queries exceeding 1 second",
+      "columns": {
+        "module": "Module",
+        "duration": "Duration",
+        "sql": "SQL",
+        "time": "Time"
+      },
+      "empty": "No slow queries detected."
+    },
+    "auth": {
+      "title": "Auth Events",
+      "subtitle": "Login, logout, password changes, token events (last 24h)",
+      "user": "User #{{id}}",
+      "ip": "IP: {{ip}}",
+      "notAvailable": "N/A",
+      "empty": "No auth events in the last 24 hours."
+    },
+    "healthTab": {
+      "status": "Status: {{status}}",
+      "restarts": "Restarts: {{count}}",
+      "recentErrors": "Recent errors: {{count}}",
+      "lastActivity": "Last activity: {{time}}",
+      "loading": "Loading module health...",
+      "empty": "No module health data available."
+    },
+    "status": {
+      "healthy": "Healthy",
+      "warning": "Warning",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    },
+    "pagination": {
+      "status": "Page {{page}} of {{totalPages}} ({{total}} total)",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "health": {
+      "restarts_one": "{{count}} restart(s)",
+      "restarts_other": "{{count}} restart(s)",
+      "recentErrors_one": "{{count}} errors",
+      "recentErrors_other": "{{count}} errors"
+    }
+  },
+  "dataSanity": {
+    "title": "Data Sanity Checker",
+    "subtitle": "Cross-module data consistency verification",
+    "overall": {
+      "healthy": {
+        "title": "All Systems Healthy",
+        "subtitle": "All cross-module data consistency checks passed."
+      },
+      "warnings": {
+        "title": "Warnings Detected",
+        "subtitle": "Some data inconsistencies were found that may need attention."
+      },
+      "critical": {
+        "title": "Critical Issues Found",
+        "subtitle": "Data integrity problems detected that require immediate action."
+      }
+    },
+    "status": {
+      "pass": "Pass",
+      "warn": "Warning",
+      "fail": "Fail"
+    },
+    "check": {
+      "noIssues": "No issues detected.",
+      "issuesFound_one": "{{count}} issue found",
+      "issuesFound_other": "{{count}} issues found",
+      "showingCount_one": "(showing {{count}})",
+      "showingCount_other": "(showing {{count}})"
+    },
+    "confirmFix": {
+      "title": "Confirm Auto-Fix",
+      "intro": "This will automatically apply the following fixes:",
+      "fix": {
+        "syncOrgUserCounts": "Sync organization user counts",
+        "syncSeatCounts": "Sync subscription seat counts",
+        "fixNegativeLeave": "Fix negative leave balances (clamp to 0)",
+        "removeOrphaned": "Remove orphaned records (leave, attendance, helpdesk, announcements)"
+      },
+      "warning": "These changes cannot be undone. Make sure you have a database backup.",
+      "cancel": "Cancel",
+      "apply": "Apply Fixes",
+      "applying": "Fixing..."
+    },
+    "fixResults": {
+      "none": "No fixes were necessary. Everything looks clean.",
+      "title_one": "Auto-Fix Results ({{count}} total change)",
+      "title_other": "Auto-Fix Results ({{count}} total changes)"
+    },
+    "button": {
+      "autoFix": "Auto-Fix",
+      "runCheck": "Run Check",
+      "running": "Running..."
+    },
+    "loading": {
+      "title": "Running Sanity Checks...",
+      "subtitle": "Checking data consistency across all module databases. This may take a moment."
+    },
+    "empty": {
+      "title": "No Report Yet",
+      "subtitle": "Click \"Run Check\" to verify data consistency across all module databases.",
+      "runButton": "Run Sanity Check"
+    },
+    "summary": {
+      "totalChecks": "Total Checks",
+      "passed": "Passed",
+      "warnings": "Warnings",
+      "failures": "Failures"
+    },
+    "lastRun": "Last run:",
+    "checkResults": {
+      "heading": "Check Results"
+    }
   }
 }

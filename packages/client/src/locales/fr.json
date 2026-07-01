@@ -3371,5 +3371,447 @@
       "title": "Activité récente",
       "systemActor": "Système"
     }
+  },
+  "healthDashboard": {
+    "title": "État des services",
+    "subtitle": "État de santé en temps réel de tous les services de l'écosystème EMP Cloud",
+    "refreshing": "Actualisation...",
+    "actions": {
+      "checking": "Vérification...",
+      "checkNow": "Vérifier maintenant"
+    },
+    "loading": "Exécution des vérifications de santé...",
+    "overall": {
+      "operational": {
+        "title": "Tous les systèmes opérationnels",
+        "subtitle": "Tous les services fonctionnent normalement."
+      },
+      "degraded": {
+        "title": "Dégradation partielle du système",
+        "subtitle": "Un ou plusieurs services rencontrent des problèmes."
+      },
+      "majorOutage": {
+        "title": "Panne majeure",
+        "subtitle": "Plusieurs services sont actuellement indisponibles."
+      },
+      "unknown": {
+        "title": "Vérification de l'état...",
+        "subtitle": "Exécution de la vérification de santé initiale."
+      },
+      "lastChecked": "Dernière vérification"
+    },
+    "status": {
+      "healthy": "Opérationnel",
+      "degraded": "Dégradé",
+      "down": "Hors service"
+    },
+    "module": {
+      "port": "Port {{port}}",
+      "responseTime": "Temps de réponse",
+      "version": "Version",
+      "uptime": "Disponibilité",
+      "lastCheck": "Dernière vérification"
+    },
+    "infra": {
+      "fallbackType": "Infrastructure",
+      "connected": "Connecté",
+      "disconnected": "Déconnecté",
+      "responseTime": "Temps de réponse",
+      "version": "Version",
+      "database": "Base de données",
+      "threads": "Connexions",
+      "uptime": "Disponibilité"
+    },
+    "endpoints": {
+      "title": "État des points de terminaison API",
+      "description": "Points de terminaison de vérification de santé pour chaque module",
+      "columns": {
+        "module": "Module",
+        "endpoint": "Point de terminaison",
+        "method": "Méthode",
+        "status": "État",
+        "response": "Réponse",
+        "httpCode": "Code HTTP",
+        "lastChecked": "Dernière vérification"
+      },
+      "status": {
+        "ok": "OK",
+        "down": "Hors service"
+      }
+    },
+    "stats": {
+      "totalServices": "Total des services",
+      "healthy": "Opérationnels",
+      "degraded": "Dégradés",
+      "down": "Hors service"
+    },
+    "sections": {
+      "moduleServices": "Services des modules",
+      "infrastructure": "Infrastructure"
+    },
+    "footer": {
+      "note": "Actualisation automatique toutes les 30 secondes. Les vérifications en arrière-plan s'exécutent toutes les 60 secondes."
+    }
+  },
+  "aiConfig": {
+    "title": "Configuration de l'IA",
+    "subtitle": "Configurez les fournisseurs d'IA pour l'assistant chatbot RH. Les clés définies ici remplacent les variables d'environnement.",
+    "status": {
+      "active": "Actif",
+      "configured": "Configuré",
+      "notConfigured": "Non configuré"
+    },
+    "field": {
+      "apiKey": "Clé API",
+      "baseUrl": "URL de base",
+      "model": "Modèle",
+      "maxTokens": "Jetons max : {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "Actuelle : {{value}}",
+      "apiKeyEnter": "Saisir la clé API...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "Saisir le nom du modèle (ex. : my-model)"
+    },
+    "testResult": {
+      "latency": "Latence : {{ms}} ms",
+      "requestFailed": "Échec de la requête de test"
+    },
+    "button": {
+      "testConnection": "Tester la connexion",
+      "active": "Actif",
+      "saveActivate": "Enregistrer et activer",
+      "deactivate": "Désactiver",
+      "saveMaxTokens": "Enregistrer les jetons max"
+    },
+    "banner": {
+      "aiPoweredMode": "Mode assisté par IA",
+      "aiPoweredModeProvider": "Mode assisté par IA ({{provider}})",
+      "basicMode": "Mode basique (aucun fournisseur d'IA actif)",
+      "modelStatus": "Modèle : {{model}} | Statut : {{status}}",
+      "basicModeHint": "Le chatbot fonctionne en mode basé sur des règles. Activez un fournisseur ci-dessous pour activer les réponses assistées par IA."
+    },
+    "section": {
+      "providers": "Fournisseurs",
+      "generalSettings": "Paramètres généraux"
+    },
+    "info": {
+      "title": "Fonctionnement",
+      "encryption": "Les clés API sont chiffrées au repos avec AES-256-GCM et ne sont jamais renvoyées en clair",
+      "overrideEnv": "Les paramètres enregistrés ici remplacent les variables d'environnement (.env)",
+      "singleActive": "Un seul fournisseur peut être actif à la fois. Le changement de fournisseur prend effet immédiatement.",
+      "testFirst": "Utilisez « Tester la connexion » pour vérifier votre clé API et votre modèle avant l'activation"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "Analyse des modules",
+    "subtitle": "Métriques détaillées pour chaque module de la plateforme.",
+    "loading": "Chargement...",
+    "stats": {
+      "activeModules": "Modules actifs",
+      "totalSubscribers": "Nombre total d'abonnés",
+      "totalSeats": "Nombre total de licences",
+      "totalModuleRevenue": "Revenus totaux des modules"
+    },
+    "charts": {
+      "revenueByModule": "Revenus par module",
+      "revenueSeries": "Revenus",
+      "noRevenueData": "Aucune donnée de revenus",
+      "subscriberDistribution": "Répartition des abonnés",
+      "noSubscriberData": "Aucune donnée d'abonné"
+    },
+    "details": {
+      "heading": "Détails des modules",
+      "noSubscribers": "Aucun abonné",
+      "disableModule": "Désactiver le module",
+      "subscribers": "Abonnés",
+      "seats": "Licences",
+      "revenue": "Revenus",
+      "seatUtilization": "Utilisation des licences",
+      "planDistribution": "Répartition des forfaits",
+      "orgCount_one": "{{count}} organisation",
+      "orgCount_other": "{{count}} organisations"
+    },
+    "table": {
+      "heading": "Métriques détaillées",
+      "module": "Module",
+      "slug": "Slug",
+      "subscribers": "Abonnés",
+      "totalSeats": "Total des licences",
+      "usedSeats": "Licences utilisées",
+      "utilization": "Utilisation",
+      "revenue": "Revenus",
+      "status": "Statut"
+    },
+    "status": {
+      "active": "Actif"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "Métriques d'abonnement",
+    "subtitle": "Répartition des offres, utilisation des sièges et métriques de facturation.",
+    "loading": "Chargement...",
+    "stats": {
+      "totalSeats": "Sièges totaux",
+      "usedSeats": "Sièges utilisés",
+      "seatUtilization": "Utilisation des sièges",
+      "activeUsers": "Utilisateurs actifs",
+      "inactive_one": "{{count}} inactif",
+      "inactive_other": "{{count}} inactifs"
+    },
+    "charts": {
+      "planTierDistribution": "Répartition par niveau d'offre",
+      "subscriptionStatus": "Statut de l'abonnement",
+      "billingCycle": "Cycle de facturation",
+      "seatUtilizationByTier": "Utilisation des sièges par niveau d'offre",
+      "subscriptionChurn": "Résiliations des abonnements"
+    },
+    "churn": {
+      "cancelledSeries": "Résiliés"
+    },
+    "seats": "{{used}} / {{total}} sièges",
+    "empty": {
+      "noData": "Aucune donnée",
+      "noTierData": "Aucune donnée de niveau"
+    }
+  },
+  "systemNotifications": {
+    "title": "Notifications système",
+    "subtitle": "Envoyez des annonces à l'échelle de la plateforme à toutes les organisations ou à des organisations spécifiques.",
+    "newNotification": "Nouvelle notification",
+    "form": {
+      "heading": "Envoyer une notification",
+      "titleLabel": "Titre",
+      "titlePlaceholder": "Titre de la notification",
+      "typeLabel": "Type",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Message de la notification...",
+      "targetLabel": "Cible",
+      "allOrgs": "Toutes les orgs.",
+      "specificOrg": "Organisation spécifique",
+      "organizationLabel": "Organisation",
+      "selectOrgPlaceholder": "Sélectionner une organisation...",
+      "send": "Envoyer la notification",
+      "sending": "Envoi en cours..."
+    },
+    "type": {
+      "info": "Info",
+      "warning": "Avertissement",
+      "maintenance": "Maintenance",
+      "release": "Nouvelle fonctionnalité"
+    },
+    "list": {
+      "empty": "Aucune notification système envoyée pour le moment.",
+      "heading_one": "Toutes les notifications ({{count}})",
+      "heading_other": "Toutes les notifications ({{count}})"
+    },
+    "item": {
+      "deactivated": "Désactivée",
+      "targetAll": "Toutes les organisations",
+      "targetPrefix": "Cible :",
+      "byPrefix": "Par :",
+      "systemAuthor": "Système",
+      "orgFallback": "Organisation n° {{id}}",
+      "deactivate": "Désactiver"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "Analytique des revenus",
+    "subtitle": "Vue d'ensemble financière et répartition des revenus.",
+    "loading": "Chargement...",
+    "stats": {
+      "mrr": "Revenu récurrent mensuel (MRR)",
+      "arr": "Revenu récurrent annuel (ARR)",
+      "seatUtilization": "Utilisation des sièges",
+      "seats": "{{used}} / {{total}} sièges",
+      "payingCustomers": "Clients payants"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Tendance des revenus (12 derniers mois)",
+        "empty": "Aucune donnée de tendance pour le moment"
+      },
+      "revenueByModule": {
+        "title": "Revenus par module",
+        "series": "Revenus"
+      },
+      "empty": "Aucune donnée",
+      "revenueByTier": {
+        "title": "Revenus par niveau de forfait",
+        "subsLabel_one": "{{count}} abonnement - {{revenue}}",
+        "subsLabel_other": "{{count}} abonnements - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "Répartition des cycles de facturation",
+        "percentOfSubscriptions": "{{percent}} % des abonnements",
+        "subs_one": "{{count}} abonnement",
+        "subs_other": "{{count}} abonnements"
+      }
+    },
+    "topCustomers": {
+      "title": "Top 10 des clients par revenus",
+      "columns": {
+        "rank": "#",
+        "organization": "Organisation",
+        "email": "E-mail",
+        "subscriptions": "Abonnements",
+        "monthlySpend": "Dépense mensuelle"
+      },
+      "empty": "Aucune donnée client pour le moment"
+    }
+  },
+  "logDashboard": {
+    "title": "Tableau de bord des logs",
+    "subtitle": "Surveillance en temps réel de tous les modules EMP Cloud",
+    "actions": {
+      "refresh": "Actualiser"
+    },
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "errors": "Erreurs",
+      "slow": "Requêtes lentes",
+      "auth": "Événements d'authentification",
+      "health": "État des modules"
+    },
+    "stats": {
+      "auditEvents": "Événements d'audit (24 h)",
+      "fileErrors": "Erreurs de fichiers (24 h)",
+      "slowQueries": "Requêtes lentes",
+      "healthyModules": "Modules opérationnels"
+    },
+    "sections": {
+      "errorsByAction": "Erreurs par action (24 h)",
+      "errorsPerModule": "Erreurs par module (d'après les fichiers de logs)",
+      "moduleHealth": "État des modules"
+    },
+    "errors": {
+      "title": "Erreurs récentes",
+      "subtitle": "Depuis les logs d'erreurs PM2 et les erreurs client du frontend sur tous les modules → Depuis les journaux d'erreurs PM2 et les erreurs client sur tous les modules",
+      "badge": {
+        "frontend": "Client (or keep 'Frontend' if brand/tech term is intended)"
+      },
+      "detail": {
+        "page": "Page :",
+        "component": "Composant :"
+      },
+      "empty": "Aucune erreur trouvée."
+    },
+    "slow": {
+      "title": "Requêtes lentes",
+      "subtitle": "Requêtes de base de données dépassant 1 seconde",
+      "columns": {
+        "module": "Module",
+        "duration": "Durée",
+        "sql": "SQL",
+        "time": "Heure"
+      },
+      "empty": "Aucune requête lente détectée."
+    },
+    "auth": {
+      "title": "Événements d'authentification",
+      "subtitle": "Connexion, déconnexion, changements de mot de passe, événements de jeton (dernières 24 h)",
+      "user": "Utilisateur n° {{id}}",
+      "ip": "IP : {{ip}}",
+      "notAvailable": "S.O.",
+      "empty": "Aucun événement d'authentification au cours des dernières 24 heures."
+    },
+    "healthTab": {
+      "status": "Statut : {{status}}",
+      "restarts": "Redémarrages : {{count}}",
+      "recentErrors": "Erreurs récentes : {{count}}",
+      "lastActivity": "Dernière activité : {{time}}",
+      "loading": "Chargement de l'état des modules...",
+      "empty": "Aucune donnée d'état de module disponible."
+    },
+    "status": {
+      "healthy": "Opérationnel",
+      "warning": "Avertissement",
+      "critical": "Critique",
+      "unknown": "Inconnu"
+    },
+    "pagination": {
+      "status": "Page {{page}} sur {{totalPages}} ({{total}} au total)",
+      "prev": "Précédent",
+      "next": "Suivant"
+    },
+    "health": {
+      "restarts_one": "{{count}} redémarrage",
+      "restarts_other": "{{count}} redémarrages",
+      "recentErrors_one": "{{count}} erreur",
+      "recentErrors_other": "{{count}} erreurs"
+    }
+  },
+  "dataSanity": {
+    "title": "Vérificateur d'intégrité des données",
+    "subtitle": "Vérification de la cohérence des données entre modules",
+    "overall": {
+      "healthy": {
+        "title": "Tous les systèmes sont sains",
+        "subtitle": "Toutes les vérifications de cohérence des données entre modules ont réussi."
+      },
+      "warnings": {
+        "title": "Avertissements détectés",
+        "subtitle": "Des incohérences de données susceptibles de nécessiter une attention ont été détectées."
+      },
+      "critical": {
+        "title": "Problèmes critiques détectés",
+        "subtitle": "Des problèmes d'intégrité des données nécessitant une action immédiate ont été détectés."
+      }
+    },
+    "status": {
+      "pass": "Réussite",
+      "warn": "Avertissement",
+      "fail": "Échec"
+    },
+    "check": {
+      "noIssues": "Aucun problème détecté.",
+      "issuesFound_one": "{{count}} problème détecté",
+      "issuesFound_other": "{{count}} problèmes détectés",
+      "showingCount_one": "({{count}} affiché)",
+      "showingCount_other": "({{count}} affichés)"
+    },
+    "confirmFix": {
+      "title": "Confirmer la correction automatique",
+      "intro": "Les corrections suivantes seront appliquées automatiquement :",
+      "fix": {
+        "syncOrgUserCounts": "Synchroniser le nombre d'utilisateurs des organisations",
+        "syncSeatCounts": "Synchroniser le nombre de postes des abonnements",
+        "fixNegativeLeave": "Corriger les soldes de congés négatifs (ramener à 0)",
+        "removeOrphaned": "Supprimer les enregistrements orphelins (congés, présence, assistance, annonces)"
+      },
+      "warning": "Ces modifications sont irréversibles. Assurez-vous de disposer d'une sauvegarde de la base de données.",
+      "cancel": "Annuler",
+      "apply": "Appliquer les corrections",
+      "applying": "Correction en cours..."
+    },
+    "fixResults": {
+      "none": "Aucune correction n'était nécessaire. Tout semble en ordre.",
+      "title_one": "Résultats de la correction automatique ({{count}} modification au total)",
+      "title_other": "Résultats de la correction automatique ({{count}} modifications au total)"
+    },
+    "button": {
+      "autoFix": "Correction automatique",
+      "runCheck": "Lancer la vérification",
+      "running": "Exécution en cours..."
+    },
+    "loading": {
+      "title": "Vérifications d'intégrité en cours...",
+      "subtitle": "Vérification de la cohérence des données dans toutes les bases de données des modules. Cela peut prendre un moment."
+    },
+    "empty": {
+      "title": "Aucun rapport pour le moment",
+      "subtitle": "Cliquez sur « Lancer la vérification » pour vérifier la cohérence des données dans toutes les bases de données des modules.",
+      "runButton": "Lancer la vérification d'intégrité"
+    },
+    "summary": {
+      "totalChecks": "Total des vérifications",
+      "passed": "Réussies",
+      "warnings": "Avertissements",
+      "failures": "Échecs"
+    },
+    "lastRun": "Dernière exécution :",
+    "checkResults": {
+      "heading": "Résultats des vérifications"
+    }
   }
 }

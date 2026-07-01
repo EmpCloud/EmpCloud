@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   CreditCard,
@@ -42,6 +43,7 @@ const CYCLE_COLORS: Record<string, string> = {
 };
 
 export default function SubscriptionMetricsPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["admin-subscriptions"],
     queryFn: () => api.get("/admin/subscriptions").then((r) => r.data.data),
@@ -57,7 +59,7 @@ export default function SubscriptionMetricsPage() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-2">
           <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">Loading...</span>
+          <span className="text-sm text-gray-400">{t("subscriptionMetrics.loading")}</span>
         </div>
       </div>
     );
@@ -72,9 +74,9 @@ export default function SubscriptionMetricsPage() {
             <CreditCard className="h-5 w-5 text-green-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Subscription Metrics</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("subscriptionMetrics.title")}</h1>
             <p className="text-gray-500 mt-0.5 text-sm">
-              Plan distribution, seat utilization, and billing metrics.
+              {t("subscriptionMetrics.subtitle")}
             </p>
           </div>
         </div>
@@ -88,7 +90,7 @@ export default function SubscriptionMetricsPage() {
               <Layers className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Seats</p>
+              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.totalSeats")}</p>
               <p className="text-xl font-bold text-gray-900">{(data?.total_seats ?? 0).toLocaleString()}</p>
             </div>
           </div>
@@ -99,7 +101,7 @@ export default function SubscriptionMetricsPage() {
               <Layers className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Used Seats</p>
+              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.usedSeats")}</p>
               <p className="text-xl font-bold text-gray-900">{(data?.used_seats ?? 0).toLocaleString()}</p>
             </div>
           </div>
@@ -110,7 +112,7 @@ export default function SubscriptionMetricsPage() {
               <PieChartIcon className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Seat Utilization</p>
+              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.seatUtilization")}</p>
               <p className="text-xl font-bold text-gray-900">{data?.overall_utilization ?? 0}%</p>
             </div>
           </div>
@@ -121,12 +123,12 @@ export default function SubscriptionMetricsPage() {
               <BarChart3 className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Active Users</p>
+              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.activeUsers")}</p>
               <p className="text-xl font-bold text-gray-900">
                 {(growth?.active_users ?? 0).toLocaleString()}
               </p>
               <p className="text-xs text-gray-400">
-                {growth?.inactive_users ?? 0} inactive
+                {t("subscriptionMetrics.stats.inactive", { count: growth?.inactive_users ?? 0 })}
               </p>
             </div>
           </div>
@@ -137,7 +139,7 @@ export default function SubscriptionMetricsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Plan Tier Distribution (Pie) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Plan Tier Distribution</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.planTierDistribution")}</h2>
           {data?.tier_distribution?.length > 0 ? (
             <div>
               <ResponsiveContainer width="100%" height={250}>
@@ -178,14 +180,14 @@ export default function SubscriptionMetricsPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-[250px] text-gray-400 text-sm">
-              No data
+              {t("subscriptionMetrics.empty.noData")}
             </div>
           )}
         </div>
 
         {/* Subscription Status (Pie) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Subscription Status</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.subscriptionStatus")}</h2>
           {data?.status_distribution?.length > 0 ? (
             <div>
               <ResponsiveContainer width="100%" height={250}>
@@ -226,14 +228,14 @@ export default function SubscriptionMetricsPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-[250px] text-gray-400 text-sm">
-              No data
+              {t("subscriptionMetrics.empty.noData")}
             </div>
           )}
         </div>
 
         {/* Billing Cycle (Pie) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Billing Cycle</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.billingCycle")}</h2>
           {data?.cycle_distribution?.length > 0 ? (
             <div>
               <ResponsiveContainer width="100%" height={250}>
@@ -274,7 +276,7 @@ export default function SubscriptionMetricsPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-[250px] text-gray-400 text-sm">
-              No data
+              {t("subscriptionMetrics.empty.noData")}
             </div>
           )}
         </div>
@@ -282,7 +284,7 @@ export default function SubscriptionMetricsPage() {
 
       {/* Seat Utilization by Tier */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Seat Utilization by Plan Tier</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.seatUtilizationByTier")}</h2>
         {data?.tier_distribution?.length > 0 ? (
           <div className="space-y-4">
             {data.tier_distribution.map((tier: any) => (
@@ -297,7 +299,7 @@ export default function SubscriptionMetricsPage() {
                   </div>
                   <div className="flex items-center gap-4 text-sm">
                     <span className="text-gray-500">
-                      {tier.used_seats.toLocaleString()} / {tier.total_seats.toLocaleString()} seats
+                      {t("subscriptionMetrics.seats", { count: tier.total_seats, used: tier.used_seats.toLocaleString(), total: tier.total_seats.toLocaleString() })}
                     </span>
                     <span
                       className={`font-medium ${
@@ -329,7 +331,7 @@ export default function SubscriptionMetricsPage() {
           </div>
         ) : (
           <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
-            No tier data
+            {t("subscriptionMetrics.empty.noTierData")}
           </div>
         )}
       </div>
@@ -337,14 +339,14 @@ export default function SubscriptionMetricsPage() {
       {/* Churn */}
       {growth?.churn?.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Subscription Churn</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.subscriptionChurn")}</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={growth.churn}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="count" name="Cancelled" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" name={t("subscriptionMetrics.churn.cancelledSeries")} fill="#ef4444" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

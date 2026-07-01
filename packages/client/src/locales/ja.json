@@ -3371,5 +3371,447 @@
       "title": "最近のアクティビティ",
       "systemActor": "システム"
     }
+  },
+  "healthDashboard": {
+    "title": "サービス稼働状況",
+    "subtitle": "EMP Cloud エコシステムの全サービスのリアルタイム稼働状況",
+    "refreshing": "更新中...",
+    "actions": {
+      "checking": "確認中...",
+      "checkNow": "今すぐ確認"
+    },
+    "loading": "ヘルスチェックを実行中...",
+    "overall": {
+      "operational": {
+        "title": "すべてのシステムが正常稼働中",
+        "subtitle": "すべてのサービスが正常に稼働しています。"
+      },
+      "degraded": {
+        "title": "一部システムの性能低下",
+        "subtitle": "1つ以上のサービスで問題が発生しています。"
+      },
+      "majorOutage": {
+        "title": "重大な障害",
+        "subtitle": "複数のサービスが現在利用できません。"
+      },
+      "unknown": {
+        "title": "ステータスを確認中...",
+        "subtitle": "初回のヘルスチェックを実行しています。"
+      },
+      "lastChecked": "最終確認"
+    },
+    "status": {
+      "healthy": "正常",
+      "degraded": "性能低下",
+      "down": "停止"
+    },
+    "module": {
+      "port": "ポート {{port}}",
+      "responseTime": "応答時間",
+      "version": "バージョン",
+      "uptime": "稼働時間",
+      "lastCheck": "最終チェック"
+    },
+    "infra": {
+      "fallbackType": "インフラストラクチャ",
+      "connected": "接続済み",
+      "disconnected": "切断",
+      "responseTime": "応答時間",
+      "version": "バージョン",
+      "database": "データベース",
+      "threads": "スレッド",
+      "uptime": "稼働時間"
+    },
+    "endpoints": {
+      "title": "API エンドポイントの状態",
+      "description": "各モジュールのヘルスチェックエンドポイント",
+      "columns": {
+        "module": "モジュール",
+        "endpoint": "エンドポイント",
+        "method": "メソッド",
+        "status": "ステータス",
+        "response": "応答",
+        "httpCode": "HTTP コード",
+        "lastChecked": "最終確認"
+      },
+      "status": {
+        "ok": "OK",
+        "down": "停止"
+      }
+    },
+    "stats": {
+      "totalServices": "サービス総数",
+      "healthy": "正常",
+      "degraded": "性能低下",
+      "down": "停止"
+    },
+    "sections": {
+      "moduleServices": "モジュールサービス",
+      "infrastructure": "インフラストラクチャ"
+    },
+    "footer": {
+      "note": "30秒ごとに自動更新されます。バックグラウンドチェックは60秒ごとに実行されます。"
+    }
+  },
+  "aiConfig": {
+    "title": "AI設定",
+    "subtitle": "HRチャットボットアシスタント用のAIプロバイダーを設定します。ここで設定したキーは環境変数より優先されます。",
+    "status": {
+      "active": "有効",
+      "configured": "設定済み",
+      "notConfigured": "未設定"
+    },
+    "field": {
+      "apiKey": "APIキー",
+      "baseUrl": "ベースURL",
+      "model": "モデル",
+      "maxTokens": "最大トークン数: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "現在: {{value}}",
+      "apiKeyEnter": "APIキーを入力...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "モデル名を入力（例: my-model）"
+    },
+    "testResult": {
+      "latency": "レイテンシ: {{ms}}ms",
+      "requestFailed": "テストリクエストに失敗しました"
+    },
+    "button": {
+      "testConnection": "接続テスト",
+      "active": "有効",
+      "saveActivate": "保存して有効化",
+      "deactivate": "無効化",
+      "saveMaxTokens": "最大トークン数を保存"
+    },
+    "banner": {
+      "aiPoweredMode": "AI駆動モード",
+      "aiPoweredModeProvider": "AI駆動モード（{{provider}}）",
+      "basicMode": "ベーシックモード（AIプロバイダーが無効）",
+      "modelStatus": "モデル: {{model}} | ステータス: {{status}}",
+      "basicModeHint": "チャットボットはルールベースモードで動作しています。以下でプロバイダーを有効化すると、AI駆動の応答が利用できます。"
+    },
+    "section": {
+      "providers": "プロバイダー",
+      "generalSettings": "一般設定"
+    },
+    "info": {
+      "title": "仕組み",
+      "encryption": "APIキーはAES-256-GCMで保存時に暗号化され、マスクを解除して返されることはありません",
+      "overrideEnv": "ここに保存された設定は環境変数（.env）より優先されます",
+      "singleActive": "同時に有効にできるプロバイダーは1つのみです。プロバイダーの切り替えは即時反映されます。",
+      "testFirst": "有効化する前に「接続テスト」を使用して、APIキーとモデルを検証してください"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "モジュール分析",
+    "subtitle": "プラットフォーム全体の各モジュールの詳細な指標。",
+    "loading": "読み込み中...",
+    "stats": {
+      "activeModules": "有効なモジュール",
+      "totalSubscribers": "契約者総数",
+      "totalSeats": "シート総数",
+      "totalModuleRevenue": "モジュール収益合計"
+    },
+    "charts": {
+      "revenueByModule": "モジュール別収益",
+      "revenueSeries": "収益",
+      "noRevenueData": "収益データがありません",
+      "subscriberDistribution": "契約者の内訳",
+      "noSubscriberData": "契約者データがありません"
+    },
+    "details": {
+      "heading": "モジュール詳細",
+      "noSubscribers": "契約者なし",
+      "disableModule": "モジュールを無効化",
+      "subscribers": "契約者数",
+      "seats": "シート数",
+      "revenue": "収益",
+      "seatUtilization": "シート利用率",
+      "planDistribution": "プラン分布",
+      "orgCount_one": "{{count}}組織",
+      "orgCount_other": "{{count}}組織"
+    },
+    "table": {
+      "heading": "詳細指標",
+      "module": "モジュール",
+      "slug": "スラッグ",
+      "subscribers": "契約者数",
+      "totalSeats": "シート総数",
+      "usedSeats": "使用済みシート数",
+      "utilization": "利用率",
+      "revenue": "収益",
+      "status": "ステータス"
+    },
+    "status": {
+      "active": "有効"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "サブスクリプション指標",
+    "subtitle": "プラン分布、シート利用状況、請求指標。",
+    "loading": "読み込み中...",
+    "stats": {
+      "totalSeats": "総シート数",
+      "usedSeats": "使用中シート数",
+      "seatUtilization": "シート利用率",
+      "activeUsers": "アクティブユーザー",
+      "inactive_one": "非アクティブ {{count}} 人",
+      "inactive_other": "非アクティブ {{count}} 人"
+    },
+    "charts": {
+      "planTierDistribution": "プランティア分布",
+      "subscriptionStatus": "サブスクリプションステータス",
+      "billingCycle": "請求サイクル",
+      "seatUtilizationByTier": "プランティア別シート利用率",
+      "subscriptionChurn": "サブスクリプション解約"
+    },
+    "churn": {
+      "cancelledSeries": "キャンセル済み"
+    },
+    "seats": "{{used}} / {{total}} シート",
+    "empty": {
+      "noData": "データなし",
+      "noTierData": "プランティアデータなし"
+    }
+  },
+  "systemNotifications": {
+    "title": "システム通知",
+    "subtitle": "プラットフォーム全体のお知らせを、すべての組織または特定の組織に送信します。",
+    "newNotification": "新規通知",
+    "form": {
+      "heading": "通知を送信",
+      "titleLabel": "タイトル",
+      "titlePlaceholder": "通知のタイトル",
+      "typeLabel": "種類",
+      "messageLabel": "メッセージ",
+      "messagePlaceholder": "通知メッセージ...",
+      "targetLabel": "送信先",
+      "allOrgs": "全組織",
+      "specificOrg": "特定の組織",
+      "organizationLabel": "組織",
+      "selectOrgPlaceholder": "組織を選択...",
+      "send": "通知を送信",
+      "sending": "送信中..."
+    },
+    "type": {
+      "info": "情報",
+      "warning": "警告",
+      "maintenance": "メンテナンス",
+      "release": "機能リリース"
+    },
+    "list": {
+      "empty": "システム通知はまだ送信されていません。",
+      "heading_one": "すべての通知（{{count}}）",
+      "heading_other": "すべての通知（{{count}}）"
+    },
+    "item": {
+      "deactivated": "無効化済み",
+      "targetAll": "すべての組織",
+      "targetPrefix": "送信先:",
+      "byPrefix": "作成者:",
+      "systemAuthor": "システム",
+      "orgFallback": "組織 #{{id}}",
+      "deactivate": "無効化"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "収益分析",
+    "subtitle": "財務の概要と収益の内訳。",
+    "loading": "読み込み中...",
+    "stats": {
+      "mrr": "月間経常収益（MRR）",
+      "arr": "年間経常収益（ARR）",
+      "seatUtilization": "シート利用率",
+      "seats": "{{used}} / {{total}} シート",
+      "payingCustomers": "有料顧客数"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "収益推移（過去12か月）",
+        "empty": "推移データがまだありません"
+      },
+      "revenueByModule": {
+        "title": "モジュール別収益",
+        "series": "収益"
+      },
+      "empty": "データなし",
+      "revenueByTier": {
+        "title": "プランティア別収益",
+        "subsLabel_one": "{{count}} 件のサブスクリプション - {{revenue}}",
+        "subsLabel_other": "{{count}} 件のサブスクリプション - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "請求サイクルの分布",
+        "percentOfSubscriptions": "サブスクリプションの {{percent}}%",
+        "subs_one": "{{count}} 件のサブスクリプション",
+        "subs_other": "{{count}} 件のサブスクリプション"
+      }
+    },
+    "topCustomers": {
+      "title": "収益上位10顧客",
+      "columns": {
+        "rank": "#",
+        "organization": "組織",
+        "email": "メールアドレス",
+        "subscriptions": "サブスクリプション",
+        "monthlySpend": "月額支出"
+      },
+      "empty": "顧客データがまだありません"
+    }
+  },
+  "logDashboard": {
+    "title": "ログダッシュボード",
+    "subtitle": "すべての EMP Cloud モジュールをリアルタイムで監視",
+    "actions": {
+      "refresh": "更新"
+    },
+    "tabs": {
+      "overview": "概要",
+      "errors": "エラー",
+      "slow": "スロークエリ",
+      "auth": "認証イベント",
+      "health": "モジュール状態"
+    },
+    "stats": {
+      "auditEvents": "監査イベント（24時間）",
+      "fileErrors": "ファイルエラー（24時間）",
+      "slowQueries": "スロークエリ",
+      "healthyModules": "正常なモジュール"
+    },
+    "sections": {
+      "errorsByAction": "アクション別エラー（24時間）",
+      "errorsPerModule": "モジュール別エラー（ログファイルより）",
+      "moduleHealth": "モジュール状態"
+    },
+    "errors": {
+      "title": "最近のエラー",
+      "subtitle": "すべてのモジュールの PM2 エラーログおよびフロントエンドのクライアントエラーより",
+      "badge": {
+        "frontend": "フロントエンド"
+      },
+      "detail": {
+        "page": "ページ：",
+        "component": "コンポーネント："
+      },
+      "empty": "エラーは見つかりませんでした。"
+    },
+    "slow": {
+      "title": "スロークエリ",
+      "subtitle": "1 秒を超えるデータベースクエリ",
+      "columns": {
+        "module": "モジュール",
+        "duration": "実行時間",
+        "sql": "SQL",
+        "time": "時刻"
+      },
+      "empty": "スロークエリは検出されませんでした。"
+    },
+    "auth": {
+      "title": "認証イベント",
+      "subtitle": "ログイン、ログアウト、パスワード変更、トークンイベント（過去24時間）",
+      "user": "ユーザー #{{id}}",
+      "ip": "IP：{{ip}}",
+      "notAvailable": "該当なし",
+      "empty": "過去24時間に認証イベントはありません。"
+    },
+    "healthTab": {
+      "status": "ステータス：{{status}}",
+      "restarts": "再起動回数：{{count}}",
+      "recentErrors": "最近のエラー：{{count}}",
+      "lastActivity": "最終アクティビティ：{{time}}",
+      "loading": "モジュール状態を読み込み中...",
+      "empty": "モジュール状態のデータがありません。"
+    },
+    "status": {
+      "healthy": "正常",
+      "warning": "警告",
+      "critical": "重大",
+      "unknown": "不明"
+    },
+    "pagination": {
+      "status": "{{totalPages}} ページ中 {{page}} ページ（全 {{total}} 件）",
+      "prev": "前へ",
+      "next": "次へ"
+    },
+    "health": {
+      "restarts_one": "{{count}} 回の再起動",
+      "restarts_other": "{{count}} 回の再起動",
+      "recentErrors_one": "{{count}} 件のエラー",
+      "recentErrors_other": "{{count}} 件のエラー"
+    }
+  },
+  "dataSanity": {
+    "title": "データ整合性チェッカー",
+    "subtitle": "モジュール間のデータ整合性検証",
+    "overall": {
+      "healthy": {
+        "title": "すべてのシステムが正常です",
+        "subtitle": "モジュール間のデータ整合性チェックはすべて合格しました。"
+      },
+      "warnings": {
+        "title": "警告が検出されました",
+        "subtitle": "対応が必要な可能性のあるデータの不整合が見つかりました。"
+      },
+      "critical": {
+        "title": "重大な問題が見つかりました",
+        "subtitle": "早急な対応が必要なデータ整合性の問題が検出されました。"
+      }
+    },
+    "status": {
+      "pass": "合格",
+      "warn": "警告",
+      "fail": "失敗"
+    },
+    "check": {
+      "noIssues": "問題は検出されませんでした。",
+      "issuesFound_one": "{{count}} 件の問題が見つかりました",
+      "issuesFound_other": "{{count}} 件の問題が見つかりました",
+      "showingCount_one": "（{{count}} 件を表示中）",
+      "showingCount_other": "（{{count}} 件を表示中）"
+    },
+    "confirmFix": {
+      "title": "自動修正の確認",
+      "intro": "以下の修正が自動的に適用されます：",
+      "fix": {
+        "syncOrgUserCounts": "組織のユーザー数を同期",
+        "syncSeatCounts": "サブスクリプションのシート数を同期",
+        "fixNegativeLeave": "マイナスの休暇残数を修正（0にクランプ）",
+        "removeOrphaned": "孤立レコードを削除（休暇、勤怠、ヘルプデスク、お知らせ）"
+      },
+      "warning": "これらの変更は元に戻せません。データベースのバックアップがあることを確認してください。",
+      "cancel": "キャンセル",
+      "apply": "修正を適用",
+      "applying": "修正中…"
+    },
+    "fixResults": {
+      "none": "修正の必要はありませんでした。すべて正常です。",
+      "title_one": "自動修正の結果（合計 {{count}} 件の変更）",
+      "title_other": "自動修正の結果（合計 {{count}} 件の変更）"
+    },
+    "button": {
+      "autoFix": "自動修正",
+      "runCheck": "チェック実行",
+      "running": "実行中…"
+    },
+    "loading": {
+      "title": "整合性チェックを実行中…",
+      "subtitle": "すべてのモジュールデータベースのデータ整合性を確認しています。しばらくお待ちください。"
+    },
+    "empty": {
+      "title": "レポートはまだありません",
+      "subtitle": "「チェック実行」をクリックして、すべてのモジュールデータベースのデータ整合性を検証してください。",
+      "runButton": "整合性チェックを実行"
+    },
+    "summary": {
+      "totalChecks": "チェック総数",
+      "passed": "合格",
+      "warnings": "警告",
+      "failures": "失敗"
+    },
+    "lastRun": "最終実行：",
+    "checkResults": {
+      "heading": "チェック結果"
+    }
   }
 }

@@ -18,6 +18,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -141,33 +142,34 @@ function timeAgo(iso: string): string {
 // ---------------------------------------------------------------------------
 
 function OverallStatusBanner({ status, lastCheck }: { status: string; lastCheck: string }) {
+  const { t } = useTranslation();
   const bannerConfig = {
     operational: {
       bg: "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200",
       icon: <CheckCircle2 className="h-8 w-8 text-green-500" />,
-      title: "All Systems Operational",
-      subtitle: "Every service is running normally.",
+      title: t("healthDashboard.overall.operational.title"),
+      subtitle: t("healthDashboard.overall.operational.subtitle"),
       dotColor: "bg-green-500",
     },
     degraded: {
       bg: "bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200",
       icon: <AlertTriangle className="h-8 w-8 text-amber-500" />,
-      title: "Partial System Degradation",
-      subtitle: "One or more services are experiencing issues.",
+      title: t("healthDashboard.overall.degraded.title"),
+      subtitle: t("healthDashboard.overall.degraded.subtitle"),
       dotColor: "bg-amber-500",
     },
     major_outage: {
       bg: "bg-gradient-to-r from-red-50 to-rose-50 border-red-200",
       icon: <XCircle className="h-8 w-8 text-red-500" />,
-      title: "Major Outage",
-      subtitle: "Multiple services are currently unavailable.",
+      title: t("healthDashboard.overall.majorOutage.title"),
+      subtitle: t("healthDashboard.overall.majorOutage.subtitle"),
       dotColor: "bg-red-500",
     },
   }[status] || {
     bg: "bg-gray-50 border-gray-200",
     icon: <Activity className="h-8 w-8 text-gray-400" />,
-    title: "Checking Status...",
-    subtitle: "Performing initial health check.",
+    title: t("healthDashboard.overall.unknown.title"),
+    subtitle: t("healthDashboard.overall.unknown.subtitle"),
     dotColor: "bg-gray-400",
   };
 
@@ -188,7 +190,7 @@ function OverallStatusBanner({ status, lastCheck }: { status: string; lastCheck:
         </div>
         {lastCheck && (
           <div className="text-right hidden sm:block">
-            <p className="text-xs text-gray-500">Last checked</p>
+            <p className="text-xs text-gray-500">{t("healthDashboard.overall.lastChecked")}</p>
             <p className="text-sm font-medium text-gray-700">{timeAgo(lastCheck)}</p>
           </div>
         )}
@@ -198,21 +200,22 @@ function OverallStatusBanner({ status, lastCheck }: { status: string; lastCheck:
 }
 
 function StatusBadge({ status }: { status: "healthy" | "degraded" | "down" }) {
+  const { t } = useTranslation();
   const configs = {
     healthy: {
       bg: "bg-green-100 text-green-700",
       dot: "bg-green-500 animate-pulse",
-      label: "Healthy",
+      label: t("healthDashboard.status.healthy"),
     },
     degraded: {
       bg: "bg-amber-100 text-amber-700",
       dot: "bg-amber-500 animate-pulse",
-      label: "Degraded",
+      label: t("healthDashboard.status.degraded"),
     },
     down: {
       bg: "bg-red-100 text-red-700",
       dot: "bg-red-500",
-      label: "Down",
+      label: t("healthDashboard.status.down"),
     },
   };
 
@@ -227,6 +230,7 @@ function StatusBadge({ status }: { status: "healthy" | "degraded" | "down" }) {
 }
 
 function ModuleCard({ module }: { module: ModuleHealth }) {
+  const { t } = useTranslation();
   const iconText = MODULE_ICONS[module.slug] || module.name.substring(0, 2).toUpperCase();
   const gradient = MODULE_COLORS[module.slug] || "from-gray-500 to-gray-600";
 
@@ -251,7 +255,7 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-gray-900">{module.name}</h3>
-            <p className="text-xs text-gray-500">Port {module.port}</p>
+            <p className="text-xs text-gray-500">{t("healthDashboard.module.port", { port: module.port })}</p>
           </div>
         </div>
         <StatusBadge status={module.status} />
@@ -261,7 +265,7 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs text-gray-500 flex items-center gap-1">
-            <Zap className="h-3 w-3" /> Response Time
+            <Zap className="h-3 w-3" /> {t("healthDashboard.module.responseTime")}
           </span>
           <span className={`text-xs font-bold ${getResponseTimeColor(module.responseTime)}`}>
             {module.responseTime}ms
@@ -280,7 +284,7 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
         {module.version && (
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500 flex items-center gap-1">
-              <Shield className="h-3 w-3" /> Version
+              <Shield className="h-3 w-3" /> {t("healthDashboard.module.version")}
             </span>
             <span className="text-xs font-medium text-gray-700">{module.version}</span>
           </div>
@@ -288,14 +292,14 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
         {module.uptime && (
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500 flex items-center gap-1">
-              <Clock className="h-3 w-3" /> Uptime
+              <Clock className="h-3 w-3" /> {t("healthDashboard.module.uptime")}
             </span>
             <span className="text-xs font-medium text-gray-700">{module.uptime}</span>
           </div>
         )}
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500 flex items-center gap-1">
-            <Clock className="h-3 w-3" /> Last Check
+            <Clock className="h-3 w-3" /> {t("healthDashboard.module.lastCheck")}
           </span>
           <span className="text-xs font-medium text-gray-700">
             {formatTimestamp(module.lastChecked)}
@@ -316,6 +320,7 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
 }
 
 function InfraCard({ infra }: { infra: InfraHealth }) {
+  const { t } = useTranslation();
   const isConnected = infra.status === "connected";
   const icon =
     infra.name === "MySQL" ? (
@@ -344,7 +349,7 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
           <div>
             <h3 className="text-sm font-semibold text-gray-900">{infra.name}</h3>
             <p className="text-xs text-gray-500">
-              {infra.details?.host ? String(infra.details.host) : "Infrastructure"}
+              {infra.details?.host ? String(infra.details.host) : t("healthDashboard.infra.fallbackType")}
             </p>
           </div>
         </div>
@@ -359,14 +364,14 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
               isConnected ? "text-green-600" : "text-red-600"
             }`}
           >
-            {isConnected ? "Connected" : "Disconnected"}
+            {isConnected ? t("healthDashboard.infra.connected") : t("healthDashboard.infra.disconnected")}
           </span>
         </div>
       </div>
 
       {/* Response time */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-gray-500">Response Time</span>
+        <span className="text-xs text-gray-500">{t("healthDashboard.infra.responseTime")}</span>
         <span className={`text-xs font-bold ${getResponseTimeColor(infra.responseTime)}`}>
           {infra.responseTime}ms
         </span>
@@ -377,7 +382,7 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
         <div className="space-y-1 mt-3 pt-3 border-t border-gray-100">
           {infra.details.version && (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Version</span>
+              <span className="text-xs text-gray-500">{t("healthDashboard.infra.version")}</span>
               <span className="text-xs font-medium text-gray-700">
                 {String(infra.details.version)}
               </span>
@@ -385,7 +390,7 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
           )}
           {infra.details.database && (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Database</span>
+              <span className="text-xs text-gray-500">{t("healthDashboard.infra.database")}</span>
               <span className="text-xs font-medium text-gray-700">
                 {String(infra.details.database)}
               </span>
@@ -393,7 +398,7 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
           )}
           {infra.details.threads_connected && (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Threads</span>
+              <span className="text-xs text-gray-500">{t("healthDashboard.infra.threads")}</span>
               <span className="text-xs font-medium text-gray-700">
                 {String(infra.details.threads_connected)}
               </span>
@@ -401,7 +406,7 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
           )}
           {infra.details.uptime && (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Uptime</span>
+              <span className="text-xs text-gray-500">{t("healthDashboard.infra.uptime")}</span>
               <span className="text-xs font-medium text-gray-700">
                 {String(infra.details.uptime)}
               </span>
@@ -423,39 +428,40 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
 }
 
 function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <Globe className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">API Endpoints Status</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("healthDashboard.endpoints.title")}</h2>
         </div>
-        <p className="text-sm text-gray-500 mt-1">Health check endpoints for each module</p>
+        <p className="text-sm text-gray-500 mt-1">{t("healthDashboard.endpoints.description")}</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Module
+                {t("healthDashboard.endpoints.columns.module")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Endpoint
+                {t("healthDashboard.endpoints.columns.endpoint")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Method
+                {t("healthDashboard.endpoints.columns.method")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Status
+                {t("healthDashboard.endpoints.columns.status")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Response
+                {t("healthDashboard.endpoints.columns.response")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                HTTP Code
+                {t("healthDashboard.endpoints.columns.httpCode")}
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Last Checked
+                {t("healthDashboard.endpoints.columns.lastChecked")}
               </th>
             </tr>
           </thead>
@@ -478,11 +484,11 @@ function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
                 <td className="px-6 py-3">
                   {ep.status === "healthy" ? (
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> OK
+                      <CheckCircle2 className="h-3.5 w-3.5" /> {t("healthDashboard.endpoints.status.ok")}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-red-700">
-                      <XCircle className="h-3.5 w-3.5" /> Down
+                      <XCircle className="h-3.5 w-3.5" /> {t("healthDashboard.endpoints.status.down")}
                     </span>
                   )}
                 </td>
@@ -523,6 +529,7 @@ function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
 // ---------------------------------------------------------------------------
 
 export default function HealthDashboardPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const {
@@ -547,7 +554,7 @@ export default function HealthDashboardPage() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
-          <div className="text-gray-400 text-sm">Running health checks...</div>
+          <div className="text-gray-400 text-sm">{t("healthDashboard.loading")}</div>
         </div>
       </div>
     );
@@ -569,9 +576,9 @@ export default function HealthDashboardPage() {
               <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Service Health</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t("healthDashboard.title")}</h1>
               <p className="text-gray-500 text-sm">
-                Real-time health status of all EMP Cloud ecosystem services
+                {t("healthDashboard.subtitle")}
               </p>
             </div>
           </div>
@@ -581,7 +588,7 @@ export default function HealthDashboardPage() {
           {/* Auto-refresh indicator */}
           {isFetching && !forceCheckMutation.isPending && (
             <span className="text-xs text-gray-400 flex items-center gap-1">
-              <RefreshCw className="h-3 w-3 animate-spin" /> Refreshing...
+              <RefreshCw className="h-3 w-3 animate-spin" /> {t("healthDashboard.refreshing")}
             </span>
           )}
 
@@ -594,7 +601,7 @@ export default function HealthDashboardPage() {
             <RefreshCw
               className={`h-4 w-4 ${forceCheckMutation.isPending ? "animate-spin" : ""}`}
             />
-            {forceCheckMutation.isPending ? "Checking..." : "Check Now"}
+            {forceCheckMutation.isPending ? t("healthDashboard.actions.checking") : t("healthDashboard.actions.checkNow")}
           </button>
         </div>
       </div>
@@ -616,7 +623,7 @@ export default function HealthDashboardPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-gray-900">{health?.total_count || 0}</p>
-          <p className="text-xs text-gray-500">Total Services</p>
+          <p className="text-xs text-gray-500">{t("healthDashboard.stats.totalServices")}</p>
         </div>
         <div className="bg-white rounded-xl border border-green-200 p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -625,7 +632,7 @@ export default function HealthDashboardPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-green-600">{health?.healthy_count || 0}</p>
-          <p className="text-xs text-gray-500">Healthy</p>
+          <p className="text-xs text-gray-500">{t("healthDashboard.stats.healthy")}</p>
         </div>
         <div className="bg-white rounded-xl border border-amber-200 p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -634,7 +641,7 @@ export default function HealthDashboardPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-amber-600">{health?.degraded_count || 0}</p>
-          <p className="text-xs text-gray-500">Degraded</p>
+          <p className="text-xs text-gray-500">{t("healthDashboard.stats.degraded")}</p>
         </div>
         <div className="bg-white rounded-xl border border-red-200 p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -643,7 +650,7 @@ export default function HealthDashboardPage() {
             </div>
           </div>
           <p className="text-2xl font-bold text-red-600">{health?.down_count || 0}</p>
-          <p className="text-xs text-gray-500">Down</p>
+          <p className="text-xs text-gray-500">{t("healthDashboard.stats.down")}</p>
         </div>
       </div>
 
@@ -651,7 +658,7 @@ export default function HealthDashboardPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">
           <Server className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">Module Services</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("healthDashboard.sections.moduleServices")}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {health?.modules?.map((mod) => (
@@ -664,7 +671,7 @@ export default function HealthDashboardPage() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">
           <Database className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">Infrastructure</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("healthDashboard.sections.infrastructure")}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {health?.infrastructure?.map((infra) => (
@@ -683,7 +690,7 @@ export default function HealthDashboardPage() {
       {/* Footer note */}
       <div className="text-center py-4">
         <p className="text-xs text-gray-400">
-          Auto-refreshes every 30 seconds. Background checks run every 60 seconds.
+          {t("healthDashboard.footer.note")}
         </p>
       </div>
     </div>

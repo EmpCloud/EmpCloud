@@ -3371,5 +3371,447 @@
       "title": "近期活动",
       "systemActor": "系统"
     }
+  },
+  "healthDashboard": {
+    "title": "服务健康状态",
+    "subtitle": "EMP Cloud 生态系统所有服务的实时健康状态",
+    "refreshing": "正在刷新…",
+    "actions": {
+      "checking": "正在检查…",
+      "checkNow": "立即检查"
+    },
+    "loading": "正在运行健康检查…",
+    "overall": {
+      "operational": {
+        "title": "所有系统运行正常",
+        "subtitle": "所有服务均运行正常。"
+      },
+      "degraded": {
+        "title": "部分系统降级",
+        "subtitle": "一个或多个服务出现异常。"
+      },
+      "majorOutage": {
+        "title": "重大故障",
+        "subtitle": "多个服务当前不可用。"
+      },
+      "unknown": {
+        "title": "正在检查状态…",
+        "subtitle": "正在执行初始健康检查。"
+      },
+      "lastChecked": "上次检查"
+    },
+    "status": {
+      "healthy": "健康",
+      "degraded": "降级",
+      "down": "宕机"
+    },
+    "module": {
+      "port": "端口 {{port}}",
+      "responseTime": "响应时间",
+      "version": "版本",
+      "uptime": "正常运行时间",
+      "lastCheck": "上次检查"
+    },
+    "infra": {
+      "fallbackType": "基础设施",
+      "connected": "已连接",
+      "disconnected": "已断开",
+      "responseTime": "响应时间",
+      "version": "版本",
+      "database": "数据库",
+      "threads": "线程数",
+      "uptime": "正常运行时间"
+    },
+    "endpoints": {
+      "title": "API 端点状态",
+      "description": "各模块的健康检查端点",
+      "columns": {
+        "module": "模块",
+        "endpoint": "端点",
+        "method": "方法",
+        "status": "状态",
+        "response": "响应",
+        "httpCode": "HTTP 代码",
+        "lastChecked": "上次检查"
+      },
+      "status": {
+        "ok": "正常",
+        "down": "宕机"
+      }
+    },
+    "stats": {
+      "totalServices": "服务总数",
+      "healthy": "健康",
+      "degraded": "降级",
+      "down": "宕机"
+    },
+    "sections": {
+      "moduleServices": "模块服务",
+      "infrastructure": "基础设施"
+    },
+    "footer": {
+      "note": "每 30 秒自动刷新。后台检查每 60 秒运行一次。"
+    }
+  },
+  "aiConfig": {
+    "title": "AI 配置",
+    "subtitle": "为 HR 聊天机器人助手配置 AI 提供商。此处设置的密钥将覆盖环境变量。",
+    "status": {
+      "active": "已启用",
+      "configured": "已配置",
+      "notConfigured": "未配置"
+    },
+    "field": {
+      "apiKey": "API 密钥",
+      "baseUrl": "基础 URL",
+      "model": "模型",
+      "maxTokens": "最大 Token 数：{{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "当前：{{value}}",
+      "apiKeyEnter": "请输入 API 密钥…",
+      "baseUrl": "https://api.example.com",
+      "customModel": "请输入模型名称（例如 my-model）"
+    },
+    "testResult": {
+      "latency": "延迟：{{ms}}ms",
+      "requestFailed": "测试请求失败"
+    },
+    "button": {
+      "testConnection": "测试连接",
+      "active": "已启用",
+      "saveActivate": "保存并启用",
+      "deactivate": "停用",
+      "saveMaxTokens": "保存最大 Token 数"
+    },
+    "banner": {
+      "aiPoweredMode": "AI 驱动模式",
+      "aiPoweredModeProvider": "AI 驱动模式（{{provider}}）",
+      "basicMode": "基础模式（未启用 AI 提供商）",
+      "modelStatus": "模型：{{model}} | 状态：{{status}}",
+      "basicModeHint": "聊天机器人正以基于规则的模式运行。请在下方启用某个提供商以启用 AI 驱动的响应。"
+    },
+    "section": {
+      "providers": "提供商",
+      "generalSettings": "常规设置"
+    },
+    "info": {
+      "title": "工作原理",
+      "encryption": "API 密钥在静态存储时使用 AES-256-GCM 加密，且绝不会以明文形式返回",
+      "overrideEnv": "此处存储的设置将覆盖环境变量（.env）",
+      "singleActive": "同一时间只能启用一个提供商。切换提供商会立即生效。",
+      "testFirst": "启用前请使用“测试连接”来验证您的 API 密钥和模型"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "模块分析",
+    "subtitle": "平台各模块的详细指标。",
+    "loading": "加载中…",
+    "stats": {
+      "activeModules": "活跃模块",
+      "totalSubscribers": "订阅者总数",
+      "totalSeats": "席位总数",
+      "totalModuleRevenue": "模块总收入"
+    },
+    "charts": {
+      "revenueByModule": "按模块划分的收入",
+      "revenueSeries": "收入",
+      "noRevenueData": "暂无收入数据",
+      "subscriberDistribution": "订阅者分布",
+      "noSubscriberData": "暂无订阅者数据"
+    },
+    "details": {
+      "heading": "模块详情",
+      "noSubscribers": "无订阅者",
+      "disableModule": "禁用模块",
+      "subscribers": "订阅者",
+      "seats": "席位",
+      "revenue": "收入",
+      "seatUtilization": "席位使用率",
+      "planDistribution": "套餐分布",
+      "orgCount_one": "{{count}} 个组织",
+      "orgCount_other": "{{count}} 个组织"
+    },
+    "table": {
+      "heading": "详细指标",
+      "module": "模块",
+      "slug": "Slug",
+      "subscribers": "订阅者",
+      "totalSeats": "席位总数",
+      "usedSeats": "已用席位",
+      "utilization": "使用率",
+      "revenue": "收入",
+      "status": "状态"
+    },
+    "status": {
+      "active": "活跃"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "订阅指标",
+    "subtitle": "套餐分布、席位使用率和计费指标。",
+    "loading": "加载中...",
+    "stats": {
+      "totalSeats": "席位总数",
+      "usedSeats": "已用席位",
+      "seatUtilization": "席位使用率",
+      "activeUsers": "活跃用户",
+      "inactive_one": "{{count}} 名不活跃",
+      "inactive_other": "{{count}} 名不活跃"
+    },
+    "charts": {
+      "planTierDistribution": "套餐等级分布",
+      "subscriptionStatus": "订阅状态",
+      "billingCycle": "计费周期",
+      "seatUtilizationByTier": "按套餐等级划分的席位使用率",
+      "subscriptionChurn": "订阅流失"
+    },
+    "churn": {
+      "cancelledSeries": "已取消"
+    },
+    "seats": "{{used}} / {{total}} 席位",
+    "empty": {
+      "noData": "暂无数据",
+      "noTierData": "暂无等级数据"
+    }
+  },
+  "systemNotifications": {
+    "title": "系统通知",
+    "subtitle": "向所有组织或指定组织发送平台级公告。",
+    "newNotification": "新建通知",
+    "form": {
+      "heading": "发送通知",
+      "titleLabel": "标题",
+      "titlePlaceholder": "通知标题",
+      "typeLabel": "类型",
+      "messageLabel": "内容",
+      "messagePlaceholder": "通知内容……",
+      "targetLabel": "目标",
+      "allOrgs": "所有组织",
+      "specificOrg": "指定组织",
+      "organizationLabel": "组织",
+      "selectOrgPlaceholder": "选择组织……",
+      "send": "发送通知",
+      "sending": "发送中……"
+    },
+    "type": {
+      "info": "信息",
+      "warning": "警告",
+      "maintenance": "维护",
+      "release": "功能发布"
+    },
+    "list": {
+      "empty": "尚未发送任何系统通知。",
+      "heading_one": "全部通知（{{count}}）",
+      "heading_other": "全部通知（{{count}}）"
+    },
+    "item": {
+      "deactivated": "已停用",
+      "targetAll": "所有组织",
+      "targetPrefix": "目标：",
+      "byPrefix": "发送者：",
+      "systemAuthor": "系统",
+      "orgFallback": "组织 #{{id}}",
+      "deactivate": "停用"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "收入分析",
+    "subtitle": "财务概览与收入明细。",
+    "loading": "加载中...",
+    "stats": {
+      "mrr": "月度经常性收入（MRR）",
+      "arr": "年度经常性收入（ARR）",
+      "seatUtilization": "席位利用率",
+      "seats": "{{used}} / {{total}} 个席位",
+      "payingCustomers": "付费客户"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "收入趋势（最近 12 个月）",
+        "empty": "暂无趋势数据"
+      },
+      "revenueByModule": {
+        "title": "按模块划分的收入",
+        "series": "收入"
+      },
+      "empty": "暂无数据",
+      "revenueByTier": {
+        "title": "按套餐层级划分的收入",
+        "subsLabel_one": "{{count}} 个订阅 - {{revenue}}",
+        "subsLabel_other": "{{count}} 个订阅 - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "计费周期分布",
+        "percentOfSubscriptions": "占订阅总数的 {{percent}}%",
+        "subs_one": "{{count}} 个订阅",
+        "subs_other": "{{count}} 个订阅"
+      }
+    },
+    "topCustomers": {
+      "title": "收入排名前 10 的客户",
+      "columns": {
+        "rank": "#",
+        "organization": "组织",
+        "email": "电子邮箱",
+        "subscriptions": "订阅",
+        "monthlySpend": "月度支出"
+      },
+      "empty": "暂无客户数据"
+    }
+  },
+  "logDashboard": {
+    "title": "日志仪表板",
+    "subtitle": "跨所有 EMP Cloud 模块的实时监控",
+    "actions": {
+      "refresh": "刷新"
+    },
+    "tabs": {
+      "overview": "概览",
+      "errors": "错误",
+      "slow": "慢查询",
+      "auth": "认证事件",
+      "health": "模块健康状况"
+    },
+    "stats": {
+      "auditEvents": "审计事件（24 小时）",
+      "fileErrors": "文件错误（24 小时）",
+      "slowQueries": "慢查询",
+      "healthyModules": "健康模块"
+    },
+    "sections": {
+      "errorsByAction": "按操作分类的错误（24 小时）",
+      "errorsPerModule": "各模块错误（来自日志文件）",
+      "moduleHealth": "模块健康状况"
+    },
+    "errors": {
+      "title": "近期错误",
+      "subtitle": "来自 PM2 错误日志和所有模块的前端客户端错误",
+      "badge": {
+        "frontend": "前端"
+      },
+      "detail": {
+        "page": "页面：",
+        "component": "组件："
+      },
+      "empty": "未发现错误。"
+    },
+    "slow": {
+      "title": "慢查询",
+      "subtitle": "耗时超过 1 秒的数据库查询",
+      "columns": {
+        "module": "模块",
+        "duration": "耗时",
+        "sql": "SQL",
+        "time": "时间"
+      },
+      "empty": "未检测到慢查询。"
+    },
+    "auth": {
+      "title": "认证事件",
+      "subtitle": "登录、登出、密码更改、令牌事件（最近 24 小时）",
+      "user": "用户 #{{id}}",
+      "ip": "IP：{{ip}}",
+      "notAvailable": "无",
+      "empty": "最近 24 小时内无认证事件。"
+    },
+    "healthTab": {
+      "status": "状态：{{status}}",
+      "restarts": "重启次数：{{count}}",
+      "recentErrors": "近期错误：{{count}}",
+      "lastActivity": "最后活动：{{time}}",
+      "loading": "正在加载模块健康状况……",
+      "empty": "无可用的模块健康状况数据。"
+    },
+    "status": {
+      "healthy": "健康",
+      "warning": "警告",
+      "critical": "严重",
+      "unknown": "未知"
+    },
+    "pagination": {
+      "status": "第 {{page}} 页，共 {{totalPages}} 页（共 {{total}} 条）",
+      "prev": "上一页",
+      "next": "下一页"
+    },
+    "health": {
+      "restarts_one": "{{count}} 次重启",
+      "restarts_other": "{{count}} 次重启",
+      "recentErrors_one": "{{count}} 个错误",
+      "recentErrors_other": "{{count}} 个错误"
+    }
+  },
+  "dataSanity": {
+    "title": "数据完整性检查器",
+    "subtitle": "跨模块数据一致性验证",
+    "overall": {
+      "healthy": {
+        "title": "所有系统运行正常",
+        "subtitle": "所有跨模块数据一致性检查均已通过。"
+      },
+      "warnings": {
+        "title": "检测到警告",
+        "subtitle": "发现部分数据不一致，可能需要关注。"
+      },
+      "critical": {
+        "title": "发现严重问题",
+        "subtitle": "检测到数据完整性问题，需要立即处理。"
+      }
+    },
+    "status": {
+      "pass": "通过",
+      "warn": "警告",
+      "fail": "失败"
+    },
+    "check": {
+      "noIssues": "未检测到任何问题。",
+      "issuesFound_one": "发现 {{count}} 个问题",
+      "issuesFound_other": "发现 {{count}} 个问题",
+      "showingCount_one": "（显示 {{count}} 个）",
+      "showingCount_other": "（显示 {{count}} 个）"
+    },
+    "confirmFix": {
+      "title": "确认自动修复",
+      "intro": "此操作将自动应用以下修复：",
+      "fix": {
+        "syncOrgUserCounts": "同步组织用户数量",
+        "syncSeatCounts": "同步订阅席位数量",
+        "fixNegativeLeave": "修复负数休假余额（归零处理）",
+        "removeOrphaned": "移除孤立记录（休假、考勤、服务台、公告）"
+      },
+      "warning": "这些更改无法撤销。请确保您已备份数据库。",
+      "cancel": "取消",
+      "apply": "应用修复",
+      "applying": "修复中……"
+    },
+    "fixResults": {
+      "none": "无需任何修复。一切正常。",
+      "title_one": "自动修复结果（共 {{count}} 项更改）",
+      "title_other": "自动修复结果（共 {{count}} 项更改）"
+    },
+    "button": {
+      "autoFix": "自动修复",
+      "runCheck": "运行检查",
+      "running": "运行中……"
+    },
+    "loading": {
+      "title": "正在运行完整性检查……",
+      "subtitle": "正在检查所有模块数据库的数据一致性。这可能需要一些时间。"
+    },
+    "empty": {
+      "title": "暂无报告",
+      "subtitle": "点击“运行检查”以验证所有模块数据库的数据一致性。",
+      "runButton": "运行完整性检查"
+    },
+    "summary": {
+      "totalChecks": "检查总数",
+      "passed": "已通过",
+      "warnings": "警告",
+      "failures": "失败"
+    },
+    "lastRun": "上次运行：",
+    "checkResults": {
+      "heading": "检查结果"
+    }
   }
 }

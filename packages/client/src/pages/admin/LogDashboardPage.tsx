@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
@@ -69,6 +70,7 @@ interface ModuleHealth {
 // ---------------------------------------------------------------------------
 
 export default function LogDashboardPage() {
+  const { t } = useTranslation();
   const [errorsPage, setErrorsPage] = useState(1);
   const [authPage, setAuthPage] = useState(1);
   const [expandedError, setExpandedError] = useState<number | null>(null);
@@ -145,11 +147,11 @@ export default function LogDashboardPage() {
   };
 
   const tabs = [
-    { key: "overview" as const, label: "Overview", icon: Activity },
-    { key: "errors" as const, label: "Errors", icon: XCircle },
-    { key: "slow" as const, label: "Slow Queries", icon: Database },
-    { key: "auth" as const, label: "Auth Events", icon: Shield },
-    { key: "health" as const, label: "Module Health", icon: CheckCircle },
+    { key: "overview" as const, label: t("logDashboard.tabs.overview"), icon: Activity },
+    { key: "errors" as const, label: t("logDashboard.tabs.errors"), icon: XCircle },
+    { key: "slow" as const, label: t("logDashboard.tabs.slow"), icon: Database },
+    { key: "auth" as const, label: t("logDashboard.tabs.auth"), icon: Shield },
+    { key: "health" as const, label: t("logDashboard.tabs.health"), icon: CheckCircle },
   ];
 
   return (
@@ -157,9 +159,9 @@ export default function LogDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Log Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("logDashboard.title")}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Real-time monitoring across all EMP Cloud modules
+            {t("logDashboard.subtitle")}
           </p>
         </div>
         <button
@@ -170,7 +172,7 @@ export default function LogDashboardPage() {
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
         >
           <RefreshCw className={`h-4 w-4 ${summaryQ.isFetching ? "animate-spin" : ""}`} />
-          Refresh
+          {t("logDashboard.actions.refresh")}
         </button>
       </div>
 
@@ -201,25 +203,25 @@ export default function LogDashboardPage() {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-white border border-gray-200 rounded-xl p-5">
-              <div className="text-sm text-gray-500 mb-1">Audit Events (24h)</div>
+              <div className="text-sm text-gray-500 mb-1">{t("logDashboard.stats.auditEvents")}</div>
               <div className="text-2xl font-bold text-gray-900">
                 {summary?.audit_events?.toLocaleString() ?? "--"}
               </div>
             </div>
             <div className="bg-white border border-gray-200 rounded-xl p-5">
-              <div className="text-sm text-gray-500 mb-1">File Errors (24h)</div>
+              <div className="text-sm text-gray-500 mb-1">{t("logDashboard.stats.fileErrors")}</div>
               <div className="text-2xl font-bold text-red-600">
                 {summary?.file_errors?.toLocaleString() ?? "--"}
               </div>
             </div>
             <div className="bg-white border border-gray-200 rounded-xl p-5">
-              <div className="text-sm text-gray-500 mb-1">Slow Queries</div>
+              <div className="text-sm text-gray-500 mb-1">{t("logDashboard.stats.slowQueries")}</div>
               <div className="text-2xl font-bold text-amber-600">
                 {slowQ.data?.meta?.total?.toLocaleString() ?? "--"}
               </div>
             </div>
             <div className="bg-white border border-gray-200 rounded-xl p-5">
-              <div className="text-sm text-gray-500 mb-1">Healthy Modules</div>
+              <div className="text-sm text-gray-500 mb-1">{t("logDashboard.stats.healthyModules")}</div>
               <div className="text-2xl font-bold text-green-600">
                 {healthData.filter((h) => h.status === "healthy").length} / {healthData.length || "--"}
               </div>
@@ -230,7 +232,7 @@ export default function LogDashboardPage() {
           {summary && summary.errors_by_action.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-5">
               <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                Errors by Action (24h)
+                {t("logDashboard.sections.errorsByAction")}
               </h3>
               <div className="space-y-2">
                 {summary.errors_by_action.map((e) => (
@@ -254,7 +256,7 @@ export default function LogDashboardPage() {
           {summary && (
             <div className="bg-white border border-gray-200 rounded-xl p-5">
               <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                Errors per Module (from log files)
+                {t("logDashboard.sections.errorsPerModule")}
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {Object.entries(summary.module_error_counts).map(
@@ -291,7 +293,7 @@ export default function LogDashboardPage() {
           {/* Module Health Cards */}
           <div className="bg-white border border-gray-200 rounded-xl p-5">
             <h3 className="text-sm font-semibold text-gray-700 mb-3">
-              Module Health
+              {t("logDashboard.sections.moduleHealth")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {healthData.map((mod) => (
@@ -305,8 +307,8 @@ export default function LogDashboardPage() {
                       {mod.name}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {mod.restarts > 0 && `${mod.restarts} restart(s) | `}
-                      {mod.recent_errors} errors
+                      {mod.restarts > 0 && `${t("logDashboard.health.restarts", { count: mod.restarts })} | `}
+                      {t("logDashboard.health.recentErrors", { count: mod.recent_errors })}
                     </div>
                   </div>
                 </div>
@@ -320,9 +322,9 @@ export default function LogDashboardPage() {
       {activeTab === "errors" && (
         <div className="bg-white border border-gray-200 rounded-xl">
           <div className="p-5 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900">Recent Errors</h3>
+            <h3 className="font-semibold text-gray-900">{t("logDashboard.errors.title")}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              From PM2 error logs and frontend client errors across all modules
+              {t("logDashboard.errors.subtitle")}
             </p>
           </div>
           <div className="divide-y divide-gray-100">
@@ -341,7 +343,7 @@ export default function LogDashboardPage() {
                   )}
                   {err.source === "frontend" ? (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium flex-shrink-0">
-                      Frontend
+                      {t("logDashboard.errors.badge.frontend")}
                     </span>
                   ) : (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium flex-shrink-0">
@@ -361,8 +363,8 @@ export default function LogDashboardPage() {
                   <div className="mt-3 ml-7 space-y-2">
                     {err.source === "frontend" && (err.url || err.component) && (
                       <div className="text-xs text-gray-500">
-                        {err.url && <span className="mr-4">Page: {err.url}</span>}
-                        {err.component && <span>Component: {err.component}</span>}
+                        {err.url && <span className="mr-4">{t("logDashboard.errors.detail.page")} {err.url}</span>}
+                        {err.component && <span>{t("logDashboard.errors.detail.component")} {err.component}</span>}
                       </div>
                     )}
                     {err.stack && (
@@ -376,7 +378,7 @@ export default function LogDashboardPage() {
             ))}
             {(errorsQ.data?.data || []).length === 0 && (
               <div className="p-8 text-center text-gray-500">
-                No errors found.
+                {t("logDashboard.errors.empty")}
               </div>
             )}
           </div>
@@ -384,7 +386,7 @@ export default function LogDashboardPage() {
           {errorsQ.data?.meta && errorsQ.data.meta.total_pages > 1 && (
             <div className="flex items-center justify-between p-4 border-t border-gray-200">
               <span className="text-sm text-gray-500">
-                Page {errorsPage} of {errorsQ.data.meta.total_pages} ({errorsQ.data.meta.total} total)
+                {t("logDashboard.pagination.status", { page: errorsPage, totalPages: errorsQ.data.meta.total_pages, total: errorsQ.data.meta.total })}
               </span>
               <div className="flex gap-2">
                 <button
@@ -392,14 +394,14 @@ export default function LogDashboardPage() {
                   onClick={() => setErrorsPage((p) => p - 1)}
                   className="px-3 py-1 text-sm border rounded disabled:opacity-50"
                 >
-                  Prev
+                  {t("logDashboard.pagination.prev")}
                 </button>
                 <button
                   disabled={errorsPage >= errorsQ.data.meta.total_pages}
                   onClick={() => setErrorsPage((p) => p + 1)}
                   className="px-3 py-1 text-sm border rounded disabled:opacity-50"
                 >
-                  Next
+                  {t("logDashboard.pagination.next")}
                 </button>
               </div>
             </div>
@@ -411,19 +413,19 @@ export default function LogDashboardPage() {
       {activeTab === "slow" && (
         <div className="bg-white border border-gray-200 rounded-xl">
           <div className="p-5 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900">Slow Queries</h3>
+            <h3 className="font-semibold text-gray-900">{t("logDashboard.slow.title")}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              Database queries exceeding 1 second
+              {t("logDashboard.slow.subtitle")}
             </p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-left">
                 <tr>
-                  <th className="px-4 py-3 text-gray-600 font-medium">Module</th>
-                  <th className="px-4 py-3 text-gray-600 font-medium">Duration</th>
-                  <th className="px-4 py-3 text-gray-600 font-medium">SQL</th>
-                  <th className="px-4 py-3 text-gray-600 font-medium">Time</th>
+                  <th className="px-4 py-3 text-gray-600 font-medium">{t("logDashboard.slow.columns.module")}</th>
+                  <th className="px-4 py-3 text-gray-600 font-medium">{t("logDashboard.slow.columns.duration")}</th>
+                  <th className="px-4 py-3 text-gray-600 font-medium">{t("logDashboard.slow.columns.sql")}</th>
+                  <th className="px-4 py-3 text-gray-600 font-medium">{t("logDashboard.slow.columns.time")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -456,7 +458,7 @@ export default function LogDashboardPage() {
                 {(slowQ.data?.data || []).length === 0 && (
                   <tr>
                     <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                      No slow queries detected.
+                      {t("logDashboard.slow.empty")}
                     </td>
                   </tr>
                 )}
@@ -470,9 +472,9 @@ export default function LogDashboardPage() {
       {activeTab === "auth" && (
         <div className="bg-white border border-gray-200 rounded-xl">
           <div className="p-5 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900">Auth Events</h3>
+            <h3 className="font-semibold text-gray-900">{t("logDashboard.auth.title")}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              Login, logout, password changes, token events (last 24h)
+              {t("logDashboard.auth.subtitle")}
             </p>
           </div>
           <div className="divide-y divide-gray-100">
@@ -502,7 +504,7 @@ export default function LogDashboardPage() {
                     {event.action.replace(/_/g, " ")}
                   </div>
                   <div className="text-xs text-gray-500">
-                    User #{event.user_id || "N/A"} | IP: {event.ip_address || "N/A"}
+                    {t("logDashboard.auth.user", { id: event.user_id || t("logDashboard.auth.notAvailable") })} | {t("logDashboard.auth.ip", { ip: event.ip_address || t("logDashboard.auth.notAvailable") })}
                   </div>
                 </div>
                 <div className="text-xs text-gray-400 flex-shrink-0">
@@ -512,7 +514,7 @@ export default function LogDashboardPage() {
             ))}
             {(authQ.data?.data || []).length === 0 && (
               <div className="p-8 text-center text-gray-500">
-                No auth events in the last 24 hours.
+                {t("logDashboard.auth.empty")}
               </div>
             )}
           </div>
@@ -520,7 +522,7 @@ export default function LogDashboardPage() {
           {authQ.data?.meta && authQ.data.meta.total_pages > 1 && (
             <div className="flex items-center justify-between p-4 border-t border-gray-200">
               <span className="text-sm text-gray-500">
-                Page {authPage} of {authQ.data.meta.total_pages} ({authQ.data.meta.total} total)
+                {t("logDashboard.pagination.status", { page: authPage, totalPages: authQ.data.meta.total_pages, total: authQ.data.meta.total })}
               </span>
               <div className="flex gap-2">
                 <button
@@ -528,14 +530,14 @@ export default function LogDashboardPage() {
                   onClick={() => setAuthPage((p) => p - 1)}
                   className="px-3 py-1 text-sm border rounded disabled:opacity-50"
                 >
-                  Prev
+                  {t("logDashboard.pagination.prev")}
                 </button>
                 <button
                   disabled={authPage >= authQ.data.meta.total_pages}
                   onClick={() => setAuthPage((p) => p + 1)}
                   className="px-3 py-1 text-sm border rounded disabled:opacity-50"
                 >
-                  Next
+                  {t("logDashboard.pagination.next")}
                 </button>
               </div>
             </div>
@@ -557,12 +559,11 @@ export default function LogDashboardPage() {
                   {mod.name}
                 </div>
                 <div className="text-sm text-gray-500 mt-0.5">
-                  Status: {mod.status} | Restarts: {mod.restarts} | Recent
-                  errors: {mod.recent_errors}
+                  {t("logDashboard.healthTab.status", { status: mod.status })} | {t("logDashboard.healthTab.restarts", { count: mod.restarts })} | {t("logDashboard.healthTab.recentErrors", { count: mod.recent_errors })}
                 </div>
                 {mod.last_log_at && (
                   <div className="text-xs text-gray-400 mt-1">
-                    Last activity: {new Date(mod.last_log_at).toLocaleString()}
+                    {t("logDashboard.healthTab.lastActivity", { time: new Date(mod.last_log_at).toLocaleString() })}
                   </div>
                 )}
               </div>
@@ -571,8 +572,8 @@ export default function LogDashboardPage() {
           {healthData.length === 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-500">
               {healthQ.isLoading
-                ? "Loading module health..."
-                : "No module health data available."}
+                ? t("logDashboard.healthTab.loading")
+                : t("logDashboard.healthTab.empty")}
             </div>
           )}
         </div>
