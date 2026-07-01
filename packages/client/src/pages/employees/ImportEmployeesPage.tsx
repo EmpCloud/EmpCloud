@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Upload, CheckCircle2, XCircle, FileSpreadsheet, AlertTriangle } from "lucide-react";
 import api from "@/api/client";
 
@@ -16,6 +17,7 @@ interface PreviewResult {
 }
 
 export default function ImportEmployeesPage() {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
   const [importResult, setImportResult] = useState<{ count: number } | null>(null);
@@ -74,9 +76,9 @@ export default function ImportEmployeesPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Import Employees</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("importEmployees.page.title")}</h1>
         <p className="text-gray-500 mt-1">
-          Upload a CSV file to bulk import employees into your organization.
+          {t("importEmployees.page.subtitle")}
         </p>
       </div>
 
@@ -85,15 +87,15 @@ export default function ImportEmployeesPage() {
         <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-6 flex items-start gap-3">
           <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 shrink-0" />
           <div>
-            <h3 className="text-lg font-semibold text-green-800">Import Successful</h3>
+            <h3 className="text-lg font-semibold text-green-800">{t("importEmployees.success.title")}</h3>
             <p className="text-green-700 mt-1">
-              Successfully imported {importResult.count} employee{importResult.count !== 1 ? "s" : ""}.
+              {t("importEmployees.success.message", { count: importResult.count })}
             </p>
             <button
               onClick={() => setImportResult(null)}
               className="mt-3 text-sm text-green-700 underline hover:text-green-900"
             >
-              Import more employees
+              {t("importEmployees.success.importMore")}
             </button>
           </div>
         </div>
@@ -116,14 +118,14 @@ export default function ImportEmployeesPage() {
         >
           <FileSpreadsheet className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600 mb-2">
-            Drag and drop a CSV file here, or click to browse
+            {t("importEmployees.dropzone.instructions")}
           </p>
           <p className="text-xs text-gray-400 mb-4">
-            Required columns: first_name, last_name, email. Optional: designation, department_name, emp_code, role, contact_number
+            {t("importEmployees.dropzone.columnsHint")}
           </p>
           <label className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer transition-colors">
             <Upload className="h-4 w-4" />
-            Choose File
+            {t("importEmployees.dropzone.chooseFile")}
             <input
               type="file"
               accept=".csv"
@@ -133,7 +135,7 @@ export default function ImportEmployeesPage() {
           </label>
           {file && (
             <p className="mt-3 text-sm text-gray-500">
-              Selected: {file.name}
+              {t("importEmployees.dropzone.selectedFile", { name: file.name })}
             </p>
           )}
         </div>
@@ -141,7 +143,7 @@ export default function ImportEmployeesPage() {
 
       {/* Loading */}
       {previewMutation.isPending && (
-        <div className="mt-6 text-center text-gray-400">Parsing and validating CSV...</div>
+        <div className="mt-6 text-center text-gray-400">{t("importEmployees.loading.parsing")}</div>
       )}
 
       {/* Preview results */}
@@ -150,15 +152,15 @@ export default function ImportEmployeesPage() {
           {/* Summary */}
           <div className="flex gap-4">
             <div className="flex-1 bg-white border border-gray-200 rounded-xl p-4">
-              <p className="text-sm text-gray-500">Total Rows</p>
+              <p className="text-sm text-gray-500">{t("importEmployees.summary.totalRows")}</p>
               <p className="text-2xl font-bold text-gray-900">{preview.totalRows}</p>
             </div>
             <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-4">
-              <p className="text-sm text-green-600">Valid</p>
+              <p className="text-sm text-green-600">{t("importEmployees.summary.valid")}</p>
               <p className="text-2xl font-bold text-green-700">{preview.valid.length}</p>
             </div>
             <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-4">
-              <p className="text-sm text-red-600">Errors</p>
+              <p className="text-sm text-red-600">{t("importEmployees.summary.errors")}</p>
               <p className="text-2xl font-bold text-red-700">{preview.errors.length}</p>
             </div>
           </div>
@@ -169,18 +171,18 @@ export default function ImportEmployeesPage() {
               <div className="px-6 py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <h3 className="text-sm font-medium text-gray-700">
-                  Valid Employees ({preview.valid.length})
+                  {t("importEmployees.validTable.title", { count: preview.valid.length })}
                 </h3>
               </div>
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Name</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Email</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Emp Code</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Designation</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Department</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">Status</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">{t("importEmployees.validTable.col.name")}</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">{t("importEmployees.validTable.col.email")}</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">{t("importEmployees.validTable.col.empCode")}</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">{t("importEmployees.validTable.col.designation")}</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">{t("importEmployees.validTable.col.department")}</th>
+                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-2">{t("importEmployees.validTable.col.status")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -191,13 +193,13 @@ export default function ImportEmployeesPage() {
                       </td>
                       <td className="px-6 py-2 text-sm text-gray-500">{row.email}</td>
                       <td className="px-6 py-2 text-sm text-gray-500">
-                        {row.emp_code || "-"}
+                        {row.emp_code || t("importEmployees.validTable.emptyCell")}
                       </td>
                       <td className="px-6 py-2 text-sm text-gray-500">
-                        {row.designation || "-"}
+                        {row.designation || t("importEmployees.validTable.emptyCell")}
                       </td>
                       <td className="px-6 py-2 text-sm text-gray-500">
-                        {row.department_name || "-"}
+                        {row.department_name || t("importEmployees.validTable.emptyCell")}
                       </td>
                       <td className="px-6 py-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -208,7 +210,7 @@ export default function ImportEmployeesPage() {
               </table>
               {preview.valid.length > 50 && (
                 <div className="px-6 py-2 text-sm text-gray-400 border-t border-gray-100">
-                  ...and {preview.valid.length - 50} more
+                  {t("importEmployees.validTable.andMore", { count: preview.valid.length - 50 })}
                 </div>
               )}
             </div>
@@ -220,16 +222,16 @@ export default function ImportEmployeesPage() {
               <div className="px-6 py-3 bg-red-50 border-b border-red-200 flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-red-600" />
                 <h3 className="text-sm font-medium text-red-700">
-                  Errors ({preview.errors.length})
+                  {t("importEmployees.errorTable.title", { count: preview.errors.length })}
                 </h3>
               </div>
               <table className="w-full">
                 <thead className="bg-red-50 border-b border-red-100">
                   <tr>
-                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">Row</th>
-                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">Name</th>
-                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">Email</th>
-                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">Errors</th>
+                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">{t("importEmployees.errorTable.col.row")}</th>
+                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">{t("importEmployees.errorTable.col.name")}</th>
+                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">{t("importEmployees.errorTable.col.email")}</th>
+                    <th className="text-left text-xs font-medium text-red-500 uppercase px-6 py-2">{t("importEmployees.errorTable.col.errors")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-red-50">
@@ -266,11 +268,11 @@ export default function ImportEmployeesPage() {
                 className="flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
               >
                 {executeMutation.isPending ? (
-                  "Importing..."
+                  t("importEmployees.import.importing")
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    Import {preview.valid.length} valid employee{preview.valid.length !== 1 ? "s" : ""}
+                    {t("importEmployees.import.button", { count: preview.valid.length })}
                   </>
                 )}
               </button>
