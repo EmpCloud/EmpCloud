@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "Keine Mitarbeiter in dieser Kategorie.",
       "lateBy": "Verspätet um",
       "minSuffix": "Min.",
-      "close": "Schließen"
+      "close": "Schließen",
+      "dateLabel": "Datum",
+      "noSearchResults": "Kein Mitarbeiter entspricht Ihrer Suche.",
+      "searchPlaceholder": "Name, E-Mail oder Abteilung suchen"
     },
     "export": {
       "title": "Anwesenheitsbericht exportieren",
@@ -1706,7 +1709,8 @@
       "previous": "Zurück",
       "next": "Weiter",
       "alertPlannedInvalid": "Geplanter Personalbestand muss 0 oder größer sein.",
-      "alertCurrentInvalid": "Aktueller Personalbestand muss 0 oder größer sein."
+      "alertCurrentInvalid": "Aktueller Personalbestand muss 0 oder größer sein.",
+      "searchPlaceholder": "Nach Plantitel oder Geschäftsjahr suchen..."
     },
     "vacancies": {
       "title": "Offene Stellen",
@@ -1850,7 +1854,9 @@
       "announcement_created": "Ankündigung erstellt",
       "policy_created": "Richtlinie erstellt",
       "policy_acknowledged": "Richtlinie bestätigt"
-    }
+    },
+    "noActionMatches": "Keine passende Aktion",
+    "searchActions": "Aktionstyp suchen..."
   },
   "employees": {
     "directory": {

@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "Nenhum funcionário nesta categoria.",
       "lateBy": "Atraso",
       "minSuffix": "min",
-      "close": "Fechar"
+      "close": "Fechar",
+      "dateLabel": "Data",
+      "noSearchResults": "Nenhum funcionário corresponde à sua busca.",
+      "searchPlaceholder": "Pesquisar nome, e-mail ou departamento"
     },
     "export": {
       "title": "Exportar relatório de presença",
@@ -1706,7 +1709,8 @@
       "previous": "Anterior",
       "next": "Próximo",
       "alertPlannedInvalid": "O quadro planejado deve ser 0 ou maior.",
-      "alertCurrentInvalid": "O quadro atual deve ser 0 ou maior."
+      "alertCurrentInvalid": "O quadro atual deve ser 0 ou maior.",
+      "searchPlaceholder": "Pesquisar por título do plano ou ano fiscal..."
     },
     "vacancies": {
       "title": "Vagas Abertas",
@@ -1850,7 +1854,9 @@
       "announcement_created": "Comunicado Criado",
       "policy_created": "Política Criada",
       "policy_acknowledged": "Política Reconhecida"
-    }
+    },
+    "noActionMatches": "Nenhuma ação correspondente",
+    "searchActions": "Pesquisar tipo de ação..."
   },
   "employees": {
     "directory": {

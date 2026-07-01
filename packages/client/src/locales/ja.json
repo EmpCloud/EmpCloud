@@ -962,7 +962,10 @@
       "noEmployeesInCategory": "このカテゴリに従業員はいません。",
       "lateBy": "遅刻時間",
       "minSuffix": "分",
-      "close": "閉じる"
+      "close": "閉じる",
+      "dateLabel": "日付",
+      "noSearchResults": "検索に一致する従業員はいません。",
+      "searchPlaceholder": "名前、メール、部門で検索"
     },
     "export": {
       "title": "勤怠レポートのエクスポート",
@@ -1706,7 +1709,8 @@
       "previous": "前へ",
       "next": "次へ",
       "alertPlannedInvalid": "計画人員は 0 以上である必要があります。",
-      "alertCurrentInvalid": "現在の人員は 0 以上である必要があります。"
+      "alertCurrentInvalid": "現在の人員は 0 以上である必要があります。",
+      "searchPlaceholder": "プラン名または会計年度で検索..."
     },
     "vacancies": {
       "title": "公開中の欠員",
@@ -1850,7 +1854,9 @@
       "announcement_created": "お知らせ作成",
       "policy_created": "ポリシー作成",
       "policy_acknowledged": "ポリシー承認"
-    }
+    },
+    "noActionMatches": "一致するアクションがありません",
+    "searchActions": "アクションの種類を検索..."
   },
   "employees": {
     "directory": {
