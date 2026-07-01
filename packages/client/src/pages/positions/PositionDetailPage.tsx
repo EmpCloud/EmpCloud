@@ -55,7 +55,13 @@ export default function PositionDetailPage() {
   const assignMutation = useMutation({
     mutationFn: (body: object) => api.post(`/positions/${id}/assign`, body).then((r) => r.data.data),
     onSuccess: () => {
+      // Assigning a user raises headcount_filled and can flip the position to
+      // "filled", removing it from vacancies — refresh those views too, not just
+      // this position's detail.
       queryClient.invalidateQueries({ queryKey: ["position", id] });
+      queryClient.invalidateQueries({ queryKey: ["position-vacancies"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setShowAssign(false);
       setAssignForm({ user_id: "", start_date: "", is_primary: true });
     },
