@@ -963,7 +963,10 @@
       "noEmployeesInCategory": "لا يوجد موظفون في هذه الفئة.",
       "lateBy": "التأخر",
       "minSuffix": "دقيقة",
-      "close": "إغلاق"
+      "close": "إغلاق",
+      "dateLabel": "التاريخ",
+      "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو القسم",
+      "noSearchResults": "لا يوجد موظفون مطابقون لبحثك."
     },
     "export": {
       "title": "تصدير تقرير الحضور",
@@ -1707,7 +1710,8 @@
       "previous": "السابق",
       "next": "التالي",
       "alertPlannedInvalid": "يجب أن يكون الملاك المخطط 0 أو أكثر.",
-      "alertCurrentInvalid": "يجب أن يكون الملاك الحالي 0 أو أكثر."
+      "alertCurrentInvalid": "يجب أن يكون الملاك الحالي 0 أو أكثر.",
+      "searchPlaceholder": "ابحث حسب عنوان الخطة أو السنة المالية..."
     },
     "vacancies": {
       "title": "الشواغر المفتوحة",
@@ -1851,7 +1855,9 @@
       "announcement_created": "إنشاء إعلان",
       "policy_created": "إنشاء سياسة",
       "policy_acknowledged": "تأكيد السياسة"
-    }
+    },
+    "searchActions": "ابحث عن نوع الإجراء...",
+    "noActionMatches": "لا يوجد إجراء مطابق"
   },
   "employees": {
     "directory": {

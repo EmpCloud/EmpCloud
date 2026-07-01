@@ -963,7 +963,10 @@
       "noEmployeesInCategory": "इस श्रेणी में कोई कर्मचारी नहीं।",
       "lateBy": "देरी",
       "minSuffix": "मिनट",
-      "close": "बंद करें"
+      "close": "बंद करें",
+      "dateLabel": "दिनांक",
+      "searchPlaceholder": "नाम, ईमेल या विभाग खोजें",
+      "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।"
     },
     "export": {
       "title": "उपस्थिति रिपोर्ट निर्यात करें",
@@ -1707,7 +1710,8 @@
       "previous": "पिछला",
       "next": "अगला",
       "alertPlannedInvalid": "नियोजित हेडकाउंट 0 या उससे अधिक होना चाहिए।",
-      "alertCurrentInvalid": "वर्तमान हेडकाउंट 0 या उससे अधिक होना चाहिए।"
+      "alertCurrentInvalid": "वर्तमान हेडकाउंट 0 या उससे अधिक होना चाहिए।",
+      "searchPlaceholder": "योजना शीर्षक या वित्तीय वर्ष से खोजें..."
     },
     "vacancies": {
       "title": "खुली रिक्तियाँ",
@@ -1851,7 +1855,9 @@
       "announcement_created": "घोषणा बनाई",
       "policy_created": "नीति बनाई",
       "policy_acknowledged": "नीति स्वीकृत"
-    }
+    },
+    "searchActions": "कार्रवाई प्रकार खोजें...",
+    "noActionMatches": "कोई मेल खाती कार्रवाई नहीं"
   },
   "employees": {
     "directory": {

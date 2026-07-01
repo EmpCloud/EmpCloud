@@ -963,7 +963,10 @@
       "noEmployeesInCategory": "此类别中没有员工。",
       "lateBy": "迟到时长",
       "minSuffix": "分钟",
-      "close": "关闭"
+      "close": "关闭",
+      "dateLabel": "日期",
+      "searchPlaceholder": "搜索姓名、邮箱或部门",
+      "noSearchResults": "没有符合搜索条件的员工。"
     },
     "export": {
       "title": "导出考勤报表",
@@ -1707,7 +1710,8 @@
       "previous": "上一页",
       "next": "下一页",
       "alertPlannedInvalid": "计划人数必须为 0 或更大。",
-      "alertCurrentInvalid": "当前人数必须为 0 或更大。"
+      "alertCurrentInvalid": "当前人数必须为 0 或更大。",
+      "searchPlaceholder": "按计划名称或财年搜索……"
     },
     "vacancies": {
       "title": "公开空缺",
@@ -1851,7 +1855,9 @@
       "announcement_created": "创建公告",
       "policy_created": "创建政策",
       "policy_acknowledged": "确认政策"
-    }
+    },
+    "searchActions": "搜索操作类型……",
+    "noActionMatches": "无匹配的操作"
   },
   "employees": {
     "directory": {
