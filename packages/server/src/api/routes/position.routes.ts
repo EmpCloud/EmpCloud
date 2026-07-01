@@ -194,7 +194,7 @@ router.get("/", authenticate, requirePermission("positions:view", "positions:man
 });
 
 // GET /api/v1/positions/:id
-router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", authenticate, requirePermission("positions:view", "positions:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const position = await positionService.getPosition(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, position);
