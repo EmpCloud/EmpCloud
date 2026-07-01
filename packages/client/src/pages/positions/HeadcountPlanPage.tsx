@@ -14,6 +14,8 @@ export default function HeadcountPlanPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [departmentFilter, setDepartmentFilter] = useState<string>("");
+  const [fiscalYearFilter, setFiscalYearFilter] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
   // #1548 — Detail modal: plans are clickable and open this full-detail view
   // so the notes, budget and all other fields captured at creation time are
@@ -29,7 +31,10 @@ export default function HeadcountPlanPage() {
   const deptList = departments || [];
 
   const { data, isLoading } = useQuery({
-    queryKey: ["headcount-plans", { page, status: statusFilter, search }],
+    queryKey: [
+      "headcount-plans",
+      { page, status: statusFilter, search, department_id: departmentFilter, fiscal_year: fiscalYearFilter },
+    ],
     queryFn: () =>
       api
         .get("/positions/headcount-plans", {
@@ -38,6 +43,8 @@ export default function HeadcountPlanPage() {
             per_page: 10,
             ...(statusFilter ? { status: statusFilter } : {}),
             ...(search ? { search } : {}),
+            ...(departmentFilter ? { department_id: departmentFilter } : {}),
+            ...(fiscalYearFilter ? { fiscal_year: fiscalYearFilter } : {}),
           },
         })
         .then((r) => r.data),
@@ -88,6 +95,9 @@ export default function HeadcountPlanPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
     },
+    onError: (err: any) => {
+      showToast("error", err?.response?.data?.error?.message || (tx("failedApprove") as string));
+    },
   });
 
   const rejectMutation = useMutation({
@@ -97,6 +107,9 @@ export default function HeadcountPlanPage() {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
       setRejectTarget(null);
       setRejectReason("");
+    },
+    onError: (err: any) => {
+      showToast("error", err?.response?.data?.error?.message || (tx("failedReject") as string));
     },
   });
 
@@ -110,6 +123,9 @@ export default function HeadcountPlanPage() {
       api.put(`/positions/headcount-plans/${planId}`, { status: "submitted" }).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+    },
+    onError: (err: any) => {
+      showToast("error", err?.response?.data?.error?.message || (tx("failedSubmit") as string));
     },
   });
 
@@ -313,6 +329,26 @@ export default function HeadcountPlanPage() {
           <option value="submitted">{tx("statusSubmitted")}</option>
           <option value="approved">{tx("statusApproved")}</option>
           <option value="rejected">{tx("statusRejected")}</option>
+        </select>
+        <select
+          value={departmentFilter}
+          onChange={(e) => { setDepartmentFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        >
+          <option value="">{tx("allDepartments")}</option>
+          {deptList.map((d: any) => (
+            <option key={d.id} value={d.id}>{d.name}</option>
+          ))}
+        </select>
+        <select
+          value={fiscalYearFilter}
+          onChange={(e) => { setFiscalYearFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        >
+          <option value="">{tx("allYears")}</option>
+          {fiscalYearOptions.map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
         </select>
       </div>
 

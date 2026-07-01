@@ -1190,7 +1190,10 @@ const positionStatusEnum = z.enum(["active", "filled", "frozen", "closed"]);
 const headcountPlanStatusEnum = z.enum(["draft", "submitted", "approved", "rejected"]);
 const headcountQuarterEnum = z.enum(["Q1", "Q2", "Q3", "Q4", "annual"]);
 
-export const createPositionSchema = z.object({
+// Base object shape shared by create/update. Kept as a plain ZodObject so
+// updatePositionSchema can still call .partial() on it — applying .refine() here
+// would turn it into a ZodEffects that no longer exposes .partial().
+const positionBaseSchema = z.object({
   title: z.string().min(1).max(200),
   code: z.preprocess((v) => (v === "" ? undefined : v), z.string().max(50).optional().nullable()),
   department_id: z.preprocess((v) => (v === "" || v === 0 ? null : v), z.number().int().positive().optional().nullable()),
@@ -1206,19 +1209,38 @@ export const createPositionSchema = z.object({
   is_critical: z.boolean().default(false),
 });
 
-export const updatePositionSchema = createPositionSchema.partial().extend({
-  status: positionStatusEnum.optional(),
+// max_salary must be >= min_salary when both are provided.
+const salaryOrderCheck = (d: { min_salary?: number | null; max_salary?: number | null }) =>
+  d.min_salary == null || d.max_salary == null || d.max_salary >= d.min_salary;
+
+export const createPositionSchema = positionBaseSchema.refine(salaryOrderCheck, {
+  message: "max_salary must be greater than or equal to min_salary",
+  path: ["max_salary"],
 });
 
-export const assignPositionSchema = z.object({
-  user_id: z.number().int().positive(),
-  start_date: z.string(),
-  end_date: z.string().optional().nullable(),
-  is_primary: z.boolean().default(true),
-});
+export const updatePositionSchema = positionBaseSchema
+  .partial()
+  .extend({ status: positionStatusEnum.optional() })
+  .refine(salaryOrderCheck, {
+    message: "max_salary must be greater than or equal to min_salary",
+    path: ["max_salary"],
+  });
+
+export const assignPositionSchema = z
+  .object({
+    user_id: z.number().int().positive(),
+    start_date: z.string().date(),
+    end_date: z.string().date().optional().nullable(),
+    is_primary: z.boolean().default(true),
+  })
+  .refine((d) => !d.end_date || d.end_date >= d.start_date, {
+    message: "end_date must be on or after start_date",
+    path: ["end_date"],
+  });
 
 export const positionQuerySchema = paginationSchema.extend({
   department_id: z.coerce.number().int().positive().optional(),
+  location_id: z.coerce.number().int().positive().optional(),
   status: positionStatusEnum.optional(),
   employment_type: positionEmploymentTypeEnum.optional(),
   search: z.string().optional(),
@@ -1254,6 +1276,7 @@ export const headcountPlanQuerySchema = paginationSchema.extend({
   fiscal_year: z.string().optional(),
   status: headcountPlanStatusEnum.optional(),
   department_id: z.coerce.number().int().positive().optional(),
+  quarter: headcountQuarterEnum.optional(),
   search: z.string().optional(),
 });
 
