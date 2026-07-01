@@ -363,32 +363,44 @@ export async function assignUserToPosition(
 export async function removeUserFromPosition(orgId: number, assignmentId: number) {
   const db = getDB();
 
-  const assignment = await db("position_assignments")
-    .where({ id: assignmentId, organization_id: orgId, status: "active" })
-    .first();
+  // End the assignment, decrement headcount and revert status inside one transaction
+  // with a row lock on the position, so concurrent assign/remove operations can't
+  // interleave and leave headcount_filled or status inconsistent.
+  return db.transaction(async (trx) => {
+    const assignment = await trx("position_assignments")
+      .where({ id: assignmentId, organization_id: orgId, status: "active" })
+      .first();
 
-  if (!assignment) throw new NotFoundError("Position Assignment");
+    if (!assignment) throw new NotFoundError("Position Assignment");
 
-  await db("position_assignments")
-    .where({ id: assignmentId })
-    .update({ status: "ended", end_date: new Date(), updated_at: new Date() });
-
-  // Decrement headcount_filled (min 0)
-  await db("positions")
-    .where({ id: assignment.position_id })
-    .where("headcount_filled", ">", 0)
-    .update({
-      headcount_filled: db.raw("headcount_filled - 1"),
-      updated_at: new Date(),
-    });
-
-  // If position was "filled" (fully staffed), revert to "active" since there's now a vacancy
-  const pos = await db("positions").where({ id: assignment.position_id }).first();
-  if (pos && (pos.status === "filled" || pos.status === "frozen") && pos.headcount_filled < pos.headcount_budget) {
-    await db("positions")
+    // Lock the position row for the rest of the transaction.
+    const pos = await trx("positions")
       .where({ id: assignment.position_id })
-      .update({ status: "active", updated_at: new Date() });
-  }
+      .forUpdate()
+      .first();
+
+    await trx("position_assignments")
+      .where({ id: assignmentId })
+      .update({ status: "ended", end_date: new Date(), updated_at: new Date() });
+
+    // Decrement headcount_filled (floor at 0)
+    await trx("positions")
+      .where({ id: assignment.position_id })
+      .where("headcount_filled", ">", 0)
+      .update({
+        headcount_filled: trx.raw("headcount_filled - 1"),
+        updated_at: new Date(),
+      });
+
+    // If the position was fully staffed/frozen, revert to "active" now that a seat
+    // opened. Derive the new filled count from the locked row.
+    const newFilled = Math.max(0, (pos?.headcount_filled ?? 0) - 1);
+    if (pos && (pos.status === "filled" || pos.status === "frozen") && newFilled < pos.headcount_budget) {
+      await trx("positions")
+        .where({ id: assignment.position_id })
+        .update({ status: "active", updated_at: new Date() });
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
