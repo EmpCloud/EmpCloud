@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
@@ -82,6 +83,7 @@ function fmtDate(d?: string | null) {
 }
 
 export default function SubscriptionsAdminPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
@@ -150,12 +152,12 @@ export default function SubscriptionsAdminPage() {
         .then((r) => r.data);
     },
     onSuccess: () => {
-      toast.success("Subscription updated");
+      toast.success(t("subscriptionsAdmin.toast.updated"));
       setEditRow(null);
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
     onError: (err: any) =>
-      toast.error(err?.response?.data?.error?.message || err?.message || "Failed"),
+      toast.error(err?.response?.data?.error?.message || err?.message || t("subscriptionsAdmin.toast.failed")),
   });
 
   // -------- Quick actions --------
@@ -168,26 +170,26 @@ export default function SubscriptionsAdminPage() {
   const suspend = useMutation({
     mutationFn: (id: number) => postAction(id, "suspend"),
     onSuccess: () => {
-      toast.success("Suspended");
+      toast.success(t("subscriptionsAdmin.toast.suspended"));
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || t("subscriptionsAdmin.toast.failed")),
   });
   const activate = useMutation({
     mutationFn: (id: number) => postAction(id, "activate"),
     onSuccess: () => {
-      toast.success("Activated");
+      toast.success(t("subscriptionsAdmin.toast.activated"));
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || t("subscriptionsAdmin.toast.failed")),
   });
   const cancel = useMutation({
     mutationFn: (id: number) => postAction(id, "cancel"),
     onSuccess: () => {
-      toast.success("Cancelled");
+      toast.success(t("subscriptionsAdmin.toast.cancelled"));
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || t("subscriptionsAdmin.toast.failed")),
   });
 
   // -------- Free / comp modal --------
@@ -196,20 +198,20 @@ export default function SubscriptionsAdminPage() {
   const makeFree = useMutation({
     mutationFn: () => postAction(freeRow!.id, "free", { reason: freeReason }),
     onSuccess: () => {
-      toast.success("Marked free");
+      toast.success(t("subscriptionsAdmin.toast.markedFree"));
       setFreeRow(null);
       setFreeReason("");
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || t("subscriptionsAdmin.toast.failed")),
   });
   const unmakeFree = useMutation({
     mutationFn: (id: number) => postAction(id, "unfree"),
     onSuccess: () => {
-      toast.success("Unmarked free");
+      toast.success(t("subscriptionsAdmin.toast.unmarkedFree"));
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || t("subscriptionsAdmin.toast.failed")),
   });
 
   // -------- Manual invoice modal --------
@@ -223,21 +225,20 @@ export default function SubscriptionsAdminPage() {
         due_date: invForm.due_date || undefined,
       }),
     onSuccess: () => {
-      toast.success("Manual invoice recorded");
+      toast.success(t("subscriptionsAdmin.toast.manualInvoiceRecorded"));
       setInvRow(null);
       setInvForm({ amount: "", description: "", due_date: "" });
       qc.invalidateQueries({ queryKey: ["admin-subs-list"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) => toast.error(e?.response?.data?.error?.message || t("subscriptionsAdmin.toast.failed")),
   });
 
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Subscriptions</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("subscriptionsAdmin.title")}</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Full control of every customer subscription — tier, status, seats, pricing, period
-          dates, trial end, auto-renew, free / comp, and manual invoice intent.
+          {t("subscriptionsAdmin.subtitle")}
         </p>
       </div>
 
@@ -245,7 +246,7 @@ export default function SubscriptionsAdminPage() {
       <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[200px]">
-            <label className="mb-1 block text-xs font-medium text-gray-600">Search org</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600">{t("subscriptionsAdmin.filters.searchOrg.label")}</label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
@@ -254,13 +255,13 @@ export default function SubscriptionsAdminPage() {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                placeholder="Name or email"
+                placeholder={t("subscriptionsAdmin.filters.searchOrg.placeholder")}
                 className="w-full rounded-lg border border-gray-200 bg-white pl-8 pr-3 py-2 text-sm"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Status</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600">{t("subscriptionsAdmin.filters.status.label")}</label>
             <select
               value={status}
               onChange={(e) => {
@@ -269,12 +270,12 @@ export default function SubscriptionsAdminPage() {
               }}
               className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
             >
-              <option value="">All</option>
-              {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+              <option value="">{t("subscriptionsAdmin.filters.all")}</option>
+              {STATUSES.map((s) => <option key={s} value={s}>{t(`subscriptionsAdmin.status.${s}`, { defaultValue: s })}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Currency</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600">{t("subscriptionsAdmin.filters.currency.label")}</label>
             <select
               value={currency}
               onChange={(e) => {
@@ -283,11 +284,11 @@ export default function SubscriptionsAdminPage() {
               }}
               className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
             >
-              <option value="">All</option>
+              <option value="">{t("subscriptionsAdmin.filters.all")}</option>
               {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-          <div className="ml-auto text-sm text-gray-500">{total} subscription(s)</div>
+          <div className="ml-auto text-sm text-gray-500">{t("subscriptionsAdmin.count.subscriptions", { count: total })}</div>
         </div>
       </div>
 
@@ -295,23 +296,23 @@ export default function SubscriptionsAdminPage() {
       <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         {listQ.isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-gray-400">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading...
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("subscriptionsAdmin.loading")}
           </div>
         ) : rows.length === 0 ? (
-          <div className="py-12 text-center text-sm text-gray-400">No subscriptions match.</div>
+          <div className="py-12 text-center text-sm text-gray-400">{t("subscriptionsAdmin.empty")}</div>
         ) : (
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
               <tr>
-                <th className="px-3 py-2 text-left">Org</th>
-                <th className="px-3 py-2 text-left">Module</th>
-                <th className="px-3 py-2 text-left">Tier</th>
-                <th className="px-3 py-2 text-left">Status</th>
-                <th className="px-3 py-2 text-right">Seats</th>
-                <th className="px-3 py-2 text-right">Price/seat</th>
-                <th className="px-3 py-2 text-left">Period</th>
-                <th className="px-3 py-2 text-center">Flags</th>
-                <th className="px-3 py-2 text-right">Actions</th>
+                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.org")}</th>
+                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.module")}</th>
+                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.tier")}</th>
+                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.status")}</th>
+                <th className="px-3 py-2 text-right">{t("subscriptionsAdmin.table.columns.seats")}</th>
+                <th className="px-3 py-2 text-right">{t("subscriptionsAdmin.table.columns.pricePerSeat")}</th>
+                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.period")}</th>
+                <th className="px-3 py-2 text-center">{t("subscriptionsAdmin.table.columns.flags")}</th>
+                <th className="px-3 py-2 text-right">{t("subscriptionsAdmin.table.columns.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -328,7 +329,7 @@ export default function SubscriptionsAdminPage() {
                   <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{r.plan_tier}</td>
                   <td className="px-3 py-2">
                     <span className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-gray-100 text-gray-600"}`}>
-                      {r.status}
+                      {t(`subscriptionsAdmin.status.${r.status}`, { defaultValue: r.status })}
                     </span>
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
@@ -340,19 +341,19 @@ export default function SubscriptionsAdminPage() {
                   <td className="px-3 py-2 text-xs text-gray-600 dark:text-gray-400">
                     {fmtDate(r.current_period_start)} → {fmtDate(r.current_period_end)}
                     {r.trial_ends_at && (
-                      <div className="text-blue-600">Trial ends {fmtDate(r.trial_ends_at)}</div>
+                      <div className="text-blue-600">{t("subscriptionsAdmin.period.trialEnds", { date: fmtDate(r.trial_ends_at) })}</div>
                     )}
                   </td>
                   <td className="px-3 py-2 text-center">
                     <div className="flex flex-wrap gap-1 justify-center">
                       {Number(r.is_free) ? (
-                        <span className="rounded bg-pink-100 px-1.5 py-0.5 text-[10px] text-pink-700" title={r.free_reason || ""}>FREE</span>
+                        <span className="rounded bg-pink-100 px-1.5 py-0.5 text-[10px] text-pink-700" title={r.free_reason || ""}>{t("subscriptionsAdmin.badges.free")}</span>
                       ) : null}
                       {Number(r.manually_overridden) ? (
-                        <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] text-purple-700">MANUAL</span>
+                        <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] text-purple-700">{t("subscriptionsAdmin.badges.manual")}</span>
                       ) : null}
                       {Number(r.auto_renew) ? null : (
-                        <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] text-amber-700">NO-RENEW</span>
+                        <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] text-amber-700">{t("subscriptionsAdmin.badges.noRenew")}</span>
                       )}
                     </div>
                   </td>
@@ -361,18 +362,18 @@ export default function SubscriptionsAdminPage() {
                       <button
                         onClick={() => openEdit(r)}
                         className="text-gray-500 hover:text-gray-700"
-                        title="Edit (all fields)"
+                        title={t("subscriptionsAdmin.actions.edit")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       {r.status === "active" || r.status === "trial" ? (
                         <button
                           onClick={() => {
-                            if (window.confirm(`Suspend ${r.organization_name}'s ${r.module_name}?`))
+                            if (window.confirm(t("subscriptionsAdmin.confirm.suspend", { org: r.organization_name, module: r.module_name })))
                               suspend.mutate(r.id);
                           }}
                           className="text-orange-500 hover:text-orange-700"
-                          title="Suspend"
+                          title={t("subscriptionsAdmin.actions.suspend")}
                         >
                           <Pause className="h-4 w-4" />
                         </button>
@@ -380,29 +381,29 @@ export default function SubscriptionsAdminPage() {
                         <button
                           onClick={() => activate.mutate(r.id)}
                           className="text-emerald-500 hover:text-emerald-700"
-                          title="Activate"
+                          title={t("subscriptionsAdmin.actions.activate")}
                         >
                           <Play className="h-4 w-4" />
                         </button>
                       )}
                       <button
                         onClick={() => {
-                          if (window.confirm(`Cancel ${r.organization_name}'s ${r.module_name}?`))
+                          if (window.confirm(t("subscriptionsAdmin.confirm.cancel", { org: r.organization_name, module: r.module_name })))
                             cancel.mutate(r.id);
                         }}
                         className="text-red-500 hover:text-red-700"
-                        title="Cancel"
+                        title={t("subscriptionsAdmin.actions.cancel")}
                       >
                         <XCircle className="h-4 w-4" />
                       </button>
                       {Number(r.is_free) ? (
                         <button
                           onClick={() => {
-                            if (window.confirm("Remove free / comp flag?"))
+                            if (window.confirm(t("subscriptionsAdmin.confirm.removeFree")))
                               unmakeFree.mutate(r.id);
                           }}
                           className="text-pink-500 hover:text-pink-700"
-                          title="Remove free flag"
+                          title={t("subscriptionsAdmin.actions.removeFreeFlag")}
                         >
                           <Gift className="h-4 w-4" />
                         </button>
@@ -413,7 +414,7 @@ export default function SubscriptionsAdminPage() {
                             setFreeReason("");
                           }}
                           className="text-gray-500 hover:text-pink-700"
-                          title="Mark as free / comp"
+                          title={t("subscriptionsAdmin.actions.markFree")}
                         >
                           <Gift className="h-4 w-4" />
                         </button>
@@ -424,7 +425,7 @@ export default function SubscriptionsAdminPage() {
                           setInvForm({ amount: "", description: "", due_date: "" });
                         }}
                         className="text-gray-500 hover:text-brand-700"
-                        title="Record manual invoice"
+                        title={t("subscriptionsAdmin.actions.recordManualInvoice")}
                       >
                         <Receipt className="h-4 w-4" />
                       </button>
@@ -444,15 +445,15 @@ export default function SubscriptionsAdminPage() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="rounded border border-gray-200 px-3 py-1 text-sm disabled:opacity-40"
           >
-            Prev
+            {t("subscriptionsAdmin.pagination.prev")}
           </button>
-          <span className="text-sm text-gray-600">{page} / {totalPages}</span>
+          <span className="text-sm text-gray-600">{t("subscriptionsAdmin.pagination.pageOf", { page, totalPages })}</span>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             className="rounded border border-gray-200 px-3 py-1 text-sm disabled:opacity-40"
           >
-            Next
+            {t("subscriptionsAdmin.pagination.next")}
           </button>
         </div>
       )}
@@ -460,27 +461,27 @@ export default function SubscriptionsAdminPage() {
       {/* Edit modal */}
       {editRow && (
         <BigModal
-          title={`Edit subscription — ${editRow.organization_name} · ${editRow.module_name}`}
+          title={t("subscriptionsAdmin.editModal.title", { org: editRow.organization_name, module: editRow.module_name })}
           onClose={() => (saveEdit.isPending ? null : setEditRow(null))}
         >
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Plan tier">
+            <Field label={t("subscriptionsAdmin.editModal.fields.planTier")}>
               <input
                 value={editForm.plan_tier}
                 onChange={(e) => setEditForm({ ...editForm, plan_tier: e.target.value })}
                 className="input"
               />
             </Field>
-            <Field label="Status">
+            <Field label={t("subscriptionsAdmin.editModal.fields.status")}>
               <select
                 value={editForm.status}
                 onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                 className="input"
               >
-                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                {STATUSES.map((s) => <option key={s} value={s}>{t(`subscriptionsAdmin.status.${s}`, { defaultValue: s })}</option>)}
               </select>
             </Field>
-            <Field label="Total seats">
+            <Field label={t("subscriptionsAdmin.editModal.fields.totalSeats")}>
               <input
                 type="number"
                 min={0}
@@ -489,16 +490,16 @@ export default function SubscriptionsAdminPage() {
                 className="input"
               />
             </Field>
-            <Field label="Billing cycle">
+            <Field label={t("subscriptionsAdmin.editModal.fields.billingCycle")}>
               <select
                 value={editForm.billing_cycle}
                 onChange={(e) => setEditForm({ ...editForm, billing_cycle: e.target.value })}
                 className="input"
               >
-                {BILLING_CYCLES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {BILLING_CYCLES.map((c) => <option key={c} value={c}>{t(`subscriptionsAdmin.billingCycle.${c}`, { defaultValue: c })}</option>)}
               </select>
             </Field>
-            <Field label="Price per seat (major unit)">
+            <Field label={t("subscriptionsAdmin.editModal.fields.pricePerSeat")}>
               <input
                 type="number"
                 step="0.01"
@@ -508,7 +509,7 @@ export default function SubscriptionsAdminPage() {
                 className="input font-mono"
               />
             </Field>
-            <Field label="Currency">
+            <Field label={t("subscriptionsAdmin.editModal.fields.currency")}>
               <select
                 value={editForm.currency}
                 onChange={(e) => setEditForm({ ...editForm, currency: e.target.value })}
@@ -517,7 +518,7 @@ export default function SubscriptionsAdminPage() {
                 {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
-            <Field label="Period start">
+            <Field label={t("subscriptionsAdmin.editModal.fields.periodStart")}>
               <input
                 type="date"
                 value={editForm.current_period_start}
@@ -525,7 +526,7 @@ export default function SubscriptionsAdminPage() {
                 className="input"
               />
             </Field>
-            <Field label="Period end">
+            <Field label={t("subscriptionsAdmin.editModal.fields.periodEnd")}>
               <input
                 type="date"
                 value={editForm.current_period_end}
@@ -533,7 +534,7 @@ export default function SubscriptionsAdminPage() {
                 className="input"
               />
             </Field>
-            <Field label="Trial ends (blank = no trial)">
+            <Field label={t("subscriptionsAdmin.editModal.fields.trialEnds")}>
               <input
                 type="date"
                 value={editForm.trial_ends_at}
@@ -541,52 +542,52 @@ export default function SubscriptionsAdminPage() {
                 className="input"
               />
             </Field>
-            <Field label="Auto-renew">
+            <Field label={t("subscriptionsAdmin.editModal.fields.autoRenew")}>
               <label className="inline-flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   checked={!!editForm.auto_renew}
                   onChange={(e) => setEditForm({ ...editForm, auto_renew: e.target.checked })}
                 />
-                Yes
+                {t("subscriptionsAdmin.editModal.autoRenewYes")}
               </label>
             </Field>
-            <Field label="Free / comp">
+            <Field label={t("subscriptionsAdmin.editModal.fields.freeComp")}>
               <label className="inline-flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   checked={!!editForm.is_free}
                   onChange={(e) => setEditForm({ ...editForm, is_free: e.target.checked })}
                 />
-                Comped (price forced to 0)
+                {t("subscriptionsAdmin.editModal.compedLabel")}
               </label>
             </Field>
             {editForm.is_free && (
-              <Field label="Free reason" full>
+              <Field label={t("subscriptionsAdmin.editModal.fields.freeReason")} full>
                 <input
                   value={editForm.free_reason}
                   onChange={(e) => setEditForm({ ...editForm, free_reason: e.target.value })}
-                  placeholder="Beta tester, internal use, exec deal, etc."
+                  placeholder={t("subscriptionsAdmin.editModal.freeReasonPlaceholder")}
                   className="input"
                 />
               </Field>
             )}
-            <Field label="Internal notes" full>
+            <Field label={t("subscriptionsAdmin.editModal.fields.internalNotes")} full>
               <textarea
                 rows={3}
                 value={editForm.internal_notes}
                 onChange={(e) => setEditForm({ ...editForm, internal_notes: e.target.value })}
-                placeholder="Deal context, special terms, audit trail..."
+                placeholder={t("subscriptionsAdmin.editModal.internalNotesPlaceholder")}
                 className="input"
               />
             </Field>
           </div>
           <div className="flex justify-end gap-2 pt-4">
             <button onClick={() => setEditRow(null)} disabled={saveEdit.isPending} className="btn-outline">
-              Cancel
+              {t("subscriptionsAdmin.editModal.cancel")}
             </button>
             <button onClick={() => saveEdit.mutate()} disabled={saveEdit.isPending} className="btn-primary">
-              {saveEdit.isPending ? "Saving..." : "Save all changes"}
+              {saveEdit.isPending ? t("subscriptionsAdmin.editModal.saving") : t("subscriptionsAdmin.editModal.save")}
             </button>
           </div>
         </BigModal>
@@ -595,28 +596,27 @@ export default function SubscriptionsAdminPage() {
       {/* Free modal */}
       {freeRow && (
         <BigModal
-          title={`Mark free — ${freeRow.organization_name} · ${freeRow.module_name}`}
+          title={t("subscriptionsAdmin.freeModal.title", { org: freeRow.organization_name, module: freeRow.module_name })}
           onClose={() => (makeFree.isPending ? null : setFreeRow(null))}
           small
         >
           <p className="text-sm text-gray-600 mb-3">
-            This will set price_per_seat to 0 and flag the subscription as comped.
-            A reason is required for the audit log.
+            {t("subscriptionsAdmin.freeModal.description")}
           </p>
           <input
             value={freeReason}
             onChange={(e) => setFreeReason(e.target.value)}
-            placeholder="e.g. Beta tester, internal team, executive sponsorship"
+            placeholder={t("subscriptionsAdmin.freeModal.reasonPlaceholder")}
             className="input mb-3"
           />
           <div className="flex justify-end gap-2">
-            <button onClick={() => setFreeRow(null)} disabled={makeFree.isPending} className="btn-outline">Cancel</button>
+            <button onClick={() => setFreeRow(null)} disabled={makeFree.isPending} className="btn-outline">{t("subscriptionsAdmin.freeModal.cancel")}</button>
             <button
               onClick={() => makeFree.mutate()}
               disabled={makeFree.isPending || !freeReason.trim()}
               className="btn-primary"
             >
-              {makeFree.isPending ? "Saving..." : "Confirm — make free"}
+              {makeFree.isPending ? t("subscriptionsAdmin.freeModal.saving") : t("subscriptionsAdmin.freeModal.confirm")}
             </button>
           </div>
         </BigModal>
@@ -625,18 +625,17 @@ export default function SubscriptionsAdminPage() {
       {/* Manual invoice modal */}
       {invRow && (
         <BigModal
-          title={`Manual invoice — ${invRow.organization_name} · ${invRow.module_name}`}
+          title={t("subscriptionsAdmin.invoiceModal.title", { org: invRow.organization_name, module: invRow.module_name })}
           onClose={() => (recordInvoice.isPending ? null : setInvRow(null))}
           small
         >
           <p className="text-sm text-gray-600 mb-3 flex items-start gap-2">
             <CreditCard className="h-4 w-4 mt-0.5 text-gray-400 flex-shrink-0" />
             <span>
-              Records the invoice intent on this subscription's internal notes for audit.
-              The actual invoice document is created in EMP Billing on the next sync.
+              {t("subscriptionsAdmin.invoiceModal.description")}
             </span>
           </p>
-          <Field label={`Amount (in ${invRow.currency})`}>
+          <Field label={t("subscriptionsAdmin.invoiceModal.amountLabel", { currency: invRow.currency })}>
             <input
               type="number"
               step="0.01"
@@ -645,15 +644,15 @@ export default function SubscriptionsAdminPage() {
               className="input font-mono"
             />
           </Field>
-          <Field label="Description">
+          <Field label={t("subscriptionsAdmin.invoiceModal.descriptionLabel")}>
             <input
               value={invForm.description}
               onChange={(e) => setInvForm({ ...invForm, description: e.target.value })}
-              placeholder="One-time setup fee, custom feature work, etc."
+              placeholder={t("subscriptionsAdmin.invoiceModal.descriptionPlaceholder")}
               className="input"
             />
           </Field>
-          <Field label="Due date (optional)">
+          <Field label={t("subscriptionsAdmin.invoiceModal.dueDateLabel")}>
             <input
               type="date"
               value={invForm.due_date}
@@ -662,13 +661,13 @@ export default function SubscriptionsAdminPage() {
             />
           </Field>
           <div className="flex justify-end gap-2 pt-3">
-            <button onClick={() => setInvRow(null)} disabled={recordInvoice.isPending} className="btn-outline">Cancel</button>
+            <button onClick={() => setInvRow(null)} disabled={recordInvoice.isPending} className="btn-outline">{t("subscriptionsAdmin.invoiceModal.cancel")}</button>
             <button
               onClick={() => recordInvoice.mutate()}
               disabled={recordInvoice.isPending || !invForm.amount}
               className="btn-primary"
             >
-              {recordInvoice.isPending ? "Saving..." : "Record invoice intent"}
+              {recordInvoice.isPending ? t("subscriptionsAdmin.invoiceModal.saving") : t("subscriptionsAdmin.invoiceModal.confirm")}
             </button>
           </div>
         </BigModal>

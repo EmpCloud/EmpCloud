@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
@@ -68,6 +69,7 @@ function fmtDate(d?: string | null) {
 }
 
 export default function InvoicesAdminPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
@@ -103,14 +105,15 @@ export default function InvoicesAdminPage() {
         })
         .then((r) => r.data),
     onSuccess: () => {
-      toast.success("Invoice marked paid");
+      toast.success(t("invoicesAdmin.toast.markPaidSuccess"));
       setPayTarget(null);
       setPayMethod("manual");
       setPayRef("");
       setPayNotes("");
       qc.invalidateQueries({ queryKey: ["admin-billing-invoices"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) =>
+      toast.error(e?.response?.data?.error?.message || t("invoicesAdmin.toast.genericError")),
   });
 
   // ---- Send-email ----
@@ -118,10 +121,11 @@ export default function InvoicesAdminPage() {
     mutationFn: (id: string) =>
       api.post(`/admin/billing/invoices/${id}/send`).then((r) => r.data),
     onSuccess: () => {
-      toast.success("Invoice email queued");
+      toast.success(t("invoicesAdmin.toast.sendEmailSuccess"));
       qc.invalidateQueries({ queryKey: ["admin-billing-invoices"] });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.error?.message || "Failed"),
+    onError: (e: any) =>
+      toast.error(e?.response?.data?.error?.message || t("invoicesAdmin.toast.genericError")),
   });
 
   // ---- View PDF ----
@@ -144,7 +148,7 @@ export default function InvoicesAdminPage() {
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch {
       if (win) win.close();
-      toast.error("Failed to load invoice PDF");
+      toast.error(t("invoicesAdmin.toast.pdfError"));
     } finally {
       setPdfLoadingId(null);
     }
@@ -209,7 +213,7 @@ export default function InvoicesAdminPage() {
         })
         .then((r) => r.data),
     onSuccess: () => {
-      toast.success("Subscription created; invoice will appear in a moment");
+      toast.success(t("invoicesAdmin.toast.subscribeSuccess"));
       setSubOpen(false);
       setTimeout(() => {
         qc.invalidateQueries({ queryKey: ["admin-billing-invoices"] });
@@ -218,7 +222,7 @@ export default function InvoicesAdminPage() {
     onError: (e: any) =>
       toast.error(
         e?.response?.data?.error?.message ||
-          "Failed to create subscription. Check the org is valid and emp-billing is running.",
+          t("invoicesAdmin.toast.subscribeError"),
       ),
   });
 
@@ -228,11 +232,10 @@ export default function InvoicesAdminPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <Receipt className="h-6 w-6 text-brand-600" />
-            Invoices
+            {t("invoicesAdmin.title")}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            All invoices across all customer orgs (proxied from emp-billing). Mark paid,
-            send by email, view PDF, or create a subscription on behalf of any org.
+            {t("invoicesAdmin.subtitle")}
           </p>
         </div>
         <button
@@ -251,7 +254,7 @@ export default function InvoicesAdminPage() {
           }}
           className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" /> Subscribe on behalf
+          <Plus className="h-4 w-4" /> {t("invoicesAdmin.subscribeOnBehalf")}
         </button>
       </div>
 
@@ -259,36 +262,36 @@ export default function InvoicesAdminPage() {
       <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[220px]">
-            <label className="mb-1 block text-xs font-medium text-gray-600">Search</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600">{t("invoicesAdmin.filters.searchLabel")}</label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                placeholder="Invoice number, org name…"
+                placeholder={t("invoicesAdmin.filters.searchPlaceholder")}
                 className="w-full rounded-lg border border-gray-200 bg-white pl-8 pr-3 py-2 text-sm"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Status</label>
+            <label className="mb-1 block text-xs font-medium text-gray-600">{t("invoicesAdmin.filters.statusLabel")}</label>
             <select
               value={status}
               onChange={(e) => { setStatus(e.target.value); setPage(1); }}
               className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
             >
-              <option value="">All</option>
-              <option value="draft">Draft</option>
-              <option value="sent">Sent</option>
-              <option value="viewed">Viewed</option>
-              <option value="partially_paid">Partially paid</option>
-              <option value="paid">Paid</option>
-              <option value="overdue">Overdue</option>
-              <option value="void">Void</option>
-              <option value="written_off">Written off</option>
+              <option value="">{t("invoicesAdmin.status.all")}</option>
+              <option value="draft">{t("invoicesAdmin.status.draft")}</option>
+              <option value="sent">{t("invoicesAdmin.status.sent")}</option>
+              <option value="viewed">{t("invoicesAdmin.status.viewed")}</option>
+              <option value="partially_paid">{t("invoicesAdmin.status.partially_paid")}</option>
+              <option value="paid">{t("invoicesAdmin.status.paid")}</option>
+              <option value="overdue">{t("invoicesAdmin.status.overdue")}</option>
+              <option value="void">{t("invoicesAdmin.status.void")}</option>
+              <option value="written_off">{t("invoicesAdmin.status.written_off")}</option>
             </select>
           </div>
-          <div className="ml-auto text-sm text-gray-500">{total} invoice(s)</div>
+          <div className="ml-auto text-sm text-gray-500">{t("invoicesAdmin.invoiceCount", { count: total })}</div>
         </div>
       </div>
 
@@ -296,21 +299,21 @@ export default function InvoicesAdminPage() {
       <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         {listQ.isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-gray-400">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("invoicesAdmin.loading")}
           </div>
         ) : rows.length === 0 ? (
-          <div className="py-12 text-center text-sm text-gray-400">No invoices match.</div>
+          <div className="py-12 text-center text-sm text-gray-400">{t("invoicesAdmin.empty")}</div>
         ) : (
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
               <tr>
-                <th className="px-3 py-2 text-left">Invoice</th>
-                <th className="px-3 py-2 text-left">Org</th>
-                <th className="px-3 py-2 text-left">Status</th>
-                <th className="px-3 py-2 text-right">Total</th>
-                <th className="px-3 py-2 text-right">Due</th>
-                <th className="px-3 py-2 text-left">Issued</th>
-                <th className="px-3 py-2 text-right">Actions</th>
+                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.invoice")}</th>
+                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.org")}</th>
+                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.status")}</th>
+                <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.total")}</th>
+                <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.due")}</th>
+                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.issued")}</th>
+                <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -336,7 +339,7 @@ export default function InvoicesAdminPage() {
                     <span
                       className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-gray-100 text-gray-600"}`}
                     >
-                      {r.status}
+                      {t(`invoicesAdmin.status.${r.status}`, { defaultValue: r.status })}
                     </span>
                   </td>
                   <td className="px-3 py-2 text-right font-mono">
@@ -348,7 +351,7 @@ export default function InvoicesAdminPage() {
                   <td className="px-3 py-2 text-xs text-gray-600 dark:text-gray-400">
                     {fmtDate(r.issue_date)}
                     {r.due_date && r.due_date !== r.issue_date && (
-                      <div className="text-gray-400">due {fmtDate(r.due_date)}</div>
+                      <div className="text-gray-400">{t("invoicesAdmin.table.dueDatePrefix")} {fmtDate(r.due_date)}</div>
                     )}
                   </td>
                   <td className="px-3 py-2 text-right">
@@ -357,7 +360,7 @@ export default function InvoicesAdminPage() {
                         <button
                           onClick={() => setPayTarget(r)}
                           className="text-emerald-600 hover:text-emerald-800"
-                          title="Mark paid"
+                          title={t("invoicesAdmin.actions.markPaid")}
                         >
                           <CheckCircle2 className="h-4 w-4" />
                         </button>
@@ -365,7 +368,7 @@ export default function InvoicesAdminPage() {
                       <button
                         onClick={() => sendEmail.mutate(r.id)}
                         className="text-blue-600 hover:text-blue-800"
-                        title="Send email"
+                        title={t("invoicesAdmin.actions.sendEmail")}
                       >
                         <Send className="h-4 w-4" />
                       </button>
@@ -373,7 +376,7 @@ export default function InvoicesAdminPage() {
                         onClick={() => openPdf(r.id)}
                         disabled={pdfLoadingId === r.id}
                         className="text-gray-500 hover:text-gray-700 disabled:opacity-40"
-                        title="PDF"
+                        title={t("invoicesAdmin.actions.pdf")}
                       >
                         {pdfLoadingId === r.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -397,7 +400,7 @@ export default function InvoicesAdminPage() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="rounded border border-gray-200 px-3 py-1 text-sm disabled:opacity-40"
           >
-            Prev
+            {t("invoicesAdmin.pagination.prev")}
           </button>
           <span className="text-sm text-gray-600">{page} / {totalPages}</span>
           <button
@@ -405,49 +408,49 @@ export default function InvoicesAdminPage() {
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             className="rounded border border-gray-200 px-3 py-1 text-sm disabled:opacity-40"
           >
-            Next
+            {t("invoicesAdmin.pagination.next")}
           </button>
         </div>
       )}
 
       {/* Mark Paid Modal */}
       {payTarget && (
-        <Modal title="Mark invoice paid" onClose={() => (markPaid.isPending ? null : setPayTarget(null))}>
+        <Modal title={t("invoicesAdmin.markPaid.title")} onClose={() => (markPaid.isPending ? null : setPayTarget(null))}>
           <p className="text-sm text-gray-600 mb-3">
             Records a payment for the full outstanding amount{" "}
             <strong>{fmtMoney(Number(payTarget.amount_due), payTarget.currency)}</strong> against{" "}
             <strong>{payTarget.invoice_number}</strong>. emp-billing will flip the status to paid
             and notify the customer (if email is configured).
           </p>
-          <Field label="Payment method">
+          <Field label={t("invoicesAdmin.markPaid.methodLabel")}>
             <select
               value={payMethod}
               onChange={(e) => setPayMethod(e.target.value)}
               className="input"
             >
-              <option value="manual">Manual / Cash</option>
-              <option value="bank_transfer">Bank Transfer</option>
-              <option value="cheque">Cheque</option>
-              <option value="upi">UPI</option>
-              <option value="card">Card</option>
-              <option value="other">Other</option>
+              <option value="manual">{t("invoicesAdmin.markPaid.method.manual")}</option>
+              <option value="bank_transfer">{t("invoicesAdmin.markPaid.method.bank_transfer")}</option>
+              <option value="cheque">{t("invoicesAdmin.markPaid.method.cheque")}</option>
+              <option value="upi">{t("invoicesAdmin.markPaid.method.upi")}</option>
+              <option value="card">{t("invoicesAdmin.markPaid.method.card")}</option>
+              <option value="other">{t("invoicesAdmin.markPaid.method.other")}</option>
             </select>
           </Field>
-          <Field label="Reference (txn id, cheque #, etc.)">
+          <Field label={t("invoicesAdmin.markPaid.referenceLabel")}>
             <input
               value={payRef}
               onChange={(e) => setPayRef(e.target.value)}
               className="input"
-              placeholder="e.g. TXN-2026-04-XYZ"
+              placeholder={t("invoicesAdmin.markPaid.referencePlaceholder")}
             />
           </Field>
-          <Field label="Notes (internal)">
+          <Field label={t("invoicesAdmin.markPaid.notesLabel")}>
             <textarea
               rows={2}
               value={payNotes}
               onChange={(e) => setPayNotes(e.target.value)}
               className="input"
-              placeholder="Optional"
+              placeholder={t("invoicesAdmin.markPaid.notesPlaceholder")}
             />
           </Field>
           <div className="flex justify-end gap-2 pt-3">
@@ -456,14 +459,14 @@ export default function InvoicesAdminPage() {
               disabled={markPaid.isPending}
               className="btn-outline"
             >
-              Cancel
+              {t("invoicesAdmin.markPaid.cancel")}
             </button>
             <button
               onClick={() => markPaid.mutate()}
               disabled={markPaid.isPending}
               className="btn-primary"
             >
-              {markPaid.isPending ? "Recording…" : "Record payment"}
+              {markPaid.isPending ? t("invoicesAdmin.markPaid.recording") : t("invoicesAdmin.markPaid.submit")}
             </button>
           </div>
         </Modal>
@@ -471,12 +474,11 @@ export default function InvoicesAdminPage() {
 
       {/* Subscribe on behalf Modal */}
       {subOpen && (
-        <Modal title="Subscribe an org on behalf" onClose={() => (subscribe.isPending ? null : setSubOpen(false))} wide>
+        <Modal title={t("invoicesAdmin.subscribe.title")} onClose={() => (subscribe.isPending ? null : setSubOpen(false))} wide>
           <p className="text-sm text-gray-600 mb-3">
-            Creates the subscription in EmpCloud, which fires the standard webhook to
-            emp-billing — client, plan and the first invoice are provisioned automatically.
+            {t("invoicesAdmin.subscribe.description")}
           </p>
-          <Field label="Organization">
+          <Field label={t("invoicesAdmin.subscribe.orgLabel")}>
             <div className="relative">
               <input
                 type="text"
@@ -492,10 +494,10 @@ export default function InvoicesAdminPage() {
                 onBlur={() => setTimeout(() => setOrgDropdownOpen(false), 150)}
                 placeholder={
                   orgsQ.isLoading
-                    ? "Loading organizations…"
+                    ? t("invoicesAdmin.subscribe.orgLoadingPlaceholder")
                     : orgs.length
-                      ? `Type to search ${orgs.length} organizations…`
-                      : "No organizations available"
+                      ? t("invoicesAdmin.subscribe.orgSearchPlaceholder", { count: orgs.length })
+                      : t("invoicesAdmin.subscribe.orgNonePlaceholder")
                 }
                 className="input"
                 autoComplete="off"
@@ -503,11 +505,11 @@ export default function InvoicesAdminPage() {
               {orgDropdownOpen && (orgsQ.isLoading || filteredOrgs.length > 0 || orgSearch.trim()) && (
                 <div className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
                   {orgsQ.isLoading && (
-                    <div className="px-3 py-2 text-sm text-gray-400">Loading…</div>
+                    <div className="px-3 py-2 text-sm text-gray-400">{t("invoicesAdmin.subscribe.orgDropdownLoading")}</div>
                   )}
                   {!orgsQ.isLoading && filteredOrgs.length === 0 && (
                     <div className="px-3 py-2 text-sm text-gray-400">
-                      No matching organizations
+                      {t("invoicesAdmin.subscribe.orgNoMatches")}
                     </div>
                   )}
                   {!orgsQ.isLoading &&
@@ -535,7 +537,7 @@ export default function InvoicesAdminPage() {
                     ))}
                   {filteredOrgs.length > 50 && (
                     <div className="border-t border-gray-100 px-3 py-2 text-xs text-gray-400 dark:border-gray-800">
-                      {filteredOrgs.length - 50} more — refine search to narrow
+                      {t("invoicesAdmin.subscribe.orgMoreResults", { count: filteredOrgs.length - 50 })}
                     </div>
                   )}
                 </div>
@@ -543,32 +545,32 @@ export default function InvoicesAdminPage() {
             </div>
             {subForm.organization_id && (
               <div className="mt-1 text-xs text-emerald-600">
-                ✓ Selected (org id {subForm.organization_id})
+                ✓ {t("invoicesAdmin.subscribe.orgSelected", { orgId: subForm.organization_id })}
               </div>
             )}
           </Field>
-          <Field label="Module">
+          <Field label={t("invoicesAdmin.subscribe.moduleLabel")}>
             <select
               value={subForm.module_id}
               onChange={(e) => setSubForm({ ...subForm, module_id: e.target.value })}
               className="input"
             >
-              <option value="">— Pick a module —</option>
+              <option value="">{t("invoicesAdmin.subscribe.modulePlaceholder")}</option>
               {modules.map((m: any) => (
                 <option key={m.id} value={m.id}>{m.name}</option>
               ))}
             </select>
           </Field>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Plan tier">
+            <Field label={t("invoicesAdmin.subscribe.planTierLabel")}>
               <input
                 value={subForm.plan_tier}
                 onChange={(e) => setSubForm({ ...subForm, plan_tier: e.target.value })}
                 className="input"
-                placeholder="basic / professional / enterprise / custom"
+                placeholder={t("invoicesAdmin.subscribe.planTierPlaceholder")}
               />
             </Field>
-            <Field label="Total seats">
+            <Field label={t("invoicesAdmin.subscribe.totalSeatsLabel")}>
               <input
                 type="number"
                 min={1}
@@ -579,18 +581,18 @@ export default function InvoicesAdminPage() {
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Billing cycle">
+            <Field label={t("invoicesAdmin.subscribe.billingCycleLabel")}>
               <select
                 value={subForm.billing_cycle}
                 onChange={(e) => setSubForm({ ...subForm, billing_cycle: e.target.value })}
                 className="input"
               >
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
-                <option value="annual">Annual</option>
+                <option value="monthly">{t("invoicesAdmin.subscribe.cycle.monthly")}</option>
+                <option value="quarterly">{t("invoicesAdmin.subscribe.cycle.quarterly")}</option>
+                <option value="annual">{t("invoicesAdmin.subscribe.cycle.annual")}</option>
               </select>
             </Field>
-            <Field label="Trial days (0 = bill immediately)">
+            <Field label={t("invoicesAdmin.subscribe.trialDaysLabel")}>
               <input
                 type="number"
                 min={0}
@@ -602,7 +604,7 @@ export default function InvoicesAdminPage() {
           </div>
           <div className="flex justify-end gap-2 pt-3">
             <button onClick={() => setSubOpen(false)} disabled={subscribe.isPending} className="btn-outline">
-              Cancel
+              {t("invoicesAdmin.subscribe.cancel")}
             </button>
             <button
               onClick={() => subscribe.mutate()}
@@ -614,7 +616,7 @@ export default function InvoicesAdminPage() {
               }
               className="btn-primary"
             >
-              {subscribe.isPending ? "Creating…" : "Create subscription"}
+              {subscribe.isPending ? t("invoicesAdmin.subscribe.creating") : t("invoicesAdmin.subscribe.submit")}
             </button>
           </div>
         </Modal>
