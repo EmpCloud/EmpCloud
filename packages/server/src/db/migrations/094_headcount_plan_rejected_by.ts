@@ -16,11 +16,16 @@ export async function up(knex: Knex): Promise<void> {
 
   await knex.schema.alterTable("headcount_plans", (t) => {
     if (!hasRejectedBy) {
+      // ON DELETE SET NULL so hard-deleting a user who rejected a plan clears the
+      // reference instead of being blocked by the FK. (approved_by uses RESTRICT and
+      // is nulled explicitly in the user hard-delete path; SET NULL keeps this new
+      // column self-contained without having to extend that cleanup list.)
       t.bigInteger("rejected_by")
         .unsigned()
         .nullable()
         .references("id")
-        .inTable("users");
+        .inTable("users")
+        .onDelete("SET NULL");
     }
     if (!hasRejectedAt) {
       t.timestamp("rejected_at").nullable();
