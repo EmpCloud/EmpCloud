@@ -36,7 +36,12 @@ router.get("/dashboard", authenticate, requirePermission("positions:view", "posi
 // GET /api/v1/positions/vacancies — Open vacancies
 router.get("/vacancies", authenticate, requirePermission("positions:view", "positions:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const vacancies = await positionService.getVacancies(req.user!.org_id);
+    const query = positionQuerySchema.parse(req.query);
+    const vacancies = await positionService.getVacancies(req.user!.org_id, {
+      department_id: query.department_id,
+      employment_type: query.employment_type,
+      is_critical: query.is_critical,
+    });
     sendSuccess(res, vacancies);
   } catch (err) { next(err); }
 });
