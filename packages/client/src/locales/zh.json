@@ -2726,5 +2726,62 @@
     "deactivateBody": "停用 <strong>{{name}}</strong>？已用此类别标记的现有资产将保留标记，但在恢复之前无法将新资产放入此处。",
     "deactivating": "正在停用...",
     "deactivate": "停用"
+  },
+  "helpdeskDashboard": {
+    "loading": "正在加载服务台仪表板……",
+    "title": "服务台仪表板",
+    "subtitle": "HR 服务台工单与 SLA 表现概览。",
+    "viewAllTickets": "查看全部工单",
+    "stat": {
+      "totalOpen": "待处理总数",
+      "inProgress": "处理中",
+      "overdue": "已逾期（违反 SLA）",
+      "resolvedToday": "今日已解决"
+    },
+    "slaCompliance": {
+      "heading": "SLA 达标率",
+      "caption": "在 SLA 内解决的工单"
+    },
+    "avgResolution": {
+      "heading": "平均解决时长",
+      "unit": "小时"
+    },
+    "satisfaction": {
+      "heading": "满意度评分",
+      "notAvailable": "暂无",
+      "ratingCount_one": "{{count}} 条评分",
+      "ratingCount_other": "{{count}} 条评分"
+    },
+    "categoryBreakdown": {
+      "heading": "按类别统计工单"
+    },
+    "recentTickets": {
+      "heading": "近期工单"
+    },
+    "noTicketsYet": "暂无工单",
+    "category": {
+      "leave": "请假",
+      "payroll": "薪资",
+      "benefits": "福利",
+      "it": "IT",
+      "facilities": "后勤设施",
+      "onboarding": "入职",
+      "policy": "政策制度",
+      "general": "综合"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高",
+      "urgent": "紧急"
+    },
+    "status": {
+      "open": "待处理",
+      "in_progress": "处理中",
+      "awaiting_response": "等待回复",
+      "resolved": "已解决",
+      "closed": "已关闭",
+      "reopened": "已重新打开"
+    }
   }
 }

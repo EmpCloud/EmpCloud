@@ -2739,5 +2739,62 @@
     "deactivateBody": "Deactivate <strong>{{name}}</strong>? Existing assets tagged with this category keep the tag, but no new assets can be placed here until it's restored.",
     "deactivating": "Deactivating...",
     "deactivate": "Deactivate"
+  },
+  "helpdeskDashboard": {
+    "loading": "Loading helpdesk dashboard...",
+    "title": "Helpdesk Dashboard",
+    "subtitle": "Overview of HR helpdesk tickets and SLA performance.",
+    "viewAllTickets": "View All Tickets",
+    "stat": {
+      "totalOpen": "Total Open",
+      "inProgress": "In Progress",
+      "overdue": "Overdue (SLA Breached)",
+      "resolvedToday": "Resolved Today"
+    },
+    "slaCompliance": {
+      "heading": "SLA Compliance",
+      "caption": "Tickets resolved within SLA"
+    },
+    "avgResolution": {
+      "heading": "Average Resolution Time",
+      "unit": "hours"
+    },
+    "satisfaction": {
+      "heading": "Satisfaction Rating",
+      "notAvailable": "N/A",
+      "ratingCount_one": "{{count}} rating",
+      "ratingCount_other": "{{count}} ratings"
+    },
+    "categoryBreakdown": {
+      "heading": "Tickets by Category"
+    },
+    "recentTickets": {
+      "heading": "Recent Tickets"
+    },
+    "noTicketsYet": "No tickets yet",
+    "category": {
+      "leave": "Leave",
+      "payroll": "Payroll",
+      "benefits": "Benefits",
+      "it": "IT",
+      "facilities": "Facilities",
+      "onboarding": "Onboarding",
+      "policy": "Policy",
+      "general": "General"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "awaiting_response": "Awaiting Response",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    }
   }
 }

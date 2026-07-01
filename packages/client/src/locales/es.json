@@ -2726,5 +2726,62 @@
     "deactivateBody": "¿Desactivar <strong>{{name}}</strong>? Los activos existentes etiquetados con esta categoría conservan la etiqueta, pero no se pueden colocar nuevos activos aquí hasta que se restaure.",
     "deactivating": "Desactivando...",
     "deactivate": "Desactivar"
+  },
+  "helpdeskDashboard": {
+    "loading": "Cargando el panel de soporte...",
+    "title": "Panel de soporte",
+    "subtitle": "Resumen de los tickets de soporte de RR. HH. y el cumplimiento de SLA.",
+    "viewAllTickets": "Ver todos los tickets",
+    "stat": {
+      "totalOpen": "Total abiertos",
+      "inProgress": "En curso",
+      "overdue": "Vencidos (SLA incumplido)",
+      "resolvedToday": "Resueltos hoy"
+    },
+    "slaCompliance": {
+      "heading": "Cumplimiento de SLA",
+      "caption": "Tickets resueltos dentro del SLA"
+    },
+    "avgResolution": {
+      "heading": "Tiempo medio de resolución",
+      "unit": "horas"
+    },
+    "satisfaction": {
+      "heading": "Valoración de satisfacción",
+      "notAvailable": "N/D",
+      "ratingCount_one": "{{count}} valoración",
+      "ratingCount_other": "{{count}} valoraciones"
+    },
+    "categoryBreakdown": {
+      "heading": "Tickets por categoría"
+    },
+    "recentTickets": {
+      "heading": "Tickets recientes"
+    },
+    "noTicketsYet": "Aún no hay tickets",
+    "category": {
+      "leave": "Ausencias",
+      "payroll": "Nómina",
+      "benefits": "Beneficios",
+      "it": "TI",
+      "facilities": "Instalaciones",
+      "onboarding": "Incorporación",
+      "policy": "Políticas",
+      "general": "General"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Abierto",
+      "in_progress": "En curso",
+      "awaiting_response": "Esperando respuesta",
+      "resolved": "Resuelto",
+      "closed": "Cerrado",
+      "reopened": "Reabierto"
+    }
   }
 }
