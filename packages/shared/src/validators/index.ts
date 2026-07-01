@@ -1270,6 +1270,7 @@ export const headcountPlanQuerySchema = paginationSchema.extend({
   fiscal_year: z.string().optional(),
   status: headcountPlanStatusEnum.optional(),
   department_id: z.coerce.number().int().positive().optional(),
+  quarter: headcountQuarterEnum.optional(),
   search: z.string().optional(),
 });
 

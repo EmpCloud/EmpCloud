@@ -520,6 +520,7 @@ export async function listHeadcountPlans(
     fiscal_year?: string;
     status?: string;
     department_id?: number;
+    quarter?: string;
     search?: string;
   }
 ) {
@@ -538,6 +539,9 @@ export async function listHeadcountPlans(
   }
   if (params?.department_id) {
     query = query.where({ "headcount_plans.department_id": params.department_id });
+  }
+  if (params?.quarter) {
+    query = query.where({ "headcount_plans.quarter": params.quarter });
   }
   if (params?.search) {
     const s = `%${params.search}%`;
