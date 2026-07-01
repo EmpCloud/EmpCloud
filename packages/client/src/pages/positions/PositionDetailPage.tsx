@@ -75,7 +75,13 @@ export default function PositionDetailPage() {
   const removeMutation = useMutation({
     mutationFn: (assignmentId: number) => api.delete(`/positions/assignments/${assignmentId}`),
     onSuccess: () => {
+      // Ending an assignment lowers headcount_filled and can reopen the position
+      // (filled -> active), so refresh the vacancies, list and dashboard views too —
+      // not just this position's detail.
       queryClient.invalidateQueries({ queryKey: ["position", id] });
+      queryClient.invalidateQueries({ queryKey: ["position-vacancies"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setEndAssignmentId(null);
     },
   });
