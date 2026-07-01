@@ -2860,5 +2860,290 @@
       "cycleDeleted": "Abrechnungszyklus gelöscht",
       "failed": "Fehlgeschlagen"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Mitarbeiter aus Excel / CSV importieren"
+    },
+    "downloadTemplate": "Vorlage herunterladen",
+    "downloadTemplateHint": "Laden Sie eine Excel-Beispieldatei mit den richtigen Spaltenüberschriften herunter.",
+    "dropzone": {
+      "title": "Ziehen Sie Ihre Excel- oder CSV-Datei hierher",
+      "browse": "oder zum Durchsuchen klicken"
+    },
+    "parseError": "Datei konnte nicht verarbeitet werden",
+    "preview": {
+      "uploadDifferent": "Andere Datei hochladen",
+      "errorsHeading": "Zeilen mit Fehlern (korrigieren Sie Ihre Datei und laden Sie sie erneut hoch)",
+      "rowLabel": "Zeile {{row}}:",
+      "valid_one": "{{count}} gültig",
+      "valid_other": "{{count}} gültig",
+      "invalid_one": "{{count}} ungültig",
+      "invalid_other": "{{count}} ungültig",
+      "totalRows_one": "{{count}} Zeile insgesamt",
+      "totalRows_other": "{{count}} Zeilen insgesamt"
+    },
+    "table": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "role": "Rolle",
+      "empCode": "Personalnummer",
+      "designation": "Bezeichnung",
+      "department": "Abteilung",
+      "location": "Standort",
+      "manager": "Vorgesetzter",
+      "type": "Typ",
+      "joining": "Eintritt",
+      "inviteFallback": "Einladung"
+    },
+    "importing": "Mitarbeiter werden importiert... bitte warten.",
+    "done": {
+      "title": "Import abgeschlossen",
+      "summary_one": "{{count}} Mitarbeiter erfolgreich importiert.",
+      "summary_other": "{{count}} Mitarbeiter erfolgreich importiert.",
+      "departmentsCreated_one": "Neue Abteilung erstellt ({{count}}):",
+      "departmentsCreated_other": "Neue Abteilungen erstellt ({{count}}):",
+      "locationsCreated_one": "Neuer Standort erstellt ({{count}}):",
+      "locationsCreated_other": "Neue Standorte erstellt ({{count}}):",
+      "skipped_one": "{{count}} Zeile mit Fehlern übersprungen:",
+      "skipped_other": "{{count}} Zeilen mit Fehlern übersprungen:"
+    },
+    "failed": "Import fehlgeschlagen",
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "submit_one": "{{count}} gültigen Mitarbeiter importieren",
+    "submit_other": "{{count}} gültige Mitarbeiter importieren"
+  },
+  "invoicesAdmin": {
+    "title": "Rechnungen",
+    "subtitle": "Alle Rechnungen über alle Kundenorganisationen hinweg (per Proxy aus emp-billing). Als bezahlt markieren, per E-Mail versenden, PDF anzeigen oder ein Abonnement im Namen einer beliebigen Organisation erstellen.",
+    "subscribeOnBehalf": "Im Auftrag abonnieren",
+    "filters": {
+      "searchLabel": "Suchen",
+      "searchPlaceholder": "Rechnungsnummer, Organisationsname…",
+      "statusLabel": "Status"
+    },
+    "status": {
+      "all": "Alle",
+      "draft": "Entwurf",
+      "sent": "Gesendet",
+      "viewed": "Angesehen",
+      "partially_paid": "Teilweise bezahlt",
+      "paid": "Bezahlt",
+      "overdue": "Überfällig",
+      "void": "Storniert",
+      "written_off": "Abgeschrieben"
+    },
+    "table": {
+      "invoice": "Rechnung",
+      "org": "Org.",
+      "status": "Status",
+      "total": "Gesamtbetrag",
+      "due": "Fällig",
+      "issued": "Ausgestellt",
+      "actions": "Aktionen",
+      "dueDatePrefix": "fällig"
+    },
+    "loading": "Wird geladen…",
+    "empty": "Keine passenden Rechnungen.",
+    "actions": {
+      "markPaid": "Als bezahlt markieren",
+      "sendEmail": "E-Mail senden",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "Zurück",
+      "next": "Weiter"
+    },
+    "markPaid": {
+      "title": "Rechnung als bezahlt markieren",
+      "methodLabel": "Zahlungsmethode",
+      "method": {
+        "manual": "Manuell / Bar",
+        "bank_transfer": "Banküberweisung",
+        "cheque": "Scheck",
+        "upi": "UPI",
+        "card": "Karte",
+        "other": "Sonstige"
+      },
+      "referenceLabel": "Referenz (Transaktions-ID, Scheck-Nr. usw.)",
+      "referencePlaceholder": "z. B. TXN-2026-04-XYZ",
+      "notesLabel": "Notizen (intern)",
+      "notesPlaceholder": "Optional",
+      "cancel": "Abbrechen",
+      "recording": "Wird erfasst…",
+      "submit": "Zahlung erfassen"
+    },
+    "subscribe": {
+      "title": "Organisation im Auftrag abonnieren",
+      "description": "Erstellt das Abonnement in EmpCloud, wodurch der Standard-Webhook an emp-billing ausgelöst wird — Kunde, Tarif und die erste Rechnung werden automatisch bereitgestellt.",
+      "orgLabel": "Organisation",
+      "orgLoadingPlaceholder": "Organisationen werden geladen…",
+      "orgNonePlaceholder": "Keine Organisationen verfügbar",
+      "orgDropdownLoading": "Wird geladen…",
+      "orgNoMatches": "Keine passenden Organisationen",
+      "orgSelected": "Ausgewählt (Org.-ID {{orgId}})",
+      "moduleLabel": "Modul",
+      "modulePlaceholder": "— Modul auswählen —",
+      "planTierLabel": "Tarifstufe",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "Gesamtzahl der Lizenzen",
+      "billingCycleLabel": "Abrechnungszeitraum",
+      "cycle": {
+        "monthly": "Monatlich",
+        "quarterly": "Vierteljährlich",
+        "annual": "Jährlich"
+      },
+      "trialDaysLabel": "Probetage (0 = sofort abrechnen)",
+      "cancel": "Abbrechen",
+      "creating": "Wird erstellt…",
+      "submit": "Abonnement erstellen",
+      "orgSearchPlaceholder_one": "Zum Durchsuchen von {{count}} Organisationen tippen…",
+      "orgSearchPlaceholder_other": "Zum Durchsuchen von {{count}} Organisationen tippen…",
+      "orgMoreResults_one": "{{count}} weiteres — Suche verfeinern zum Eingrenzen",
+      "orgMoreResults_other": "{{count}} weitere — Suche verfeinern zum Eingrenzen"
+    },
+    "toast": {
+      "markPaidSuccess": "Rechnung als bezahlt markiert",
+      "sendEmailSuccess": "Rechnungs-E-Mail in die Warteschlange gestellt",
+      "pdfError": "Rechnungs-PDF konnte nicht geladen werden",
+      "subscribeSuccess": "Abonnement erstellt; die Rechnung erscheint in Kürze",
+      "genericError": "Fehlgeschlagen",
+      "subscribeError": "Abonnement konnte nicht erstellt werden. Prüfen Sie, ob die Organisation gültig ist und emp-billing ausgeführt wird."
+    },
+    "invoiceCount_one": "{{count}} Rechnung",
+    "invoiceCount_other": "{{count}} Rechnungen"
+  },
+  "subscriptionsAdmin": {
+    "title": "Abonnements",
+    "subtitle": "Vollständige Kontrolle über jedes Kundenabonnement – Stufe, Status, Lizenzen, Preisgestaltung, Abrechnungszeitraum, Testphasenende, automatische Verlängerung, kostenlos / Kulanz und manuelle Rechnungsabsicht.",
+    "filters": {
+      "searchOrg": {
+        "label": "Organisation suchen",
+        "placeholder": "Name oder E-Mail"
+      },
+      "status": {
+        "label": "Status"
+      },
+      "currency": {
+        "label": "Währung"
+      },
+      "all": "Alle"
+    },
+    "table": {
+      "columns": {
+        "org": "Organisation",
+        "module": "Modul",
+        "tier": "Stufe",
+        "status": "Status",
+        "seats": "Plätze",
+        "pricePerSeat": "Preis/Platz",
+        "period": "Zeitraum",
+        "flags": "Kennzeichen",
+        "actions": "Aktionen"
+      }
+    },
+    "status": {
+      "trial": "Testphase",
+      "active": "aktiv",
+      "past_due": "überfällig",
+      "suspended": "ausgesetzt",
+      "cancelled": "gekündigt",
+      "expired": "abgelaufen"
+    },
+    "billingCycle": {
+      "monthly": "monatlich",
+      "quarterly": "vierteljährlich",
+      "annual": "jährlich"
+    },
+    "period": {
+      "trialEnds": "Testphase endet {{date}}"
+    },
+    "badges": {
+      "free": "KOSTENLOS",
+      "manual": "MANUELL",
+      "noRenew": "OHNE VERLÄNGERUNG"
+    },
+    "loading": "Wird geladen...",
+    "empty": "Keine Abonnements gefunden.",
+    "actions": {
+      "edit": "Bearbeiten (alle Felder)",
+      "suspend": "Aussetzen",
+      "activate": "Aktivieren",
+      "cancel": "Kündigen",
+      "removeFreeFlag": "Kostenlos-Kennzeichen entfernen",
+      "markFree": "Als kostenlos / Kulanz markieren",
+      "recordManualInvoice": "Manuelle Rechnung erfassen"
+    },
+    "confirm": {
+      "suspend": "{{module}} von {{org}} aussetzen?",
+      "cancel": "{{module}} von {{org}} kündigen?",
+      "removeFree": "Kennzeichen kostenlos / Kulanz entfernen?"
+    },
+    "pagination": {
+      "prev": "Zurück",
+      "next": "Weiter",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "Abonnement aktualisiert",
+      "suspended": "Ausgesetzt",
+      "activated": "Aktiviert",
+      "cancelled": "Gekündigt",
+      "markedFree": "Als kostenlos markiert",
+      "unmarkedFree": "Kostenlos-Markierung entfernt",
+      "manualInvoiceRecorded": "Manuelle Rechnung erfasst",
+      "failed": "Fehlgeschlagen"
+    },
+    "editModal": {
+      "title": "Abonnement bearbeiten – {{org}} · {{module}}",
+      "fields": {
+        "planTier": "Tarifstufe",
+        "status": "Status",
+        "totalSeats": "Plätze gesamt",
+        "billingCycle": "Abrechnungszyklus",
+        "pricePerSeat": "Preis pro Platz (in ganzer Währungseinheit, z. B. Euro)",
+        "currency": "Währung",
+        "periodStart": "Zeitraumbeginn",
+        "periodEnd": "Zeitraumende",
+        "trialEnds": "Testphasenende (leer = keine Testphase)",
+        "autoRenew": "Automatische Verlängerung",
+        "freeComp": "Kostenlos / Kulanz",
+        "freeReason": "Grund für Kostenlosstellung",
+        "internalNotes": "Interne Notizen"
+      },
+      "autoRenewYes": "Ja",
+      "compedLabel": "Kostenlos gestellt (Preis auf 0 gesetzt)",
+      "freeReasonPlaceholder": "Beta-Tester, interne Nutzung, Vereinbarung mit der Geschäftsführung usw.",
+      "internalNotesPlaceholder": "Vertragskontext, Sonderkonditionen, Prüfprotokoll...",
+      "cancel": "Abbrechen",
+      "save": "Alle Änderungen speichern",
+      "saving": "Wird gespeichert..."
+    },
+    "freeModal": {
+      "title": "Als kostenlos markieren – {{org}} · {{module}}",
+      "description": "Dadurch wird price_per_seat auf 0 gesetzt und das Abonnement als kostenlos gestellt gekennzeichnet. Für das Prüfprotokoll ist ein Grund erforderlich.",
+      "reasonPlaceholder": "z. B. Beta-Tester, internes Team, Sponsoring durch die Geschäftsführung",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen – kostenlos machen",
+      "saving": "Wird gespeichert..."
+    },
+    "invoiceModal": {
+      "title": "Manuelle Rechnung – {{org}} · {{module}}",
+      "description": "Erfasst die Rechnungsabsicht in den internen Notizen dieses Abonnements zur Prüfung. Das eigentliche Rechnungsdokument wird bei der nächsten Synchronisierung in EMP Billing erstellt.",
+      "amountLabel": "Betrag (in {{currency}})",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Einmalige Einrichtungsgebühr, individuelle Funktionsentwicklung usw.",
+      "dueDateLabel": "Fälligkeitsdatum (optional)",
+      "cancel": "Abbrechen",
+      "confirm": "Rechnungsabsicht erfassen",
+      "saving": "Wird gespeichert..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} Abonnement",
+      "subscriptions_other": "{{count}} Abonnements"
+    }
   }
 }

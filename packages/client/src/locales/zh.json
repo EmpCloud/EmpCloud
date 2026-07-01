@@ -2860,5 +2860,290 @@
       "cycleDeleted": "计费周期已删除",
       "failed": "操作失败"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "从 Excel / CSV 导入员工"
+    },
+    "downloadTemplate": "下载模板",
+    "downloadTemplateHint": "下载包含正确表头的 Excel 示例文件。",
+    "dropzone": {
+      "title": "将 Excel 或 CSV 文件拖放到此处",
+      "browse": "或点击浏览"
+    },
+    "parseError": "文件解析失败",
+    "preview": {
+      "uploadDifferent": "上传其他文件",
+      "errorsHeading": "存在错误的行（请修正文件后重新上传）",
+      "rowLabel": "第 {{row}} 行：",
+      "valid_one": "{{count}} 条有效",
+      "valid_other": "{{count}} 条有效",
+      "invalid_one": "{{count}} 条无效",
+      "invalid_other": "{{count}} 条无效",
+      "totalRows_one": "共 {{count}} 行",
+      "totalRows_other": "共 {{count}} 行"
+    },
+    "table": {
+      "firstName": "名字",
+      "lastName": "姓氏",
+      "email": "邮箱",
+      "password": "密码",
+      "role": "角色",
+      "empCode": "员工编号",
+      "designation": "职位",
+      "department": "部门",
+      "location": "工作地点",
+      "manager": "上级",
+      "type": "类型",
+      "joining": "入职日期",
+      "inviteFallback": "邀请"
+    },
+    "importing": "正在导入员工... 请稍候。",
+    "done": {
+      "title": "导入完成",
+      "summary_one": "成功导入 {{count}} 名员工。",
+      "summary_other": "成功导入 {{count}} 名员工。",
+      "departmentsCreated_one": "已新建部门（{{count}} 个）：",
+      "departmentsCreated_other": "已新建部门（{{count}} 个）：",
+      "locationsCreated_one": "已新建工作地点（{{count}} 个）：",
+      "locationsCreated_other": "已新建工作地点（{{count}} 个）：",
+      "skipped_one": "已跳过 {{count}} 行存在错误的数据：",
+      "skipped_other": "已跳过 {{count}} 行存在错误的数据："
+    },
+    "failed": "导入失败",
+    "close": "关闭",
+    "cancel": "取消",
+    "submit_one": "导入 {{count}} 名有效员工",
+    "submit_other": "导入 {{count}} 名有效员工"
+  },
+  "invoicesAdmin": {
+    "title": "发票",
+    "subtitle": "所有客户组织的全部发票（由 emp-billing 代理）。可标记为已付款、通过电子邮件发送、查看 PDF，或代表任意组织创建订阅。",
+    "subscribeOnBehalf": "代为订阅",
+    "filters": {
+      "searchLabel": "搜索",
+      "searchPlaceholder": "发票号、组织名称…",
+      "statusLabel": "状态"
+    },
+    "status": {
+      "all": "全部",
+      "draft": "草稿",
+      "sent": "已发送",
+      "viewed": "已查看",
+      "partially_paid": "部分付款",
+      "paid": "已付款",
+      "overdue": "已逾期",
+      "void": "已作废",
+      "written_off": "已核销为坏账"
+    },
+    "table": {
+      "invoice": "发票",
+      "org": "组织",
+      "status": "状态",
+      "total": "总计",
+      "due": "应付",
+      "issued": "开具日期",
+      "actions": "操作",
+      "dueDatePrefix": "到期"
+    },
+    "loading": "加载中…",
+    "empty": "没有匹配的发票。",
+    "actions": {
+      "markPaid": "标记为已付款",
+      "sendEmail": "发送电子邮件",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "上一页",
+      "next": "下一页"
+    },
+    "markPaid": {
+      "title": "将发票标记为已付款",
+      "methodLabel": "付款方式",
+      "method": {
+        "manual": "手动 / 现金",
+        "bank_transfer": "银行转账",
+        "cheque": "支票",
+        "upi": "UPI",
+        "card": "银行卡",
+        "other": "其他"
+      },
+      "referenceLabel": "参考号（交易 ID、支票号等）",
+      "referencePlaceholder": "例如 TXN-2026-04-XYZ",
+      "notesLabel": "备注（内部）",
+      "notesPlaceholder": "可选",
+      "cancel": "取消",
+      "recording": "记录中…",
+      "submit": "记录付款"
+    },
+    "subscribe": {
+      "title": "代表组织订阅",
+      "description": "在 EmpCloud 中创建订阅，将触发发送给 emp-billing 的标准 webhook——客户、套餐和首张发票将自动开通。",
+      "orgLabel": "组织",
+      "orgLoadingPlaceholder": "正在加载组织…",
+      "orgNonePlaceholder": "无可用组织",
+      "orgDropdownLoading": "加载中…",
+      "orgNoMatches": "没有匹配的组织",
+      "orgSelected": "已选择（组织 ID {{orgId}}）",
+      "moduleLabel": "模块",
+      "modulePlaceholder": "— 选择模块 —",
+      "planTierLabel": "套餐等级",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "总席位数",
+      "billingCycleLabel": "计费周期",
+      "cycle": {
+        "monthly": "按月",
+        "quarterly": "按季度",
+        "annual": "按年"
+      },
+      "trialDaysLabel": "试用天数（0 = 立即计费）",
+      "cancel": "取消",
+      "creating": "创建中…",
+      "submit": "创建订阅",
+      "orgSearchPlaceholder_one": "输入以搜索 {{count}} 个组织…",
+      "orgSearchPlaceholder_other": "输入以搜索 {{count}} 个组织…",
+      "orgMoreResults_one": "还有 {{count}} 个——细化搜索以缩小范围",
+      "orgMoreResults_other": "还有 {{count}} 个——细化搜索以缩小范围"
+    },
+    "toast": {
+      "markPaidSuccess": "发票已标记为已付款",
+      "sendEmailSuccess": "发票邮件已加入队列",
+      "pdfError": "加载发票 PDF 失败",
+      "subscribeSuccess": "订阅已创建；发票稍后将会出现",
+      "genericError": "失败",
+      "subscribeError": "创建订阅失败。请检查组织是否有效，以及 emp-billing 是否正在运行。"
+    },
+    "invoiceCount_one": "{{count}} 张发票",
+    "invoiceCount_other": "{{count}} 张发票"
+  },
+  "subscriptionsAdmin": {
+    "title": "订阅",
+    "subtitle": "全面管理每个客户的订阅——套餐层级、状态、席位、定价、周期日期、试用结束、自动续订、免费/赠送以及手动开票意向。",
+    "filters": {
+      "searchOrg": {
+        "label": "搜索组织",
+        "placeholder": "名称或邮箱"
+      },
+      "status": {
+        "label": "状态"
+      },
+      "currency": {
+        "label": "币种"
+      },
+      "all": "全部"
+    },
+    "table": {
+      "columns": {
+        "org": "组织",
+        "module": "模块",
+        "tier": "层级",
+        "status": "状态",
+        "seats": "席位",
+        "pricePerSeat": "单席位价格",
+        "period": "周期",
+        "flags": "标记",
+        "actions": "操作"
+      }
+    },
+    "status": {
+      "trial": "试用",
+      "active": "活跃",
+      "past_due": "逾期未付",
+      "suspended": "已暂停",
+      "cancelled": "已取消",
+      "expired": "已过期"
+    },
+    "billingCycle": {
+      "monthly": "按月",
+      "quarterly": "按季度",
+      "annual": "按年"
+    },
+    "period": {
+      "trialEnds": "试用结束于 {{date}}"
+    },
+    "badges": {
+      "free": "免费",
+      "manual": "手动",
+      "noRenew": "不续订"
+    },
+    "loading": "加载中...",
+    "empty": "没有匹配的订阅。",
+    "actions": {
+      "edit": "编辑（全部字段）",
+      "suspend": "暂停",
+      "activate": "激活",
+      "cancel": "取消",
+      "removeFreeFlag": "移除免费标记",
+      "markFree": "标记为免费/赠送",
+      "recordManualInvoice": "记录手动开票"
+    },
+    "confirm": {
+      "suspend": "确定暂停 {{org}} 的 {{module}} 吗？",
+      "cancel": "确定取消 {{org}} 的 {{module}} 吗？",
+      "removeFree": "确定移除免费/赠送标记吗？"
+    },
+    "pagination": {
+      "prev": "上一页",
+      "next": "下一页",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "订阅已更新",
+      "suspended": "已暂停",
+      "activated": "已激活",
+      "cancelled": "已取消",
+      "markedFree": "已标记为免费",
+      "unmarkedFree": "已取消免费标记",
+      "manualInvoiceRecorded": "手动开票已记录",
+      "failed": "操作失败"
+    },
+    "editModal": {
+      "title": "编辑订阅 — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "套餐层级",
+        "status": "状态",
+        "totalSeats": "席位总数",
+        "billingCycle": "计费周期",
+        "pricePerSeat": "每席位价格（主单位）",
+        "currency": "币种",
+        "periodStart": "周期开始",
+        "periodEnd": "周期结束",
+        "trialEnds": "试用结束（留空 = 无试用）",
+        "autoRenew": "自动续订",
+        "freeComp": "免费/赠送",
+        "freeReason": "免费原因",
+        "internalNotes": "内部备注"
+      },
+      "autoRenewYes": "是",
+      "compedLabel": "已赠送（价格强制为 0）",
+      "freeReasonPlaceholder": "内测用户、内部使用、高管协议等",
+      "internalNotesPlaceholder": "交易背景、特殊条款、审计记录...",
+      "cancel": "取消",
+      "save": "保存所有更改",
+      "saving": "保存中..."
+    },
+    "freeModal": {
+      "title": "标记免费 — {{org}} · {{module}}",
+      "description": "此操作会将 price_per_seat 设为 0，并将该订阅标记为已赠送。审计日志需要填写原因。",
+      "reasonPlaceholder": "例如：内测用户、内部团队、高管赞助",
+      "cancel": "取消",
+      "confirm": "确认 — 设为免费",
+      "saving": "保存中..."
+    },
+    "invoiceModal": {
+      "title": "手动开票 — {{org}} · {{module}}",
+      "description": "将开票意向记录到该订阅的内部备注中以供审计。实际的发票文档将在下次同步时在 EMP Billing 中创建。",
+      "amountLabel": "金额（以 {{currency}} 计）",
+      "descriptionLabel": "描述",
+      "descriptionPlaceholder": "一次性设置费、定制功能开发等",
+      "dueDateLabel": "到期日（可选）",
+      "cancel": "取消",
+      "confirm": "记录开票意向",
+      "saving": "保存中..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} 个订阅",
+      "subscriptions_other": "{{count}} 个订阅"
+    }
   }
 }

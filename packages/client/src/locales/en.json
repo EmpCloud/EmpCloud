@@ -2866,5 +2866,290 @@
       "cycleDeleted": "Billing cycle deleted",
       "failed": "Failed"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Import Employees from Excel / CSV"
+    },
+    "downloadTemplate": "Download Template",
+    "downloadTemplateHint": "Download a sample Excel file with the correct headers.",
+    "dropzone": {
+      "title": "Drag & drop your Excel or CSV file here",
+      "browse": "or click to browse"
+    },
+    "parseError": "Failed to parse file",
+    "preview": {
+      "uploadDifferent": "Upload different file",
+      "errorsHeading": "Rows with errors (fix your file and re-upload)",
+      "rowLabel": "Row {{row}}:",
+      "valid_one": "{{count}} valid",
+      "valid_other": "{{count}} valid",
+      "invalid_one": "{{count}} invalid",
+      "invalid_other": "{{count}} invalid",
+      "totalRows_one": "{{count}} total row",
+      "totalRows_other": "{{count}} total rows"
+    },
+    "table": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role",
+      "empCode": "Emp Code",
+      "designation": "Designation",
+      "department": "Department",
+      "location": "Location",
+      "manager": "Manager",
+      "type": "Type",
+      "joining": "Joining",
+      "inviteFallback": "invite"
+    },
+    "importing": "Importing employees... please wait.",
+    "done": {
+      "title": "Import Complete",
+      "summary_one": "{{count}} employee imported successfully.",
+      "summary_other": "{{count}} employees imported successfully.",
+      "departmentsCreated_one": "New department created ({{count}}):",
+      "departmentsCreated_other": "New departments created ({{count}}):",
+      "locationsCreated_one": "New location created ({{count}}):",
+      "locationsCreated_other": "New locations created ({{count}}):",
+      "skipped_one": "Skipped {{count}} row with errors:",
+      "skipped_other": "Skipped {{count}} rows with errors:"
+    },
+    "failed": "Import failed",
+    "close": "Close",
+    "cancel": "Cancel",
+    "submit_one": "Import {{count}} valid employee",
+    "submit_other": "Import {{count}} valid employees"
+  },
+  "invoicesAdmin": {
+    "title": "Invoices",
+    "subtitle": "All invoices across all customer orgs (proxied from emp-billing). Mark paid, send by email, view PDF, or create a subscription on behalf of any org.",
+    "subscribeOnBehalf": "Subscribe on behalf",
+    "filters": {
+      "searchLabel": "Search",
+      "searchPlaceholder": "Invoice number, org name…",
+      "statusLabel": "Status"
+    },
+    "status": {
+      "all": "All",
+      "draft": "Draft",
+      "sent": "Sent",
+      "viewed": "Viewed",
+      "partially_paid": "Partially paid",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void",
+      "written_off": "Written off"
+    },
+    "table": {
+      "invoice": "Invoice",
+      "org": "Org",
+      "status": "Status",
+      "total": "Total",
+      "due": "Due",
+      "issued": "Issued",
+      "actions": "Actions",
+      "dueDatePrefix": "due"
+    },
+    "loading": "Loading…",
+    "empty": "No invoices match.",
+    "actions": {
+      "markPaid": "Mark paid",
+      "sendEmail": "Send email",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "markPaid": {
+      "title": "Mark invoice paid",
+      "methodLabel": "Payment method",
+      "method": {
+        "manual": "Manual / Cash",
+        "bank_transfer": "Bank Transfer",
+        "cheque": "Cheque",
+        "upi": "UPI",
+        "card": "Card",
+        "other": "Other"
+      },
+      "referenceLabel": "Reference (txn id, cheque #, etc.)",
+      "referencePlaceholder": "e.g. TXN-2026-04-XYZ",
+      "notesLabel": "Notes (internal)",
+      "notesPlaceholder": "Optional",
+      "cancel": "Cancel",
+      "recording": "Recording…",
+      "submit": "Record payment"
+    },
+    "subscribe": {
+      "title": "Subscribe an org on behalf",
+      "description": "Creates the subscription in EmpCloud, which fires the standard webhook to emp-billing — client, plan and the first invoice are provisioned automatically.",
+      "orgLabel": "Organization",
+      "orgLoadingPlaceholder": "Loading organizations…",
+      "orgNonePlaceholder": "No organizations available",
+      "orgDropdownLoading": "Loading…",
+      "orgNoMatches": "No matching organizations",
+      "orgSelected": "Selected (org id {{orgId}})",
+      "moduleLabel": "Module",
+      "modulePlaceholder": "— Pick a module —",
+      "planTierLabel": "Plan tier",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "Total seats",
+      "billingCycleLabel": "Billing cycle",
+      "cycle": {
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annual": "Annual"
+      },
+      "trialDaysLabel": "Trial days (0 = bill immediately)",
+      "cancel": "Cancel",
+      "creating": "Creating…",
+      "submit": "Create subscription",
+      "orgSearchPlaceholder_one": "Type to search {{count}} organization…",
+      "orgSearchPlaceholder_other": "Type to search {{count}} organizations…",
+      "orgMoreResults_one": "{{count}} more — refine search to narrow",
+      "orgMoreResults_other": "{{count}} more — refine search to narrow"
+    },
+    "toast": {
+      "markPaidSuccess": "Invoice marked paid",
+      "sendEmailSuccess": "Invoice email queued",
+      "pdfError": "Failed to load invoice PDF",
+      "subscribeSuccess": "Subscription created; invoice will appear in a moment",
+      "genericError": "Failed",
+      "subscribeError": "Failed to create subscription. Check the org is valid and emp-billing is running."
+    },
+    "invoiceCount_one": "{{count}} invoice",
+    "invoiceCount_other": "{{count}} invoices"
+  },
+  "subscriptionsAdmin": {
+    "title": "Subscriptions",
+    "subtitle": "Full control of every customer subscription — tier, status, seats, pricing, period dates, trial end, auto-renew, free / comp, and manual invoice intent.",
+    "filters": {
+      "searchOrg": {
+        "label": "Search org",
+        "placeholder": "Name or email"
+      },
+      "status": {
+        "label": "Status"
+      },
+      "currency": {
+        "label": "Currency"
+      },
+      "all": "All"
+    },
+    "table": {
+      "columns": {
+        "org": "Org",
+        "module": "Module",
+        "tier": "Tier",
+        "status": "Status",
+        "seats": "Seats",
+        "pricePerSeat": "Price/seat",
+        "period": "Period",
+        "flags": "Flags",
+        "actions": "Actions"
+      }
+    },
+    "status": {
+      "trial": "trial",
+      "active": "active",
+      "past_due": "past_due",
+      "suspended": "suspended",
+      "cancelled": "cancelled",
+      "expired": "expired"
+    },
+    "billingCycle": {
+      "monthly": "monthly",
+      "quarterly": "quarterly",
+      "annual": "annual"
+    },
+    "period": {
+      "trialEnds": "Trial ends {{date}}"
+    },
+    "badges": {
+      "free": "FREE",
+      "manual": "MANUAL",
+      "noRenew": "NO-RENEW"
+    },
+    "loading": "Loading...",
+    "empty": "No subscriptions match.",
+    "actions": {
+      "edit": "Edit (all fields)",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "cancel": "Cancel",
+      "removeFreeFlag": "Remove free flag",
+      "markFree": "Mark as free / comp",
+      "recordManualInvoice": "Record manual invoice"
+    },
+    "confirm": {
+      "suspend": "Suspend {{org}}'s {{module}}?",
+      "cancel": "Cancel {{org}}'s {{module}}?",
+      "removeFree": "Remove free / comp flag?"
+    },
+    "pagination": {
+      "prev": "Prev",
+      "next": "Next",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "Subscription updated",
+      "suspended": "Suspended",
+      "activated": "Activated",
+      "cancelled": "Cancelled",
+      "markedFree": "Marked free",
+      "unmarkedFree": "Unmarked free",
+      "manualInvoiceRecorded": "Manual invoice recorded",
+      "failed": "Failed"
+    },
+    "editModal": {
+      "title": "Edit subscription — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "Plan tier",
+        "status": "Status",
+        "totalSeats": "Total seats",
+        "billingCycle": "Billing cycle",
+        "pricePerSeat": "Price per seat (major unit)",
+        "currency": "Currency",
+        "periodStart": "Period start",
+        "periodEnd": "Period end",
+        "trialEnds": "Trial ends (blank = no trial)",
+        "autoRenew": "Auto-renew",
+        "freeComp": "Free / comp",
+        "freeReason": "Free reason",
+        "internalNotes": "Internal notes"
+      },
+      "autoRenewYes": "Yes",
+      "compedLabel": "Comped (price forced to 0)",
+      "freeReasonPlaceholder": "Beta tester, internal use, exec deal, etc.",
+      "internalNotesPlaceholder": "Deal context, special terms, audit trail...",
+      "cancel": "Cancel",
+      "save": "Save all changes",
+      "saving": "Saving..."
+    },
+    "freeModal": {
+      "title": "Mark free — {{org}} · {{module}}",
+      "description": "This will set price_per_seat to 0 and flag the subscription as comped. A reason is required for the audit log.",
+      "reasonPlaceholder": "e.g. Beta tester, internal team, executive sponsorship",
+      "cancel": "Cancel",
+      "confirm": "Confirm — make free",
+      "saving": "Saving..."
+    },
+    "invoiceModal": {
+      "title": "Manual invoice — {{org}} · {{module}}",
+      "description": "Records the invoice intent on this subscription's internal notes for audit. The actual invoice document is created in EMP Billing on the next sync.",
+      "amountLabel": "Amount (in {{currency}})",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "One-time setup fee, custom feature work, etc.",
+      "dueDateLabel": "Due date (optional)",
+      "cancel": "Cancel",
+      "confirm": "Record invoice intent",
+      "saving": "Saving..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} subscription",
+      "subscriptions_other": "{{count}} subscriptions"
+    }
   }
 }

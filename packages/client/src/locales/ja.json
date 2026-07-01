@@ -2860,5 +2860,290 @@
       "cycleDeleted": "請求サイクルを削除しました",
       "failed": "失敗しました"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Excel／CSVから従業員をインポート"
+    },
+    "downloadTemplate": "テンプレートをダウンロード",
+    "downloadTemplateHint": "正しいヘッダーが設定されたサンプル Excel ファイルをダウンロードします。",
+    "dropzone": {
+      "title": "Excel または CSV ファイルをここにドラッグ＆ドロップ",
+      "browse": "またはクリックして選択"
+    },
+    "parseError": "ファイルの解析に失敗しました",
+    "preview": {
+      "uploadDifferent": "別のファイルをアップロード",
+      "errorsHeading": "エラーのある行（ファイルを修正して再アップロードしてください）",
+      "rowLabel": "{{row}} 行目：",
+      "valid_one": "有効 {{count}} 件",
+      "valid_other": "有効 {{count}} 件",
+      "invalid_one": "エラー {{count}} 件",
+      "invalid_other": "エラー {{count}} 件",
+      "totalRows_one": "合計 {{count}} 行",
+      "totalRows_other": "合計 {{count}} 行"
+    },
+    "table": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "role": "ロール",
+      "empCode": "従業員コード",
+      "designation": "役職",
+      "department": "部署",
+      "location": "勤務地",
+      "manager": "上長",
+      "type": "雇用形態",
+      "joining": "入社日",
+      "inviteFallback": "招待"
+    },
+    "importing": "従業員をインポート中... お待ちください。",
+    "done": {
+      "title": "インポート完了",
+      "summary_one": "{{count}}人の従業員を正常にインポートしました。",
+      "summary_other": "{{count}}人の従業員を正常にインポートしました。",
+      "departmentsCreated_one": "新規作成された部署（{{count}} 件）：",
+      "departmentsCreated_other": "新規作成された部署（{{count}} 件）：",
+      "locationsCreated_one": "新規作成された勤務地（{{count}} 件）：",
+      "locationsCreated_other": "新規作成された勤務地（{{count}} 件）：",
+      "skipped_one": "エラーのある {{count}} 行をスキップしました：",
+      "skipped_other": "エラーのある {{count}} 行をスキップしました："
+    },
+    "failed": "インポートに失敗しました",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "submit_one": "有効な従業員{{count}}人をインポート",
+    "submit_other": "有効な従業員{{count}}人をインポート"
+  },
+  "invoicesAdmin": {
+    "title": "請求書",
+    "subtitle": "すべての顧客組織にわたるすべての請求書（emp-billing からプロキシ）。支払い済みにする、メールで送信する、PDF を表示する、または任意の組織に代わってサブスクリプションを作成できます。",
+    "subscribeOnBehalf": "代理でサブスクライブ",
+    "filters": {
+      "searchLabel": "検索",
+      "searchPlaceholder": "請求書番号、組織名…",
+      "statusLabel": "ステータス"
+    },
+    "status": {
+      "all": "すべて",
+      "draft": "下書き",
+      "sent": "送信済み",
+      "viewed": "閲覧済み",
+      "partially_paid": "一部支払い済み",
+      "paid": "支払い済み",
+      "overdue": "支払期限超過",
+      "void": "無効",
+      "written_off": "貸倒処理済み"
+    },
+    "table": {
+      "invoice": "請求書",
+      "org": "組織",
+      "status": "ステータス",
+      "total": "合計",
+      "due": "未払額",
+      "issued": "発行日",
+      "actions": "操作",
+      "dueDatePrefix": "期限"
+    },
+    "loading": "読み込み中…",
+    "empty": "一致する請求書はありません。",
+    "actions": {
+      "markPaid": "支払い済みにする",
+      "sendEmail": "メールを送信",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "前へ",
+      "next": "次へ"
+    },
+    "markPaid": {
+      "title": "請求書を支払い済みにする",
+      "methodLabel": "支払方法",
+      "method": {
+        "manual": "手動 / 現金",
+        "bank_transfer": "銀行振込",
+        "cheque": "小切手",
+        "upi": "UPI",
+        "card": "カード",
+        "other": "その他"
+      },
+      "referenceLabel": "参照番号（取引ID、小切手番号など）",
+      "referencePlaceholder": "例：TXN-2026-04-XYZ",
+      "notesLabel": "メモ（社内用）",
+      "notesPlaceholder": "任意",
+      "cancel": "キャンセル",
+      "recording": "記録中…",
+      "submit": "支払いを記録"
+    },
+    "subscribe": {
+      "title": "組織を代理でサブスクライブ",
+      "description": "EmpCloud 内でサブスクリプションを作成し、標準の Webhook を emp-billing に送信します。クライアント、プラン、および最初の請求書が自動的にプロビジョニングされます。",
+      "orgLabel": "組織",
+      "orgLoadingPlaceholder": "組織を読み込み中…",
+      "orgNonePlaceholder": "利用可能な組織がありません",
+      "orgDropdownLoading": "読み込み中…",
+      "orgNoMatches": "一致する組織はありません",
+      "orgSelected": "選択済み（組織ID {{orgId}}）",
+      "moduleLabel": "モジュール",
+      "modulePlaceholder": "— モジュールを選択 —",
+      "planTierLabel": "プランティア",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "合計シート数",
+      "billingCycleLabel": "請求サイクル",
+      "cycle": {
+        "monthly": "月次",
+        "quarterly": "四半期",
+        "annual": "年次"
+      },
+      "trialDaysLabel": "トライアル日数（0 = 即時請求）",
+      "cancel": "キャンセル",
+      "creating": "作成中…",
+      "submit": "サブスクリプションを作成",
+      "orgSearchPlaceholder_one": "入力して {{count}} 件の組織を検索…",
+      "orgSearchPlaceholder_other": "入力して {{count}} 件の組織を検索…",
+      "orgMoreResults_one": "他 {{count}} 件 — 検索条件を絞り込んでください",
+      "orgMoreResults_other": "他 {{count}} 件 — 検索条件を絞り込んでください"
+    },
+    "toast": {
+      "markPaidSuccess": "請求書を支払い済みにしました",
+      "sendEmailSuccess": "請求書メールを送信キューに追加しました",
+      "pdfError": "請求書 PDF の読み込みに失敗しました",
+      "subscribeSuccess": "サブスクリプションを作成しました。まもなく請求書が表示されます",
+      "genericError": "失敗しました",
+      "subscribeError": "サブスクリプションの作成に失敗しました。組織が有効であること、および emp-billing が稼働していることを確認してください。"
+    },
+    "invoiceCount_one": "{{count}} 件の請求書",
+    "invoiceCount_other": "{{count}} 件の請求書"
+  },
+  "subscriptionsAdmin": {
+    "title": "サブスクリプション",
+    "subtitle": "すべての顧客サブスクリプションを完全に管理します。ティア、ステータス、シート数、料金、期間、トライアル終了日、自動更新、無料／コンプ、手動請求書の登録意図まで。",
+    "filters": {
+      "searchOrg": {
+        "label": "組織を検索",
+        "placeholder": "名前またはメールアドレス"
+      },
+      "status": {
+        "label": "ステータス"
+      },
+      "currency": {
+        "label": "通貨"
+      },
+      "all": "すべて"
+    },
+    "table": {
+      "columns": {
+        "org": "組織",
+        "module": "モジュール",
+        "tier": "ティア",
+        "status": "ステータス",
+        "seats": "シート数",
+        "pricePerSeat": "シート単価",
+        "period": "期間",
+        "flags": "フラグ",
+        "actions": "操作"
+      }
+    },
+    "status": {
+      "trial": "トライアル",
+      "active": "有効",
+      "past_due": "支払期限超過",
+      "suspended": "停止中",
+      "cancelled": "解約済み",
+      "expired": "期限切れ"
+    },
+    "billingCycle": {
+      "monthly": "月次",
+      "quarterly": "四半期次",
+      "annual": "年次"
+    },
+    "period": {
+      "trialEnds": "トライアル終了：{{date}}"
+    },
+    "badges": {
+      "free": "無料",
+      "manual": "手動",
+      "noRenew": "更新なし"
+    },
+    "loading": "読み込み中...",
+    "empty": "該当するサブスクリプションはありません。",
+    "actions": {
+      "edit": "編集（全項目）",
+      "suspend": "停止",
+      "activate": "有効化",
+      "cancel": "解約",
+      "removeFreeFlag": "無料フラグを解除",
+      "markFree": "無料／コンプに設定",
+      "recordManualInvoice": "手動請求書を登録"
+    },
+    "confirm": {
+      "suspend": "{{org}} の {{module}} を停止しますか？",
+      "cancel": "{{org}} の {{module}} を解約しますか？",
+      "removeFree": "無料／コンプフラグを解除しますか？"
+    },
+    "pagination": {
+      "prev": "前へ",
+      "next": "次へ",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "サブスクリプションを更新しました",
+      "suspended": "停止しました",
+      "activated": "有効化しました",
+      "cancelled": "解約しました",
+      "markedFree": "無料に設定しました",
+      "unmarkedFree": "無料設定を解除しました",
+      "manualInvoiceRecorded": "手動請求書を登録しました",
+      "failed": "失敗しました"
+    },
+    "editModal": {
+      "title": "サブスクリプションの編集 — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "プランティア",
+        "status": "ステータス",
+        "totalSeats": "合計シート数",
+        "billingCycle": "請求サイクル",
+        "pricePerSeat": "シート単価（主要単位）",
+        "currency": "通貨",
+        "periodStart": "期間開始日",
+        "periodEnd": "期間終了日",
+        "trialEnds": "トライアル終了日（空欄＝トライアルなし）",
+        "autoRenew": "自動更新",
+        "freeComp": "無料／コンプ",
+        "freeReason": "無料理由",
+        "internalNotes": "内部メモ"
+      },
+      "autoRenewYes": "はい",
+      "compedLabel": "コンプ（料金を強制的に 0 に設定）",
+      "freeReasonPlaceholder": "ベータテスター、社内利用、経営陣との取引など",
+      "internalNotesPlaceholder": "取引の背景、特別条件、監査証跡...",
+      "cancel": "キャンセル",
+      "save": "すべての変更を保存",
+      "saving": "保存中..."
+    },
+    "freeModal": {
+      "title": "無料に設定 — {{org}} · {{module}}",
+      "description": "この操作により price_per_seat が 0 に設定され、サブスクリプションがコンプとしてフラグ付けされます。監査ログのために理由の入力が必要です。",
+      "reasonPlaceholder": "例：ベータテスター、社内チーム、経営陣によるスポンサーシップ",
+      "cancel": "キャンセル",
+      "confirm": "確定 — 無料にする",
+      "saving": "保存中..."
+    },
+    "invoiceModal": {
+      "title": "手動請求書 — {{org}} · {{module}}",
+      "description": "このサブスクリプションの内部メモに請求書の登録意図を監査用に記録します。実際の請求書ドキュメントは、次回の同期時に EMP Billing で作成されます。",
+      "amountLabel": "金額（{{currency}}）",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "初期セットアップ費用、カスタム機能の開発など",
+      "dueDateLabel": "支払期日（任意）",
+      "cancel": "キャンセル",
+      "confirm": "請求予定を記録",
+      "saving": "保存中..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} 件のサブスクリプション",
+      "subscriptions_other": "{{count}} 件のサブスクリプション"
+    }
   }
 }

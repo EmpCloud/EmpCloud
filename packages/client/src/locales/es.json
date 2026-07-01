@@ -2860,5 +2860,290 @@
       "cycleDeleted": "Ciclo de facturación eliminado",
       "failed": "Error"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Importar Empleados desde Excel / CSV"
+    },
+    "downloadTemplate": "Descargar plantilla",
+    "downloadTemplateHint": "Descarga un archivo Excel de ejemplo con los encabezados correctos.",
+    "dropzone": {
+      "title": "Arrastra y suelta tu archivo Excel o CSV aquí",
+      "browse": "o haz clic para examinar"
+    },
+    "parseError": "No se pudo analizar el archivo",
+    "preview": {
+      "uploadDifferent": "Subir un archivo diferente",
+      "errorsHeading": "Filas con errores (corrige tu archivo y vuelve a subirlo)",
+      "rowLabel": "Fila {{row}}:",
+      "valid_one": "{{count}} válido",
+      "valid_other": "{{count}} válidos",
+      "invalid_one": "{{count}} no válido",
+      "invalid_other": "{{count}} no válidos",
+      "totalRows_one": "{{count}} fila en total",
+      "totalRows_other": "{{count}} filas en total"
+    },
+    "table": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "role": "Rol",
+      "empCode": "Código de empleado",
+      "designation": "Cargo",
+      "department": "Departamento",
+      "location": "Ubicación",
+      "manager": "Responsable",
+      "type": "Tipo",
+      "joining": "Incorporación",
+      "inviteFallback": "invitación"
+    },
+    "importing": "Importando empleados... por favor espera.",
+    "done": {
+      "title": "Importación completada",
+      "summary_one": "{{count}} empleado importado correctamente.",
+      "summary_other": "{{count}} empleados importados correctamente.",
+      "departmentsCreated_one": "Nuevo departamento creado ({{count}}):",
+      "departmentsCreated_other": "Nuevos departamentos creados ({{count}}):",
+      "locationsCreated_one": "Nueva ubicación creada ({{count}}):",
+      "locationsCreated_other": "Nuevas ubicaciones creadas ({{count}}):",
+      "skipped_one": "Se omitió {{count}} fila con errores:",
+      "skipped_other": "Se omitieron {{count}} filas con errores:"
+    },
+    "failed": "La importación falló",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "submit_one": "Importar {{count}} empleado válido",
+    "submit_other": "Importar {{count}} empleados válidos"
+  },
+  "invoicesAdmin": {
+    "title": "Facturas",
+    "subtitle": "Todas las facturas de todas las organizaciones de clientes (obtenidas mediante proxy desde emp-billing). Marca como pagada, envía por correo electrónico, visualiza el PDF o crea una suscripción en nombre de cualquier organización.",
+    "subscribeOnBehalf": "Suscribir en su nombre",
+    "filters": {
+      "searchLabel": "Buscar",
+      "searchPlaceholder": "Número de factura, nombre de organización…",
+      "statusLabel": "Estado"
+    },
+    "status": {
+      "all": "Todos",
+      "draft": "Borrador",
+      "sent": "Enviada",
+      "viewed": "Vista",
+      "partially_paid": "Parcialmente pagada",
+      "paid": "Pagada",
+      "overdue": "Vencida",
+      "void": "Anulada",
+      "written_off": "Cancelada por incobrable"
+    },
+    "table": {
+      "invoice": "Factura",
+      "org": "Organización",
+      "status": "Estado",
+      "total": "Total",
+      "due": "Pendiente",
+      "issued": "Emitida",
+      "actions": "Acciones",
+      "dueDatePrefix": "vence"
+    },
+    "loading": "Cargando…",
+    "empty": "No hay facturas que coincidan.",
+    "actions": {
+      "markPaid": "Marcar como pagada",
+      "sendEmail": "Enviar correo",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "Anterior",
+      "next": "Siguiente"
+    },
+    "markPaid": {
+      "title": "Marcar factura como pagada",
+      "methodLabel": "Método de pago",
+      "method": {
+        "manual": "Manual / Efectivo",
+        "bank_transfer": "Transferencia bancaria",
+        "cheque": "Cheque",
+        "upi": "UPI",
+        "card": "Tarjeta",
+        "other": "Otro"
+      },
+      "referenceLabel": "Referencia (id de transacción, n.º de cheque, etc.)",
+      "referencePlaceholder": "p. ej. TXN-2026-04-XYZ",
+      "notesLabel": "Notas (internas)",
+      "notesPlaceholder": "Opcional",
+      "cancel": "Cancelar",
+      "recording": "Registrando…",
+      "submit": "Registrar pago"
+    },
+    "subscribe": {
+      "title": "Suscribir una organización en su nombre",
+      "description": "Crea la suscripción en EmpCloud, lo que activa el webhook estándar hacia emp-billing: el cliente, el plan y la primera factura se aprovisionan automáticamente.",
+      "orgLabel": "Organización",
+      "orgLoadingPlaceholder": "Cargando organizaciones…",
+      "orgNonePlaceholder": "No hay organizaciones disponibles",
+      "orgDropdownLoading": "Cargando…",
+      "orgNoMatches": "No hay organizaciones coincidentes",
+      "orgSelected": "Seleccionada (id de organización {{orgId}})",
+      "moduleLabel": "Módulo",
+      "modulePlaceholder": "— Selecciona un módulo —",
+      "planTierLabel": "Nivel de plan",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "Total de licencias",
+      "billingCycleLabel": "Ciclo de facturación",
+      "cycle": {
+        "monthly": "Mensual",
+        "quarterly": "Trimestral",
+        "annual": "Anual"
+      },
+      "trialDaysLabel": "Días de prueba (0 = facturar de inmediato)",
+      "cancel": "Cancelar",
+      "creating": "Creando…",
+      "submit": "Crear suscripción",
+      "orgSearchPlaceholder_one": "Escribe para buscar en {{count}} organización…",
+      "orgSearchPlaceholder_other": "Escribe para buscar en {{count}} organizaciones…",
+      "orgMoreResults_one": "{{count}} más — refina la búsqueda para acotar",
+      "orgMoreResults_other": "{{count}} más — refina la búsqueda para acotar"
+    },
+    "toast": {
+      "markPaidSuccess": "Factura marcada como pagada",
+      "sendEmailSuccess": "Correo de factura en cola",
+      "pdfError": "No se pudo cargar el PDF de la factura",
+      "subscribeSuccess": "Suscripción creada; la factura aparecerá en un momento",
+      "genericError": "Error",
+      "subscribeError": "No se pudo crear la suscripción. Comprueba que la organización sea válida y que emp-billing esté en ejecución."
+    },
+    "invoiceCount_one": "{{count}} factura",
+    "invoiceCount_other": "{{count}} facturas"
+  },
+  "subscriptionsAdmin": {
+    "title": "Suscripciones",
+    "subtitle": "Control total de cada suscripción de cliente: nivel, estado, licencias, precios, fechas del periodo, fin de la prueba, renovación automática, gratis / cortesía e intención de factura manual.",
+    "filters": {
+      "searchOrg": {
+        "label": "Buscar organización",
+        "placeholder": "Nombre o correo electrónico"
+      },
+      "status": {
+        "label": "Estado"
+      },
+      "currency": {
+        "label": "Moneda"
+      },
+      "all": "Todos"
+    },
+    "table": {
+      "columns": {
+        "org": "Organización",
+        "module": "Módulo",
+        "tier": "Nivel",
+        "status": "Estado",
+        "seats": "Licencias",
+        "pricePerSeat": "Precio/licencia",
+        "period": "Periodo",
+        "flags": "Marcadores",
+        "actions": "Acciones"
+      }
+    },
+    "status": {
+      "trial": "prueba",
+      "active": "activa",
+      "past_due": "vencida",
+      "suspended": "suspendida",
+      "cancelled": "cancelada",
+      "expired": "expirada"
+    },
+    "billingCycle": {
+      "monthly": "mensual",
+      "quarterly": "trimestral",
+      "annual": "anual"
+    },
+    "period": {
+      "trialEnds": "La prueba finaliza: {{date}}"
+    },
+    "badges": {
+      "free": "GRATIS",
+      "manual": "MANUAL",
+      "noRenew": "SIN RENOVACIÓN"
+    },
+    "loading": "Cargando...",
+    "empty": "No hay suscripciones que coincidan.",
+    "actions": {
+      "edit": "Editar (todos los campos)",
+      "suspend": "Suspender",
+      "activate": "Activar",
+      "cancel": "Cancelar",
+      "removeFreeFlag": "Quitar marcador de gratis / cortesía",
+      "markFree": "Marcar como gratis / cortesía",
+      "recordManualInvoice": "Registrar factura manual"
+    },
+    "confirm": {
+      "suspend": "¿Suspender el módulo {{module}} de {{org}}?",
+      "cancel": "¿Cancelar el módulo {{module}} de {{org}}?",
+      "removeFree": "¿Quitar el marcador de gratis / cortesía?"
+    },
+    "pagination": {
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "Suscripción actualizada",
+      "suspended": "Suspendida",
+      "activated": "Activada",
+      "cancelled": "Cancelada",
+      "markedFree": "Marcada como gratis",
+      "unmarkedFree": "Desmarcada como gratis",
+      "manualInvoiceRecorded": "Factura manual registrada",
+      "failed": "Error"
+    },
+    "editModal": {
+      "title": "Editar suscripción — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "Nivel del plan",
+        "status": "Estado",
+        "totalSeats": "Licencias totales",
+        "billingCycle": "Ciclo de facturación",
+        "pricePerSeat": "Precio por licencia (unidad principal)",
+        "currency": "Moneda",
+        "periodStart": "Inicio del periodo",
+        "periodEnd": "Fin del periodo",
+        "trialEnds": "Fin de la prueba (en blanco = sin prueba)",
+        "autoRenew": "Renovación automática",
+        "freeComp": "Gratis / cortesía",
+        "freeReason": "Motivo de gratis / cortesía",
+        "internalNotes": "Notas internas"
+      },
+      "autoRenewYes": "Sí",
+      "compedLabel": "De cortesía (precio forzado a 0)",
+      "freeReasonPlaceholder": "Tester beta, uso interno, acuerdo ejecutivo, etc.",
+      "internalNotesPlaceholder": "Contexto del acuerdo, condiciones especiales, registro de auditoría...",
+      "cancel": "Cancelar",
+      "save": "Guardar todos los cambios",
+      "saving": "Guardando..."
+    },
+    "freeModal": {
+      "title": "Marcar como gratis — {{org}} · {{module}}",
+      "description": "Esto establecerá price_per_seat en 0 y marcará la suscripción como de cortesía. Se requiere un motivo para el registro de auditoría.",
+      "reasonPlaceholder": "p. ej. Tester beta, equipo interno, patrocinio ejecutivo",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar — hacer gratis",
+      "saving": "Guardando..."
+    },
+    "invoiceModal": {
+      "title": "Factura manual — {{org}} · {{module}}",
+      "description": "Registra la intención de factura en las notas internas de esta suscripción para auditoría. El documento de factura real se crea en EMP Billing en la siguiente sincronización.",
+      "amountLabel": "Importe (en {{currency}})",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Tarifa de configuración única, desarrollo de función personalizada, etc.",
+      "dueDateLabel": "Fecha de vencimiento (opcional)",
+      "cancel": "Cancelar",
+      "confirm": "Registrar intención de factura",
+      "saving": "Guardando..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} suscripción",
+      "subscriptions_other": "{{count}} suscripciones"
+    }
   }
 }

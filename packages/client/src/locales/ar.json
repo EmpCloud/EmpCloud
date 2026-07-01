@@ -2896,5 +2896,338 @@
       "cycleDeleted": "تم حذف دورة الفوترة",
       "failed": "فشل"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "استيراد الموظفين من Excel / CSV"
+    },
+    "downloadTemplate": "تنزيل القالب",
+    "downloadTemplateHint": "نزّل ملف Excel نموذجيًا يحتوي على العناوين الصحيحة.",
+    "dropzone": {
+      "title": "اسحب ملف Excel أو CSV وأفلته هنا",
+      "browse": "أو انقر للتصفح"
+    },
+    "parseError": "فشل تحليل الملف",
+    "preview": {
+      "uploadDifferent": "رفع ملف مختلف",
+      "errorsHeading": "الصفوف التي تحتوي على أخطاء (صحّح ملفك وأعد الرفع)",
+      "rowLabel": "الصف {{row}}:",
+      "valid_zero": "{{count}} صف صالح",
+      "valid_one": "{{count}} صف صالح",
+      "valid_two": "{{count}} صف صالح",
+      "valid_few": "{{count}} صفوف صالحة",
+      "valid_many": "{{count}} صفًا صالحًا",
+      "valid_other": "{{count}} صف صالح",
+      "invalid_zero": "{{count}} صف غير صالح",
+      "invalid_one": "{{count}} صف غير صالح",
+      "invalid_two": "{{count}} صف غير صالح",
+      "invalid_few": "{{count}} صفوف غير صالحة",
+      "invalid_many": "{{count}} صفًا غير صالح",
+      "invalid_other": "{{count}} صف غير صالح",
+      "totalRows_zero": "{{count}} صف إجمالًا",
+      "totalRows_one": "{{count}} صف إجمالًا",
+      "totalRows_two": "{{count}} صف إجمالًا",
+      "totalRows_few": "{{count}} صفوف إجمالًا",
+      "totalRows_many": "{{count}} صفًا إجمالًا",
+      "totalRows_other": "{{count}} صف إجمالًا"
+    },
+    "table": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "role": "الدور",
+      "empCode": "رمز الموظف",
+      "designation": "المسمى الوظيفي",
+      "department": "القسم",
+      "location": "الموقع",
+      "manager": "المدير",
+      "type": "النوع",
+      "joining": "الالتحاق",
+      "inviteFallback": "دعوة"
+    },
+    "importing": "جارٍ استيراد الموظفين... يرجى الانتظار.",
+    "done": {
+      "title": "اكتمل الاستيراد",
+      "summary_zero": "تم استيراد {{count}} موظفين بنجاح.",
+      "summary_one": "تم استيراد {{count}} موظف بنجاح.",
+      "summary_two": "تم استيراد {{count}} موظفين بنجاح.",
+      "summary_few": "تم استيراد {{count}} موظفين بنجاح.",
+      "summary_many": "تم استيراد {{count}} موظفين بنجاح.",
+      "summary_other": "تم استيراد {{count}} موظفين بنجاح.",
+      "departmentsCreated_zero": "أقسام جديدة تم إنشاؤها ({{count}}):",
+      "departmentsCreated_one": "قسم جديد تم إنشاؤه ({{count}}):",
+      "departmentsCreated_two": "قسمان جديدان تم إنشاؤهما ({{count}}):",
+      "departmentsCreated_few": "أقسام جديدة تم إنشاؤها ({{count}}):",
+      "departmentsCreated_many": "أقسام جديدة تم إنشاؤها ({{count}}):",
+      "departmentsCreated_other": "أقسام جديدة تم إنشاؤها ({{count}}):",
+      "locationsCreated_zero": "مواقع جديدة تم إنشاؤها ({{count}}):",
+      "locationsCreated_one": "موقع جديد تم إنشاؤه ({{count}}):",
+      "locationsCreated_two": "موقعان جديدان تم إنشاؤهما ({{count}}):",
+      "locationsCreated_few": "مواقع جديدة تم إنشاؤها ({{count}}):",
+      "locationsCreated_many": "مواقع جديدة تم إنشاؤها ({{count}}):",
+      "locationsCreated_other": "مواقع جديدة تم إنشاؤها ({{count}}):",
+      "skipped_zero": "تم تخطي {{count}} صف يحتوي على أخطاء:",
+      "skipped_one": "تم تخطي {{count}} صف يحتوي على أخطاء:",
+      "skipped_two": "تم تخطي {{count}} صف يحتوي على أخطاء:",
+      "skipped_few": "تم تخطي {{count}} صفوف تحتوي على أخطاء:",
+      "skipped_many": "تم تخطي {{count}} صفًا يحتوي على أخطاء:",
+      "skipped_other": "تم تخطي {{count}} صف يحتوي على أخطاء:"
+    },
+    "failed": "فشل الاستيراد",
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "submit_zero": "استيراد {{count}} موظفين صالحين",
+    "submit_one": "استيراد {{count}} موظف صالح",
+    "submit_two": "استيراد {{count}} موظفين صالحين",
+    "submit_few": "استيراد {{count}} موظفين صالحين",
+    "submit_many": "استيراد {{count}} موظفين صالحين",
+    "submit_other": "استيراد {{count}} موظفين صالحين"
+  },
+  "invoicesAdmin": {
+    "title": "الفواتير",
+    "subtitle": "جميع الفواتير عبر كل مؤسسات العملاء (مُمرَّرة من emp-billing). حدِّد كمدفوعة، أو أرسِل بالبريد الإلكتروني، أو اعرض ملف PDF، أو أنشئ اشتراكًا نيابةً عن أي مؤسسة.",
+    "subscribeOnBehalf": "الاشتراك نيابةً",
+    "filters": {
+      "searchLabel": "بحث",
+      "searchPlaceholder": "رقم الفاتورة، اسم المؤسسة…",
+      "statusLabel": "الحالة"
+    },
+    "status": {
+      "all": "الكل",
+      "draft": "مسودة",
+      "sent": "مُرسَلة",
+      "viewed": "تمت مشاهدتها",
+      "partially_paid": "مدفوعة جزئيًا",
+      "paid": "مدفوعة",
+      "overdue": "متأخرة",
+      "void": "ملغاة",
+      "written_off": "مشطوبة"
+    },
+    "table": {
+      "invoice": "الفاتورة",
+      "org": "المؤسسة",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "due": "المستحق",
+      "issued": "تاريخ الإصدار",
+      "actions": "الإجراءات",
+      "dueDatePrefix": "الاستحقاق"
+    },
+    "loading": "جارٍ التحميل…",
+    "empty": "لا توجد فواتير مطابقة.",
+    "actions": {
+      "markPaid": "تحديد كمدفوعة",
+      "sendEmail": "إرسال بريد إلكتروني",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "markPaid": {
+      "title": "تحديد الفاتورة كمدفوعة",
+      "methodLabel": "طريقة الدفع",
+      "method": {
+        "manual": "يدوي / نقدًا",
+        "bank_transfer": "تحويل بنكي",
+        "cheque": "شيك",
+        "upi": "UPI",
+        "card": "بطاقة",
+        "other": "أخرى"
+      },
+      "referenceLabel": "المرجع (معرّف المعاملة، رقم الشيك، إلخ.)",
+      "referencePlaceholder": "مثال: TXN-2026-04-XYZ",
+      "notesLabel": "ملاحظات (داخلية)",
+      "notesPlaceholder": "اختياري",
+      "cancel": "إلغاء",
+      "recording": "جارٍ التسجيل…",
+      "submit": "تسجيل الدفعة"
+    },
+    "subscribe": {
+      "title": "اشتراك مؤسسة نيابةً",
+      "description": "يُنشئ الاشتراك في EmpCloud، ممّا يُطلق خطاف الويب القياسي إلى emp-billing — يتم توفير العميل والخطة والفاتورة الأولى تلقائيًا.",
+      "orgLabel": "المؤسسة",
+      "orgLoadingPlaceholder": "جارٍ تحميل المؤسسات…",
+      "orgNonePlaceholder": "لا توجد مؤسسات متاحة",
+      "orgDropdownLoading": "جارٍ التحميل…",
+      "orgNoMatches": "لا توجد مؤسسات مطابقة",
+      "orgSelected": "تم التحديد (معرّف المؤسسة {{orgId}})",
+      "moduleLabel": "الوحدة",
+      "modulePlaceholder": "— اختر وحدة —",
+      "planTierLabel": "مستوى الخطة",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "إجمالي المقاعد",
+      "billingCycleLabel": "دورة الفوترة",
+      "cycle": {
+        "monthly": "شهري",
+        "quarterly": "ربع سنوي",
+        "annual": "سنوي"
+      },
+      "trialDaysLabel": "أيام التجربة (0 = الفوترة فورًا)",
+      "cancel": "إلغاء",
+      "creating": "جارٍ الإنشاء…",
+      "submit": "إنشاء اشتراك",
+      "orgSearchPlaceholder_zero": "اكتب للبحث في {{count}} مؤسسة…",
+      "orgSearchPlaceholder_one": "اكتب للبحث في {{count}} مؤسسة…",
+      "orgSearchPlaceholder_two": "اكتب للبحث في {{count}} مؤسسة…",
+      "orgSearchPlaceholder_few": "اكتب للبحث في {{count}} مؤسسات…",
+      "orgSearchPlaceholder_many": "اكتب للبحث في {{count}} مؤسسة…",
+      "orgSearchPlaceholder_other": "اكتب للبحث في {{count}} مؤسسة…",
+      "orgMoreResults_zero": "{{count}} أخرى — حسِّن البحث للتضييق",
+      "orgMoreResults_one": "{{count}} أخرى — حسِّن البحث للتضييق",
+      "orgMoreResults_two": "{{count}} أخرى — حسِّن البحث للتضييق",
+      "orgMoreResults_few": "{{count}} أخرى — حسِّن البحث للتضييق",
+      "orgMoreResults_many": "{{count}} أخرى — حسِّن البحث للتضييق",
+      "orgMoreResults_other": "{{count}} أخرى — حسِّن البحث للتضييق"
+    },
+    "toast": {
+      "markPaidSuccess": "تم تحديد الفاتورة كمدفوعة",
+      "sendEmailSuccess": "تم وضع بريد الفاتورة في قائمة الانتظار",
+      "pdfError": "فشل تحميل ملف PDF للفاتورة",
+      "subscribeSuccess": "تم إنشاء الاشتراك؛ ستظهر الفاتورة بعد لحظات",
+      "genericError": "فشل",
+      "subscribeError": "فشل إنشاء الاشتراك. تأكد من صحة المؤسسة ومن أن emp-billing قيد التشغيل."
+    },
+    "invoiceCount_zero": "{{count}} فاتورة",
+    "invoiceCount_one": "{{count}} فاتورة",
+    "invoiceCount_two": "{{count}} فاتورة",
+    "invoiceCount_few": "{{count}} فواتير",
+    "invoiceCount_many": "{{count}} فاتورة",
+    "invoiceCount_other": "{{count}} فاتورة"
+  },
+  "subscriptionsAdmin": {
+    "title": "الاشتراكات",
+    "subtitle": "تحكّم كامل في كل اشتراك عميل — المستوى، الحالة، المقاعد، التسعير، تواريخ الفترة، انتهاء الفترة التجريبية، التجديد التلقائي، المجاني / التعويضي، ونيّة الفاتورة اليدوية.",
+    "filters": {
+      "searchOrg": {
+        "label": "البحث عن مؤسسة",
+        "placeholder": "الاسم أو البريد الإلكتروني"
+      },
+      "status": {
+        "label": "الحالة"
+      },
+      "currency": {
+        "label": "العملة"
+      },
+      "all": "الكل"
+    },
+    "table": {
+      "columns": {
+        "org": "المؤسسة",
+        "module": "الوحدة",
+        "tier": "المستوى",
+        "status": "الحالة",
+        "seats": "المقاعد",
+        "pricePerSeat": "السعر/المقعد",
+        "period": "الفترة",
+        "flags": "العلامات",
+        "actions": "الإجراءات"
+      }
+    },
+    "status": {
+      "trial": "تجريبي",
+      "active": "نشط",
+      "past_due": "متأخر السداد",
+      "suspended": "معلّق",
+      "cancelled": "ملغى",
+      "expired": "منتهي الصلاحية"
+    },
+    "billingCycle": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "annual": "سنوي"
+    },
+    "period": {
+      "trialEnds": "تنتهي الفترة التجريبية في {{date}}"
+    },
+    "badges": {
+      "free": "مجاني",
+      "manual": "يدوي",
+      "noRenew": "بدون تجديد"
+    },
+    "loading": "جارٍ التحميل...",
+    "empty": "لا توجد اشتراكات مطابقة.",
+    "actions": {
+      "edit": "تحرير (جميع الحقول)",
+      "suspend": "تعليق",
+      "activate": "تفعيل",
+      "cancel": "إلغاء",
+      "removeFreeFlag": "إزالة علامة المجاني",
+      "markFree": "وضع علامة مجاني / تعويضي",
+      "recordManualInvoice": "تسجيل فاتورة يدوية"
+    },
+    "confirm": {
+      "suspend": "تعليق {{module}} لـ {{org}}؟",
+      "cancel": "إلغاء {{module}} لـ {{org}}؟",
+      "removeFree": "إزالة علامة المجاني / التعويضي؟"
+    },
+    "pagination": {
+      "prev": "السابق",
+      "next": "التالي",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "تم تحديث الاشتراك",
+      "suspended": "تم التعليق",
+      "activated": "تم التفعيل",
+      "cancelled": "تم الإلغاء",
+      "markedFree": "تم وضع علامة مجاني",
+      "unmarkedFree": "تمت إزالة علامة المجاني",
+      "manualInvoiceRecorded": "تم تسجيل الفاتورة اليدوية",
+      "failed": "فشل"
+    },
+    "editModal": {
+      "title": "تحرير الاشتراك — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "مستوى الخطة",
+        "status": "الحالة",
+        "totalSeats": "إجمالي المقاعد",
+        "billingCycle": "دورة الفوترة",
+        "pricePerSeat": "السعر لكل مقعد (الوحدة الرئيسية)",
+        "currency": "العملة",
+        "periodStart": "بداية الفترة",
+        "periodEnd": "نهاية الفترة",
+        "trialEnds": "انتهاء الفترة التجريبية (فارغ = بدون فترة تجريبية)",
+        "autoRenew": "التجديد التلقائي",
+        "freeComp": "مجاني / تعويضي",
+        "freeReason": "سبب المجانية",
+        "internalNotes": "ملاحظات داخلية"
+      },
+      "autoRenewYes": "نعم",
+      "compedLabel": "تعويضي (تعيين السعر إلى 0 إلزاميًا)",
+      "freeReasonPlaceholder": "مختبِر تجريبي، استخدام داخلي، صفقة تنفيذية، إلخ.",
+      "internalNotesPlaceholder": "سياق الصفقة، شروط خاصة، سجل التدقيق...",
+      "cancel": "إلغاء",
+      "save": "حفظ جميع التغييرات",
+      "saving": "جارٍ الحفظ..."
+    },
+    "freeModal": {
+      "title": "وضع علامة مجاني — {{org}} · {{module}}",
+      "description": "سيؤدي هذا إلى تعيين price_per_seat إلى 0 ووضع علامة على الاشتراك كتعويضي. يلزم إدخال سبب لسجل التدقيق.",
+      "reasonPlaceholder": "مثال: مختبِر تجريبي، فريق داخلي، رعاية تنفيذية",
+      "cancel": "إلغاء",
+      "confirm": "تأكيد — جعله مجانيًا",
+      "saving": "جارٍ الحفظ..."
+    },
+    "invoiceModal": {
+      "title": "فاتورة يدوية — {{org}} · {{module}}",
+      "description": "يسجّل نيّة الفاتورة في الملاحظات الداخلية لهذا الاشتراك لأغراض التدقيق. يتم إنشاء مستند الفاتورة الفعلي في EMP Billing عند المزامنة التالية.",
+      "amountLabel": "المبلغ (بعملة {{currency}})",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "رسوم إعداد لمرة واحدة، عمل على ميزة مخصصة، إلخ.",
+      "dueDateLabel": "تاريخ الاستحقاق (اختياري)",
+      "cancel": "إلغاء",
+      "confirm": "تسجيل نيّة الفاتورة",
+      "saving": "جارٍ الحفظ..."
+    },
+    "count": {
+      "subscriptions_zero": "لا اشتراكات ({{count}})",
+      "subscriptions_one": "لا اشتراكات ({{count}})",
+      "subscriptions_two": "اشتراكان ({{count}})",
+      "subscriptions_few": "{{count}} اشتراكات",
+      "subscriptions_many": "{{count}} اشتراكًا",
+      "subscriptions_other": "{{count}} اشتراك"
+    }
   }
 }

@@ -2860,5 +2860,290 @@
       "cycleDeleted": "बिलिंग चक्र हटाया गया",
       "failed": "विफल"
     }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Excel / CSV से कर्मचारी आयात करें"
+    },
+    "downloadTemplate": "टेम्पलेट डाउनलोड करें",
+    "downloadTemplateHint": "सही हेडर वाली एक नमूना Excel फ़ाइल डाउनलोड करें।",
+    "dropzone": {
+      "title": "अपनी Excel या CSV फ़ाइल यहाँ खींचें और छोड़ें",
+      "browse": "या ब्राउज़ करने के लिए क्लिक करें"
+    },
+    "parseError": "फ़ाइल पार्स करने में विफल",
+    "preview": {
+      "uploadDifferent": "भिन्न फ़ाइल अपलोड करें",
+      "errorsHeading": "त्रुटियों वाली पंक्तियाँ (अपनी फ़ाइल ठीक करें और फिर से अपलोड करें)",
+      "rowLabel": "पंक्ति {{row}}:",
+      "valid_one": "{{count}} मान्य",
+      "valid_other": "{{count}} मान्य",
+      "invalid_one": "{{count}} अमान्य",
+      "invalid_other": "{{count}} अमान्य",
+      "totalRows_one": "कुल {{count}} पंक्ति",
+      "totalRows_other": "कुल {{count}} पंक्तियाँ"
+    },
+    "table": {
+      "firstName": "प्रथम नाम",
+      "lastName": "उपनाम",
+      "email": "ईमेल",
+      "password": "पासवर्ड",
+      "role": "भूमिका",
+      "empCode": "कर्मचारी कोड",
+      "designation": "पदनाम",
+      "department": "विभाग",
+      "location": "स्थान",
+      "manager": "प्रबंधक",
+      "type": "प्रकार",
+      "joining": "कार्यग्रहण तिथि",
+      "inviteFallback": "आमंत्रण"
+    },
+    "importing": "कर्मचारी आयात हो रहे हैं... कृपया प्रतीक्षा करें।",
+    "done": {
+      "title": "आयात पूर्ण",
+      "summary_one": "{{count}} कर्मचारी सफलतापूर्वक आयात किया गया।",
+      "summary_other": "{{count}} कर्मचारी सफलतापूर्वक आयात किए गए।",
+      "departmentsCreated_one": "नया विभाग बनाया गया ({{count}}):",
+      "departmentsCreated_other": "नए विभाग बनाए गए ({{count}}):",
+      "locationsCreated_one": "नया स्थान बनाया गया ({{count}}):",
+      "locationsCreated_other": "नए स्थान बनाए गए ({{count}}):",
+      "skipped_one": "त्रुटियों वाली {{count}} पंक्ति छोड़ी गई:",
+      "skipped_other": "त्रुटियों वाली {{count}} पंक्तियाँ छोड़ी गईं:"
+    },
+    "failed": "आयात विफल",
+    "close": "बंद करें",
+    "cancel": "रद्द करें",
+    "submit_one": "{{count}} मान्य कर्मचारी आयात करें",
+    "submit_other": "{{count}} मान्य कर्मचारी आयात करें"
+  },
+  "invoicesAdmin": {
+    "title": "इनवॉइस",
+    "subtitle": "सभी ग्राहक संगठनों की सभी इनवॉइस (emp-billing से प्रॉक्सी की गई)। भुगतान किया गया चिह्नित करें, ईमेल से भेजें, PDF देखें, या किसी भी संगठन की ओर से सब्सक्रिप्शन बनाएँ।",
+    "subscribeOnBehalf": "की ओर से सब्सक्राइब करें",
+    "filters": {
+      "searchLabel": "खोजें",
+      "searchPlaceholder": "इनवॉइस नंबर, संगठन का नाम…",
+      "statusLabel": "स्थिति"
+    },
+    "status": {
+      "all": "सभी",
+      "draft": "ड्राफ़्ट",
+      "sent": "भेजा गया",
+      "viewed": "देखा गया",
+      "partially_paid": "आंशिक रूप से भुगतान किया गया",
+      "paid": "भुगतान किया गया",
+      "overdue": "अतिदेय",
+      "void": "रद्द",
+      "written_off": "बट्टे खाते में डाला गया"
+    },
+    "table": {
+      "invoice": "इनवॉइस",
+      "org": "संगठन",
+      "status": "स्थिति",
+      "total": "कुल",
+      "due": "देय",
+      "issued": "जारी",
+      "actions": "कार्रवाइयाँ",
+      "dueDatePrefix": "देय"
+    },
+    "loading": "लोड हो रहा है…",
+    "empty": "कोई इनवॉइस मेल नहीं खाती।",
+    "actions": {
+      "markPaid": "भुगतान किया गया चिह्नित करें",
+      "sendEmail": "ईमेल भेजें",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "पिछला",
+      "next": "अगला"
+    },
+    "markPaid": {
+      "title": "इनवॉइस को भुगतान किया गया चिह्नित करें",
+      "methodLabel": "भुगतान विधि",
+      "method": {
+        "manual": "मैनुअल / नकद",
+        "bank_transfer": "बैंक ट्रांसफर",
+        "cheque": "चेक",
+        "upi": "UPI",
+        "card": "कार्ड",
+        "other": "अन्य"
+      },
+      "referenceLabel": "संदर्भ (लेनदेन आईडी, चेक #, आदि)",
+      "referencePlaceholder": "उदा. TXN-2026-04-XYZ",
+      "notesLabel": "टिप्पणियाँ (आंतरिक)",
+      "notesPlaceholder": "वैकल्पिक",
+      "cancel": "रद्द करें",
+      "recording": "रिकॉर्ड किया जा रहा है…",
+      "submit": "भुगतान रिकॉर्ड करें"
+    },
+    "subscribe": {
+      "title": "किसी संगठन की ओर से सब्सक्राइब करें",
+      "description": "EmpCloud में सब्सक्रिप्शन बनाता है, जो emp-billing को मानक वेबहुक भेजता है — क्लाइंट, प्लान और पहली इनवॉइस स्वचालित रूप से प्रावधानित हो जाते हैं।",
+      "orgLabel": "संगठन",
+      "orgLoadingPlaceholder": "संगठन लोड हो रहे हैं…",
+      "orgNonePlaceholder": "कोई संगठन उपलब्ध नहीं",
+      "orgDropdownLoading": "लोड हो रहा है…",
+      "orgNoMatches": "कोई मेल खाता संगठन नहीं",
+      "orgSelected": "चयनित (संगठन आईडी {{orgId}})",
+      "moduleLabel": "मॉड्यूल",
+      "modulePlaceholder": "— एक मॉड्यूल चुनें —",
+      "planTierLabel": "प्लान स्तर",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "कुल सीटें",
+      "billingCycleLabel": "बिलिंग चक्र",
+      "cycle": {
+        "monthly": "मासिक",
+        "quarterly": "त्रैमासिक",
+        "annual": "वार्षिक"
+      },
+      "trialDaysLabel": "ट्रायल के दिन (0 = तुरंत बिल करें)",
+      "cancel": "रद्द करें",
+      "creating": "बनाया जा रहा है…",
+      "submit": "सब्सक्रिप्शन बनाएँ",
+      "orgSearchPlaceholder_one": "{{count}} संगठन खोजने के लिए टाइप करें…",
+      "orgSearchPlaceholder_other": "{{count}} संगठन खोजने के लिए टाइप करें…",
+      "orgMoreResults_one": "{{count}} और — सीमित करने के लिए खोज परिष्कृत करें",
+      "orgMoreResults_other": "{{count}} और — सीमित करने के लिए खोज परिष्कृत करें"
+    },
+    "toast": {
+      "markPaidSuccess": "इनवॉइस भुगतान किया गया चिह्नित की गई",
+      "sendEmailSuccess": "इनवॉइस ईमेल कतारबद्ध की गई",
+      "pdfError": "इनवॉइस PDF लोड करने में विफल",
+      "subscribeSuccess": "सब्सक्रिप्शन बनाया गया; इनवॉइस कुछ ही क्षण में दिखाई देगी",
+      "genericError": "विफल",
+      "subscribeError": "सब्सक्रिप्शन बनाने में विफल। जाँचें कि संगठन मान्य है और emp-billing चल रहा है।"
+    },
+    "invoiceCount_one": "{{count}} इनवॉइस",
+    "invoiceCount_other": "{{count}} इनवॉइस"
+  },
+  "subscriptionsAdmin": {
+    "title": "सब्सक्रिप्शन",
+    "subtitle": "प्रत्येक ग्राहक सब्सक्रिप्शन पर पूर्ण नियंत्रण — टियर, स्थिति, सीटें, मूल्य निर्धारण, अवधि तिथियाँ, ट्रायल समाप्ति, ऑटो-रिन्यू, फ्री / कॉम्प, और मैन्युअल इनवॉइस इंटेंट।",
+    "filters": {
+      "searchOrg": {
+        "label": "संगठन खोजें",
+        "placeholder": "नाम या ईमेल"
+      },
+      "status": {
+        "label": "स्थिति"
+      },
+      "currency": {
+        "label": "मुद्रा"
+      },
+      "all": "सभी"
+    },
+    "table": {
+      "columns": {
+        "org": "संगठन",
+        "module": "मॉड्यूल",
+        "tier": "टियर",
+        "status": "स्थिति",
+        "seats": "सीटें",
+        "pricePerSeat": "मूल्य/सीट",
+        "period": "अवधि",
+        "flags": "फ्लैग",
+        "actions": "कार्रवाइयाँ"
+      }
+    },
+    "status": {
+      "trial": "ट्रायल",
+      "active": "सक्रिय",
+      "past_due": "भुगतान अतिदेय",
+      "suspended": "निलंबित",
+      "cancelled": "रद्द",
+      "expired": "समाप्त"
+    },
+    "billingCycle": {
+      "monthly": "मासिक",
+      "quarterly": "त्रैमासिक",
+      "annual": "वार्षिक"
+    },
+    "period": {
+      "trialEnds": "ट्रायल {{date}} को समाप्त होता है"
+    },
+    "badges": {
+      "free": "फ्री",
+      "manual": "मैन्युअल",
+      "noRenew": "नो-रिन्यू"
+    },
+    "loading": "लोड हो रहा है...",
+    "empty": "कोई सब्सक्रिप्शन मेल नहीं खाता।",
+    "actions": {
+      "edit": "संपादित करें (सभी फ़ील्ड)",
+      "suspend": "निलंबित करें",
+      "activate": "सक्रिय करें",
+      "cancel": "रद्द करें",
+      "removeFreeFlag": "फ्री फ्लैग हटाएँ",
+      "markFree": "फ्री / कॉम्प के रूप में चिह्नित करें",
+      "recordManualInvoice": "मैन्युअल इनवॉइस रिकॉर्ड करें"
+    },
+    "confirm": {
+      "suspend": "{{org}} का {{module}} निलंबित करें?",
+      "cancel": "{{org}} का {{module}} रद्द करें?",
+      "removeFree": "फ्री / कॉम्प फ्लैग हटाएँ?"
+    },
+    "pagination": {
+      "prev": "पिछला",
+      "next": "अगला",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "सब्सक्रिप्शन अपडेट किया गया",
+      "suspended": "निलंबित किया गया",
+      "activated": "सक्रिय किया गया",
+      "cancelled": "रद्द किया गया",
+      "markedFree": "फ्री के रूप में चिह्नित किया गया",
+      "unmarkedFree": "फ्री चिह्न हटाया गया",
+      "manualInvoiceRecorded": "मैन्युअल इनवॉइस रिकॉर्ड किया गया",
+      "failed": "विफल"
+    },
+    "editModal": {
+      "title": "सब्सक्रिप्शन संपादित करें — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "प्लान टियर",
+        "status": "स्थिति",
+        "totalSeats": "कुल सीटें",
+        "billingCycle": "बिलिंग चक्र",
+        "pricePerSeat": "प्रति सीट मूल्य (मुख्य इकाई)",
+        "currency": "मुद्रा",
+        "periodStart": "अवधि प्रारंभ",
+        "periodEnd": "अवधि समाप्ति",
+        "trialEnds": "ट्रायल समाप्ति (खाली = कोई ट्रायल नहीं)",
+        "autoRenew": "ऑटो-रिन्यू",
+        "freeComp": "फ्री / कॉम्प",
+        "freeReason": "फ्री का कारण",
+        "internalNotes": "आंतरिक नोट्स"
+      },
+      "autoRenewYes": "हाँ",
+      "compedLabel": "कॉम्प्ड (मूल्य 0 पर सेट किया गया)",
+      "freeReasonPlaceholder": "बीटा टेस्टर, आंतरिक उपयोग, एग्जीक्यूटिव डील, आदि।",
+      "internalNotesPlaceholder": "डील संदर्भ, विशेष शर्तें, ऑडिट ट्रेल...",
+      "cancel": "रद्द करें",
+      "save": "सभी परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "freeModal": {
+      "title": "फ्री चिह्नित करें — {{org}} · {{module}}",
+      "description": "इससे price_per_seat 0 पर सेट हो जाएगा और सब्सक्रिप्शन कॉम्प्ड के रूप में फ्लैग हो जाएगा। ऑडिट लॉग के लिए एक कारण आवश्यक है।",
+      "reasonPlaceholder": "जैसे बीटा टेस्टर, आंतरिक टीम, एग्जीक्यूटिव प्रायोजन",
+      "cancel": "रद्द करें",
+      "confirm": "पुष्टि करें — फ्री करें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "invoiceModal": {
+      "title": "मैन्युअल इनवॉइस — {{org}} · {{module}}",
+      "description": "ऑडिट के लिए इस सब्सक्रिप्शन के आंतरिक नोट्स पर इनवॉइस इंटेंट रिकॉर्ड करता है। वास्तविक इनवॉइस दस्तावेज़ अगले सिंक पर EMP Billing में बनाया जाता है।",
+      "amountLabel": "राशि ({{currency}} में)",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "एक-बार सेटअप शुल्क, कस्टम फीचर कार्य, आदि।",
+      "dueDateLabel": "देय तिथि (वैकल्पिक)",
+      "cancel": "रद्द करें",
+      "confirm": "इनवॉइस इंटेंट रिकॉर्ड करें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} सब्सक्रिप्शन",
+      "subscriptions_other": "{{count}} सब्सक्रिप्शन"
+    }
   }
 }
