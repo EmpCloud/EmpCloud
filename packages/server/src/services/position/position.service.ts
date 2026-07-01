@@ -651,7 +651,8 @@ export async function rejectHeadcountPlan(
     .where({ id: planId })
     .update({
       status: "rejected",
-      approved_by: userId,
+      rejected_by: userId,
+      rejected_at: new Date(),
       notes: reason ? `Rejected: ${reason}` : plan.notes,
       updated_at: new Date(),
     });
