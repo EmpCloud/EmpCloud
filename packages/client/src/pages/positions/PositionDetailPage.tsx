@@ -57,7 +57,13 @@ export default function PositionDetailPage() {
   const assignMutation = useMutation({
     mutationFn: (body: object) => api.post(`/positions/${id}/assign`, body).then((r) => r.data.data),
     onSuccess: () => {
+      // Assigning a user raises headcount_filled and can flip the position to
+      // "filled", removing it from vacancies — refresh those views too, not just
+      // this position's detail.
       queryClient.invalidateQueries({ queryKey: ["position", id] });
+      queryClient.invalidateQueries({ queryKey: ["position-vacancies"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setShowAssign(false);
       setAssignForm({ user_id: "", start_date: "", is_primary: true });
     },
@@ -77,7 +83,13 @@ export default function PositionDetailPage() {
   const removeMutation = useMutation({
     mutationFn: (assignmentId: number) => api.delete(`/positions/assignments/${assignmentId}`),
     onSuccess: () => {
+      // Ending an assignment lowers headcount_filled and can reopen the position
+      // (filled -> active), so refresh the vacancies, list and dashboard views too —
+      // not just this position's detail.
       queryClient.invalidateQueries({ queryKey: ["position", id] });
+      queryClient.invalidateQueries({ queryKey: ["position-vacancies"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setEndAssignmentId(null);
     },
   });
@@ -88,6 +100,17 @@ export default function PositionDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+    onError: (err: any) => {
+      // Without this the inline status <select> silently keeps the value the user
+      // picked even when the change was rejected, so it looks like it worked.
+      // The query invalidation on settle snaps it back to the true status.
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        "Failed to update position status.";
+      showToast("error", msg);
+      queryClient.invalidateQueries({ queryKey: ["position", id] });
     },
   });
 

@@ -1711,7 +1711,12 @@
       "next": "Weiter",
       "alertPlannedInvalid": "Geplanter Personalbestand muss 0 oder größer sein.",
       "alertCurrentInvalid": "Aktueller Personalbestand muss 0 oder größer sein.",
-      "searchPlaceholder": "Nach Plantitel oder Geschäftsjahr suchen..."
+      "searchPlaceholder": "Nach Plantitel oder Geschäftsjahr suchen...",
+      "allDepartments": "Alle Abteilungen",
+      "allYears": "Alle Jahre",
+      "failedApprove": "Plan konnte nicht genehmigt werden",
+      "failedReject": "Plan konnte nicht abgelehnt werden",
+      "failedSubmit": "Plan konnte nicht eingereicht werden"
     },
     "vacancies": {
       "title": "Offene Stellen",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "Position löschen?",
       "deleteConfirm": "{{title}} löschen? Aktive Zuweisungen werden beendet und die Position wird geschlossen. Dies kann nicht rückgängig gemacht werden.",
       "deleting": "Wird gelöscht...",
-      "failedDelete": "Position konnte nicht gelöscht werden"
+      "failedDelete": "Position konnte nicht gelöscht werden",
+      "allTypes": "Alle Typen",
+      "criticalOnly": "Nur kritische"
     },
     "dashboard": {
       "title": "Positionsübersicht",

@@ -36,7 +36,12 @@ router.get("/dashboard", authenticate, requirePermission("positions:view", "posi
 // GET /api/v1/positions/vacancies — Open vacancies
 router.get("/vacancies", authenticate, requirePermission("positions:view", "positions:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const vacancies = await positionService.getVacancies(req.user!.org_id);
+    const query = positionQuerySchema.parse(req.query);
+    const vacancies = await positionService.getVacancies(req.user!.org_id, {
+      department_id: query.department_id,
+      employment_type: query.employment_type,
+      is_critical: query.is_critical,
+    });
     sendSuccess(res, vacancies);
   } catch (err) { next(err); }
 });
@@ -81,6 +86,7 @@ router.get("/headcount-plans", authenticate, requirePermission("positions:view",
       fiscal_year: query.fiscal_year,
       status: query.status,
       department_id: query.department_id,
+      quarter: query.quarter,
       search: query.search,
     });
     sendPaginated(res, result.plans, result.total, query.page, query.per_page);
@@ -184,16 +190,18 @@ router.get("/", authenticate, requirePermission("positions:view", "positions:man
       page: query.page,
       perPage: query.per_page,
       department_id: query.department_id,
+      location_id: query.location_id,
       status: query.status,
       employment_type: query.employment_type,
       search: query.search,
+      is_critical: query.is_critical,
     });
     sendPaginated(res, result.positions, result.total, query.page, query.per_page);
   } catch (err) { next(err); }
 });
 
 // GET /api/v1/positions/:id
-router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", authenticate, requirePermission("positions:view", "positions:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const position = await positionService.getPosition(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, position);

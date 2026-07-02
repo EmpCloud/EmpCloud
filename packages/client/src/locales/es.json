@@ -1711,7 +1711,12 @@
       "next": "Siguiente",
       "alertPlannedInvalid": "La plantilla planificada debe ser 0 o mayor.",
       "alertCurrentInvalid": "La plantilla actual debe ser 0 o mayor.",
-      "searchPlaceholder": "Buscar por título del plan o año fiscal..."
+      "searchPlaceholder": "Buscar por título del plan o año fiscal...",
+      "allDepartments": "Todos los departamentos",
+      "allYears": "Todos los años",
+      "failedApprove": "No se pudo aprobar el plan",
+      "failedReject": "No se pudo rechazar el plan",
+      "failedSubmit": "No se pudo enviar el plan"
     },
     "vacancies": {
       "title": "Vacantes Abiertas",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "¿Eliminar posición?",
       "deleteConfirm": "¿Eliminar {{title}}? Las asignaciones activas finalizan y la posición se cierra. Esta acción no se puede deshacer.",
       "deleting": "Eliminando...",
-      "failedDelete": "Error al eliminar la posición"
+      "failedDelete": "Error al eliminar la posición",
+      "allTypes": "Todos los tipos",
+      "criticalOnly": "Solo críticos"
     },
     "dashboard": {
       "title": "Panel de Posiciones",

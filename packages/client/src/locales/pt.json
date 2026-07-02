@@ -1711,7 +1711,12 @@
       "next": "Próximo",
       "alertPlannedInvalid": "O quadro planejado deve ser 0 ou maior.",
       "alertCurrentInvalid": "O quadro atual deve ser 0 ou maior.",
-      "searchPlaceholder": "Buscar por título do plano ou ano fiscal..."
+      "searchPlaceholder": "Buscar por título do plano ou ano fiscal...",
+      "allDepartments": "Todos os departamentos",
+      "allYears": "Todos os anos",
+      "failedApprove": "Falha ao aprovar o plano",
+      "failedReject": "Falha ao rejeitar o plano",
+      "failedSubmit": "Falha ao enviar o plano"
     },
     "vacancies": {
       "title": "Vagas Abertas",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "Excluir cargo?",
       "deleteConfirm": "Excluir {{title}}? As atribuições ativas são encerradas e o cargo é fechado. Esta ação não pode ser desfeita.",
       "deleting": "Excluindo...",
-      "failedDelete": "Falha ao excluir o cargo"
+      "failedDelete": "Falha ao excluir o cargo",
+      "allTypes": "Todos os tipos",
+      "criticalOnly": "Somente críticos"
     },
     "dashboard": {
       "title": "Painel de Cargos",

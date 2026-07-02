@@ -1711,7 +1711,12 @@
       "next": "Suivant",
       "alertPlannedInvalid": "L'effectif planifié doit être supérieur ou égal à 0.",
       "alertCurrentInvalid": "L'effectif actuel doit être supérieur ou égal à 0.",
-      "searchPlaceholder": "Rechercher par titre de plan ou exercice fiscal..."
+      "searchPlaceholder": "Rechercher par titre de plan ou exercice fiscal...",
+      "allDepartments": "Tous les services",
+      "allYears": "Toutes les années",
+      "failedApprove": "Échec de l'approbation du plan",
+      "failedReject": "Échec du rejet du plan",
+      "failedSubmit": "Échec de la soumission du plan"
     },
     "vacancies": {
       "title": "Postes vacants",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "Supprimer le poste ?",
       "deleteConfirm": "Supprimer {{title}} ? Les affectations actives sont clôturées et le poste est fermé. Cette action est irréversible.",
       "deleting": "Suppression...",
-      "failedDelete": "Échec de la suppression du poste"
+      "failedDelete": "Échec de la suppression du poste",
+      "allTypes": "Tous les types",
+      "criticalOnly": "Critiques uniquement"
     },
     "dashboard": {
       "title": "Tableau de bord des postes",

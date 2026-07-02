@@ -1711,7 +1711,12 @@
       "next": "次へ",
       "alertPlannedInvalid": "計画人員は 0 以上である必要があります。",
       "alertCurrentInvalid": "現在の人員は 0 以上である必要があります。",
-      "searchPlaceholder": "プラン名または会計年度で検索..."
+      "searchPlaceholder": "プラン名または会計年度で検索...",
+      "allDepartments": "すべての部門",
+      "allYears": "すべての年度",
+      "failedApprove": "計画の承認に失敗しました",
+      "failedReject": "計画の却下に失敗しました",
+      "failedSubmit": "計画の提出に失敗しました"
     },
     "vacancies": {
       "title": "公開中の欠員",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "ポジションを削除しますか?",
       "deleteConfirm": "{{title}} を削除しますか? 有効な割当は終了し、ポジションは閉じられます。この操作は取り消せません。",
       "deleting": "削除中...",
-      "failedDelete": "ポジションの削除に失敗しました"
+      "failedDelete": "ポジションの削除に失敗しました",
+      "allTypes": "すべての種類",
+      "criticalOnly": "重要のみ"
     },
     "dashboard": {
       "title": "ポジションダッシュボード",

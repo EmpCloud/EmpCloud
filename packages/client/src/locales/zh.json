@@ -1711,7 +1711,12 @@
       "next": "下一页",
       "alertPlannedInvalid": "计划人数必须为 0 或更大。",
       "alertCurrentInvalid": "当前人数必须为 0 或更大。",
-      "searchPlaceholder": "按计划名称或财年搜索……"
+      "searchPlaceholder": "按计划名称或财年搜索……",
+      "allDepartments": "全部部门",
+      "allYears": "全部年份",
+      "failedApprove": "审批计划失败",
+      "failedReject": "驳回计划失败",
+      "failedSubmit": "提交计划失败"
     },
     "vacancies": {
       "title": "公开空缺",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "删除职位?",
       "deleteConfirm": "删除 {{title}}?活动分配将被终止,职位将关闭。此操作无法撤消。",
       "deleting": "正在删除...",
-      "failedDelete": "删除职位失败"
+      "failedDelete": "删除职位失败",
+      "allTypes": "全部类型",
+      "criticalOnly": "仅关键岗位"
     },
     "dashboard": {
       "title": "职位仪表盘",

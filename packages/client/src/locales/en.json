@@ -1711,7 +1711,12 @@
       "previous": "Previous",
       "next": "Next",
       "alertPlannedInvalid": "Planned Headcount must be 0 or greater.",
-      "alertCurrentInvalid": "Current Headcount must be 0 or greater."
+      "alertCurrentInvalid": "Current Headcount must be 0 or greater.",
+      "failedApprove": "Failed to approve plan",
+      "failedReject": "Failed to reject plan",
+      "failedSubmit": "Failed to submit plan",
+      "allDepartments": "All Departments",
+      "allYears": "All Years"
     },
     "vacancies": {
       "title": "Open Vacancies",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "Delete position?",
       "deleteConfirm": "Delete {{title}}? Active assignments are ended and the position is closed. This cannot be undone.",
       "deleting": "Deleting...",
-      "failedDelete": "Failed to delete position"
+      "failedDelete": "Failed to delete position",
+      "criticalOnly": "Critical only",
+      "allTypes": "All Types"
     },
     "dashboard": {
       "title": "Position Dashboard",

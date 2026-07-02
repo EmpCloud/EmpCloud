@@ -1711,7 +1711,12 @@
       "next": "التالي",
       "alertPlannedInvalid": "يجب أن يكون الملاك المخطط 0 أو أكثر.",
       "alertCurrentInvalid": "يجب أن يكون الملاك الحالي 0 أو أكثر.",
-      "searchPlaceholder": "ابحث حسب عنوان الخطة أو السنة المالية..."
+      "searchPlaceholder": "ابحث حسب عنوان الخطة أو السنة المالية...",
+      "allDepartments": "جميع الأقسام",
+      "allYears": "جميع السنوات",
+      "failedApprove": "فشل اعتماد الخطة",
+      "failedReject": "فشل رفض الخطة",
+      "failedSubmit": "فشل إرسال الخطة"
     },
     "vacancies": {
       "title": "الشواغر المفتوحة",
@@ -1770,7 +1775,9 @@
       "deleteTitle": "حذف الوظيفة؟",
       "deleteConfirm": "هل تريد حذف {{title}}؟ ستنتهي التعيينات النشطة وستُغلق الوظيفة. لا يمكن التراجع عن هذا الإجراء.",
       "deleting": "جاري الحذف...",
-      "failedDelete": "فشل حذف الوظيفة"
+      "failedDelete": "فشل حذف الوظيفة",
+      "allTypes": "جميع الأنواع",
+      "criticalOnly": "الحرجة فقط"
     },
     "dashboard": {
       "title": "لوحة الوظائف",
