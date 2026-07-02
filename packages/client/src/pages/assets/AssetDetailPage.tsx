@@ -322,7 +322,7 @@ export default function AssetDetailPage() {
               className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium"
             >
               <Pencil className="h-4 w-4" />
-              {t("assetDetail.actions.edit")}
+              {t("assetDetail.buttons.edit")}
             </button>
             {asset.status === "available" && (
               <button
@@ -330,7 +330,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
               >
                 <UserCheck className="h-4 w-4" />
-                {t("assetDetail.actions.assign")}
+                {t("assetDetail.buttons.assign")}
               </button>
             )}
             {asset.status === "assigned" && (
@@ -339,7 +339,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium"
               >
                 <RotateCcw className="h-4 w-4" />
-                {t("assetDetail.actions.return")}
+                {t("assetDetail.buttons.return")}
               </button>
             )}
             {(asset.status === "available" || asset.status === "assigned") && (
@@ -351,7 +351,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 border border-yellow-200 text-yellow-700 rounded-lg hover:bg-yellow-50 text-sm font-medium"
               >
                 <Wrench className="h-4 w-4" />
-                {t("assetDetail.actions.sendForRepair")}
+                {t("assetDetail.buttons.sendForRepair")}
               </button>
             )}
             {asset.status === "in_repair" && (
@@ -363,7 +363,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
               >
                 <CheckCircle className="h-4 w-4" />
-                {t("assetDetail.actions.repairComplete")}
+                {t("assetDetail.buttons.repairComplete")}
               </button>
             )}
             {asset.status !== "retired" && asset.status !== "lost" && (
@@ -376,7 +376,7 @@ export default function AssetDetailPage() {
                   className="inline-flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 text-sm font-medium"
                 >
                   <Trash2 className="h-4 w-4" />
-                  {t("assetDetail.actions.retire")}
+                  {t("assetDetail.buttons.retire")}
                 </button>
                 <button
                   onClick={() => {
@@ -386,7 +386,7 @@ export default function AssetDetailPage() {
                   className="inline-flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium"
                 >
                   <AlertTriangle className="h-4 w-4" />
-                  {t("assetDetail.actions.reportLost")}
+                  {t("assetDetail.buttons.reportLost")}
                 </button>
               </>
             )}
@@ -399,7 +399,7 @@ export default function AssetDetailPage() {
                 className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
               >
                 <PackageCheck className="h-4 w-4" />
-                {t("assetDetail.actions.markFound")}
+                {t("assetDetail.buttons.markFound")}
               </button>
             )}
           </div>
@@ -410,7 +410,7 @@ export default function AssetDetailPage() {
         {/* Asset Details */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("assetDetail.info.title")}</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("assetDetail.info.heading")}</h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-8">
               <div>
                 <p className="text-xs text-gray-500 mb-1">{t("assetDetail.info.assetTag")}</p>
@@ -479,7 +479,7 @@ export default function AssetDetailPage() {
                     <Shield className={`h-4 w-4 ${warrantyExpired ? "text-red-500" : "text-green-500"}`} />
                     <p className={`text-sm ${warrantyExpired ? "text-red-600 font-medium" : "text-gray-900"}`}>
                       {new Date(asset.warranty_expiry).toLocaleDateString()}
-                      {warrantyExpired && ` ${t("assetDetail.info.expired")}`}
+                      {warrantyExpired && t("assetDetail.info.expiredSuffix")}
                     </p>
                   </div>
                 </div>
@@ -502,7 +502,7 @@ export default function AssetDetailPage() {
           {/* Assignment Info */}
           {asset.status === "assigned" && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-blue-900 mb-3">{t("assetDetail.assignment.title")}</h2>
+              <h2 className="text-lg font-semibold text-blue-900 mb-3">{t("assetDetail.assignment.heading")}</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-blue-600 mb-1">{t("assetDetail.assignment.assignedTo")}</p>
@@ -529,7 +529,7 @@ export default function AssetDetailPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">{t("assetDetail.history.title")}</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("assetDetail.history.heading")}</h2>
           </div>
           {asset.history && asset.history.length > 0 ? (
             <div className="relative">
@@ -542,10 +542,10 @@ export default function AssetDetailPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 capitalize">{t(`assetDetail.action.${entry.action}`, { defaultValue: entry.action })}</p>
                         {entry.to_user_name && (
-                          <p className="text-xs text-gray-600">{t("assetDetail.history.toUser", { name: entry.to_user_name })}</p>
+                          <p className="text-xs text-gray-600">{t("assetDetail.history.to", { name: entry.to_user_name })}</p>
                         )}
                         {entry.from_user_name && (
-                          <p className="text-xs text-gray-600">{t("assetDetail.history.fromUser", { name: entry.from_user_name })}</p>
+                          <p className="text-xs text-gray-600">{t("assetDetail.history.from", { name: entry.from_user_name })}</p>
                         )}
                         {entry.notes && (
                           <p className="text-xs text-gray-500 mt-0.5">{entry.notes}</p>
@@ -565,8 +565,8 @@ export default function AssetDetailPage() {
                             setHistoryDeleteId(entry.id);
                             setHistoryDeleteError(null);
                           }}
-                          title={t("assetDetail.history.deleteEntry")}
-                          aria-label={t("assetDetail.history.deleteEntry")}
+                          title={t("assetDetail.history.deleteTitle")}
+                          aria-label={t("assetDetail.history.deleteTitle")}
                           className="p-1 rounded text-gray-400 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -604,7 +604,7 @@ export default function AssetDetailPage() {
               className="p-6 space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.assignModal.assignToLabel")} *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.assignModal.assignToLabel")}</label>
                 <select
                   required
                   value={assignUserId}
@@ -634,7 +634,7 @@ export default function AssetDetailPage() {
                   onClick={() => setShowAssignModal(false)}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  {t("assetDetail.common.cancel")}
+                  {t("assetDetail.assignModal.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -676,10 +676,10 @@ export default function AssetDetailPage() {
                   onChange={(e) => setReturnCondition(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  <option value="new">{t("assetDetail.condition.new")}</option>
-                  <option value="good">{t("assetDetail.condition.good")}</option>
-                  <option value="fair">{t("assetDetail.condition.fair")}</option>
-                  <option value="poor">{t("assetDetail.condition.poor")}</option>
+                  <option value="new">{t("assetDetail.conditionOptions.new")}</option>
+                  <option value="good">{t("assetDetail.conditionOptions.good")}</option>
+                  <option value="fair">{t("assetDetail.conditionOptions.fair")}</option>
+                  <option value="poor">{t("assetDetail.conditionOptions.poor")}</option>
                 </select>
               </div>
               <div>
@@ -697,7 +697,7 @@ export default function AssetDetailPage() {
                   onClick={() => setShowReturnModal(false)}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
                 >
-                  {t("assetDetail.common.cancel")}
+                  {t("assetDetail.returnModal.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -748,7 +748,7 @@ export default function AssetDetailPage() {
             body:
               asset.status === "assigned"
                 ? t("assetDetail.confirm.repairStart.bodyAssigned")
-                : t("assetDetail.confirm.repairStart.bodyUnassigned"),
+                : t("assetDetail.confirm.repairStart.bodyDefault"),
             confirmLabel: t("assetDetail.confirm.repairStart.confirmLabel"),
             iconColor: "text-yellow-700 bg-yellow-50",
             confirmBtn: "bg-yellow-600 hover:bg-yellow-700",
@@ -809,7 +809,7 @@ export default function AssetDetailPage() {
                   disabled={pending}
                   className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
                 >
-                  {t("assetDetail.common.cancel")}
+                  {t("assetDetail.confirm.cancel")}
                 </button>
                 <button
                   type="button"
@@ -853,7 +853,7 @@ export default function AssetDetailPage() {
             <form onSubmit={submitEdit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.nameLabel")} *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.nameLabel")}</label>
                   <input
                     type="text"
                     required
@@ -869,7 +869,7 @@ export default function AssetDetailPage() {
                     onChange={(e) => setEditForm({ ...editForm, category_id: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="">{t("assetDetail.info.uncategorized")}</option>
+                    <option value="">{t("assetDetail.editModal.uncategorized")}</option>
                     {(categories || []).map((c: any) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
@@ -913,10 +913,10 @@ export default function AssetDetailPage() {
                     }
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="new">{t("assetDetail.condition.new")}</option>
-                    <option value="good">{t("assetDetail.condition.good")}</option>
-                    <option value="fair">{t("assetDetail.condition.fair")}</option>
-                    <option value="poor">{t("assetDetail.condition.poor")}</option>
+                    <option value="new">{t("assetDetail.conditionOptions.new")}</option>
+                    <option value="good">{t("assetDetail.conditionOptions.good")}</option>
+                    <option value="fair">{t("assetDetail.conditionOptions.fair")}</option>
+                    <option value="poor">{t("assetDetail.conditionOptions.poor")}</option>
                   </select>
                 </div>
                 <div>
@@ -932,7 +932,7 @@ export default function AssetDetailPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t("assetDetail.editModal.purchaseCostLabel")}</label>
                   <div className="flex items-stretch">
                     <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-sm text-gray-600">
-                      {t("assetDetail.editModal.currencyPrefix")}
+                      ₹ INR
                     </span>
                     <input
                       type="number"
@@ -993,7 +993,7 @@ export default function AssetDetailPage() {
                   disabled={updateMutation.isPending}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                 >
-                  {t("assetDetail.common.cancel")}
+                  {t("assetDetail.editModal.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -1030,9 +1030,9 @@ export default function AssetDetailPage() {
                   <Trash2 className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{t("assetDetail.historyDelete.title")}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("assetDetail.deleteHistory.title")}</h3>
                   <p className="mt-2 text-sm text-gray-500">
-                    {t("assetDetail.historyDelete.body")}
+                    {t("assetDetail.deleteHistory.body")}
                   </p>
                 </div>
               </div>
@@ -1049,7 +1049,7 @@ export default function AssetDetailPage() {
                 disabled={deleteHistoryMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                {t("assetDetail.common.cancel")}
+                {t("assetDetail.deleteHistory.cancel")}
               </button>
               <button
                 type="button"
@@ -1059,10 +1059,10 @@ export default function AssetDetailPage() {
               >
                 {deleteHistoryMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> {t("assetDetail.historyDelete.deleting")}
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("assetDetail.deleteHistory.deleting")}
                   </>
                 ) : (
-                  t("assetDetail.historyDelete.confirm")
+                  t("assetDetail.deleteHistory.confirm")
                 )}
               </button>
             </div>

@@ -6,6 +6,7 @@
 // content, capped in height so long member lists scroll inside the card.
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { X, CheckCheck, Check, Clock } from "lucide-react";
 import type { MessageReceiptBreakdown, ChatMessageReceipt } from "@empcloud/shared";
 import api from "@/api/client";
@@ -66,6 +67,7 @@ export function ReceiptsPanel({
   messageId: number;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useQuery<MessageReceiptBreakdown>({
     queryKey: ["chat-receipts", conversationId, messageId],
     queryFn: () =>
@@ -85,43 +87,43 @@ export function ReceiptsPanel({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-900">Message info</p>
+          <p className="text-sm font-semibold text-gray-900">{t("receiptsPanel.header.title")}</p>
           <button
             type="button"
             onClick={onClose}
             className="p-1 rounded-lg text-gray-400 hover:bg-gray-100"
-            aria-label="Close"
+            aria-label={t("receiptsPanel.actions.close")}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto pb-1.5">
           {isLoading ? (
-            <p className="px-3 py-3 text-sm text-gray-400">Loading…</p>
+            <p className="px-3 py-3 text-sm text-gray-400">{t("receiptsPanel.state.loading")}</p>
           ) : isError || !data ? (
-            <p className="px-3 py-3 text-sm text-red-500">Couldn't load message info.</p>
+            <p className="px-3 py-3 text-sm text-red-500">{t("receiptsPanel.state.error")}</p>
           ) : (
             <>
               <Section
-                title="Read by"
+                title={t("receiptsPanel.section.readBy")}
                 icon={<CheckCheck className="h-3.5 w-3.5 text-sky-500" />}
                 people={data.read}
                 tone="text-sky-600"
               />
               <Section
-                title="Delivered to"
+                title={t("receiptsPanel.section.deliveredTo")}
                 icon={<Check className="h-3.5 w-3.5 text-gray-400" />}
                 people={data.delivered}
                 tone="text-gray-500"
               />
               <Section
-                title="Pending"
+                title={t("receiptsPanel.section.pending")}
                 icon={<Clock className="h-3.5 w-3.5 text-gray-300" />}
                 people={data.pending}
                 tone="text-gray-400"
               />
               {data.read.length + data.delivered.length + data.pending.length === 0 && (
-                <p className="px-3 py-3 text-sm text-gray-400">No other members.</p>
+                <p className="px-3 py-3 text-sm text-gray-400">{t("receiptsPanel.state.noOtherMembers")}</p>
               )}
             </>
           )}

@@ -62,13 +62,13 @@ export default function SettingsPage() {
   const { data: locations } = useLocations();
   const [editingOrg, setEditingOrg] = useState(false);
 
-  if (isLoading) return <div className="text-gray-500">{t("orgSettings.loading")}</div>;
+  if (isLoading) return <div className="text-gray-500">{t("settingsPage.loading")}</div>;
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t("orgSettings.title")}</h1>
-        <p className="text-gray-500 mt-1">{t("orgSettings.subtitle")}</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("settingsPage.header.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("settingsPage.header.subtitle")}</p>
       </div>
 
       {/* Organization info */}
@@ -79,29 +79,29 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-brand-600" />
-              <h2 className="font-semibold text-gray-900">{t("orgSettings.companyInfo")}</h2>
+              <h2 className="font-semibold text-gray-900">{t("settingsPage.company.title")}</h2>
             </div>
             <button
               onClick={() => setEditingOrg(true)}
               className="flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium"
             >
-              <Pencil className="h-3.5 w-3.5" /> {t("orgSettings.edit")}
+              <Pencil className="h-3.5 w-3.5" /> {t("settingsPage.actions.edit")}
             </button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              ["name", org?.name],
-              ["legalName", org?.legal_name],
-              ["email", org?.email],
-              ["phone", org?.contact_number],
-              ["country", org?.country],
-              ["state", org?.state],
-              ["city", org?.city],
-              ["timezone", org?.timezone],
-              ["language", org?.language],
+              ["fields.name", org?.name],
+              ["fields.legalName", org?.legal_name],
+              ["fields.email", org?.email],
+              ["fields.phone", org?.contact_number],
+              ["fields.country", org?.country],
+              ["fields.state", org?.state],
+              ["fields.city", org?.city],
+              ["fields.timezone", org?.timezone],
+              ["fields.language", org?.language],
             ].map(([labelKey, value]) => (
               <div key={labelKey as string}>
-                <p className="text-xs text-gray-500">{t(`orgSettings.field.${labelKey}`)}</p>
+                <p className="text-xs text-gray-500">{t(`settingsPage.${labelKey}`)}</p>
                 <p className="text-sm font-medium text-gray-900">{value || "\u2014"}</p>
               </div>
             ))}
@@ -165,13 +165,13 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
     e.preventDefault();
     const errors: Record<string, string> = {};
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = t("orgSettings.errEmail");
+      errors.email = t("settingsPage.validation.email");
     }
     if (form.city && !NAME_ONLY_RE.test(form.city)) {
-      errors.city = t("orgSettings.errCity");
+      errors.city = t("settingsPage.validation.city");
     }
     if (form.state && !NAME_ONLY_RE.test(form.state)) {
-      errors.state = t("orgSettings.errState");
+      errors.state = t("settingsPage.validation.state");
     }
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -182,15 +182,15 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
   };
 
   const fields: [string, keyof typeof form][] = [
-    ["name", "name"],
-    ["legalName", "legal_name"],
-    ["email", "email"],
-    ["phone", "contact_number"],
-    ["country", "country"],
-    ["state", "state"],
-    ["city", "city"],
-    ["timezone", "timezone"],
-    ["language", "language"],
+    ["fields.name", "name"],
+    ["fields.legalName", "legal_name"],
+    ["fields.email", "email"],
+    ["fields.phone", "contact_number"],
+    ["fields.country", "country"],
+    ["fields.state", "state"],
+    ["fields.city", "city"],
+    ["fields.timezone", "timezone"],
+    ["fields.language", "language"],
   ];
 
   return (
@@ -198,23 +198,23 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Building2 className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">{t("orgSettings.editCompanyInfo")}</h2>
+          <h2 className="font-semibold text-gray-900">{t("settingsPage.company.editTitle")}</h2>
         </div>
         <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
           <X className="h-5 w-5" />
         </button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {fields.map(([label, key]) => (
+        {fields.map(([labelKey, key]) => (
           <div key={key}>
-            <label className="block text-xs text-gray-500 mb-1">{t(`orgSettings.field.${label}`)}</label>
+            <label className="block text-xs text-gray-500 mb-1">{t(`settingsPage.${labelKey}`)}</label>
             {key === "timezone" ? (
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
               >
-                <option value="">{t("orgSettings.selectTimezone")}</option>
+                <option value="">{t("settingsPage.form.selectTimezone")}</option>
                 {TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>{tz}</option>
                 ))}
@@ -225,7 +225,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
               >
-                <option value="">{t("orgSettings.selectCountry")}</option>
+                <option value="">{t("settingsPage.form.selectCountry")}</option>
                 {COUNTRIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -257,18 +257,18 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
           onClick={onClose}
           className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
         >
-          {t("orgSettings.cancel")}
+          {t("settingsPage.actions.cancel")}
         </button>
         <button
           type="submit"
           disabled={updateOrg.isPending}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
-          <Save className="h-4 w-4" /> {t("orgSettings.saveChanges")}
+          <Save className="h-4 w-4" /> {t("settingsPage.actions.saveChanges")}
         </button>
       </div>
       {updateOrg.isError && (
-        <p className="mt-3 text-sm text-red-600">{t("orgSettings.updateError")}</p>
+        <p className="mt-3 text-sm text-red-600">{t("settingsPage.errors.updateOrg")}</p>
       )}
     </form>
   );
@@ -299,7 +299,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || t("orgSettings.addDeptError"));
+      setAddError(err?.response?.data?.error?.message || t("settingsPage.errors.addDepartment"));
     },
   });
 
@@ -315,7 +315,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setEditError("");
     },
     onError: (err: any) => {
-      setEditError(err?.response?.data?.error?.message || t("orgSettings.renameDeptError"));
+      setEditError(err?.response?.data?.error?.message || t("settingsPage.errors.renameDepartment"));
     },
   });
 
@@ -329,7 +329,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       setDeleteError("");
     },
     onError: (err: any) => {
-      setDeleteError(err?.response?.data?.error?.message || t("orgSettings.deleteDeptError"));
+      setDeleteError(err?.response?.data?.error?.message || t("settingsPage.errors.deleteDepartment"));
     },
   });
 
@@ -355,13 +355,13 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Briefcase className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">{t("orgSettings.departments", { count: departments.length })}</h2>
+          <h2 className="font-semibold text-gray-900">{t("settingsPage.departments.title", { count: departments.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
         >
-          <Plus className="h-3.5 w-3.5" /> {t("orgSettings.add")}
+          <Plus className="h-3.5 w-3.5" /> {t("settingsPage.actions.add")}
         </button>
       </div>
       {showAdd && (
@@ -378,7 +378,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               type="text"
               value={newName}
               onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
-              placeholder={t("orgSettings.departmentName")}
+              placeholder={t("settingsPage.departments.namePlaceholder")}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
               required
             />
@@ -387,7 +387,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               disabled={addDept.isPending}
               className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              {t("orgSettings.add")}
+              {t("settingsPage.actions.add")}
             </button>
           </form>
           {addError && <p className="text-xs text-red-500 mt-1">{addError}</p>}
@@ -422,7 +422,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   type="submit"
                   disabled={updateDept.isPending || !editName.trim()}
                   className="text-green-600 hover:text-green-700 disabled:opacity-50"
-                  title={t("orgSettings.save")}
+                  title={t("settingsPage.rowActions.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
                 </button>
@@ -430,7 +430,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   type="button"
                   onClick={cancelEdit}
                   className="text-gray-400 hover:text-gray-600"
-                  title={t("orgSettings.cancel")}
+                  title={t("settingsPage.rowActions.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -442,7 +442,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                   <button
                     onClick={() => startEdit(d)}
                     className="text-gray-400 hover:text-brand-600"
-                    title={t("orgSettings.renameDepartment")}
+                    title={t("settingsPage.departments.renameTitle")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -452,7 +452,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                       deleteDept.mutate(d.id);
                     }}
                     className="text-gray-400 hover:text-red-500"
-                    title={t("orgSettings.deleteDepartment")}
+                    title={t("settingsPage.departments.deleteTitle")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -494,7 +494,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setAddError("");
     },
     onError: (err: any) => {
-      setAddError(err?.response?.data?.error?.message || t("orgSettings.addLocError"));
+      setAddError(err?.response?.data?.error?.message || t("settingsPage.errors.addLocation"));
     },
   });
 
@@ -513,7 +513,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setEditError("");
     },
     onError: (err: any) => {
-      setEditError(err?.response?.data?.error?.message || t("orgSettings.updateLocError"));
+      setEditError(err?.response?.data?.error?.message || t("settingsPage.errors.updateLocation"));
     },
   });
 
@@ -525,7 +525,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
       setDeleteError("");
     },
     onError: (err: any) => {
-      setDeleteError(err?.response?.data?.error?.message || t("orgSettings.deleteLocError"));
+      setDeleteError(err?.response?.data?.error?.message || t("settingsPage.errors.deleteLocation"));
     },
   });
 
@@ -551,13 +551,13 @@ function LocationsCard({ locations }: { locations: any[] }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <MapPin className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">{t("orgSettings.locations", { count: locations.length })}</h2>
+          <h2 className="font-semibold text-gray-900">{t("settingsPage.locations.title", { count: locations.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
           className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
         >
-          <Plus className="h-3.5 w-3.5" /> {t("orgSettings.add")}
+          <Plus className="h-3.5 w-3.5" /> {t("settingsPage.actions.add")}
         </button>
       </div>
       {showAdd && (
@@ -570,7 +570,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             const timezone = locForm.timezone.trim();
             if (!name) return;
             if (!timezone) {
-              setAddError(t("orgSettings.timezoneRequired"));
+              setAddError(t("settingsPage.validation.timezoneRequired"));
               return;
             }
             addLoc.mutate({ name, timezone });
@@ -581,7 +581,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             type="text"
             value={locForm.name}
             onChange={(e) => { setLocForm({ ...locForm, name: e.target.value }); setAddError(""); }}
-            placeholder={t("orgSettings.locationName")}
+            placeholder={t("settingsPage.locations.namePlaceholder")}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             required
           />
@@ -592,7 +592,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             required
             aria-required="true"
           >
-            <option value="">{t("orgSettings.selectTimezoneRequired")}</option>
+            <option value="">{t("settingsPage.form.selectTimezoneRequired")}</option>
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
             ))}
@@ -602,7 +602,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
             disabled={addLoc.isPending}
             className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
           >
-            Add
+            {t("settingsPage.actions.add")}
           </button>
         </form>
         {addError && <p className="text-xs text-red-500 mt-1">{addError}</p>}
@@ -630,7 +630,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                     setEditError("");
                   }}
                   autoFocus
-                  placeholder={t("orgSettings.locationName")}
+                  placeholder={t("settingsPage.locations.namePlaceholder")}
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
                   required
                 />
@@ -639,7 +639,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   onChange={(e) => setEditForm({ ...editForm, timezone: e.target.value })}
                   className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm bg-white"
                 >
-                  <option value="">{t("orgSettings.noTimezone")}</option>
+                  <option value="">{t("settingsPage.form.noTimezone")}</option>
                   {TIMEZONES.map((tz) => (
                     <option key={tz} value={tz}>
                       {tz}
@@ -650,7 +650,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   type="submit"
                   disabled={updateLoc.isPending || !editForm.name.trim()}
                   className="text-green-600 hover:text-green-700 disabled:opacity-50"
-                  title={t("orgSettings.save")}
+                  title={t("settingsPage.rowActions.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
                 </button>
@@ -658,7 +658,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   type="button"
                   onClick={cancelEdit}
                   className="text-gray-400 hover:text-gray-600"
-                  title={t("orgSettings.cancel")}
+                  title={t("settingsPage.rowActions.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -671,7 +671,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   <button
                     onClick={() => startEdit(l)}
                     className="text-gray-400 hover:text-brand-600"
-                    title={t("orgSettings.editLocation")}
+                    title={t("settingsPage.locations.editTitle")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
@@ -681,7 +681,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                       deleteLoc.mutate(l.id);
                     }}
                     className="text-gray-400 hover:text-red-500"
-                    title={t("orgSettings.deleteLocation")}
+                    title={t("settingsPage.locations.deleteTitle")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

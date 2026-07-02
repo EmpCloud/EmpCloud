@@ -778,7 +778,7 @@ export default function EmployeeDirectoryPage() {
               </div>
               <button
                 onClick={() => setShowPendingInvitations(false)}
-                aria-label="Close"
+                aria-label={t("common.close")}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X className="h-5 w-5" />
@@ -840,7 +840,7 @@ export default function EmployeeDirectoryPage() {
                           disabled={
                             cancelInvitation.isPending && cancelInvitation.variables === inv.id
                           }
-                          title="Cancel this invitation and remove the unactivated user"
+                          title={t("common.cancelInvitationTooltip")}
                           className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
                         >
                           {cancelInvitation.isPending && cancelInvitation.variables === inv.id ? (
@@ -1263,7 +1263,7 @@ export default function EmployeeDirectoryPage() {
                 resetPassword.reset();
               }}
                   className="text-gray-400 hover:text-gray-600"
-                  aria-label="Close"
+                  aria-label={t("common.close")}
                 >
                   <X className="h-5 w-5" />
                 </button>

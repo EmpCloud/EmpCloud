@@ -426,7 +426,8 @@
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications yet",
     "viewAll": "View all",
-    "review": "Review"
+    "review": "Review",
+    "cancelInvitationTooltip": "Cancel this invitation and remove the unactivated user"
   },
   "auth": {
     "signIn": "Sign in",
@@ -1687,12 +1688,7 @@
       "cancel": "Cancel",
       "close": "Close",
       "failedCreate": "Failed to create plan",
-      "failedApprove": "Failed to approve plan",
-      "failedReject": "Failed to reject plan",
-      "failedSubmit": "Failed to submit plan",
       "allStatuses": "All Statuses",
-      "allDepartments": "All Departments",
-      "allYears": "All Years",
       "statusDraft": "Draft",
       "statusSubmitted": "Submitted",
       "statusApproved": "Approved",
@@ -1715,7 +1711,12 @@
       "previous": "Previous",
       "next": "Next",
       "alertPlannedInvalid": "Planned Headcount must be 0 or greater.",
-      "alertCurrentInvalid": "Current Headcount must be 0 or greater."
+      "alertCurrentInvalid": "Current Headcount must be 0 or greater.",
+      "failedApprove": "Failed to approve plan",
+      "failedReject": "Failed to reject plan",
+      "failedSubmit": "Failed to submit plan",
+      "allDepartments": "All Departments",
+      "allYears": "All Years"
     },
     "vacancies": {
       "title": "Open Vacancies",
@@ -1759,8 +1760,6 @@
       "searchPlaceholder": "Search by title or code...",
       "allDepartments": "All Departments",
       "allStatuses": "All Statuses",
-      "criticalOnly": "Critical only",
-      "allTypes": "All Types",
       "statusActive": "Active",
       "statusFilled": "Filled",
       "statusFrozen": "Frozen",
@@ -1776,7 +1775,9 @@
       "deleteTitle": "Delete position?",
       "deleteConfirm": "Delete {{title}}? Active assignments are ended and the position is closed. This cannot be undone.",
       "deleting": "Deleting...",
-      "failedDelete": "Failed to delete position"
+      "failedDelete": "Failed to delete position",
+      "criticalOnly": "Critical only",
+      "allTypes": "All Types"
     },
     "dashboard": {
       "title": "Position Dashboard",
@@ -2552,11 +2553,3135 @@
       "updated": "Updated"
     }
   },
-  "customFields": {
-    "title": "Custom Fields",
-    "subtitle": "Define custom data fields for employees, departments, and other entities",
-    "addField": "Add Field",
-    "entity": {
+  "messageThread": {
+    "presence": {
+      "online": "Online",
+      "typing": "typing…",
+      "typingOne": "{{name}} is typing…",
+      "typingTwo": "{{name1}} and {{name2}} are typing…",
+      "typingMany_one": "{{count}} person is typing…",
+      "typingMany_other": "{{count}} people are typing…"
+    },
+    "fallback": {
+      "someone": "Someone"
+    },
+    "sr": {
+      "sentAttachment": "sent an attachment"
+    },
+    "header": {
+      "conversationTitleFallback": "Conversation",
+      "backToConversations": "Back to conversations",
+      "membersTooltip": "Members: {{roster}}",
+      "viewMembers": "View members",
+      "searchInConversation": "Search in conversation"
+    },
+    "mute": {
+      "unmute": "Unmute notifications",
+      "mute": "Mute notifications",
+      "unmutedToast": "Notifications unmuted.",
+      "mutedToast": "Notifications muted.",
+      "error": "Couldn't update notifications. Please try again."
+    },
+    "archive": {
+      "unarchive": "Unarchive conversation",
+      "archive": "Archive conversation",
+      "unarchivedToast": "Conversation unarchived.",
+      "archivedToast": "Conversation archived.",
+      "error": "Couldn't update the conversation. Please try again."
+    },
+    "search": {
+      "placeholder": "Search in this conversation…",
+      "noMatches": "No matches."
+    },
+    "pinned": {
+      "label": "Pinned",
+      "attachmentFallback": "📎 Attachment",
+      "goTo": "Go to pinned message",
+      "unpin": "Unpin message",
+      "labelCount_one": "Pinned · {{count}}",
+      "labelCount_other": "Pinned · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "Message pinned.",
+      "unpinnedToast": "Message unpinned.",
+      "error": "Couldn't update the pin. Please try again."
+    },
+    "members": {
+      "dialogLabel": "Group members",
+      "saveName": "Save name",
+      "cancel": "Cancel",
+      "renameGroup": "Rename group",
+      "close": "Close",
+      "changePhoto": "Change group photo",
+      "descriptionPlaceholder": "Add a group description…",
+      "noDescription": "No description",
+      "descCancel": "Cancel",
+      "descSave": "Save",
+      "youSuffix": "(You)",
+      "adminBadge": "Admin",
+      "removeMember": "Remove {{name}}",
+      "addMembers": "Add members",
+      "deleteGroup": "Delete group",
+      "leaveGroup": "Leave group",
+      "memberCount_one": "{{count}} member",
+      "memberCount_other": "{{count}} members"
+    },
+    "confirm": {
+      "leaveTitle": "Leave group?",
+      "leaveDescription": "You'll leave \"{{group}}\" and stop receiving its messages. You can be re-added by the group admin.",
+      "leaveGroupFallback": "this group",
+      "leaveConfirm": "Leave",
+      "deleteGroupTitle": "Delete group?",
+      "deleteGroupDescription": "\"{{group}}\" will be deleted for everyone and removed from all members' chat lists. This can't be undone.",
+      "deleteGroupFallback": "This group",
+      "deleteGroupConfirm": "Delete group",
+      "bulkDeletePartial": "Only your own messages will be deleted; others stay. This can't be undone.",
+      "bulkDeleteAll": "These messages will be deleted for everyone. This can't be undone.",
+      "bulkDeleteConfirm": "Delete",
+      "removeMemberTitle": "Remove member?",
+      "removeMemberDescription": "{{name}} will be removed from \"{{group}}\" and will no longer see its messages.",
+      "removeMemberGroupFallback": "this group",
+      "removeMemberConfirm": "Remove",
+      "bulkDeleteTitle_one": "Delete {{count}} message?",
+      "bulkDeleteTitle_other": "Delete {{count}} messages?"
+    },
+    "group": {
+      "renamedToast": "Group renamed.",
+      "renameError": "Couldn't rename the group. Please try again.",
+      "descriptionUpdatedToast": "Description updated.",
+      "descriptionError": "Couldn't update the description.",
+      "photoMustBeImage": "Group photo must be an image.",
+      "photoUpdatedToast": "Group photo updated.",
+      "photoUploadError": "Couldn't upload the photo.",
+      "memberRemovedToast": "{{name}} was removed from the group.",
+      "memberRemoveError": "Couldn't remove the member. Please try again.",
+      "leftToast": "You left the group.",
+      "leaveError": "Couldn't leave the group. Please try again.",
+      "deletedToast": "Group deleted.",
+      "deleteError": "Couldn't delete the group. Please try again."
+    },
+    "attachment": {
+      "tooLarge": "\"{{name}}\" is larger than 10 MB."
+    },
+    "dropFiles": "Drop files to send",
+    "list": {
+      "failedToLoad": "Failed to load messages. Please try again.",
+      "empty": "No messages yet",
+      "emptyHint": "Say hello to get the conversation started.",
+      "beginning": "Beginning of conversation",
+      "unreadDivider": "Unread messages"
+    },
+    "message": {
+      "deletedTombstone": "This message was deleted",
+      "forwardedFrom": "Forwarded from {{name}}",
+      "goToMessage": "Go to message"
+    },
+    "reply": {
+      "deletedQuote": "Message deleted",
+      "attachmentQuote": "📎 Attachment"
+    },
+    "edit": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "hint": "Enter to save · Esc to cancel"
+    },
+    "actions": {
+      "react": "React",
+      "reply": "Reply",
+      "forward": "Forward",
+      "edit": "Edit message",
+      "delete": "Delete message"
+    },
+    "meta": {
+      "edited": "edited",
+      "messageInfo": "Message info"
+    },
+    "jump": {
+      "latest": "Jump to latest",
+      "newMessages_one": "{{count}} new message",
+      "newMessages_other": "{{count}} new messages"
+    },
+    "select": {
+      "cancel": "Cancel selection",
+      "deleteOnlyOwn": "You can only delete your own messages",
+      "deleteSelected": "Delete selected",
+      "delete": "Delete",
+      "forward": "Forward",
+      "countSelected_one": "{{count}} selected",
+      "countSelected_other": "{{count}} selected"
+    },
+    "bulkDelete": {
+      "error": "Couldn't delete some messages. Please try again.",
+      "successToast_one": "Deleted {{count}} message.",
+      "successToast_other": "Deleted {{count}} messages."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "Replying to {{name}}",
+        "deletedPreview": "Message deleted",
+        "attachmentPreview": "📎 Attachment",
+        "cancel": "Cancel reply"
+      },
+      "removeAttachment": "Remove attachment",
+      "queuedClear": "clear",
+      "placeholderCaption": "Add a caption…",
+      "placeholderGroup": "Type a message… (@ to mention)",
+      "placeholderDirect": "Type a message…",
+      "attach": "Attach a photo or file",
+      "emojiTitle": "Emoji",
+      "emojiAria": "Insert emoji",
+      "send": "Send message",
+      "hint": "Enter to send · Shift + Enter for a new line",
+      "hintMention": " · @ to mention",
+      "hintAttach": " · Attach up to 10 MB",
+      "queuedFiles_one": "{{count}} more file queued",
+      "queuedFiles_other": "{{count}} more files queued"
+    },
+    "toast": {
+      "messageNotLoaded": "That message isn't loaded — scroll up to load older messages.",
+      "sendError": "Couldn't send your message. Please try again.",
+      "reactionError": "Couldn't update your reaction.",
+      "deleteMessageError": "Couldn't delete the message.",
+      "saveEditError": "Couldn't save your edit. Please try again.",
+      "linkCopied": "Message link copied.",
+      "linkCopyError": "Couldn't copy the link.",
+      "openChatError": "Couldn't open that chat.",
+      "messageTooLong_one": "Message is too long (max {{count}} characters).",
+      "messageTooLong_other": "Message is too long (max {{count}} characters)."
+    }
+  },
+  "pricingManagement": {
+    "title": "Pricing Management",
+    "subtitle": "Manage plan tiers and per-seat pricing per currency, volume band, and effective date. Existing subscriptions keep their stored price; changes apply to new subscriptions and plan upgrades.",
+    "tiers": {
+      "heading": "Tiers",
+      "add": "Add tier",
+      "empty": "No tiers yet.",
+      "col": {
+        "slug": "Slug",
+        "name": "Name",
+        "description": "Description",
+        "sort": "Sort",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "deleteConfirm": "Delete tier \"{{name}}\" ({{slug}})?"
+    },
+    "pricingRows": {
+      "heading": "Pricing rows",
+      "add": "Add pricing row",
+      "empty": "No pricing rows yet.",
+      "col": {
+        "tier": "Tier",
+        "currency": "Currency",
+        "pricePerSeat": "Price / seat",
+        "seatBand": "Seat band",
+        "effectiveFrom": "Effective from",
+        "notes": "Notes",
+        "actions": "Actions"
+      },
+      "deleteConfirm": "Delete this pricing row?"
+    },
+    "billingCycles": {
+      "heading": "Billing cycles",
+      "add": "Add cycle",
+      "empty": "No billing cycles yet.",
+      "col": {
+        "cycle": "Cycle",
+        "label": "Label",
+        "discount": "Discount",
+        "months": "Months",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "flat": "flat {{currency}} {{amount}}",
+      "save": "Save {{percent}}%",
+      "deleteConfirm": "Delete billing cycle \"{{cycle}}\"?"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "loading": "Loading...",
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "tierModal": {
+      "addTitle": "Add tier",
+      "editTitle": "Edit tier — {{name}}",
+      "field": {
+        "slug": "Slug",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Internal identifier (lowercase, no spaces). Cannot be changed after creation.",
+        "name": "Name",
+        "namePlaceholder": "Starter",
+        "description": "Description",
+        "sortOrder": "Sort order",
+        "active": "Active"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Add pricing row",
+      "editTitle": "Edit pricing row",
+      "field": {
+        "tier": "Tier",
+        "currency": "Currency",
+        "pricePerSeat": "Price per seat (in major unit — ₹/$/£/€, not paise/cents)",
+        "minSeats": "Min seats",
+        "maxSeats": "Max seats (blank = ∞)",
+        "effectiveFrom": "Effective from",
+        "effectiveFromHelp": "Future dates schedule price changes. The newest matching row wins at the moment of subscription create / upgrade.",
+        "notes": "Notes",
+        "notesPlaceholder": "Q3 promo, deprecated tier, etc."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Add billing cycle",
+      "editTitle": "Edit billing cycle — {{cycle}}",
+      "field": {
+        "cycleSlug": "Cycle slug",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Label",
+        "labelPlaceholder": "Semi-Annual",
+        "discountPct": "Discount %",
+        "discountPctHelp": "Shown as \"Save N%\" on the cycle button.",
+        "monthsPerCycle": "Months per cycle",
+        "sortOrder": "Sort order",
+        "active": "Active"
+      },
+      "override": {
+        "heading": "Override amount (optional)",
+        "help": "If set, this exact per-seat amount replaces the discount-based calculation when the customer's currency matches. Leave blank to use discount %.",
+        "amount": "Amount per seat (major unit)",
+        "amountPlaceholder": "e.g. 4800.00",
+        "currency": "Currency",
+        "currencyNone": "— None —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Tier created",
+      "tierUpdated": "Tier updated",
+      "tierDeleted": "Tier deleted",
+      "priceAdded": "Pricing row added",
+      "priceUpdated": "Pricing row updated",
+      "priceDeleted": "Pricing row deleted",
+      "cycleCreated": "Billing cycle created",
+      "cycleUpdated": "Billing cycle updated",
+      "cycleDeleted": "Billing cycle deleted",
+      "failed": "Failed"
+    }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Import Employees from Excel / CSV"
+    },
+    "downloadTemplate": "Download Template",
+    "downloadTemplateHint": "Download a sample Excel file with the correct headers.",
+    "dropzone": {
+      "title": "Drag & drop your Excel or CSV file here",
+      "browse": "or click to browse"
+    },
+    "parseError": "Failed to parse file",
+    "preview": {
+      "uploadDifferent": "Upload different file",
+      "errorsHeading": "Rows with errors (fix your file and re-upload)",
+      "rowLabel": "Row {{row}}:",
+      "valid_one": "{{count}} valid",
+      "valid_other": "{{count}} valid",
+      "invalid_one": "{{count}} invalid",
+      "invalid_other": "{{count}} invalid",
+      "totalRows_one": "{{count}} total row",
+      "totalRows_other": "{{count}} total rows"
+    },
+    "table": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role",
+      "empCode": "Emp Code",
+      "designation": "Designation",
+      "department": "Department",
+      "location": "Location",
+      "manager": "Manager",
+      "type": "Type",
+      "joining": "Joining",
+      "inviteFallback": "invite"
+    },
+    "importing": "Importing employees... please wait.",
+    "done": {
+      "title": "Import Complete",
+      "summary_one": "{{count}} employee imported successfully.",
+      "summary_other": "{{count}} employees imported successfully.",
+      "departmentsCreated_one": "New department created ({{count}}):",
+      "departmentsCreated_other": "New departments created ({{count}}):",
+      "locationsCreated_one": "New location created ({{count}}):",
+      "locationsCreated_other": "New locations created ({{count}}):",
+      "skipped_one": "Skipped {{count}} row with errors:",
+      "skipped_other": "Skipped {{count}} rows with errors:"
+    },
+    "failed": "Import failed",
+    "close": "Close",
+    "cancel": "Cancel",
+    "submit_one": "Import {{count}} valid employee",
+    "submit_other": "Import {{count}} valid employees"
+  },
+  "invoicesAdmin": {
+    "title": "Invoices",
+    "subtitle": "All invoices across all customer orgs (proxied from emp-billing). Mark paid, send by email, view PDF, or create a subscription on behalf of any org.",
+    "subscribeOnBehalf": "Subscribe on behalf",
+    "filters": {
+      "searchLabel": "Search",
+      "searchPlaceholder": "Invoice number, org name…",
+      "statusLabel": "Status"
+    },
+    "status": {
+      "all": "All",
+      "draft": "Draft",
+      "sent": "Sent",
+      "viewed": "Viewed",
+      "partially_paid": "Partially paid",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "void": "Void",
+      "written_off": "Written off"
+    },
+    "table": {
+      "invoice": "Invoice",
+      "org": "Org",
+      "status": "Status",
+      "total": "Total",
+      "due": "Due",
+      "issued": "Issued",
+      "actions": "Actions",
+      "dueDatePrefix": "due"
+    },
+    "loading": "Loading…",
+    "empty": "No invoices match.",
+    "actions": {
+      "markPaid": "Mark paid",
+      "sendEmail": "Send email",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "markPaid": {
+      "title": "Mark invoice paid",
+      "methodLabel": "Payment method",
+      "method": {
+        "manual": "Manual / Cash",
+        "bank_transfer": "Bank Transfer",
+        "cheque": "Cheque",
+        "upi": "UPI",
+        "card": "Card",
+        "other": "Other"
+      },
+      "referenceLabel": "Reference (txn id, cheque #, etc.)",
+      "referencePlaceholder": "e.g. TXN-2026-04-XYZ",
+      "notesLabel": "Notes (internal)",
+      "notesPlaceholder": "Optional",
+      "cancel": "Cancel",
+      "recording": "Recording…",
+      "submit": "Record payment"
+    },
+    "subscribe": {
+      "title": "Subscribe an org on behalf",
+      "description": "Creates the subscription in EmpCloud, which fires the standard webhook to emp-billing — client, plan and the first invoice are provisioned automatically.",
+      "orgLabel": "Organization",
+      "orgLoadingPlaceholder": "Loading organizations…",
+      "orgNonePlaceholder": "No organizations available",
+      "orgDropdownLoading": "Loading…",
+      "orgNoMatches": "No matching organizations",
+      "orgSelected": "Selected (org id {{orgId}})",
+      "moduleLabel": "Module",
+      "modulePlaceholder": "— Pick a module —",
+      "planTierLabel": "Plan tier",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "Total seats",
+      "billingCycleLabel": "Billing cycle",
+      "cycle": {
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annual": "Annual"
+      },
+      "trialDaysLabel": "Trial days (0 = bill immediately)",
+      "cancel": "Cancel",
+      "creating": "Creating…",
+      "submit": "Create subscription",
+      "orgSearchPlaceholder_one": "Type to search {{count}} organization…",
+      "orgSearchPlaceholder_other": "Type to search {{count}} organizations…",
+      "orgMoreResults_one": "{{count}} more — refine search to narrow",
+      "orgMoreResults_other": "{{count}} more — refine search to narrow"
+    },
+    "toast": {
+      "markPaidSuccess": "Invoice marked paid",
+      "sendEmailSuccess": "Invoice email queued",
+      "pdfError": "Failed to load invoice PDF",
+      "subscribeSuccess": "Subscription created; invoice will appear in a moment",
+      "genericError": "Failed",
+      "subscribeError": "Failed to create subscription. Check the org is valid and emp-billing is running."
+    },
+    "invoiceCount_one": "{{count}} invoice",
+    "invoiceCount_other": "{{count}} invoices"
+  },
+  "subscriptionsAdmin": {
+    "title": "Subscriptions",
+    "subtitle": "Full control of every customer subscription — tier, status, seats, pricing, period dates, trial end, auto-renew, free / comp, and manual invoice intent.",
+    "filters": {
+      "searchOrg": {
+        "label": "Search org",
+        "placeholder": "Name or email"
+      },
+      "status": {
+        "label": "Status"
+      },
+      "currency": {
+        "label": "Currency"
+      },
+      "all": "All"
+    },
+    "table": {
+      "columns": {
+        "org": "Org",
+        "module": "Module",
+        "tier": "Tier",
+        "status": "Status",
+        "seats": "Seats",
+        "pricePerSeat": "Price/seat",
+        "period": "Period",
+        "flags": "Flags",
+        "actions": "Actions"
+      }
+    },
+    "status": {
+      "trial": "trial",
+      "active": "active",
+      "past_due": "past_due",
+      "suspended": "suspended",
+      "cancelled": "cancelled",
+      "expired": "expired"
+    },
+    "billingCycle": {
+      "monthly": "monthly",
+      "quarterly": "quarterly",
+      "annual": "annual"
+    },
+    "period": {
+      "trialEnds": "Trial ends {{date}}"
+    },
+    "badges": {
+      "free": "FREE",
+      "manual": "MANUAL",
+      "noRenew": "NO-RENEW"
+    },
+    "loading": "Loading...",
+    "empty": "No subscriptions match.",
+    "actions": {
+      "edit": "Edit (all fields)",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "cancel": "Cancel",
+      "removeFreeFlag": "Remove free flag",
+      "markFree": "Mark as free / comp",
+      "recordManualInvoice": "Record manual invoice"
+    },
+    "confirm": {
+      "suspend": "Suspend {{org}}'s {{module}}?",
+      "cancel": "Cancel {{org}}'s {{module}}?",
+      "removeFree": "Remove free / comp flag?"
+    },
+    "pagination": {
+      "prev": "Prev",
+      "next": "Next",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "Subscription updated",
+      "suspended": "Suspended",
+      "activated": "Activated",
+      "cancelled": "Cancelled",
+      "markedFree": "Marked free",
+      "unmarkedFree": "Unmarked free",
+      "manualInvoiceRecorded": "Manual invoice recorded",
+      "failed": "Failed"
+    },
+    "editModal": {
+      "title": "Edit subscription — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "Plan tier",
+        "status": "Status",
+        "totalSeats": "Total seats",
+        "billingCycle": "Billing cycle",
+        "pricePerSeat": "Price per seat (major unit)",
+        "currency": "Currency",
+        "periodStart": "Period start",
+        "periodEnd": "Period end",
+        "trialEnds": "Trial ends (blank = no trial)",
+        "autoRenew": "Auto-renew",
+        "freeComp": "Free / comp",
+        "freeReason": "Free reason",
+        "internalNotes": "Internal notes"
+      },
+      "autoRenewYes": "Yes",
+      "compedLabel": "Comped (price forced to 0)",
+      "freeReasonPlaceholder": "Beta tester, internal use, exec deal, etc.",
+      "internalNotesPlaceholder": "Deal context, special terms, audit trail...",
+      "cancel": "Cancel",
+      "save": "Save all changes",
+      "saving": "Saving..."
+    },
+    "freeModal": {
+      "title": "Mark free — {{org}} · {{module}}",
+      "description": "This will set price_per_seat to 0 and flag the subscription as comped. A reason is required for the audit log.",
+      "reasonPlaceholder": "e.g. Beta tester, internal team, executive sponsorship",
+      "cancel": "Cancel",
+      "confirm": "Confirm — make free",
+      "saving": "Saving..."
+    },
+    "invoiceModal": {
+      "title": "Manual invoice — {{org}} · {{module}}",
+      "description": "Records the invoice intent on this subscription's internal notes for audit. The actual invoice document is created in EMP Billing on the next sync.",
+      "amountLabel": "Amount (in {{currency}})",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "One-time setup fee, custom feature work, etc.",
+      "dueDateLabel": "Due date (optional)",
+      "cancel": "Cancel",
+      "confirm": "Record invoice intent",
+      "saving": "Saving..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} subscription",
+      "subscriptions_other": "{{count}} subscriptions"
+    }
+  },
+  "orgDetail": {
+    "loading": "Loading...",
+    "error": {
+      "loadFailed": "Failed to load organization details.",
+      "backToOrganizations": "Back to organizations"
+    },
+    "backToAll": "Back to all organizations",
+    "createdOn": "Created",
+    "stats": {
+      "users": "Users",
+      "activeSubscriptions": "Active Subscriptions",
+      "monthlyRevenue": "Monthly Revenue",
+      "totalSpend": "Total Spend"
+    },
+    "users": {
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "deactivate": "Deactivate user",
+        "activate": "Activate user",
+        "resetPassword": "Reset password",
+        "changeRole": "Change role"
+      },
+      "empty": "No users in this organization",
+      "heading_one": "Users ({{count}})",
+      "heading_other": "Users ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "Module",
+        "plan": "Plan",
+        "status": "Status",
+        "seats": "Seats",
+        "pricePerSeat": "Price/Seat",
+        "monthly": "Monthly",
+        "billing": "Billing",
+        "periodEnd": "Period End"
+      },
+      "empty": "No subscriptions",
+      "heading_one": "Subscriptions ({{count}})",
+      "heading_other": "Subscriptions ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "Action",
+        "entity": "Entity",
+        "ip": "IP",
+        "time": "Time"
+      },
+      "heading_one": "Audit Log (Last {{count}})",
+      "heading_other": "Audit Log (Last {{count}})"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Reset password for <strong>{{name}}</strong> ({{email}}).",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Minimum 8 characters",
+      "submitting": "Resetting...",
+      "submit": "Reset Password"
+    },
+    "changeRole": {
+      "title": "Change Role",
+      "description": "Change role for <strong>{{name}}</strong>.",
+      "currentRole": "Current role: {{role}}",
+      "newRoleLabel": "New Role",
+      "submitting": "Updating...",
+      "submit": "Update Role"
+    },
+    "actions": {
+      "cancel": "Cancel"
+    },
+    "tabs": {
+      "users_one": "Users ({{count}})",
+      "users_other": "Users ({{count}})",
+      "subscriptions_one": "Subscriptions ({{count}})",
+      "subscriptions_other": "Subscriptions ({{count}})",
+      "auditLog_one": "Audit Log (Last {{count}})",
+      "auditLog_other": "Audit Log (Last {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "All Organizations",
+    "createButton": "Create Organization",
+    "modal": {
+      "title": "Create New Organization",
+      "fields": {
+        "orgName": "Organization Name",
+        "firstName": "Admin First Name",
+        "lastName": "Admin Last Name",
+        "email": "Admin Email",
+        "password": "Admin Password",
+        "country": "Country",
+        "timezone": "Timezone"
+      },
+      "passwordHint": "Must contain uppercase, lowercase, digit, and special character.",
+      "placeholders": {
+        "password": "Min 8 chars, uppercase, lowercase, digit, special"
+      },
+      "cancel": "Cancel",
+      "submit": "Create Organization",
+      "submitting": "Creating...",
+      "error": "Failed to create organization. Please check all fields."
+    },
+    "search": {
+      "placeholder": "Search by name or email..."
+    },
+    "table": {
+      "headers": {
+        "organization": "Organization",
+        "adminEmail": "Admin Email",
+        "employees": "Employees",
+        "activeModules": "Active Modules",
+        "monthlySpend": "Monthly Spend",
+        "status": "Status",
+        "joined": "Joined"
+      }
+    },
+    "status": {
+      "active": "active"
+    },
+    "loading": "Loading...",
+    "empty": "No organizations found",
+    "pagination": {
+      "summary": "Page {{page}} of {{totalPages}} ({{total}} total)"
+    },
+    "subtitle_one": "{{count}} organization registered on the platform.",
+    "subtitle_other": "{{count}} organizations registered on the platform."
+  },
+  "superAdminDashboard": {
+    "title": "Platform Dashboard",
+    "subtitle": "Real-time overview of the entire EMP Cloud platform.",
+    "loading": "Loading platform data...",
+    "error": {
+      "title": "Failed to load dashboard data",
+      "retryHint": "Please try refreshing the page"
+    },
+    "stats": {
+      "totalOrganizations": "Total Organizations",
+      "totalUsers": "Total Users",
+      "activeSubscriptions": "Active Subscriptions",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "System Health",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "newThisMonth_one": "+{{count}} this month",
+      "newThisMonth_other": "+{{count}} this month"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "All systems operational",
+      "degraded": "Some systems degraded",
+      "offline": "Systems offline"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "Organizations",
+        "description": "View and manage all organizations"
+      },
+      "moduleAnalytics": {
+        "label": "Module Analytics",
+        "description": "Subscribers, seats, revenue per module"
+      },
+      "revenueAnalytics": {
+        "label": "Revenue Analytics",
+        "description": "MRR, ARR, trends, top customers"
+      },
+      "subscriptionMetrics": {
+        "label": "Subscription Metrics",
+        "description": "Plans, utilization, billing cycles"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Revenue Trend"
+      },
+      "revenueByModule": {
+        "title": "Revenue by Module"
+      },
+      "moduleAdoption": {
+        "title": "Module Adoption"
+      },
+      "growthTrends": {
+        "title": "Growth Trends"
+      },
+      "viewDetails": "View details",
+      "legend": {
+        "organizations": "Organizations",
+        "totalSeats": "Total Seats",
+        "newOrgs": "New Orgs",
+        "newUsers": "New Users"
+      }
+    },
+    "empty": {
+      "revenue": "No revenue data yet",
+      "adoption": "No adoption data yet",
+      "growth": "No growth data yet",
+      "activity": "No recent activity"
+    },
+    "systemHealth": {
+      "title": "System Health",
+      "badge": {
+        "allOperational": "All Operational",
+        "degraded": "Degraded",
+        "checking": "Checking..."
+      },
+      "checkingModules": "Checking health..."
+    },
+    "healthBadge": {
+      "healthy": "Healthy",
+      "down": "Down"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "systemActor": "System"
+    }
+  },
+  "healthDashboard": {
+    "title": "Service Health",
+    "subtitle": "Real-time health status of all EMP Cloud ecosystem services",
+    "refreshing": "Refreshing...",
+    "actions": {
+      "checking": "Checking...",
+      "checkNow": "Check Now"
+    },
+    "loading": "Running health checks...",
+    "overall": {
+      "operational": {
+        "title": "All Systems Operational",
+        "subtitle": "Every service is running normally."
+      },
+      "degraded": {
+        "title": "Partial System Degradation",
+        "subtitle": "One or more services are experiencing issues."
+      },
+      "majorOutage": {
+        "title": "Major Outage",
+        "subtitle": "Multiple services are currently unavailable."
+      },
+      "unknown": {
+        "title": "Checking Status...",
+        "subtitle": "Performing initial health check."
+      },
+      "lastChecked": "Last checked"
+    },
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "down": "Down"
+    },
+    "module": {
+      "port": "Port {{port}}",
+      "responseTime": "Response Time",
+      "version": "Version",
+      "uptime": "Uptime",
+      "lastCheck": "Last Check"
+    },
+    "infra": {
+      "fallbackType": "Infrastructure",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "responseTime": "Response Time",
+      "version": "Version",
+      "database": "Database",
+      "threads": "Threads",
+      "uptime": "Uptime"
+    },
+    "endpoints": {
+      "title": "API Endpoints Status",
+      "description": "Health check endpoints for each module",
+      "columns": {
+        "module": "Module",
+        "endpoint": "Endpoint",
+        "method": "Method",
+        "status": "Status",
+        "response": "Response",
+        "httpCode": "HTTP Code",
+        "lastChecked": "Last Checked"
+      },
+      "status": {
+        "ok": "OK",
+        "down": "Down"
+      }
+    },
+    "stats": {
+      "totalServices": "Total Services",
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "down": "Down"
+    },
+    "sections": {
+      "moduleServices": "Module Services",
+      "infrastructure": "Infrastructure"
+    },
+    "footer": {
+      "note": "Auto-refreshes every 30 seconds. Background checks run every 60 seconds."
+    }
+  },
+  "aiConfig": {
+    "title": "AI Configuration",
+    "subtitle": "Configure AI providers for the HR chatbot assistant. Keys set here override environment variables.",
+    "status": {
+      "active": "Active",
+      "configured": "Configured",
+      "notConfigured": "Not configured"
+    },
+    "field": {
+      "apiKey": "API Key",
+      "baseUrl": "Base URL",
+      "model": "Model",
+      "maxTokens": "Max Tokens: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "Current: {{value}}",
+      "apiKeyEnter": "Enter API key...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "Enter model name (e.g., my-model)"
+    },
+    "testResult": {
+      "latency": "Latency: {{ms}}ms",
+      "requestFailed": "Test request failed"
+    },
+    "button": {
+      "testConnection": "Test Connection",
+      "active": "Active",
+      "saveActivate": "Save & Activate",
+      "deactivate": "Deactivate",
+      "saveMaxTokens": "Save Max Tokens"
+    },
+    "banner": {
+      "aiPoweredMode": "AI-Powered Mode",
+      "aiPoweredModeProvider": "AI-Powered Mode ({{provider}})",
+      "basicMode": "Basic Mode (No AI Provider Active)",
+      "modelStatus": "Model: {{model}} | Status: {{status}}",
+      "basicModeHint": "The chatbot is running in rule-based mode. Activate a provider below to enable AI-powered responses."
+    },
+    "section": {
+      "providers": "Providers",
+      "generalSettings": "General Settings"
+    },
+    "info": {
+      "title": "How it works",
+      "encryption": "API keys are encrypted at rest using AES-256-GCM and never returned unmasked",
+      "overrideEnv": "Settings stored here override environment variables (.env)",
+      "singleActive": "Only one provider can be active at a time. Switching providers takes effect immediately.",
+      "testFirst": "Use \"Test Connection\" to verify your API key and model before activating"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "Module Analytics",
+    "subtitle": "Detailed metrics for each module across the platform.",
+    "loading": "Loading...",
+    "stats": {
+      "activeModules": "Active Modules",
+      "totalSubscribers": "Total Subscribers",
+      "totalSeats": "Total Seats",
+      "totalModuleRevenue": "Total Module Revenue"
+    },
+    "charts": {
+      "revenueByModule": "Revenue by Module",
+      "revenueSeries": "Revenue",
+      "noRevenueData": "No revenue data",
+      "subscriberDistribution": "Subscriber Distribution",
+      "noSubscriberData": "No subscriber data"
+    },
+    "details": {
+      "heading": "Module Details",
+      "noSubscribers": "No subscribers",
+      "disableModule": "Disable module",
+      "subscribers": "Subscribers",
+      "seats": "Seats",
+      "revenue": "Revenue",
+      "seatUtilization": "Seat Utilization",
+      "planDistribution": "Plan Distribution",
+      "orgCount_one": "{{count}} org",
+      "orgCount_other": "{{count}} orgs"
+    },
+    "table": {
+      "heading": "Detailed Metrics",
+      "module": "Module",
+      "slug": "Slug",
+      "subscribers": "Subscribers",
+      "totalSeats": "Total Seats",
+      "usedSeats": "Used Seats",
+      "utilization": "Utilization",
+      "revenue": "Revenue",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "Subscription Metrics",
+    "subtitle": "Plan distribution, seat utilization, and billing metrics.",
+    "loading": "Loading...",
+    "stats": {
+      "totalSeats": "Total Seats",
+      "usedSeats": "Used Seats",
+      "seatUtilization": "Seat Utilization",
+      "activeUsers": "Active Users",
+      "inactive_one": "{{count}} inactive",
+      "inactive_other": "{{count}} inactive"
+    },
+    "charts": {
+      "planTierDistribution": "Plan Tier Distribution",
+      "subscriptionStatus": "Subscription Status",
+      "billingCycle": "Billing Cycle",
+      "seatUtilizationByTier": "Seat Utilization by Plan Tier",
+      "subscriptionChurn": "Subscription Churn"
+    },
+    "churn": {
+      "cancelledSeries": "Cancelled"
+    },
+    "seats": "{{used}} / {{total}} seats",
+    "empty": {
+      "noData": "No data",
+      "noTierData": "No tier data"
+    }
+  },
+  "systemNotifications": {
+    "title": "System Notifications",
+    "subtitle": "Send platform-wide announcements to all organizations or specific ones.",
+    "newNotification": "New Notification",
+    "form": {
+      "heading": "Send Notification",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Notification title",
+      "typeLabel": "Type",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Notification message...",
+      "targetLabel": "Target",
+      "allOrgs": "All Orgs",
+      "specificOrg": "Specific Org",
+      "organizationLabel": "Organization",
+      "selectOrgPlaceholder": "Select organization...",
+      "send": "Send Notification",
+      "sending": "Sending..."
+    },
+    "type": {
+      "info": "Info",
+      "warning": "Warning",
+      "maintenance": "Maintenance",
+      "release": "Feature Release"
+    },
+    "list": {
+      "empty": "No system notifications sent yet.",
+      "heading_one": "All Notifications ({{count}})",
+      "heading_other": "All Notifications ({{count}})"
+    },
+    "item": {
+      "deactivated": "Deactivated",
+      "targetAll": "All organizations",
+      "targetPrefix": "Target:",
+      "byPrefix": "By:",
+      "systemAuthor": "System",
+      "orgFallback": "Org #{{id}}",
+      "deactivate": "Deactivate"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "Revenue Analytics",
+    "subtitle": "Financial overview and revenue breakdown.",
+    "loading": "Loading...",
+    "stats": {
+      "mrr": "Monthly Recurring Revenue",
+      "arr": "Annual Recurring Revenue",
+      "seatUtilization": "Seat Utilization",
+      "seats": "{{used}} / {{total}} seats",
+      "payingCustomers": "Paying Customers"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Revenue Trend (Last 12 Months)",
+        "empty": "No trend data yet"
+      },
+      "revenueByModule": {
+        "title": "Revenue by Module",
+        "series": "Revenue"
+      },
+      "empty": "No data",
+      "revenueByTier": {
+        "title": "Revenue by Plan Tier",
+        "subsLabel_one": "{{count}} sub - {{revenue}}",
+        "subsLabel_other": "{{count}} subs - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "Billing Cycle Distribution",
+        "percentOfSubscriptions": "{{percent}}% of subscriptions",
+        "subs_one": "{{count}} sub",
+        "subs_other": "{{count}} subs"
+      }
+    },
+    "topCustomers": {
+      "title": "Top 10 Customers by Revenue",
+      "columns": {
+        "rank": "#",
+        "organization": "Organization",
+        "email": "Email",
+        "subscriptions": "Subscriptions",
+        "monthlySpend": "Monthly Spend"
+      },
+      "empty": "No customer data yet"
+    }
+  },
+  "logDashboard": {
+    "title": "Log Dashboard",
+    "subtitle": "Real-time monitoring across all EMP Cloud modules",
+    "actions": {
+      "refresh": "Refresh"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "errors": "Errors",
+      "slow": "Slow Queries",
+      "auth": "Auth Events",
+      "health": "Module Health"
+    },
+    "stats": {
+      "auditEvents": "Audit Events (24h)",
+      "fileErrors": "File Errors (24h)",
+      "slowQueries": "Slow Queries",
+      "healthyModules": "Healthy Modules"
+    },
+    "sections": {
+      "errorsByAction": "Errors by Action (24h)",
+      "errorsPerModule": "Errors per Module (from log files)",
+      "moduleHealth": "Module Health"
+    },
+    "errors": {
+      "title": "Recent Errors",
+      "subtitle": "From PM2 error logs and frontend client errors across all modules",
+      "badge": {
+        "frontend": "Frontend"
+      },
+      "detail": {
+        "page": "Page:",
+        "component": "Component:"
+      },
+      "empty": "No errors found."
+    },
+    "slow": {
+      "title": "Slow Queries",
+      "subtitle": "Database queries exceeding 1 second",
+      "columns": {
+        "module": "Module",
+        "duration": "Duration",
+        "sql": "SQL",
+        "time": "Time"
+      },
+      "empty": "No slow queries detected."
+    },
+    "auth": {
+      "title": "Auth Events",
+      "subtitle": "Login, logout, password changes, token events (last 24h)",
+      "user": "User #{{id}}",
+      "ip": "IP: {{ip}}",
+      "notAvailable": "N/A",
+      "empty": "No auth events in the last 24 hours."
+    },
+    "healthTab": {
+      "status": "Status: {{status}}",
+      "restarts": "Restarts: {{count}}",
+      "recentErrors": "Recent errors: {{count}}",
+      "lastActivity": "Last activity: {{time}}",
+      "loading": "Loading module health...",
+      "empty": "No module health data available."
+    },
+    "status": {
+      "healthy": "Healthy",
+      "warning": "Warning",
+      "critical": "Critical",
+      "unknown": "Unknown"
+    },
+    "pagination": {
+      "status": "Page {{page}} of {{totalPages}} ({{total}} total)",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "health": {
+      "restarts_one": "{{count}} restart(s)",
+      "restarts_other": "{{count}} restart(s)",
+      "recentErrors_one": "{{count}} errors",
+      "recentErrors_other": "{{count}} errors"
+    }
+  },
+  "dataSanity": {
+    "title": "Data Sanity Checker",
+    "subtitle": "Cross-module data consistency verification",
+    "overall": {
+      "healthy": {
+        "title": "All Systems Healthy",
+        "subtitle": "All cross-module data consistency checks passed."
+      },
+      "warnings": {
+        "title": "Warnings Detected",
+        "subtitle": "Some data inconsistencies were found that may need attention."
+      },
+      "critical": {
+        "title": "Critical Issues Found",
+        "subtitle": "Data integrity problems detected that require immediate action."
+      }
+    },
+    "status": {
+      "pass": "Pass",
+      "warn": "Warning",
+      "fail": "Fail"
+    },
+    "check": {
+      "noIssues": "No issues detected.",
+      "issuesFound_one": "{{count}} issue found",
+      "issuesFound_other": "{{count}} issues found",
+      "showingCount_one": "(showing {{count}})",
+      "showingCount_other": "(showing {{count}})"
+    },
+    "confirmFix": {
+      "title": "Confirm Auto-Fix",
+      "intro": "This will automatically apply the following fixes:",
+      "fix": {
+        "syncOrgUserCounts": "Sync organization user counts",
+        "syncSeatCounts": "Sync subscription seat counts",
+        "fixNegativeLeave": "Fix negative leave balances (clamp to 0)",
+        "removeOrphaned": "Remove orphaned records (leave, attendance, helpdesk, announcements)"
+      },
+      "warning": "These changes cannot be undone. Make sure you have a database backup.",
+      "cancel": "Cancel",
+      "apply": "Apply Fixes",
+      "applying": "Fixing..."
+    },
+    "fixResults": {
+      "none": "No fixes were necessary. Everything looks clean.",
+      "title_one": "Auto-Fix Results ({{count}} total change)",
+      "title_other": "Auto-Fix Results ({{count}} total changes)"
+    },
+    "button": {
+      "autoFix": "Auto-Fix",
+      "runCheck": "Run Check",
+      "running": "Running..."
+    },
+    "loading": {
+      "title": "Running Sanity Checks...",
+      "subtitle": "Checking data consistency across all module databases. This may take a moment."
+    },
+    "empty": {
+      "title": "No Report Yet",
+      "subtitle": "Click \"Run Check\" to verify data consistency across all module databases.",
+      "runButton": "Run Sanity Check"
+    },
+    "summary": {
+      "totalChecks": "Total Checks",
+      "passed": "Passed",
+      "warnings": "Warnings",
+      "failures": "Failures"
+    },
+    "lastRun": "Last run:",
+    "checkResults": {
+      "heading": "Check Results"
+    }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "Event Dashboard",
+      "subtitle": "Manage company events and track attendance.",
+      "createEvent": "Create Event"
+    },
+    "stats": {
+      "upcomingEvents": "Upcoming Events",
+      "thisMonth": "This Month",
+      "totalRsvps": "Total RSVPs",
+      "eventTypes": "Event Types"
+    },
+    "typeBreakdown": {
+      "title": "Event Type Breakdown"
+    },
+    "eventType": {
+      "meeting": "Meeting",
+      "training": "Training",
+      "celebration": "Celebration",
+      "team_building": "Team Building",
+      "town_hall": "Town Hall",
+      "holiday": "Holiday",
+      "workshop": "Workshop",
+      "social": "Social",
+      "other": "Other"
+    },
+    "form": {
+      "title": "Create Event",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "eventType": "Event Type",
+        "allDay": "All Day Event",
+        "mandatory": "Mandatory",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "location": "Location",
+        "virtualLink": "Virtual Link",
+        "targetAudience": "Target Audience",
+        "targetIds": "Target IDs (JSON)",
+        "maxAttendees": "Max Attendees"
+      },
+      "placeholders": {
+        "title": "Event title",
+        "description": "Event description...",
+        "location": "Office, Room 101, etc.",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "Unlimited"
+      },
+      "targetType": {
+        "all": "All Employees",
+        "department": "Department",
+        "role": "Role"
+      },
+      "errors": {
+        "endBeforeStart": "End date cannot be before start date."
+      },
+      "cancel": "Cancel",
+      "submit": "Create Event"
+    },
+    "upcoming": {
+      "title": "Upcoming Events",
+      "viewAll": "View All",
+      "loading": "Loading...",
+      "empty": "No upcoming events. Create one above!",
+      "view": "View",
+      "cancel": "Cancel",
+      "deleteTitle": "Delete event",
+      "attending_one": "{{count}} attending",
+      "attending_other": "{{count}} attending"
+    },
+    "deleteModal": {
+      "title": "Delete event?",
+      "body": "Delete {{name}}? This permanently removes the event and its RSVPs. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "error": "Failed to delete event"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "Rating (1-5)",
+      "rating_1_10": "Rating (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "Yes / No",
+      "multiple_choice": "Multiple Choice",
+      "text": "Free Text",
+      "scale": "Scale"
+    },
+    "surveyType": {
+      "pulse": "Pulse Survey",
+      "enps": "eNPS Survey",
+      "engagement": "Engagement Survey",
+      "custom": "Custom Survey",
+      "onboarding": "Onboarding Survey",
+      "exit_survey": "Exit Survey"
+    },
+    "header": {
+      "editTitle": "Edit Survey",
+      "createTitle": "Create Survey",
+      "subtitle": "Design your survey and add questions."
+    },
+    "details": {
+      "heading": "Survey Details",
+      "titleLabel": "Title *",
+      "titlePlaceholder": "e.g., Q1 2026 Employee Pulse Survey",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brief description of the survey purpose...",
+      "typeLabel": "Type",
+      "targetAudienceLabel": "Target Audience",
+      "recurrenceLabel": "Recurrence",
+      "startDateLabel": "Start Date & Time",
+      "endDateLabel": "End Date & Time",
+      "dateTimeHelper": "Pick a date and a time of day.",
+      "anonymousLabel": "Anonymous"
+    },
+    "target": {
+      "all": "All Employees",
+      "department": "By Department",
+      "role": "By Role",
+      "custom": "Custom"
+    },
+    "recurrence": {
+      "none": "One-time",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly"
+    },
+    "questions": {
+      "heading": "Questions",
+      "addButton": "Add Question",
+      "moveUpTitle": "Move up",
+      "removeTitle": "Remove question",
+      "textPlaceholder": "Enter question text...",
+      "typeLabel": "Type",
+      "requiredLabel": "Required",
+      "optionsLabel": "Options (one per line)",
+      "optionsPlaceholder": "Option A\nOption B\nOption C",
+      "previewLabel": "Preview"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "saveDraft": "Save as Draft",
+      "savePublish": "Save & Publish"
+    },
+    "toast": {
+      "endBeforeStart": "End date cannot be before the start date."
+    },
+    "preview": {
+      "emptyHint": "Type a question to see preview",
+      "enpsNotLikely": "Not likely",
+      "enpsVeryLikely": "Very likely",
+      "yes": "Yes",
+      "no": "No",
+      "optionA": "Option A",
+      "optionB": "Option B",
+      "optionC": "Option C",
+      "textPlaceholder": "Employee will type their answer here..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "Meeting",
+      "training": "Training",
+      "celebration": "Celebration",
+      "team_building": "Team Building",
+      "town_hall": "Town Hall",
+      "holiday": "Holiday",
+      "workshop": "Workshop",
+      "social": "Social",
+      "other": "Other"
+    },
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "state": {
+      "loading": "Loading event...",
+      "notFound": "Event not found."
+    },
+    "header": {
+      "backToEvents": "Back to Events",
+      "delete": "Delete"
+    },
+    "badge": {
+      "mandatory": "Mandatory"
+    },
+    "details": {
+      "dateLabel": "Date",
+      "allDaySuffix": " (All Day)",
+      "dateRange": "to {{date}}",
+      "locationLabel": "Location",
+      "virtualLabel": "Virtual Meeting",
+      "joinOnline": "Join Online",
+      "attendeesLabel": "Attendees",
+      "attendingCount_one": "{{count}} attending",
+      "attendingCount_other": "{{count}} attending",
+      "maybeSuffix_one": ", {{count}} maybe",
+      "maybeSuffix_other": ", {{count}} maybe",
+      "maxSuffix_one": " / {{count}} max",
+      "maxSuffix_other": " / {{count}} max"
+    },
+    "rsvp": {
+      "heading": "Your RSVP",
+      "currently": "(Currently: {{status}})",
+      "attending": "Attending",
+      "maybe": "Maybe",
+      "decline": "Decline"
+    },
+    "delete": {
+      "title": "Delete event?",
+      "confirm": "Delete {{name}}? This permanently removes the event and its RSVPs. This cannot be undone.",
+      "error": "Failed to delete event",
+      "cancel": "Cancel",
+      "confirmButton": "Delete",
+      "deleting": "Deleting..."
+    },
+    "attendees": {
+      "attendingHeading_one": "Attending ({{count}})",
+      "attendingHeading_other": "Attending ({{count}})",
+      "maybeHeading_one": "Maybe ({{count}})",
+      "maybeHeading_other": "Maybe ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "Loading results...",
+    "notFound": "Survey not found.",
+    "actions": {
+      "exportCsv": "Export CSV"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed",
+      "draft": "Draft"
+    },
+    "summary": {
+      "totalResponses": "Total Responses",
+      "questions": "Questions",
+      "enpsScore": "eNPS Score"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "Jump to per-question results",
+      "jumpToQuestionsBreakdown": "Jump to questions breakdown",
+      "jumpToEnpsBreakdown": "Jump to eNPS breakdown"
+    },
+    "enps": {
+      "breakdownTitle": "eNPS Breakdown",
+      "promoters": "Promoters (9-10)",
+      "passives": "Passives (7-8)",
+      "detractors": "Detractors (0-6)",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "Average:",
+      "minMax": "(min: {{min}}, max: {{max}})",
+      "yes": "Yes",
+      "no": "No",
+      "answersMeta_one": "{{type}} | {{count}} answer",
+      "answersMeta_other": "{{type}} | {{count}} answers",
+      "responsesCount_one": "{{count}} response",
+      "responsesCount_other": "{{count}} responses"
+    },
+    "questionType": {
+      "rating_1_5": "Rating 1-5",
+      "rating_1_10": "Rating 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "Scale",
+      "yes_no": "Yes / No",
+      "multiple_choice": "Multiple Choice",
+      "text": "Text"
+    }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "Submitted",
+      "under_investigation": "Under Investigation",
+      "escalated": "Escalated",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed",
+      "closed": "Closed"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "reportInfo": {
+      "categoryLabel": "Category:",
+      "anonymousLabel": "Anonymous:",
+      "anonymousYes": "Yes",
+      "anonymousNo": "No",
+      "reporterLabel": "Reporter:",
+      "evidenceFilesLabel": "Evidence Files:"
+    },
+    "timeline": {
+      "heading": "Investigation Timeline",
+      "visibleToReporterBadge": "Visible to Reporter",
+      "systemAuthor": "System",
+      "empty": "No updates yet"
+    },
+    "addUpdate": {
+      "heading": "Add Update",
+      "typeNote": "Internal Note",
+      "typeResponseToReporter": "Response to Reporter",
+      "typeStatusChange": "Status Change Note",
+      "visibleToReporterCheckbox": "Visible to reporter",
+      "contentPlaceholder": "Write an update or note...",
+      "submitSending": "Sending...",
+      "submit": "Add Update"
+    },
+    "info": {
+      "submittedLabel": "Submitted:",
+      "investigatorLabel": "Investigator:",
+      "escalatedToLabel": "Escalated to:",
+      "resolvedLabel": "Resolved:",
+      "resolutionLabel": "Resolution:"
+    },
+    "assign": {
+      "heading": "Assign Investigator",
+      "loadUsersError": "Failed to load users. Please refresh the page.",
+      "optionLoading": "Loading users...",
+      "optionError": "Error loading users",
+      "optionSelect": "Select investigator...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "Failed to assign investigator. Please try again.",
+      "success": "Investigator assigned successfully."
+    },
+    "changeStatus": {
+      "heading": "Change Status",
+      "optionSelect": "Select status...",
+      "resolutionPlaceholder": "Resolution notes...",
+      "submitUpdating": "Updating...",
+      "submit": "Update Status"
+    },
+    "escalate": {
+      "heading": "Escalate Externally",
+      "placeholder": "External body or authority",
+      "submitEscalating": "Escalating...",
+      "submit": "Escalate Report"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "Report Submitted",
+      "description": "Your report has been submitted successfully. Please save your case number to track the status of your report.",
+      "caseNumberLabel": "Your Case Number",
+      "importantLabel": "Important:",
+      "saveCaseNumber": "Save this case number securely. It is the only way to track your report.",
+      "identityAnonymous": "Your identity is fully anonymous and cannot be revealed.",
+      "identityAttached": "Your identity is attached to this report.",
+      "trackReportHint": "Use the \"Track Report\" page to check for updates.",
+      "submitAnother": "Submit Another Report"
+    },
+    "header": {
+      "title": "Submit a Whistleblowing Report",
+      "subtitle": "Report misconduct safely and confidentially (EU Directive 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "Anonymous Report",
+      "identifiedTitle": "Identified Report",
+      "anonymousDescription": "Your identity will not be stored or disclosed to anyone.",
+      "identifiedDescription": "Your identity will be visible to investigators."
+    },
+    "form": {
+      "categoryLabel": "Category",
+      "required": "*",
+      "categoryPlaceholder": "Select a category...",
+      "severityLabel": "Severity",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Brief summary of the issue",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Provide as much detail as possible: what happened, when, where, who was involved, and any evidence you have."
+    },
+    "actions": {
+      "submit": "Submit Report",
+      "submitting": "Submitting..."
+    },
+    "error": {
+      "submitFailed": "Failed to submit report. Please try again."
+    },
+    "category": {
+      "fraud": "Fraud",
+      "corruption": "Corruption",
+      "harassment": "Harassment",
+      "discrimination": "Discrimination",
+      "safety_violation": "Safety Violation",
+      "data_breach": "Data Breach",
+      "financial_misconduct": "Financial Misconduct",
+      "environmental": "Environmental",
+      "retaliation": "Retaliation",
+      "other": "Other"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "Whistleblowing Dashboard",
+      "subtitle": "EU Directive 2019/1937 compliance overview",
+      "viewAllReports": "View All Reports"
+    },
+    "stats": {
+      "totalReports": "Total Reports",
+      "open": "Open",
+      "resolved": "Resolved",
+      "avgResolution": "Avg. Resolution",
+      "avgResolutionDays": "{{count}}d",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "By Severity",
+      "byCategory": "By Category",
+      "recentReports": "Recent Reports"
+    },
+    "empty": {
+      "noData": "No data yet",
+      "noReports": "No reports yet"
+    },
+    "table": {
+      "caseNumber": "Case #",
+      "category": "Category",
+      "severity": "Severity",
+      "subject": "Subject",
+      "status": "Status",
+      "date": "Date"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "status": {
+      "submitted": "Submitted",
+      "under_investigation": "Under Investigation",
+      "escalated": "Escalated",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed",
+      "closed": "Closed"
+    },
+    "category": {
+      "harassment": "Harassment",
+      "discrimination": "Discrimination",
+      "fraud": "Fraud",
+      "corruption": "Corruption",
+      "safety_violation": "Safety Violation",
+      "data_breach": "Data Breach",
+      "financial_misconduct": "Financial Misconduct",
+      "other": "Other"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "My Wellness",
+      "subtitle": "Track your health journey and personal goals",
+      "dailyCheckIn": "Daily Check-in"
+    },
+    "error": {
+      "loadFailed": "Failed to load wellness data. Please try again later."
+    },
+    "stats": {
+      "dayStreak": "Day Streak",
+      "totalCheckIns": "Total Check-ins",
+      "avgEnergy": "Avg Energy",
+      "goalsDone": "Goals Done"
+    },
+    "moodTrend": {
+      "title": "Mood Trend (Last 14 Days)"
+    },
+    "mood": {
+      "great": "Great",
+      "good": "Good",
+      "okay": "Okay",
+      "low": "Low",
+      "stressed": "Stressed"
+    },
+    "goals": {
+      "title": "My Goals",
+      "addGoal": "Add Goal",
+      "empty": "No goals yet. Create your first wellness goal!",
+      "update": "Update"
+    },
+    "goalStatus": {
+      "completed": "Completed",
+      "abandoned": "Abandoned",
+      "active": "Active"
+    },
+    "goalFrequency": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "goalType": {
+      "steps": "Steps",
+      "exercise": "Exercise",
+      "meditation": "Meditation",
+      "water": "Water Intake",
+      "sleep": "Sleep",
+      "custom": "Custom"
+    },
+    "programs": {
+      "title": "My Programs",
+      "emptyCompleted": "No completed programs yet. Keep going!",
+      "emptyActive": "No active programs.",
+      "markComplete": "Mark Complete",
+      "pointsReward": "+{{points}} points on completion",
+      "tabActive_one": "Active ({{count}})",
+      "tabActive_other": "Active ({{count}})",
+      "tabCompleted_one": "Completed ({{count}})",
+      "tabCompleted_other": "Completed ({{count}})"
+    },
+    "programStatus": {
+      "completed": "Completed",
+      "active": "Active"
+    },
+    "checkIns": {
+      "title": "Recent Check-ins",
+      "colDate": "Date",
+      "colMood": "Mood",
+      "colEnergy": "Energy",
+      "colSleep": "Sleep",
+      "colExercise": "Exercise"
+    },
+    "goalModal": {
+      "title": "Create Wellness Goal",
+      "labelTitle": "Title *",
+      "placeholderTitle": "e.g., Walk 10,000 steps daily",
+      "labelGoalType": "Goal Type",
+      "labelFrequency": "Frequency",
+      "labelTargetValue": "Target Value *",
+      "placeholderTargetValue": "e.g., 10000",
+      "labelUnit": "Unit *",
+      "placeholderUnit": "e.g., steps, minutes",
+      "labelStartDate": "Start Date *",
+      "labelEndDate": "End Date",
+      "errorCreateFailed": "Failed to create goal",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "submit": "Create Goal",
+      "errorEndBeforeStart": "End date cannot be before the start date."
+    },
+    "progressModal": {
+      "title": "Update Progress",
+      "prompt": "Add progress (current: {{current}} {{unit}}):",
+      "placeholder": "Amount to add in {{unit}}",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "submit": "Update"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "Great",
+      "good": "Good",
+      "okay": "Okay",
+      "low": "Low",
+      "stressed": "Stressed",
+      "title": "Mood Distribution (30 days)",
+      "noData": "No check-in data yet",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Mental Health",
+      "nutrition": "Nutrition",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "team_activity": "Team Activity",
+      "health_checkup": "Health Checkup",
+      "other": "Other"
+    },
+    "loading": "Loading wellness dashboard...",
+    "error": {
+      "load": "Failed to load wellness dashboard. Please try again later.",
+      "createProgram": "Failed to create program"
+    },
+    "header": {
+      "title": "Wellness Dashboard",
+      "subtitle": "Organization-wide wellness metrics and program management",
+      "createProgram": "Create Program"
+    },
+    "kpi": {
+      "wellnessScore": "Wellness Score",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "Active Programs",
+      "activeParticipants": "Active Participants",
+      "goalCompletion": "Goal Completion",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} goals",
+      "totalPrograms_one": "{{count}} total program",
+      "totalPrograms_other": "{{count}} total programs",
+      "checkins30d_one": "{{count}} check-in (30d)",
+      "checkins30d_other": "{{count}} check-ins (30d)"
+    },
+    "metrics": {
+      "title": "Average Metrics (30 days)",
+      "avgEnergyLevel": "Avg Energy Level",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "Avg Exercise Minutes",
+      "avgExerciseMinutesValue": "{{value}} min",
+      "totalEnrollments": "Total Enrollments",
+      "completedEnrollments_one": "{{count}} completed",
+      "completedEnrollments_other": "{{count}} completed"
+    },
+    "topPrograms": {
+      "title": "Top Programs by Enrollment",
+      "colProgram": "Program",
+      "colType": "Type",
+      "colEnrolled": "Enrolled",
+      "colPoints": "Points",
+      "colStatus": "Status",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "modal": {
+      "title": "Create Wellness Program",
+      "fieldTitle": "Title *",
+      "titlePlaceholder": "e.g., 30-Day Yoga Challenge",
+      "fieldDescription": "Description",
+      "descriptionPlaceholder": "Program description...",
+      "fieldType": "Type",
+      "fieldMaxParticipants": "Max Participants",
+      "maxParticipantsPlaceholder": "Unlimited",
+      "fieldStartDate": "Start Date",
+      "fieldEndDate": "End Date",
+      "fieldPointsReward": "Points Reward",
+      "cancel": "Cancel",
+      "submit": "Create Program",
+      "submitting": "Creating..."
+    },
+    "toast": {
+      "endBeforeStart": "End date cannot be before the start date."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Mental Health",
+      "nutrition": "Nutrition",
+      "meditation": "Meditation",
+      "yoga": "Yoga",
+      "team_activity": "Team Activity",
+      "health_checkup": "Health Checkup",
+      "other": "Other"
+    },
+    "enroll": {
+      "success": "Successfully enrolled in program",
+      "error": "Failed to enroll in program"
+    },
+    "header": {
+      "title": "Wellness Programs",
+      "subtitle": "Explore programs, track your well-being, and achieve your health goals"
+    },
+    "actions": {
+      "dailyCheckIn": "Daily Check-in",
+      "myWellness": "My Wellness"
+    },
+    "stats": {
+      "checkInStreak": "Check-in Streak",
+      "activePrograms": "Active Programs",
+      "goalsCompleted": "Goals Completed",
+      "latestMood": "Latest Mood",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} day",
+      "checkInStreakValue_other": "{{count}} days"
+    },
+    "filter": {
+      "allTypes": "All Types",
+      "programsAvailable_one": "{{count}} program available",
+      "programsAvailable_other": "{{count}} programs available"
+    },
+    "list": {
+      "loading": "Loading programs...",
+      "empty": "No wellness programs available yet"
+    },
+    "card": {
+      "ongoing": "Ongoing",
+      "enrolledButton": "Enrolled",
+      "enrollNow": "Enroll Now",
+      "pointsReward_one": "+{{count}} pts",
+      "pointsReward_other": "+{{count}} pts",
+      "enrolledCount_one": "{{count}} enrolled",
+      "enrolledCount_other": "{{count}} enrolled"
+    },
+    "pagination": {
+      "pageOf": "Page {{page}} of {{totalPages}}"
+    }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "Document Categories",
+      "subtitle": "Manage document categories for your organization."
+    },
+    "actions": {
+      "newCategory": "New Category",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "form": {
+      "editTitle": "Edit Category",
+      "createTitle": "Create Category",
+      "nameLabel": "Name *",
+      "namePlaceholder": "e.g. Aadhaar Card",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional description",
+      "mandatoryLabel": "Mandatory for all employees"
+    },
+    "table": {
+      "categoryHeader": "Category",
+      "descriptionHeader": "Description",
+      "documentsHeader": "Documents",
+      "mandatoryHeader": "Mandatory",
+      "actionsHeader": "Actions",
+      "loading": "Loading...",
+      "empty": "No categories yet. Create one to get started.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "Required",
+      "optional": "Optional"
+    },
+    "deactivate": {
+      "titleNamed": "Deactivate category \"{{name}}\"?",
+      "title": "Deactivate category?",
+      "description": "Documents in this category will remain.",
+      "confirm": "Deactivate"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "My Documents",
+      "subtitle": "Upload, view, and track the status of your documents."
+    },
+    "actions": {
+      "uploadDocument": "Upload Document"
+    },
+    "upload": {
+      "heading": "Upload Document",
+      "fileLabel": "File *",
+      "nameLabel": "Document Name",
+      "namePlaceholder": "Optional - defaults to file name",
+      "categoryLabel": "Category *",
+      "categoryPlaceholder": "Select category",
+      "expiryLabel": "Expiry Date",
+      "submit": "Upload",
+      "submitting": "Uploading..."
+    },
+    "list": {
+      "loading": "Loading your documents...",
+      "empty": "You haven't uploaded any documents yet.",
+      "uploadFirst": "Upload your first document"
+    },
+    "expiry": {
+      "expired": "Expired",
+      "expiringSoon": "Expiring soon",
+      "expires": "Expires"
+    },
+    "doc": {
+      "rejectionReason": "Rejection reason: {{reason}}",
+      "download": "Download",
+      "reupload": "Re-upload"
+    },
+    "status": {
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "pending": "Pending"
+    },
+    "toast": {
+      "downloadFailed": "Failed to download document."
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "summary_one": "Page {{page}} of {{totalPages}} ({{count}} total)",
+      "summary_other": "Page {{page}} of {{totalPages}} ({{count}} total)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "just now",
+      "minutesAgo_one": "{{count}}m ago",
+      "minutesAgo_other": "{{count}}m ago",
+      "hoursAgo_one": "{{count}}h ago",
+      "hoursAgo_other": "{{count}}h ago",
+      "daysAgo_one": "{{count}}d ago",
+      "daysAgo_other": "{{count}}d ago"
+    },
+    "header": {
+      "defaultCategoryName": "Category",
+      "newPost": "New Post"
+    },
+    "filters": {
+      "allTypes": "All Types",
+      "discussions": "Discussions",
+      "questions": "Questions",
+      "ideas": "Ideas",
+      "polls": "Polls"
+    },
+    "sort": {
+      "recent": "Recent",
+      "popular": "Popular",
+      "active": "Active",
+      "mostViewed": "Most Viewed"
+    },
+    "list": {
+      "loading": "Loading posts...",
+      "empty": "No posts in this category yet. Start the conversation!"
+    },
+    "postType": {
+      "discussion": "Discussion",
+      "question": "Question",
+      "idea": "Idea",
+      "poll": "Poll"
+    },
+    "badge": {
+      "pinned": "Pinned",
+      "locked": "Locked"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "pageInfo_one": "Page {{page}} of {{totalPages}} ({{count}} total)",
+      "pageInfo_other": "Page {{page}} of {{totalPages}} ({{count}} total)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "Discussion",
+      "question": "Question",
+      "idea": "Idea",
+      "poll": "Poll"
+    },
+    "time": {
+      "justNow": "just now",
+      "minutesAgo_one": "{{count}}m ago",
+      "minutesAgo_other": "{{count}}m ago",
+      "hoursAgo_one": "{{count}}h ago",
+      "hoursAgo_other": "{{count}}h ago",
+      "daysAgo_one": "{{count}}d ago",
+      "daysAgo_other": "{{count}}d ago"
+    },
+    "loading": "Loading post...",
+    "notFound": "Post not found",
+    "reply": {
+      "acceptedAnswer": "Accepted Answer",
+      "replyAction": "Reply",
+      "acceptAnswer": "Accept Answer"
+    },
+    "badge": {
+      "pinned": "Pinned",
+      "locked": "Locked"
+    },
+    "action": {
+      "like": "Like",
+      "unpin": "Unpin",
+      "pin": "Pin",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
+    },
+    "replies": {
+      "empty": "No replies yet. Be the first to respond!",
+      "heading_one": "{{count}} Reply",
+      "heading_other": "{{count}} Replies"
+    },
+    "form": {
+      "replyingTo": "Replying to {{name}}",
+      "cancel": "Cancel",
+      "placeholder": "Write a reply...",
+      "posting": "Posting...",
+      "submit": "Reply"
+    },
+    "locked": {
+      "message": "This post is locked. No new replies allowed."
+    },
+    "deleteReply": {
+      "title": "Delete this reply?",
+      "confirm": "Delete"
+    },
+    "deletePost": {
+      "title": "Delete this post and all its replies?",
+      "description": "This cannot be undone.",
+      "confirm": "Delete"
+    },
+    "replyCount_one": "{{count}} reply",
+    "replyCount_other": "{{count}} replies"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "Failed to assign employee to this position.",
+      "saveChangesFailed": "Failed to save position changes.",
+      "deleteFailed": "Failed to delete position"
+    },
+    "loading": "Loading...",
+    "notFound": "Position not found",
+    "backToPositions": "Back to Positions",
+    "action": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "assignEmployee": "Assign Employee"
+    },
+    "status": {
+      "active": "Active",
+      "filled": "Filled",
+      "frozen": "Frozen",
+      "closed": "Closed"
+    },
+    "assignForm": {
+      "heading": "Assign Employee to Position",
+      "employeeLabel": "Employee *",
+      "searchPlaceholder": "Start typing to search users...",
+      "noUsersMatch": "No users match",
+      "startDateLabel": "Start Date *",
+      "primaryPosition": "Primary Position",
+      "assigning": "Assigning...",
+      "assign": "Assign",
+      "assignFailedInline": "Failed to assign"
+    },
+    "common": {
+      "cancel": "Cancel"
+    },
+    "editForm": {
+      "heading": "Edit Position",
+      "titleLabel": "Title *",
+      "departmentLabel": "Department",
+      "departmentNone": "None",
+      "employmentTypeLabel": "Employment Type",
+      "headcountBudgetLabel": "Headcount Budget",
+      "minSalaryLabel": "Min Salary (paise/cents)",
+      "maxSalaryLabel": "Max Salary (paise/cents)",
+      "jobDescriptionLabel": "Job Description",
+      "criticalRole": "Critical Role",
+      "headcountMinError": "Headcount Budget must be at least 1.",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "updateFailedInline": "Failed to update position"
+    },
+    "employmentType": {
+      "full_time": "Full Time",
+      "part_time": "Part Time",
+      "contract": "Contract",
+      "intern": "Intern"
+    },
+    "details": {
+      "heading": "Position Details",
+      "employmentType": "Employment Type",
+      "headcount": "Headcount",
+      "salaryRange": "Salary Range",
+      "reportsTo": "Reports To"
+    },
+    "jobDescription": {
+      "heading": "Job Description"
+    },
+    "requirements": {
+      "heading": "Requirements"
+    },
+    "assignees": {
+      "noneAssigned": "No one assigned",
+      "since": "Since {{date}}",
+      "actingInterim": "Acting/Interim",
+      "endAssignmentTitle": "End assignment",
+      "heading_one": "Current Assignees ({{count}})",
+      "heading_other": "Current Assignees ({{count}})"
+    },
+    "history": {
+      "heading": "Assignment History",
+      "dateRangeNA": "N/A"
+    },
+    "delete": {
+      "heading": "Delete position?",
+      "body": "Delete {{name}}? Active assignments are ended and the position is closed. This cannot be undone.",
+      "deleting": "Deleting...",
+      "confirm": "Delete"
+    },
+    "endAssignment": {
+      "title": "End this assignment?",
+      "confirmText": "End assignment"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "This invitation link is invalid, has already been used, or has expired. Please ask your administrator to resend the invitation.",
+      "genericFailure": "Could not accept invitation. Please try again."
+    },
+    "validation": {
+      "firstNameRequired": "First name is required.",
+      "lastNameRequired": "Last name is required.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "passwordTooShort_one": "Password must be at least {{count}} character.",
+      "passwordTooShort_other": "Password must be at least {{count}} characters."
+    },
+    "toast": {
+      "success": "Invitation accepted. You can now sign in."
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "Accept your invitation",
+    "subheading": "Set your name and password to activate your EMP Cloud account.",
+    "loadingInvitation": "Loading invitation…",
+    "form": {
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "Last name",
+      "namesLockedNote": "Your name is on file with {{org}}. Contact your HR admin if it needs to change.",
+      "orgFallback": "your organization",
+      "passwordLabel": "Password",
+      "hidePasswordAria": "Hide password",
+      "showPasswordAria": "Show password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Type the same password again",
+      "submitting": "Activating account...",
+      "submit": "Accept invitation & sign in",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "passwordPlaceholder_one": "At least {{count}} character",
+      "passwordPlaceholder_other": "At least {{count}} characters"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "Muted",
+      "groupCreated": "Group created",
+      "noMessagesYet": "No messages yet",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "Profile photo must be an image.",
+      "photoUpdated": "Profile photo updated.",
+      "photoUploadFailed": "Couldn't upload the photo.",
+      "statusUpdateFailed": "Couldn't update your status. Please try again.",
+      "openNotesFailed": "Couldn't open your notes."
+    },
+    "profile": {
+      "yourProfileTitle": "Your profile",
+      "changePhotoTitle": "Change your profile photo",
+      "youFallback": "You",
+      "statusLabel": "Status",
+      "statusPlaceholder": "Set a status…",
+      "save": "Save",
+      "setStatusTitle": "Set your status",
+      "messageYourself": "Message yourself (notes)"
+    },
+    "search": {
+      "placeholder": "Search chats & messages…",
+      "messagesHeader": "Messages",
+      "noMessageMatch": "No messages match “{{query}}”.",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "New chat",
+      "backToChats": "← Back to chats",
+      "archived": "Archived",
+      "loadError": "Failed to load conversations. Please try again.",
+      "noSearchMatch": "No conversations match \"{{query}}\".",
+      "noConversationsTitle": "No conversations yet",
+      "noConversationsHint": "Start one with the \"New chat\" button.",
+      "archivedWithCount_one": "Archived ({{count}})",
+      "archivedWithCount_other": "Archived ({{count}})"
+    },
+    "empty": {
+      "yourMessagesTitle": "Your messages",
+      "yourMessagesHint": "Select a conversation on the left, or start a new chat to begin messaging."
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "Create your EMP Cloud account",
+      "subtitle": "Set up your organization in minutes"
+    },
+    "error": {
+      "registrationFailed": "Registration failed"
+    },
+    "section": {
+      "organization": "Organization",
+      "adminAccount": "Admin Account"
+    },
+    "field": {
+      "companyName": {
+        "label": "Company Name",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "Country"
+      },
+      "state": {
+        "label": "State"
+      },
+      "firstName": {
+        "label": "First Name"
+      },
+      "lastName": {
+        "label": "Last Name"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Min 8 chars, upper, lower, digit, special"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "Hide password",
+      "showAriaLabel": "Show password"
+    },
+    "submit": {
+      "creating": "Creating account...",
+      "default": "Create account"
+    },
+    "footer": {
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "Reply",
+      "forward": "Forward",
+      "selectMessages": "Select messages",
+      "messageInfo": "Message info",
+      "copyText": "Copy text",
+      "copied": "Copied",
+      "copyLink": "Copy link",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "Message info"
+    },
+    "actions": {
+      "close": "Close"
+    },
+    "state": {
+      "loading": "Loading…",
+      "error": "Couldn't load message info.",
+      "noOtherMembers": "No other members."
+    },
+    "section": {
+      "readBy": "Read by",
+      "deliveredTo": "Delivered to",
+      "pending": "Pending"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "Desktop alerts enabled — you'll be notified of new messages.",
+      "blocked": "Alerts blocked. You can re-enable them in your browser's site settings."
+    },
+    "confirmation": {
+      "title": "Desktop alerts on",
+      "body": "You'll be notified here when a new message arrives."
+    },
+    "description": "Get notified of new messages even while you're working in another app.",
+    "button": {
+      "enabling": "Enabling…",
+      "enable": "Enable alerts",
+      "dismissAriaLabel": "Dismiss"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "Open {{name}}"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "Sending",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "read": "Read"
+    },
+    "failed": {
+      "title": "Failed to send — tap to retry",
+      "ariaLabel": "Failed to send, tap to retry",
+      "retry": "Retry"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "Smileys",
+      "gestures": "Gestures",
+      "objects": "Objects"
+    },
+    "button": {
+      "reactWithAriaLabel": "React with {{emoji}}"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "New chat"
+    },
+    "actions": {
+      "close": "Close",
+      "createGroup": "Create group"
+    },
+    "mode": {
+      "direct": "Direct",
+      "group": "Group"
+    },
+    "group": {
+      "namePlaceholder": "Group name",
+      "enterNameHint": "Enter a group name to continue",
+      "selectedNeedMore_one": "{{count}} selected · need ≥ 2",
+      "selectedNeedMore_other": "{{count}} selected · need ≥ 2",
+      "selectedCount_one": "{{count}} selected",
+      "selectedCount_other": "{{count}} selected"
+    },
+    "search": {
+      "placeholder": "Search employees…"
+    },
+    "list": {
+      "loadError": "Failed to load employees.",
+      "emptySearch": "No employees match your search.",
+      "empty": "No employees found."
+    },
+    "direct": {
+      "starting": "Starting conversation…"
+    },
+    "toast": {
+      "directError": "Couldn't start that conversation.",
+      "groupError": "Couldn't create the group."
+    },
+    "validation": {
+      "groupNameRequired": "Please give the group a name.",
+      "minTwoMembers": "Select at least 2 people for a group."
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "Couldn't forward. Please try again.",
+      "forwardSuccess_one": "Forwarded {{count}} message to {{chatCount}} chat.",
+      "forwardSuccess_other": "Forwarded {{count}} messages to {{chatCount}} chat."
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "Message",
+      "multiple_one": "{{count}} message",
+      "multiple_other": "{{count}} messages"
+    },
+    "heading": {
+      "title": "Forward to…"
+    },
+    "section": {
+      "forwarding": "Forwarding",
+      "chats": "Chats",
+      "people": "People"
+    },
+    "search": {
+      "placeholder": "Search chats & people…"
+    },
+    "state": {
+      "loading": "Loading…",
+      "noMatches": "No matches for \"{{query}}\".",
+      "noTargets": "No one to forward to."
+    },
+    "button": {
+      "forwarding": "Forwarding…",
+      "forward": "Forward"
+    },
+    "footer": {
+      "selectedCount_one": "{{count}} selected",
+      "selectedCount_other": "{{count}} selected"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "Add members",
+      "close": "Close"
+    },
+    "search": {
+      "placeholder": "Search employees…"
+    },
+    "list": {
+      "loading": "Loading…",
+      "noMatches": "No matches for \"{{search}}\".",
+      "allInGroup": "Everyone is already in this group."
+    },
+    "footer": {
+      "add": "Add",
+      "adding": "Adding…",
+      "selectedCount_one": "{{count}} selected",
+      "selectedCount_other": "{{count}} selected"
+    },
+    "toast": {
+      "addFailed": "Couldn't add members. Please try again.",
+      "added_one": "Added {{count}} member.",
+      "added_other": "Added {{count}} members."
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "Personal",
+      "education": "Education",
+      "experience": "Experience",
+      "dependents": "Dependents",
+      "addresses": "Addresses",
+      "custom": "Custom Fields"
+    },
+    "invalid": {
+      "title": "Invalid Employee",
+      "description": "The employee ID in the URL is missing or invalid.",
+      "backToDirectory": "← Back to Employee Directory"
+    },
+    "accessDenied": {
+      "title": "Access denied",
+      "description": "You don't have permission to view this profile.",
+      "backToDashboard": "← Back to Dashboard"
+    },
+    "loading": "Loading profile...",
+    "notFound": "Employee not found",
+    "header": {
+      "backToDirectory": "Back to Directory",
+      "biometricPhotoTooltip": "Photo is managed via biometric kiosk enrollment",
+      "biometricFaceAlt": "Biometric face",
+      "profilePhotoAlt": "Profile",
+      "noDesignation": "No designation",
+      "biometricHint": "Photo from biometric enrollment — managed via the kiosk.",
+      "removingPhoto": "Removing...",
+      "removePhoto": "Remove photo",
+      "empCode": "Emp Code: {{code}}",
+      "joined": "Joined: {{date}}",
+      "cancel": "Cancel",
+      "editMyInfo": "Edit My Info",
+      "editProfile": "Edit Profile"
+    },
+    "removePhotoDialog": {
+      "title": "Remove your profile photo?",
+      "description": "You'll show initials again.",
+      "confirm": "Remove photo"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "PAN must be 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F)",
+      "aadhar": "Aadhaar must be 12 digits",
+      "uan": "UAN must be 12 digits",
+      "passport": "Passport must be 1 letter + 7 digits (e.g. A1234567)"
+    },
+    "personal": {
+      "saveError": "Failed to save",
+      "selfServiceNotice": "You can edit your personal and emergency contact information. Contact HR to update administrative fields.",
+      "field": {
+        "personalEmail": "Personal Email",
+        "contactNumber": "Contact Number",
+        "gender": "Gender",
+        "dateOfBirth": "Date of Birth",
+        "bloodGroup": "Blood Group",
+        "maritalStatus": "Marital Status",
+        "nationality": "Nationality",
+        "aadharNumber": "Aadhar Number",
+        "panNumber": "PAN Number",
+        "uanNumber": "UAN Number",
+        "passportNumber": "Passport Number",
+        "passportExpiry": "Passport Expiry",
+        "visaStatus": "Visa Status",
+        "visaExpiry": "Visa Expiry",
+        "emergencyContact": "Emergency Contact",
+        "emergencyPhone": "Emergency Phone",
+        "emergencyRelation": "Emergency Relation",
+        "noticePeriodDays": "Notice Period (days)",
+        "reportingManager": "Reporting Manager",
+        "department": "Department",
+        "shift": "Shift",
+        "designation": "Designation",
+        "employeeCode": "Employee Code",
+        "probationStart": "Probation Start",
+        "probationEnd": "Probation End",
+        "confirmationDate": "Confirmation Date"
+      },
+      "select": {
+        "placeholder": "Select"
+      },
+      "aadhar": {
+        "placeholder": "12 digits"
+      },
+      "uan": {
+        "placeholder": "12 digits"
+      },
+      "reportingManager": {
+        "none": "No Manager",
+        "option": "{{name}} ({{role}}) - {{email}}"
+      },
+      "department": {
+        "none": "No department"
+      },
+      "shift": {
+        "none": "No shift"
+      },
+      "designation": {
+        "placeholderSelfService": "Contact HR to change",
+        "placeholderHint": "e.g. Senior Engineer"
+      },
+      "empCode": {
+        "placeholderSelfService": "Contact HR to set",
+        "placeholderHint": "e.g. EMP001"
+      },
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "reportingManagerFallback": "User #{{id}}",
+      "departmentFallback": "Dept #{{id}}",
+      "shiftFallback": "Shift #{{id}}"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "maritalStatus": {
+      "single": "Single",
+      "married": "Married",
+      "divorced": "Divorced",
+      "widowed": "Widowed"
+    },
+    "customRoles": {
+      "label": "Custom Roles"
+    },
+    "additionalManagers": {
+      "label": "Additional Managers",
+      "description": "Co-managers with the same team-scope access as the primary Reporting Manager. Honoured by every team-scoped permission.",
+      "loading": "Loading…",
+      "empty": "No additional managers",
+      "userFallback": "User #{{id}}",
+      "removeAria": "Remove {{name}}",
+      "removeAriaFallback": "manager",
+      "searchPlaceholderEmpty": "Search by name or email…",
+      "searchPlaceholderMore": "Add another…",
+      "noMatches": "No matching users",
+      "allSelected": "All eligible users already selected",
+      "saving": "Saving…",
+      "save": "Save additional managers",
+      "unsaved": "unsaved changes",
+      "saved": "Saved",
+      "selectedCount_one": "({{count}} selected)",
+      "selectedCount_other": "({{count}} selected)"
+    },
+    "apiError": {
+      "requestFailed": "Request failed"
+    },
+    "education": {
+      "add": "Add Education",
+      "editHeading": "Edit Education",
+      "field": {
+        "degree": "Degree *",
+        "institution": "Institution *",
+        "fieldOfStudy": "Field of Study",
+        "grade": "Grade",
+        "startYear": "Start Year",
+        "endYear": "End Year"
+      },
+      "degree": {
+        "placeholder": "e.g. B.Tech"
+      },
+      "institution": {
+        "placeholder": "e.g. IIT Delhi"
+      },
+      "validation": {
+        "required": "Degree and Institution are required",
+        "endYear": "End year must be on or after start year"
+      },
+      "empty": "No education records added yet.",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "From {{year}}",
+      "gradeSuffix": " | Grade: {{grade}}",
+      "deleteDialog": {
+        "title": "Delete this education record?"
+      }
+    },
+    "common": {
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "experience": {
+      "add": "Add Experience",
+      "editHeading": "Edit Experience",
+      "field": {
+        "company": "Company *",
+        "designation": "Designation *",
+        "startDate": "Start Date *",
+        "endDate": "End Date",
+        "description": "Description"
+      },
+      "currentlyWorking": "Currently working here",
+      "validation": {
+        "required": "Company, Designation and Start Date are required"
+      },
+      "empty": "No work experience records added yet.",
+      "currentBadge": "Current",
+      "present": "Present",
+      "deleteDialog": {
+        "title": "Delete this experience record?"
+      }
+    },
+    "dependents": {
+      "add": "Add Dependent",
+      "editHeading": "Edit Dependent",
+      "field": {
+        "name": "Name *",
+        "relationship": "Relationship *",
+        "dateOfBirth": "Date of Birth",
+        "gender": "Gender",
+        "nomineePercent": "Nominee %"
+      },
+      "relationship": {
+        "placeholder": "e.g. Spouse, Child, Parent"
+      },
+      "isNominee": "Is Nominee",
+      "validation": {
+        "required": "Name and Relationship are required"
+      },
+      "empty": "No dependents added yet.",
+      "column": {
+        "name": "Name",
+        "relationship": "Relationship",
+        "dob": "DOB",
+        "gender": "Gender",
+        "nominee": "Nominee",
+        "actions": "Actions"
+      },
+      "nomineeYes": "Yes",
+      "nomineeYesPercent": "Yes ({{percent}}%)",
+      "nomineeNo": "No",
+      "deleteDialog": {
+        "title": "Delete this dependent?"
+      }
+    },
+    "addresses": {
+      "add": "Add Address",
+      "editHeading": "Edit Address",
+      "field": {
+        "type": "Type *",
+        "country": "Country",
+        "line1": "Address Line 1 *",
+        "line2": "Address Line 2",
+        "city": "City *",
+        "state": "State *",
+        "zipcode": "Zipcode *"
+      },
+      "type": {
+        "current": "Current",
+        "permanent": "Permanent"
+      },
+      "validation": {
+        "required": "Address line 1, City, State and Zipcode are required"
+      },
+      "empty": "No addresses added yet.",
+      "deleteDialog": {
+        "title": "Delete this address?"
+      }
+    },
+    "custom": {
+      "loading": "Loading custom fields...",
+      "saveError": "Failed to save custom fields",
+      "emptyTitle": "No custom fields have been defined for employees yet.",
+      "emptyHint": "HR administrators can create custom fields from the Custom Fields settings page.",
+      "heading": "Custom Fields",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "checkboxYes": "Yes",
+      "checkboxNo": "No",
+      "select": {
+        "placeholder": "Select..."
+      },
+      "file": {
+        "placeholder": "File reference or path"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "Import Employees",
+      "subtitle": "Upload a CSV file to bulk import employees into your organization."
+    },
+    "success": {
+      "title": "Import Successful",
+      "importMore": "Import more employees",
+      "message_one": "Successfully imported {{count}} employee.",
+      "message_other": "Successfully imported {{count}} employees."
+    },
+    "dropzone": {
+      "instructions": "Drag and drop a CSV file here, or click to browse",
+      "columnsHint": "Required columns: first_name, last_name, email. Optional: designation, department_name, emp_code, role, contact_number",
+      "chooseFile": "Choose File",
+      "selectedFile": "Selected: {{name}}"
+    },
+    "loading": {
+      "parsing": "Parsing and validating CSV..."
+    },
+    "summary": {
+      "totalRows": "Total Rows",
+      "valid": "Valid",
+      "errors": "Errors"
+    },
+    "validTable": {
+      "col": {
+        "name": "Name",
+        "email": "Email",
+        "empCode": "Emp Code",
+        "designation": "Designation",
+        "department": "Department",
+        "status": "Status"
+      },
+      "emptyCell": "-",
+      "title_one": "Valid Employees ({{count}})",
+      "title_other": "Valid Employees ({{count}})",
+      "andMore_one": "...and {{count}} more",
+      "andMore_other": "...and {{count}} more"
+    },
+    "errorTable": {
+      "col": {
+        "row": "Row",
+        "name": "Name",
+        "email": "Email",
+        "errors": "Errors"
+      },
+      "title_one": "Errors ({{count}})",
+      "title_other": "Errors ({{count}})"
+    },
+    "import": {
+      "importing": "Importing...",
+      "button_one": "Import {{count}} valid employee",
+      "button_other": "Import {{count}} valid employees"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "Platform Settings",
+      "subtitle": "View current platform configuration and system information."
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "Platform Info"
+      },
+      "email": {
+        "title": "Email / SMTP Settings"
+      },
+      "security": {
+        "title": "Security Settings"
+      }
+    },
+    "fields": {
+      "serverVersion": "Server Version",
+      "nodeVersion": "Node.js Version",
+      "environment": "Environment",
+      "uptime": "Uptime",
+      "smtpStatus": "SMTP Status",
+      "smtpHost": "SMTP Host",
+      "fromAddress": "From Address",
+      "bcryptRounds": "Bcrypt Rounds",
+      "accessTokenExpiry": "Access Token Expiry",
+      "refreshTokenExpiry": "Refresh Token Expiry",
+      "authRateLimit": "Auth Rate Limit",
+      "apiRateLimit": "API Rate Limit"
+    },
+    "smtpStatus": {
+      "configured": "Configured",
+      "notConfigured": "Not Configured"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}}d {{hours}}h {{mins}}m",
+      "hoursMins": "{{hours}}h {{mins}}m",
+      "mins": "{{mins}}m"
+    },
+    "footer": {
+      "autoRefresh": "Auto-refreshes every 30 seconds"
+    }
+  },
+  "settingsPage": {
+    "loading": "Loading settings...",
+    "header": {
+      "title": "Organization Settings",
+      "subtitle": "Manage your company details, departments, and locations."
+    },
+    "company": {
+      "title": "Company Information",
+      "editTitle": "Edit Company Information"
+    },
+    "actions": {
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "add": "Add",
+      "saveChanges": "Save Changes"
+    },
+    "fields": {
+      "name": "Name",
+      "legalName": "Legal Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "state": "State",
+      "city": "City",
+      "timezone": "Timezone",
+      "language": "Language"
+    },
+    "form": {
+      "selectTimezone": "Select timezone",
+      "selectTimezoneRequired": "Select timezone *",
+      "selectCountry": "Select country",
+      "noTimezone": "No timezone"
+    },
+    "validation": {
+      "email": "Please enter a valid email address (e.g., user@example.com).",
+      "city": "City must only contain letters, spaces, and hyphens.",
+      "state": "State must only contain letters, spaces, and hyphens.",
+      "timezoneRequired": "Timezone is required."
+    },
+    "errors": {
+      "updateOrg": "Failed to update. Please try again.",
+      "addDepartment": "Failed to add department.",
+      "renameDepartment": "Failed to rename department.",
+      "deleteDepartment": "Failed to delete department.",
+      "addLocation": "Failed to add location.",
+      "updateLocation": "Failed to update location.",
+      "deleteLocation": "Failed to delete location."
+    },
+    "departments": {
+      "namePlaceholder": "Department name",
+      "renameTitle": "Rename department",
+      "deleteTitle": "Delete department",
+      "title_one": "Departments ({{count}})",
+      "title_other": "Departments ({{count}})"
+    },
+    "locations": {
+      "namePlaceholder": "Location name",
+      "editTitle": "Edit location",
+      "deleteTitle": "Delete location",
+      "title_one": "Locations ({{count}})",
+      "title_other": "Locations ({{count}})"
+    },
+    "rowActions": {
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "Loading subscriptions...",
+    "header": {
+      "title": "Subscriptions",
+      "subtitle": "Manage your module subscriptions and billing."
+    },
+    "moduleFallback": "Module",
+    "billing": {
+      "viewInvoicesLink": "View detailed invoices and payment history",
+      "monthlyCostHeading": "Monthly Cost",
+      "perMonthSuffix": " /month"
+    },
+    "toast": {
+      "updated": "Subscription updated successfully",
+      "cancelled": "Subscription cancelled"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "Edit subscription",
+        "cancel": "Cancel subscription"
+      },
+      "field": {
+        "plan": "Plan",
+        "seats": "Seats",
+        "pricePerSeat": "Price/Seat",
+        "billingCycle": "Billing Cycle"
+      },
+      "seatsFull": "(full)"
+    },
+    "trial": {
+      "expired": "Trial expired — converting to active subscription shortly. First invoice will be issued today.",
+      "endsIn_one": "Trial ends in {{count}} day ({{date}})",
+      "endsIn_other": "Trial ends in {{count}} days ({{date}})"
+    },
+    "cancelModal": {
+      "title": "Cancel Subscription?",
+      "body": "This will cancel the subscription and revoke access for all assigned seats. This action cannot be undone.",
+      "keep": "Keep",
+      "confirm": "Yes, Cancel",
+      "confirming": "Cancelling..."
+    },
+    "editModal": {
+      "title": "Edit Subscription",
+      "planTierLabel": "Plan Tier",
+      "totalSeatsLabel": "Total Seats",
+      "currentlyUsing": "Currently using {{seats}} seats",
+      "cannotReduceBelow": "Cannot reduce below {{seats}} (in use)",
+      "billingCycleLabel": "Billing Cycle",
+      "changesHeading": "Changes:",
+      "change": {
+        "plan": "Plan: {{from}} → {{to}}",
+        "seats": "Seats: {{from}} → {{to}}",
+        "cycle": "Cycle: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ This will end your free trial",
+        "reason": {
+          "seats": "Adding seats",
+          "tier": "Upgrading your plan tier",
+          "cycle": "Switching to a longer billing cycle"
+        },
+        "body": " during the trial will activate the subscription immediately. An invoice for the first billing period will be generated and due today."
+      },
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "planTier": {
+      "basic": "Basic",
+      "professional": "Professional",
+      "enterprise": "Enterprise",
+      "free": "Free"
+    },
+    "billingCycle": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semi_annual": "Semi-annual",
+      "annual": "Annual"
+    },
+    "status": {
+      "active": "Active",
+      "trial": "Trial",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "Custom Fields",
+      "subtitle": "Define custom data fields for employees, departments, and other entities"
+    },
+    "actions": {
+      "addField": "Add Field"
+    },
+    "entityType": {
       "employee": "Employee",
       "department": "Department",
       "location": "Location",
@@ -2578,200 +5703,106 @@
       "url": "URL",
       "file": "File"
     },
-    "editField": "Edit Field",
-    "newField": "New Field",
-    "preview": "Preview",
-    "hidePreview": "Hide Preview",
-    "fieldName": "Field Name *",
-    "fieldNamePlaceholder": "e.g. T-Shirt Size",
-    "section": "Section",
-    "placeholder": "Placeholder",
-    "defaultValue": "Default Value",
-    "validationRegex": "Validation Regex",
-    "minValue": "Min Value",
-    "maxValue": "Max Value",
-    "helpText": "Help Text",
-    "helpTextPlaceholder": "Tooltip or description shown to users",
-    "options": "Options",
-    "optionPlaceholder": "Type option and press Enter",
-    "add": "Add",
-    "required": "Required",
-    "searchable": "Searchable",
-    "fieldPreview": "Field Preview",
-    "saveError": "Failed to save field. Please try again.",
-    "saving": "Saving...",
-    "updateFieldBtn": "Update Field",
-    "createField": "Create Field",
-    "cancel": "Cancel",
-    "loading": "Loading fields...",
-    "empty": "No custom fields defined for {{entity}}.",
-    "emptyHint": "Click \"Add Field\" to create your first custom field.",
-    "colFieldName": "Field Name",
-    "colKey": "Key",
-    "colType": "Type",
-    "colActions": "Actions",
-    "optionsCount_one": "({{count}} option)",
-    "optionsCount_other": "({{count}} options)",
-    "yes": "Yes",
-    "no": "No",
-    "editFieldAria": "Edit field",
-    "deleteFieldAria": "Delete field",
-    "deactivateNamed": "Deactivate field \"{{name}}\"?",
-    "deactivate": "Deactivate field?",
-    "deactivateDesc": "Existing values will be preserved.",
-    "deactivateBtn": "Deactivate",
-    "previewFieldName": "Field Name",
-    "previewEnter": "Enter {{name}}",
-    "previewValue": "value",
-    "previewSelect": "Select {{name}}...",
-    "previewOption": "option",
-    "noOptionsDefined": "No options defined",
-    "previewCheckbox": "Checkbox",
-    "fieldTypeField": "Field Type *"
-  },
-  "orgSettings": {
-    "loading": "Loading settings...",
-    "title": "Organization Settings",
-    "subtitle": "Manage your company details, departments, and locations.",
-    "companyInfo": "Company Information",
-    "edit": "Edit",
-    "field": {
-      "name": "Name",
-      "legalName": "Legal Name",
-      "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "state": "State",
-      "city": "City",
-      "timezone": "Timezone",
-      "language": "Language"
+    "form": {
+      "editTitle": "Edit Field",
+      "newTitle": "New Field",
+      "hidePreview": "Hide Preview",
+      "preview": "Preview",
+      "fieldNameLabel": "Field Name *",
+      "fieldNamePlaceholder": "e.g. T-Shirt Size",
+      "fieldTypeLabel": "Field Type *",
+      "sectionLabel": "Section",
+      "sectionPlaceholder": "Custom Fields",
+      "placeholderLabel": "Placeholder",
+      "defaultValueLabel": "Default Value",
+      "validationRegexLabel": "Validation Regex",
+      "minValueLabel": "Min Value",
+      "maxValueLabel": "Max Value",
+      "helpTextLabel": "Help Text",
+      "helpTextPlaceholder": "Tooltip or description shown to users",
+      "optionsLabel": "Options",
+      "optionInputPlaceholder": "Type option and press Enter",
+      "addOption": "Add",
+      "requiredLabel": "Required",
+      "searchableLabel": "Searchable",
+      "fieldPreviewHeading": "Field Preview",
+      "saving": "Saving...",
+      "updateField": "Update Field",
+      "createField": "Create Field",
+      "cancel": "Cancel"
     },
-    "errEmail": "Please enter a valid email address (e.g., user@example.com).",
-    "errCity": "City must only contain letters, spaces, and hyphens.",
-    "errState": "State must only contain letters, spaces, and hyphens.",
-    "editCompanyInfo": "Edit Company Information",
-    "selectTimezone": "Select timezone",
-    "selectCountry": "Select country",
-    "cancel": "Cancel",
-    "saveChanges": "Save Changes",
-    "updateError": "Failed to update. Please try again.",
-    "departments": "Departments ({{count}})",
-    "add": "Add",
-    "departmentName": "Department name",
-    "renameDepartment": "Rename department",
-    "deleteDepartment": "Delete department",
-    "save": "Save",
-    "addDeptError": "Failed to add department.",
-    "renameDeptError": "Failed to rename department.",
-    "deleteDeptError": "Failed to delete department.",
-    "locations": "Locations ({{count}})",
-    "timezoneRequired": "Timezone is required.",
-    "locationName": "Location name",
-    "selectTimezoneRequired": "Select timezone *",
-    "noTimezone": "No timezone",
-    "editLocation": "Edit location",
-    "deleteLocation": "Delete location",
-    "addLocError": "Failed to add location.",
-    "updateLocError": "Failed to update location.",
-    "deleteLocError": "Failed to delete location."
-  },
-  "apiKeys": {
-    "title": "API Keys",
-    "newKey": "New Key",
-    "description": "Generate keys for programmatic access to the EmpCloud APIs. One key works across EmpCloud and the Payroll module, and carries the permissions of the admin who created it.",
-    "statusRevoked": "Revoked",
-    "statusExpired": "Expired",
-    "statusActive": "Active",
-    "createError": "Failed to create API key",
-    "copyError": "Couldn't copy — select and copy manually",
-    "revokeConfirm": "Revoke \"{{name}}\"? Any integration using it will stop working immediately.",
-    "revoked": "API key revoked",
-    "revokeError": "Failed to revoke key",
-    "howToTitle": "How to use your API key",
-    "howToIntro": "The generated key is a <strong>Bearer token</strong>. Send it in the <code>Authorization</code> header on every API request — exactly like a logged-in session token:",
-    "bulletBothSystems": "<strong>Works in both systems.</strong> The same token authenticates against EmpCloud APIs and the Payroll module APIs — no separate login or token exchange needed.",
-    "bulletPermissions": "<strong>Inherits your permissions.</strong> A key can only do what the admin who created it can do. It always reflects that admin's current role — change the role and the key's access changes with it.",
-    "bulletShownOnce": "<strong>Shown only once.</strong> The full key is displayed a single time at creation. Store it somewhere safe (a secrets manager) — we keep only a hashed copy and can't show it again.",
-    "bulletRevocable": "<strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a password — anyone who has it can act with your permissions.",
-    "copyNow": "Copy this key now — it won't be shown again.",
-    "copied": "Copied",
-    "copy": "Copy",
-    "dismiss": "Dismiss",
-    "useAsBearer": "Use it as a Bearer token in the Authorization header:",
-    "keyName": "Key name",
-    "keyNamePlaceholder": "e.g. Attendance export",
-    "expiresInDays": "Expires in (days)",
-    "never": "Never",
-    "generating": "Generating…",
-    "generateKey": "Generate key",
-    "cancel": "Cancel",
-    "loadingKeys": "Loading keys…",
-    "noKeys": "No API keys yet.",
-    "colName": "Name",
-    "colKey": "Key",
-    "colStatus": "Status",
-    "colLastUsed": "Last used",
-    "colExpires": "Expires",
-    "colCreated": "Created",
-    "revoke": "Revoke"
-  },
-  "assetCategories": {
-    "title": "Asset Categories",
-    "subtitle": "Organize assets by type",
-    "addCategory": "Add Category",
-    "loading": "Loading categories...",
-    "empty": "No categories yet. Create your first one.",
-    "colName": "Name",
-    "colDescription": "Description",
-    "colActions": "Actions",
-    "edit": "Edit",
-    "delete": "Delete",
-    "editCategory": "Edit Category",
-    "newCategory": "New Category",
-    "nameLabel": "Name *",
-    "namePlaceholder": "e.g. Laptop, Monitor, Phone",
-    "descriptionLabel": "Description",
-    "cancel": "Cancel",
-    "update": "Update",
-    "create": "Create",
-    "deactivateError": "Failed to deactivate category",
-    "deactivateTitle": "Deactivate category?",
-    "deactivateBody": "Deactivate <strong>{{name}}</strong>? Existing assets tagged with this category keep the tag, but no new assets can be placed here until it's restored.",
-    "deactivating": "Deactivating...",
-    "deactivate": "Deactivate"
+    "error": {
+      "saveFailed": "Failed to save field. Please try again."
+    },
+    "list": {
+      "loading": "Loading fields...",
+      "emptyTitle": "No custom fields defined for {{name}}.",
+      "emptyHint": "Click \"Add Field\" to create your first custom field."
+    },
+    "table": {
+      "fieldName": "Field Name",
+      "key": "Key",
+      "type": "Type",
+      "required": "Required",
+      "searchable": "Searchable",
+      "actions": "Actions",
+      "yes": "Yes",
+      "no": "No",
+      "editAria": "Edit field",
+      "deleteAria": "Delete field",
+      "optionCount_one": "({{count}} option)",
+      "optionCount_other": "({{count}} options)"
+    },
+    "confirm": {
+      "titleNamed": "Deactivate field \"{{name}}\"?",
+      "title": "Deactivate field?",
+      "description": "Existing values will be preserved.",
+      "confirmText": "Deactivate"
+    },
+    "preview": {
+      "defaultFieldName": "Field Name",
+      "enterValue": "Enter {{name}}",
+      "enterValueFallback": "value",
+      "selectOption": "Select {{name}}...",
+      "selectOptionFallback": "option",
+      "noOptions": "No options defined",
+      "checkboxFallback": "Checkbox"
+    }
   },
   "helpdeskDashboard": {
     "loading": "Loading helpdesk dashboard...",
     "title": "Helpdesk Dashboard",
     "subtitle": "Overview of HR helpdesk tickets and SLA performance.",
     "viewAllTickets": "View All Tickets",
-    "stat": {
+    "stats": {
       "totalOpen": "Total Open",
       "inProgress": "In Progress",
       "overdue": "Overdue (SLA Breached)",
       "resolvedToday": "Resolved Today"
     },
-    "slaCompliance": {
-      "heading": "SLA Compliance",
-      "caption": "Tickets resolved within SLA"
+    "sla": {
+      "compliance": "SLA Compliance",
+      "resolvedWithinSla": "Tickets resolved within SLA"
     },
-    "avgResolution": {
-      "heading": "Average Resolution Time",
-      "unit": "hours"
+    "metrics": {
+      "avgResolutionTime": "Average Resolution Time",
+      "hours": "hours"
     },
     "satisfaction": {
-      "heading": "Satisfaction Rating",
+      "title": "Satisfaction Rating",
       "notAvailable": "N/A",
       "ratingCount_one": "{{count}} rating",
       "ratingCount_other": "{{count}} ratings"
     },
     "categoryBreakdown": {
-      "heading": "Tickets by Category"
+      "title": "Tickets by Category"
     },
     "recentTickets": {
-      "heading": "Recent Tickets"
+      "title": "Recent Tickets"
     },
-    "noTicketsYet": "No tickets yet",
+    "emptyState": {
+      "noTickets": "No tickets yet"
+    },
     "category": {
       "leave": "Leave",
       "payroll": "Payroll",
@@ -2797,22 +5828,86 @@
       "reopened": "Reopened"
     }
   },
-  "submitFeedback": {
-    "title": "Submit Feedback",
-    "successHeading": "Feedback Submitted",
-    "successMessage": "Your feedback has been submitted anonymously. Your identity is not stored or visible to anyone. You can check the status of your feedback on the \"My Feedback\" page.",
-    "submitAnother": "Submit Another",
-    "bannerTitle": "Your feedback is completely anonymous",
-    "bannerBody": "Your identity is hashed and cannot be traced back to you. HR will see the feedback content but never your name or email.",
-    "categoryLabel": "Category",
-    "subjectLabel": "Subject",
-    "messageLabel": "Message",
-    "subjectPlaceholder": "Brief summary of your feedback",
-    "messagePlaceholder": "Describe your feedback in detail...",
-    "markUrgent": "Mark as urgent",
-    "submitAnon": "Submit Anonymously",
-    "submitting": "Submitting...",
-    "submitError": "Failed to submit feedback. Please try again.",
+  "ticketDetail": {
+    "loading": "Loading ticket...",
+    "backToTickets": "Back to tickets",
+    "slaBreached": "SLA Breached",
+    "raisedBy": "Raised by: {{name}}",
+    "created": "Created: {{date}}",
+    "assignedTo": "Assigned to: {{name}}",
+    "slaDeadlines": "SLA Deadlines",
+    "firstResponse": "First Response:",
+    "responded": "Responded {{date}}",
+    "due": "Due {{date}}",
+    "resolution": "Resolution:",
+    "resolved": "Resolved {{date}}",
+    "action": {
+      "assign": "Assign",
+      "resolve": "Resolve",
+      "close": "Close",
+      "reopen": "Reopen",
+      "rateService": "Rate Service"
+    },
+    "assign": {
+      "selectUser": "Select a user to assign..."
+    },
+    "rating": {
+      "prompt": "How satisfied are you with the resolution?",
+      "feedbackPlaceholder": "Additional feedback (optional)",
+      "submit": "Submit Rating"
+    },
+    "satisfaction": "Satisfaction:",
+    "conversation": "Conversation",
+    "internalNote": "Internal Note",
+    "noComments": "No comments yet. Start the conversation below.",
+    "replyPlaceholder": "Write a reply...",
+    "internalNoteToggle": "Internal note (not visible to employee)",
+    "sending": "Sending...",
+    "sendReply": "Send Reply",
+    "toast": {
+      "resolveSuccess": "Ticket marked as resolved.",
+      "resolveError": "Failed to resolve ticket.",
+      "closeSuccess": "Ticket closed.",
+      "closeError": "Failed to close ticket.",
+      "reopenSuccess": "Ticket reopened.",
+      "reopenError": "Failed to reopen ticket."
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "awaiting_response": "Awaiting Response",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    },
+    "category": {
+      "general": "General",
+      "technical": "Technical",
+      "hr": "HR",
+      "payroll": "Payroll",
+      "it": "IT",
+      "facilities": "Facilities",
+      "other": "Other"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "My Feedback",
+      "subtitle": "View the status of your anonymously submitted feedback and any responses from HR."
+    },
+    "status": {
+      "new": "New",
+      "acknowledged": "Acknowledged",
+      "under_review": "Under Review",
+      "resolved": "Resolved",
+      "archived": "Archived"
+    },
     "category": {
       "workplace": "Workplace",
       "management": "Management",
@@ -2822,265 +5917,118 @@
       "safety": "Safety",
       "suggestion": "Suggestion",
       "other": "Other"
+    },
+    "empty": {
+      "title": "No feedback submitted yet",
+      "description": "Share your thoughts anonymously with HR.",
+      "submitCta": "Submit Feedback"
+    },
+    "card": {
+      "urgentBadge": "Urgent",
+      "editButton": "Edit",
+      "hrResponseLabel": "HR Response",
+      "respondedOn": "Responded on {{date}}"
+    },
+    "editModal": {
+      "title": "Edit Feedback",
+      "categoryLabel": "Category",
+      "subjectLabel": "Subject",
+      "messageLabel": "Message",
+      "markUrgent": "Mark as urgent",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "error": {
+      "updateFailed": "Failed to update feedback"
+    },
+    "pagination": {
+      "summary": "Page {{page}} of {{totalPages}} ({{total}} total)",
+      "previous": "Previous",
+      "next": "Next"
     }
   },
-  "employeeProfile": {
-    "tab": {
-      "personal": "Personal",
-      "education": "Education",
-      "experience": "Experience",
-      "dependents": "Dependents",
-      "addresses": "Addresses",
-      "custom": "Custom Fields"
+  "feedbackDashboard": {
+    "title": "Feedback Dashboard",
+    "subtitle": "Overview of anonymous employee feedback.",
+    "loading": "Loading dashboard...",
+    "stats": {
+      "totalFeedback": "Total Feedback",
+      "urgentItems": "Urgent Items",
+      "responseRate": "Response Rate",
+      "newUnread": "New / Unread"
     },
-    "invalidEmployee": {
-      "title": "Invalid Employee",
-      "description": "The employee ID in the URL is missing or invalid.",
-      "backLink": "Back to Employee Directory"
+    "sections": {
+      "byCategory": "By Category",
+      "sentimentDistribution": "Sentiment Distribution",
+      "byStatus": "By Status",
+      "recentFeedback": "Recent Feedback"
     },
-    "accessDenied": {
-      "title": "Access denied",
-      "description": "You don't have permission to view this profile.",
-      "backLink": "Back to Dashboard"
+    "empty": {
+      "noData": "No data yet.",
+      "noFeedback": "No feedback yet."
     },
-    "loadingProfile": "Loading profile...",
-    "employeeNotFound": "Employee not found",
-    "backToDirectory": "Back to Directory",
-    "noDesignation": "No designation",
-    "biometricPhotoTooltip": "Photo is managed via biometric kiosk enrollment",
-    "biometricPhotoAlt": "Biometric face",
-    "profilePhotoAlt": "Profile",
-    "biometricPhotoHint": "Photo from biometric enrollment — managed via the kiosk.",
-    "removingPhoto": "Removing...",
-    "removePhoto": "Remove photo",
-    "empCodeLabel": "Emp Code: {{code}}",
-    "joinedLabel": "Joined: {{date}}",
-    "cancel": "Cancel",
-    "editMyInfo": "Edit My Info",
-    "editProfile": "Edit Profile",
-    "removePhotoDialog": {
-      "title": "Remove your profile photo?",
-      "description": "You'll show initials again.",
-      "confirm": "Remove photo"
+    "status": {
+      "new": "New",
+      "acknowledged": "Acknowledged",
+      "under_review": "Under Review",
+      "resolved": "Resolved",
+      "archived": "Archived"
     },
-    "fieldRow": {
-      "empty": "-"
-    },
-    "validation": {
-      "pan": "PAN must be 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F)",
-      "aadhaar": "Aadhaar must be 12 digits",
-      "uan": "UAN must be 12 digits",
-      "passport": "Passport must be 1 letter + 7 digits (e.g. A1234567)"
-    },
-    "personal": {
-      "saveFailed": "Failed to save",
-      "selfServiceNotice": "You can edit your personal and emergency contact information. Contact HR to update administrative fields."
-    },
-    "field": {
-      "personalEmail": "Personal Email",
-      "contactNumber": "Contact Number",
-      "gender": "Gender",
-      "dateOfBirth": "Date of Birth",
-      "bloodGroup": "Blood Group",
-      "maritalStatus": "Marital Status",
-      "nationality": "Nationality",
-      "aadharNumber": "Aadhar Number",
-      "panNumber": "PAN Number",
-      "uanNumber": "UAN Number",
-      "passportNumber": "Passport Number",
-      "passportExpiry": "Passport Expiry",
-      "visaStatus": "Visa Status",
-      "visaExpiry": "Visa Expiry",
-      "emergencyContact": "Emergency Contact",
-      "emergencyPhone": "Emergency Phone",
-      "emergencyRelation": "Emergency Relation",
-      "noticePeriodDays": "Notice Period (days)",
-      "reportingManager": "Reporting Manager",
-      "department": "Department",
-      "shift": "Shift",
-      "designation": "Designation",
-      "employeeCode": "Employee Code",
-      "probationStart": "Probation Start",
-      "probationEnd": "Probation End",
-      "confirmationDate": "Confirmation Date",
-      "customRoles": "Custom Roles",
-      "additionalManagers": "Additional Managers"
-    },
-    "select": {
-      "placeholder": "Select"
-    },
-    "gender": {
-      "male": "Male",
-      "female": "Female",
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
       "other": "Other"
     },
-    "maritalStatus": {
-      "single": "Single",
-      "married": "Married",
-      "divorced": "Divorced",
-      "widowed": "Widowed"
+    "sentiment": {
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative",
+      "unset": "Unset"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "Submit Feedback"
     },
-    "placeholder": {
-      "aadhar": "12 digits",
-      "pan": "ABCDE1234F",
-      "uan": "12 digits",
-      "passport": "A1234567",
-      "designationSelfService": "Contact HR to change",
-      "designation": "e.g. Senior Engineer",
-      "empCodeSelfService": "Contact HR to set",
-      "empCode": "e.g. EMP001"
+    "success": {
+      "title": "Feedback Submitted",
+      "description": "Your feedback has been submitted anonymously. Your identity is not stored or visible to anyone. You can check the status of your feedback on the \"My Feedback\" page.",
+      "submitAnother": "Submit Another"
     },
-    "reportingManager": {
-      "none": "No Manager"
+    "anonymousBanner": {
+      "title": "Your feedback is completely anonymous",
+      "description": "Your identity is hashed and cannot be traced back to you. HR will see the feedback content but never your name or email."
     },
-    "department": {
-      "none": "No department"
+    "field": {
+      "category": "Category",
+      "subject": "Subject",
+      "message": "Message",
+      "subjectPlaceholder": "Brief summary of your feedback",
+      "messagePlaceholder": "Describe your feedback in detail...",
+      "markUrgent": "Mark as urgent"
     },
-    "shift": {
-      "none": "No shift"
+    "action": {
+      "submit": "Submit Anonymously",
+      "submitting": "Submitting..."
     },
-    "saving": "Saving...",
-    "saveChanges": "Save Changes",
-    "additionalManagers": {
-      "loading": "Loading…",
-      "none": "No additional managers",
-      "userFallback": "User #{{id}}",
-      "selectedCount_one": "({{count}} selected)",
-      "selectedCount_other": "({{count}} selected)",
-      "helpText": "Co-managers with the same team-scope access as the primary Reporting Manager. Honoured by every team-scoped permission.",
-      "removeAria": "Remove {{name}}",
-      "removeAriaFallback": "manager",
-      "searchPlaceholder": "Search by name or email…",
-      "addPlaceholder": "Add another…",
-      "noMatches": "No matching users",
-      "allSelected": "All eligible users already selected",
-      "savingButton": "Saving…",
-      "saveButton": "Save additional managers",
-      "unsavedChanges": "unsaved changes",
-      "saved": "Saved"
+    "error": {
+      "submitFailed": "Failed to submit feedback. Please try again."
     },
-    "apiError": {
-      "requestFailed": "Request failed"
-    },
-    "education": {
-      "add": "Add Education",
-      "edit": "Edit Education",
-      "empty": "No education records added yet.",
-      "deleteDialog": {
-        "title": "Delete this education record?"
-      },
-      "field": {
-        "degree": "Degree",
-        "institution": "Institution",
-        "fieldOfStudy": "Field of Study",
-        "grade": "Grade",
-        "startYear": "Start Year",
-        "endYear": "End Year"
-      },
-      "placeholder": {
-        "degree": "e.g. B.Tech",
-        "institution": "e.g. IIT Delhi"
-      },
-      "validation": {
-        "required": "Degree and Institution are required",
-        "endYear": "End year must be on or after start year"
-      },
-      "fromYear": "From {{year}}",
-      "gradeSuffix": "Grade: {{grade}}"
-    },
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "experience": {
-      "add": "Add Experience",
-      "edit": "Edit Experience",
-      "empty": "No work experience records added yet.",
-      "deleteDialog": {
-        "title": "Delete this experience record?"
-      },
-      "field": {
-        "company": "Company",
-        "designation": "Designation",
-        "startDate": "Start Date",
-        "endDate": "End Date",
-        "description": "Description"
-      },
-      "currentlyWorking": "Currently working here",
-      "current": "Current",
-      "present": "Present",
-      "validation": {
-        "required": "Company, Designation and Start Date are required"
-      }
-    },
-    "dependents": {
-      "add": "Add Dependent",
-      "edit": "Edit Dependent",
-      "empty": "No dependents added yet.",
-      "deleteDialog": {
-        "title": "Delete this dependent?"
-      },
-      "field": {
-        "name": "Name",
-        "relationship": "Relationship",
-        "dateOfBirth": "Date of Birth",
-        "gender": "Gender",
-        "nomineePercent": "Nominee %"
-      },
-      "isNominee": "Is Nominee",
-      "placeholder": {
-        "relationship": "e.g. Spouse, Child, Parent"
-      },
-      "validation": {
-        "required": "Name and Relationship are required"
-      },
-      "column": {
-        "name": "Name",
-        "relationship": "Relationship",
-        "dob": "DOB",
-        "gender": "Gender",
-        "nominee": "Nominee",
-        "actions": "Actions"
-      },
-      "nomineeYes": "Yes",
-      "nomineeNo": "No"
-    },
-    "addresses": {
-      "add": "Add Address",
-      "edit": "Edit Address",
-      "empty": "No addresses added yet.",
-      "deleteDialog": {
-        "title": "Delete this address?"
-      },
-      "field": {
-        "type": "Type",
-        "country": "Country",
-        "line1": "Address Line 1",
-        "line2": "Address Line 2",
-        "city": "City",
-        "state": "State",
-        "zipcode": "Zipcode"
-      },
-      "type": {
-        "current": "Current",
-        "permanent": "Permanent"
-      },
-      "validation": {
-        "required": "Address line 1, City, State and Zipcode are required"
-      }
-    },
-    "customFields": {
-      "loading": "Loading custom fields...",
-      "emptyTitle": "No custom fields have been defined for employees yet.",
-      "emptyHint": "HR administrators can create custom fields from the Custom Fields settings page.",
-      "heading": "Custom Fields",
-      "saveFailed": "Failed to save custom fields",
-      "defaultSection": "Custom Fields",
-      "display": {
-        "yes": "Yes",
-        "no": "No"
-      },
-      "selectPlaceholder": "Select...",
-      "filePlaceholder": "File reference or path"
+    "category": {
+      "workplace": "Workplace",
+      "management": "Management",
+      "process": "Process",
+      "culture": "Culture",
+      "harassment": "Harassment",
+      "safety": "Safety",
+      "suggestion": "Suggestion",
+      "other": "Other"
     }
   },
   "assetDetail": {
@@ -3103,7 +6051,7 @@
       "created": "Created",
       "assigned": "Assigned",
       "returned": "Returned",
-      "sent_to_repair": "Sent To Repair",
+      "sent_to_repair": "Sent to repair",
       "repaired": "Repaired",
       "retired": "Retired",
       "lost": "Lost",
@@ -3111,7 +6059,7 @@
       "damaged": "Damaged",
       "updated": "Updated"
     },
-    "actions": {
+    "buttons": {
       "edit": "Edit",
       "assign": "Assign",
       "return": "Return",
@@ -3122,7 +6070,7 @@
       "markFound": "Mark Found"
     },
     "info": {
-      "title": "Asset Information",
+      "heading": "Asset Information",
       "assetTag": "Asset Tag",
       "category": "Category",
       "uncategorized": "Uncategorized",
@@ -3133,40 +6081,39 @@
       "purchaseDate": "Purchase Date",
       "purchaseCost": "Purchase Cost",
       "warrantyExpiry": "Warranty Expiry",
-      "expired": "(Expired)",
+      "expiredSuffix": " (Expired)",
       "description": "Description",
       "notes": "Notes"
     },
     "assignment": {
-      "title": "Currently Assigned",
+      "heading": "Currently Assigned",
       "assignedTo": "Assigned To",
       "assignedAt": "Assigned At",
       "assignedBy": "Assigned By"
     },
     "history": {
-      "title": "History",
-      "toUser": "To: {{name}}",
-      "fromUser": "From: {{name}}",
+      "heading": "History",
+      "to": "To: {{name}}",
+      "from": "From: {{name}}",
       "empty": "No history entries",
-      "deleteEntry": "Delete history entry"
+      "deleteTitle": "Delete history entry"
     },
     "assignModal": {
       "title": "Assign Asset",
-      "assignToLabel": "Assign To",
+      "assignToLabel": "Assign To *",
       "selectEmployee": "Select employee",
       "notesLabel": "Notes",
-      "submitting": "Assigning...",
-      "submit": "Assign"
-    },
-    "common": {
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "submit": "Assign",
+      "submitting": "Assigning..."
     },
     "returnModal": {
       "title": "Return Asset",
       "conditionLabel": "Condition on Return",
       "notesLabel": "Notes",
-      "submitting": "Returning...",
-      "submit": "Return Asset"
+      "cancel": "Cancel",
+      "submit": "Return Asset",
+      "submitting": "Returning..."
     },
     "confirm": {
       "retire": {
@@ -3187,7 +6134,7 @@
       "repairStart": {
         "title": "Send asset for repair?",
         "bodyAssigned": "This will unassign the asset and move it to 'In Repair'. The current holder stays recorded in the history.",
-        "bodyUnassigned": "This will move the asset to 'In Repair'. It won't be assignable until repair is complete.",
+        "bodyDefault": "This will move the asset to 'In Repair'. It won't be assignable until repair is complete.",
         "confirmLabel": "Send for Repair"
       },
       "repairComplete": {
@@ -3195,32 +6142,41 @@
         "body": "This will return the asset to active inventory as available, so it can be reassigned.",
         "confirmLabel": "Mark as Repaired"
       },
+      "cancel": "Cancel",
       "working": "Working..."
     },
     "editModal": {
       "title": "Edit Asset",
-      "nameLabel": "Name",
+      "nameLabel": "Name *",
       "categoryLabel": "Category",
+      "uncategorized": "Uncategorized",
       "serialNumberLabel": "Serial Number",
       "brandLabel": "Brand",
       "modelLabel": "Model",
       "conditionLabel": "Condition",
       "purchaseDateLabel": "Purchase Date",
       "purchaseCostLabel": "Purchase Cost",
-      "currencyPrefix": "₹ INR",
       "purchaseCostHint": "Amount in paise.",
       "warrantyExpiryLabel": "Warranty Expiry",
       "locationLabel": "Location",
       "descriptionLabel": "Description",
       "notesLabel": "Notes",
-      "saving": "Saving...",
-      "save": "Save Changes"
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
     },
-    "historyDelete": {
+    "conditionOptions": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "deleteHistory": {
       "title": "Delete history entry?",
       "body": "This removes just this log row. The asset's current status stays unchanged — past assignments or actions are not reverted.",
-      "deleting": "Deleting...",
-      "confirm": "Delete Entry"
+      "cancel": "Cancel",
+      "confirm": "Delete Entry",
+      "deleting": "Deleting..."
     },
     "errors": {
       "updateFailed": "Failed to update asset",
@@ -3232,5 +6188,222 @@
       "sendToRepairFailed": "Failed to send asset to repair",
       "completeRepairFailed": "Failed to complete repair"
     }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "Asset Categories",
+      "subtitle": "Organize assets by type"
+    },
+    "actions": {
+      "addCategory": "Add Category",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "list": {
+      "loading": "Loading categories...",
+      "empty": "No categories yet. Create your first one."
+    },
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "actions": "Actions"
+    },
+    "form": {
+      "editTitle": "Edit Category",
+      "newTitle": "New Category",
+      "nameLabel": "Name *",
+      "namePlaceholder": "e.g. Laptop, Monitor, Phone",
+      "descriptionLabel": "Description",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create"
+    },
+    "delete": {
+      "title": "Deactivate category?",
+      "message": "Deactivate {{name}}? Existing assets tagged with this category keep the tag, but no new assets can be placed here until it's restored.",
+      "cancel": "Cancel",
+      "confirm": "Deactivate",
+      "inProgress": "Deactivating..."
+    },
+    "errors": {
+      "deactivateFailed": "Failed to deactivate category"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "My Assets",
+      "subtitle": "Equipment and assets assigned to you"
+    },
+    "empty": {
+      "title": "No assets assigned to you",
+      "description": "When your organization assigns equipment to you, it will appear here."
+    },
+    "card": {
+      "serialNumber": "S/N: {{serial}}",
+      "assigned": "Assigned {{date}}",
+      "warranty": "Warranty: {{date}}",
+      "warrantyExpiredSuffix": "(Expired)"
+    },
+    "condition": {
+      "new": "New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "Revoked",
+      "expired": "Expired",
+      "active": "Active"
+    },
+    "toast": {
+      "createError": "Failed to create API key",
+      "copyError": "Couldn't copy — select and copy manually",
+      "revokeSuccess": "API key revoked",
+      "revokeError": "Failed to revoke key"
+    },
+    "confirm": {
+      "revoke": "Revoke \"{{name}}\"? Any integration using it will stop working immediately."
+    },
+    "heading": "API Keys",
+    "newKeyButton": "New Key",
+    "description": "Generate keys for programmatic access to the EmpCloud APIs. One key works across EmpCloud and the Payroll module, and carries the permissions of the admin who created it.",
+    "howTo": {
+      "title": "How to use your API key",
+      "intro": "The generated key is a <strong>Bearer token</strong>. Send it in the <code>Authorization</code> header on every API request — exactly like a logged-in session token:",
+      "bulletBothSystems": "<strong>Works in both systems.</strong> The same token authenticates against EmpCloud APIs and the Payroll module APIs — no separate login or token exchange needed.",
+      "bulletInheritsPermissions": "<strong>Inherits your permissions.</strong> A key can only do what the admin who created it can do. It always reflects that admin's current role — change the role and the key's access changes with it.",
+      "bulletShownOnce": "<strong>Shown only once.</strong> The full key is displayed a single time at creation. Store it somewhere safe (a secrets manager) — we keep only a hashed copy and can't show it again.",
+      "bulletRevocable": "<strong>Revocable & expirable.</strong> Set an optional expiry, or revoke a key at any time. Revoked or expired keys stop working immediately, everywhere. Treat a key like a password — anyone who has it can act with your permissions."
+    },
+    "reveal": {
+      "warning": "Copy this key now — it won't be shown again.",
+      "copied": "Copied",
+      "copy": "Copy",
+      "dismissAria": "Dismiss",
+      "bearerHint": "Use it as a Bearer token in the Authorization header:"
+    },
+    "form": {
+      "nameLabel": "Key name",
+      "namePlaceholder": "e.g. Attendance export",
+      "expiresLabel": "Expires in (days)",
+      "expiresPlaceholder": "Never",
+      "generating": "Generating…",
+      "generate": "Generate key",
+      "cancel": "Cancel"
+    },
+    "list": {
+      "loading": "Loading keys…",
+      "empty": "No API keys yet."
+    },
+    "table": {
+      "name": "Name",
+      "key": "Key",
+      "status": "Status",
+      "lastUsed": "Last used",
+      "expires": "Expires",
+      "created": "Created",
+      "neverExpires": "Never"
+    },
+    "revokeAction": "Revoke"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7": "Last 7 Days",
+      "last30": "Last 30 Days",
+      "thisMonth": "This Month",
+      "lastMonth": "Last Month",
+      "customRange": "Custom Range"
+    },
+    "trigger": {
+      "placeholder": "Select date range"
+    },
+    "dialog": {
+      "ariaLabel": "Pick a date range"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "Clear",
+      "cancel": "Cancel",
+      "apply": "Apply"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "Bulk Import Assets from CSV / Excel"
+    },
+    "actions": {
+      "downloadTemplate": "Download Template",
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "upload": {
+      "requiredHint": "Required: <0>name</0>. Other columns are optional.",
+      "dropzoneTitle": "Drag & drop your CSV or Excel file here",
+      "dropzoneSubtitle": "or click to browse",
+      "tipsHeading": "Tips:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> is the amount in paise (e.g. 150000 for ₹1,500).",
+        "conditionStatus": "<0>condition_status</0> must be one of: new, good, fair, poor.",
+        "categoryAutoCreate": "Unknown <0>category_name</0> values are auto-created.",
+        "dateFormats": "Dates accept YYYY-MM-DD or Excel date cells."
+      }
+    },
+    "importing": {
+      "message": "Importing assets... please wait."
+    },
+    "done": {
+      "completeTitle": "Import Complete",
+      "rowError": "Row {{row}}:",
+      "emptyFile": "No rows found in the uploaded file.",
+      "importedCount_one": "{{count}} asset imported successfully.",
+      "importedCount_other": "{{count}} assets imported successfully.",
+      "createdCategoriesTitle_one": "New category created ({{count}}):",
+      "createdCategoriesTitle_other": "New categories created ({{count}}):",
+      "skippedRows_one": "Skipped {{count}} row with errors",
+      "skippedRows_other": "Skipped {{count}} rows with errors"
+    },
+    "errors": {
+      "bulkImportFailed": "Bulk import failed"
+    }
+  },
+  "customRolesField": {
+    "label": "Custom Roles",
+    "loading": "Loading…",
+    "emptyReadonly": "No custom roles assigned",
+    "helpText": "Additional roles that grant fine-grained permissions on top of this user's primary role. Manage roles in",
+    "helpTextLink": "Settings → Roles & Permissions",
+    "removeAria": "Remove {{name}}",
+    "placeholderEmpty": "Click to assign a custom role…",
+    "placeholderMore": "Add another role…",
+    "noneToAssign": "No custom roles to assign. Create one in Settings → Roles & Permissions.",
+    "noMatches": "No matching roles",
+    "error": {
+      "requestFailed": "Request failed"
+    },
+    "assignedCount_one": "({{count}} assigned)",
+    "assignedCount_other": "({{count}} assigned)",
+    "permissionCount_one": "{{count}} permission",
+    "permissionCount_other": "{{count}} permissions"
+  },
+  "viewModeToggle": {
+    "myView": "My view",
+    "adminView": "Admin view",
+    "myViewTitle": "Personal self-service view",
+    "adminViewTitle": "Admin view — only items your custom-role permissions unlock"
+  },
+  "aiBadge": {
+    "label": "AI Powered"
   }
 }

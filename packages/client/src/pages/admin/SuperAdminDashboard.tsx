@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
@@ -98,18 +99,19 @@ function StatCard({
 }
 
 function HealthBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   if (status === "healthy") {
     return (
       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-        Healthy
+        {t("superAdminDashboard.healthBadge.healthy")}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
       <span className="h-2 w-2 rounded-full bg-red-500" />
-      Down
+      {t("superAdminDashboard.healthBadge.down")}
     </span>
   );
 }
@@ -145,6 +147,7 @@ function QuickLinkCard({
 }
 
 export default function SuperAdminDashboard() {
+  const { t } = useTranslation();
   const { data: overview, isLoading: overviewLoading, isError: overviewError } = useQuery({
     queryKey: ["admin-overview"],
     queryFn: () => api.get("/admin/overview").then((r) => r.data.data),
@@ -187,7 +190,7 @@ export default function SuperAdminDashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
-          <div className="text-gray-400 text-sm">Loading platform data...</div>
+          <div className="text-gray-400 text-sm">{t("superAdminDashboard.loading")}</div>
         </div>
       </div>
     );
@@ -198,8 +201,8 @@ export default function SuperAdminDashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-3 text-center">
           <Activity className="h-8 w-8 text-red-400" />
-          <div className="text-gray-600 font-medium">Failed to load dashboard data</div>
-          <div className="text-gray-400 text-sm">Please try refreshing the page</div>
+          <div className="text-gray-600 font-medium">{t("superAdminDashboard.error.title")}</div>
+          <div className="text-gray-400 text-sm">{t("superAdminDashboard.error.retryHint")}</div>
         </div>
       </div>
     );
@@ -217,9 +220,9 @@ export default function SuperAdminDashboard() {
             <Crown className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Platform Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("superAdminDashboard.title")}</h1>
             <p className="text-gray-500 mt-0.5 text-sm">
-              Real-time overview of the entire EMP Cloud platform.
+              {t("superAdminDashboard.subtitle")}
             </p>
           </div>
         </div>
@@ -228,54 +231,54 @@ export default function SuperAdminDashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
         <StatCard
-          label="Total Organizations"
+          label={t("superAdminDashboard.stats.totalOrganizations")}
           value={overview?.total_organizations ?? 0}
-          subtitle={`+${overview?.new_orgs_this_month ?? 0} this month`}
+          subtitle={t("superAdminDashboard.stats.newThisMonth", { count: overview?.new_orgs_this_month ?? 0 })}
           icon={Building2}
           color="bg-blue-50 text-blue-600"
           trend={overview?.new_orgs_this_month > 0 ? "up" : "neutral"}
           trendValue={overview?.new_orgs_this_month > 0 ? `+${overview.new_orgs_this_month}` : "0"}
         />
         <StatCard
-          label="Total Users"
+          label={t("superAdminDashboard.stats.totalUsers")}
           value={overview?.total_users ?? 0}
-          subtitle={`+${overview?.new_users_this_month ?? 0} this month`}
+          subtitle={t("superAdminDashboard.stats.newThisMonth", { count: overview?.new_users_this_month ?? 0 })}
           icon={Users}
           color="bg-green-50 text-green-600"
           trend={overview?.new_users_this_month > 0 ? "up" : "neutral"}
           trendValue={overview?.new_users_this_month > 0 ? `+${overview.new_users_this_month}` : "0"}
         />
         <StatCard
-          label="Active Subscriptions"
+          label={t("superAdminDashboard.stats.activeSubscriptions")}
           value={overview?.active_subscriptions ?? 0}
           icon={CreditCard}
           color="bg-purple-50 text-purple-600"
         />
         <StatCard
-          label="MRR"
+          label={t("superAdminDashboard.stats.mrr")}
           value={formatINR(overview?.mrr ?? 0)}
-          subtitle="Monthly Recurring Revenue"
+          subtitle={t("superAdminDashboard.stats.mrrSubtitle")}
           icon={TrendingUp}
           color="bg-amber-50 text-amber-600"
           trend={revenue?.mrr_growth_percent > 0 ? "up" : revenue?.mrr_growth_percent < 0 ? "down" : "neutral"}
           trendValue={revenue?.mrr_growth_percent != null ? `${revenue.mrr_growth_percent}%` : undefined}
         />
         <StatCard
-          label="ARR"
+          label={t("superAdminDashboard.stats.arr")}
           value={formatINR(overview?.arr ?? 0)}
-          subtitle="Annual Recurring Revenue"
+          subtitle={t("superAdminDashboard.stats.arrSubtitle")}
           icon={DollarSign}
           color="bg-indigo-50 text-indigo-600"
         />
         <StatCard
-          label="System Health"
+          label={t("superAdminDashboard.stats.systemHealth")}
           value={`${healthyCount}/${totalModules}`}
           subtitle={
             health?.overall_status === "all_healthy"
-              ? "All systems operational"
+              ? t("superAdminDashboard.systemHealthStatus.allHealthy")
               : health?.overall_status === "degraded"
-                ? "Some systems degraded"
-                : "Systems offline"
+                ? t("superAdminDashboard.systemHealthStatus.degraded")
+                : t("superAdminDashboard.systemHealthStatus.offline")
           }
           icon={Heart}
           color={
@@ -293,29 +296,29 @@ export default function SuperAdminDashboard() {
         <QuickLinkCard
           to="/admin/organizations"
           icon={Building2}
-          label="Organizations"
-          description="View and manage all organizations"
+          label={t("superAdminDashboard.quickLinks.organizations.label")}
+          description={t("superAdminDashboard.quickLinks.organizations.description")}
           color="bg-blue-50 text-blue-600"
         />
         <QuickLinkCard
           to="/admin/modules"
           icon={Package}
-          label="Module Analytics"
-          description="Subscribers, seats, revenue per module"
+          label={t("superAdminDashboard.quickLinks.moduleAnalytics.label")}
+          description={t("superAdminDashboard.quickLinks.moduleAnalytics.description")}
           color="bg-purple-50 text-purple-600"
         />
         <QuickLinkCard
           to="/admin/revenue"
           icon={BarChart3}
-          label="Revenue Analytics"
-          description="MRR, ARR, trends, top customers"
+          label={t("superAdminDashboard.quickLinks.revenueAnalytics.label")}
+          description={t("superAdminDashboard.quickLinks.revenueAnalytics.description")}
           color="bg-amber-50 text-amber-600"
         />
         <QuickLinkCard
           to="/admin/subscriptions"
           icon={CreditCard}
-          label="Subscription Metrics"
-          description="Plans, utilization, billing cycles"
+          label={t("superAdminDashboard.quickLinks.subscriptionMetrics.label")}
+          description={t("superAdminDashboard.quickLinks.subscriptionMetrics.description")}
           color="bg-green-50 text-green-600"
         />
       </div>
@@ -325,9 +328,9 @@ export default function SuperAdminDashboard() {
         {/* Revenue Trend (Line) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Revenue Trend</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("superAdminDashboard.charts.revenueTrend.title")}</h2>
             <Link to="/admin/revenue" className="text-xs text-brand-600 hover:underline">
-              View details
+              {t("superAdminDashboard.charts.viewDetails")}
             </Link>
           </div>
           {revenue?.revenue_trend?.length > 0 ? (
@@ -349,7 +352,7 @@ export default function SuperAdminDashboard() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
-              No revenue data yet
+              {t("superAdminDashboard.empty.revenue")}
             </div>
           )}
         </div>
@@ -357,9 +360,9 @@ export default function SuperAdminDashboard() {
         {/* Revenue by Module (Pie) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Revenue by Module</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("superAdminDashboard.charts.revenueByModule.title")}</h2>
             <Link to="/admin/modules" className="text-xs text-brand-600 hover:underline">
-              View details
+              {t("superAdminDashboard.charts.viewDetails")}
             </Link>
           </div>
           {revenue?.revenue_by_module?.length > 0 ? (
@@ -386,7 +389,7 @@ export default function SuperAdminDashboard() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
-              No revenue data yet
+              {t("superAdminDashboard.empty.revenue")}
             </div>
           )}
         </div>
@@ -396,7 +399,7 @@ export default function SuperAdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Module Adoption (Bar) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Module Adoption</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("superAdminDashboard.charts.moduleAdoption.title")}</h2>
           {adoption?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={adoption}>
@@ -405,20 +408,20 @@ export default function SuperAdminDashboard() {
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="org_count" name="Organizations" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="total_seats" name="Total Seats" fill="#a78bfa" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="org_count" name={t("superAdminDashboard.charts.legend.organizations")} fill="#6366f1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="total_seats" name={t("superAdminDashboard.charts.legend.totalSeats")} fill="#a78bfa" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
-              No adoption data yet
+              {t("superAdminDashboard.empty.adoption")}
             </div>
           )}
         </div>
 
         {/* Org & User Growth */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Growth Trends</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("superAdminDashboard.charts.growthTrends.title")}</h2>
           {growth?.org_growth?.length > 0 || growth?.user_growth?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
@@ -446,13 +449,13 @@ export default function SuperAdminDashboard() {
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="new_orgs" name="New Orgs" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="new_users" name="New Users" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="new_orgs" name={t("superAdminDashboard.charts.legend.newOrgs")} fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="new_users" name={t("superAdminDashboard.charts.legend.newUsers")} fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
-              No growth data yet
+              {t("superAdminDashboard.empty.growth")}
             </div>
           )}
         </div>
@@ -463,7 +466,7 @@ export default function SuperAdminDashboard() {
         {/* System Health */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">System Health</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("superAdminDashboard.systemHealth.title")}</h2>
             <span
               className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                 health?.overall_status === "all_healthy"
@@ -474,10 +477,10 @@ export default function SuperAdminDashboard() {
               }`}
             >
               {health?.overall_status === "all_healthy"
-                ? "All Operational"
+                ? t("superAdminDashboard.systemHealth.badge.allOperational")
                 : health?.overall_status === "degraded"
-                  ? "Degraded"
-                  : "Checking..."}
+                  ? t("superAdminDashboard.systemHealth.badge.degraded")
+                  : t("superAdminDashboard.systemHealth.badge.checking")}
             </span>
           </div>
           <div className="space-y-3">
@@ -505,7 +508,7 @@ export default function SuperAdminDashboard() {
               </div>
             )) ?? (
               <div className="text-center text-gray-400 py-8 text-sm">
-                Checking health...
+                {t("superAdminDashboard.systemHealth.checkingModules")}
               </div>
             )}
           </div>
@@ -513,7 +516,7 @@ export default function SuperAdminDashboard() {
 
         {/* Recent Activity */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("superAdminDashboard.activity.title")}</h2>
           <div className="space-y-0 max-h-[420px] overflow-y-auto">
             {activity?.length > 0 ? (
               activity.map((event: any) => (
@@ -527,7 +530,7 @@ export default function SuperAdminDashboard() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-900">
                       <span className="font-medium">
-                        {event.user_name || event.user_email || "System"}
+                        {event.user_name || event.user_email || t("superAdminDashboard.activity.systemActor")}
                       </span>{" "}
                       <span className="text-gray-600">{event.action}</span>{" "}
                       {event.entity_type && (
@@ -550,7 +553,7 @@ export default function SuperAdminDashboard() {
               ))
             ) : (
               <div className="text-center text-gray-400 py-8 text-sm">
-                No recent activity
+                {t("superAdminDashboard.empty.activity")}
               </div>
             )}
           </div>

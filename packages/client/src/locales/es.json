@@ -426,7 +426,8 @@
     "markAllRead": "Marcar todo como leído",
     "noNotifications": "Aún no hay notificaciones",
     "viewAll": "Ver todo",
-    "review": "Revisar"
+    "review": "Revisar",
+    "cancelInvitationTooltip": "Cancelar esta invitación y eliminar al usuario no activado"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -964,8 +965,8 @@
       "minSuffix": "min",
       "close": "Cerrar",
       "dateLabel": "Fecha",
-      "noSearchResults": "Ningún empleado coincide con tu búsqueda.",
-      "searchPlaceholder": "Buscar nombre, correo o departamento"
+      "searchPlaceholder": "Buscar nombre, correo electrónico o departamento",
+      "noSearchResults": "Ningún empleado coincide con su búsqueda."
     },
     "export": {
       "title": "Exportar informe de asistencia",
@@ -1710,7 +1711,12 @@
       "next": "Siguiente",
       "alertPlannedInvalid": "La plantilla planificada debe ser 0 o mayor.",
       "alertCurrentInvalid": "La plantilla actual debe ser 0 o mayor.",
-      "searchPlaceholder": "Buscar por título del plan o año fiscal..."
+      "searchPlaceholder": "Buscar por título del plan o año fiscal...",
+      "allDepartments": "Todos los departamentos",
+      "allYears": "Todos los años",
+      "failedApprove": "No se pudo aprobar el plan",
+      "failedReject": "No se pudo rechazar el plan",
+      "failedSubmit": "No se pudo enviar el plan"
     },
     "vacancies": {
       "title": "Vacantes Abiertas",
@@ -1769,7 +1775,9 @@
       "deleteTitle": "¿Eliminar posición?",
       "deleteConfirm": "¿Eliminar {{title}}? Las asignaciones activas finalizan y la posición se cierra. Esta acción no se puede deshacer.",
       "deleting": "Eliminando...",
-      "failedDelete": "Error al eliminar la posición"
+      "failedDelete": "Error al eliminar la posición",
+      "allTypes": "Todos los tipos",
+      "criticalOnly": "Solo críticos"
     },
     "dashboard": {
       "title": "Panel de Posiciones",
@@ -1855,8 +1863,8 @@
       "policy_created": "Política creada",
       "policy_acknowledged": "Política reconocida"
     },
-    "noActionMatches": "Ninguna acción coincide",
-    "searchActions": "Buscar tipo de acción..."
+    "searchActions": "Buscar tipo de acción...",
+    "noActionMatches": "No hay acciones coincidentes"
   },
   "employees": {
     "directory": {
@@ -2545,11 +2553,3135 @@
       "updated": "Actualizado"
     }
   },
-  "customFields": {
-    "title": "Campos Personalizados",
-    "subtitle": "Define campos de datos personalizados para empleados, departamentos y otras entidades",
-    "addField": "Agregar Campo",
-    "entity": {
+  "messageThread": {
+    "presence": {
+      "online": "En línea",
+      "typing": "escribiendo…",
+      "typingOne": "{{name}} está escribiendo…",
+      "typingTwo": "{{name1}} y {{name2}} están escribiendo…",
+      "typingMany_one": "{{count}} persona está escribiendo…",
+      "typingMany_other": "{{count}} personas están escribiendo…"
+    },
+    "fallback": {
+      "someone": "Alguien"
+    },
+    "sr": {
+      "sentAttachment": "envió un archivo adjunto"
+    },
+    "header": {
+      "conversationTitleFallback": "Conversación",
+      "backToConversations": "Volver a las conversaciones",
+      "membersTooltip": "Miembros: {{roster}}",
+      "viewMembers": "Ver miembros",
+      "searchInConversation": "Buscar en la conversación"
+    },
+    "mute": {
+      "unmute": "Activar notificaciones",
+      "mute": "Silenciar notificaciones",
+      "unmutedToast": "Notificaciones activadas.",
+      "mutedToast": "Notificaciones silenciadas.",
+      "error": "No se pudieron actualizar las notificaciones. Inténtalo de nuevo."
+    },
+    "archive": {
+      "unarchive": "Desarchivar conversación",
+      "archive": "Archivar conversación",
+      "unarchivedToast": "Conversación desarchivada.",
+      "archivedToast": "Conversación archivada.",
+      "error": "No se pudo actualizar la conversación. Inténtalo de nuevo."
+    },
+    "search": {
+      "placeholder": "Buscar en esta conversación…",
+      "noMatches": "Sin resultados."
+    },
+    "pinned": {
+      "label": "Fijado",
+      "attachmentFallback": "📎 Archivo adjunto",
+      "goTo": "Ir al mensaje fijado",
+      "unpin": "Dejar de fijar mensaje",
+      "labelCount_one": "Fijado · {{count}}",
+      "labelCount_other": "Fijados · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "Mensaje fijado.",
+      "unpinnedToast": "Mensaje no fijado.",
+      "error": "No se pudo actualizar el mensaje fijado. Inténtalo de nuevo."
+    },
+    "members": {
+      "dialogLabel": "Miembros del grupo",
+      "saveName": "Guardar nombre",
+      "cancel": "Cancelar",
+      "renameGroup": "Cambiar nombre del grupo",
+      "close": "Cerrar",
+      "changePhoto": "Cambiar foto del grupo",
+      "descriptionPlaceholder": "Añade una descripción del grupo…",
+      "noDescription": "Sin descripción",
+      "descCancel": "Cancelar",
+      "descSave": "Guardar",
+      "youSuffix": "(Tú)",
+      "adminBadge": "Admin",
+      "removeMember": "Eliminar a {{name}}",
+      "addMembers": "Añadir miembros",
+      "deleteGroup": "Eliminar grupo",
+      "leaveGroup": "Salir del grupo",
+      "memberCount_one": "{{count}} miembro",
+      "memberCount_other": "{{count}} miembros"
+    },
+    "confirm": {
+      "leaveTitle": "¿Salir del grupo?",
+      "leaveDescription": "Saldrás de \"{{group}}\" y dejarás de recibir sus mensajes. El administrador del grupo puede volver a añadirte.",
+      "leaveGroupFallback": "este grupo",
+      "leaveConfirm": "Salir",
+      "deleteGroupTitle": "¿Eliminar grupo?",
+      "deleteGroupDescription": "\"{{group}}\" se eliminará para todos y desaparecerá de las listas de chats de todos los miembros. Esta acción no se puede deshacer.",
+      "deleteGroupFallback": "Este grupo",
+      "deleteGroupConfirm": "Eliminar grupo",
+      "bulkDeletePartial": "Solo se eliminarán tus propios mensajes; los demás permanecerán. Esta acción no se puede deshacer.",
+      "bulkDeleteAll": "Estos mensajes se eliminarán para todos. Esta acción no se puede deshacer.",
+      "bulkDeleteConfirm": "Eliminar",
+      "removeMemberTitle": "¿Eliminar miembro?",
+      "removeMemberDescription": "Se eliminará a {{name}} de \"{{group}}\" y ya no podrá ver sus mensajes.",
+      "removeMemberGroupFallback": "este grupo",
+      "removeMemberConfirm": "Eliminar",
+      "bulkDeleteTitle_one": "¿Eliminar {{count}} mensaje?",
+      "bulkDeleteTitle_other": "¿Eliminar {{count}} mensajes?"
+    },
+    "group": {
+      "renamedToast": "Nombre del grupo cambiado.",
+      "renameError": "No se pudo cambiar el nombre del grupo. Inténtalo de nuevo.",
+      "descriptionUpdatedToast": "Descripción actualizada.",
+      "descriptionError": "No se pudo actualizar la descripción.",
+      "photoMustBeImage": "La foto del grupo debe ser una imagen.",
+      "photoUpdatedToast": "Foto del grupo actualizada.",
+      "photoUploadError": "No se pudo subir la foto.",
+      "memberRemovedToast": "Se eliminó a {{name}} del grupo.",
+      "memberRemoveError": "No se pudo eliminar al miembro. Inténtalo de nuevo.",
+      "leftToast": "Saliste del grupo.",
+      "leaveError": "No se pudo salir del grupo. Inténtalo de nuevo.",
+      "deletedToast": "Grupo eliminado.",
+      "deleteError": "No se pudo eliminar el grupo. Inténtalo de nuevo."
+    },
+    "attachment": {
+      "tooLarge": "\"{{name}}\" supera los 10 MB."
+    },
+    "dropFiles": "Suelta los archivos para enviarlos",
+    "list": {
+      "failedToLoad": "No se pudieron cargar los mensajes. Inténtalo de nuevo.",
+      "empty": "Aún no hay mensajes",
+      "emptyHint": "Saluda para iniciar la conversación.",
+      "beginning": "Inicio de la conversación",
+      "unreadDivider": "Mensajes no leídos"
+    },
+    "message": {
+      "deletedTombstone": "Este mensaje fue eliminado",
+      "forwardedFrom": "Reenviado de {{name}}",
+      "goToMessage": "Ir al mensaje"
+    },
+    "reply": {
+      "deletedQuote": "Mensaje eliminado",
+      "attachmentQuote": "📎 Archivo adjunto"
+    },
+    "edit": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "hint": "Intro para guardar · Esc para cancelar"
+    },
+    "actions": {
+      "react": "Reaccionar",
+      "reply": "Responder",
+      "forward": "Reenviar",
+      "edit": "Editar mensaje",
+      "delete": "Eliminar mensaje"
+    },
+    "meta": {
+      "edited": "editado",
+      "messageInfo": "Información del mensaje"
+    },
+    "jump": {
+      "latest": "Ir al más reciente",
+      "newMessages_one": "{{count}} mensaje nuevo",
+      "newMessages_other": "{{count}} mensajes nuevos"
+    },
+    "select": {
+      "cancel": "Cancelar selección",
+      "deleteOnlyOwn": "Solo puedes eliminar tus propios mensajes",
+      "deleteSelected": "Eliminar seleccionados",
+      "delete": "Eliminar",
+      "forward": "Reenviar",
+      "countSelected_one": "{{count}} seleccionado",
+      "countSelected_other": "{{count}} seleccionados"
+    },
+    "bulkDelete": {
+      "error": "No se pudieron eliminar algunos mensajes. Inténtalo de nuevo.",
+      "successToast_one": "{{count}} mensaje eliminado.",
+      "successToast_other": "{{count}} mensajes eliminados."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "Respondiendo a {{name}}",
+        "deletedPreview": "Mensaje eliminado",
+        "attachmentPreview": "📎 Archivo adjunto",
+        "cancel": "Cancelar respuesta"
+      },
+      "removeAttachment": "Quitar archivo adjunto",
+      "queuedClear": "borrar",
+      "placeholderCaption": "Añade un texto…",
+      "placeholderGroup": "Escribe un mensaje… (@ para mencionar)",
+      "placeholderDirect": "Escribe un mensaje…",
+      "attach": "Adjuntar una foto o un archivo",
+      "emojiTitle": "Emoji",
+      "emojiAria": "Insertar emoji",
+      "send": "Enviar mensaje",
+      "hint": "Intro para enviar · Mayús + Intro para una nueva línea",
+      "hintMention": " · @ para mencionar",
+      "hintAttach": " · Adjunta hasta 10 MB",
+      "queuedFiles_one": "{{count}} archivo más en cola",
+      "queuedFiles_other": "{{count}} archivos más en cola"
+    },
+    "toast": {
+      "messageNotLoaded": "Ese mensaje no está cargado: desplázate hacia arriba para cargar los mensajes anteriores.",
+      "sendError": "No se pudo enviar tu mensaje. Inténtalo de nuevo.",
+      "reactionError": "No se pudo actualizar tu reacción.",
+      "deleteMessageError": "No se pudo eliminar el mensaje.",
+      "saveEditError": "No se pudo guardar tu edición. Inténtalo de nuevo.",
+      "linkCopied": "Enlace del mensaje copiado.",
+      "linkCopyError": "No se pudo copiar el enlace.",
+      "openChatError": "No se pudo abrir ese chat.",
+      "messageTooLong_one": "El mensaje es demasiado largo (máximo {{count}} carácter).",
+      "messageTooLong_other": "El mensaje es demasiado largo (máximo {{count}} caracteres)."
+    }
+  },
+  "pricingManagement": {
+    "title": "Gestión de precios",
+    "subtitle": "Gestione los niveles de plan y los precios por puesto según la moneda, el tramo de volumen y la fecha de entrada en vigor. Las suscripciones existentes conservan su precio almacenado; los cambios se aplican a las nuevas suscripciones y a las mejoras de plan.",
+    "tiers": {
+      "heading": "Niveles",
+      "add": "Añadir nivel",
+      "empty": "Aún no hay niveles.",
+      "col": {
+        "slug": "Slug",
+        "name": "Nombre",
+        "description": "Descripción",
+        "sort": "Orden",
+        "active": "Activo",
+        "actions": "Acciones"
+      },
+      "deleteConfirm": "¿Eliminar el nivel \"{{name}}\" ({{slug}})?"
+    },
+    "pricingRows": {
+      "heading": "Filas de precios",
+      "add": "Añadir fila de precios",
+      "empty": "Aún no hay filas de precios.",
+      "col": {
+        "tier": "Nivel",
+        "currency": "Moneda",
+        "pricePerSeat": "Precio / puesto",
+        "seatBand": "Tramo de puestos",
+        "effectiveFrom": "En vigor desde",
+        "notes": "Notas",
+        "actions": "Acciones"
+      },
+      "deleteConfirm": "¿Eliminar esta fila de precios?"
+    },
+    "billingCycles": {
+      "heading": "Ciclos de facturación",
+      "add": "Añadir ciclo",
+      "empty": "Aún no hay ciclos de facturación.",
+      "col": {
+        "cycle": "Ciclo",
+        "label": "Etiqueta",
+        "discount": "Descuento",
+        "months": "Meses",
+        "active": "Activo",
+        "actions": "Acciones"
+      },
+      "flat": "{{currency}} {{amount}} fijo",
+      "save": "Ahorra un {{percent}}%",
+      "deleteConfirm": "¿Eliminar el ciclo de facturación \"{{cycle}}\"?"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "loading": "Cargando...",
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "Guardando..."
+    },
+    "tierModal": {
+      "addTitle": "Añadir nivel",
+      "editTitle": "Editar nivel — {{name}}",
+      "field": {
+        "slug": "Slug",
+        "slugPlaceholder": "starter",
+        "slugHelp": "Identificador interno (minúsculas, sin espacios). No se puede cambiar tras la creación.",
+        "name": "Nombre",
+        "namePlaceholder": "Starter",
+        "description": "Descripción",
+        "sortOrder": "Orden de clasificación",
+        "active": "Activo"
+      }
+    },
+    "priceModal": {
+      "addTitle": "Añadir fila de precios",
+      "editTitle": "Editar fila de precios",
+      "field": {
+        "tier": "Nivel",
+        "currency": "Moneda",
+        "pricePerSeat": "Precio por puesto (en unidad mayor — ₹/$/£/€, no paise/céntimos)",
+        "minSeats": "Puestos mínimos",
+        "maxSeats": "Puestos máximos (en blanco = ∞)",
+        "effectiveFrom": "En vigor desde",
+        "effectiveFromHelp": "Las fechas futuras programan cambios de precio. La fila coincidente más reciente prevalece en el momento de crear la suscripción o de mejorar el plan.",
+        "notes": "Notas",
+        "notesPlaceholder": "Promoción del 3.er trimestre, nivel obsoleto, etc."
+      }
+    },
+    "cycleModal": {
+      "addTitle": "Añadir ciclo de facturación",
+      "editTitle": "Editar ciclo de facturación — {{cycle}}",
+      "field": {
+        "cycleSlug": "Slug del ciclo",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "Etiqueta",
+        "labelPlaceholder": "Semestral",
+        "discountPct": "Descuento %",
+        "discountPctHelp": "Se muestra como \"Ahorra un N%\" en el botón del ciclo.",
+        "monthsPerCycle": "Meses por ciclo",
+        "sortOrder": "Orden de clasificación",
+        "active": "Activo"
+      },
+      "override": {
+        "heading": "Importe de sustitución (opcional)",
+        "help": "Si se establece, este importe exacto por puesto reemplaza el cálculo basado en el descuento cuando coincide la moneda del cliente. Déjelo en blanco para usar el % de descuento.",
+        "amount": "Importe por puesto (unidad mayor)",
+        "amountPlaceholder": "p. ej. 4800.00",
+        "currency": "Moneda",
+        "currencyNone": "— Ninguna —"
+      }
+    },
+    "toast": {
+      "tierCreated": "Nivel creado",
+      "tierUpdated": "Nivel actualizado",
+      "tierDeleted": "Nivel eliminado",
+      "priceAdded": "Fila de precios añadida",
+      "priceUpdated": "Fila de precios actualizada",
+      "priceDeleted": "Fila de precios eliminada",
+      "cycleCreated": "Ciclo de facturación creado",
+      "cycleUpdated": "Ciclo de facturación actualizado",
+      "cycleDeleted": "Ciclo de facturación eliminado",
+      "failed": "Error"
+    }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Importar Empleados desde Excel / CSV"
+    },
+    "downloadTemplate": "Descargar plantilla",
+    "downloadTemplateHint": "Descarga un archivo Excel de ejemplo con los encabezados correctos.",
+    "dropzone": {
+      "title": "Arrastra y suelta tu archivo Excel o CSV aquí",
+      "browse": "o haz clic para examinar"
+    },
+    "parseError": "No se pudo analizar el archivo",
+    "preview": {
+      "uploadDifferent": "Subir un archivo diferente",
+      "errorsHeading": "Filas con errores (corrige tu archivo y vuelve a subirlo)",
+      "rowLabel": "Fila {{row}}:",
+      "valid_one": "{{count}} válido",
+      "valid_other": "{{count}} válidos",
+      "invalid_one": "{{count}} no válido",
+      "invalid_other": "{{count}} no válidos",
+      "totalRows_one": "{{count}} fila en total",
+      "totalRows_other": "{{count}} filas en total"
+    },
+    "table": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "role": "Rol",
+      "empCode": "Código de empleado",
+      "designation": "Cargo",
+      "department": "Departamento",
+      "location": "Ubicación",
+      "manager": "Responsable",
+      "type": "Tipo",
+      "joining": "Incorporación",
+      "inviteFallback": "invitación"
+    },
+    "importing": "Importando empleados... por favor espera.",
+    "done": {
+      "title": "Importación completada",
+      "summary_one": "{{count}} empleado importado correctamente.",
+      "summary_other": "{{count}} empleados importados correctamente.",
+      "departmentsCreated_one": "Nuevo departamento creado ({{count}}):",
+      "departmentsCreated_other": "Nuevos departamentos creados ({{count}}):",
+      "locationsCreated_one": "Nueva ubicación creada ({{count}}):",
+      "locationsCreated_other": "Nuevas ubicaciones creadas ({{count}}):",
+      "skipped_one": "Se omitió {{count}} fila con errores:",
+      "skipped_other": "Se omitieron {{count}} filas con errores:"
+    },
+    "failed": "La importación falló",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "submit_one": "Importar {{count}} empleado válido",
+    "submit_other": "Importar {{count}} empleados válidos"
+  },
+  "invoicesAdmin": {
+    "title": "Facturas",
+    "subtitle": "Todas las facturas de todas las organizaciones de clientes (obtenidas mediante proxy desde emp-billing). Marca como pagada, envía por correo electrónico, visualiza el PDF o crea una suscripción en nombre de cualquier organización.",
+    "subscribeOnBehalf": "Suscribir en su nombre",
+    "filters": {
+      "searchLabel": "Buscar",
+      "searchPlaceholder": "Número de factura, nombre de organización…",
+      "statusLabel": "Estado"
+    },
+    "status": {
+      "all": "Todos",
+      "draft": "Borrador",
+      "sent": "Enviada",
+      "viewed": "Vista",
+      "partially_paid": "Parcialmente pagada",
+      "paid": "Pagada",
+      "overdue": "Vencida",
+      "void": "Anulada",
+      "written_off": "Cancelada por incobrable"
+    },
+    "table": {
+      "invoice": "Factura",
+      "org": "Organización",
+      "status": "Estado",
+      "total": "Total",
+      "due": "Pendiente",
+      "issued": "Emitida",
+      "actions": "Acciones",
+      "dueDatePrefix": "vence"
+    },
+    "loading": "Cargando…",
+    "empty": "No hay facturas que coincidan.",
+    "actions": {
+      "markPaid": "Marcar como pagada",
+      "sendEmail": "Enviar correo",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "Anterior",
+      "next": "Siguiente"
+    },
+    "markPaid": {
+      "title": "Marcar factura como pagada",
+      "methodLabel": "Método de pago",
+      "method": {
+        "manual": "Manual / Efectivo",
+        "bank_transfer": "Transferencia bancaria",
+        "cheque": "Cheque",
+        "upi": "UPI",
+        "card": "Tarjeta",
+        "other": "Otro"
+      },
+      "referenceLabel": "Referencia (id de transacción, n.º de cheque, etc.)",
+      "referencePlaceholder": "p. ej. TXN-2026-04-XYZ",
+      "notesLabel": "Notas (internas)",
+      "notesPlaceholder": "Opcional",
+      "cancel": "Cancelar",
+      "recording": "Registrando…",
+      "submit": "Registrar pago"
+    },
+    "subscribe": {
+      "title": "Suscribir una organización en su nombre",
+      "description": "Crea la suscripción en EmpCloud, lo que activa el webhook estándar hacia emp-billing: el cliente, el plan y la primera factura se aprovisionan automáticamente.",
+      "orgLabel": "Organización",
+      "orgLoadingPlaceholder": "Cargando organizaciones…",
+      "orgNonePlaceholder": "No hay organizaciones disponibles",
+      "orgDropdownLoading": "Cargando…",
+      "orgNoMatches": "No hay organizaciones coincidentes",
+      "orgSelected": "Seleccionada (id de organización {{orgId}})",
+      "moduleLabel": "Módulo",
+      "modulePlaceholder": "— Selecciona un módulo —",
+      "planTierLabel": "Nivel de plan",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "Total de licencias",
+      "billingCycleLabel": "Ciclo de facturación",
+      "cycle": {
+        "monthly": "Mensual",
+        "quarterly": "Trimestral",
+        "annual": "Anual"
+      },
+      "trialDaysLabel": "Días de prueba (0 = facturar de inmediato)",
+      "cancel": "Cancelar",
+      "creating": "Creando…",
+      "submit": "Crear suscripción",
+      "orgSearchPlaceholder_one": "Escribe para buscar en {{count}} organización…",
+      "orgSearchPlaceholder_other": "Escribe para buscar en {{count}} organizaciones…",
+      "orgMoreResults_one": "{{count}} más — refina la búsqueda para acotar",
+      "orgMoreResults_other": "{{count}} más — refina la búsqueda para acotar"
+    },
+    "toast": {
+      "markPaidSuccess": "Factura marcada como pagada",
+      "sendEmailSuccess": "Correo de factura en cola",
+      "pdfError": "No se pudo cargar el PDF de la factura",
+      "subscribeSuccess": "Suscripción creada; la factura aparecerá en un momento",
+      "genericError": "Error",
+      "subscribeError": "No se pudo crear la suscripción. Comprueba que la organización sea válida y que emp-billing esté en ejecución."
+    },
+    "invoiceCount_one": "{{count}} factura",
+    "invoiceCount_other": "{{count}} facturas"
+  },
+  "subscriptionsAdmin": {
+    "title": "Suscripciones",
+    "subtitle": "Control total de cada suscripción de cliente: nivel, estado, licencias, precios, fechas del periodo, fin de la prueba, renovación automática, gratis / cortesía e intención de factura manual.",
+    "filters": {
+      "searchOrg": {
+        "label": "Buscar organización",
+        "placeholder": "Nombre o correo electrónico"
+      },
+      "status": {
+        "label": "Estado"
+      },
+      "currency": {
+        "label": "Moneda"
+      },
+      "all": "Todos"
+    },
+    "table": {
+      "columns": {
+        "org": "Organización",
+        "module": "Módulo",
+        "tier": "Nivel",
+        "status": "Estado",
+        "seats": "Licencias",
+        "pricePerSeat": "Precio/licencia",
+        "period": "Periodo",
+        "flags": "Marcadores",
+        "actions": "Acciones"
+      }
+    },
+    "status": {
+      "trial": "prueba",
+      "active": "activa",
+      "past_due": "vencida",
+      "suspended": "suspendida",
+      "cancelled": "cancelada",
+      "expired": "expirada"
+    },
+    "billingCycle": {
+      "monthly": "mensual",
+      "quarterly": "trimestral",
+      "annual": "anual"
+    },
+    "period": {
+      "trialEnds": "La prueba finaliza: {{date}}"
+    },
+    "badges": {
+      "free": "GRATIS",
+      "manual": "MANUAL",
+      "noRenew": "SIN RENOVACIÓN"
+    },
+    "loading": "Cargando...",
+    "empty": "No hay suscripciones que coincidan.",
+    "actions": {
+      "edit": "Editar (todos los campos)",
+      "suspend": "Suspender",
+      "activate": "Activar",
+      "cancel": "Cancelar",
+      "removeFreeFlag": "Quitar marcador de gratis / cortesía",
+      "markFree": "Marcar como gratis / cortesía",
+      "recordManualInvoice": "Registrar factura manual"
+    },
+    "confirm": {
+      "suspend": "¿Suspender el módulo {{module}} de {{org}}?",
+      "cancel": "¿Cancelar el módulo {{module}} de {{org}}?",
+      "removeFree": "¿Quitar el marcador de gratis / cortesía?"
+    },
+    "pagination": {
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "Suscripción actualizada",
+      "suspended": "Suspendida",
+      "activated": "Activada",
+      "cancelled": "Cancelada",
+      "markedFree": "Marcada como gratis",
+      "unmarkedFree": "Desmarcada como gratis",
+      "manualInvoiceRecorded": "Factura manual registrada",
+      "failed": "Error"
+    },
+    "editModal": {
+      "title": "Editar suscripción — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "Nivel del plan",
+        "status": "Estado",
+        "totalSeats": "Licencias totales",
+        "billingCycle": "Ciclo de facturación",
+        "pricePerSeat": "Precio por licencia (unidad principal)",
+        "currency": "Moneda",
+        "periodStart": "Inicio del periodo",
+        "periodEnd": "Fin del periodo",
+        "trialEnds": "Fin de la prueba (en blanco = sin prueba)",
+        "autoRenew": "Renovación automática",
+        "freeComp": "Gratis / cortesía",
+        "freeReason": "Motivo de gratis / cortesía",
+        "internalNotes": "Notas internas"
+      },
+      "autoRenewYes": "Sí",
+      "compedLabel": "De cortesía (precio forzado a 0)",
+      "freeReasonPlaceholder": "Tester beta, uso interno, acuerdo ejecutivo, etc.",
+      "internalNotesPlaceholder": "Contexto del acuerdo, condiciones especiales, registro de auditoría...",
+      "cancel": "Cancelar",
+      "save": "Guardar todos los cambios",
+      "saving": "Guardando..."
+    },
+    "freeModal": {
+      "title": "Marcar como gratis — {{org}} · {{module}}",
+      "description": "Esto establecerá price_per_seat en 0 y marcará la suscripción como de cortesía. Se requiere un motivo para el registro de auditoría.",
+      "reasonPlaceholder": "p. ej. Tester beta, equipo interno, patrocinio ejecutivo",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar — hacer gratis",
+      "saving": "Guardando..."
+    },
+    "invoiceModal": {
+      "title": "Factura manual — {{org}} · {{module}}",
+      "description": "Registra la intención de factura en las notas internas de esta suscripción para auditoría. El documento de factura real se crea en EMP Billing en la siguiente sincronización.",
+      "amountLabel": "Importe (en {{currency}})",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Tarifa de configuración única, desarrollo de función personalizada, etc.",
+      "dueDateLabel": "Fecha de vencimiento (opcional)",
+      "cancel": "Cancelar",
+      "confirm": "Registrar intención de factura",
+      "saving": "Guardando..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} suscripción",
+      "subscriptions_other": "{{count}} suscripciones"
+    }
+  },
+  "orgDetail": {
+    "loading": "Cargando...",
+    "error": {
+      "loadFailed": "No se pudieron cargar los detalles de la organización.",
+      "backToOrganizations": "Volver a organizaciones"
+    },
+    "backToAll": "Volver a todas las organizaciones",
+    "createdOn": "Creada",
+    "stats": {
+      "users": "Usuarios",
+      "activeSubscriptions": "Suscripciones activas",
+      "monthlyRevenue": "Ingresos mensuales",
+      "totalSpend": "Gasto total"
+    },
+    "users": {
+      "columns": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "role": "Rol",
+        "status": "Estado",
+        "joined": "Fecha de incorporación",
+        "actions": "Acciones"
+      },
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "actions": {
+        "deactivate": "Desactivar usuario",
+        "activate": "Activar usuario",
+        "resetPassword": "Restablecer contraseña",
+        "changeRole": "Cambiar rol"
+      },
+      "empty": "No hay usuarios en esta organización",
+      "heading_one": "Usuarios ({{count}})",
+      "heading_other": "Usuarios ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "Módulo",
+        "plan": "Plan",
+        "status": "Estado",
+        "seats": "Licencias",
+        "pricePerSeat": "Precio/licencia",
+        "monthly": "Mensual",
+        "billing": "Facturación",
+        "periodEnd": "Fin del período"
+      },
+      "empty": "Sin suscripciones",
+      "heading_one": "Suscripciones ({{count}})",
+      "heading_other": "Suscripciones ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "Acción",
+        "entity": "Entidad",
+        "ip": "IP",
+        "time": "Hora"
+      },
+      "heading_one": "Registro de auditoría (último {{count}})",
+      "heading_other": "Registro de auditoría (últimos {{count}})"
+    },
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "description": "Restablecer la contraseña de <strong>{{name}}</strong> ({{email}}).",
+      "newPasswordLabel": "Nueva contraseña",
+      "newPasswordPlaceholder": "Mínimo 8 caracteres",
+      "submitting": "Restableciendo...",
+      "submit": "Restablecer contraseña"
+    },
+    "changeRole": {
+      "title": "Cambiar rol",
+      "description": "Cambiar el rol de <strong>{{name}}</strong>.",
+      "currentRole": "Rol actual: {{role}}",
+      "newRoleLabel": "Nuevo rol",
+      "submitting": "Actualizando...",
+      "submit": "Actualizar rol"
+    },
+    "actions": {
+      "cancel": "Cancelar"
+    },
+    "tabs": {
+      "users_one": "Usuarios ({{count}})",
+      "users_other": "Usuarios ({{count}})",
+      "subscriptions_one": "Suscripciones ({{count}})",
+      "subscriptions_other": "Suscripciones ({{count}})",
+      "auditLog_one": "Registro de auditoría (último {{count}})",
+      "auditLog_other": "Registro de auditoría (últimos {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "Todas las organizaciones",
+    "createButton": "Crear organización",
+    "modal": {
+      "title": "Crear nueva organización",
+      "fields": {
+        "orgName": "Nombre de la organización",
+        "firstName": "Nombre del administrador",
+        "lastName": "Apellidos del administrador",
+        "email": "Correo electrónico del administrador",
+        "password": "Contraseña del administrador",
+        "country": "País",
+        "timezone": "Zona horaria"
+      },
+      "passwordHint": "Debe contener mayúsculas, minúsculas, un dígito y un carácter especial.",
+      "placeholders": {
+        "password": "Mín. 8 caracteres, mayúsculas, minúsculas, dígito, especial"
+      },
+      "cancel": "Cancelar",
+      "submit": "Crear organización",
+      "submitting": "Creando...",
+      "error": "No se pudo crear la organización. Compruebe todos los campos."
+    },
+    "search": {
+      "placeholder": "Buscar por nombre o correo electrónico..."
+    },
+    "table": {
+      "headers": {
+        "organization": "Organización",
+        "adminEmail": "Correo del administrador",
+        "employees": "Empleados",
+        "activeModules": "Módulos activos",
+        "monthlySpend": "Gasto mensual",
+        "status": "Estado",
+        "joined": "Fecha de alta"
+      }
+    },
+    "status": {
+      "active": "activa"
+    },
+    "loading": "Cargando...",
+    "empty": "No se encontraron organizaciones",
+    "pagination": {
+      "summary": "Página {{page}} de {{totalPages}} ({{total}} en total)"
+    },
+    "subtitle_one": "{{count}} organización registrada en la plataforma.",
+    "subtitle_other": "{{count}} organizaciones registradas en la plataforma."
+  },
+  "superAdminDashboard": {
+    "title": "Panel de la plataforma",
+    "subtitle": "Vista general en tiempo real de toda la plataforma EMP Cloud.",
+    "loading": "Cargando datos de la plataforma...",
+    "error": {
+      "title": "No se pudieron cargar los datos del panel",
+      "retryHint": "Intenta actualizar la página"
+    },
+    "stats": {
+      "totalOrganizations": "Total de organizaciones",
+      "totalUsers": "Total de usuarios",
+      "activeSubscriptions": "Suscripciones activas",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "Estado del sistema",
+      "mrrSubtitle": "Ingresos recurrentes mensuales",
+      "arrSubtitle": "Ingresos recurrentes anuales",
+      "newThisMonth_one": "+{{count}} este mes",
+      "newThisMonth_other": "+{{count}} este mes"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "Todos los sistemas operativos",
+      "degraded": "Algunos sistemas degradados",
+      "offline": "Sistemas fuera de línea"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "Organizaciones",
+        "description": "Ver y gestionar todas las organizaciones"
+      },
+      "moduleAnalytics": {
+        "label": "Análisis de módulos",
+        "description": "Suscriptores, licencias e ingresos por módulo"
+      },
+      "revenueAnalytics": {
+        "label": "Análisis de ingresos",
+        "description": "MRR, ARR, tendencias y principales clientes"
+      },
+      "subscriptionMetrics": {
+        "label": "Métricas de suscripción",
+        "description": "Planes, utilización y ciclos de facturación"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Tendencia de ingresos"
+      },
+      "revenueByModule": {
+        "title": "Ingresos por módulo"
+      },
+      "moduleAdoption": {
+        "title": "Adopción de módulos"
+      },
+      "growthTrends": {
+        "title": "Tendencias de crecimiento"
+      },
+      "viewDetails": "Ver detalles",
+      "legend": {
+        "organizations": "Organizaciones",
+        "totalSeats": "Total de licencias",
+        "newOrgs": "Nuevas organizaciones",
+        "newUsers": "Nuevos usuarios"
+      }
+    },
+    "empty": {
+      "revenue": "Aún no hay datos de ingresos",
+      "adoption": "Aún no hay datos de adopción",
+      "growth": "Aún no hay datos de crecimiento",
+      "activity": "No hay actividad reciente"
+    },
+    "systemHealth": {
+      "title": "Estado del sistema",
+      "badge": {
+        "allOperational": "Todo operativo",
+        "degraded": "Degradado",
+        "checking": "Comprobando..."
+      },
+      "checkingModules": "Comprobando estado..."
+    },
+    "healthBadge": {
+      "healthy": "Operativo",
+      "down": "Caído"
+    },
+    "activity": {
+      "title": "Actividad reciente",
+      "systemActor": "Sistema"
+    }
+  },
+  "healthDashboard": {
+    "title": "Estado del servicio",
+    "subtitle": "Estado de salud en tiempo real de todos los servicios del ecosistema EMP Cloud",
+    "refreshing": "Actualizando...",
+    "actions": {
+      "checking": "Comprobando...",
+      "checkNow": "Comprobar ahora"
+    },
+    "loading": "Ejecutando comprobaciones de estado...",
+    "overall": {
+      "operational": {
+        "title": "Todos los sistemas operativos",
+        "subtitle": "Todos los servicios funcionan con normalidad."
+      },
+      "degraded": {
+        "title": "Degradación parcial del sistema",
+        "subtitle": "Uno o varios servicios presentan problemas."
+      },
+      "majorOutage": {
+        "title": "Interrupción grave",
+        "subtitle": "Varios servicios no están disponibles actualmente."
+      },
+      "unknown": {
+        "title": "Comprobando estado...",
+        "subtitle": "Realizando la comprobación de estado inicial."
+      },
+      "lastChecked": "Última comprobación"
+    },
+    "status": {
+      "healthy": "En buen estado",
+      "degraded": "Degradado",
+      "down": "Caído"
+    },
+    "module": {
+      "port": "Puerto {{port}}",
+      "responseTime": "Tiempo de respuesta",
+      "version": "Versión",
+      "uptime": "Tiempo de actividad",
+      "lastCheck": "Última comprobación"
+    },
+    "infra": {
+      "fallbackType": "Infraestructura",
+      "connected": "Conectado",
+      "disconnected": "Desconectado",
+      "responseTime": "Tiempo de respuesta",
+      "version": "Versión",
+      "database": "Base de datos",
+      "threads": "Subprocesos",
+      "uptime": "Tiempo de actividad"
+    },
+    "endpoints": {
+      "title": "Estado de los endpoints de la API",
+      "description": "Endpoints de comprobación de estado de cada módulo",
+      "columns": {
+        "module": "Módulo",
+        "endpoint": "Endpoint",
+        "method": "Método",
+        "status": "Estado",
+        "response": "Respuesta",
+        "httpCode": "Código HTTP",
+        "lastChecked": "Última comprobación"
+      },
+      "status": {
+        "ok": "OK",
+        "down": "Caído"
+      }
+    },
+    "stats": {
+      "totalServices": "Total de servicios",
+      "healthy": "En buen estado",
+      "degraded": "Degradados",
+      "down": "Caídos"
+    },
+    "sections": {
+      "moduleServices": "Servicios de módulos",
+      "infrastructure": "Infraestructura"
+    },
+    "footer": {
+      "note": "Se actualiza automáticamente cada 30 segundos. Las comprobaciones en segundo plano se ejecutan cada 60 segundos."
+    }
+  },
+  "aiConfig": {
+    "title": "Configuración de IA",
+    "subtitle": "Configure los proveedores de IA para el asistente de chatbot de RR. HH. Las claves establecidas aquí anulan las variables de entorno.",
+    "status": {
+      "active": "Activo",
+      "configured": "Configurado",
+      "notConfigured": "Sin configurar"
+    },
+    "field": {
+      "apiKey": "Clave de API",
+      "baseUrl": "URL base",
+      "model": "Modelo",
+      "maxTokens": "Tokens máximos: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "Actual: {{value}}",
+      "apiKeyEnter": "Introduzca la clave de API...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "Introduzca el nombre del modelo (p. ej., mi-modelo)"
+    },
+    "testResult": {
+      "latency": "Latencia: {{ms}} ms",
+      "requestFailed": "La solicitud de prueba falló"
+    },
+    "button": {
+      "testConnection": "Probar conexión",
+      "active": "Activo",
+      "saveActivate": "Guardar y activar",
+      "deactivate": "Desactivar",
+      "saveMaxTokens": "Guardar tokens máximos"
+    },
+    "banner": {
+      "aiPoweredMode": "Modo con IA",
+      "aiPoweredModeProvider": "Modo con IA ({{provider}})",
+      "basicMode": "Modo básico (ningún proveedor de IA activo)",
+      "modelStatus": "Modelo: {{model}} | Estado: {{status}}",
+      "basicModeHint": "El chatbot se ejecuta en modo basado en reglas. Active un proveedor a continuación para habilitar las respuestas con IA."
+    },
+    "section": {
+      "providers": "Proveedores",
+      "generalSettings": "Configuración general"
+    },
+    "info": {
+      "title": "Cómo funciona",
+      "encryption": "Las claves de API se cifran en reposo mediante AES-256-GCM y nunca se devuelven sin enmascarar",
+      "overrideEnv": "La configuración almacenada aquí anula las variables de entorno (.env)",
+      "singleActive": "Solo puede haber un proveedor activo a la vez. El cambio de proveedor surte efecto de inmediato.",
+      "testFirst": "Use \"Probar conexión\" para verificar su clave de API y su modelo antes de activar el proveedor"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "Análisis de módulos",
+    "subtitle": "Métricas detalladas de cada módulo en toda la plataforma.",
+    "loading": "Cargando...",
+    "stats": {
+      "activeModules": "Módulos activos",
+      "totalSubscribers": "Total de suscriptores",
+      "totalSeats": "Total de puestos",
+      "totalModuleRevenue": "Ingresos totales por módulos"
+    },
+    "charts": {
+      "revenueByModule": "Ingresos por módulo",
+      "revenueSeries": "Ingresos",
+      "noRevenueData": "Sin datos de ingresos",
+      "subscriberDistribution": "Distribución de suscriptores",
+      "noSubscriberData": "Sin datos de suscriptores"
+    },
+    "details": {
+      "heading": "Detalles del módulo",
+      "noSubscribers": "Sin suscriptores",
+      "disableModule": "Desactivar módulo",
+      "subscribers": "Suscriptores",
+      "seats": "Puestos",
+      "revenue": "Ingresos",
+      "seatUtilization": "Utilización de puestos",
+      "planDistribution": "Distribución de planes",
+      "orgCount_one": "{{count}} organización",
+      "orgCount_other": "{{count}} organizaciones"
+    },
+    "table": {
+      "heading": "Métricas detalladas",
+      "module": "Módulo",
+      "slug": "Slug",
+      "subscribers": "Suscriptores",
+      "totalSeats": "Total de puestos",
+      "usedSeats": "Puestos usados",
+      "utilization": "Utilización",
+      "revenue": "Ingresos",
+      "status": "Estado"
+    },
+    "status": {
+      "active": "Activo"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "Métricas de suscripción",
+    "subtitle": "Distribución de planes, utilización de licencias y métricas de facturación.",
+    "loading": "Cargando...",
+    "stats": {
+      "totalSeats": "Licencias totales",
+      "usedSeats": "Licencias usadas",
+      "seatUtilization": "Utilización de licencias",
+      "activeUsers": "Usuarios activos",
+      "inactive_one": "{{count}} inactivo",
+      "inactive_other": "{{count}} inactivos"
+    },
+    "charts": {
+      "planTierDistribution": "Distribución por nivel de plan",
+      "subscriptionStatus": "Estado de la suscripción",
+      "billingCycle": "Ciclo de facturación",
+      "seatUtilizationByTier": "Utilización de licencias por nivel de plan",
+      "subscriptionChurn": "Cancelación de suscripciones"
+    },
+    "churn": {
+      "cancelledSeries": "Canceladas"
+    },
+    "seats": "{{used}} / {{total}} licencias",
+    "empty": {
+      "noData": "Sin datos",
+      "noTierData": "Sin datos de nivel"
+    }
+  },
+  "systemNotifications": {
+    "title": "Notificaciones del sistema",
+    "subtitle": "Envía anuncios para toda la plataforma a todas las organizaciones o a organizaciones específicas.",
+    "newNotification": "Nueva notificación",
+    "form": {
+      "heading": "Enviar notificación",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Título de la notificación",
+      "typeLabel": "Tipo",
+      "messageLabel": "Mensaje",
+      "messagePlaceholder": "Mensaje de la notificación...",
+      "targetLabel": "Destino",
+      "allOrgs": "Todas las orgs",
+      "specificOrg": "Org específica",
+      "organizationLabel": "Organización",
+      "selectOrgPlaceholder": "Selecciona una organización...",
+      "send": "Enviar notificación",
+      "sending": "Enviando..."
+    },
+    "type": {
+      "info": "Información",
+      "warning": "Advertencia",
+      "maintenance": "Mantenimiento",
+      "release": "Lanzamiento de función"
+    },
+    "list": {
+      "empty": "Aún no se han enviado notificaciones del sistema.",
+      "heading_one": "Todas las notificaciones ({{count}})",
+      "heading_other": "Todas las notificaciones ({{count}})"
+    },
+    "item": {
+      "deactivated": "Desactivada",
+      "targetAll": "Todas las organizaciones",
+      "targetPrefix": "Destino:",
+      "byPrefix": "Por:",
+      "systemAuthor": "Sistema",
+      "orgFallback": "Org n.º {{id}}",
+      "deactivate": "Desactivar"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "Análisis de ingresos",
+    "subtitle": "Resumen financiero y desglose de ingresos.",
+    "loading": "Cargando...",
+    "stats": {
+      "mrr": "Ingresos recurrentes mensuales",
+      "arr": "Ingresos recurrentes anuales",
+      "seatUtilization": "Uso de licencias",
+      "seats": "{{used}} / {{total}} licencias",
+      "payingCustomers": "Clientes de pago"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "Tendencia de ingresos (últimos 12 meses)",
+        "empty": "Aún no hay datos de tendencia"
+      },
+      "revenueByModule": {
+        "title": "Ingresos por módulo",
+        "series": "Ingresos"
+      },
+      "empty": "Sin datos",
+      "revenueByTier": {
+        "title": "Ingresos por nivel de plan",
+        "subsLabel_one": "{{count}} suscripción - {{revenue}}",
+        "subsLabel_other": "{{count}} suscripciones - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "Distribución del ciclo de facturación",
+        "percentOfSubscriptions": "{{percent}}% de las suscripciones",
+        "subs_one": "{{count}} suscripción",
+        "subs_other": "{{count}} suscripciones"
+      }
+    },
+    "topCustomers": {
+      "title": "Los 10 principales clientes por ingresos",
+      "columns": {
+        "rank": "#",
+        "organization": "Organización",
+        "email": "Correo electrónico",
+        "subscriptions": "Suscripciones",
+        "monthlySpend": "Gasto mensual"
+      },
+      "empty": "Aún no hay datos de clientes"
+    }
+  },
+  "logDashboard": {
+    "title": "Panel de registros",
+    "subtitle": "Monitorización en tiempo real de todos los módulos de EMP Cloud",
+    "actions": {
+      "refresh": "Actualizar"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "errors": "Errores",
+      "slow": "Consultas lentas",
+      "auth": "Eventos de autenticación",
+      "health": "Estado de los módulos"
+    },
+    "stats": {
+      "auditEvents": "Eventos de auditoría (24 h)",
+      "fileErrors": "Errores de archivo (24 h)",
+      "slowQueries": "Consultas lentas",
+      "healthyModules": "Módulos en buen estado"
+    },
+    "sections": {
+      "errorsByAction": "Errores por acción (24 h)",
+      "errorsPerModule": "Errores por módulo (desde archivos de registro)",
+      "moduleHealth": "Estado de los módulos"
+    },
+    "errors": {
+      "title": "Errores recientes",
+      "subtitle": "Desde los registros de errores de PM2 y errores del cliente frontend en todos los módulos",
+      "badge": {
+        "frontend": "Frontend"
+      },
+      "detail": {
+        "page": "Página:",
+        "component": "Componente:"
+      },
+      "empty": "No se encontraron errores."
+    },
+    "slow": {
+      "title": "Consultas lentas",
+      "subtitle": "Consultas de base de datos que superan 1 segundo",
+      "columns": {
+        "module": "Módulo",
+        "duration": "Duración",
+        "sql": "SQL",
+        "time": "Hora"
+      },
+      "empty": "No se detectaron consultas lentas."
+    },
+    "auth": {
+      "title": "Eventos de autenticación",
+      "subtitle": "Inicio de sesión, cierre de sesión, cambios de contraseña y eventos de token (últimas 24 h)",
+      "user": "Usuario n.º {{id}}",
+      "ip": "IP: {{ip}}",
+      "notAvailable": "N/D",
+      "empty": "No hay eventos de autenticación en las últimas 24 horas."
+    },
+    "healthTab": {
+      "status": "Estado: {{status}}",
+      "restarts": "Reinicios: {{count}}",
+      "recentErrors": "Errores recientes: {{count}}",
+      "lastActivity": "Última actividad: {{time}}",
+      "loading": "Cargando el estado de los módulos...",
+      "empty": "No hay datos disponibles sobre el estado de los módulos."
+    },
+    "status": {
+      "healthy": "En buen estado",
+      "warning": "Advertencia",
+      "critical": "Crítico",
+      "unknown": "Desconocido"
+    },
+    "pagination": {
+      "status": "Página {{page}} de {{totalPages}} ({{total}} en total)",
+      "prev": "Anterior",
+      "next": "Siguiente"
+    },
+    "health": {
+      "restarts_one": "{{count}} reinicio",
+      "restarts_other": "{{count}} reinicios",
+      "recentErrors_one": "{{count}} error",
+      "recentErrors_other": "{{count}} errores"
+    }
+  },
+  "dataSanity": {
+    "title": "Verificador de integridad de datos",
+    "subtitle": "Verificación de consistencia de datos entre módulos",
+    "overall": {
+      "healthy": {
+        "title": "Todos los sistemas en buen estado",
+        "subtitle": "Se superaron todas las comprobaciones de consistencia de datos entre módulos."
+      },
+      "warnings": {
+        "title": "Advertencias detectadas",
+        "subtitle": "Se encontraron algunas inconsistencias de datos que podrían requerir atención."
+      },
+      "critical": {
+        "title": "Problemas críticos encontrados",
+        "subtitle": "Se detectaron problemas de integridad de datos que requieren acción inmediata."
+      }
+    },
+    "status": {
+      "pass": "Correcto",
+      "warn": "Advertencia",
+      "fail": "Fallo"
+    },
+    "check": {
+      "noIssues": "No se detectaron problemas.",
+      "issuesFound_one": "{{count}} problema encontrado",
+      "issuesFound_other": "{{count}} problemas encontrados",
+      "showingCount_one": "(mostrando {{count}})",
+      "showingCount_other": "(mostrando {{count}})"
+    },
+    "confirmFix": {
+      "title": "Confirmar corrección automática",
+      "intro": "Esto aplicará automáticamente las siguientes correcciones:",
+      "fix": {
+        "syncOrgUserCounts": "Sincronizar los recuentos de usuarios de la organización",
+        "syncSeatCounts": "Sincronizar los recuentos de licencias de la suscripción",
+        "fixNegativeLeave": "Corregir los saldos de ausencias negativos (limitar a 0)",
+        "removeOrphaned": "Eliminar registros huérfanos (ausencias, asistencia, mesa de ayuda, anuncios)"
+      },
+      "warning": "Estos cambios no se pueden deshacer. Asegúrate de tener una copia de seguridad de la base de datos.",
+      "cancel": "Cancelar",
+      "apply": "Aplicar correcciones",
+      "applying": "Corrigiendo..."
+    },
+    "fixResults": {
+      "none": "No fue necesaria ninguna corrección. Todo está en orden.",
+      "title_one": "Resultados de la corrección automática ({{count}} cambio en total)",
+      "title_other": "Resultados de la corrección automática ({{count}} cambios en total)"
+    },
+    "button": {
+      "autoFix": "Corrección automática",
+      "runCheck": "Ejecutar comprobación",
+      "running": "Ejecutando..."
+    },
+    "loading": {
+      "title": "Ejecutando comprobaciones de integridad...",
+      "subtitle": "Comprobando la consistencia de datos en las bases de datos de todos los módulos. Esto puede tardar un momento."
+    },
+    "empty": {
+      "title": "Aún no hay informe",
+      "subtitle": "Haz clic en \"Ejecutar comprobación\" para verificar la consistencia de datos en las bases de datos de todos los módulos.",
+      "runButton": "Ejecutar comprobación de integridad"
+    },
+    "summary": {
+      "totalChecks": "Comprobaciones totales",
+      "passed": "Superadas",
+      "warnings": "Advertencias",
+      "failures": "Fallos"
+    },
+    "lastRun": "Última ejecución:",
+    "checkResults": {
+      "heading": "Resultados de las comprobaciones"
+    }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "Panel de eventos",
+      "subtitle": "Gestiona los eventos de la empresa y realiza el seguimiento de la asistencia.",
+      "createEvent": "Crear evento"
+    },
+    "stats": {
+      "upcomingEvents": "Próximos eventos",
+      "thisMonth": "Este mes",
+      "totalRsvps": "Total de confirmaciones",
+      "eventTypes": "Tipos de evento"
+    },
+    "typeBreakdown": {
+      "title": "Desglose por tipo de evento"
+    },
+    "eventType": {
+      "meeting": "Reunión",
+      "training": "Formación",
+      "celebration": "Celebración",
+      "team_building": "Trabajo en equipo (team building)",
+      "town_hall": "Asamblea general",
+      "holiday": "Festivo",
+      "workshop": "Taller",
+      "social": "Social",
+      "other": "Otro"
+    },
+    "form": {
+      "title": "Crear evento",
+      "fields": {
+        "title": "Título",
+        "description": "Descripción",
+        "eventType": "Tipo de evento",
+        "allDay": "Evento de día completo",
+        "mandatory": "Obligatorio",
+        "startDate": "Fecha de inicio",
+        "endDate": "Fecha de fin",
+        "location": "Ubicación",
+        "virtualLink": "Enlace virtual",
+        "targetAudience": "Público objetivo",
+        "targetIds": "ID de destino (JSON)",
+        "maxAttendees": "Máx. de asistentes"
+      },
+      "placeholders": {
+        "title": "Título del evento",
+        "description": "Descripción del evento...",
+        "location": "Oficina, Sala 101, etc.",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "Ilimitado"
+      },
+      "targetType": {
+        "all": "Todos los empleados",
+        "department": "Departamento",
+        "role": "Rol"
+      },
+      "errors": {
+        "endBeforeStart": "La fecha de fin no puede ser anterior a la de inicio."
+      },
+      "cancel": "Cancelar",
+      "submit": "Crear evento"
+    },
+    "upcoming": {
+      "title": "Próximos eventos",
+      "viewAll": "Ver todo",
+      "loading": "Cargando...",
+      "empty": "No hay próximos eventos. ¡Crea uno arriba!",
+      "view": "Ver",
+      "cancel": "Cancelar",
+      "deleteTitle": "Eliminar evento",
+      "attending_one": "{{count}} asistente",
+      "attending_other": "{{count}} asistentes"
+    },
+    "deleteModal": {
+      "title": "¿Eliminar evento?",
+      "body": "¿Eliminar {{name}}? Esto elimina de forma permanente el evento y sus confirmaciones. Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "deleting": "Eliminando...",
+      "error": "No se pudo eliminar el evento"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "Valoración (1-5)",
+      "rating_1_10": "Valoración (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "Sí / No",
+      "multiple_choice": "Opción múltiple",
+      "text": "Texto libre",
+      "scale": "Escala"
+    },
+    "surveyType": {
+      "pulse": "Encuesta de pulso",
+      "enps": "Encuesta eNPS",
+      "engagement": "Encuesta de compromiso",
+      "custom": "Encuesta personalizada",
+      "onboarding": "Encuesta de incorporación",
+      "exit_survey": "Encuesta de salida"
+    },
+    "header": {
+      "editTitle": "Editar encuesta",
+      "createTitle": "Crear encuesta",
+      "subtitle": "Diseña tu encuesta y añade preguntas."
+    },
+    "details": {
+      "heading": "Detalles de la encuesta",
+      "titleLabel": "Título *",
+      "titlePlaceholder": "p. ej., Encuesta de pulso a empleados T1 2026",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Breve descripción del propósito de la encuesta...",
+      "typeLabel": "Tipo",
+      "targetAudienceLabel": "Público objetivo",
+      "recurrenceLabel": "Recurrencia",
+      "startDateLabel": "Fecha y hora de inicio",
+      "endDateLabel": "Fecha y hora de fin",
+      "dateTimeHelper": "Elige una fecha y una hora del día.",
+      "anonymousLabel": "Anónima"
+    },
+    "target": {
+      "all": "Todos los empleados",
+      "department": "Por departamento",
+      "role": "Por rol",
+      "custom": "Personalizado"
+    },
+    "recurrence": {
+      "none": "Única vez",
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "quarterly": "Trimestral"
+    },
+    "questions": {
+      "heading": "Preguntas",
+      "addButton": "Añadir pregunta",
+      "moveUpTitle": "Subir",
+      "removeTitle": "Eliminar pregunta",
+      "textPlaceholder": "Introduce el texto de la pregunta...",
+      "typeLabel": "Tipo",
+      "requiredLabel": "Obligatoria",
+      "optionsLabel": "Opciones (una por línea)",
+      "optionsPlaceholder": "Opción A\nOpción B\nOpción C",
+      "previewLabel": "Vista previa"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "saveDraft": "Guardar como borrador",
+      "savePublish": "Guardar y publicar"
+    },
+    "toast": {
+      "endBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio."
+    },
+    "preview": {
+      "emptyHint": "Escribe una pregunta para ver la vista previa",
+      "enpsNotLikely": "Poco probable",
+      "enpsVeryLikely": "Muy probable",
+      "yes": "Sí",
+      "no": "No",
+      "optionA": "Opción A",
+      "optionB": "Opción B",
+      "optionC": "Opción C",
+      "textPlaceholder": "El empleado escribirá su respuesta aquí..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "Reunión",
+      "training": "Formación",
+      "celebration": "Celebración",
+      "team_building": "Trabajo en equipo",
+      "town_hall": "Asamblea general",
+      "holiday": "Festivo",
+      "workshop": "Taller",
+      "social": "Social",
+      "other": "Otro"
+    },
+    "status": {
+      "upcoming": "Próximo",
+      "ongoing": "En curso",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "state": {
+      "loading": "Cargando evento...",
+      "notFound": "Evento no encontrado."
+    },
+    "header": {
+      "backToEvents": "Volver a eventos",
+      "delete": "Eliminar"
+    },
+    "badge": {
+      "mandatory": "Obligatorio"
+    },
+    "details": {
+      "dateLabel": "Fecha",
+      "allDaySuffix": " (Todo el día)",
+      "dateRange": "hasta {{date}}",
+      "locationLabel": "Ubicación",
+      "virtualLabel": "Reunión virtual",
+      "joinOnline": "Unirse en línea",
+      "attendeesLabel": "Asistentes",
+      "attendingCount_one": "{{count}} asistente",
+      "attendingCount_other": "{{count}} asistentes",
+      "maybeSuffix_one": ", {{count}} tal vez",
+      "maybeSuffix_other": ", {{count}} tal vez",
+      "maxSuffix_one": " / {{count}} máx.",
+      "maxSuffix_other": " / {{count}} máx."
+    },
+    "rsvp": {
+      "heading": "Tu confirmación",
+      "currently": "(Actualmente: {{status}})",
+      "attending": "Asistiré",
+      "maybe": "Tal vez",
+      "decline": "Rechazar"
+    },
+    "delete": {
+      "title": "¿Eliminar evento?",
+      "confirm": "¿Eliminar {{name}}? Esto elimina permanentemente el evento y sus confirmaciones. No se puede deshacer.",
+      "error": "No se pudo eliminar el evento",
+      "cancel": "Cancelar",
+      "confirmButton": "Eliminar",
+      "deleting": "Eliminando..."
+    },
+    "attendees": {
+      "attendingHeading_one": "Asistiendo ({{count}})",
+      "attendingHeading_other": "Asistiendo ({{count}})",
+      "maybeHeading_one": "Tal vez ({{count}})",
+      "maybeHeading_other": "Tal vez ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "Cargando resultados...",
+    "notFound": "Encuesta no encontrada.",
+    "actions": {
+      "exportCsv": "Exportar CSV"
+    },
+    "status": {
+      "active": "Activa",
+      "closed": "Cerrada",
+      "draft": "Borrador"
+    },
+    "summary": {
+      "totalResponses": "Respuestas totales",
+      "questions": "Preguntas",
+      "enpsScore": "Puntuación eNPS"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "Ir a los resultados por pregunta",
+      "jumpToQuestionsBreakdown": "Ir al desglose de preguntas",
+      "jumpToEnpsBreakdown": "Ir al desglose de eNPS"
+    },
+    "enps": {
+      "breakdownTitle": "Desglose de eNPS",
+      "promoters": "Promotores (9-10)",
+      "passives": "Pasivos (7-8)",
+      "detractors": "Detractores (0-6)",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "Promedio:",
+      "minMax": "(mín.: {{min}}, máx.: {{max}})",
+      "yes": "Sí",
+      "no": "No",
+      "answersMeta_one": "{{type}} | {{count}} respuesta",
+      "answersMeta_other": "{{type}} | {{count}} respuestas",
+      "responsesCount_one": "{{count}} respuesta",
+      "responsesCount_other": "{{count}} respuestas"
+    },
+    "questionType": {
+      "rating_1_5": "Valoración 1-5",
+      "rating_1_10": "Valoración 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "Escala",
+      "yes_no": "Sí / No",
+      "multiple_choice": "Opción múltiple",
+      "text": "Texto"
+    }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "Enviado",
+      "under_investigation": "En investigación",
+      "escalated": "Escalado",
+      "resolved": "Resuelto",
+      "dismissed": "Desestimado",
+      "closed": "Cerrado"
+    },
+    "severity": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "reportInfo": {
+      "categoryLabel": "Categoría:",
+      "anonymousLabel": "Anónimo:",
+      "anonymousYes": "Sí",
+      "anonymousNo": "No",
+      "reporterLabel": "Informante:",
+      "evidenceFilesLabel": "Archivos de evidencia:"
+    },
+    "timeline": {
+      "heading": "Cronología de la investigación",
+      "visibleToReporterBadge": "Visible para el informante",
+      "systemAuthor": "Sistema",
+      "empty": "Aún no hay actualizaciones"
+    },
+    "addUpdate": {
+      "heading": "Añadir actualización",
+      "typeNote": "Nota interna",
+      "typeResponseToReporter": "Respuesta al informante",
+      "typeStatusChange": "Nota de cambio de estado",
+      "visibleToReporterCheckbox": "Visible para el informante",
+      "contentPlaceholder": "Escribe una actualización o nota...",
+      "submitSending": "Enviando...",
+      "submit": "Añadir actualización"
+    },
+    "info": {
+      "submittedLabel": "Enviado:",
+      "investigatorLabel": "Investigador:",
+      "escalatedToLabel": "Escalado a:",
+      "resolvedLabel": "Resuelto:",
+      "resolutionLabel": "Resolución:"
+    },
+    "assign": {
+      "heading": "Asignar investigador",
+      "loadUsersError": "No se pudieron cargar los usuarios. Actualiza la página.",
+      "optionLoading": "Cargando usuarios...",
+      "optionError": "Error al cargar los usuarios",
+      "optionSelect": "Selecciona un investigador...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "No se pudo asignar el investigador. Inténtalo de nuevo.",
+      "success": "Investigador asignado correctamente."
+    },
+    "changeStatus": {
+      "heading": "Cambiar estado",
+      "optionSelect": "Selecciona un estado...",
+      "resolutionPlaceholder": "Notas de resolución...",
+      "submitUpdating": "Actualizando...",
+      "submit": "Actualizar estado"
+    },
+    "escalate": {
+      "heading": "Escalar externamente",
+      "placeholder": "Organismo o autoridad externa",
+      "submitEscalating": "Escalando...",
+      "submit": "Escalar denuncia"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "Denuncia enviada",
+      "description": "Su denuncia se ha enviado correctamente. Guarde su número de caso para poder hacer seguimiento del estado de su denuncia.",
+      "caseNumberLabel": "Su número de caso",
+      "importantLabel": "Importante:",
+      "saveCaseNumber": "Guarde este número de caso de forma segura. Es la única manera de hacer seguimiento de su denuncia.",
+      "identityAnonymous": "Su identidad es totalmente anónima y no puede revelarse.",
+      "identityAttached": "Su identidad está vinculada a esta denuncia.",
+      "trackReportHint": "Use la página \"Seguir denuncia\" para consultar las actualizaciones.",
+      "submitAnother": "Enviar otra denuncia"
+    },
+    "header": {
+      "title": "Enviar una denuncia",
+      "subtitle": "Denuncie conductas indebidas de forma segura y confidencial (Directiva UE 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "Denuncia anónima",
+      "identifiedTitle": "Denuncia identificada",
+      "anonymousDescription": "Su identidad no se almacenará ni se divulgará a nadie.",
+      "identifiedDescription": "Su identidad será visible para los investigadores."
+    },
+    "form": {
+      "categoryLabel": "Categoría",
+      "required": "*",
+      "categoryPlaceholder": "Seleccione una categoría...",
+      "severityLabel": "Gravedad",
+      "subjectLabel": "Asunto",
+      "subjectPlaceholder": "Breve resumen del problema",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Proporcione todos los detalles posibles: qué ocurrió, cuándo, dónde, quién estuvo implicado y cualquier prueba que tenga."
+    },
+    "actions": {
+      "submit": "Enviar denuncia",
+      "submitting": "Enviando..."
+    },
+    "error": {
+      "submitFailed": "No se pudo enviar la denuncia. Inténtelo de nuevo."
+    },
+    "category": {
+      "fraud": "Fraude",
+      "corruption": "Corrupción",
+      "harassment": "Acoso",
+      "discrimination": "Discriminación",
+      "safety_violation": "Infracción de seguridad",
+      "data_breach": "Brecha de datos",
+      "financial_misconduct": "Conducta financiera indebida",
+      "environmental": "Medioambiental",
+      "retaliation": "Represalias",
+      "other": "Otro"
+    },
+    "severity": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "Panel de denuncias",
+      "subtitle": "Resumen de cumplimiento de la Directiva UE 2019/1937",
+      "viewAllReports": "Ver todas las denuncias"
+    },
+    "stats": {
+      "totalReports": "Total de denuncias",
+      "open": "Abiertas",
+      "resolved": "Resueltas",
+      "avgResolution": "Resolución media",
+      "avgResolutionDays": "{{count}} d",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "Por gravedad",
+      "byCategory": "Por categoría",
+      "recentReports": "Denuncias recientes"
+    },
+    "empty": {
+      "noData": "Aún no hay datos",
+      "noReports": "Aún no hay denuncias"
+    },
+    "table": {
+      "caseNumber": "N.º de caso",
+      "category": "Categoría",
+      "severity": "Gravedad",
+      "subject": "Asunto",
+      "status": "Estado",
+      "date": "Fecha"
+    },
+    "severity": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "status": {
+      "submitted": "Enviada",
+      "under_investigation": "En investigación",
+      "escalated": "Escalada",
+      "resolved": "Resuelta",
+      "dismissed": "Desestimada",
+      "closed": "Cerrada"
+    },
+    "category": {
+      "harassment": "Acoso",
+      "discrimination": "Discriminación",
+      "fraud": "Fraude",
+      "corruption": "Corrupción",
+      "safety_violation": "Infracción de seguridad",
+      "data_breach": "Brecha de datos",
+      "financial_misconduct": "Mala conducta financiera",
+      "other": "Otra"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "Mi bienestar",
+      "subtitle": "Sigue tu proceso de salud y tus metas personales",
+      "dailyCheckIn": "Registro diario"
+    },
+    "error": {
+      "loadFailed": "No se pudieron cargar los datos de bienestar. Vuelve a intentarlo más tarde."
+    },
+    "stats": {
+      "dayStreak": "Días seguidos",
+      "totalCheckIns": "Registros totales",
+      "avgEnergy": "Energía media",
+      "goalsDone": "Metas logradas"
+    },
+    "moodTrend": {
+      "title": "Tendencia del estado de ánimo (últimos 14 días)"
+    },
+    "mood": {
+      "great": "Excelente",
+      "good": "Bien",
+      "okay": "Regular",
+      "low": "Bajo",
+      "stressed": "Estresado"
+    },
+    "goals": {
+      "title": "Mis metas",
+      "addGoal": "Añadir meta",
+      "empty": "Aún no tienes metas. ¡Crea tu primera meta de bienestar!",
+      "update": "Actualizar"
+    },
+    "goalStatus": {
+      "completed": "Completada",
+      "abandoned": "Abandonada",
+      "active": "Activa"
+    },
+    "goalFrequency": {
+      "daily": "Diaria",
+      "weekly": "Semanal",
+      "monthly": "Mensual"
+    },
+    "goalType": {
+      "steps": "Pasos",
+      "exercise": "Ejercicio",
+      "meditation": "Meditación",
+      "water": "Consumo de agua",
+      "sleep": "Sueño",
+      "custom": "Personalizada"
+    },
+    "programs": {
+      "title": "Mis programas",
+      "emptyCompleted": "Aún no tienes programas completados. ¡Sigue así!",
+      "emptyActive": "No tienes programas activos.",
+      "markComplete": "Marcar como completado",
+      "pointsReward": "+{{points}} puntos al completar",
+      "tabActive_one": "Activo ({{count}})",
+      "tabActive_other": "Activos ({{count}})",
+      "tabCompleted_one": "Completado ({{count}})",
+      "tabCompleted_other": "Completados ({{count}})"
+    },
+    "programStatus": {
+      "completed": "Completado",
+      "active": "Activo"
+    },
+    "checkIns": {
+      "title": "Registros recientes",
+      "colDate": "Fecha",
+      "colMood": "Estado de ánimo",
+      "colEnergy": "Energía",
+      "colSleep": "Sueño",
+      "colExercise": "Ejercicio"
+    },
+    "goalModal": {
+      "title": "Crear meta de bienestar",
+      "labelTitle": "Título *",
+      "placeholderTitle": "p. ej., Caminar 10.000 pasos al día",
+      "labelGoalType": "Tipo de meta",
+      "labelFrequency": "Frecuencia",
+      "labelTargetValue": "Valor objetivo *",
+      "placeholderTargetValue": "p. ej., 10000",
+      "labelUnit": "Unidad *",
+      "placeholderUnit": "p. ej., pasos, minutos",
+      "labelStartDate": "Fecha de inicio *",
+      "labelEndDate": "Fecha de fin",
+      "errorCreateFailed": "No se pudo crear la meta",
+      "cancel": "Cancelar",
+      "creating": "Creando...",
+      "submit": "Crear meta",
+      "errorEndBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio."
+    },
+    "progressModal": {
+      "title": "Actualizar progreso",
+      "prompt": "Añadir progreso (actual: {{current}} {{unit}}):",
+      "placeholder": "Cantidad a añadir en {{unit}}",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "submit": "Actualizar"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "Excelente",
+      "good": "Bien",
+      "okay": "Regular",
+      "low": "Bajo",
+      "stressed": "Estresado",
+      "title": "Distribución del estado de ánimo (30 días)",
+      "noData": "Aún no hay datos de registros",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "Ejercicio físico",
+      "mental_health": "Salud mental",
+      "nutrition": "Nutrición",
+      "meditation": "Meditación",
+      "yoga": "Yoga",
+      "team_activity": "Actividad en equipo",
+      "health_checkup": "Chequeo médico",
+      "other": "Otro"
+    },
+    "loading": "Cargando el panel de bienestar...",
+    "error": {
+      "load": "No se pudo cargar el panel de bienestar. Inténtalo de nuevo más tarde.",
+      "createProgram": "No se pudo crear el programa"
+    },
+    "header": {
+      "title": "Panel de bienestar",
+      "subtitle": "Métricas de bienestar de toda la organización y gestión de programas",
+      "createProgram": "Crear programa"
+    },
+    "kpi": {
+      "wellnessScore": "Índice de bienestar",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "Programas activos",
+      "activeParticipants": "Participantes activos",
+      "goalCompletion": "Cumplimiento de objetivos",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} objetivos",
+      "totalPrograms_one": "{{count}} programa en total",
+      "totalPrograms_other": "{{count}} programas en total",
+      "checkins30d_one": "{{count}} registro (30 días)",
+      "checkins30d_other": "{{count}} registros (30 días)"
+    },
+    "metrics": {
+      "title": "Métricas promedio (30 días)",
+      "avgEnergyLevel": "Nivel de energía promedio",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "Minutos de ejercicio promedio",
+      "avgExerciseMinutesValue": "{{value}} min",
+      "totalEnrollments": "Inscripciones totales",
+      "completedEnrollments_one": "{{count}} completada",
+      "completedEnrollments_other": "{{count}} completadas"
+    },
+    "topPrograms": {
+      "title": "Programas principales por inscripción",
+      "colProgram": "Programa",
+      "colType": "Tipo",
+      "colEnrolled": "Inscritos",
+      "colPoints": "Puntos",
+      "colStatus": "Estado",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "modal": {
+      "title": "Crear programa de bienestar",
+      "fieldTitle": "Título *",
+      "titlePlaceholder": "p. ej., Reto de yoga de 30 días",
+      "fieldDescription": "Descripción",
+      "descriptionPlaceholder": "Descripción del programa...",
+      "fieldType": "Tipo",
+      "fieldMaxParticipants": "Máximo de participantes",
+      "maxParticipantsPlaceholder": "Sin límite",
+      "fieldStartDate": "Fecha de inicio",
+      "fieldEndDate": "Fecha de finalización",
+      "fieldPointsReward": "Recompensa en puntos",
+      "cancel": "Cancelar",
+      "submit": "Crear programa",
+      "submitting": "Creando..."
+    },
+    "toast": {
+      "endBeforeStart": "La fecha de finalización no puede ser anterior a la fecha de inicio."
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "Fitness",
+      "mental_health": "Salud mental",
+      "nutrition": "Nutrición",
+      "meditation": "Meditación",
+      "yoga": "Yoga",
+      "team_activity": "Actividad en equipo",
+      "health_checkup": "Chequeo médico",
+      "other": "Otro"
+    },
+    "enroll": {
+      "success": "Te has inscrito correctamente en el programa",
+      "error": "No se pudo inscribir en el programa"
+    },
+    "header": {
+      "title": "Programas de bienestar",
+      "subtitle": "Explora programas, haz seguimiento de tu bienestar y alcanza tus objetivos de salud"
+    },
+    "actions": {
+      "dailyCheckIn": "Registro diario",
+      "myWellness": "Mi bienestar"
+    },
+    "stats": {
+      "checkInStreak": "Racha de registros",
+      "activePrograms": "Programas activos",
+      "goalsCompleted": "Objetivos completados",
+      "latestMood": "Estado de ánimo reciente",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} día",
+      "checkInStreakValue_other": "{{count}} días"
+    },
+    "filter": {
+      "allTypes": "Todos los tipos",
+      "programsAvailable_one": "{{count}} programa disponible",
+      "programsAvailable_other": "{{count}} programas disponibles"
+    },
+    "list": {
+      "loading": "Cargando programas...",
+      "empty": "Aún no hay programas de bienestar disponibles"
+    },
+    "card": {
+      "ongoing": "En curso",
+      "enrolledButton": "Inscrito",
+      "enrollNow": "Inscribirse",
+      "pointsReward_one": "+{{count}} pto",
+      "pointsReward_other": "+{{count}} ptos",
+      "enrolledCount_one": "{{count}} inscrito",
+      "enrolledCount_other": "{{count}} inscritos"
+    },
+    "pagination": {
+      "pageOf": "Página {{page}} de {{totalPages}}"
+    }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "Categorías de documentos",
+      "subtitle": "Gestiona las categorías de documentos de tu organización."
+    },
+    "actions": {
+      "newCategory": "Nueva categoría",
+      "cancel": "Cancelar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "editTitle": "Editar categoría",
+      "createTitle": "Crear categoría",
+      "nameLabel": "Nombre *",
+      "namePlaceholder": "p. ej. Documento de identidad",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Descripción opcional",
+      "mandatoryLabel": "Obligatorio para todos los empleados"
+    },
+    "table": {
+      "categoryHeader": "Categoría",
+      "descriptionHeader": "Descripción",
+      "documentsHeader": "Documentos",
+      "mandatoryHeader": "Obligatorio",
+      "actionsHeader": "Acciones",
+      "loading": "Cargando...",
+      "empty": "Aún no hay categorías. Crea una para empezar.",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "Obligatorio",
+      "optional": "Opcional"
+    },
+    "deactivate": {
+      "titleNamed": "¿Desactivar la categoría \"{{name}}\"?",
+      "title": "¿Desactivar la categoría?",
+      "description": "Los documentos de esta categoría se conservarán.",
+      "confirm": "Desactivar"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "Mis documentos",
+      "subtitle": "Sube, consulta y controla el estado de tus documentos."
+    },
+    "actions": {
+      "uploadDocument": "Subir documento"
+    },
+    "upload": {
+      "heading": "Subir documento",
+      "fileLabel": "Archivo *",
+      "nameLabel": "Nombre del documento",
+      "namePlaceholder": "Opcional: se usará el nombre del archivo",
+      "categoryLabel": "Categoría *",
+      "categoryPlaceholder": "Selecciona una categoría",
+      "expiryLabel": "Fecha de vencimiento",
+      "submit": "Subir",
+      "submitting": "Subiendo..."
+    },
+    "list": {
+      "loading": "Cargando tus documentos...",
+      "empty": "Aún no has subido ningún documento.",
+      "uploadFirst": "Sube tu primer documento"
+    },
+    "expiry": {
+      "expired": "Vencido",
+      "expiringSoon": "Vence pronto",
+      "expires": "Vence"
+    },
+    "doc": {
+      "rejectionReason": "Motivo del rechazo: {{reason}}",
+      "download": "Descargar",
+      "reupload": "Volver a subir"
+    },
+    "status": {
+      "verified": "Verificado",
+      "rejected": "Rechazado",
+      "pending": "Pendiente"
+    },
+    "toast": {
+      "downloadFailed": "No se pudo descargar el documento."
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "summary_one": "Página {{page}} de {{totalPages}} ({{count}} en total)",
+      "summary_other": "Página {{page}} de {{totalPages}} ({{count}} en total)"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo_one": "hace {{count}} min",
+      "minutesAgo_other": "hace {{count}} min",
+      "hoursAgo_one": "hace {{count}} h",
+      "hoursAgo_other": "hace {{count}} h",
+      "daysAgo_one": "hace {{count}} d",
+      "daysAgo_other": "hace {{count}} d"
+    },
+    "header": {
+      "defaultCategoryName": "Categoría",
+      "newPost": "Nueva publicación"
+    },
+    "filters": {
+      "allTypes": "Todos los tipos",
+      "discussions": "Debates",
+      "questions": "Preguntas",
+      "ideas": "Ideas",
+      "polls": "Encuestas"
+    },
+    "sort": {
+      "recent": "Recientes",
+      "popular": "Populares",
+      "active": "Activos",
+      "mostViewed": "Más vistos"
+    },
+    "list": {
+      "loading": "Cargando publicaciones...",
+      "empty": "Aún no hay publicaciones en esta categoría. ¡Inicia la conversación!"
+    },
+    "postType": {
+      "discussion": "Debate",
+      "question": "Pregunta",
+      "idea": "Idea",
+      "poll": "Encuesta"
+    },
+    "badge": {
+      "pinned": "Fijado",
+      "locked": "Bloqueado"
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageInfo_one": "Página {{page}} de {{totalPages}} ({{count}} en total)",
+      "pageInfo_other": "Página {{page}} de {{totalPages}} ({{count}} en total)"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "Debate",
+      "question": "Pregunta",
+      "idea": "Idea",
+      "poll": "Encuesta"
+    },
+    "time": {
+      "justNow": "ahora mismo",
+      "minutesAgo_one": "hace {{count}} min",
+      "minutesAgo_other": "hace {{count}} min",
+      "hoursAgo_one": "hace {{count}} h",
+      "hoursAgo_other": "hace {{count}} h",
+      "daysAgo_one": "hace {{count}} d",
+      "daysAgo_other": "hace {{count}} d"
+    },
+    "loading": "Cargando publicación...",
+    "notFound": "Publicación no encontrada",
+    "reply": {
+      "acceptedAnswer": "Respuesta aceptada",
+      "replyAction": "Responder",
+      "acceptAnswer": "Aceptar respuesta"
+    },
+    "badge": {
+      "pinned": "Fijada",
+      "locked": "Bloqueada"
+    },
+    "action": {
+      "like": "Me gusta",
+      "unpin": "Dejar de fijar",
+      "pin": "Fijar",
+      "unlock": "Desbloquear",
+      "lock": "Bloquear",
+      "delete": "Eliminar"
+    },
+    "replies": {
+      "empty": "Aún no hay respuestas. ¡Sé el primero en responder!",
+      "heading_one": "{{count}} respuesta",
+      "heading_other": "{{count}} respuestas"
+    },
+    "form": {
+      "replyingTo": "Respondiendo a {{name}}",
+      "cancel": "Cancelar",
+      "placeholder": "Escribe una respuesta...",
+      "posting": "Publicando...",
+      "submit": "Responder"
+    },
+    "locked": {
+      "message": "Esta publicación está bloqueada. No se permiten nuevas respuestas."
+    },
+    "deleteReply": {
+      "title": "¿Eliminar esta respuesta?",
+      "confirm": "Eliminar"
+    },
+    "deletePost": {
+      "title": "¿Eliminar esta publicación y todas sus respuestas?",
+      "description": "Esta acción no se puede deshacer.",
+      "confirm": "Eliminar"
+    },
+    "replyCount_one": "{{count}} respuesta",
+    "replyCount_other": "{{count}} respuestas"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "No se pudo asignar al empleado a este puesto.",
+      "saveChangesFailed": "No se pudieron guardar los cambios del puesto.",
+      "deleteFailed": "No se pudo eliminar el puesto"
+    },
+    "loading": "Cargando...",
+    "notFound": "Puesto no encontrado",
+    "backToPositions": "Volver a Puestos",
+    "action": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "assignEmployee": "Asignar empleado"
+    },
+    "status": {
+      "active": "Activo",
+      "filled": "Cubierto",
+      "frozen": "Congelado",
+      "closed": "Cerrado"
+    },
+    "assignForm": {
+      "heading": "Asignar empleado al puesto",
+      "employeeLabel": "Empleado *",
+      "searchPlaceholder": "Empieza a escribir para buscar usuarios...",
+      "noUsersMatch": "Ningún usuario coincide",
+      "startDateLabel": "Fecha de inicio *",
+      "primaryPosition": "Puesto principal",
+      "assigning": "Asignando...",
+      "assign": "Asignar",
+      "assignFailedInline": "No se pudo asignar"
+    },
+    "common": {
+      "cancel": "Cancelar"
+    },
+    "editForm": {
+      "heading": "Editar puesto",
+      "titleLabel": "Título *",
+      "departmentLabel": "Departamento",
+      "departmentNone": "Ninguno",
+      "employmentTypeLabel": "Tipo de empleo",
+      "headcountBudgetLabel": "Plantilla presupuestada",
+      "minSalaryLabel": "Salario mín. (paise/céntimos)",
+      "maxSalaryLabel": "Salario máx. (paise/céntimos)",
+      "jobDescriptionLabel": "Descripción del puesto",
+      "criticalRole": "Rol crítico",
+      "headcountMinError": "La plantilla presupuestada debe ser al menos 1.",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "updateFailedInline": "No se pudo actualizar el puesto"
+    },
+    "employmentType": {
+      "full_time": "Tiempo completo",
+      "part_time": "Tiempo parcial",
+      "contract": "Contrato",
+      "intern": "Becario"
+    },
+    "details": {
+      "heading": "Detalles del puesto",
+      "employmentType": "Tipo de empleo",
+      "headcount": "Plantilla",
+      "salaryRange": "Rango salarial",
+      "reportsTo": "Reporta a"
+    },
+    "jobDescription": {
+      "heading": "Descripción del puesto"
+    },
+    "requirements": {
+      "heading": "Requisitos"
+    },
+    "assignees": {
+      "noneAssigned": "Nadie asignado",
+      "since": "Desde {{date}}",
+      "actingInterim": "En funciones/interino",
+      "endAssignmentTitle": "Finalizar asignación",
+      "heading_one": "Asignado actual ({{count}})",
+      "heading_other": "Asignados actuales ({{count}})"
+    },
+    "history": {
+      "heading": "Historial de asignaciones",
+      "dateRangeNA": "N/D"
+    },
+    "delete": {
+      "heading": "¿Eliminar puesto?",
+      "body": "¿Eliminar {{name}}? Las asignaciones activas se finalizan y el puesto se cierra. Esto no se puede deshacer.",
+      "deleting": "Eliminando...",
+      "confirm": "Eliminar"
+    },
+    "endAssignment": {
+      "title": "¿Finalizar esta asignación?",
+      "confirmText": "Finalizar asignación"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "Este enlace de invitación no es válido, ya se ha utilizado o ha caducado. Solicita a tu administrador que vuelva a enviar la invitación.",
+      "genericFailure": "No se pudo aceptar la invitación. Inténtalo de nuevo."
+    },
+    "validation": {
+      "firstNameRequired": "El nombre es obligatorio.",
+      "lastNameRequired": "Los apellidos son obligatorios.",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden.",
+      "passwordTooShort_one": "La contraseña debe tener al menos {{count}} carácter.",
+      "passwordTooShort_other": "La contraseña debe tener al menos {{count}} caracteres."
+    },
+    "toast": {
+      "success": "Invitación aceptada. Ya puedes iniciar sesión."
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "Acepta tu invitación",
+    "subheading": "Establece tu nombre y contraseña para activar tu cuenta de EMP Cloud.",
+    "loadingInvitation": "Cargando invitación…",
+    "form": {
+      "firstNameLabel": "Nombre",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "Apellidos",
+      "namesLockedNote": "Tu nombre está registrado en {{org}}. Contacta con tu administrador de RR. HH. si necesitas cambiarlo.",
+      "orgFallback": "tu organización",
+      "passwordLabel": "Contraseña",
+      "hidePasswordAria": "Ocultar contraseña",
+      "showPasswordAria": "Mostrar contraseña",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Vuelve a escribir la misma contraseña",
+      "submitting": "Activando cuenta...",
+      "submit": "Aceptar invitación e iniciar sesión",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "signInLink": "Iniciar sesión",
+      "passwordPlaceholder_one": "Al menos {{count}} carácter",
+      "passwordPlaceholder_other": "Al menos {{count}} caracteres"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "Silenciado",
+      "groupCreated": "Grupo creado",
+      "noMessagesYet": "Aún no hay mensajes",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "La foto de perfil debe ser una imagen.",
+      "photoUpdated": "Foto de perfil actualizada.",
+      "photoUploadFailed": "No se pudo subir la foto.",
+      "statusUpdateFailed": "No se pudo actualizar tu estado. Inténtalo de nuevo.",
+      "openNotesFailed": "No se pudieron abrir tus notas."
+    },
+    "profile": {
+      "yourProfileTitle": "Tu perfil",
+      "changePhotoTitle": "Cambiar tu foto de perfil",
+      "youFallback": "Tú",
+      "statusLabel": "Estado",
+      "statusPlaceholder": "Establece un estado…",
+      "save": "Guardar",
+      "setStatusTitle": "Establecer tu estado",
+      "messageYourself": "Enviarte un mensaje (notas)"
+    },
+    "search": {
+      "placeholder": "Buscar chats y mensajes…",
+      "messagesHeader": "Mensajes",
+      "noMessageMatch": "Ningún mensaje coincide con “{{query}}”.",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "Nuevo chat",
+      "backToChats": "← Volver a los chats",
+      "archived": "Archivados",
+      "loadError": "No se pudieron cargar las conversaciones. Inténtalo de nuevo.",
+      "noSearchMatch": "Ninguna conversación coincide con \"{{query}}\".",
+      "noConversationsTitle": "Aún no hay conversaciones",
+      "noConversationsHint": "Inicia una con el botón \"Nuevo chat\".",
+      "archivedWithCount_one": "Archivado ({{count}})",
+      "archivedWithCount_other": "Archivados ({{count}})"
+    },
+    "empty": {
+      "yourMessagesTitle": "Tus mensajes",
+      "yourMessagesHint": "Selecciona una conversación a la izquierda o inicia un nuevo chat para empezar a enviar mensajes."
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "Crea tu cuenta de EMP Cloud",
+      "subtitle": "Configura tu organización en minutos"
+    },
+    "error": {
+      "registrationFailed": "Error al registrarse"
+    },
+    "section": {
+      "organization": "Organización",
+      "adminAccount": "Cuenta de administrador"
+    },
+    "field": {
+      "companyName": {
+        "label": "Nombre de la empresa",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "País"
+      },
+      "state": {
+        "label": "Estado"
+      },
+      "firstName": {
+        "label": "Nombre"
+      },
+      "lastName": {
+        "label": "Apellidos"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Mín. 8 caracteres, mayúscula, minúscula, dígito, especial"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "Ocultar contraseña",
+      "showAriaLabel": "Mostrar contraseña"
+    },
+    "submit": {
+      "creating": "Creando cuenta...",
+      "default": "Crear cuenta"
+    },
+    "footer": {
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "signIn": "Iniciar sesión"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "Responder",
+      "forward": "Reenviar",
+      "selectMessages": "Seleccionar mensajes",
+      "messageInfo": "Información del mensaje",
+      "copyText": "Copiar texto",
+      "copied": "Copiado",
+      "copyLink": "Copiar enlace",
+      "pin": "Fijar",
+      "unpin": "Dejar de fijar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "Información del mensaje"
+    },
+    "actions": {
+      "close": "Cerrar"
+    },
+    "state": {
+      "loading": "Cargando…",
+      "error": "No se pudo cargar la información del mensaje.",
+      "noOtherMembers": "No hay otros miembros."
+    },
+    "section": {
+      "readBy": "Leído por",
+      "deliveredTo": "Entregado a",
+      "pending": "Pendiente"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "Alertas de escritorio activadas: recibirás avisos de los mensajes nuevos.",
+      "blocked": "Alertas bloqueadas. Puedes volver a activarlas en la configuración del sitio de tu navegador."
+    },
+    "confirmation": {
+      "title": "Alertas de escritorio activadas",
+      "body": "Recibirás un aviso aquí cuando llegue un mensaje nuevo."
+    },
+    "description": "Recibe avisos de los mensajes nuevos incluso mientras trabajas en otra aplicación.",
+    "button": {
+      "enabling": "Activando…",
+      "enable": "Activar alertas",
+      "dismissAriaLabel": "Descartar"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "Abrir {{name}}"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "Enviando",
+      "sent": "Enviado",
+      "delivered": "Entregado",
+      "read": "Leído"
+    },
+    "failed": {
+      "title": "Error al enviar. Toca para reintentar",
+      "ariaLabel": "Error al enviar, toca para reintentar",
+      "retry": "Reintentar"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "Caras",
+      "gestures": "Gestos",
+      "objects": "Objetos"
+    },
+    "button": {
+      "reactWithAriaLabel": "Reaccionar con {{emoji}}"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "Nuevo chat"
+    },
+    "actions": {
+      "close": "Cerrar",
+      "createGroup": "Crear grupo"
+    },
+    "mode": {
+      "direct": "Directo",
+      "group": "Grupo"
+    },
+    "group": {
+      "namePlaceholder": "Nombre del grupo",
+      "enterNameHint": "Escribe un nombre de grupo para continuar",
+      "selectedNeedMore_one": "{{count}} seleccionado · se necesitan ≥ 2",
+      "selectedNeedMore_other": "{{count}} seleccionados · se necesitan ≥ 2",
+      "selectedCount_one": "{{count}} seleccionado",
+      "selectedCount_other": "{{count}} seleccionados"
+    },
+    "search": {
+      "placeholder": "Buscar empleados…"
+    },
+    "list": {
+      "loadError": "No se pudieron cargar los empleados.",
+      "emptySearch": "Ningún empleado coincide con tu búsqueda.",
+      "empty": "No se encontraron empleados."
+    },
+    "direct": {
+      "starting": "Iniciando conversación…"
+    },
+    "toast": {
+      "directError": "No se pudo iniciar esa conversación.",
+      "groupError": "No se pudo crear el grupo."
+    },
+    "validation": {
+      "groupNameRequired": "Asigna un nombre al grupo.",
+      "minTwoMembers": "Selecciona al menos 2 personas para un grupo."
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "No se pudo reenviar. Inténtalo de nuevo.",
+      "forwardSuccess_one": "Se reenvió {{count}} mensaje a {{chatCount}} chat.",
+      "forwardSuccess_other": "Se reenviaron {{count}} mensajes a {{chatCount}} chats."
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "Mensaje",
+      "multiple_one": "{{count}} mensaje",
+      "multiple_other": "{{count}} mensajes"
+    },
+    "heading": {
+      "title": "Reenviar a…"
+    },
+    "section": {
+      "forwarding": "Reenviando",
+      "chats": "Chats",
+      "people": "Personas"
+    },
+    "search": {
+      "placeholder": "Buscar chats y personas…"
+    },
+    "state": {
+      "loading": "Cargando…",
+      "noMatches": "No hay resultados para \"{{query}}\".",
+      "noTargets": "No hay nadie a quien reenviar."
+    },
+    "button": {
+      "forwarding": "Reenviando…",
+      "forward": "Reenviar"
+    },
+    "footer": {
+      "selectedCount_one": "{{count}} seleccionado",
+      "selectedCount_other": "{{count}} seleccionados"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "Añadir miembros",
+      "close": "Cerrar"
+    },
+    "search": {
+      "placeholder": "Buscar empleados…"
+    },
+    "list": {
+      "loading": "Cargando…",
+      "noMatches": "No hay resultados para «{{search}}».",
+      "allInGroup": "Todos ya están en este grupo."
+    },
+    "footer": {
+      "add": "Añadir",
+      "adding": "Añadiendo…",
+      "selectedCount_one": "{{count}} seleccionado",
+      "selectedCount_other": "{{count}} seleccionados"
+    },
+    "toast": {
+      "addFailed": "No se pudieron añadir los miembros. Inténtalo de nuevo.",
+      "added_one": "Se añadió {{count}} miembro.",
+      "added_other": "Se añadieron {{count}} miembros."
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "Personal",
+      "education": "Formación",
+      "experience": "Experiencia",
+      "dependents": "Dependientes",
+      "addresses": "Direcciones",
+      "custom": "Campos personalizados"
+    },
+    "invalid": {
+      "title": "Empleado no válido",
+      "description": "El ID de empleado en la URL falta o no es válido.",
+      "backToDirectory": "← Volver al directorio de empleados"
+    },
+    "accessDenied": {
+      "title": "Acceso denegado",
+      "description": "No tienes permiso para ver este perfil.",
+      "backToDashboard": "← Volver al panel"
+    },
+    "loading": "Cargando perfil...",
+    "notFound": "Empleado no encontrado",
+    "header": {
+      "backToDirectory": "Volver al directorio",
+      "biometricPhotoTooltip": "La foto se gestiona mediante el registro en el quiosco biométrico",
+      "biometricFaceAlt": "Rostro biométrico",
+      "profilePhotoAlt": "Perfil",
+      "noDesignation": "Sin cargo",
+      "biometricHint": "Foto del registro biométrico: se gestiona mediante el quiosco.",
+      "removingPhoto": "Eliminando...",
+      "removePhoto": "Eliminar foto",
+      "empCode": "Código de empleado: {{code}}",
+      "joined": "Fecha de ingreso: {{date}}",
+      "cancel": "Cancelar",
+      "editMyInfo": "Editar mi información",
+      "editProfile": "Editar perfil"
+    },
+    "removePhotoDialog": {
+      "title": "¿Eliminar tu foto de perfil?",
+      "description": "Se mostrarán tus iniciales de nuevo.",
+      "confirm": "Eliminar foto"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "El PAN debe tener 5 letras + 4 dígitos + 1 letra (p. ej. ABCDE1234F)",
+      "aadhar": "El Aadhaar debe tener 12 dígitos",
+      "uan": "El UAN debe tener 12 dígitos",
+      "passport": "El pasaporte debe tener 1 letra + 7 dígitos (p. ej. A1234567)"
+    },
+    "personal": {
+      "saveError": "Error al guardar",
+      "selfServiceNotice": "Puedes editar tu información personal y de contacto de emergencia. Contacta con RR. HH. para actualizar los campos administrativos.",
+      "field": {
+        "personalEmail": "Correo personal",
+        "contactNumber": "Número de contacto",
+        "gender": "Género",
+        "dateOfBirth": "Fecha de nacimiento",
+        "bloodGroup": "Grupo sanguíneo",
+        "maritalStatus": "Estado civil",
+        "nationality": "Nacionalidad",
+        "aadharNumber": "Número de Aadhaar",
+        "panNumber": "Número de PAN",
+        "uanNumber": "Número de UAN",
+        "passportNumber": "Número de pasaporte",
+        "passportExpiry": "Vencimiento del pasaporte",
+        "visaStatus": "Estado del visado",
+        "visaExpiry": "Vencimiento del visado",
+        "emergencyContact": "Contacto de emergencia",
+        "emergencyPhone": "Teléfono de emergencia",
+        "emergencyRelation": "Parentesco de emergencia",
+        "noticePeriodDays": "Periodo de preaviso (días)",
+        "reportingManager": "Responsable directo",
+        "department": "Departamento",
+        "shift": "Turno",
+        "designation": "Cargo",
+        "employeeCode": "Código de empleado",
+        "probationStart": "Inicio del periodo de prueba",
+        "probationEnd": "Fin del periodo de prueba",
+        "confirmationDate": "Fecha de confirmación"
+      },
+      "select": {
+        "placeholder": "Seleccionar"
+      },
+      "aadhar": {
+        "placeholder": "12 dígitos"
+      },
+      "uan": {
+        "placeholder": "12 dígitos"
+      },
+      "reportingManager": {
+        "none": "Sin responsable",
+        "option": "{{name}} ({{role}}) - {{email}}"
+      },
+      "department": {
+        "none": "Sin departamento"
+      },
+      "shift": {
+        "none": "Sin turno"
+      },
+      "designation": {
+        "placeholderSelfService": "Contacta con RR. HH. para cambiarlo",
+        "placeholderHint": "p. ej. Ingeniero sénior"
+      },
+      "empCode": {
+        "placeholderSelfService": "Contacta con RR. HH. para configurarlo",
+        "placeholderHint": "p. ej. EMP001"
+      },
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "reportingManagerFallback": "Usuario n.º {{id}}",
+      "departmentFallback": "Depto. n.º {{id}}",
+      "shiftFallback": "Turno n.º {{id}}"
+    },
+    "gender": {
+      "male": "Masculino",
+      "female": "Femenino",
+      "other": "Otro"
+    },
+    "maritalStatus": {
+      "single": "Soltero/a",
+      "married": "Casado/a",
+      "divorced": "Divorciado/a",
+      "widowed": "Viudo/a"
+    },
+    "customRoles": {
+      "label": "Roles personalizados"
+    },
+    "additionalManagers": {
+      "label": "Responsables adicionales",
+      "description": "Corresponsables con el mismo acceso al ámbito del equipo que el responsable directo principal. Se aplican en todos los permisos con ámbito de equipo.",
+      "loading": "Cargando…",
+      "empty": "Sin responsables adicionales",
+      "userFallback": "Usuario n.º {{id}}",
+      "removeAria": "Eliminar {{name}}",
+      "removeAriaFallback": "responsable",
+      "searchPlaceholderEmpty": "Buscar por nombre o correo…",
+      "searchPlaceholderMore": "Añadir otro…",
+      "noMatches": "No hay usuarios coincidentes",
+      "allSelected": "Todos los usuarios elegibles ya están seleccionados",
+      "saving": "Guardando…",
+      "save": "Guardar responsables adicionales",
+      "unsaved": "cambios sin guardar",
+      "saved": "Guardado",
+      "selectedCount_one": "({{count}} seleccionado)",
+      "selectedCount_other": "({{count}} seleccionados)"
+    },
+    "apiError": {
+      "requestFailed": "Error en la solicitud"
+    },
+    "education": {
+      "add": "Añadir formación",
+      "editHeading": "Editar formación",
+      "field": {
+        "degree": "Título *",
+        "institution": "Institución *",
+        "fieldOfStudy": "Área de estudio",
+        "grade": "Calificación",
+        "startYear": "Año de inicio",
+        "endYear": "Año de finalización"
+      },
+      "degree": {
+        "placeholder": "p. ej. B.Tech"
+      },
+      "institution": {
+        "placeholder": "p. ej. IIT Delhi"
+      },
+      "validation": {
+        "required": "El título y la institución son obligatorios",
+        "endYear": "El año de finalización debe ser igual o posterior al año de inicio"
+      },
+      "empty": "Aún no se han añadido registros de formación.",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "Desde {{year}}",
+      "gradeSuffix": " | Calificación: {{grade}}",
+      "deleteDialog": {
+        "title": "¿Eliminar este registro de formación?"
+      }
+    },
+    "common": {
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "experience": {
+      "add": "Añadir experiencia",
+      "editHeading": "Editar experiencia",
+      "field": {
+        "company": "Empresa *",
+        "designation": "Cargo *",
+        "startDate": "Fecha de inicio *",
+        "endDate": "Fecha de finalización",
+        "description": "Descripción"
+      },
+      "currentlyWorking": "Trabajo aquí actualmente",
+      "validation": {
+        "required": "La empresa, el cargo y la fecha de inicio son obligatorios"
+      },
+      "empty": "Aún no se han añadido registros de experiencia laboral.",
+      "currentBadge": "Actual",
+      "present": "Actualidad",
+      "deleteDialog": {
+        "title": "¿Eliminar este registro de experiencia?"
+      }
+    },
+    "dependents": {
+      "add": "Añadir dependiente",
+      "editHeading": "Editar dependiente",
+      "field": {
+        "name": "Nombre *",
+        "relationship": "Parentesco *",
+        "dateOfBirth": "Fecha de nacimiento",
+        "gender": "Género",
+        "nomineePercent": "% de beneficiario"
+      },
+      "relationship": {
+        "placeholder": "p. ej. Cónyuge, Hijo/a, Padre/Madre"
+      },
+      "isNominee": "Es beneficiario",
+      "validation": {
+        "required": "El nombre y el parentesco son obligatorios"
+      },
+      "empty": "Aún no se han añadido dependientes.",
+      "column": {
+        "name": "Nombre",
+        "relationship": "Parentesco",
+        "dob": "F. nac.",
+        "gender": "Género",
+        "nominee": "Beneficiario",
+        "actions": "Acciones"
+      },
+      "nomineeYes": "Sí",
+      "nomineeYesPercent": "Sí ({{percent}} %)",
+      "nomineeNo": "No",
+      "deleteDialog": {
+        "title": "¿Eliminar este dependiente?"
+      }
+    },
+    "addresses": {
+      "add": "Añadir dirección",
+      "editHeading": "Editar dirección",
+      "field": {
+        "type": "Tipo *",
+        "country": "País",
+        "line1": "Línea de dirección 1 *",
+        "line2": "Línea de dirección 2",
+        "city": "Ciudad *",
+        "state": "Provincia *",
+        "zipcode": "Código postal *"
+      },
+      "type": {
+        "current": "Actual",
+        "permanent": "Permanente"
+      },
+      "validation": {
+        "required": "La línea de dirección 1, la ciudad, la provincia y el código postal son obligatorios"
+      },
+      "empty": "Aún no se han añadido direcciones.",
+      "deleteDialog": {
+        "title": "¿Eliminar esta dirección?"
+      }
+    },
+    "custom": {
+      "loading": "Cargando campos personalizados...",
+      "saveError": "Error al guardar los campos personalizados",
+      "emptyTitle": "Aún no se han definido campos personalizados para los empleados.",
+      "emptyHint": "Los administradores de RR. HH. pueden crear campos personalizados desde la página de configuración de campos personalizados.",
+      "heading": "Campos personalizados",
+      "edit": "Editar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "checkboxYes": "Sí",
+      "checkboxNo": "No",
+      "select": {
+        "placeholder": "Seleccionar..."
+      },
+      "file": {
+        "placeholder": "Referencia o ruta del archivo"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "Importar empleados",
+      "subtitle": "Sube un archivo CSV para importar empleados de forma masiva a tu organización."
+    },
+    "success": {
+      "title": "Importación correcta",
+      "importMore": "Importar más empleados",
+      "message_one": "Se importó correctamente {{count}} empleado.",
+      "message_other": "Se importaron correctamente {{count}} empleados."
+    },
+    "dropzone": {
+      "instructions": "Arrastra y suelta un archivo CSV aquí, o haz clic para buscar",
+      "columnsHint": "Columnas obligatorias: first_name, last_name, email. Opcionales: designation, department_name, emp_code, role, contact_number",
+      "chooseFile": "Elegir archivo",
+      "selectedFile": "Seleccionado: {{name}}"
+    },
+    "loading": {
+      "parsing": "Analizando y validando el CSV..."
+    },
+    "summary": {
+      "totalRows": "Total de filas",
+      "valid": "Válidas",
+      "errors": "Errores"
+    },
+    "validTable": {
+      "col": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "empCode": "Cód. empleado",
+        "designation": "Cargo",
+        "department": "Departamento",
+        "status": "Estado"
+      },
+      "emptyCell": "-",
+      "title_one": "Empleado válido ({{count}})",
+      "title_other": "Empleados válidos ({{count}})",
+      "andMore_one": "...y {{count}} más",
+      "andMore_other": "...y {{count}} más"
+    },
+    "errorTable": {
+      "col": {
+        "row": "Fila",
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "errors": "Errores"
+      },
+      "title_one": "Error ({{count}})",
+      "title_other": "Errores ({{count}})"
+    },
+    "import": {
+      "importing": "Importando...",
+      "button_one": "Importar {{count}} empleado válido",
+      "button_other": "Importar {{count}} empleados válidos"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "Configuración de la plataforma",
+      "subtitle": "Consulta la configuración actual de la plataforma y la información del sistema."
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "Información de la plataforma"
+      },
+      "email": {
+        "title": "Configuración de correo/SMTP"
+      },
+      "security": {
+        "title": "Configuración de seguridad"
+      }
+    },
+    "fields": {
+      "serverVersion": "Versión del servidor",
+      "nodeVersion": "Versión de Node.js",
+      "environment": "Entorno",
+      "uptime": "Tiempo de actividad",
+      "smtpStatus": "Estado de SMTP",
+      "smtpHost": "Host SMTP",
+      "fromAddress": "Dirección de remitente",
+      "bcryptRounds": "Rondas de bcrypt",
+      "accessTokenExpiry": "Caducidad del token de acceso",
+      "refreshTokenExpiry": "Caducidad del token de actualización",
+      "authRateLimit": "Límite de tasa de autenticación",
+      "apiRateLimit": "Límite de tasa de API"
+    },
+    "smtpStatus": {
+      "configured": "Configurado",
+      "notConfigured": "Sin configurar"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}}d {{hours}}h {{mins}}m",
+      "hoursMins": "{{hours}}h {{mins}}m",
+      "mins": "{{mins}}m"
+    },
+    "footer": {
+      "autoRefresh": "Se actualiza automáticamente cada 30 segundos"
+    }
+  },
+  "settingsPage": {
+    "loading": "Cargando configuración...",
+    "header": {
+      "title": "Configuración de la organización",
+      "subtitle": "Gestiona los datos de tu empresa, departamentos y ubicaciones."
+    },
+    "company": {
+      "title": "Información de la empresa",
+      "editTitle": "Editar información de la empresa"
+    },
+    "actions": {
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "add": "Añadir",
+      "saveChanges": "Guardar cambios"
+    },
+    "fields": {
+      "name": "Nombre",
+      "legalName": "Razón social",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "country": "País",
+      "state": "Estado",
+      "city": "Ciudad",
+      "timezone": "Zona horaria",
+      "language": "Idioma"
+    },
+    "form": {
+      "selectTimezone": "Selecciona una zona horaria",
+      "selectTimezoneRequired": "Selecciona una zona horaria *",
+      "selectCountry": "Selecciona un país",
+      "noTimezone": "Sin zona horaria"
+    },
+    "validation": {
+      "email": "Introduce una dirección de correo electrónico válida (p. ej., user@example.com).",
+      "city": "La ciudad solo puede contener letras, espacios y guiones.",
+      "state": "El estado solo puede contener letras, espacios y guiones.",
+      "timezoneRequired": "La zona horaria es obligatoria."
+    },
+    "errors": {
+      "updateOrg": "No se pudo actualizar. Inténtalo de nuevo.",
+      "addDepartment": "No se pudo añadir el departamento.",
+      "renameDepartment": "No se pudo cambiar el nombre del departamento.",
+      "deleteDepartment": "No se pudo eliminar el departamento.",
+      "addLocation": "No se pudo añadir la ubicación.",
+      "updateLocation": "No se pudo actualizar la ubicación.",
+      "deleteLocation": "No se pudo eliminar la ubicación."
+    },
+    "departments": {
+      "namePlaceholder": "Nombre del departamento",
+      "renameTitle": "Cambiar nombre del departamento",
+      "deleteTitle": "Eliminar departamento",
+      "title_one": "Departamentos ({{count}})",
+      "title_other": "Departamentos ({{count}})"
+    },
+    "locations": {
+      "namePlaceholder": "Nombre de la ubicación",
+      "editTitle": "Editar ubicación",
+      "deleteTitle": "Eliminar ubicación",
+      "title_one": "Ubicaciones ({{count}})",
+      "title_other": "Ubicaciones ({{count}})"
+    },
+    "rowActions": {
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
+  },
+  "subscriptionsPage": {
+    "loading": "Cargando suscripciones...",
+    "header": {
+      "title": "Suscripciones",
+      "subtitle": "Administra tus suscripciones de módulos y la facturación."
+    },
+    "moduleFallback": "Módulo",
+    "billing": {
+      "viewInvoicesLink": "Ver facturas detalladas e historial de pagos",
+      "monthlyCostHeading": "Costo mensual",
+      "perMonthSuffix": " /mes"
+    },
+    "toast": {
+      "updated": "Suscripción actualizada correctamente",
+      "cancelled": "Suscripción cancelada"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "Editar suscripción",
+        "cancel": "Cancelar suscripción"
+      },
+      "field": {
+        "plan": "Plan",
+        "seats": "Licencias",
+        "pricePerSeat": "Precio/licencia",
+        "billingCycle": "Ciclo de facturación"
+      },
+      "seatsFull": "(completo)"
+    },
+    "trial": {
+      "expired": "Prueba finalizada — se convertirá en suscripción activa en breve. La primera factura se emitirá hoy.",
+      "endsIn_one": "La prueba termina en {{count}} día ({{date}})",
+      "endsIn_other": "La prueba termina en {{count}} días ({{date}})"
+    },
+    "cancelModal": {
+      "title": "¿Cancelar suscripción?",
+      "body": "Esto cancelará la suscripción y revocará el acceso de todas las licencias asignadas. Esta acción no se puede deshacer.",
+      "keep": "Mantener",
+      "confirm": "Sí, cancelar",
+      "confirming": "Cancelando..."
+    },
+    "editModal": {
+      "title": "Editar suscripción",
+      "planTierLabel": "Nivel del plan",
+      "totalSeatsLabel": "Total de licencias",
+      "currentlyUsing": "Actualmente en uso: {{seats}} licencias",
+      "cannotReduceBelow": "No se puede reducir por debajo de {{seats}} (en uso)",
+      "billingCycleLabel": "Ciclo de facturación",
+      "changesHeading": "Cambios:",
+      "change": {
+        "plan": "Plan: {{from}} → {{to}}",
+        "seats": "Licencias: {{from}} → {{to}}",
+        "cycle": "Ciclo: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ Esto finalizará tu prueba gratuita",
+        "reason": {
+          "seats": "Agregar licencias",
+          "tier": "Mejorar el nivel de tu plan",
+          "cycle": "Cambiar a un ciclo de facturación más largo"
+        },
+        "body": " durante la prueba activará la suscripción de inmediato. Se generará una factura del primer período de facturación con vencimiento hoy."
+      },
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
+    },
+    "planTier": {
+      "basic": "Básico",
+      "professional": "Profesional",
+      "enterprise": "Enterprise",
+      "free": "Gratis"
+    },
+    "billingCycle": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "semi_annual": "Semestral",
+      "annual": "Anual"
+    },
+    "status": {
+      "active": "Activa",
+      "trial": "Prueba",
+      "cancelled": "Cancelada",
+      "expired": "Expirada"
+    }
+  },
+  "customFieldsSettings": {
+    "page": {
+      "title": "Campos personalizados",
+      "subtitle": "Define campos de datos personalizados para empleados, departamentos y otras entidades"
+    },
+    "actions": {
+      "addField": "Añadir campo"
+    },
+    "entityType": {
       "employee": "Empleado",
       "department": "Departamento",
       "location": "Ubicación",
@@ -2558,213 +5690,119 @@
     },
     "fieldType": {
       "text": "Texto",
-      "textarea": "Área de Texto",
+      "textarea": "Área de texto",
       "number": "Número",
       "decimal": "Decimal",
       "date": "Fecha",
-      "datetime": "Fecha y Hora",
-      "dropdown": "Lista Desplegable",
-      "multi_select": "Selección Múltiple",
-      "checkbox": "Casilla de Verificación",
+      "datetime": "Fecha y hora",
+      "dropdown": "Lista desplegable",
+      "multi_select": "Selección múltiple",
+      "checkbox": "Casilla de verificación",
       "email": "Correo electrónico",
       "phone": "Teléfono",
       "url": "URL",
       "file": "Archivo"
     },
-    "editField": "Editar Campo",
-    "newField": "Nuevo Campo",
-    "preview": "Vista previa",
-    "hidePreview": "Ocultar Vista previa",
-    "fieldName": "Nombre del Campo *",
-    "fieldNamePlaceholder": "p. ej. Talla de Camiseta",
-    "section": "Sección",
-    "placeholder": "Marcador de Posición",
-    "defaultValue": "Valor Predeterminado",
-    "validationRegex": "Regex de Validación",
-    "minValue": "Valor Mínimo",
-    "maxValue": "Valor Máximo",
-    "helpText": "Texto de Ayuda",
-    "helpTextPlaceholder": "Información o descripción mostrada a los usuarios",
-    "options": "Opciones",
-    "optionPlaceholder": "Escribe la opción y presiona Enter",
-    "add": "Agregar",
-    "required": "Obligatorio",
-    "searchable": "Buscable",
-    "fieldPreview": "Vista previa del Campo",
-    "saveError": "No se pudo guardar el campo. Inténtalo de nuevo.",
-    "saving": "Guardando...",
-    "updateFieldBtn": "Actualizar Campo",
-    "createField": "Crear Campo",
-    "cancel": "Cancelar",
-    "loading": "Cargando campos...",
-    "empty": "No hay campos personalizados definidos para {{entity}}.",
-    "emptyHint": "Haz clic en \"Agregar Campo\" para crear tu primer campo personalizado.",
-    "colFieldName": "Nombre del Campo",
-    "colKey": "Clave",
-    "colType": "Tipo",
-    "colActions": "Acciones",
-    "optionsCount_one": "({{count}} opción)",
-    "optionsCount_other": "({{count}} opciones)",
-    "yes": "Sí",
-    "no": "No",
-    "editFieldAria": "Editar campo",
-    "deleteFieldAria": "Eliminar campo",
-    "deactivateNamed": "¿Desactivar el campo \"{{name}}\"?",
-    "deactivate": "¿Desactivar campo?",
-    "deactivateDesc": "Los valores existentes se conservarán.",
-    "deactivateBtn": "Desactivar",
-    "previewFieldName": "Nombre del Campo",
-    "previewEnter": "Ingresa {{name}}",
-    "previewValue": "valor",
-    "previewSelect": "Seleccionar {{name}}...",
-    "previewOption": "opción",
-    "noOptionsDefined": "No hay opciones definidas",
-    "previewCheckbox": "Casilla de Verificación",
-    "fieldTypeField": "Tipo de Campo *"
-  },
-  "orgSettings": {
-    "loading": "Cargando configuración...",
-    "title": "Configuración de la Organización",
-    "subtitle": "Gestiona los datos, departamentos y ubicaciones de tu empresa.",
-    "companyInfo": "Información de la Empresa",
-    "edit": "Editar",
-    "field": {
-      "name": "Nombre",
-      "legalName": "Razón Social",
-      "email": "Correo electrónico",
-      "phone": "Teléfono",
-      "country": "País",
-      "state": "Estado/Provincia",
-      "city": "Ciudad",
-      "timezone": "Zona Horaria",
-      "language": "Idioma"
+    "form": {
+      "editTitle": "Editar campo",
+      "newTitle": "Nuevo campo",
+      "hidePreview": "Ocultar vista previa",
+      "preview": "Vista previa",
+      "fieldNameLabel": "Nombre del campo *",
+      "fieldNamePlaceholder": "p. ej. Talla de camiseta",
+      "fieldTypeLabel": "Tipo de campo *",
+      "sectionLabel": "Sección",
+      "sectionPlaceholder": "Campos personalizados",
+      "placeholderLabel": "Texto de ejemplo",
+      "defaultValueLabel": "Valor predeterminado",
+      "validationRegexLabel": "Expresión regular de validación",
+      "minValueLabel": "Valor mínimo",
+      "maxValueLabel": "Valor máximo",
+      "helpTextLabel": "Texto de ayuda",
+      "helpTextPlaceholder": "Descripción o información sobre herramientas que se muestra a los usuarios",
+      "optionsLabel": "Opciones",
+      "optionInputPlaceholder": "Escribe una opción y pulsa Intro",
+      "addOption": "Añadir",
+      "requiredLabel": "Obligatorio",
+      "searchableLabel": "Con búsqueda",
+      "fieldPreviewHeading": "Vista previa del campo",
+      "saving": "Guardando...",
+      "updateField": "Actualizar campo",
+      "createField": "Crear campo",
+      "cancel": "Cancelar"
     },
-    "errEmail": "Introduce una dirección de correo válida (p. ej., user@example.com).",
-    "errCity": "La ciudad solo puede contener letras, espacios y guiones.",
-    "errState": "El estado solo puede contener letras, espacios y guiones.",
-    "editCompanyInfo": "Editar Información de la Empresa",
-    "selectTimezone": "Seleccionar zona horaria",
-    "selectCountry": "Seleccionar país",
-    "cancel": "Cancelar",
-    "saveChanges": "Guardar Cambios",
-    "updateError": "No se pudo actualizar. Inténtalo de nuevo.",
-    "departments": "Departamentos ({{count}})",
-    "add": "Agregar",
-    "departmentName": "Nombre del departamento",
-    "renameDepartment": "Renombrar departamento",
-    "deleteDepartment": "Eliminar departamento",
-    "save": "Guardar",
-    "addDeptError": "No se pudo agregar el departamento.",
-    "renameDeptError": "No se pudo renombrar el departamento.",
-    "deleteDeptError": "No se pudo eliminar el departamento.",
-    "locations": "Ubicaciones ({{count}})",
-    "timezoneRequired": "La zona horaria es obligatoria.",
-    "locationName": "Nombre de la ubicación",
-    "selectTimezoneRequired": "Seleccionar zona horaria *",
-    "noTimezone": "Sin zona horaria",
-    "editLocation": "Editar ubicación",
-    "deleteLocation": "Eliminar ubicación",
-    "addLocError": "No se pudo agregar la ubicación.",
-    "updateLocError": "No se pudo actualizar la ubicación.",
-    "deleteLocError": "No se pudo eliminar la ubicación."
-  },
-  "apiKeys": {
-    "title": "Claves de API",
-    "newKey": "Nueva Clave",
-    "description": "Genera claves para el acceso programático a las API de EmpCloud. Una clave funciona en todo EmpCloud y el módulo de Nómina, y lleva los permisos del administrador que la creó.",
-    "statusRevoked": "Revocada",
-    "statusExpired": "Expirada",
-    "statusActive": "Activa",
-    "createError": "No se pudo crear la clave de API",
-    "copyError": "No se pudo copiar — selecciona y copia manualmente",
-    "revokeConfirm": "¿Revocar \"{{name}}\"? Cualquier integración que la use dejará de funcionar de inmediato.",
-    "revoked": "Clave de API revocada",
-    "revokeError": "No se pudo revocar la clave",
-    "howToTitle": "Cómo usar tu clave de API",
-    "howToIntro": "La clave generada es un <strong>token Bearer</strong>. Envíala en el encabezado <code>Authorization</code> en cada solicitud de API — exactamente como un token de sesión iniciada:",
-    "bulletBothSystems": "<strong>Funciona en ambos sistemas.</strong> El mismo token autentica en las API de EmpCloud y en las API del módulo de Nómina — sin inicio de sesión ni intercambio de token aparte.",
-    "bulletPermissions": "<strong>Hereda tus permisos.</strong> Una clave solo puede hacer lo que puede hacer el administrador que la creó. Siempre refleja el rol actual de ese administrador — cambia el rol y el acceso de la clave cambia con él.",
-    "bulletShownOnce": "<strong>Se muestra solo una vez.</strong> La clave completa se muestra una sola vez al crearla. Guárdala en un lugar seguro (un gestor de secretos) — solo conservamos una copia con hash y no podemos volver a mostrarla.",
-    "bulletRevocable": "<strong>Revocable y con caducidad.</strong> Establece una caducidad opcional o revoca una clave en cualquier momento. Las claves revocadas o caducadas dejan de funcionar de inmediato, en todas partes. Trata una clave como una contraseña — cualquiera que la tenga puede actuar con tus permisos.",
-    "copyNow": "Copia esta clave ahora — no se volverá a mostrar.",
-    "copied": "Copiada",
-    "copy": "Copiar",
-    "dismiss": "Descartar",
-    "useAsBearer": "Úsala como un token Bearer en el encabezado Authorization:",
-    "keyName": "Nombre de la clave",
-    "keyNamePlaceholder": "p. ej. Exportación de asistencia",
-    "expiresInDays": "Caduca en (días)",
-    "never": "Nunca",
-    "generating": "Generando…",
-    "generateKey": "Generar clave",
-    "cancel": "Cancelar",
-    "loadingKeys": "Cargando claves…",
-    "noKeys": "Aún no hay claves de API.",
-    "colName": "Nombre",
-    "colKey": "Clave",
-    "colStatus": "Estado",
-    "colLastUsed": "Último uso",
-    "colExpires": "Caduca",
-    "colCreated": "Creada",
-    "revoke": "Revocar"
-  },
-  "assetCategories": {
-    "title": "Categorías de Activos",
-    "subtitle": "Organiza los activos por tipo",
-    "addCategory": "Agregar Categoría",
-    "loading": "Cargando categorías...",
-    "empty": "Aún no hay categorías. Crea la primera.",
-    "colName": "Nombre",
-    "colDescription": "Descripción",
-    "colActions": "Acciones",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "editCategory": "Editar Categoría",
-    "newCategory": "Nueva Categoría",
-    "nameLabel": "Nombre *",
-    "namePlaceholder": "p. ej. Portátil, Monitor, Teléfono",
-    "descriptionLabel": "Descripción",
-    "cancel": "Cancelar",
-    "update": "Actualizar",
-    "create": "Crear",
-    "deactivateError": "No se pudo desactivar la categoría",
-    "deactivateTitle": "¿Desactivar categoría?",
-    "deactivateBody": "¿Desactivar <strong>{{name}}</strong>? Los activos existentes etiquetados con esta categoría conservan la etiqueta, pero no se pueden colocar nuevos activos aquí hasta que se restaure.",
-    "deactivating": "Desactivando...",
-    "deactivate": "Desactivar"
+    "error": {
+      "saveFailed": "No se pudo guardar el campo. Inténtalo de nuevo."
+    },
+    "list": {
+      "loading": "Cargando campos...",
+      "emptyTitle": "No hay campos personalizados definidos para {{name}}.",
+      "emptyHint": "Haz clic en \"Añadir campo\" para crear tu primer campo personalizado."
+    },
+    "table": {
+      "fieldName": "Nombre del campo",
+      "key": "Clave",
+      "type": "Tipo",
+      "required": "Obligatorio",
+      "searchable": "Con búsqueda",
+      "actions": "Acciones",
+      "yes": "Sí",
+      "no": "No",
+      "editAria": "Editar campo",
+      "deleteAria": "Eliminar campo",
+      "optionCount_one": "({{count}} opción)",
+      "optionCount_other": "({{count}} opciones)"
+    },
+    "confirm": {
+      "titleNamed": "¿Desactivar el campo \"{{name}}\"?",
+      "title": "¿Desactivar el campo?",
+      "description": "Se conservarán los valores existentes.",
+      "confirmText": "Desactivar"
+    },
+    "preview": {
+      "defaultFieldName": "Nombre del campo",
+      "enterValue": "Introduce {{name}}",
+      "enterValueFallback": "valor",
+      "selectOption": "Selecciona {{name}}...",
+      "selectOptionFallback": "opción",
+      "noOptions": "No hay opciones definidas",
+      "checkboxFallback": "Casilla de verificación"
+    }
   },
   "helpdeskDashboard": {
-    "loading": "Cargando el panel de soporte...",
+    "loading": "Cargando panel de soporte...",
     "title": "Panel de soporte",
-    "subtitle": "Resumen de los tickets de soporte de RR. HH. y el cumplimiento de SLA.",
+    "subtitle": "Resumen de tickets de soporte de RR. HH. y cumplimiento de SLA.",
     "viewAllTickets": "Ver todos los tickets",
-    "stat": {
+    "stats": {
       "totalOpen": "Total abiertos",
-      "inProgress": "En curso",
+      "inProgress": "En progreso",
       "overdue": "Vencidos (SLA incumplido)",
       "resolvedToday": "Resueltos hoy"
     },
-    "slaCompliance": {
-      "heading": "Cumplimiento de SLA",
-      "caption": "Tickets resueltos dentro del SLA"
+    "sla": {
+      "compliance": "Cumplimiento de SLA",
+      "resolvedWithinSla": "Tickets resueltos dentro del SLA"
     },
-    "avgResolution": {
-      "heading": "Tiempo medio de resolución",
-      "unit": "horas"
+    "metrics": {
+      "avgResolutionTime": "Tiempo medio de resolución",
+      "hours": "horas"
     },
     "satisfaction": {
-      "heading": "Valoración de satisfacción",
+      "title": "Valoración de satisfacción",
       "notAvailable": "N/D",
       "ratingCount_one": "{{count}} valoración",
       "ratingCount_other": "{{count}} valoraciones"
     },
     "categoryBreakdown": {
-      "heading": "Tickets por categoría"
+      "title": "Tickets por categoría"
     },
     "recentTickets": {
-      "heading": "Tickets recientes"
+      "title": "Tickets recientes"
     },
-    "noTicketsYet": "Aún no hay tickets",
+    "emptyState": {
+      "noTickets": "Aún no hay tickets"
+    },
     "category": {
       "leave": "Ausencias",
       "payroll": "Nómina",
@@ -2790,22 +5828,86 @@
       "reopened": "Reabierto"
     }
   },
-  "submitFeedback": {
-    "title": "Enviar comentarios",
-    "successHeading": "Comentarios enviados",
-    "successMessage": "Tus comentarios se enviaron de forma anónima. Tu identidad no se almacena ni es visible para nadie. Puedes consultar el estado de tus comentarios en la página \"Mis comentarios\".",
-    "submitAnother": "Enviar otro",
-    "bannerTitle": "Tus comentarios son completamente anónimos",
-    "bannerBody": "Tu identidad se cifra de forma irreversible y no se puede rastrear hasta ti. RR. HH. verá el contenido de los comentarios, pero nunca tu nombre ni tu correo electrónico.",
-    "categoryLabel": "Categoría",
-    "subjectLabel": "Asunto",
-    "messageLabel": "Mensaje",
-    "subjectPlaceholder": "Breve resumen de tus comentarios",
-    "messagePlaceholder": "Describe tus comentarios en detalle...",
-    "markUrgent": "Marcar como urgente",
-    "submitAnon": "Enviar de forma anónima",
-    "submitting": "Enviando...",
-    "submitError": "No se pudieron enviar los comentarios. Inténtalo de nuevo.",
+  "ticketDetail": {
+    "loading": "Cargando ticket...",
+    "backToTickets": "Volver a tickets",
+    "slaBreached": "SLA incumplido",
+    "raisedBy": "Reportado por: {{name}}",
+    "created": "Creado: {{date}}",
+    "assignedTo": "Asignado a: {{name}}",
+    "slaDeadlines": "Plazos de SLA",
+    "firstResponse": "Primera respuesta:",
+    "responded": "Respondido {{date}}",
+    "due": "Vence {{date}}",
+    "resolution": "Resolución:",
+    "resolved": "Resuelto {{date}}",
+    "action": {
+      "assign": "Asignar",
+      "resolve": "Resolver",
+      "close": "Cerrar",
+      "reopen": "Reabrir",
+      "rateService": "Valorar servicio"
+    },
+    "assign": {
+      "selectUser": "Selecciona un usuario para asignar..."
+    },
+    "rating": {
+      "prompt": "¿Qué tan satisfecho estás con la resolución?",
+      "feedbackPlaceholder": "Comentarios adicionales (opcional)",
+      "submit": "Enviar valoración"
+    },
+    "satisfaction": "Satisfacción:",
+    "conversation": "Conversación",
+    "internalNote": "Nota interna",
+    "noComments": "Aún no hay comentarios. Inicia la conversación abajo.",
+    "replyPlaceholder": "Escribe una respuesta...",
+    "internalNoteToggle": "Nota interna (no visible para el empleado)",
+    "sending": "Enviando...",
+    "sendReply": "Enviar respuesta",
+    "toast": {
+      "resolveSuccess": "Ticket marcado como resuelto.",
+      "resolveError": "No se pudo resolver el ticket.",
+      "closeSuccess": "Ticket cerrado.",
+      "closeError": "No se pudo cerrar el ticket.",
+      "reopenSuccess": "Ticket reabierto.",
+      "reopenError": "No se pudo reabrir el ticket."
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "status": {
+      "open": "Abierto",
+      "in_progress": "En curso",
+      "awaiting_response": "Esperando respuesta",
+      "resolved": "Resuelto",
+      "closed": "Cerrado",
+      "reopened": "Reabierto"
+    },
+    "category": {
+      "general": "General",
+      "technical": "Técnico",
+      "hr": "RR. HH.",
+      "payroll": "Nómina",
+      "it": "TI",
+      "facilities": "Instalaciones",
+      "other": "Otro"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "Mis comentarios",
+      "subtitle": "Consulta el estado de los comentarios que enviaste de forma anónima y las respuestas de RR. HH."
+    },
+    "status": {
+      "new": "Nuevo",
+      "acknowledged": "Confirmado",
+      "under_review": "En revisión",
+      "resolved": "Resuelto",
+      "archived": "Archivado"
+    },
     "category": {
       "workplace": "Entorno laboral",
       "management": "Dirección",
@@ -2815,265 +5917,118 @@
       "safety": "Seguridad",
       "suggestion": "Sugerencia",
       "other": "Otro"
+    },
+    "empty": {
+      "title": "Aún no has enviado comentarios",
+      "description": "Comparte tus opiniones de forma anónima con RR. HH.",
+      "submitCta": "Enviar comentarios"
+    },
+    "card": {
+      "urgentBadge": "Urgente",
+      "editButton": "Editar",
+      "hrResponseLabel": "Respuesta de RR. HH.",
+      "respondedOn": "Respondido el {{date}}"
+    },
+    "editModal": {
+      "title": "Editar comentarios",
+      "categoryLabel": "Categoría",
+      "subjectLabel": "Asunto",
+      "messageLabel": "Mensaje",
+      "markUrgent": "Marcar como urgente",
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
+    },
+    "error": {
+      "updateFailed": "No se pudieron actualizar los comentarios"
+    },
+    "pagination": {
+      "summary": "Página {{page}} de {{totalPages}} ({{total}} en total)",
+      "previous": "Anterior",
+      "next": "Siguiente"
     }
   },
-  "employeeProfile": {
-    "tab": {
-      "personal": "Personal",
-      "education": "Formación",
-      "experience": "Experiencia",
-      "dependents": "Dependientes",
-      "addresses": "Direcciones",
-      "custom": "Campos personalizados"
+  "feedbackDashboard": {
+    "title": "Panel de comentarios",
+    "subtitle": "Resumen de los comentarios anónimos de los empleados.",
+    "loading": "Cargando panel...",
+    "stats": {
+      "totalFeedback": "Comentarios totales",
+      "urgentItems": "Elementos urgentes",
+      "responseRate": "Tasa de respuesta",
+      "newUnread": "Nuevos / Sin leer"
     },
-    "invalidEmployee": {
-      "title": "Empleado no válido",
-      "description": "El ID de empleado de la URL falta o no es válido.",
-      "backLink": "Volver al directorio de empleados"
+    "sections": {
+      "byCategory": "Por categoría",
+      "sentimentDistribution": "Distribución del sentimiento",
+      "byStatus": "Por estado",
+      "recentFeedback": "Comentarios recientes"
     },
-    "accessDenied": {
-      "title": "Acceso denegado",
-      "description": "No tienes permiso para ver este perfil.",
-      "backLink": "Volver al panel"
+    "empty": {
+      "noData": "Aún no hay datos.",
+      "noFeedback": "Aún no hay comentarios."
     },
-    "loadingProfile": "Cargando perfil...",
-    "employeeNotFound": "Empleado no encontrado",
-    "backToDirectory": "Volver al directorio",
-    "noDesignation": "Sin puesto",
-    "biometricPhotoTooltip": "La foto se gestiona mediante el registro en el quiosco biométrico",
-    "biometricPhotoAlt": "Rostro biométrico",
-    "profilePhotoAlt": "Perfil",
-    "biometricPhotoHint": "Foto del registro biométrico: se gestiona desde el quiosco.",
-    "removingPhoto": "Eliminando...",
-    "removePhoto": "Eliminar foto",
-    "empCodeLabel": "Código de empleado: {{code}}",
-    "joinedLabel": "Incorporación: {{date}}",
-    "cancel": "Cancelar",
-    "editMyInfo": "Editar mi información",
-    "editProfile": "Editar perfil",
-    "removePhotoDialog": {
-      "title": "¿Eliminar tu foto de perfil?",
-      "description": "Se mostrarán de nuevo tus iniciales.",
-      "confirm": "Eliminar foto"
+    "status": {
+      "new": "Nuevo",
+      "acknowledged": "Recibido",
+      "under_review": "En revisión",
+      "resolved": "Resuelto",
+      "archived": "Archivado"
     },
-    "fieldRow": {
-      "empty": "-"
-    },
-    "validation": {
-      "pan": "El PAN debe tener 5 letras + 4 dígitos + 1 letra (p. ej. ABCDE1234F)",
-      "aadhaar": "El Aadhaar debe tener 12 dígitos",
-      "uan": "El UAN debe tener 12 dígitos",
-      "passport": "El pasaporte debe tener 1 letra + 7 dígitos (p. ej. A1234567)"
-    },
-    "personal": {
-      "saveFailed": "No se pudo guardar",
-      "selfServiceNotice": "Puedes editar tu información personal y de contacto de emergencia. Contacta con RR. HH. para actualizar los campos administrativos."
-    },
-    "field": {
-      "personalEmail": "Correo personal",
-      "contactNumber": "Número de contacto",
-      "gender": "Género",
-      "dateOfBirth": "Fecha de nacimiento",
-      "bloodGroup": "Grupo sanguíneo",
-      "maritalStatus": "Estado civil",
-      "nationality": "Nacionalidad",
-      "aadharNumber": "Número de Aadhar",
-      "panNumber": "Número de PAN",
-      "uanNumber": "Número de UAN",
-      "passportNumber": "Número de pasaporte",
-      "passportExpiry": "Vencimiento del pasaporte",
-      "visaStatus": "Estado del visado",
-      "visaExpiry": "Vencimiento del visado",
-      "emergencyContact": "Contacto de emergencia",
-      "emergencyPhone": "Teléfono de emergencia",
-      "emergencyRelation": "Parentesco de emergencia",
-      "noticePeriodDays": "Periodo de preaviso (días)",
-      "reportingManager": "Responsable directo",
-      "department": "Departamento",
-      "shift": "Turno",
-      "designation": "Puesto",
-      "employeeCode": "Código de empleado",
-      "probationStart": "Inicio del periodo de prueba",
-      "probationEnd": "Fin del periodo de prueba",
-      "confirmationDate": "Fecha de confirmación",
-      "customRoles": "Roles personalizados",
-      "additionalManagers": "Responsables adicionales"
-    },
-    "select": {
-      "placeholder": "Seleccionar"
-    },
-    "gender": {
-      "male": "Masculino",
-      "female": "Femenino",
+    "category": {
+      "workplace": "Lugar de trabajo",
+      "management": "Dirección",
+      "process": "Proceso",
+      "culture": "Cultura",
+      "harassment": "Acoso",
+      "safety": "Seguridad",
+      "suggestion": "Sugerencia",
       "other": "Otro"
     },
-    "maritalStatus": {
-      "single": "Soltero/a",
-      "married": "Casado/a",
-      "divorced": "Divorciado/a",
-      "widowed": "Viudo/a"
+    "sentiment": {
+      "positive": "Positivo",
+      "neutral": "Neutral",
+      "negative": "Negativo",
+      "unset": "Sin definir"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "Enviar comentarios"
     },
-    "placeholder": {
-      "aadhar": "12 dígitos",
-      "pan": "ABCDE1234F",
-      "uan": "12 dígitos",
-      "passport": "A1234567",
-      "designationSelfService": "Contacta con RR. HH. para cambiarlo",
-      "designation": "p. ej. Ingeniero sénior",
-      "empCodeSelfService": "Contacta con RR. HH. para establecerlo",
-      "empCode": "p. ej. EMP001"
+    "success": {
+      "title": "Comentarios enviados",
+      "description": "Tus comentarios se han enviado de forma anónima. Tu identidad no se almacena ni es visible para nadie. Puedes consultar el estado de tus comentarios en la página \"Mis comentarios\".",
+      "submitAnother": "Enviar otro"
     },
-    "reportingManager": {
-      "none": "Sin responsable"
+    "anonymousBanner": {
+      "title": "Tus comentarios son completamente anónimos",
+      "description": "Tu identidad se convierte en un hash y no se puede rastrear hasta ti. RR. HH. verá el contenido de los comentarios, pero nunca tu nombre ni tu correo electrónico."
     },
-    "department": {
-      "none": "Sin departamento"
+    "field": {
+      "category": "Categoría",
+      "subject": "Asunto",
+      "message": "Mensaje",
+      "subjectPlaceholder": "Breve resumen de tus comentarios",
+      "messagePlaceholder": "Describe tus comentarios en detalle...",
+      "markUrgent": "Marcar como urgente"
     },
-    "shift": {
-      "none": "Sin turno"
+    "action": {
+      "submit": "Enviar de forma anónima",
+      "submitting": "Enviando..."
     },
-    "saving": "Guardando...",
-    "saveChanges": "Guardar cambios",
-    "additionalManagers": {
-      "loading": "Cargando…",
-      "none": "Sin responsables adicionales",
-      "userFallback": "Usuario n.º {{id}}",
-      "selectedCount_one": "({{count}} seleccionado)",
-      "selectedCount_other": "({{count}} seleccionados)",
-      "helpText": "Corresponsables con el mismo acceso al ámbito de equipo que el responsable directo principal. Se respetan en todos los permisos de ámbito de equipo.",
-      "removeAria": "Eliminar a {{name}}",
-      "removeAriaFallback": "responsable",
-      "searchPlaceholder": "Buscar por nombre o correo…",
-      "addPlaceholder": "Añadir otro…",
-      "noMatches": "No hay usuarios coincidentes",
-      "allSelected": "Ya se han seleccionado todos los usuarios elegibles",
-      "savingButton": "Guardando…",
-      "saveButton": "Guardar responsables adicionales",
-      "unsavedChanges": "cambios sin guardar",
-      "saved": "Guardado"
+    "error": {
+      "submitFailed": "No se pudieron enviar los comentarios. Inténtalo de nuevo."
     },
-    "apiError": {
-      "requestFailed": "La solicitud falló"
-    },
-    "education": {
-      "add": "Añadir formación",
-      "edit": "Editar formación",
-      "empty": "Aún no se han añadido registros de formación.",
-      "deleteDialog": {
-        "title": "¿Eliminar este registro de formación?"
-      },
-      "field": {
-        "degree": "Título",
-        "institution": "Institución",
-        "fieldOfStudy": "Campo de estudio",
-        "grade": "Calificación",
-        "startYear": "Año de inicio",
-        "endYear": "Año de finalización"
-      },
-      "placeholder": {
-        "degree": "p. ej. Grado en Ingeniería",
-        "institution": "p. ej. IIT Delhi"
-      },
-      "validation": {
-        "required": "El título y la institución son obligatorios",
-        "endYear": "El año de finalización debe ser igual o posterior al año de inicio"
-      },
-      "fromYear": "Desde {{year}}",
-      "gradeSuffix": "Calificación: {{grade}}"
-    },
-    "save": "Guardar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "experience": {
-      "add": "Añadir experiencia",
-      "edit": "Editar experiencia",
-      "empty": "Aún no se han añadido registros de experiencia laboral.",
-      "deleteDialog": {
-        "title": "¿Eliminar este registro de experiencia?"
-      },
-      "field": {
-        "company": "Empresa",
-        "designation": "Puesto",
-        "startDate": "Fecha de inicio",
-        "endDate": "Fecha de finalización",
-        "description": "Descripción"
-      },
-      "currentlyWorking": "Trabajo aquí actualmente",
-      "current": "Actual",
-      "present": "Actualidad",
-      "validation": {
-        "required": "La empresa, el puesto y la fecha de inicio son obligatorios"
-      }
-    },
-    "dependents": {
-      "add": "Añadir dependiente",
-      "edit": "Editar dependiente",
-      "empty": "Aún no se han añadido dependientes.",
-      "deleteDialog": {
-        "title": "¿Eliminar este dependiente?"
-      },
-      "field": {
-        "name": "Nombre",
-        "relationship": "Parentesco",
-        "dateOfBirth": "Fecha de nacimiento",
-        "gender": "Género",
-        "nomineePercent": "% de beneficiario"
-      },
-      "isNominee": "Es beneficiario",
-      "placeholder": {
-        "relationship": "p. ej. Cónyuge, Hijo/a, Padre/Madre"
-      },
-      "validation": {
-        "required": "El nombre y el parentesco son obligatorios"
-      },
-      "column": {
-        "name": "Nombre",
-        "relationship": "Parentesco",
-        "dob": "F. nac.",
-        "gender": "Género",
-        "nominee": "Beneficiario",
-        "actions": "Acciones"
-      },
-      "nomineeYes": "Sí",
-      "nomineeNo": "No"
-    },
-    "addresses": {
-      "add": "Añadir dirección",
-      "edit": "Editar dirección",
-      "empty": "Aún no se han añadido direcciones.",
-      "deleteDialog": {
-        "title": "¿Eliminar esta dirección?"
-      },
-      "field": {
-        "type": "Tipo",
-        "country": "País",
-        "line1": "Línea de dirección 1",
-        "line2": "Línea de dirección 2",
-        "city": "Ciudad",
-        "state": "Provincia",
-        "zipcode": "Código postal"
-      },
-      "type": {
-        "current": "Actual",
-        "permanent": "Permanente"
-      },
-      "validation": {
-        "required": "La línea de dirección 1, la ciudad, la provincia y el código postal son obligatorios"
-      }
-    },
-    "customFields": {
-      "loading": "Cargando campos personalizados...",
-      "emptyTitle": "Aún no se han definido campos personalizados para los empleados.",
-      "emptyHint": "Los administradores de RR. HH. pueden crear campos personalizados desde la página de configuración de campos personalizados.",
-      "heading": "Campos personalizados",
-      "saveFailed": "No se pudieron guardar los campos personalizados",
-      "defaultSection": "Campos personalizados",
-      "display": {
-        "yes": "Sí",
-        "no": "No"
-      },
-      "selectPlaceholder": "Seleccionar...",
-      "filePlaceholder": "Referencia o ruta del archivo"
+    "category": {
+      "workplace": "Entorno laboral",
+      "management": "Dirección",
+      "process": "Proceso",
+      "culture": "Cultura",
+      "harassment": "Acoso",
+      "safety": "Seguridad",
+      "suggestion": "Sugerencia",
+      "other": "Otro"
     }
   },
   "assetDetail": {
@@ -3104,18 +6059,18 @@
       "damaged": "Dañado",
       "updated": "Actualizado"
     },
-    "actions": {
+    "buttons": {
       "edit": "Editar",
       "assign": "Asignar",
       "return": "Devolver",
       "sendForRepair": "Enviar a reparación",
       "repairComplete": "Reparación completada",
       "retire": "Retirar",
-      "reportLost": "Reportar perdido",
+      "reportLost": "Reportar pérdida",
       "markFound": "Marcar como encontrado"
     },
     "info": {
-      "title": "Información del activo",
+      "heading": "Información del activo",
       "assetTag": "Etiqueta del activo",
       "category": "Categoría",
       "uncategorized": "Sin categoría",
@@ -3126,50 +6081,49 @@
       "purchaseDate": "Fecha de compra",
       "purchaseCost": "Costo de compra",
       "warrantyExpiry": "Vencimiento de garantía",
-      "expired": "(Vencida)",
+      "expiredSuffix": " (Vencida)",
       "description": "Descripción",
       "notes": "Notas"
     },
     "assignment": {
-      "title": "Asignado actualmente",
+      "heading": "Asignado actualmente",
       "assignedTo": "Asignado a",
       "assignedAt": "Fecha de asignación",
       "assignedBy": "Asignado por"
     },
     "history": {
-      "title": "Historial",
-      "toUser": "A: {{name}}",
-      "fromUser": "De: {{name}}",
-      "empty": "Sin entradas en el historial",
-      "deleteEntry": "Eliminar entrada del historial"
+      "heading": "Historial",
+      "to": "Para: {{name}}",
+      "from": "De: {{name}}",
+      "empty": "No hay entradas en el historial",
+      "deleteTitle": "Eliminar entrada del historial"
     },
     "assignModal": {
       "title": "Asignar activo",
-      "assignToLabel": "Asignar a",
+      "assignToLabel": "Asignar a *",
       "selectEmployee": "Seleccionar empleado",
       "notesLabel": "Notas",
-      "submitting": "Asignando...",
-      "submit": "Asignar"
-    },
-    "common": {
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "submit": "Asignar",
+      "submitting": "Asignando..."
     },
     "returnModal": {
       "title": "Devolver activo",
       "conditionLabel": "Estado al devolver",
       "notesLabel": "Notas",
-      "submitting": "Devolviendo...",
-      "submit": "Devolver activo"
+      "cancel": "Cancelar",
+      "submit": "Devolver activo",
+      "submitting": "Devolviendo..."
     },
     "confirm": {
       "retire": {
         "title": "¿Retirar este activo?",
-        "body": "Retirar un activo lo saca del inventario activo. Las asignaciones anteriores quedan registradas, pero el activo ya no se puede asignar.",
+        "body": "Retirar un activo lo elimina del inventario activo. Las asignaciones anteriores quedan registradas, pero el activo ya no podrá asignarse.",
         "confirmLabel": "Retirar activo"
       },
       "lost": {
         "title": "¿Reportar el activo como perdido?",
-        "body": "Esto marcará el activo como perdido y lo registrará en el historial de auditoría. Podrás marcarlo como encontrado más tarde desde la página de detalles del activo.",
+        "body": "Esto marcará el activo como perdido y lo registrará en el historial de auditoría. Podrás marcarlo como encontrado más adelante desde la página de detalles del activo.",
         "confirmLabel": "Reportar como perdido"
       },
       "found": {
@@ -3179,8 +6133,8 @@
       },
       "repairStart": {
         "title": "¿Enviar el activo a reparación?",
-        "bodyAssigned": "Esto desasignará el activo y lo cambiará a 'En reparación'. El titular actual queda registrado en el historial.",
-        "bodyUnassigned": "Esto cambiará el activo a 'En reparación'. No podrá asignarse hasta que se complete la reparación.",
+        "bodyAssigned": "Esto desasignará el activo y lo pasará a 'En reparación'. El titular actual quedará registrado en el historial.",
+        "bodyDefault": "Esto pasará el activo a 'En reparación'. No podrá asignarse hasta que se complete la reparación.",
         "confirmLabel": "Enviar a reparación"
       },
       "repairComplete": {
@@ -3188,32 +6142,41 @@
         "body": "Esto devolverá el activo al inventario activo como disponible, para que pueda reasignarse.",
         "confirmLabel": "Marcar como reparado"
       },
+      "cancel": "Cancelar",
       "working": "Procesando..."
     },
     "editModal": {
       "title": "Editar activo",
-      "nameLabel": "Nombre",
+      "nameLabel": "Nombre *",
       "categoryLabel": "Categoría",
+      "uncategorized": "Sin categoría",
       "serialNumberLabel": "Número de serie",
       "brandLabel": "Marca",
       "modelLabel": "Modelo",
       "conditionLabel": "Estado",
       "purchaseDateLabel": "Fecha de compra",
       "purchaseCostLabel": "Costo de compra",
-      "currencyPrefix": "₹ INR",
       "purchaseCostHint": "Importe en paise.",
       "warrantyExpiryLabel": "Vencimiento de garantía",
       "locationLabel": "Ubicación",
       "descriptionLabel": "Descripción",
       "notesLabel": "Notas",
-      "saving": "Guardando...",
-      "save": "Guardar cambios"
+      "cancel": "Cancelar",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
     },
-    "historyDelete": {
+    "conditionOptions": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "fair": "Regular",
+      "poor": "Malo"
+    },
+    "deleteHistory": {
       "title": "¿Eliminar entrada del historial?",
-      "body": "Esto elimina solo esta fila del registro. El estado actual del activo no cambia: las asignaciones o acciones anteriores no se revierten.",
-      "deleting": "Eliminando...",
-      "confirm": "Eliminar entrada"
+      "body": "Esto elimina únicamente esta fila del registro. El estado actual del activo permanece sin cambios: las asignaciones o acciones anteriores no se revierten.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar entrada",
+      "deleting": "Eliminando..."
     },
     "errors": {
       "updateFailed": "No se pudo actualizar el activo",
@@ -3225,5 +6188,222 @@
       "sendToRepairFailed": "No se pudo enviar el activo a reparación",
       "completeRepairFailed": "No se pudo completar la reparación"
     }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "Categorías de activos",
+      "subtitle": "Organiza los activos por tipo"
+    },
+    "actions": {
+      "addCategory": "Añadir categoría",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "list": {
+      "loading": "Cargando categorías...",
+      "empty": "Aún no hay categorías. Crea la primera."
+    },
+    "table": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "actions": "Acciones"
+    },
+    "form": {
+      "editTitle": "Editar categoría",
+      "newTitle": "Nueva categoría",
+      "nameLabel": "Nombre *",
+      "namePlaceholder": "p. ej. Portátil, Monitor, Teléfono",
+      "descriptionLabel": "Descripción",
+      "cancel": "Cancelar",
+      "update": "Actualizar",
+      "create": "Crear"
+    },
+    "delete": {
+      "title": "¿Desactivar categoría?",
+      "message": "¿Desactivar {{name}}? Los activos existentes etiquetados con esta categoría conservan la etiqueta, pero no se pueden asignar nuevos activos aquí hasta que se restaure.",
+      "cancel": "Cancelar",
+      "confirm": "Desactivar",
+      "inProgress": "Desactivando..."
+    },
+    "errors": {
+      "deactivateFailed": "No se pudo desactivar la categoría"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "Mis activos",
+      "subtitle": "Equipos y activos asignados a ti"
+    },
+    "empty": {
+      "title": "No tienes activos asignados",
+      "description": "Cuando tu organización te asigne equipos, aparecerán aquí."
+    },
+    "card": {
+      "serialNumber": "N.º de serie: {{serial}}",
+      "assigned": "Asignado el {{date}}",
+      "warranty": "Garantía: {{date}}",
+      "warrantyExpiredSuffix": "(Vencida)"
+    },
+    "condition": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "fair": "Aceptable",
+      "poor": "Malo"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "Revocada",
+      "expired": "Caducada",
+      "active": "Activa"
+    },
+    "toast": {
+      "createError": "No se pudo crear la clave de API",
+      "copyError": "No se pudo copiar: selecciona y copia manualmente",
+      "revokeSuccess": "Clave de API revocada",
+      "revokeError": "No se pudo revocar la clave"
+    },
+    "confirm": {
+      "revoke": "¿Revocar «{{name}}»? Cualquier integración que la utilice dejará de funcionar de inmediato."
+    },
+    "heading": "Claves de API",
+    "newKeyButton": "Nueva clave",
+    "description": "Genera claves para el acceso programático a las API de EmpCloud. Una misma clave funciona en EmpCloud y en el módulo Payroll, y hereda los permisos del administrador que la creó.",
+    "howTo": {
+      "title": "Cómo usar tu clave de API",
+      "intro": "La clave generada es un <strong>token Bearer</strong>. Envíalo en la cabecera <code>Authorization</code> en cada solicitud a la API, igual que un token de sesión iniciada:",
+      "bulletBothSystems": "<strong>Funciona en ambos sistemas.</strong> El mismo token se autentica frente a las API de EmpCloud y las API del módulo Payroll, sin necesidad de un inicio de sesión o intercambio de tokens aparte.",
+      "bulletInheritsPermissions": "<strong>Hereda tus permisos.</strong> Una clave solo puede hacer lo que puede hacer el administrador que la creó. Siempre refleja el rol actual de ese administrador: si cambias el rol, el acceso de la clave cambia con él.",
+      "bulletShownOnce": "<strong>Se muestra una sola vez.</strong> La clave completa se muestra una única vez al crearla. Guárdala en un lugar seguro (un gestor de secretos); solo conservamos una copia cifrada y no podemos volver a mostrarla.",
+      "bulletRevocable": "<strong>Revocable y con caducidad.</strong> Establece una caducidad opcional o revoca una clave en cualquier momento. Las claves revocadas o caducadas dejan de funcionar de inmediato, en todas partes. Trata una clave como una contraseña: cualquiera que la tenga puede actuar con tus permisos."
+    },
+    "reveal": {
+      "warning": "Copia esta clave ahora; no se volverá a mostrar.",
+      "copied": "Copiada",
+      "copy": "Copiar",
+      "dismissAria": "Descartar",
+      "bearerHint": "Úsala como token Bearer en la cabecera Authorization:"
+    },
+    "form": {
+      "nameLabel": "Nombre de la clave",
+      "namePlaceholder": "p. ej. Exportación de asistencia",
+      "expiresLabel": "Caduca en (días)",
+      "expiresPlaceholder": "Nunca",
+      "generating": "Generando…",
+      "generate": "Generar clave",
+      "cancel": "Cancelar"
+    },
+    "list": {
+      "loading": "Cargando claves…",
+      "empty": "Aún no hay claves de API."
+    },
+    "table": {
+      "name": "Nombre",
+      "key": "Clave",
+      "status": "Estado",
+      "lastUsed": "Último uso",
+      "expires": "Caduca",
+      "created": "Creada",
+      "neverExpires": "Nunca"
+    },
+    "revokeAction": "Revocar"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "last7": "Últimos 7 días",
+      "last30": "Últimos 30 días",
+      "thisMonth": "Este mes",
+      "lastMonth": "Mes pasado",
+      "customRange": "Intervalo personalizado"
+    },
+    "trigger": {
+      "placeholder": "Seleccionar intervalo de fechas"
+    },
+    "dialog": {
+      "ariaLabel": "Elegir un intervalo de fechas"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "Borrar",
+      "cancel": "Cancelar",
+      "apply": "Aplicar"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "Importación masiva de activos desde CSV / Excel"
+    },
+    "actions": {
+      "downloadTemplate": "Descargar plantilla",
+      "close": "Cerrar",
+      "cancel": "Cancelar"
+    },
+    "upload": {
+      "requiredHint": "Obligatorio: <0>name</0>. Las demás columnas son opcionales.",
+      "dropzoneTitle": "Arrastra y suelta aquí tu archivo CSV o Excel",
+      "dropzoneSubtitle": "o haz clic para explorar",
+      "tipsHeading": "Consejos:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> es el importe en paise (p. ej., 150000 para ₹1500).",
+        "conditionStatus": "<0>condition_status</0> debe ser uno de: new, good, fair, poor.",
+        "categoryAutoCreate": "Los valores de <0>category_name</0> desconocidos se crean automáticamente.",
+        "dateFormats": "Las fechas admiten el formato YYYY-MM-DD o celdas de fecha de Excel."
+      }
+    },
+    "importing": {
+      "message": "Importando activos... espera un momento."
+    },
+    "done": {
+      "completeTitle": "Importación completada",
+      "rowError": "Fila {{row}}:",
+      "emptyFile": "No se encontraron filas en el archivo cargado.",
+      "importedCount_one": "{{count}} activo importado correctamente.",
+      "importedCount_other": "{{count}} activos importados correctamente.",
+      "createdCategoriesTitle_one": "Nueva categoría creada ({{count}}):",
+      "createdCategoriesTitle_other": "Nuevas categorías creadas ({{count}}):",
+      "skippedRows_one": "Se omitió {{count}} fila con errores",
+      "skippedRows_other": "Se omitieron {{count}} filas con errores"
+    },
+    "errors": {
+      "bulkImportFailed": "Error en la importación masiva"
+    }
+  },
+  "customRolesField": {
+    "label": "Roles personalizados",
+    "loading": "Cargando…",
+    "emptyReadonly": "No hay roles personalizados asignados",
+    "helpText": "Roles adicionales que otorgan permisos detallados además del rol principal de este usuario. Gestiona los roles en",
+    "helpTextLink": "Configuración → Roles y permisos",
+    "removeAria": "Eliminar {{name}}",
+    "placeholderEmpty": "Haz clic para asignar un rol personalizado…",
+    "placeholderMore": "Añadir otro rol…",
+    "noneToAssign": "No hay roles personalizados para asignar. Crea uno en Configuración → Roles y permisos.",
+    "noMatches": "No hay roles coincidentes",
+    "error": {
+      "requestFailed": "La solicitud falló"
+    },
+    "assignedCount_one": "({{count}} asignado)",
+    "assignedCount_other": "({{count}} asignados)",
+    "permissionCount_one": "{{count}} permiso",
+    "permissionCount_other": "{{count}} permisos"
+  },
+  "viewModeToggle": {
+    "myView": "Mi vista",
+    "adminView": "Vista de administrador",
+    "myViewTitle": "Vista personal de autoservicio",
+    "adminViewTitle": "Vista de administrador — solo los elementos que habilitan los permisos de tu rol personalizado"
+  },
+  "aiBadge": {
+    "label": "Con tecnología de IA"
   }
 }

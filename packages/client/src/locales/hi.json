@@ -426,7 +426,8 @@
     "markAllRead": "सबको पढ़ा हुआ मार्क करें",
     "noNotifications": "अभी कोई सूचना नहीं",
     "viewAll": "सभी देखें",
-    "review": "समीक्षा करें"
+    "review": "समीक्षा करें",
+    "cancelInvitationTooltip": "इस निमंत्रण को रद्द करें और निष्क्रिय उपयोगकर्ता को हटाएं"
   },
   "auth": {
     "signIn": "साइन इन",
@@ -963,9 +964,9 @@
       "lateBy": "देरी",
       "minSuffix": "मिनट",
       "close": "बंद करें",
-      "dateLabel": "तिथि",
-      "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।",
-      "searchPlaceholder": "नाम, ईमेल या विभाग खोजें"
+      "dateLabel": "दिनांक",
+      "searchPlaceholder": "नाम, ईमेल या विभाग खोजें",
+      "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।"
     },
     "export": {
       "title": "उपस्थिति रिपोर्ट निर्यात करें",
@@ -1710,7 +1711,12 @@
       "next": "अगला",
       "alertPlannedInvalid": "नियोजित हेडकाउंट 0 या उससे अधिक होना चाहिए।",
       "alertCurrentInvalid": "वर्तमान हेडकाउंट 0 या उससे अधिक होना चाहिए।",
-      "searchPlaceholder": "योजना शीर्षक या वित्तीय वर्ष से खोजें..."
+      "searchPlaceholder": "योजना शीर्षक या वित्तीय वर्ष से खोजें...",
+      "allDepartments": "सभी विभाग",
+      "allYears": "सभी वर्ष",
+      "failedApprove": "योजना स्वीकृत करने में विफल",
+      "failedReject": "योजना अस्वीकृत करने में विफल",
+      "failedSubmit": "योजना सबमिट करने में विफल"
     },
     "vacancies": {
       "title": "खुली रिक्तियाँ",
@@ -1769,7 +1775,9 @@
       "deleteTitle": "पद हटाएँ?",
       "deleteConfirm": "{{title}} हटाएँ? सक्रिय असाइनमेंट समाप्त हो जाते हैं और पद बंद हो जाता है। यह क्रिया वापस नहीं की जा सकती।",
       "deleting": "हटा रहा है...",
-      "failedDelete": "पद हटाने में विफल"
+      "failedDelete": "पद हटाने में विफल",
+      "allTypes": "सभी प्रकार",
+      "criticalOnly": "केवल महत्वपूर्ण"
     },
     "dashboard": {
       "title": "पद डैशबोर्ड",
@@ -1855,8 +1863,8 @@
       "policy_created": "नीति बनाई",
       "policy_acknowledged": "नीति स्वीकृत"
     },
-    "noActionMatches": "कोई मिलती-जुलती क्रिया नहीं",
-    "searchActions": "क्रिया प्रकार खोजें..."
+    "searchActions": "कार्रवाई प्रकार खोजें...",
+    "noActionMatches": "कोई मेल खाती कार्रवाई नहीं"
   },
   "employees": {
     "directory": {
@@ -2545,90 +2553,2990 @@
       "updated": "अपडेट किया गया"
     }
   },
-  "customFields": {
-    "title": "कस्टम फ़ील्ड",
-    "subtitle": "कर्मचारियों, विभागों और अन्य इकाइयों के लिए कस्टम डेटा फ़ील्ड परिभाषित करें",
-    "addField": "फ़ील्ड जोड़ें",
-    "entity": {
-      "employee": "कर्मचारी",
+  "messageThread": {
+    "presence": {
+      "online": "ऑनलाइन",
+      "typing": "टाइप कर रहे हैं…",
+      "typingOne": "{{name}} टाइप कर रहे हैं…",
+      "typingTwo": "{{name1}} और {{name2}} टाइप कर रहे हैं…",
+      "typingMany_one": "{{count}} व्यक्ति टाइप कर रहा है…",
+      "typingMany_other": "{{count}} लोग टाइप कर रहे हैं…"
+    },
+    "fallback": {
+      "someone": "कोई"
+    },
+    "sr": {
+      "sentAttachment": "एक अटैचमेंट भेजा"
+    },
+    "header": {
+      "conversationTitleFallback": "बातचीत",
+      "backToConversations": "बातचीत पर वापस जाएँ",
+      "membersTooltip": "सदस्य: {{roster}}",
+      "viewMembers": "सदस्य देखें",
+      "searchInConversation": "बातचीत में खोजें"
+    },
+    "mute": {
+      "unmute": "नोटिफ़िकेशन अनम्यूट करें",
+      "mute": "नोटिफ़िकेशन म्यूट करें",
+      "unmutedToast": "नोटिफ़िकेशन अनम्यूट हो गए.",
+      "mutedToast": "नोटिफ़िकेशन म्यूट हो गए.",
+      "error": "नोटिफ़िकेशन अपडेट नहीं हो सके. कृपया फिर से कोशिश करें."
+    },
+    "archive": {
+      "unarchive": "बातचीत अनआर्काइव करें",
+      "archive": "बातचीत आर्काइव करें",
+      "unarchivedToast": "बातचीत अनआर्काइव हो गई.",
+      "archivedToast": "बातचीत आर्काइव हो गई.",
+      "error": "बातचीत अपडेट नहीं हो सकी. कृपया फिर से कोशिश करें."
+    },
+    "search": {
+      "placeholder": "इस बातचीत में खोजें…",
+      "noMatches": "कोई मिलान नहीं."
+    },
+    "pinned": {
+      "label": "पिन किया गया",
+      "attachmentFallback": "📎 अटैचमेंट",
+      "goTo": "पिन किए गए संदेश पर जाएँ",
+      "unpin": "संदेश अनपिन करें",
+      "labelCount_one": "पिन किया गया · {{count}}",
+      "labelCount_other": "पिन किए गए · {{count}}"
+    },
+    "pin": {
+      "pinnedToast": "संदेश पिन हो गया.",
+      "unpinnedToast": "संदेश अनपिन हो गया.",
+      "error": "पिन अपडेट नहीं हो सका. कृपया फिर से कोशिश करें."
+    },
+    "members": {
+      "dialogLabel": "ग्रुप के सदस्य",
+      "saveName": "नाम सहेजें",
+      "cancel": "रद्द करें",
+      "renameGroup": "ग्रुप का नाम बदलें",
+      "close": "बंद करें",
+      "changePhoto": "ग्रुप फ़ोटो बदलें",
+      "descriptionPlaceholder": "ग्रुप का विवरण जोड़ें…",
+      "noDescription": "कोई विवरण नहीं",
+      "descCancel": "रद्द करें",
+      "descSave": "सहेजें",
+      "youSuffix": "(आप)",
+      "adminBadge": "एडमिन",
+      "removeMember": "{{name}} को हटाएँ",
+      "addMembers": "सदस्य जोड़ें",
+      "deleteGroup": "ग्रुप हटाएँ",
+      "leaveGroup": "ग्रुप छोड़ें",
+      "memberCount_one": "{{count}} सदस्य",
+      "memberCount_other": "{{count}} सदस्य"
+    },
+    "confirm": {
+      "leaveTitle": "ग्रुप छोड़ें?",
+      "leaveDescription": "आप \"{{group}}\" छोड़ देंगे और इसके संदेश मिलना बंद हो जाएँगे. ग्रुप एडमिन आपको दोबारा जोड़ सकते हैं.",
+      "leaveGroupFallback": "यह ग्रुप",
+      "leaveConfirm": "छोड़ें",
+      "deleteGroupTitle": "ग्रुप हटाएँ?",
+      "deleteGroupDescription": "\"{{group}}\" सभी के लिए हटा दिया जाएगा और सभी सदस्यों की चैट सूची से निकाल दिया जाएगा. इसे पूर्ववत नहीं किया जा सकता.",
+      "deleteGroupFallback": "यह ग्रुप",
+      "deleteGroupConfirm": "ग्रुप हटाएँ",
+      "bulkDeletePartial": "केवल आपके अपने संदेश हटाए जाएँगे; बाकी बने रहेंगे. इसे पूर्ववत नहीं किया जा सकता.",
+      "bulkDeleteAll": "ये संदेश सभी के लिए हटा दिए जाएँगे. इसे पूर्ववत नहीं किया जा सकता.",
+      "bulkDeleteConfirm": "हटाएँ",
+      "removeMemberTitle": "सदस्य हटाएँ?",
+      "removeMemberDescription": "{{name}} को \"{{group}}\" से हटा दिया जाएगा और वे इसके संदेश नहीं देख पाएँगे.",
+      "removeMemberGroupFallback": "यह ग्रुप",
+      "removeMemberConfirm": "हटाएँ",
+      "bulkDeleteTitle_one": "{{count}} संदेश हटाएँ?",
+      "bulkDeleteTitle_other": "{{count}} संदेश हटाएँ?"
+    },
+    "group": {
+      "renamedToast": "ग्रुप का नाम बदल गया.",
+      "renameError": "ग्रुप का नाम नहीं बदला जा सका. कृपया फिर से कोशिश करें.",
+      "descriptionUpdatedToast": "विवरण अपडेट हो गया.",
+      "descriptionError": "विवरण अपडेट नहीं हो सका.",
+      "photoMustBeImage": "ग्रुप फ़ोटो एक इमेज होनी चाहिए.",
+      "photoUpdatedToast": "ग्रुप फ़ोटो अपडेट हो गई.",
+      "photoUploadError": "फ़ोटो अपलोड नहीं हो सकी.",
+      "memberRemovedToast": "{{name}} को ग्रुप से हटा दिया गया.",
+      "memberRemoveError": "सदस्य को हटाया नहीं जा सका. कृपया फिर से कोशिश करें.",
+      "leftToast": "आपने ग्रुप छोड़ दिया.",
+      "leaveError": "ग्रुप नहीं छोड़ा जा सका. कृपया फिर से कोशिश करें.",
+      "deletedToast": "ग्रुप हटा दिया गया.",
+      "deleteError": "ग्रुप हटाया नहीं जा सका. कृपया फिर से कोशिश करें."
+    },
+    "attachment": {
+      "tooLarge": "\"{{name}}\" 10 MB से बड़ा है."
+    },
+    "dropFiles": "भेजने के लिए फ़ाइलें यहाँ छोड़ें",
+    "list": {
+      "failedToLoad": "संदेश लोड नहीं हो सके. कृपया फिर से कोशिश करें.",
+      "empty": "अभी कोई संदेश नहीं",
+      "emptyHint": "बातचीत शुरू करने के लिए नमस्ते कहें.",
+      "beginning": "बातचीत की शुरुआत",
+      "unreadDivider": "अपठित संदेश"
+    },
+    "message": {
+      "deletedTombstone": "यह संदेश हटा दिया गया था",
+      "forwardedFrom": "{{name}} से फ़ॉरवर्ड किया गया",
+      "goToMessage": "संदेश पर जाएँ"
+    },
+    "reply": {
+      "deletedQuote": "संदेश हटा दिया गया",
+      "attachmentQuote": "📎 अटैचमेंट"
+    },
+    "edit": {
+      "save": "सहेजें",
+      "cancel": "रद्द करें",
+      "hint": "सहेजने के लिए Enter · रद्द करने के लिए Esc"
+    },
+    "actions": {
+      "react": "रिएक्ट करें",
+      "reply": "जवाब दें",
+      "forward": "फ़ॉरवर्ड करें",
+      "edit": "संदेश संपादित करें",
+      "delete": "संदेश हटाएँ"
+    },
+    "meta": {
+      "edited": "संपादित",
+      "messageInfo": "संदेश जानकारी"
+    },
+    "jump": {
+      "latest": "नवीनतम पर जाएँ",
+      "newMessages_one": "{{count}} नया संदेश",
+      "newMessages_other": "{{count}} नए संदेश"
+    },
+    "select": {
+      "cancel": "चयन रद्द करें",
+      "deleteOnlyOwn": "आप केवल अपने संदेश ही हटा सकते हैं",
+      "deleteSelected": "चयनित हटाएँ",
+      "delete": "हटाएँ",
+      "forward": "फ़ॉरवर्ड करें",
+      "countSelected_one": "{{count}} चयनित",
+      "countSelected_other": "{{count}} चयनित"
+    },
+    "bulkDelete": {
+      "error": "कुछ संदेश हटाए नहीं जा सके. कृपया फिर से कोशिश करें.",
+      "successToast_one": "{{count}} संदेश हटाया गया.",
+      "successToast_other": "{{count}} संदेश हटाए गए."
+    },
+    "composer": {
+      "reply": {
+        "replyingTo": "{{name}} को जवाब दे रहे हैं",
+        "deletedPreview": "संदेश हटा दिया गया",
+        "attachmentPreview": "📎 अटैचमेंट",
+        "cancel": "जवाब रद्द करें"
+      },
+      "removeAttachment": "अटैचमेंट हटाएँ",
+      "queuedClear": "साफ़ करें",
+      "placeholderCaption": "कैप्शन जोड़ें…",
+      "placeholderGroup": "संदेश लिखें… (उल्लेख के लिए @)",
+      "placeholderDirect": "संदेश लिखें…",
+      "attach": "फ़ोटो या फ़ाइल अटैच करें",
+      "emojiTitle": "इमोजी",
+      "emojiAria": "इमोजी डालें",
+      "send": "संदेश भेजें",
+      "hint": "भेजने के लिए Enter · नई लाइन के लिए Shift + Enter",
+      "hintMention": " · उल्लेख के लिए @",
+      "hintAttach": " · 10 MB तक अटैच करें",
+      "queuedFiles_one": "{{count}} और फ़ाइल कतार में",
+      "queuedFiles_other": "{{count}} और फ़ाइलें कतार में"
+    },
+    "toast": {
+      "messageNotLoaded": "वह संदेश लोड नहीं हुआ है — पुराने संदेश लोड करने के लिए ऊपर स्क्रॉल करें.",
+      "sendError": "आपका संदेश नहीं भेजा जा सका. कृपया फिर से कोशिश करें.",
+      "reactionError": "आपका रिएक्शन अपडेट नहीं हो सका.",
+      "deleteMessageError": "संदेश हटाया नहीं जा सका.",
+      "saveEditError": "आपका संपादन सहेजा नहीं जा सका. कृपया फिर से कोशिश करें.",
+      "linkCopied": "संदेश लिंक कॉपी हो गया.",
+      "linkCopyError": "लिंक कॉपी नहीं हो सका.",
+      "openChatError": "वह चैट नहीं खोली जा सकी.",
+      "messageTooLong_one": "संदेश बहुत लंबा है (अधिकतम {{count}} अक्षर).",
+      "messageTooLong_other": "संदेश बहुत लंबा है (अधिकतम {{count}} अक्षर)."
+    }
+  },
+  "pricingManagement": {
+    "title": "मूल्य निर्धारण प्रबंधन",
+    "subtitle": "प्रत्येक मुद्रा, वॉल्यूम बैंड और प्रभावी तिथि के अनुसार प्लान टियर और प्रति-सीट मूल्य निर्धारण प्रबंधित करें। मौजूदा सब्सक्रिप्शन अपना संग्रहीत मूल्य बनाए रखते हैं; परिवर्तन नए सब्सक्रिप्शन और प्लान अपग्रेड पर लागू होते हैं।",
+    "tiers": {
+      "heading": "टियर",
+      "add": "टियर जोड़ें",
+      "empty": "अभी तक कोई टियर नहीं।",
+      "col": {
+        "slug": "स्लग",
+        "name": "नाम",
+        "description": "विवरण",
+        "sort": "क्रम",
+        "active": "सक्रिय",
+        "actions": "क्रियाएँ"
+      },
+      "deleteConfirm": "टियर \"{{name}}\" ({{slug}}) हटाएँ?"
+    },
+    "pricingRows": {
+      "heading": "मूल्य निर्धारण पंक्तियाँ",
+      "add": "मूल्य निर्धारण पंक्ति जोड़ें",
+      "empty": "अभी तक कोई मूल्य निर्धारण पंक्ति नहीं।",
+      "col": {
+        "tier": "टियर",
+        "currency": "मुद्रा",
+        "pricePerSeat": "मूल्य / सीट",
+        "seatBand": "सीट बैंड",
+        "effectiveFrom": "प्रभावी तिथि से",
+        "notes": "टिप्पणियाँ",
+        "actions": "क्रियाएँ"
+      },
+      "deleteConfirm": "क्या यह मूल्य निर्धारण पंक्ति हटाएँ?"
+    },
+    "billingCycles": {
+      "heading": "बिलिंग चक्र",
+      "add": "चक्र जोड़ें",
+      "empty": "अभी तक कोई बिलिंग चक्र नहीं।",
+      "col": {
+        "cycle": "चक्र",
+        "label": "लेबल",
+        "discount": "छूट",
+        "months": "महीने",
+        "active": "सक्रिय",
+        "actions": "क्रियाएँ"
+      },
+      "flat": "निश्चित {{currency}} {{amount}}",
+      "save": "{{percent}}% बचाएँ",
+      "deleteConfirm": "बिलिंग चक्र \"{{cycle}}\" हटाएँ?"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय"
+    },
+    "loading": "लोड हो रहा है...",
+    "actions": {
+      "edit": "संपादित करें",
+      "delete": "हटाएँ",
+      "cancel": "रद्द करें",
+      "save": "सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "tierModal": {
+      "addTitle": "टियर जोड़ें",
+      "editTitle": "टियर संपादित करें — {{name}}",
+      "field": {
+        "slug": "स्लग",
+        "slugPlaceholder": "starter",
+        "slugHelp": "आंतरिक पहचानकर्ता (लोअरकेस, बिना स्पेस)। बनाने के बाद बदला नहीं जा सकता।",
+        "name": "नाम",
+        "namePlaceholder": "Starter",
+        "description": "विवरण",
+        "sortOrder": "क्रम संख्या",
+        "active": "सक्रिय"
+      }
+    },
+    "priceModal": {
+      "addTitle": "मूल्य निर्धारण पंक्ति जोड़ें",
+      "editTitle": "मूल्य निर्धारण पंक्ति संपादित करें",
+      "field": {
+        "tier": "टियर",
+        "currency": "मुद्रा",
+        "pricePerSeat": "प्रति सीट मूल्य (मुख्य इकाई में — ₹/$/£/€, पैसे/सेंट में नहीं)",
+        "minSeats": "न्यूनतम सीटें",
+        "maxSeats": "अधिकतम सीटें (खाली = ∞)",
+        "effectiveFrom": "प्रभावी तिथि से",
+        "effectiveFromHelp": "भविष्य की तिथियाँ मूल्य परिवर्तन शेड्यूल करती हैं। सब्सक्रिप्शन बनाने / अपग्रेड के समय सबसे नई मेल खाने वाली पंक्ति लागू होती है।",
+        "notes": "टिप्पणियाँ",
+        "notesPlaceholder": "Q3 प्रचार, अप्रचलित टियर, आदि।"
+      }
+    },
+    "cycleModal": {
+      "addTitle": "बिलिंग चक्र जोड़ें",
+      "editTitle": "बिलिंग चक्र संपादित करें — {{cycle}}",
+      "field": {
+        "cycleSlug": "चक्र स्लग",
+        "cycleSlugPlaceholder": "semi-annual",
+        "label": "लेबल",
+        "labelPlaceholder": "Semi-Annual",
+        "discountPct": "छूट %",
+        "discountPctHelp": "चक्र बटन पर \"N% बचाएँ\" के रूप में दिखाया गया।",
+        "monthsPerCycle": "प्रति चक्र महीने",
+        "sortOrder": "क्रम संख्या",
+        "active": "सक्रिय"
+      },
+      "override": {
+        "heading": "ओवरराइड राशि (वैकल्पिक)",
+        "help": "यदि सेट किया गया है, तो ग्राहक की मुद्रा मेल खाने पर यह सटीक प्रति-सीट राशि छूट-आधारित गणना की जगह लेती है। छूट % उपयोग करने के लिए खाली छोड़ें।",
+        "amount": "प्रति सीट राशि (मुख्य इकाई)",
+        "amountPlaceholder": "उदा. 4800.00",
+        "currency": "मुद्रा",
+        "currencyNone": "— कोई नहीं —"
+      }
+    },
+    "toast": {
+      "tierCreated": "टियर बनाया गया",
+      "tierUpdated": "टियर अपडेट किया गया",
+      "tierDeleted": "टियर हटाया गया",
+      "priceAdded": "मूल्य निर्धारण पंक्ति जोड़ी गई",
+      "priceUpdated": "मूल्य निर्धारण पंक्ति अपडेट की गई",
+      "priceDeleted": "मूल्य निर्धारण पंक्ति हटाई गई",
+      "cycleCreated": "बिलिंग चक्र बनाया गया",
+      "cycleUpdated": "बिलिंग चक्र अपडेट किया गया",
+      "cycleDeleted": "बिलिंग चक्र हटाया गया",
+      "failed": "विफल"
+    }
+  },
+  "csvImport": {
+    "modal": {
+      "title": "Excel / CSV से कर्मचारी आयात करें"
+    },
+    "downloadTemplate": "टेम्पलेट डाउनलोड करें",
+    "downloadTemplateHint": "सही हेडर वाली एक नमूना Excel फ़ाइल डाउनलोड करें।",
+    "dropzone": {
+      "title": "अपनी Excel या CSV फ़ाइल यहाँ खींचें और छोड़ें",
+      "browse": "या ब्राउज़ करने के लिए क्लिक करें"
+    },
+    "parseError": "फ़ाइल पार्स करने में विफल",
+    "preview": {
+      "uploadDifferent": "भिन्न फ़ाइल अपलोड करें",
+      "errorsHeading": "त्रुटियों वाली पंक्तियाँ (अपनी फ़ाइल ठीक करें और फिर से अपलोड करें)",
+      "rowLabel": "पंक्ति {{row}}:",
+      "valid_one": "{{count}} मान्य",
+      "valid_other": "{{count}} मान्य",
+      "invalid_one": "{{count}} अमान्य",
+      "invalid_other": "{{count}} अमान्य",
+      "totalRows_one": "कुल {{count}} पंक्ति",
+      "totalRows_other": "कुल {{count}} पंक्तियाँ"
+    },
+    "table": {
+      "firstName": "प्रथम नाम",
+      "lastName": "उपनाम",
+      "email": "ईमेल",
+      "password": "पासवर्ड",
+      "role": "भूमिका",
+      "empCode": "कर्मचारी कोड",
+      "designation": "पदनाम",
       "department": "विभाग",
       "location": "स्थान",
-      "project": "परियोजना",
-      "document": "दस्तावेज़"
+      "manager": "प्रबंधक",
+      "type": "प्रकार",
+      "joining": "कार्यग्रहण तिथि",
+      "inviteFallback": "आमंत्रण"
     },
-    "fieldType": {
-      "text": "टेक्स्ट",
-      "textarea": "टेक्स्ट क्षेत्र",
-      "number": "संख्या",
-      "decimal": "दशमलव",
-      "date": "तिथि",
-      "datetime": "तिथि और समय",
-      "dropdown": "ड्रॉपडाउन",
-      "multi_select": "बहु चयन",
-      "checkbox": "चेकबॉक्स",
-      "email": "ईमेल",
-      "phone": "फ़ोन",
-      "url": "URL",
-      "file": "फ़ाइल"
+    "importing": "कर्मचारी आयात हो रहे हैं... कृपया प्रतीक्षा करें।",
+    "done": {
+      "title": "आयात पूर्ण",
+      "summary_one": "{{count}} कर्मचारी सफलतापूर्वक आयात किया गया।",
+      "summary_other": "{{count}} कर्मचारी सफलतापूर्वक आयात किए गए।",
+      "departmentsCreated_one": "नया विभाग बनाया गया ({{count}}):",
+      "departmentsCreated_other": "नए विभाग बनाए गए ({{count}}):",
+      "locationsCreated_one": "नया स्थान बनाया गया ({{count}}):",
+      "locationsCreated_other": "नए स्थान बनाए गए ({{count}}):",
+      "skipped_one": "त्रुटियों वाली {{count}} पंक्ति छोड़ी गई:",
+      "skipped_other": "त्रुटियों वाली {{count}} पंक्तियाँ छोड़ी गईं:"
     },
-    "editField": "फ़ील्ड संपादित करें",
-    "newField": "नया फ़ील्ड",
-    "preview": "पूर्वावलोकन",
-    "hidePreview": "पूर्वावलोकन छिपाएं",
-    "fieldName": "फ़ील्ड नाम *",
-    "fieldNamePlaceholder": "जैसे टी-शर्ट साइज़",
-    "section": "अनुभाग",
-    "placeholder": "प्लेसहोल्डर",
-    "defaultValue": "डिफ़ॉल्ट मान",
-    "validationRegex": "वैलिडेशन रेगेक्स",
-    "minValue": "न्यूनतम मान",
-    "maxValue": "अधिकतम मान",
-    "helpText": "सहायता पाठ",
-    "helpTextPlaceholder": "उपयोगकर्ताओं को दिखाया जाने वाला टूलटिप या विवरण",
-    "options": "विकल्प",
-    "optionPlaceholder": "विकल्प टाइप करें और Enter दबाएं",
-    "add": "जोड़ें",
-    "required": "आवश्यक",
-    "searchable": "खोजने योग्य",
-    "fieldPreview": "फ़ील्ड पूर्वावलोकन",
-    "saveError": "फ़ील्ड सहेजने में विफल। कृपया पुनः प्रयास करें।",
-    "saving": "सहेजा जा रहा है...",
-    "updateFieldBtn": "फ़ील्ड अपडेट करें",
-    "createField": "फ़ील्ड बनाएं",
+    "failed": "आयात विफल",
+    "close": "बंद करें",
     "cancel": "रद्द करें",
-    "loading": "फ़ील्ड लोड हो रहे हैं...",
-    "empty": "{{entity}} के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं है।",
-    "emptyHint": "अपना पहला कस्टम फ़ील्ड बनाने के लिए \"फ़ील्ड जोड़ें\" पर क्लिक करें।",
-    "colFieldName": "फ़ील्ड नाम",
-    "colKey": "कुंजी",
-    "colType": "प्रकार",
-    "colActions": "क्रियाएं",
-    "optionsCount_one": "({{count}} विकल्प)",
-    "optionsCount_other": "({{count}} विकल्प)",
-    "yes": "हां",
-    "no": "नहीं",
-    "editFieldAria": "फ़ील्ड संपादित करें",
-    "deleteFieldAria": "फ़ील्ड हटाएं",
-    "deactivateNamed": "फ़ील्ड \"{{name}}\" निष्क्रिय करें?",
-    "deactivate": "फ़ील्ड निष्क्रिय करें?",
-    "deactivateDesc": "मौजूदा मान सुरक्षित रहेंगे।",
-    "deactivateBtn": "निष्क्रिय करें",
-    "previewFieldName": "फ़ील्ड नाम",
-    "previewEnter": "{{name}} दर्ज करें",
-    "previewValue": "मान",
-    "previewSelect": "{{name}} चुनें...",
-    "previewOption": "विकल्प",
-    "noOptionsDefined": "कोई विकल्प परिभाषित नहीं",
-    "previewCheckbox": "चेकबॉक्स",
-    "fieldTypeField": "फ़ील्ड प्रकार *"
+    "submit_one": "{{count}} मान्य कर्मचारी आयात करें",
+    "submit_other": "{{count}} मान्य कर्मचारी आयात करें"
   },
-  "orgSettings": {
-    "loading": "सेटिंग्स लोड हो रही हैं...",
-    "title": "संगठन सेटिंग्स",
-    "subtitle": "अपनी कंपनी के विवरण, विभाग और स्थान प्रबंधित करें।",
-    "companyInfo": "कंपनी जानकारी",
-    "edit": "संपादित करें",
+  "invoicesAdmin": {
+    "title": "इनवॉइस",
+    "subtitle": "सभी ग्राहक संगठनों की सभी इनवॉइस (emp-billing से प्रॉक्सी की गई)। भुगतान किया गया चिह्नित करें, ईमेल से भेजें, PDF देखें, या किसी भी संगठन की ओर से सब्सक्रिप्शन बनाएँ।",
+    "subscribeOnBehalf": "की ओर से सब्सक्राइब करें",
+    "filters": {
+      "searchLabel": "खोजें",
+      "searchPlaceholder": "इनवॉइस नंबर, संगठन का नाम…",
+      "statusLabel": "स्थिति"
+    },
+    "status": {
+      "all": "सभी",
+      "draft": "ड्राफ़्ट",
+      "sent": "भेजा गया",
+      "viewed": "देखा गया",
+      "partially_paid": "आंशिक रूप से भुगतान किया गया",
+      "paid": "भुगतान किया गया",
+      "overdue": "अतिदेय",
+      "void": "रद्द",
+      "written_off": "बट्टे खाते में डाला गया"
+    },
+    "table": {
+      "invoice": "इनवॉइस",
+      "org": "संगठन",
+      "status": "स्थिति",
+      "total": "कुल",
+      "due": "देय",
+      "issued": "जारी",
+      "actions": "कार्रवाइयाँ",
+      "dueDatePrefix": "देय"
+    },
+    "loading": "लोड हो रहा है…",
+    "empty": "कोई इनवॉइस मेल नहीं खाती।",
+    "actions": {
+      "markPaid": "भुगतान किया गया चिह्नित करें",
+      "sendEmail": "ईमेल भेजें",
+      "pdf": "PDF"
+    },
+    "pagination": {
+      "prev": "पिछला",
+      "next": "अगला"
+    },
+    "markPaid": {
+      "title": "इनवॉइस को भुगतान किया गया चिह्नित करें",
+      "methodLabel": "भुगतान विधि",
+      "method": {
+        "manual": "मैनुअल / नकद",
+        "bank_transfer": "बैंक ट्रांसफर",
+        "cheque": "चेक",
+        "upi": "UPI",
+        "card": "कार्ड",
+        "other": "अन्य"
+      },
+      "referenceLabel": "संदर्भ (लेनदेन आईडी, चेक #, आदि)",
+      "referencePlaceholder": "उदा. TXN-2026-04-XYZ",
+      "notesLabel": "टिप्पणियाँ (आंतरिक)",
+      "notesPlaceholder": "वैकल्पिक",
+      "cancel": "रद्द करें",
+      "recording": "रिकॉर्ड किया जा रहा है…",
+      "submit": "भुगतान रिकॉर्ड करें"
+    },
+    "subscribe": {
+      "title": "किसी संगठन की ओर से सब्सक्राइब करें",
+      "description": "EmpCloud में सब्सक्रिप्शन बनाता है, जो emp-billing को मानक वेबहुक भेजता है — क्लाइंट, प्लान और पहली इनवॉइस स्वचालित रूप से प्रावधानित हो जाते हैं।",
+      "orgLabel": "संगठन",
+      "orgLoadingPlaceholder": "संगठन लोड हो रहे हैं…",
+      "orgNonePlaceholder": "कोई संगठन उपलब्ध नहीं",
+      "orgDropdownLoading": "लोड हो रहा है…",
+      "orgNoMatches": "कोई मेल खाता संगठन नहीं",
+      "orgSelected": "चयनित (संगठन आईडी {{orgId}})",
+      "moduleLabel": "मॉड्यूल",
+      "modulePlaceholder": "— एक मॉड्यूल चुनें —",
+      "planTierLabel": "प्लान स्तर",
+      "planTierPlaceholder": "basic / professional / enterprise / custom",
+      "totalSeatsLabel": "कुल सीटें",
+      "billingCycleLabel": "बिलिंग चक्र",
+      "cycle": {
+        "monthly": "मासिक",
+        "quarterly": "त्रैमासिक",
+        "annual": "वार्षिक"
+      },
+      "trialDaysLabel": "ट्रायल के दिन (0 = तुरंत बिल करें)",
+      "cancel": "रद्द करें",
+      "creating": "बनाया जा रहा है…",
+      "submit": "सब्सक्रिप्शन बनाएँ",
+      "orgSearchPlaceholder_one": "{{count}} संगठन खोजने के लिए टाइप करें…",
+      "orgSearchPlaceholder_other": "{{count}} संगठन खोजने के लिए टाइप करें…",
+      "orgMoreResults_one": "{{count}} और — सीमित करने के लिए खोज परिष्कृत करें",
+      "orgMoreResults_other": "{{count}} और — सीमित करने के लिए खोज परिष्कृत करें"
+    },
+    "toast": {
+      "markPaidSuccess": "इनवॉइस भुगतान किया गया चिह्नित की गई",
+      "sendEmailSuccess": "इनवॉइस ईमेल कतारबद्ध की गई",
+      "pdfError": "इनवॉइस PDF लोड करने में विफल",
+      "subscribeSuccess": "सब्सक्रिप्शन बनाया गया; इनवॉइस कुछ ही क्षण में दिखाई देगी",
+      "genericError": "विफल",
+      "subscribeError": "सब्सक्रिप्शन बनाने में विफल। जाँचें कि संगठन मान्य है और emp-billing चल रहा है।"
+    },
+    "invoiceCount_one": "{{count}} इनवॉइस",
+    "invoiceCount_other": "{{count}} इनवॉइस"
+  },
+  "subscriptionsAdmin": {
+    "title": "सब्सक्रिप्शन",
+    "subtitle": "प्रत्येक ग्राहक सब्सक्रिप्शन पर पूर्ण नियंत्रण — टियर, स्थिति, सीटें, मूल्य निर्धारण, अवधि तिथियाँ, ट्रायल समाप्ति, ऑटो-रिन्यू, फ्री / कॉम्प, और मैन्युअल इनवॉइस इंटेंट।",
+    "filters": {
+      "searchOrg": {
+        "label": "संगठन खोजें",
+        "placeholder": "नाम या ईमेल"
+      },
+      "status": {
+        "label": "स्थिति"
+      },
+      "currency": {
+        "label": "मुद्रा"
+      },
+      "all": "सभी"
+    },
+    "table": {
+      "columns": {
+        "org": "संगठन",
+        "module": "मॉड्यूल",
+        "tier": "टियर",
+        "status": "स्थिति",
+        "seats": "सीटें",
+        "pricePerSeat": "मूल्य/सीट",
+        "period": "अवधि",
+        "flags": "फ्लैग",
+        "actions": "कार्रवाइयाँ"
+      }
+    },
+    "status": {
+      "trial": "ट्रायल",
+      "active": "सक्रिय",
+      "past_due": "भुगतान अतिदेय",
+      "suspended": "निलंबित",
+      "cancelled": "रद्द",
+      "expired": "समाप्त"
+    },
+    "billingCycle": {
+      "monthly": "मासिक",
+      "quarterly": "त्रैमासिक",
+      "annual": "वार्षिक"
+    },
+    "period": {
+      "trialEnds": "ट्रायल {{date}} को समाप्त होता है"
+    },
+    "badges": {
+      "free": "फ्री",
+      "manual": "मैन्युअल",
+      "noRenew": "नो-रिन्यू"
+    },
+    "loading": "लोड हो रहा है...",
+    "empty": "कोई सब्सक्रिप्शन मेल नहीं खाता।",
+    "actions": {
+      "edit": "संपादित करें (सभी फ़ील्ड)",
+      "suspend": "निलंबित करें",
+      "activate": "सक्रिय करें",
+      "cancel": "रद्द करें",
+      "removeFreeFlag": "फ्री फ्लैग हटाएँ",
+      "markFree": "फ्री / कॉम्प के रूप में चिह्नित करें",
+      "recordManualInvoice": "मैन्युअल इनवॉइस रिकॉर्ड करें"
+    },
+    "confirm": {
+      "suspend": "{{org}} का {{module}} निलंबित करें?",
+      "cancel": "{{org}} का {{module}} रद्द करें?",
+      "removeFree": "फ्री / कॉम्प फ्लैग हटाएँ?"
+    },
+    "pagination": {
+      "prev": "पिछला",
+      "next": "अगला",
+      "pageOf": "{{page}} / {{totalPages}}"
+    },
+    "toast": {
+      "updated": "सब्सक्रिप्शन अपडेट किया गया",
+      "suspended": "निलंबित किया गया",
+      "activated": "सक्रिय किया गया",
+      "cancelled": "रद्द किया गया",
+      "markedFree": "फ्री के रूप में चिह्नित किया गया",
+      "unmarkedFree": "फ्री चिह्न हटाया गया",
+      "manualInvoiceRecorded": "मैन्युअल इनवॉइस रिकॉर्ड किया गया",
+      "failed": "विफल"
+    },
+    "editModal": {
+      "title": "सब्सक्रिप्शन संपादित करें — {{org}} · {{module}}",
+      "fields": {
+        "planTier": "प्लान टियर",
+        "status": "स्थिति",
+        "totalSeats": "कुल सीटें",
+        "billingCycle": "बिलिंग चक्र",
+        "pricePerSeat": "प्रति सीट मूल्य (मुख्य इकाई)",
+        "currency": "मुद्रा",
+        "periodStart": "अवधि प्रारंभ",
+        "periodEnd": "अवधि समाप्ति",
+        "trialEnds": "ट्रायल समाप्ति (खाली = कोई ट्रायल नहीं)",
+        "autoRenew": "ऑटो-रिन्यू",
+        "freeComp": "फ्री / कॉम्प",
+        "freeReason": "फ्री का कारण",
+        "internalNotes": "आंतरिक नोट्स"
+      },
+      "autoRenewYes": "हाँ",
+      "compedLabel": "कॉम्प्ड (मूल्य 0 पर सेट किया गया)",
+      "freeReasonPlaceholder": "बीटा टेस्टर, आंतरिक उपयोग, एग्जीक्यूटिव डील, आदि।",
+      "internalNotesPlaceholder": "डील संदर्भ, विशेष शर्तें, ऑडिट ट्रेल...",
+      "cancel": "रद्द करें",
+      "save": "सभी परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "freeModal": {
+      "title": "फ्री चिह्नित करें — {{org}} · {{module}}",
+      "description": "इससे price_per_seat 0 पर सेट हो जाएगा और सब्सक्रिप्शन कॉम्प्ड के रूप में फ्लैग हो जाएगा। ऑडिट लॉग के लिए एक कारण आवश्यक है।",
+      "reasonPlaceholder": "जैसे बीटा टेस्टर, आंतरिक टीम, एग्जीक्यूटिव प्रायोजन",
+      "cancel": "रद्द करें",
+      "confirm": "पुष्टि करें — फ्री करें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "invoiceModal": {
+      "title": "मैन्युअल इनवॉइस — {{org}} · {{module}}",
+      "description": "ऑडिट के लिए इस सब्सक्रिप्शन के आंतरिक नोट्स पर इनवॉइस इंटेंट रिकॉर्ड करता है। वास्तविक इनवॉइस दस्तावेज़ अगले सिंक पर EMP Billing में बनाया जाता है।",
+      "amountLabel": "राशि ({{currency}} में)",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "एक-बार सेटअप शुल्क, कस्टम फीचर कार्य, आदि।",
+      "dueDateLabel": "देय तिथि (वैकल्पिक)",
+      "cancel": "रद्द करें",
+      "confirm": "इनवॉइस इंटेंट रिकॉर्ड करें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "count": {
+      "subscriptions_one": "{{count}} सब्सक्रिप्शन",
+      "subscriptions_other": "{{count}} सब्सक्रिप्शन"
+    }
+  },
+  "orgDetail": {
+    "loading": "लोड हो रहा है...",
+    "error": {
+      "loadFailed": "संगठन विवरण लोड करने में विफल।",
+      "backToOrganizations": "संगठनों पर वापस जाएँ"
+    },
+    "backToAll": "सभी संगठनों पर वापस जाएँ",
+    "createdOn": "बनाया गया",
+    "stats": {
+      "users": "उपयोगकर्ता",
+      "activeSubscriptions": "सक्रिय सदस्यताएँ",
+      "monthlyRevenue": "मासिक राजस्व",
+      "totalSpend": "कुल व्यय"
+    },
+    "users": {
+      "columns": {
+        "name": "नाम",
+        "email": "ईमेल",
+        "role": "भूमिका",
+        "status": "स्थिति",
+        "joined": "शामिल हुए",
+        "actions": "कार्रवाइयाँ"
+      },
+      "status": {
+        "active": "सक्रिय",
+        "inactive": "निष्क्रिय"
+      },
+      "actions": {
+        "deactivate": "उपयोगकर्ता को निष्क्रिय करें",
+        "activate": "उपयोगकर्ता को सक्रिय करें",
+        "resetPassword": "पासवर्ड रीसेट करें",
+        "changeRole": "भूमिका बदलें"
+      },
+      "empty": "इस संगठन में कोई उपयोगकर्ता नहीं है",
+      "heading_one": "उपयोगकर्ता ({{count}})",
+      "heading_other": "उपयोगकर्ता ({{count}})"
+    },
+    "subscriptions": {
+      "columns": {
+        "module": "मॉड्यूल",
+        "plan": "योजना",
+        "status": "स्थिति",
+        "seats": "सीटें",
+        "pricePerSeat": "मूल्य/सीट",
+        "monthly": "मासिक",
+        "billing": "बिलिंग",
+        "periodEnd": "अवधि समाप्ति तिथि"
+      },
+      "empty": "कोई सदस्यता नहीं",
+      "heading_one": "सदस्यता ({{count}})",
+      "heading_other": "सदस्यताएँ ({{count}})"
+    },
+    "audit": {
+      "columns": {
+        "action": "कार्रवाई",
+        "entity": "एंटिटी",
+        "ip": "आईपी",
+        "time": "समय"
+      },
+      "heading_one": "ऑडिट लॉग (अंतिम {{count}})",
+      "heading_other": "ऑडिट लॉग (अंतिम {{count}})"
+    },
+    "resetPassword": {
+      "title": "पासवर्ड रीसेट करें",
+      "description": "<strong>{{name}}</strong> ({{email}}) के लिए पासवर्ड रीसेट करें।",
+      "newPasswordLabel": "नया पासवर्ड",
+      "newPasswordPlaceholder": "न्यूनतम 8 अक्षर",
+      "submitting": "रीसेट हो रहा है...",
+      "submit": "पासवर्ड रीसेट करें"
+    },
+    "changeRole": {
+      "title": "भूमिका बदलें",
+      "description": "<strong>{{name}}</strong> के लिए भूमिका बदलें।",
+      "currentRole": "वर्तमान भूमिका: {{role}}",
+      "newRoleLabel": "नई भूमिका",
+      "submitting": "अपडेट हो रहा है...",
+      "submit": "भूमिका अपडेट करें"
+    },
+    "actions": {
+      "cancel": "रद्द करें"
+    },
+    "tabs": {
+      "users_one": "उपयोगकर्ता ({{count}})",
+      "users_other": "उपयोगकर्ता ({{count}})",
+      "subscriptions_one": "सदस्यता ({{count}})",
+      "subscriptions_other": "सदस्यताएँ ({{count}})",
+      "auditLog_one": "ऑडिट लॉग (अंतिम {{count}})",
+      "auditLog_other": "ऑडिट लॉग (अंतिम {{count}})"
+    }
+  },
+  "orgList": {
+    "title": "सभी संगठन",
+    "createButton": "संगठन बनाएँ",
+    "modal": {
+      "title": "नया संगठन बनाएँ",
+      "fields": {
+        "orgName": "संगठन का नाम",
+        "firstName": "एडमिन का पहला नाम",
+        "lastName": "एडमिन का अंतिम नाम",
+        "email": "एडमिन ईमेल",
+        "password": "एडमिन पासवर्ड",
+        "country": "देश",
+        "timezone": "समय क्षेत्र"
+      },
+      "passwordHint": "इसमें बड़े अक्षर, छोटे अक्षर, अंक और विशेष वर्ण होना आवश्यक है।",
+      "placeholders": {
+        "password": "न्यूनतम 8 वर्ण, बड़े अक्षर, छोटे अक्षर, अंक, विशेष वर्ण"
+      },
+      "cancel": "रद्द करें",
+      "submit": "संगठन बनाएँ",
+      "submitting": "बनाया जा रहा है...",
+      "error": "संगठन बनाने में विफल। कृपया सभी फ़ील्ड जाँचें।"
+    },
+    "search": {
+      "placeholder": "नाम या ईमेल से खोजें..."
+    },
+    "table": {
+      "headers": {
+        "organization": "संगठन",
+        "adminEmail": "एडमिन ईमेल",
+        "employees": "कर्मचारी",
+        "activeModules": "सक्रिय मॉड्यूल",
+        "monthlySpend": "मासिक व्यय",
+        "status": "स्थिति",
+        "joined": "शामिल होने की तिथि"
+      }
+    },
+    "status": {
+      "active": "सक्रिय"
+    },
+    "loading": "लोड हो रहा है...",
+    "empty": "कोई संगठन नहीं मिला",
+    "pagination": {
+      "summary": "पृष्ठ {{page}} / {{totalPages}} (कुल {{total}})"
+    },
+    "subtitle_one": "प्लेटफ़ॉर्म पर {{count}} संगठन पंजीकृत है।",
+    "subtitle_other": "प्लेटफ़ॉर्म पर {{count}} संगठन पंजीकृत हैं।"
+  },
+  "superAdminDashboard": {
+    "title": "प्लेटफ़ॉर्म डैशबोर्ड",
+    "subtitle": "संपूर्ण EMP Cloud प्लेटफ़ॉर्म का रीयल-टाइम अवलोकन।",
+    "loading": "प्लेटफ़ॉर्म डेटा लोड हो रहा है...",
+    "error": {
+      "title": "डैशबोर्ड डेटा लोड करने में विफल",
+      "retryHint": "कृपया पेज रीफ़्रेश करने का प्रयास करें"
+    },
+    "stats": {
+      "totalOrganizations": "कुल संगठन",
+      "totalUsers": "कुल उपयोगकर्ता",
+      "activeSubscriptions": "सक्रिय सदस्यताएँ",
+      "mrr": "MRR",
+      "arr": "ARR",
+      "systemHealth": "सिस्टम स्वास्थ्य",
+      "mrrSubtitle": "मासिक आवर्ती राजस्व",
+      "arrSubtitle": "वार्षिक आवर्ती राजस्व",
+      "newThisMonth_one": "+{{count}} इस माह",
+      "newThisMonth_other": "+{{count}} इस माह"
+    },
+    "systemHealthStatus": {
+      "allHealthy": "सभी सिस्टम चालू हैं",
+      "degraded": "कुछ सिस्टम की कार्यक्षमता घटी हुई है",
+      "offline": "सिस्टम ऑफ़लाइन हैं"
+    },
+    "quickLinks": {
+      "organizations": {
+        "label": "संगठन",
+        "description": "सभी संगठनों को देखें और प्रबंधित करें"
+      },
+      "moduleAnalytics": {
+        "label": "मॉड्यूल एनालिटिक्स",
+        "description": "प्रति मॉड्यूल सब्सक्राइबर, सीटें, राजस्व"
+      },
+      "revenueAnalytics": {
+        "label": "राजस्व एनालिटिक्स",
+        "description": "MRR, ARR, रुझान, शीर्ष ग्राहक"
+      },
+      "subscriptionMetrics": {
+        "label": "सदस्यता मेट्रिक्स",
+        "description": "प्लान, उपयोग, बिलिंग चक्र"
+      }
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "राजस्व रुझान"
+      },
+      "revenueByModule": {
+        "title": "मॉड्यूल के अनुसार राजस्व"
+      },
+      "moduleAdoption": {
+        "title": "मॉड्यूल अंगीकरण"
+      },
+      "growthTrends": {
+        "title": "वृद्धि रुझान"
+      },
+      "viewDetails": "विवरण देखें",
+      "legend": {
+        "organizations": "संगठन",
+        "totalSeats": "कुल सीटें",
+        "newOrgs": "नए संगठन",
+        "newUsers": "नए उपयोगकर्ता"
+      }
+    },
+    "empty": {
+      "revenue": "अभी तक कोई राजस्व डेटा नहीं",
+      "adoption": "अभी तक कोई अंगीकरण डेटा नहीं",
+      "growth": "अभी तक कोई वृद्धि डेटा नहीं",
+      "activity": "कोई हालिया गतिविधि नहीं"
+    },
+    "systemHealth": {
+      "title": "सिस्टम स्वास्थ्य",
+      "badge": {
+        "allOperational": "सभी चालू",
+        "degraded": "कार्यक्षमता घटी हुई",
+        "checking": "जाँच हो रही है..."
+      },
+      "checkingModules": "स्वास्थ्य की जाँच हो रही है..."
+    },
+    "healthBadge": {
+      "healthy": "स्वस्थ",
+      "down": "बंद"
+    },
+    "activity": {
+      "title": "हालिया गतिविधि",
+      "systemActor": "सिस्टम"
+    }
+  },
+  "healthDashboard": {
+    "title": "सेवा स्वास्थ्य",
+    "subtitle": "सभी EMP Cloud इकोसिस्टम सेवाओं की रीयल-टाइम स्वास्थ्य स्थिति",
+    "refreshing": "रिफ़्रेश हो रहा है...",
+    "actions": {
+      "checking": "जाँच हो रही है...",
+      "checkNow": "अभी जाँचें"
+    },
+    "loading": "स्वास्थ्य जाँच चल रही है...",
+    "overall": {
+      "operational": {
+        "title": "सभी सिस्टम चालू हैं",
+        "subtitle": "हर सेवा सामान्य रूप से चल रही है।"
+      },
+      "degraded": {
+        "title": "सिस्टम में आंशिक गिरावट",
+        "subtitle": "एक या अधिक सेवाओं में समस्याएँ आ रही हैं।"
+      },
+      "majorOutage": {
+        "title": "बड़ा व्यवधान",
+        "subtitle": "कई सेवाएँ इस समय अनुपलब्ध हैं।"
+      },
+      "unknown": {
+        "title": "स्थिति जाँची जा रही है...",
+        "subtitle": "प्रारंभिक स्वास्थ्य जाँच की जा रही है।"
+      },
+      "lastChecked": "अंतिम बार जाँचा गया"
+    },
+    "status": {
+      "healthy": "स्वस्थ",
+      "degraded": "सीमित",
+      "down": "बंद"
+    },
+    "module": {
+      "port": "पोर्ट {{port}}",
+      "responseTime": "रिस्पॉन्स समय",
+      "version": "संस्करण",
+      "uptime": "अपटाइम",
+      "lastCheck": "अंतिम जाँच"
+    },
+    "infra": {
+      "fallbackType": "इंफ्रास्ट्रक्चर",
+      "connected": "कनेक्टेड",
+      "disconnected": "डिस्कनेक्टेड",
+      "responseTime": "रिस्पॉन्स समय",
+      "version": "संस्करण",
+      "database": "डेटाबेस",
+      "threads": "थ्रेड्स",
+      "uptime": "अपटाइम"
+    },
+    "endpoints": {
+      "title": "API एंडपॉइंट स्थिति",
+      "description": "प्रत्येक मॉड्यूल के लिए स्वास्थ्य जाँच एंडपॉइंट",
+      "columns": {
+        "module": "मॉड्यूल",
+        "endpoint": "एंडपॉइंट",
+        "method": "मेथड",
+        "status": "स्थिति",
+        "response": "रिस्पॉन्स",
+        "httpCode": "HTTP कोड",
+        "lastChecked": "अंतिम बार जाँचा गया"
+      },
+      "status": {
+        "ok": "ठीक",
+        "down": "बंद"
+      }
+    },
+    "stats": {
+      "totalServices": "कुल सेवाएँ",
+      "healthy": "स्वस्थ",
+      "degraded": "सीमित",
+      "down": "बंद"
+    },
+    "sections": {
+      "moduleServices": "मॉड्यूल सेवाएँ",
+      "infrastructure": "इंफ्रास्ट्रक्चर"
+    },
+    "footer": {
+      "note": "हर 30 सेकंड में अपने-आप रिफ़्रेश होता है। बैकग्राउंड जाँच हर 60 सेकंड में चलती है।"
+    }
+  },
+  "aiConfig": {
+    "title": "AI कॉन्फ़िगरेशन",
+    "subtitle": "HR चैटबॉट असिस्टेंट के लिए AI प्रोवाइडर कॉन्फ़िगर करें। यहाँ सेट की गई कीज़ एनवायरनमेंट वेरिएबल्स को ओवरराइड करती हैं।",
+    "status": {
+      "active": "सक्रिय",
+      "configured": "कॉन्फ़िगर किया गया",
+      "notConfigured": "कॉन्फ़िगर नहीं किया गया"
+    },
     "field": {
+      "apiKey": "API कुंजी",
+      "baseUrl": "बेस URL",
+      "model": "मॉडल",
+      "maxTokens": "मैक्स टोकन: {{count}}"
+    },
+    "placeholder": {
+      "apiKeyCurrent": "वर्तमान: {{value}}",
+      "apiKeyEnter": "API की दर्ज करें...",
+      "baseUrl": "https://api.example.com",
+      "customModel": "मॉडल नाम दर्ज करें (जैसे, my-model)"
+    },
+    "testResult": {
+      "latency": "विलंबता: {{ms}}ms",
+      "requestFailed": "टेस्ट अनुरोध विफल रहा"
+    },
+    "button": {
+      "testConnection": "कनेक्शन टेस्ट करें",
+      "active": "सक्रिय",
+      "saveActivate": "सहेजें और सक्रिय करें",
+      "deactivate": "निष्क्रिय करें",
+      "saveMaxTokens": "मैक्स टोकन सहेजें"
+    },
+    "banner": {
+      "aiPoweredMode": "AI-संचालित मोड",
+      "aiPoweredModeProvider": "AI-संचालित मोड ({{provider}})",
+      "basicMode": "बेसिक मोड (कोई AI प्रोवाइडर सक्रिय नहीं)",
+      "modelStatus": "मॉडल: {{model}} | स्थिति: {{status}}",
+      "basicModeHint": "चैटबॉट नियम-आधारित मोड में चल रहा है। AI-संचालित प्रतिक्रियाएँ सक्षम करने के लिए नीचे कोई प्रोवाइडर सक्रिय करें।"
+    },
+    "section": {
+      "providers": "प्रोवाइडर",
+      "generalSettings": "सामान्य सेटिंग्स"
+    },
+    "info": {
+      "title": "यह कैसे काम करता है",
+      "encryption": "API कीज़ को AES-256-GCM का उपयोग करके निष्क्रिय अवस्था में एन्क्रिप्ट किया जाता है और कभी भी अनमास्क करके नहीं लौटाया जाता",
+      "overrideEnv": "यहाँ संग्रहीत सेटिंग्स एनवायरनमेंट वेरिएबल्स (.env) को ओवरराइड करती हैं",
+      "singleActive": "एक समय में केवल एक प्रोवाइडर सक्रिय हो सकता है। प्रोवाइडर बदलना तुरंत प्रभावी होता है।",
+      "testFirst": "सक्रिय करने से पहले अपनी API की और मॉडल सत्यापित करने के लिए \"कनेक्शन टेस्ट करें\" का उपयोग करें"
+    }
+  },
+  "moduleAnalytics": {
+    "title": "मॉड्यूल विश्लेषण",
+    "subtitle": "पूरे प्लेटफ़ॉर्म पर प्रत्येक मॉड्यूल के विस्तृत मेट्रिक्स।",
+    "loading": "लोड हो रहा है...",
+    "stats": {
+      "activeModules": "सक्रिय मॉड्यूल",
+      "totalSubscribers": "कुल सब्सक्राइबर",
+      "totalSeats": "कुल सीटें",
+      "totalModuleRevenue": "कुल मॉड्यूल राजस्व"
+    },
+    "charts": {
+      "revenueByModule": "मॉड्यूल के अनुसार राजस्व",
+      "revenueSeries": "राजस्व",
+      "noRevenueData": "कोई राजस्व डेटा नहीं",
+      "subscriberDistribution": "सब्सक्राइबर वितरण",
+      "noSubscriberData": "कोई सब्सक्राइबर डेटा नहीं"
+    },
+    "details": {
+      "heading": "मॉड्यूल विवरण",
+      "noSubscribers": "कोई सब्सक्राइबर नहीं",
+      "disableModule": "मॉड्यूल अक्षम करें",
+      "subscribers": "सब्सक्राइबर",
+      "seats": "सीटें",
+      "revenue": "राजस्व",
+      "seatUtilization": "सीट उपयोग दर",
+      "planDistribution": "प्लान वितरण",
+      "orgCount_one": "{{count}} संगठन",
+      "orgCount_other": "{{count}} संगठन"
+    },
+    "table": {
+      "heading": "विस्तृत मेट्रिक्स",
+      "module": "मॉड्यूल",
+      "slug": "स्लग",
+      "subscribers": "सब्सक्राइबर",
+      "totalSeats": "कुल सीटें",
+      "usedSeats": "उपयोग की गई सीटें",
+      "utilization": "उपयोग दर",
+      "revenue": "राजस्व",
+      "status": "स्थिति"
+    },
+    "status": {
+      "active": "सक्रिय"
+    }
+  },
+  "subscriptionMetrics": {
+    "title": "सब्सक्रिप्शन मेट्रिक्स",
+    "subtitle": "प्लान वितरण, सीट उपयोग और बिलिंग मेट्रिक्स।",
+    "loading": "लोड हो रहा है...",
+    "stats": {
+      "totalSeats": "कुल सीटें",
+      "usedSeats": "उपयोग की गई सीटें",
+      "seatUtilization": "सीट उपयोग",
+      "activeUsers": "सक्रिय उपयोगकर्ता",
+      "inactive_one": "{{count}} निष्क्रिय",
+      "inactive_other": "{{count}} निष्क्रिय"
+    },
+    "charts": {
+      "planTierDistribution": "प्लान टियर वितरण",
+      "subscriptionStatus": "सब्सक्रिप्शन स्थिति",
+      "billingCycle": "बिलिंग चक्र",
+      "seatUtilizationByTier": "प्लान टियर के अनुसार सीट उपयोग",
+      "subscriptionChurn": "सब्सक्रिप्शन चर्न"
+    },
+    "churn": {
+      "cancelledSeries": "रद्द किए गए"
+    },
+    "seats": "{{used}} / {{total}} सीटें",
+    "empty": {
+      "noData": "कोई डेटा नहीं",
+      "noTierData": "कोई टियर डेटा नहीं"
+    }
+  },
+  "systemNotifications": {
+    "title": "सिस्टम सूचनाएं",
+    "subtitle": "सभी संगठनों या विशिष्ट संगठनों को प्लेटफ़ॉर्म-व्यापी घोषणाएं भेजें।",
+    "newNotification": "नई सूचना",
+    "form": {
+      "heading": "सूचना भेजें",
+      "titleLabel": "शीर्षक",
+      "titlePlaceholder": "सूचना शीर्षक",
+      "typeLabel": "प्रकार",
+      "messageLabel": "संदेश",
+      "messagePlaceholder": "सूचना संदेश...",
+      "targetLabel": "लक्ष्य",
+      "allOrgs": "सभी संगठन",
+      "specificOrg": "विशिष्ट संगठन",
+      "organizationLabel": "संगठन",
+      "selectOrgPlaceholder": "संगठन चुनें...",
+      "send": "सूचना भेजें",
+      "sending": "भेजा जा रहा है..."
+    },
+    "type": {
+      "info": "जानकारी",
+      "warning": "चेतावनी",
+      "maintenance": "रखरखाव",
+      "release": "फ़ीचर रिलीज़"
+    },
+    "list": {
+      "empty": "अभी तक कोई सिस्टम सूचना नहीं भेजी गई है।",
+      "heading_one": "सभी सूचनाएं ({{count}})",
+      "heading_other": "सभी सूचनाएं ({{count}})"
+    },
+    "item": {
+      "deactivated": "निष्क्रिय",
+      "targetAll": "सभी संगठन",
+      "targetPrefix": "लक्ष्य:",
+      "byPrefix": "द्वारा:",
+      "systemAuthor": "सिस्टम",
+      "orgFallback": "संगठन #{{id}}",
+      "deactivate": "निष्क्रिय करें"
+    }
+  },
+  "revenueAnalytics": {
+    "title": "राजस्व एनालिटिक्स",
+    "subtitle": "वित्तीय अवलोकन और राजस्व विवरण।",
+    "loading": "लोड हो रहा है...",
+    "stats": {
+      "mrr": "मासिक आवर्ती राजस्व",
+      "arr": "वार्षिक आवर्ती राजस्व",
+      "seatUtilization": "सीट उपयोग",
+      "seats": "{{used}} / {{total}} सीटें",
+      "payingCustomers": "भुगतान करने वाले ग्राहक"
+    },
+    "charts": {
+      "revenueTrend": {
+        "title": "राजस्व रुझान (पिछले 12 महीने)",
+        "empty": "अभी तक कोई रुझान डेटा नहीं"
+      },
+      "revenueByModule": {
+        "title": "मॉड्यूल के अनुसार राजस्व",
+        "series": "राजस्व"
+      },
+      "empty": "कोई डेटा नहीं",
+      "revenueByTier": {
+        "title": "प्लान टियर के अनुसार राजस्व",
+        "subsLabel_one": "{{count}} सब्सक्रिप्शन - {{revenue}}",
+        "subsLabel_other": "{{count}} सब्सक्रिप्शन - {{revenue}}"
+      },
+      "billingCycle": {
+        "title": "बिलिंग चक्र वितरण",
+        "percentOfSubscriptions": "सब्सक्रिप्शन का {{percent}}%",
+        "subs_one": "{{count}} सब्सक्रिप्शन",
+        "subs_other": "{{count}} सब्सक्रिप्शन"
+      }
+    },
+    "topCustomers": {
+      "title": "राजस्व के अनुसार शीर्ष 10 ग्राहक",
+      "columns": {
+        "rank": "#",
+        "organization": "संगठन",
+        "email": "ईमेल",
+        "subscriptions": "सब्सक्रिप्शन",
+        "monthlySpend": "मासिक व्यय"
+      },
+      "empty": "अभी तक कोई ग्राहक डेटा नहीं"
+    }
+  },
+  "logDashboard": {
+    "title": "लॉग डैशबोर्ड",
+    "subtitle": "सभी EMP Cloud मॉड्यूल में रीयल-टाइम मॉनिटरिंग",
+    "actions": {
+      "refresh": "रिफ़्रेश करें"
+    },
+    "tabs": {
+      "overview": "अवलोकन",
+      "errors": "एरर",
+      "slow": "धीमी क्वेरी",
+      "auth": "ऑथ इवेंट",
+      "health": "मॉड्यूल हेल्थ"
+    },
+    "stats": {
+      "auditEvents": "ऑडिट इवेंट (24 घंटे)",
+      "fileErrors": "फ़ाइल एरर (24 घंटे)",
+      "slowQueries": "धीमी क्वेरी",
+      "healthyModules": "स्वस्थ मॉड्यूल"
+    },
+    "sections": {
+      "errorsByAction": "एक्शन के अनुसार एरर (24 घंटे)",
+      "errorsPerModule": "प्रति मॉड्यूल एरर (लॉग फ़ाइलों से)",
+      "moduleHealth": "मॉड्यूल हेल्थ"
+    },
+    "errors": {
+      "title": "हाल के एरर",
+      "subtitle": "सभी मॉड्यूल में PM2 एरर लॉग और फ्रंटएंड क्लाइंट एरर से",
+      "badge": {
+        "frontend": "फ्रंटएंड"
+      },
+      "detail": {
+        "page": "पेज:",
+        "component": "कंपोनेंट:"
+      },
+      "empty": "कोई एरर नहीं मिला।"
+    },
+    "slow": {
+      "title": "धीमी क्वेरी",
+      "subtitle": "1 सेकंड से अधिक समय लेने वाली डेटाबेस क्वेरी",
+      "columns": {
+        "module": "मॉड्यूल",
+        "duration": "अवधि",
+        "sql": "SQL",
+        "time": "समय"
+      },
+      "empty": "कोई धीमी क्वेरी नहीं पाई गई।"
+    },
+    "auth": {
+      "title": "ऑथ इवेंट",
+      "subtitle": "लॉगिन, लॉगआउट, पासवर्ड परिवर्तन, टोकन इवेंट (पिछले 24 घंटे)",
+      "user": "उपयोगकर्ता #{{id}}",
+      "ip": "IP: {{ip}}",
+      "notAvailable": "N/A",
+      "empty": "पिछले 24 घंटों में कोई ऑथ इवेंट नहीं।"
+    },
+    "healthTab": {
+      "status": "स्थिति: {{status}}",
+      "restarts": "रीस्टार्ट: {{count}}",
+      "recentErrors": "हाल के एरर: {{count}}",
+      "lastActivity": "अंतिम गतिविधि: {{time}}",
+      "loading": "मॉड्यूल हेल्थ लोड हो रहा है...",
+      "empty": "कोई मॉड्यूल हेल्थ डेटा उपलब्ध नहीं है।"
+    },
+    "status": {
+      "healthy": "स्वस्थ",
+      "warning": "चेतावनी",
+      "critical": "गंभीर",
+      "unknown": "अज्ञात"
+    },
+    "pagination": {
+      "status": "पेज {{page}} / {{totalPages}} (कुल {{total}})",
+      "prev": "पिछला",
+      "next": "अगला"
+    },
+    "health": {
+      "restarts_one": "{{count}} रीस्टार्ट",
+      "restarts_other": "{{count}} रीस्टार्ट",
+      "recentErrors_one": "{{count}} एरर",
+      "recentErrors_other": "{{count}} एरर"
+    }
+  },
+  "dataSanity": {
+    "title": "डेटा सैनिटी चेकर",
+    "subtitle": "क्रॉस-मॉड्यूल डेटा संगतता सत्यापन",
+    "overall": {
+      "healthy": {
+        "title": "सभी सिस्टम स्वस्थ हैं",
+        "subtitle": "सभी क्रॉस-मॉड्यूल डेटा संगतता जाँचें उत्तीर्ण हो गईं।"
+      },
+      "warnings": {
+        "title": "चेतावनियाँ पाई गईं",
+        "subtitle": "कुछ डेटा असंगतियाँ पाई गईं जिन पर ध्यान देने की आवश्यकता हो सकती है।"
+      },
+      "critical": {
+        "title": "गंभीर समस्याएँ पाई गईं",
+        "subtitle": "डेटा अखंडता की समस्याएँ पाई गईं जिनके लिए तत्काल कार्रवाई आवश्यक है।"
+      }
+    },
+    "status": {
+      "pass": "उत्तीर्ण",
+      "warn": "चेतावनी",
+      "fail": "विफल"
+    },
+    "check": {
+      "noIssues": "कोई समस्या नहीं पाई गई।",
+      "issuesFound_one": "{{count}} समस्या पाई गई",
+      "issuesFound_other": "{{count}} समस्याएँ पाई गईं",
+      "showingCount_one": "({{count}} दिखाया जा रहा है)",
+      "showingCount_other": "({{count}} दिखाए जा रहे हैं)"
+    },
+    "confirmFix": {
+      "title": "ऑटो-फिक्स की पुष्टि करें",
+      "intro": "इससे निम्नलिखित सुधार स्वचालित रूप से लागू हो जाएँगे:",
+      "fix": {
+        "syncOrgUserCounts": "संगठन उपयोगकर्ता संख्या सिंक करें",
+        "syncSeatCounts": "सब्सक्रिप्शन सीट संख्या सिंक करें",
+        "fixNegativeLeave": "ऋणात्मक अवकाश शेष ठीक करें (0 तक सीमित करें)",
+        "removeOrphaned": "अनाथ रिकॉर्ड हटाएँ (अवकाश, उपस्थिति, हेल्पडेस्क, घोषणाएँ)"
+      },
+      "warning": "इन परिवर्तनों को पूर्ववत नहीं किया जा सकता। सुनिश्चित करें कि आपके पास डेटाबेस बैकअप है।",
+      "cancel": "रद्द करें",
+      "apply": "सुधार लागू करें",
+      "applying": "ठीक किया जा रहा है..."
+    },
+    "fixResults": {
+      "none": "किसी सुधार की आवश्यकता नहीं थी। सब कुछ साफ़ दिख रहा है।",
+      "title_one": "ऑटो-फिक्स परिणाम (कुल {{count}} परिवर्तन)",
+      "title_other": "ऑटो-फिक्स परिणाम (कुल {{count}} परिवर्तन)"
+    },
+    "button": {
+      "autoFix": "ऑटो-फिक्स",
+      "runCheck": "जाँच चलाएँ",
+      "running": "चल रहा है..."
+    },
+    "loading": {
+      "title": "सैनिटी जाँचें चल रही हैं...",
+      "subtitle": "सभी मॉड्यूल डेटाबेस में डेटा संगतता की जाँच की जा रही है। इसमें कुछ समय लग सकता है।"
+    },
+    "empty": {
+      "title": "अभी तक कोई रिपोर्ट नहीं",
+      "subtitle": "सभी मॉड्यूल डेटाबेस में डेटा संगतता सत्यापित करने के लिए \"जाँच चलाएँ\" पर क्लिक करें।",
+      "runButton": "सैनिटी जाँच चलाएँ"
+    },
+    "summary": {
+      "totalChecks": "कुल जाँचें",
+      "passed": "उत्तीर्ण",
+      "warnings": "चेतावनियाँ",
+      "failures": "विफलताएँ"
+    },
+    "lastRun": "अंतिम बार चलाया गया:",
+    "checkResults": {
+      "heading": "जाँच परिणाम"
+    }
+  },
+  "eventDashboard": {
+    "header": {
+      "title": "इवेंट डैशबोर्ड",
+      "subtitle": "कंपनी इवेंट प्रबंधित करें और उपस्थिति ट्रैक करें।",
+      "createEvent": "इवेंट बनाएं"
+    },
+    "stats": {
+      "upcomingEvents": "आगामी इवेंट",
+      "thisMonth": "इस महीने",
+      "totalRsvps": "कुल RSVP",
+      "eventTypes": "इवेंट प्रकार"
+    },
+    "typeBreakdown": {
+      "title": "इवेंट प्रकार विवरण"
+    },
+    "eventType": {
+      "meeting": "मीटिंग",
+      "training": "प्रशिक्षण",
+      "celebration": "उत्सव",
+      "team_building": "टीम बिल्डिंग",
+      "town_hall": "टाउन हॉल",
+      "holiday": "अवकाश",
+      "workshop": "वर्कशॉप",
+      "social": "सामाजिक",
+      "other": "अन्य"
+    },
+    "form": {
+      "title": "इवेंट बनाएं",
+      "fields": {
+        "title": "शीर्षक",
+        "description": "विवरण",
+        "eventType": "इवेंट प्रकार",
+        "allDay": "पूरे दिन का इवेंट",
+        "mandatory": "अनिवार्य",
+        "startDate": "आरंभ तिथि",
+        "endDate": "समाप्ति तिथि",
+        "location": "स्थान",
+        "virtualLink": "वर्चुअल लिंक",
+        "targetAudience": "लक्षित दर्शक",
+        "targetIds": "लक्षित ID (JSON)",
+        "maxAttendees": "अधिकतम उपस्थित लोग"
+      },
+      "placeholders": {
+        "title": "इवेंट शीर्षक",
+        "description": "इवेंट विवरण...",
+        "location": "कार्यालय, कक्ष 101, आदि",
+        "virtualLink": "https://meet.google.com/...",
+        "maxAttendees": "असीमित"
+      },
+      "targetType": {
+        "all": "सभी कर्मचारी",
+        "department": "विभाग",
+        "role": "भूमिका"
+      },
+      "errors": {
+        "endBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+      },
+      "cancel": "रद्द करें",
+      "submit": "इवेंट बनाएं"
+    },
+    "upcoming": {
+      "title": "आगामी इवेंट",
+      "viewAll": "सभी देखें",
+      "loading": "लोड हो रहा है...",
+      "empty": "कोई आगामी इवेंट नहीं। ऊपर एक बनाएं!",
+      "view": "देखें",
+      "cancel": "रद्द करें",
+      "deleteTitle": "इवेंट हटाएं",
+      "attending_one": "{{count}} उपस्थित",
+      "attending_other": "{{count}} उपस्थित"
+    },
+    "deleteModal": {
+      "title": "इवेंट हटाएं?",
+      "body": "{{name}} हटाएं? इससे इवेंट और उसके RSVP स्थायी रूप से हट जाएंगे। इसे पूर्ववत नहीं किया जा सकता।",
+      "cancel": "रद्द करें",
+      "confirm": "हटाएं",
+      "deleting": "हटाया जा रहा है...",
+      "error": "इवेंट हटाने में विफल"
+    }
+  },
+  "surveyBuilder": {
+    "questionType": {
+      "rating_1_5": "रेटिंग (1-5)",
+      "rating_1_10": "रेटिंग (1-10)",
+      "enps_0_10": "eNPS (0-10)",
+      "yes_no": "हाँ / नहीं",
+      "multiple_choice": "बहुविकल्पीय",
+      "text": "मुक्त पाठ",
+      "scale": "स्केल"
+    },
+    "surveyType": {
+      "pulse": "पल्स सर्वेक्षण",
+      "enps": "eNPS सर्वेक्षण",
+      "engagement": "एंगेजमेंट सर्वेक्षण",
+      "custom": "कस्टम सर्वेक्षण",
+      "onboarding": "ऑनबोर्डिंग सर्वेक्षण",
+      "exit_survey": "एग्ज़िट सर्वेक्षण"
+    },
+    "header": {
+      "editTitle": "सर्वेक्षण संपादित करें",
+      "createTitle": "सर्वेक्षण बनाएँ",
+      "subtitle": "अपना सर्वेक्षण डिज़ाइन करें और प्रश्न जोड़ें।"
+    },
+    "details": {
+      "heading": "सर्वेक्षण विवरण",
+      "titleLabel": "शीर्षक *",
+      "titlePlaceholder": "उदा., Q1 2026 कर्मचारी पल्स सर्वेक्षण",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "सर्वेक्षण के उद्देश्य का संक्षिप्त विवरण...",
+      "typeLabel": "प्रकार",
+      "targetAudienceLabel": "लक्षित दर्शक",
+      "recurrenceLabel": "पुनरावृत्ति",
+      "startDateLabel": "आरंभ तिथि और समय",
+      "endDateLabel": "समाप्ति तिथि और समय",
+      "dateTimeHelper": "एक तिथि और दिन का समय चुनें।",
+      "anonymousLabel": "गुमनाम"
+    },
+    "target": {
+      "all": "सभी कर्मचारी",
+      "department": "विभाग अनुसार",
+      "role": "भूमिका अनुसार",
+      "custom": "कस्टम"
+    },
+    "recurrence": {
+      "none": "एक बार",
+      "weekly": "साप्ताहिक",
+      "monthly": "मासिक",
+      "quarterly": "त्रैमासिक"
+    },
+    "questions": {
+      "heading": "प्रश्न",
+      "addButton": "प्रश्न जोड़ें",
+      "moveUpTitle": "ऊपर ले जाएँ",
+      "removeTitle": "प्रश्न हटाएँ",
+      "textPlaceholder": "प्रश्न का पाठ दर्ज करें...",
+      "typeLabel": "प्रकार",
+      "requiredLabel": "आवश्यक",
+      "optionsLabel": "विकल्प (प्रति पंक्ति एक)",
+      "optionsPlaceholder": "विकल्प A\nविकल्प B\nविकल्प C",
+      "previewLabel": "पूर्वावलोकन"
+    },
+    "actions": {
+      "cancel": "रद्द करें",
+      "saveDraft": "ड्राफ़्ट के रूप में सहेजें",
+      "savePublish": "सहेजें और प्रकाशित करें"
+    },
+    "toast": {
+      "endBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+    },
+    "preview": {
+      "emptyHint": "पूर्वावलोकन देखने के लिए कोई प्रश्न लिखें",
+      "enpsNotLikely": "संभावना नहीं",
+      "enpsVeryLikely": "बहुत संभावना",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "optionA": "विकल्प A",
+      "optionB": "विकल्प B",
+      "optionC": "विकल्प C",
+      "textPlaceholder": "कर्मचारी यहाँ अपना उत्तर लिखेगा..."
+    }
+  },
+  "eventDetail": {
+    "type": {
+      "meeting": "मीटिंग",
+      "training": "प्रशिक्षण",
+      "celebration": "उत्सव",
+      "team_building": "टीम बिल्डिंग",
+      "town_hall": "टाउन हॉल",
+      "holiday": "अवकाश",
+      "workshop": "कार्यशाला",
+      "social": "सामाजिक",
+      "other": "अन्य"
+    },
+    "status": {
+      "upcoming": "आगामी",
+      "ongoing": "जारी",
+      "completed": "पूर्ण",
+      "cancelled": "रद्द"
+    },
+    "state": {
+      "loading": "इवेंट लोड हो रहा है...",
+      "notFound": "इवेंट नहीं मिला।"
+    },
+    "header": {
+      "backToEvents": "इवेंट्स पर वापस जाएं",
+      "delete": "हटाएं"
+    },
+    "badge": {
+      "mandatory": "अनिवार्य"
+    },
+    "details": {
+      "dateLabel": "तारीख",
+      "allDaySuffix": " (पूरे दिन)",
+      "dateRange": "{{date}} तक",
+      "locationLabel": "स्थान",
+      "virtualLabel": "वर्चुअल मीटिंग",
+      "joinOnline": "ऑनलाइन शामिल हों",
+      "attendeesLabel": "उपस्थित लोग",
+      "attendingCount_one": "{{count}} उपस्थित",
+      "attendingCount_other": "{{count}} उपस्थित",
+      "maybeSuffix_one": ", {{count}} शायद",
+      "maybeSuffix_other": ", {{count}} शायद",
+      "maxSuffix_one": " / {{count}} अधिकतम",
+      "maxSuffix_other": " / {{count}} अधिकतम"
+    },
+    "rsvp": {
+      "heading": "आपका RSVP",
+      "currently": "(वर्तमान में: {{status}})",
+      "attending": "उपस्थित",
+      "maybe": "शायद",
+      "decline": "अस्वीकार करें"
+    },
+    "delete": {
+      "title": "इवेंट हटाएं?",
+      "confirm": "{{name}} हटाएं? इससे इवेंट और उसके RSVP स्थायी रूप से हट जाएंगे। इसे पूर्ववत नहीं किया जा सकता।",
+      "error": "इवेंट हटाने में विफल",
+      "cancel": "रद्द करें",
+      "confirmButton": "हटाएं",
+      "deleting": "हटाया जा रहा है..."
+    },
+    "attendees": {
+      "attendingHeading_one": "उपस्थित ({{count}})",
+      "attendingHeading_other": "उपस्थित ({{count}})",
+      "maybeHeading_one": "शायद ({{count}})",
+      "maybeHeading_other": "शायद ({{count}})"
+    }
+  },
+  "surveyResults": {
+    "loading": "परिणाम लोड हो रहे हैं...",
+    "notFound": "सर्वेक्षण नहीं मिला।",
+    "actions": {
+      "exportCsv": "CSV निर्यात करें"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "closed": "बंद",
+      "draft": "मसौदा"
+    },
+    "summary": {
+      "totalResponses": "कुल प्रतिक्रियाएँ",
+      "questions": "प्रश्न",
+      "enpsScore": "eNPS स्कोर"
+    },
+    "a11y": {
+      "jumpToPerQuestion": "प्रति-प्रश्न परिणामों पर जाएँ",
+      "jumpToQuestionsBreakdown": "प्रश्नों के विवरण पर जाएँ",
+      "jumpToEnpsBreakdown": "eNPS विवरण पर जाएँ"
+    },
+    "enps": {
+      "breakdownTitle": "eNPS विवरण",
+      "promoters": "प्रमोटर (9-10)",
+      "passives": "निष्क्रिय (7-8)",
+      "detractors": "आलोचक (0-6)",
+      "inlineLabel": "eNPS:"
+    },
+    "question": {
+      "average": "औसत:",
+      "minMax": "(न्यूनतम: {{min}}, अधिकतम: {{max}})",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "answersMeta_one": "{{type}} | {{count}} उत्तर",
+      "answersMeta_other": "{{type}} | {{count}} उत्तर",
+      "responsesCount_one": "{{count}} प्रतिक्रिया",
+      "responsesCount_other": "{{count}} प्रतिक्रियाएँ"
+    },
+    "questionType": {
+      "rating_1_5": "रेटिंग 1-5",
+      "rating_1_10": "रेटिंग 1-10",
+      "enps_0_10": "eNPS 0-10",
+      "scale": "स्केल",
+      "yes_no": "हाँ / नहीं",
+      "multiple_choice": "बहुविकल्पीय",
+      "text": "पाठ"
+    }
+  },
+  "reportDetail": {
+    "status": {
+      "submitted": "प्रस्तुत",
+      "under_investigation": "जांच के अंतर्गत",
+      "escalated": "आगे बढ़ाया गया",
+      "resolved": "समाधानित",
+      "dismissed": "खारिज",
+      "closed": "बंद"
+    },
+    "severity": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "critical": "गंभीर"
+    },
+    "reportInfo": {
+      "categoryLabel": "श्रेणी:",
+      "anonymousLabel": "गुमनाम:",
+      "anonymousYes": "हां",
+      "anonymousNo": "नहीं",
+      "reporterLabel": "रिपोर्टकर्ता:",
+      "evidenceFilesLabel": "साक्ष्य फ़ाइलें:"
+    },
+    "timeline": {
+      "heading": "जांच समयरेखा",
+      "visibleToReporterBadge": "रिपोर्टकर्ता को दृश्यमान",
+      "systemAuthor": "सिस्टम",
+      "empty": "अभी तक कोई अपडेट नहीं"
+    },
+    "addUpdate": {
+      "heading": "अपडेट जोड़ें",
+      "typeNote": "आंतरिक टिप्पणी",
+      "typeResponseToReporter": "रिपोर्टकर्ता को उत्तर",
+      "typeStatusChange": "स्थिति परिवर्तन टिप्पणी",
+      "visibleToReporterCheckbox": "रिपोर्टकर्ता को दृश्यमान",
+      "contentPlaceholder": "एक अपडेट या टिप्पणी लिखें...",
+      "submitSending": "भेजा जा रहा है...",
+      "submit": "अपडेट जोड़ें"
+    },
+    "info": {
+      "submittedLabel": "प्रस्तुत:",
+      "investigatorLabel": "जांचकर्ता:",
+      "escalatedToLabel": "आगे बढ़ाया गया:",
+      "resolvedLabel": "समाधानित:",
+      "resolutionLabel": "समाधान:"
+    },
+    "assign": {
+      "heading": "जांचकर्ता नियुक्त करें",
+      "loadUsersError": "उपयोगकर्ता लोड करने में विफल। कृपया पृष्ठ को रीफ़्रेश करें।",
+      "optionLoading": "उपयोगकर्ता लोड हो रहे हैं...",
+      "optionError": "उपयोगकर्ता लोड करने में त्रुटि",
+      "optionSelect": "जांचकर्ता चुनें...",
+      "userOption": "{{firstName}} {{lastName}} ({{email}})",
+      "error": "जांचकर्ता नियुक्त करने में विफल। कृपया पुनः प्रयास करें।",
+      "success": "जांचकर्ता सफलतापूर्वक नियुक्त किया गया।"
+    },
+    "changeStatus": {
+      "heading": "स्थिति बदलें",
+      "optionSelect": "स्थिति चुनें...",
+      "resolutionPlaceholder": "समाधान टिप्पणियां...",
+      "submitUpdating": "अपडेट हो रहा है...",
+      "submit": "स्थिति अपडेट करें"
+    },
+    "escalate": {
+      "heading": "बाहरी रूप से आगे बढ़ाएं",
+      "placeholder": "बाहरी निकाय या प्राधिकरण",
+      "submitEscalating": "आगे बढ़ाया जा रहा है...",
+      "submit": "रिपोर्ट आगे बढ़ाएं"
+    }
+  },
+  "submitReport": {
+    "success": {
+      "title": "रिपोर्ट सबमिट की गई",
+      "description": "आपकी रिपोर्ट सफलतापूर्वक सबमिट कर दी गई है। कृपया अपनी रिपोर्ट की स्थिति ट्रैक करने के लिए अपना केस नंबर सहेज लें।",
+      "caseNumberLabel": "आपका केस नंबर",
+      "importantLabel": "महत्वपूर्ण:",
+      "saveCaseNumber": "इस केस नंबर को सुरक्षित रूप से सहेज लें। अपनी रिपोर्ट को ट्रैक करने का यही एकमात्र तरीका है।",
+      "identityAnonymous": "आपकी पहचान पूरी तरह गुमनाम है और इसे उजागर नहीं किया जा सकता।",
+      "identityAttached": "आपकी पहचान इस रिपोर्ट से जुड़ी हुई है।",
+      "trackReportHint": "अपडेट देखने के लिए \"रिपोर्ट ट्रैक करें\" पेज का उपयोग करें।",
+      "submitAnother": "एक और रिपोर्ट सबमिट करें"
+    },
+    "header": {
+      "title": "व्हिसलब्लोइंग रिपोर्ट सबमिट करें",
+      "subtitle": "कदाचार की रिपोर्ट सुरक्षित और गोपनीय रूप से करें (EU Directive 2019/1937)"
+    },
+    "anonymous": {
+      "anonymousTitle": "गुमनाम रिपोर्ट",
+      "identifiedTitle": "पहचान सहित रिपोर्ट",
+      "anonymousDescription": "आपकी पहचान न तो संग्रहीत की जाएगी और न ही किसी को बताई जाएगी।",
+      "identifiedDescription": "आपकी पहचान जाँचकर्ताओं को दिखाई देगी।"
+    },
+    "form": {
+      "categoryLabel": "श्रेणी",
+      "required": "*",
+      "categoryPlaceholder": "एक श्रेणी चुनें...",
+      "severityLabel": "गंभीरता",
+      "subjectLabel": "विषय",
+      "subjectPlaceholder": "समस्या का संक्षिप्त सारांश",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "यथासंभव अधिक विवरण दें: क्या हुआ, कब, कहाँ, कौन शामिल था, और आपके पास कोई साक्ष्य।"
+    },
+    "actions": {
+      "submit": "रिपोर्ट सबमिट करें",
+      "submitting": "सबमिट किया जा रहा है..."
+    },
+    "error": {
+      "submitFailed": "रिपोर्ट सबमिट करने में विफल। कृपया फिर से प्रयास करें।"
+    },
+    "category": {
+      "fraud": "धोखाधड़ी",
+      "corruption": "भ्रष्टाचार",
+      "harassment": "उत्पीड़न",
+      "discrimination": "भेदभाव",
+      "safety_violation": "सुरक्षा उल्लंघन",
+      "data_breach": "डेटा उल्लंघन",
+      "financial_misconduct": "वित्तीय कदाचार",
+      "environmental": "पर्यावरणीय",
+      "retaliation": "प्रतिशोधात्मक कार्रवाई",
+      "other": "अन्य"
+    },
+    "severity": {
+      "low": "कम",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "critical": "गंभीर"
+    }
+  },
+  "whistleblowingDashboard": {
+    "header": {
+      "title": "व्हिसलब्लोइंग डैशबोर्ड",
+      "subtitle": "EU Directive 2019/1937 अनुपालन अवलोकन",
+      "viewAllReports": "सभी रिपोर्ट देखें"
+    },
+    "stats": {
+      "totalReports": "कुल रिपोर्ट",
+      "open": "खुले",
+      "resolved": "समाधानित",
+      "avgResolution": "औसत समाधान",
+      "avgResolutionDays": "{{count}} दिन",
+      "noValue": "--"
+    },
+    "section": {
+      "bySeverity": "गंभीरता अनुसार",
+      "byCategory": "श्रेणी अनुसार",
+      "recentReports": "हाल की रिपोर्ट"
+    },
+    "empty": {
+      "noData": "अभी कोई डेटा नहीं",
+      "noReports": "अभी कोई रिपोर्ट नहीं"
+    },
+    "table": {
+      "caseNumber": "केस #",
+      "category": "श्रेणी",
+      "severity": "गंभीरता",
+      "subject": "विषय",
+      "status": "स्थिति",
+      "date": "दिनांक"
+    },
+    "severity": {
+      "low": "निम्न",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "critical": "गंभीर"
+    },
+    "status": {
+      "submitted": "प्रस्तुत",
+      "under_investigation": "जांच के अधीन",
+      "escalated": "आगे बढ़ाया गया",
+      "resolved": "समाधानित",
+      "dismissed": "खारिज",
+      "closed": "बंद"
+    },
+    "category": {
+      "harassment": "उत्पीड़न",
+      "discrimination": "भेदभाव",
+      "fraud": "धोखाधड़ी",
+      "corruption": "भ्रष्टाचार",
+      "safety_violation": "सुरक्षा उल्लंघन",
+      "data_breach": "डेटा उल्लंघन",
+      "financial_misconduct": "वित्तीय कदाचार",
+      "other": "अन्य"
+    }
+  },
+  "myWellness": {
+    "header": {
+      "title": "मेरी सेहत",
+      "subtitle": "अपनी स्वास्थ्य यात्रा और व्यक्तिगत लक्ष्यों को ट्रैक करें",
+      "dailyCheckIn": "दैनिक चेक-इन"
+    },
+    "error": {
+      "loadFailed": "सेहत डेटा लोड नहीं हो सका। कृपया बाद में पुनः प्रयास करें।"
+    },
+    "stats": {
+      "dayStreak": "दिनों की श्रृंखला",
+      "totalCheckIns": "कुल चेक-इन",
+      "avgEnergy": "औसत ऊर्जा",
+      "goalsDone": "पूर्ण लक्ष्य"
+    },
+    "moodTrend": {
+      "title": "मनोदशा का रुझान (पिछले 14 दिन)"
+    },
+    "mood": {
+      "great": "बहुत अच्छा",
+      "good": "अच्छा",
+      "okay": "ठीक-ठाक",
+      "low": "निम्न",
+      "stressed": "तनावग्रस्त"
+    },
+    "goals": {
+      "title": "मेरे लक्ष्य",
+      "addGoal": "लक्ष्य जोड़ें",
+      "empty": "अभी तक कोई लक्ष्य नहीं। अपना पहला सेहत लक्ष्य बनाएं!",
+      "update": "अपडेट करें"
+    },
+    "goalStatus": {
+      "completed": "पूर्ण",
+      "abandoned": "छोड़ा गया",
+      "active": "सक्रिय"
+    },
+    "goalFrequency": {
+      "daily": "दैनिक",
+      "weekly": "साप्ताहिक",
+      "monthly": "मासिक"
+    },
+    "goalType": {
+      "steps": "कदम",
+      "exercise": "व्यायाम",
+      "meditation": "ध्यान",
+      "water": "पानी का सेवन",
+      "sleep": "नींद",
+      "custom": "कस्टम"
+    },
+    "programs": {
+      "title": "मेरे कार्यक्रम",
+      "emptyCompleted": "अभी तक कोई पूर्ण कार्यक्रम नहीं। जारी रखें!",
+      "emptyActive": "कोई सक्रिय कार्यक्रम नहीं।",
+      "markComplete": "पूर्ण के रूप में चिह्नित करें",
+      "pointsReward": "पूर्ण होने पर +{{points}} अंक",
+      "tabActive_one": "सक्रिय ({{count}})",
+      "tabActive_other": "सक्रिय ({{count}})",
+      "tabCompleted_one": "पूर्ण ({{count}})",
+      "tabCompleted_other": "पूर्ण ({{count}})"
+    },
+    "programStatus": {
+      "completed": "पूर्ण",
+      "active": "सक्रिय"
+    },
+    "checkIns": {
+      "title": "हाल के चेक-इन",
+      "colDate": "दिनांक",
+      "colMood": "मनोदशा",
+      "colEnergy": "ऊर्जा",
+      "colSleep": "नींद",
+      "colExercise": "व्यायाम"
+    },
+    "goalModal": {
+      "title": "सेहत लक्ष्य बनाएं",
+      "labelTitle": "शीर्षक *",
+      "placeholderTitle": "उदा., रोज़ 10,000 कदम चलें",
+      "labelGoalType": "लक्ष्य प्रकार",
+      "labelFrequency": "आवृत्ति",
+      "labelTargetValue": "लक्ष्य मान *",
+      "placeholderTargetValue": "उदा., 10000",
+      "labelUnit": "इकाई *",
+      "placeholderUnit": "उदा., कदम, मिनट",
+      "labelStartDate": "आरंभ तिथि *",
+      "labelEndDate": "समाप्ति तिथि",
+      "errorCreateFailed": "लक्ष्य बनाने में विफल",
+      "cancel": "रद्द करें",
+      "creating": "बनाया जा रहा है...",
+      "submit": "लक्ष्य बनाएं",
+      "errorEndBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+    },
+    "progressModal": {
+      "title": "प्रगति अपडेट करें",
+      "prompt": "प्रगति जोड़ें (वर्तमान: {{current}} {{unit}}):",
+      "placeholder": "{{unit}} में जोड़ने की मात्रा",
+      "cancel": "रद्द करें",
+      "saving": "सहेजा जा रहा है...",
+      "submit": "अपडेट करें"
+    }
+  },
+  "wellnessDashboard": {
+    "mood": {
+      "great": "बहुत बढ़िया",
+      "good": "अच्छा",
+      "okay": "ठीक-ठाक",
+      "low": "उदास",
+      "stressed": "तनावग्रस्त",
+      "title": "मूड वितरण (30 दिन)",
+      "noData": "अभी तक कोई चेक-इन डेटा नहीं",
+      "percent": "{{pct}}%"
+    },
+    "programType": {
+      "fitness": "फ़िटनेस",
+      "mental_health": "मानसिक स्वास्थ्य",
+      "nutrition": "पोषण",
+      "meditation": "ध्यान",
+      "yoga": "योग",
+      "team_activity": "टीम गतिविधि",
+      "health_checkup": "स्वास्थ्य जाँच",
+      "other": "अन्य"
+    },
+    "loading": "वेलनेस डैशबोर्ड लोड हो रहा है...",
+    "error": {
+      "load": "वेलनेस डैशबोर्ड लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
+      "createProgram": "प्रोग्राम बनाने में विफल"
+    },
+    "header": {
+      "title": "वेलनेस डैशबोर्ड",
+      "subtitle": "संगठन-व्यापी वेलनेस मेट्रिक्स और प्रोग्राम प्रबंधन",
+      "createProgram": "प्रोग्राम बनाएँ"
+    },
+    "kpi": {
+      "wellnessScore": "वेलनेस स्कोर",
+      "wellnessScoreValue": "{{score}}/100",
+      "valueEmpty": "---",
+      "activePrograms": "सक्रिय प्रोग्राम",
+      "activeParticipants": "सक्रिय प्रतिभागी",
+      "goalCompletion": "लक्ष्य पूर्णता",
+      "goalCompletionValue": "{{rate}}%",
+      "goalsProgress": "{{completed}} / {{total}} लक्ष्य",
+      "totalPrograms_one": "कुल {{count}} प्रोग्राम",
+      "totalPrograms_other": "कुल {{count}} प्रोग्राम",
+      "checkins30d_one": "{{count}} चेक-इन (30 दिन)",
+      "checkins30d_other": "{{count}} चेक-इन (30 दिन)"
+    },
+    "metrics": {
+      "title": "औसत मेट्रिक्स (30 दिन)",
+      "avgEnergyLevel": "औसत ऊर्जा स्तर",
+      "avgEnergyLevelValue": "{{value}} / 5",
+      "avgExerciseMinutes": "औसत व्यायाम मिनट",
+      "avgExerciseMinutesValue": "{{value}} मिनट",
+      "totalEnrollments": "कुल नामांकन",
+      "completedEnrollments_one": "{{count}} पूर्ण",
+      "completedEnrollments_other": "{{count}} पूर्ण"
+    },
+    "topPrograms": {
+      "title": "नामांकन के आधार पर शीर्ष प्रोग्राम",
+      "colProgram": "प्रोग्राम",
+      "colType": "प्रकार",
+      "colEnrolled": "नामांकित",
+      "colPoints": "अंक",
+      "colStatus": "स्थिति",
+      "enrolledOfMax": "{{enrolled}} / {{max}}",
+      "pointsReward": "+{{points}}",
+      "pointsEmpty": "---"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय"
+    },
+    "modal": {
+      "title": "वेलनेस प्रोग्राम बनाएँ",
+      "fieldTitle": "शीर्षक *",
+      "titlePlaceholder": "उदा., 30-दिवसीय योग चुनौती",
+      "fieldDescription": "विवरण",
+      "descriptionPlaceholder": "प्रोग्राम विवरण...",
+      "fieldType": "प्रकार",
+      "fieldMaxParticipants": "अधिकतम प्रतिभागी",
+      "maxParticipantsPlaceholder": "असीमित",
+      "fieldStartDate": "प्रारंभ तिथि",
+      "fieldEndDate": "समाप्ति तिथि",
+      "fieldPointsReward": "अंक पुरस्कार",
+      "cancel": "रद्द करें",
+      "submit": "प्रोग्राम बनाएँ",
+      "submitting": "बना रहे हैं..."
+    },
+    "toast": {
+      "endBeforeStart": "समाप्ति तिथि प्रारंभ तिथि से पहले नहीं हो सकती।"
+    }
+  },
+  "wellnessPage": {
+    "programType": {
+      "fitness": "फिटनेस",
+      "mental_health": "मानसिक स्वास्थ्य",
+      "nutrition": "पोषण",
+      "meditation": "ध्यान",
+      "yoga": "योग",
+      "team_activity": "टीम गतिविधि",
+      "health_checkup": "स्वास्थ्य जांच",
+      "other": "अन्य"
+    },
+    "enroll": {
+      "success": "कार्यक्रम में सफलतापूर्वक नामांकित",
+      "error": "कार्यक्रम में नामांकन विफल रहा"
+    },
+    "header": {
+      "title": "वेलनेस कार्यक्रम",
+      "subtitle": "कार्यक्रमों का पता लगाएं, अपनी सेहत पर नज़र रखें, और अपने स्वास्थ्य लक्ष्यों को प्राप्त करें"
+    },
+    "actions": {
+      "dailyCheckIn": "दैनिक चेक-इन",
+      "myWellness": "मेरी वेलनेस"
+    },
+    "stats": {
+      "checkInStreak": "चेक-इन सिलसिला",
+      "activePrograms": "सक्रिय कार्यक्रम",
+      "goalsCompleted": "पूरे किए गए लक्ष्य",
+      "latestMood": "नवीनतम मनोदशा",
+      "moodEmpty": "---",
+      "checkInStreakValue_one": "{{count}} दिन",
+      "checkInStreakValue_other": "{{count}} दिन"
+    },
+    "filter": {
+      "allTypes": "सभी प्रकार",
+      "programsAvailable_one": "{{count}} कार्यक्रम उपलब्ध",
+      "programsAvailable_other": "{{count}} कार्यक्रम उपलब्ध"
+    },
+    "list": {
+      "loading": "कार्यक्रम लोड हो रहे हैं...",
+      "empty": "अभी तक कोई वेलनेस कार्यक्रम उपलब्ध नहीं है"
+    },
+    "card": {
+      "ongoing": "जारी",
+      "enrolledButton": "नामांकित",
+      "enrollNow": "अभी नामांकन करें",
+      "pointsReward_one": "+{{count}} अंक",
+      "pointsReward_other": "+{{count}} अंक",
+      "enrolledCount_one": "{{count}} नामांकित",
+      "enrolledCount_other": "{{count}} नामांकित"
+    },
+    "pagination": {
+      "pageOf": "पृष्ठ {{page}} / {{totalPages}}"
+    }
+  },
+  "documentCategories": {
+    "page": {
+      "title": "दस्तावेज़ श्रेणियाँ",
+      "subtitle": "अपने संगठन के लिए दस्तावेज़ श्रेणियाँ प्रबंधित करें।"
+    },
+    "actions": {
+      "newCategory": "नई श्रेणी",
+      "cancel": "रद्द करें",
+      "update": "अपडेट करें",
+      "create": "बनाएँ",
+      "edit": "संपादित करें",
+      "delete": "हटाएँ"
+    },
+    "form": {
+      "editTitle": "श्रेणी संपादित करें",
+      "createTitle": "श्रेणी बनाएँ",
+      "nameLabel": "नाम *",
+      "namePlaceholder": "जैसे आधार कार्ड",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "वैकल्पिक विवरण",
+      "mandatoryLabel": "सभी कर्मचारियों के लिए अनिवार्य"
+    },
+    "table": {
+      "categoryHeader": "श्रेणी",
+      "descriptionHeader": "विवरण",
+      "documentsHeader": "दस्तावेज़",
+      "mandatoryHeader": "अनिवार्य",
+      "actionsHeader": "कार्रवाइयाँ",
+      "loading": "लोड हो रहा है...",
+      "empty": "अभी कोई श्रेणी नहीं है। आरंभ करने के लिए एक बनाएँ।",
+      "emptyValue": "--"
+    },
+    "mandatory": {
+      "required": "आवश्यक",
+      "optional": "वैकल्पिक"
+    },
+    "deactivate": {
+      "titleNamed": "श्रेणी \"{{name}}\" को निष्क्रिय करें?",
+      "title": "श्रेणी निष्क्रिय करें?",
+      "description": "इस श्रेणी के दस्तावेज़ बने रहेंगे।",
+      "confirm": "निष्क्रिय करें"
+    }
+  },
+  "myDocuments": {
+    "page": {
+      "title": "मेरे दस्तावेज़",
+      "subtitle": "अपने दस्तावेज़ अपलोड करें, देखें और उनकी स्थिति ट्रैक करें।"
+    },
+    "actions": {
+      "uploadDocument": "दस्तावेज़ अपलोड करें"
+    },
+    "upload": {
+      "heading": "दस्तावेज़ अपलोड करें",
+      "fileLabel": "फ़ाइल *",
+      "nameLabel": "दस्तावेज़ का नाम",
+      "namePlaceholder": "वैकल्पिक - डिफ़ॉल्ट रूप से फ़ाइल का नाम",
+      "categoryLabel": "श्रेणी *",
+      "categoryPlaceholder": "श्रेणी चुनें",
+      "expiryLabel": "समाप्ति तिथि",
+      "submit": "अपलोड करें",
+      "submitting": "अपलोड हो रहा है..."
+    },
+    "list": {
+      "loading": "आपके दस्तावेज़ लोड हो रहे हैं...",
+      "empty": "आपने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है।",
+      "uploadFirst": "अपना पहला दस्तावेज़ अपलोड करें"
+    },
+    "expiry": {
+      "expired": "समाप्त",
+      "expiringSoon": "जल्द समाप्त हो रहा है",
+      "expires": "समाप्ति"
+    },
+    "doc": {
+      "rejectionReason": "अस्वीकृति का कारण: {{reason}}",
+      "download": "डाउनलोड करें",
+      "reupload": "पुनः अपलोड करें"
+    },
+    "status": {
+      "verified": "सत्यापित",
+      "rejected": "अस्वीकृत",
+      "pending": "लंबित"
+    },
+    "toast": {
+      "downloadFailed": "दस्तावेज़ डाउनलोड करने में विफल।"
+    },
+    "pagination": {
+      "previous": "पिछला",
+      "next": "अगला",
+      "summary_one": "पृष्ठ {{page}} / {{totalPages}} (कुल {{count}})",
+      "summary_other": "पृष्ठ {{page}} / {{totalPages}} (कुल {{count}})"
+    }
+  },
+  "categoryPosts": {
+    "time": {
+      "justNow": "अभी",
+      "minutesAgo_one": "{{count}} मिनट पहले",
+      "minutesAgo_other": "{{count}} मिनट पहले",
+      "hoursAgo_one": "{{count}} घंटे पहले",
+      "hoursAgo_other": "{{count}} घंटे पहले",
+      "daysAgo_one": "{{count}} दिन पहले",
+      "daysAgo_other": "{{count}} दिन पहले"
+    },
+    "header": {
+      "defaultCategoryName": "श्रेणी",
+      "newPost": "नई पोस्ट"
+    },
+    "filters": {
+      "allTypes": "सभी प्रकार",
+      "discussions": "चर्चाएँ",
+      "questions": "प्रश्न",
+      "ideas": "विचार",
+      "polls": "पोल"
+    },
+    "sort": {
+      "recent": "हाल की",
+      "popular": "लोकप्रिय",
+      "active": "सक्रिय",
+      "mostViewed": "सर्वाधिक देखी गई"
+    },
+    "list": {
+      "loading": "पोस्ट लोड हो रही हैं...",
+      "empty": "इस श्रेणी में अभी तक कोई पोस्ट नहीं है। बातचीत शुरू करें!"
+    },
+    "postType": {
+      "discussion": "चर्चा",
+      "question": "प्रश्न",
+      "idea": "विचार",
+      "poll": "पोल"
+    },
+    "badge": {
+      "pinned": "पिन की गई",
+      "locked": "लॉक की गई"
+    },
+    "pagination": {
+      "previous": "पिछला",
+      "next": "अगला",
+      "pageInfo_one": "{{totalPages}} में से पृष्ठ {{page}} (कुल {{count}})",
+      "pageInfo_other": "{{totalPages}} में से पृष्ठ {{page}} (कुल {{count}})"
+    }
+  },
+  "postDetail": {
+    "postType": {
+      "discussion": "चर्चा",
+      "question": "प्रश्न",
+      "idea": "विचार",
+      "poll": "पोल"
+    },
+    "time": {
+      "justNow": "अभी",
+      "minutesAgo_one": "{{count}} मिनट पहले",
+      "minutesAgo_other": "{{count}} मिनट पहले",
+      "hoursAgo_one": "{{count}} घंटे पहले",
+      "hoursAgo_other": "{{count}} घंटे पहले",
+      "daysAgo_one": "{{count}} दिन पहले",
+      "daysAgo_other": "{{count}} दिन पहले"
+    },
+    "loading": "पोस्ट लोड हो रही है...",
+    "notFound": "पोस्ट नहीं मिली",
+    "reply": {
+      "acceptedAnswer": "स्वीकृत उत्तर",
+      "replyAction": "जवाब दें",
+      "acceptAnswer": "उत्तर स्वीकार करें"
+    },
+    "badge": {
+      "pinned": "पिन किया गया",
+      "locked": "लॉक किया गया"
+    },
+    "action": {
+      "like": "पसंद",
+      "unpin": "अनपिन करें",
+      "pin": "पिन करें",
+      "unlock": "अनलॉक करें",
+      "lock": "लॉक करें",
+      "delete": "हटाएं"
+    },
+    "replies": {
+      "empty": "अभी तक कोई जवाब नहीं। जवाब देने वाले पहले व्यक्ति बनें!",
+      "heading_one": "{{count}} जवाब",
+      "heading_other": "{{count}} जवाब"
+    },
+    "form": {
+      "replyingTo": "{{name}} को जवाब दे रहे हैं",
+      "cancel": "रद्द करें",
+      "placeholder": "जवाब लिखें...",
+      "posting": "पोस्ट हो रहा है...",
+      "submit": "जवाब दें"
+    },
+    "locked": {
+      "message": "यह पोस्ट लॉक है। नए जवाब की अनुमति नहीं है।"
+    },
+    "deleteReply": {
+      "title": "इस जवाब को हटाएं?",
+      "confirm": "हटाएं"
+    },
+    "deletePost": {
+      "title": "इस पोस्ट और इसके सभी जवाब हटाएं?",
+      "description": "इसे पूर्ववत नहीं किया जा सकता।",
+      "confirm": "हटाएं"
+    },
+    "replyCount_one": "{{count}} जवाब",
+    "replyCount_other": "{{count}} जवाब"
+  },
+  "positionDetail": {
+    "error": {
+      "assignFailed": "कर्मचारी को इस पद पर असाइन करने में विफल।",
+      "saveChangesFailed": "पद के बदलाव सहेजने में विफल।",
+      "deleteFailed": "पद हटाने में विफल"
+    },
+    "loading": "लोड हो रहा है...",
+    "notFound": "पद नहीं मिला",
+    "backToPositions": "पदों पर वापस जाएँ",
+    "action": {
+      "edit": "संपादित करें",
+      "delete": "हटाएँ",
+      "assignEmployee": "कर्मचारी असाइन करें"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "filled": "भरा हुआ",
+      "frozen": "फ़्रोज़न",
+      "closed": "बंद"
+    },
+    "assignForm": {
+      "heading": "पद पर कर्मचारी असाइन करें",
+      "employeeLabel": "कर्मचारी *",
+      "searchPlaceholder": "उपयोगकर्ता खोजने के लिए टाइप करें...",
+      "noUsersMatch": "कोई उपयोगकर्ता मेल नहीं खाता",
+      "startDateLabel": "आरंभ तिथि *",
+      "primaryPosition": "प्राथमिक पद",
+      "assigning": "असाइन हो रहा है...",
+      "assign": "असाइन करें",
+      "assignFailedInline": "असाइन करने में विफल"
+    },
+    "common": {
+      "cancel": "रद्द करें"
+    },
+    "editForm": {
+      "heading": "पद संपादित करें",
+      "titleLabel": "शीर्षक *",
+      "departmentLabel": "विभाग",
+      "departmentNone": "कोई नहीं",
+      "employmentTypeLabel": "रोज़गार प्रकार",
+      "headcountBudgetLabel": "नियुक्ति बजट",
+      "minSalaryLabel": "न्यूनतम वेतन (पैसे/सेंट)",
+      "maxSalaryLabel": "अधिकतम वेतन (पैसे/सेंट)",
+      "jobDescriptionLabel": "कार्य विवरण",
+      "criticalRole": "महत्वपूर्ण भूमिका",
+      "headcountMinError": "नियुक्ति बजट कम से कम 1 होना चाहिए।",
+      "saving": "सहेज रहा है...",
+      "saveChanges": "बदलाव सहेजें",
+      "updateFailedInline": "पद अपडेट करने में विफल"
+    },
+    "employmentType": {
+      "full_time": "पूर्णकालिक",
+      "part_time": "अंशकालिक",
+      "contract": "अनुबंध",
+      "intern": "प्रशिक्षु"
+    },
+    "details": {
+      "heading": "पद विवरण",
+      "employmentType": "रोज़गार प्रकार",
+      "headcount": "नियुक्ति संख्या",
+      "salaryRange": "वेतन सीमा",
+      "reportsTo": "रिपोर्ट करता है"
+    },
+    "jobDescription": {
+      "heading": "कार्य विवरण"
+    },
+    "requirements": {
+      "heading": "आवश्यकताएँ"
+    },
+    "assignees": {
+      "noneAssigned": "कोई नियुक्त नहीं",
+      "since": "{{date}} से",
+      "actingInterim": "कार्यवाहक/अंतरिम",
+      "endAssignmentTitle": "नियुक्ति समाप्त करें",
+      "heading_one": "वर्तमान नियुक्त ({{count}})",
+      "heading_other": "वर्तमान नियुक्त ({{count}})"
+    },
+    "history": {
+      "heading": "नियुक्ति इतिहास",
+      "dateRangeNA": "लागू नहीं"
+    },
+    "delete": {
+      "heading": "पद हटाएँ?",
+      "body": "{{name}} को हटाएँ? सक्रिय नियुक्तियाँ समाप्त कर दी जाएँगी और पद बंद कर दिया जाएगा। यह पूर्ववत नहीं किया जा सकता।",
+      "deleting": "हटाया जा रहा है...",
+      "confirm": "हटाएँ"
+    },
+    "endAssignment": {
+      "title": "यह नियुक्ति समाप्त करें?",
+      "confirmText": "नियुक्ति समाप्त करें"
+    }
+  },
+  "acceptInvitation": {
+    "errors": {
+      "invalidToken": "यह आमंत्रण लिंक अमान्य है, पहले ही उपयोग किया जा चुका है, या समाप्त हो चुका है। कृपया अपने प्रशासक से आमंत्रण दोबारा भेजने के लिए कहें।",
+      "genericFailure": "आमंत्रण स्वीकार नहीं किया जा सका। कृपया पुनः प्रयास करें।"
+    },
+    "validation": {
+      "firstNameRequired": "पहला नाम आवश्यक है।",
+      "lastNameRequired": "अंतिम नाम आवश्यक है।",
+      "passwordsDoNotMatch": "पासवर्ड मेल नहीं खाते।",
+      "passwordTooShort_one": "पासवर्ड कम से कम {{count}} अक्षर का होना चाहिए।",
+      "passwordTooShort_other": "पासवर्ड कम से कम {{count}} अक्षरों का होना चाहिए।"
+    },
+    "toast": {
+      "success": "आमंत्रण स्वीकार कर लिया गया। अब आप साइन इन कर सकते हैं।"
+    },
+    "logoAlt": "EmpCloud",
+    "heading": "अपना आमंत्रण स्वीकार करें",
+    "subheading": "अपना EMP Cloud खाता सक्रिय करने के लिए अपना नाम और पासवर्ड सेट करें।",
+    "loadingInvitation": "आमंत्रण लोड हो रहा है…",
+    "form": {
+      "firstNameLabel": "पहला नाम",
+      "firstNamePlaceholder": "Ada",
+      "lastNameLabel": "अंतिम नाम",
+      "namesLockedNote": "आपका नाम {{org}} के रिकॉर्ड में दर्ज है। यदि इसे बदलने की आवश्यकता हो तो अपने HR प्रशासक से संपर्क करें।",
+      "orgFallback": "आपका संगठन",
+      "passwordLabel": "पासवर्ड",
+      "hidePasswordAria": "पासवर्ड छिपाएं",
+      "showPasswordAria": "पासवर्ड दिखाएं",
+      "confirmPasswordLabel": "पासवर्ड की पुष्टि करें",
+      "confirmPasswordPlaceholder": "वही पासवर्ड दोबारा टाइप करें",
+      "submitting": "खाता सक्रिय किया जा रहा है...",
+      "submit": "आमंत्रण स्वीकार करें और साइन इन करें",
+      "alreadyHaveAccount": "पहले से खाता है?",
+      "signInLink": "साइन इन करें",
+      "passwordPlaceholder_one": "कम से कम {{count}} अक्षर",
+      "passwordPlaceholder_other": "कम से कम {{count}} अक्षर"
+    }
+  },
+  "messagesPage": {
+    "conversationRow": {
+      "mutedAriaLabel": "म्यूट किया गया",
+      "groupCreated": "ग्रुप बनाया गया",
+      "noMessagesYet": "अभी तक कोई संदेश नहीं",
+      "unreadCountOverflow": "99+"
+    },
+    "toast": {
+      "photoMustBeImage": "प्रोफ़ाइल फ़ोटो एक छवि होनी चाहिए।",
+      "photoUpdated": "प्रोफ़ाइल फ़ोटो अपडेट हो गई।",
+      "photoUploadFailed": "फ़ोटो अपलोड नहीं हो सकी।",
+      "statusUpdateFailed": "आपका स्टेटस अपडेट नहीं हो सका। कृपया पुनः प्रयास करें।",
+      "openNotesFailed": "आपके नोट्स नहीं खुल सके।"
+    },
+    "profile": {
+      "yourProfileTitle": "आपकी प्रोफ़ाइल",
+      "changePhotoTitle": "अपनी प्रोफ़ाइल फ़ोटो बदलें",
+      "youFallback": "आप",
+      "statusLabel": "स्टेटस",
+      "statusPlaceholder": "स्टेटस सेट करें…",
+      "save": "सहेजें",
+      "setStatusTitle": "अपना स्टेटस सेट करें",
+      "messageYourself": "स्वयं को संदेश भेजें (नोट्स)"
+    },
+    "search": {
+      "placeholder": "चैट और संदेश खोजें…",
+      "messagesHeader": "संदेश",
+      "noMessageMatch": "“{{query}}” से मेल खाता कोई संदेश नहीं है।",
+      "senderPrefix": "{{name}}: "
+    },
+    "list": {
+      "newChat": "नई चैट",
+      "backToChats": "← चैट पर वापस जाएँ",
+      "archived": "संग्रहीत",
+      "loadError": "बातचीत लोड नहीं हो सकी। कृपया पुनः प्रयास करें।",
+      "noSearchMatch": "\"{{query}}\" से मेल खाती कोई बातचीत नहीं है।",
+      "noConversationsTitle": "अभी तक कोई बातचीत नहीं",
+      "noConversationsHint": "\"नई चैट\" बटन से कोई बातचीत शुरू करें।",
+      "archivedWithCount_one": "संग्रहीत ({{count}})",
+      "archivedWithCount_other": "संग्रहीत ({{count}})"
+    },
+    "empty": {
+      "yourMessagesTitle": "आपके संदेश",
+      "yourMessagesHint": "मैसेजिंग शुरू करने के लिए बाईं ओर से कोई बातचीत चुनें, या नई चैट शुरू करें।"
+    }
+  },
+  "registerPage": {
+    "header": {
+      "title": "अपना EMP Cloud खाता बनाएं",
+      "subtitle": "अपने संगठन को मिनटों में सेट करें"
+    },
+    "error": {
+      "registrationFailed": "पंजीकरण विफल रहा"
+    },
+    "section": {
+      "organization": "संगठन",
+      "adminAccount": "व्यवस्थापक खाता"
+    },
+    "field": {
+      "companyName": {
+        "label": "कंपनी का नाम",
+        "placeholder": "Acme Corp"
+      },
+      "country": {
+        "label": "देश"
+      },
+      "state": {
+        "label": "राज्य"
+      },
+      "firstName": {
+        "label": "पहला नाम"
+      },
+      "lastName": {
+        "label": "अंतिम नाम"
+      },
+      "email": {
+        "label": "ईमेल",
+        "placeholder": "admin@company.com"
+      },
+      "password": {
+        "label": "पासवर्ड",
+        "placeholder": "न्यूनतम 8 वर्ण, बड़े-छोटे अक्षर, अंक, विशेष चिह्न"
+      }
+    },
+    "password": {
+      "hideAriaLabel": "पासवर्ड छिपाएं",
+      "showAriaLabel": "पासवर्ड दिखाएं"
+    },
+    "submit": {
+      "creating": "खाता बनाया जा रहा है...",
+      "default": "खाता बनाएं"
+    },
+    "footer": {
+      "alreadyHaveAccount": "पहले से खाता है?",
+      "signIn": "साइन इन करें"
+    }
+  },
+  "messageContextMenu": {
+    "actions": {
+      "reply": "जवाब दें",
+      "forward": "आगे भेजें",
+      "selectMessages": "संदेश चुनें",
+      "messageInfo": "संदेश जानकारी",
+      "copyText": "टेक्स्ट कॉपी करें",
+      "copied": "कॉपी हो गया",
+      "copyLink": "लिंक कॉपी करें",
+      "pin": "पिन करें",
+      "unpin": "अनपिन करें",
+      "edit": "संपादित करें",
+      "delete": "हटाएं"
+    }
+  },
+  "receiptsPanel": {
+    "header": {
+      "title": "संदेश जानकारी"
+    },
+    "actions": {
+      "close": "बंद करें"
+    },
+    "state": {
+      "loading": "लोड हो रहा है…",
+      "error": "संदेश जानकारी लोड नहीं हो सकी.",
+      "noOtherMembers": "कोई अन्य सदस्य नहीं."
+    },
+    "section": {
+      "readBy": "द्वारा पढ़ा गया",
+      "deliveredTo": "इन्हें डिलीवर किया गया",
+      "pending": "लंबित"
+    }
+  },
+  "enableNotificationsBanner": {
+    "toast": {
+      "enabledSuccess": "डेस्कटॉप अलर्ट सक्षम किए गए — नए संदेशों की सूचना आपको मिलेगी।",
+      "blocked": "अलर्ट अवरुद्ध हैं। आप इन्हें अपने ब्राउज़र की साइट सेटिंग में फिर से सक्षम कर सकते हैं।"
+    },
+    "confirmation": {
+      "title": "डेस्कटॉप अलर्ट चालू",
+      "body": "नया संदेश आने पर आपको यहीं सूचित किया जाएगा।"
+    },
+    "description": "किसी अन्य ऐप में काम करते समय भी नए संदेशों की सूचना पाएं।",
+    "button": {
+      "enabling": "सक्षम किया जा रहा है…",
+      "enable": "अलर्ट सक्षम करें",
+      "dismissAriaLabel": "खारिज करें"
+    }
+  },
+  "messageAttachment": {
+    "card": {
+      "openTitle": "{{name}} खोलें"
+    }
+  },
+  "messageTicks": {
+    "status": {
+      "sending": "भेजा जा रहा है",
+      "sent": "भेजा गया",
+      "delivered": "डिलीवर हुआ",
+      "read": "पढ़ा गया"
+    },
+    "failed": {
+      "title": "भेजने में विफल — पुनः प्रयास के लिए टैप करें",
+      "ariaLabel": "भेजने में विफल, पुनः प्रयास के लिए टैप करें",
+      "retry": "पुनः प्रयास करें"
+    }
+  },
+  "emojiPicker": {
+    "category": {
+      "smileys": "स्माइली",
+      "gestures": "इशारे",
+      "objects": "वस्तुएँ"
+    },
+    "button": {
+      "reactWithAriaLabel": "{{emoji}} से प्रतिक्रिया दें"
+    }
+  },
+  "newChatModal": {
+    "header": {
+      "title": "नई चैट"
+    },
+    "actions": {
+      "close": "बंद करें",
+      "createGroup": "ग्रुप बनाएं"
+    },
+    "mode": {
+      "direct": "डायरेक्ट",
+      "group": "ग्रुप"
+    },
+    "group": {
+      "namePlaceholder": "ग्रुप का नाम",
+      "enterNameHint": "जारी रखने के लिए ग्रुप का नाम दर्ज करें",
+      "selectedNeedMore_one": "{{count}} चयनित · ≥ 2 आवश्यक",
+      "selectedNeedMore_other": "{{count}} चयनित · ≥ 2 आवश्यक",
+      "selectedCount_one": "{{count}} चयनित",
+      "selectedCount_other": "{{count}} चयनित"
+    },
+    "search": {
+      "placeholder": "कर्मचारी खोजें…"
+    },
+    "list": {
+      "loadError": "कर्मचारियों को लोड करने में विफल।",
+      "emptySearch": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।",
+      "empty": "कोई कर्मचारी नहीं मिला।"
+    },
+    "direct": {
+      "starting": "बातचीत शुरू हो रही है…"
+    },
+    "toast": {
+      "directError": "वह बातचीत शुरू नहीं की जा सकी।",
+      "groupError": "ग्रुप नहीं बनाया जा सका।"
+    },
+    "validation": {
+      "groupNameRequired": "कृपया ग्रुप को एक नाम दें।",
+      "minTwoMembers": "ग्रुप के लिए कम से कम 2 लोग चुनें।"
+    }
+  },
+  "forwardModal": {
+    "toast": {
+      "forwardError": "अग्रेषित नहीं कर सके। कृपया पुनः प्रयास करें।",
+      "forwardSuccess_one": "{{count}} संदेश {{chatCount}} चैट पर अग्रेषित किया गया।",
+      "forwardSuccess_other": "{{count}} संदेश {{chatCount}} चैट पर अग्रेषित किए गए।"
+    },
+    "preview": {
+      "attachment": "📎 {{name}}",
+      "messageFallback": "संदेश",
+      "multiple_one": "{{count}} संदेश",
+      "multiple_other": "{{count}} संदेश"
+    },
+    "heading": {
+      "title": "अग्रेषित करें…"
+    },
+    "section": {
+      "forwarding": "अग्रेषित किया जा रहा है",
+      "chats": "चैट",
+      "people": "लोग"
+    },
+    "search": {
+      "placeholder": "चैट और लोग खोजें…"
+    },
+    "state": {
+      "loading": "लोड हो रहा है…",
+      "noMatches": "\"{{query}}\" के लिए कोई मिलान नहीं।",
+      "noTargets": "अग्रेषित करने के लिए कोई नहीं।"
+    },
+    "button": {
+      "forwarding": "अग्रेषित किया जा रहा है…",
+      "forward": "अग्रेषित करें"
+    },
+    "footer": {
+      "selectedCount_one": "{{count}} चयनित",
+      "selectedCount_other": "{{count}} चयनित"
+    }
+  },
+  "addMembersModal": {
+    "header": {
+      "title": "सदस्य जोड़ें",
+      "close": "बंद करें"
+    },
+    "search": {
+      "placeholder": "कर्मचारी खोजें…"
+    },
+    "list": {
+      "loading": "लोड हो रहा है…",
+      "noMatches": "\"{{search}}\" के लिए कोई परिणाम नहीं।",
+      "allInGroup": "इस समूह में सभी पहले से मौजूद हैं।"
+    },
+    "footer": {
+      "add": "जोड़ें",
+      "adding": "जोड़ा जा रहा है…",
+      "selectedCount_one": "{{count}} चयनित",
+      "selectedCount_other": "{{count}} चयनित"
+    },
+    "toast": {
+      "addFailed": "सदस्य नहीं जोड़े जा सके। कृपया पुनः प्रयास करें।",
+      "added_one": "{{count}} सदस्य जोड़ा गया।",
+      "added_other": "{{count}} सदस्य जोड़े गए।"
+    }
+  },
+  "employeeProfile": {
+    "tabs": {
+      "personal": "व्यक्तिगत",
+      "education": "शिक्षा",
+      "experience": "अनुभव",
+      "dependents": "आश्रित",
+      "addresses": "पते",
+      "custom": "कस्टम फ़ील्ड"
+    },
+    "invalid": {
+      "title": "अमान्य कर्मचारी",
+      "description": "URL में कर्मचारी ID अनुपस्थित या अमान्य है।",
+      "backToDirectory": "← कर्मचारी डायरेक्टरी पर वापस जाएँ"
+    },
+    "accessDenied": {
+      "title": "पहुँच अस्वीकृत",
+      "description": "आपके पास यह प्रोफ़ाइल देखने की अनुमति नहीं है।",
+      "backToDashboard": "← डैशबोर्ड पर वापस जाएँ"
+    },
+    "loading": "प्रोफ़ाइल लोड हो रही है...",
+    "notFound": "कर्मचारी नहीं मिला",
+    "header": {
+      "backToDirectory": "डायरेक्टरी पर वापस जाएँ",
+      "biometricPhotoTooltip": "फ़ोटो बायोमेट्रिक कियोस्क नामांकन के माध्यम से प्रबंधित की जाती है",
+      "biometricFaceAlt": "बायोमेट्रिक चेहरा",
+      "profilePhotoAlt": "प्रोफ़ाइल",
+      "noDesignation": "कोई पदनाम नहीं",
+      "biometricHint": "बायोमेट्रिक नामांकन से फ़ोटो — कियोस्क के माध्यम से प्रबंधित।",
+      "removingPhoto": "हटाया जा रहा है...",
+      "removePhoto": "फ़ोटो हटाएँ",
+      "empCode": "कर्मचारी कोड: {{code}}",
+      "joined": "शामिल हुए: {{date}}",
+      "cancel": "रद्द करें",
+      "editMyInfo": "मेरी जानकारी संपादित करें",
+      "editProfile": "प्रोफ़ाइल संपादित करें"
+    },
+    "removePhotoDialog": {
+      "title": "अपनी प्रोफ़ाइल फ़ोटो हटाएँ?",
+      "description": "आपके आद्याक्षर फिर से दिखाई देंगे।",
+      "confirm": "फ़ोटो हटाएँ"
+    },
+    "field": {
+      "emptyValue": "-"
+    },
+    "validation": {
+      "pan": "PAN में 5 अक्षर + 4 अंक + 1 अक्षर होने चाहिए (उदा. ABCDE1234F)",
+      "aadhar": "आधार 12 अंकों का होना चाहिए",
+      "uan": "UAN 12 अंकों का होना चाहिए",
+      "passport": "पासपोर्ट में 1 अक्षर + 7 अंक होने चाहिए (उदा. A1234567)"
+    },
+    "personal": {
+      "saveError": "सहेजने में विफल",
+      "selfServiceNotice": "आप अपनी व्यक्तिगत और आपातकालीन संपर्क जानकारी संपादित कर सकते हैं। प्रशासनिक फ़ील्ड अपडेट करने के लिए HR से संपर्क करें।",
+      "field": {
+        "personalEmail": "व्यक्तिगत ईमेल",
+        "contactNumber": "संपर्क नंबर",
+        "gender": "लिंग",
+        "dateOfBirth": "जन्म तिथि",
+        "bloodGroup": "रक्त समूह",
+        "maritalStatus": "वैवाहिक स्थिति",
+        "nationality": "राष्ट्रीयता",
+        "aadharNumber": "आधार नंबर",
+        "panNumber": "PAN नंबर",
+        "uanNumber": "UAN नंबर",
+        "passportNumber": "पासपोर्ट नंबर",
+        "passportExpiry": "पासपोर्ट समाप्ति",
+        "visaStatus": "वीज़ा स्थिति",
+        "visaExpiry": "वीज़ा समाप्ति",
+        "emergencyContact": "आपातकालीन संपर्क",
+        "emergencyPhone": "आपातकालीन फ़ोन",
+        "emergencyRelation": "आपातकालीन संबंध",
+        "noticePeriodDays": "नोटिस अवधि (दिन)",
+        "reportingManager": "रिपोर्टिंग मैनेजर",
+        "department": "विभाग",
+        "shift": "शिफ़्ट",
+        "designation": "पदनाम",
+        "employeeCode": "कर्मचारी कोड",
+        "probationStart": "परिवीक्षा प्रारंभ",
+        "probationEnd": "परिवीक्षा समाप्ति",
+        "confirmationDate": "पुष्टिकरण तिथि"
+      },
+      "select": {
+        "placeholder": "चुनें"
+      },
+      "aadhar": {
+        "placeholder": "12 अंक"
+      },
+      "uan": {
+        "placeholder": "12 अंक"
+      },
+      "reportingManager": {
+        "none": "कोई मैनेजर नहीं",
+        "option": "{{name}} ({{role}}) - {{email}}"
+      },
+      "department": {
+        "none": "कोई विभाग नहीं"
+      },
+      "shift": {
+        "none": "कोई शिफ़्ट नहीं"
+      },
+      "designation": {
+        "placeholderSelfService": "बदलने के लिए HR से संपर्क करें",
+        "placeholderHint": "उदा. वरिष्ठ इंजीनियर"
+      },
+      "empCode": {
+        "placeholderSelfService": "सेट करने के लिए HR से संपर्क करें",
+        "placeholderHint": "उदा. EMP001"
+      },
+      "saving": "सहेजा जा रहा है...",
+      "saveChanges": "परिवर्तन सहेजें",
+      "reportingManagerFallback": "उपयोगकर्ता #{{id}}",
+      "departmentFallback": "विभाग #{{id}}",
+      "shiftFallback": "शिफ़्ट #{{id}}"
+    },
+    "gender": {
+      "male": "पुरुष",
+      "female": "महिला",
+      "other": "अन्य"
+    },
+    "maritalStatus": {
+      "single": "अविवाहित",
+      "married": "विवाहित",
+      "divorced": "तलाकशुदा",
+      "widowed": "विधवा/विधुर"
+    },
+    "customRoles": {
+      "label": "कस्टम भूमिकाएँ"
+    },
+    "additionalManagers": {
+      "label": "अतिरिक्त मैनेजर",
+      "description": "प्राथमिक रिपोर्टिंग मैनेजर के समान टीम-स्कोप पहुँच वाले सह-मैनेजर। प्रत्येक टीम-स्कोप अनुमति द्वारा सम्मानित।",
+      "loading": "लोड हो रहा है…",
+      "empty": "कोई अतिरिक्त मैनेजर नहीं",
+      "userFallback": "उपयोगकर्ता #{{id}}",
+      "removeAria": "{{name}} को हटाएँ",
+      "removeAriaFallback": "मैनेजर",
+      "searchPlaceholderEmpty": "नाम या ईमेल से खोजें…",
+      "searchPlaceholderMore": "एक और जोड़ें…",
+      "noMatches": "कोई मिलान करने वाले उपयोगकर्ता नहीं",
+      "allSelected": "सभी पात्र उपयोगकर्ता पहले से चयनित",
+      "saving": "सहेजा जा रहा है…",
+      "save": "अतिरिक्त मैनेजर सहेजें",
+      "unsaved": "असहेजे परिवर्तन",
+      "saved": "सहेजा गया",
+      "selectedCount_one": "({{count}} चयनित)",
+      "selectedCount_other": "({{count}} चयनित)"
+    },
+    "apiError": {
+      "requestFailed": "अनुरोध विफल"
+    },
+    "education": {
+      "add": "शिक्षा जोड़ें",
+      "editHeading": "शिक्षा संपादित करें",
+      "field": {
+        "degree": "डिग्री *",
+        "institution": "संस्थान *",
+        "fieldOfStudy": "अध्ययन क्षेत्र",
+        "grade": "ग्रेड",
+        "startYear": "प्रारंभ वर्ष",
+        "endYear": "समाप्ति वर्ष"
+      },
+      "degree": {
+        "placeholder": "उदा. B.Tech"
+      },
+      "institution": {
+        "placeholder": "उदा. IIT Delhi"
+      },
+      "validation": {
+        "required": "डिग्री और संस्थान आवश्यक हैं",
+        "endYear": "समाप्ति वर्ष प्रारंभ वर्ष के बराबर या उसके बाद होना चाहिए"
+      },
+      "empty": "अभी तक कोई शिक्षा रिकॉर्ड नहीं जोड़ा गया।",
+      "yearRange": "{{start}} - {{end}}",
+      "fromYear": "{{year}} से",
+      "gradeSuffix": " | ग्रेड: {{grade}}",
+      "deleteDialog": {
+        "title": "यह शिक्षा रिकॉर्ड हटाएँ?"
+      }
+    },
+    "common": {
+      "save": "सहेजें",
+      "saving": "सहेजा जा रहा है...",
+      "cancel": "रद्द करें",
+      "edit": "संपादित करें",
+      "delete": "हटाएँ"
+    },
+    "experience": {
+      "add": "अनुभव जोड़ें",
+      "editHeading": "अनुभव संपादित करें",
+      "field": {
+        "company": "कंपनी *",
+        "designation": "पदनाम *",
+        "startDate": "प्रारंभ तिथि *",
+        "endDate": "समाप्ति तिथि",
+        "description": "विवरण"
+      },
+      "currentlyWorking": "वर्तमान में यहाँ कार्यरत",
+      "validation": {
+        "required": "कंपनी, पदनाम और प्रारंभ तिथि आवश्यक हैं"
+      },
+      "empty": "अभी तक कोई कार्य अनुभव रिकॉर्ड नहीं जोड़ा गया।",
+      "currentBadge": "वर्तमान",
+      "present": "वर्तमान",
+      "deleteDialog": {
+        "title": "यह अनुभव रिकॉर्ड हटाएँ?"
+      }
+    },
+    "dependents": {
+      "add": "आश्रित जोड़ें",
+      "editHeading": "आश्रित संपादित करें",
+      "field": {
+        "name": "नाम *",
+        "relationship": "संबंध *",
+        "dateOfBirth": "जन्म तिथि",
+        "gender": "लिंग",
+        "nomineePercent": "नामिती %"
+      },
+      "relationship": {
+        "placeholder": "उदा. जीवनसाथी, बच्चा, माता-पिता"
+      },
+      "isNominee": "नामिती है",
+      "validation": {
+        "required": "नाम और संबंध आवश्यक हैं"
+      },
+      "empty": "अभी तक कोई आश्रित नहीं जोड़ा गया।",
+      "column": {
+        "name": "नाम",
+        "relationship": "संबंध",
+        "dob": "जन्म तिथि",
+        "gender": "लिंग",
+        "nominee": "नामिती",
+        "actions": "कार्रवाइयाँ"
+      },
+      "nomineeYes": "हाँ",
+      "nomineeYesPercent": "हाँ ({{percent}}%)",
+      "nomineeNo": "नहीं",
+      "deleteDialog": {
+        "title": "यह आश्रित हटाएँ?"
+      }
+    },
+    "addresses": {
+      "add": "पता जोड़ें",
+      "editHeading": "पता संपादित करें",
+      "field": {
+        "type": "प्रकार *",
+        "country": "देश",
+        "line1": "पता पंक्ति 1 *",
+        "line2": "पता पंक्ति 2",
+        "city": "शहर *",
+        "state": "राज्य *",
+        "zipcode": "पिनकोड *"
+      },
+      "type": {
+        "current": "वर्तमान",
+        "permanent": "स्थायी"
+      },
+      "validation": {
+        "required": "पता पंक्ति 1, शहर, राज्य और पिनकोड आवश्यक हैं"
+      },
+      "empty": "अभी तक कोई पता नहीं जोड़ा गया।",
+      "deleteDialog": {
+        "title": "यह पता हटाएँ?"
+      }
+    },
+    "custom": {
+      "loading": "कस्टम फ़ील्ड लोड हो रही हैं...",
+      "saveError": "कस्टम फ़ील्ड सहेजने में विफल",
+      "emptyTitle": "कर्मचारियों के लिए अभी तक कोई कस्टम फ़ील्ड परिभाषित नहीं की गई है।",
+      "emptyHint": "HR प्रशासक कस्टम फ़ील्ड सेटिंग पृष्ठ से कस्टम फ़ील्ड बना सकते हैं।",
+      "heading": "कस्टम फ़ील्ड",
+      "edit": "संपादित करें",
+      "save": "सहेजें",
+      "cancel": "रद्द करें",
+      "checkboxYes": "हाँ",
+      "checkboxNo": "नहीं",
+      "select": {
+        "placeholder": "चुनें..."
+      },
+      "file": {
+        "placeholder": "फ़ाइल संदर्भ या पथ"
+      }
+    }
+  },
+  "importEmployees": {
+    "page": {
+      "title": "कर्मचारी आयात करें",
+      "subtitle": "अपने संगठन में कर्मचारियों को थोक में आयात करने के लिए CSV फ़ाइल अपलोड करें।"
+    },
+    "success": {
+      "title": "आयात सफल",
+      "importMore": "और कर्मचारी आयात करें",
+      "message_one": "{{count}} कर्मचारी सफलतापूर्वक आयात किया गया।",
+      "message_other": "{{count}} कर्मचारी सफलतापूर्वक आयात किए गए।"
+    },
+    "dropzone": {
+      "instructions": "CSV फ़ाइल यहाँ खींचें और छोड़ें, या ब्राउज़ करने के लिए क्लिक करें",
+      "columnsHint": "आवश्यक कॉलम: first_name, last_name, email. वैकल्पिक: designation, department_name, emp_code, role, contact_number",
+      "chooseFile": "फ़ाइल चुनें",
+      "selectedFile": "चयनित: {{name}}"
+    },
+    "loading": {
+      "parsing": "CSV पार्स और मान्य किया जा रहा है..."
+    },
+    "summary": {
+      "totalRows": "कुल पंक्तियाँ",
+      "valid": "मान्य",
+      "errors": "त्रुटियाँ"
+    },
+    "validTable": {
+      "col": {
+        "name": "नाम",
+        "email": "ईमेल",
+        "empCode": "कर्मचारी कोड",
+        "designation": "पदनाम",
+        "department": "विभाग",
+        "status": "स्थिति"
+      },
+      "emptyCell": "-",
+      "title_one": "मान्य कर्मचारी ({{count}})",
+      "title_other": "मान्य कर्मचारी ({{count}})",
+      "andMore_one": "...और {{count}} अधिक",
+      "andMore_other": "...और {{count}} अधिक"
+    },
+    "errorTable": {
+      "col": {
+        "row": "पंक्ति",
+        "name": "नाम",
+        "email": "ईमेल",
+        "errors": "त्रुटियाँ"
+      },
+      "title_one": "त्रुटियाँ ({{count}})",
+      "title_other": "त्रुटियाँ ({{count}})"
+    },
+    "import": {
+      "importing": "आयात हो रहा है...",
+      "button_one": "{{count}} मान्य कर्मचारी आयात करें",
+      "button_other": "{{count}} मान्य कर्मचारी आयात करें"
+    }
+  },
+  "platformSettings": {
+    "header": {
+      "title": "प्लेटफ़ॉर्म सेटिंग",
+      "subtitle": "वर्तमान प्लेटफ़ॉर्म कॉन्फ़िगरेशन और सिस्टम जानकारी देखें।"
+    },
+    "sections": {
+      "platformInfo": {
+        "title": "प्लेटफ़ॉर्म जानकारी"
+      },
+      "email": {
+        "title": "ईमेल / SMTP सेटिंग"
+      },
+      "security": {
+        "title": "सुरक्षा सेटिंग"
+      }
+    },
+    "fields": {
+      "serverVersion": "सर्वर संस्करण",
+      "nodeVersion": "Node.js संस्करण",
+      "environment": "एनवायरनमेंट",
+      "uptime": "अपटाइम",
+      "smtpStatus": "SMTP स्थिति",
+      "smtpHost": "SMTP होस्ट",
+      "fromAddress": "प्रेषक पता",
+      "bcryptRounds": "Bcrypt राउंड",
+      "accessTokenExpiry": "एक्सेस टोकन समाप्ति",
+      "refreshTokenExpiry": "रिफ़्रेश टोकन समाप्ति",
+      "authRateLimit": "प्रमाणीकरण दर सीमा",
+      "apiRateLimit": "API दर सीमा"
+    },
+    "smtpStatus": {
+      "configured": "कॉन्फ़िगर किया गया",
+      "notConfigured": "कॉन्फ़िगर नहीं किया गया"
+    },
+    "uptime": {
+      "daysHoursMins": "{{days}}दि {{hours}}घं {{mins}}मि",
+      "hoursMins": "{{hours}}घं {{mins}}मि",
+      "mins": "{{mins}}मि"
+    },
+    "footer": {
+      "autoRefresh": "हर 30 सेकंड में स्वतः रिफ़्रेश होता है"
+    }
+  },
+  "settingsPage": {
+    "loading": "सेटिंग्स लोड हो रही हैं...",
+    "header": {
+      "title": "संगठन सेटिंग्स",
+      "subtitle": "अपनी कंपनी के विवरण, विभाग और स्थान प्रबंधित करें।"
+    },
+    "company": {
+      "title": "कंपनी जानकारी",
+      "editTitle": "कंपनी जानकारी संपादित करें"
+    },
+    "actions": {
+      "edit": "संपादित करें",
+      "cancel": "रद्द करें",
+      "add": "जोड़ें",
+      "saveChanges": "परिवर्तन सहेजें"
+    },
+    "fields": {
       "name": "नाम",
       "legalName": "कानूनी नाम",
       "email": "ईमेल",
@@ -2639,138 +5547,268 @@
       "timezone": "समय क्षेत्र",
       "language": "भाषा"
     },
-    "errEmail": "कृपया एक मान्य ईमेल पता दर्ज करें (जैसे user@example.com)।",
-    "errCity": "शहर में केवल अक्षर, स्पेस और हाइफ़न होने चाहिए।",
-    "errState": "राज्य में केवल अक्षर, स्पेस और हाइफ़न होने चाहिए।",
-    "editCompanyInfo": "कंपनी जानकारी संपादित करें",
-    "selectTimezone": "समय क्षेत्र चुनें",
-    "selectCountry": "देश चुनें",
-    "cancel": "रद्द करें",
-    "saveChanges": "परिवर्तन सहेजें",
-    "updateError": "अपडेट करने में विफल। कृपया पुनः प्रयास करें।",
-    "departments": "विभाग ({{count}})",
-    "add": "जोड़ें",
-    "departmentName": "विभाग का नाम",
-    "renameDepartment": "विभाग का नाम बदलें",
-    "deleteDepartment": "विभाग हटाएं",
-    "save": "सहेजें",
-    "addDeptError": "विभाग जोड़ने में विफल।",
-    "renameDeptError": "विभाग का नाम बदलने में विफल।",
-    "deleteDeptError": "विभाग हटाने में विफल।",
-    "locations": "स्थान ({{count}})",
-    "timezoneRequired": "समय क्षेत्र आवश्यक है।",
-    "locationName": "स्थान का नाम",
-    "selectTimezoneRequired": "समय क्षेत्र चुनें *",
-    "noTimezone": "कोई समय क्षेत्र नहीं",
-    "editLocation": "स्थान संपादित करें",
-    "deleteLocation": "स्थान हटाएं",
-    "addLocError": "स्थान जोड़ने में विफल।",
-    "updateLocError": "स्थान अपडेट करने में विफल।",
-    "deleteLocError": "स्थान हटाने में विफल।"
+    "form": {
+      "selectTimezone": "समय क्षेत्र चुनें",
+      "selectTimezoneRequired": "समय क्षेत्र चुनें *",
+      "selectCountry": "देश चुनें",
+      "noTimezone": "कोई समय क्षेत्र नहीं"
+    },
+    "validation": {
+      "email": "कृपया एक मान्य ईमेल पता दर्ज करें (उदा., user@example.com)।",
+      "city": "शहर में केवल अक्षर, स्पेस और हाइफ़न होने चाहिए।",
+      "state": "राज्य में केवल अक्षर, स्पेस और हाइफ़न होने चाहिए।",
+      "timezoneRequired": "समय क्षेत्र आवश्यक है।"
+    },
+    "errors": {
+      "updateOrg": "अपडेट करने में विफल। कृपया पुनः प्रयास करें।",
+      "addDepartment": "विभाग जोड़ने में विफल।",
+      "renameDepartment": "विभाग का नाम बदलने में विफल।",
+      "deleteDepartment": "विभाग हटाने में विफल।",
+      "addLocation": "स्थान जोड़ने में विफल।",
+      "updateLocation": "स्थान अपडेट करने में विफल।",
+      "deleteLocation": "स्थान हटाने में विफल।"
+    },
+    "departments": {
+      "namePlaceholder": "विभाग का नाम",
+      "renameTitle": "विभाग का नाम बदलें",
+      "deleteTitle": "विभाग हटाएँ",
+      "title_one": "विभाग ({{count}})",
+      "title_other": "विभाग ({{count}})"
+    },
+    "locations": {
+      "namePlaceholder": "स्थान का नाम",
+      "editTitle": "स्थान संपादित करें",
+      "deleteTitle": "स्थान हटाएँ",
+      "title_one": "स्थान ({{count}})",
+      "title_other": "स्थान ({{count}})"
+    },
+    "rowActions": {
+      "save": "सहेजें",
+      "cancel": "रद्द करें"
+    }
   },
-  "apiKeys": {
-    "title": "API कुंजियां",
-    "newKey": "नई कुंजी",
-    "description": "EmpCloud API तक प्रोग्रामेटिक एक्सेस के लिए कुंजियां जनरेट करें। एक कुंजी EmpCloud और पेरोल मॉड्यूल दोनों में काम करती है, और इसे बनाने वाले एडमिन की अनुमतियां रखती है।",
-    "statusRevoked": "रद्द",
-    "statusExpired": "समाप्त",
-    "statusActive": "सक्रिय",
-    "createError": "API कुंजी बनाने में विफल",
-    "copyError": "कॉपी नहीं हो सका — चुनें और मैन्युअल रूप से कॉपी करें",
-    "revokeConfirm": "\"{{name}}\" रद्द करें? इसका उपयोग करने वाला कोई भी एकीकरण तुरंत काम करना बंद कर देगा।",
-    "revoked": "API कुंजी रद्द की गई",
-    "revokeError": "कुंजी रद्द करने में विफल",
-    "howToTitle": "अपनी API कुंजी का उपयोग कैसे करें",
-    "howToIntro": "जनरेट की गई कुंजी एक <strong>Bearer टोकन</strong> है। इसे हर API अनुरोध पर <code>Authorization</code> हेडर में भेजें — बिल्कुल लॉग-इन सेशन टोकन की तरह:",
-    "bulletBothSystems": "<strong>दोनों सिस्टम में काम करती है।</strong> वही टोकन EmpCloud API और पेरोल मॉड्यूल API के विरुद्ध प्रमाणित होता है — किसी अलग लॉगिन या टोकन एक्सचेंज की आवश्यकता नहीं।",
-    "bulletPermissions": "<strong>आपकी अनुमतियां विरासत में लेती है।</strong> कुंजी केवल वही कर सकती है जो इसे बनाने वाला एडमिन कर सकता है। यह हमेशा उस एडमिन की वर्तमान भूमिका को दर्शाती है — भूमिका बदलें और कुंजी की पहुंच भी बदल जाती है।",
-    "bulletShownOnce": "<strong>केवल एक बार दिखाई जाती है।</strong> पूरी कुंजी निर्माण के समय केवल एक बार प्रदर्शित होती है। इसे किसी सुरक्षित स्थान (सीक्रेट्स मैनेजर) में रखें — हम केवल एक हैश की गई प्रति रखते हैं और इसे दोबारा नहीं दिखा सकते।",
-    "bulletRevocable": "<strong>रद्द करने योग्य और समाप्त होने योग्य।</strong> एक वैकल्पिक समाप्ति सेट करें, या कुंजी को कभी भी रद्द करें। रद्द या समाप्त कुंजियां हर जगह तुरंत काम करना बंद कर देती हैं। कुंजी को पासवर्ड की तरह समझें — जिसके पास यह है वह आपकी अनुमतियों के साथ कार्य कर सकता है।",
-    "copyNow": "इस कुंजी को अभी कॉपी करें — यह दोबारा नहीं दिखाई जाएगी।",
-    "copied": "कॉपी किया गया",
-    "copy": "कॉपी करें",
-    "dismiss": "खारिज करें",
-    "useAsBearer": "इसे Authorization हेडर में Bearer टोकन के रूप में उपयोग करें:",
-    "keyName": "कुंजी का नाम",
-    "keyNamePlaceholder": "जैसे उपस्थिति निर्यात",
-    "expiresInDays": "समाप्ति (दिनों में)",
-    "never": "कभी नहीं",
-    "generating": "जनरेट हो रहा है…",
-    "generateKey": "कुंजी जनरेट करें",
-    "cancel": "रद्द करें",
-    "loadingKeys": "कुंजियां लोड हो रही हैं…",
-    "noKeys": "अभी तक कोई API कुंजी नहीं।",
-    "colName": "नाम",
-    "colKey": "कुंजी",
-    "colStatus": "स्थिति",
-    "colLastUsed": "अंतिम उपयोग",
-    "colExpires": "समाप्ति",
-    "colCreated": "बनाई गई",
-    "revoke": "रद्द करें"
+  "subscriptionsPage": {
+    "loading": "सदस्यताएं लोड हो रही हैं...",
+    "header": {
+      "title": "सदस्यताएं",
+      "subtitle": "अपनी मॉड्यूल सदस्यताएं और बिलिंग प्रबंधित करें।"
+    },
+    "moduleFallback": "मॉड्यूल",
+    "billing": {
+      "viewInvoicesLink": "विस्तृत चालान और भुगतान इतिहास देखें",
+      "monthlyCostHeading": "मासिक लागत",
+      "perMonthSuffix": " /माह"
+    },
+    "toast": {
+      "updated": "सदस्यता सफलतापूर्वक अपडेट की गई",
+      "cancelled": "सदस्यता रद्द कर दी गई"
+    },
+    "card": {
+      "tooltip": {
+        "edit": "सदस्यता संपादित करें",
+        "cancel": "सदस्यता रद्द करें"
+      },
+      "field": {
+        "plan": "योजना",
+        "seats": "सीटें",
+        "pricePerSeat": "मूल्य/सीट",
+        "billingCycle": "बिलिंग चक्र"
+      },
+      "seatsFull": "(पूर्ण)"
+    },
+    "trial": {
+      "expired": "ट्रायल समाप्त हो गया — शीघ्र ही सक्रिय सदस्यता में परिवर्तित हो रहा है। पहला चालान आज जारी किया जाएगा।",
+      "endsIn_one": "ट्रायल {{count}} दिन में समाप्त होगा ({{date}})",
+      "endsIn_other": "ट्रायल {{count}} दिनों में समाप्त होगा ({{date}})"
+    },
+    "cancelModal": {
+      "title": "सदस्यता रद्द करें?",
+      "body": "इससे सदस्यता रद्द हो जाएगी और सभी असाइन की गई सीटों की पहुंच वापस ले ली जाएगी। यह क्रिया पूर्ववत नहीं की जा सकती।",
+      "keep": "रखें",
+      "confirm": "हां, रद्द करें",
+      "confirming": "रद्द किया जा रहा है..."
+    },
+    "editModal": {
+      "title": "सदस्यता संपादित करें",
+      "planTierLabel": "योजना स्तर",
+      "totalSeatsLabel": "कुल सीटें",
+      "currentlyUsing": "वर्तमान में {{seats}} सीटें उपयोग में हैं",
+      "cannotReduceBelow": "{{seats}} (उपयोग में) से कम नहीं कर सकते",
+      "billingCycleLabel": "बिलिंग चक्र",
+      "changesHeading": "परिवर्तन:",
+      "change": {
+        "plan": "योजना: {{from}} → {{to}}",
+        "seats": "सीटें: {{from}} → {{to}}",
+        "cycle": "चक्र: {{from}} → {{to}}"
+      },
+      "trialWarning": {
+        "title": "⚠️ इससे आपका निःशुल्क ट्रायल समाप्त हो जाएगा",
+        "reason": {
+          "seats": "सीटें जोड़ना",
+          "tier": "अपने योजना स्तर को अपग्रेड करना",
+          "cycle": "लंबे बिलिंग चक्र पर स्विच करना"
+        },
+        "body": " ट्रायल के दौरान सदस्यता तुरंत सक्रिय हो जाएगी। पहली बिलिंग अवधि के लिए एक चालान तैयार किया जाएगा और आज देय होगा।"
+      },
+      "cancel": "रद्द करें",
+      "save": "परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "planTier": {
+      "basic": "बेसिक",
+      "professional": "प्रोफेशनल",
+      "enterprise": "एंटरप्राइज़",
+      "free": "निःशुल्क"
+    },
+    "billingCycle": {
+      "monthly": "मासिक",
+      "quarterly": "त्रैमासिक",
+      "semi_annual": "अर्धवार्षिक",
+      "annual": "वार्षिक"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "trial": "ट्रायल",
+      "cancelled": "रद्द",
+      "expired": "समाप्त"
+    }
   },
-  "assetCategories": {
-    "title": "संपत्ति श्रेणियां",
-    "subtitle": "संपत्तियों को प्रकार के अनुसार व्यवस्थित करें",
-    "addCategory": "श्रेणी जोड़ें",
-    "loading": "श्रेणियां लोड हो रही हैं...",
-    "empty": "अभी तक कोई श्रेणी नहीं। अपनी पहली श्रेणी बनाएं।",
-    "colName": "नाम",
-    "colDescription": "विवरण",
-    "colActions": "क्रियाएं",
-    "edit": "संपादित करें",
-    "delete": "हटाएं",
-    "editCategory": "श्रेणी संपादित करें",
-    "newCategory": "नई श्रेणी",
-    "nameLabel": "नाम *",
-    "namePlaceholder": "जैसे लैपटॉप, मॉनिटर, फ़ोन",
-    "descriptionLabel": "विवरण",
-    "cancel": "रद्द करें",
-    "update": "अपडेट करें",
-    "create": "बनाएं",
-    "deactivateError": "श्रेणी निष्क्रिय करने में विफल",
-    "deactivateTitle": "श्रेणी निष्क्रिय करें?",
-    "deactivateBody": "<strong>{{name}}</strong> निष्क्रिय करें? इस श्रेणी से टैग की गई मौजूदा संपत्तियां टैग बनाए रखती हैं, लेकिन पुनर्स्थापित होने तक यहां कोई नई संपत्ति नहीं रखी जा सकती।",
-    "deactivating": "निष्क्रिय किया जा रहा है...",
-    "deactivate": "निष्क्रिय करें"
+  "customFieldsSettings": {
+    "page": {
+      "title": "कस्टम फ़ील्ड",
+      "subtitle": "कर्मचारियों, विभागों और अन्य इकाइयों के लिए कस्टम डेटा फ़ील्ड परिभाषित करें"
+    },
+    "actions": {
+      "addField": "फ़ील्ड जोड़ें"
+    },
+    "entityType": {
+      "employee": "कर्मचारी",
+      "department": "विभाग",
+      "location": "स्थान",
+      "project": "प्रोजेक्ट",
+      "document": "दस्तावेज़"
+    },
+    "fieldType": {
+      "text": "टेक्स्ट",
+      "textarea": "टेक्स्ट एरिया",
+      "number": "संख्या",
+      "decimal": "दशमलव",
+      "date": "तिथि",
+      "datetime": "तिथि और समय",
+      "dropdown": "ड्रॉपडाउन",
+      "multi_select": "मल्टी सिलेक्ट",
+      "checkbox": "चेकबॉक्स",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "url": "URL",
+      "file": "फ़ाइल"
+    },
+    "form": {
+      "editTitle": "फ़ील्ड संपादित करें",
+      "newTitle": "नया फ़ील्ड",
+      "hidePreview": "पूर्वावलोकन छिपाएँ",
+      "preview": "पूर्वावलोकन",
+      "fieldNameLabel": "फ़ील्ड नाम *",
+      "fieldNamePlaceholder": "उदा. टी-शर्ट साइज़",
+      "fieldTypeLabel": "फ़ील्ड प्रकार *",
+      "sectionLabel": "अनुभाग",
+      "sectionPlaceholder": "कस्टम फ़ील्ड",
+      "placeholderLabel": "प्लेसहोल्डर",
+      "defaultValueLabel": "डिफ़ॉल्ट मान",
+      "validationRegexLabel": "सत्यापन रेगेक्स",
+      "minValueLabel": "न्यूनतम मान",
+      "maxValueLabel": "अधिकतम मान",
+      "helpTextLabel": "सहायता टेक्स्ट",
+      "helpTextPlaceholder": "उपयोगकर्ताओं को दिखाया जाने वाला टूलटिप या विवरण",
+      "optionsLabel": "विकल्प",
+      "optionInputPlaceholder": "विकल्प टाइप करें और Enter दबाएँ",
+      "addOption": "जोड़ें",
+      "requiredLabel": "आवश्यक",
+      "searchableLabel": "खोजने योग्य",
+      "fieldPreviewHeading": "फ़ील्ड पूर्वावलोकन",
+      "saving": "सहेजा जा रहा है...",
+      "updateField": "फ़ील्ड अपडेट करें",
+      "createField": "फ़ील्ड बनाएँ",
+      "cancel": "रद्द करें"
+    },
+    "error": {
+      "saveFailed": "फ़ील्ड सहेजने में विफल। कृपया पुनः प्रयास करें।"
+    },
+    "list": {
+      "loading": "फ़ील्ड लोड हो रहे हैं...",
+      "emptyTitle": "{{name}} के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं है।",
+      "emptyHint": "अपना पहला कस्टम फ़ील्ड बनाने के लिए \"फ़ील्ड जोड़ें\" पर क्लिक करें।"
+    },
+    "table": {
+      "fieldName": "फ़ील्ड नाम",
+      "key": "कुंजी",
+      "type": "प्रकार",
+      "required": "आवश्यक",
+      "searchable": "खोजने योग्य",
+      "actions": "क्रियाएँ",
+      "yes": "हाँ",
+      "no": "नहीं",
+      "editAria": "फ़ील्ड संपादित करें",
+      "deleteAria": "फ़ील्ड हटाएँ",
+      "optionCount_one": "({{count}} विकल्प)",
+      "optionCount_other": "({{count}} विकल्प)"
+    },
+    "confirm": {
+      "titleNamed": "फ़ील्ड \"{{name}}\" निष्क्रिय करें?",
+      "title": "फ़ील्ड निष्क्रिय करें?",
+      "description": "मौजूदा मान सुरक्षित रखे जाएँगे।",
+      "confirmText": "निष्क्रिय करें"
+    },
+    "preview": {
+      "defaultFieldName": "फ़ील्ड नाम",
+      "enterValue": "{{name}} दर्ज करें",
+      "enterValueFallback": "मान",
+      "selectOption": "{{name}} चुनें...",
+      "selectOptionFallback": "विकल्प",
+      "noOptions": "कोई विकल्प परिभाषित नहीं",
+      "checkboxFallback": "चेकबॉक्स"
+    }
   },
   "helpdeskDashboard": {
     "loading": "हेल्पडेस्क डैशबोर्ड लोड हो रहा है...",
     "title": "हेल्पडेस्क डैशबोर्ड",
-    "subtitle": "HR हेल्पडेस्क टिकट और SLA प्रदर्शन का अवलोकन।",
+    "subtitle": "एचआर हेल्पडेस्क टिकट और SLA प्रदर्शन का अवलोकन।",
     "viewAllTickets": "सभी टिकट देखें",
-    "stat": {
+    "stats": {
       "totalOpen": "कुल खुले",
       "inProgress": "प्रगति पर",
-      "overdue": "अतिदेय (SLA उल्लंघित)",
+      "overdue": "अतिदेय (SLA उल्लंघन)",
       "resolvedToday": "आज हल किए गए"
     },
-    "slaCompliance": {
-      "heading": "SLA अनुपालन",
-      "caption": "SLA के भीतर हल किए गए टिकट"
+    "sla": {
+      "compliance": "SLA अनुपालन",
+      "resolvedWithinSla": "SLA के भीतर हल किए गए टिकट"
     },
-    "avgResolution": {
-      "heading": "औसत समाधान समय",
-      "unit": "घंटे"
+    "metrics": {
+      "avgResolutionTime": "औसत समाधान समय",
+      "hours": "घंटे"
     },
     "satisfaction": {
-      "heading": "संतुष्टि रेटिंग",
-      "notAvailable": "लागू नहीं",
+      "title": "संतुष्टि रेटिंग",
+      "notAvailable": "उपलब्ध नहीं",
       "ratingCount_one": "{{count}} रेटिंग",
       "ratingCount_other": "{{count}} रेटिंग"
     },
     "categoryBreakdown": {
-      "heading": "श्रेणी अनुसार टिकट"
+      "title": "श्रेणी अनुसार टिकट"
     },
     "recentTickets": {
-      "heading": "हाल के टिकट"
+      "title": "हाल के टिकट"
     },
-    "noTicketsYet": "अभी तक कोई टिकट नहीं",
+    "emptyState": {
+      "noTickets": "अभी तक कोई टिकट नहीं"
+    },
     "category": {
       "leave": "अवकाश",
-      "payroll": "पेरोल",
+      "payroll": "वेतन",
       "benefits": "लाभ",
-      "it": "IT",
-      "facilities": "सुविधाएँ",
+      "it": "आईटी",
+      "facilities": "सुविधाएं",
       "onboarding": "ऑनबोर्डिंग",
       "policy": "नीति",
       "general": "सामान्य"
@@ -2790,22 +5828,86 @@
       "reopened": "पुनः खोला गया"
     }
   },
-  "submitFeedback": {
-    "title": "फ़ीडबैक भेजें",
-    "successHeading": "फ़ीडबैक भेज दिया गया",
-    "successMessage": "आपका फ़ीडबैक गुमनाम रूप से भेज दिया गया है। आपकी पहचान न तो सहेजी जाती है और न ही किसी को दिखती है। आप अपने फ़ीडबैक की स्थिति \"मेरा फ़ीडबैक\" पेज पर देख सकते हैं।",
-    "submitAnother": "एक और भेजें",
-    "bannerTitle": "आपका फ़ीडबैक पूरी तरह गुमनाम है",
-    "bannerBody": "आपकी पहचान को हैश किया जाता है और इसका आप तक पता नहीं लगाया जा सकता। HR को केवल फ़ीडबैक की सामग्री दिखेगी, आपका नाम या ईमेल कभी नहीं।",
-    "categoryLabel": "श्रेणी",
-    "subjectLabel": "विषय",
-    "messageLabel": "संदेश",
-    "subjectPlaceholder": "आपके फ़ीडबैक का संक्षिप्त सारांश",
-    "messagePlaceholder": "अपने फ़ीडबैक का विस्तार से वर्णन करें...",
-    "markUrgent": "अत्यावश्यक के रूप में चिह्नित करें",
-    "submitAnon": "गुमनाम रूप से भेजें",
-    "submitting": "भेजा जा रहा है...",
-    "submitError": "फ़ीडबैक भेजने में विफल। कृपया पुनः प्रयास करें।",
+  "ticketDetail": {
+    "loading": "टिकट लोड हो रहा है...",
+    "backToTickets": "टिकट पर वापस जाएं",
+    "slaBreached": "SLA उल्लंघन",
+    "raisedBy": "द्वारा उठाया गया: {{name}}",
+    "created": "निर्मित: {{date}}",
+    "assignedTo": "को सौंपा गया: {{name}}",
+    "slaDeadlines": "SLA समय-सीमाएं",
+    "firstResponse": "पहली प्रतिक्रिया:",
+    "responded": "प्रतिक्रिया दी {{date}}",
+    "due": "देय {{date}}",
+    "resolution": "समाधान:",
+    "resolved": "हल किया गया {{date}}",
+    "action": {
+      "assign": "सौंपें",
+      "resolve": "हल करें",
+      "close": "बंद करें",
+      "reopen": "फिर से खोलें",
+      "rateService": "सेवा रेट करें"
+    },
+    "assign": {
+      "selectUser": "सौंपने के लिए उपयोगकर्ता चुनें..."
+    },
+    "rating": {
+      "prompt": "समाधान से आप कितने संतुष्ट हैं?",
+      "feedbackPlaceholder": "अतिरिक्त प्रतिक्रिया (वैकल्पिक)",
+      "submit": "रेटिंग सबमिट करें"
+    },
+    "satisfaction": "संतुष्टि:",
+    "conversation": "वार्तालाप",
+    "internalNote": "आंतरिक टिप्पणी",
+    "noComments": "अभी तक कोई टिप्पणी नहीं। नीचे वार्तालाप शुरू करें।",
+    "replyPlaceholder": "उत्तर लिखें...",
+    "internalNoteToggle": "आंतरिक टिप्पणी (कर्मचारी को दिखाई नहीं देती)",
+    "sending": "भेजा जा रहा है...",
+    "sendReply": "उत्तर भेजें",
+    "toast": {
+      "resolveSuccess": "टिकट को हल किए गए के रूप में चिह्नित किया गया।",
+      "resolveError": "टिकट हल करने में विफल।",
+      "closeSuccess": "टिकट बंद कर दिया गया।",
+      "closeError": "टिकट बंद करने में विफल।",
+      "reopenSuccess": "टिकट फिर से खोला गया।",
+      "reopenError": "टिकट फिर से खोलने में विफल।"
+    },
+    "priority": {
+      "low": "कम",
+      "medium": "मध्यम",
+      "high": "उच्च",
+      "urgent": "अत्यावश्यक"
+    },
+    "status": {
+      "open": "खुला",
+      "in_progress": "प्रगति पर",
+      "awaiting_response": "प्रतिक्रिया की प्रतीक्षा में",
+      "resolved": "हल किया गया",
+      "closed": "बंद",
+      "reopened": "फिर से खोला गया"
+    },
+    "category": {
+      "general": "सामान्य",
+      "technical": "तकनीकी",
+      "hr": "मानव संसाधन",
+      "payroll": "पेरोल",
+      "it": "आईटी",
+      "facilities": "सुविधाएं",
+      "other": "अन्य"
+    }
+  },
+  "myFeedback": {
+    "page": {
+      "title": "मेरी प्रतिक्रिया",
+      "subtitle": "अपनी गुमनाम रूप से भेजी गई प्रतिक्रिया की स्थिति और HR की ओर से किसी भी प्रतिक्रिया को देखें।"
+    },
+    "status": {
+      "new": "नई",
+      "acknowledged": "स्वीकार किया गया",
+      "under_review": "समीक्षाधीन",
+      "resolved": "समाधानित",
+      "archived": "संग्रहीत"
+    },
     "category": {
       "workplace": "कार्यस्थल",
       "management": "प्रबंधन",
@@ -2815,265 +5917,118 @@
       "safety": "सुरक्षा",
       "suggestion": "सुझाव",
       "other": "अन्य"
+    },
+    "empty": {
+      "title": "अभी तक कोई प्रतिक्रिया नहीं भेजी गई",
+      "description": "अपने विचार HR के साथ गुमनाम रूप से साझा करें।",
+      "submitCta": "प्रतिक्रिया भेजें"
+    },
+    "card": {
+      "urgentBadge": "अत्यावश्यक",
+      "editButton": "संपादित करें",
+      "hrResponseLabel": "HR प्रतिक्रिया",
+      "respondedOn": "{{date}} को उत्तर दिया गया"
+    },
+    "editModal": {
+      "title": "प्रतिक्रिया संपादित करें",
+      "categoryLabel": "श्रेणी",
+      "subjectLabel": "विषय",
+      "messageLabel": "संदेश",
+      "markUrgent": "अत्यावश्यक के रूप में चिह्नित करें",
+      "cancel": "रद्द करें",
+      "save": "परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "error": {
+      "updateFailed": "प्रतिक्रिया अपडेट करने में विफल"
+    },
+    "pagination": {
+      "summary": "{{totalPages}} में से पृष्ठ {{page}} (कुल {{total}})",
+      "previous": "पिछला",
+      "next": "अगला"
     }
   },
-  "employeeProfile": {
-    "tab": {
-      "personal": "व्यक्तिगत",
-      "education": "शिक्षा",
-      "experience": "अनुभव",
-      "dependents": "आश्रित",
-      "addresses": "पते",
-      "custom": "कस्टम फ़ील्ड"
+  "feedbackDashboard": {
+    "title": "फ़ीडबैक डैशबोर्ड",
+    "subtitle": "अनाम कर्मचारी फ़ीडबैक का अवलोकन।",
+    "loading": "डैशबोर्ड लोड हो रहा है...",
+    "stats": {
+      "totalFeedback": "कुल फ़ीडबैक",
+      "urgentItems": "अत्यावश्यक आइटम",
+      "responseRate": "प्रतिक्रिया दर",
+      "newUnread": "नया / अपठित"
     },
-    "invalidEmployee": {
-      "title": "अमान्य कर्मचारी",
-      "description": "URL में कर्मचारी ID अनुपस्थित या अमान्य है।",
-      "backLink": "कर्मचारी निर्देशिका पर वापस जाएँ"
+    "sections": {
+      "byCategory": "श्रेणी अनुसार",
+      "sentimentDistribution": "भावना वितरण",
+      "byStatus": "स्थिति अनुसार",
+      "recentFeedback": "हाल का फ़ीडबैक"
     },
-    "accessDenied": {
-      "title": "पहुँच अस्वीकृत",
-      "description": "आपके पास यह प्रोफ़ाइल देखने की अनुमति नहीं है।",
-      "backLink": "डैशबोर्ड पर वापस जाएँ"
+    "empty": {
+      "noData": "अभी कोई डेटा नहीं।",
+      "noFeedback": "अभी कोई फ़ीडबैक नहीं।"
     },
-    "loadingProfile": "प्रोफ़ाइल लोड हो रही है...",
-    "employeeNotFound": "कर्मचारी नहीं मिला",
-    "backToDirectory": "निर्देशिका पर वापस जाएँ",
-    "noDesignation": "कोई पदनाम नहीं",
-    "biometricPhotoTooltip": "फ़ोटो बायोमेट्रिक कियोस्क नामांकन के माध्यम से प्रबंधित होती है",
-    "biometricPhotoAlt": "बायोमेट्रिक चेहरा",
-    "profilePhotoAlt": "प्रोफ़ाइल",
-    "biometricPhotoHint": "बायोमेट्रिक नामांकन से फ़ोटो — कियोस्क के माध्यम से प्रबंधित।",
-    "removingPhoto": "हटाई जा रही है...",
-    "removePhoto": "फ़ोटो हटाएँ",
-    "empCodeLabel": "कर्मचारी कोड: {{code}}",
-    "joinedLabel": "ज्वाइन किया: {{date}}",
-    "cancel": "रद्द करें",
-    "editMyInfo": "मेरी जानकारी संपादित करें",
-    "editProfile": "प्रोफ़ाइल संपादित करें",
-    "removePhotoDialog": {
-      "title": "अपनी प्रोफ़ाइल फ़ोटो हटाएँ?",
-      "description": "आपको फिर से आद्याक्षर दिखेंगे।",
-      "confirm": "फ़ोटो हटाएँ"
+    "status": {
+      "new": "नया",
+      "acknowledged": "अभिस्वीकृत",
+      "under_review": "समीक्षाधीन",
+      "resolved": "हल किया गया",
+      "archived": "संग्रहीत"
     },
-    "fieldRow": {
-      "empty": "-"
-    },
-    "validation": {
-      "pan": "PAN में 5 अक्षर + 4 अंक + 1 अक्षर होने चाहिए (उदा. ABCDE1234F)",
-      "aadhaar": "आधार 12 अंकों का होना चाहिए",
-      "uan": "UAN 12 अंकों का होना चाहिए",
-      "passport": "पासपोर्ट में 1 अक्षर + 7 अंक होने चाहिए (उदा. A1234567)"
-    },
-    "personal": {
-      "saveFailed": "सहेजने में विफल",
-      "selfServiceNotice": "आप अपनी व्यक्तिगत और आपातकालीन संपर्क जानकारी संपादित कर सकते हैं। प्रशासनिक फ़ील्ड अपडेट करने के लिए HR से संपर्क करें।"
-    },
-    "field": {
-      "personalEmail": "व्यक्तिगत ईमेल",
-      "contactNumber": "संपर्क नंबर",
-      "gender": "लिंग",
-      "dateOfBirth": "जन्म तिथि",
-      "bloodGroup": "रक्त समूह",
-      "maritalStatus": "वैवाहिक स्थिति",
-      "nationality": "राष्ट्रीयता",
-      "aadharNumber": "आधार नंबर",
-      "panNumber": "PAN नंबर",
-      "uanNumber": "UAN नंबर",
-      "passportNumber": "पासपोर्ट नंबर",
-      "passportExpiry": "पासपोर्ट समाप्ति",
-      "visaStatus": "वीज़ा स्थिति",
-      "visaExpiry": "वीज़ा समाप्ति",
-      "emergencyContact": "आपातकालीन संपर्क",
-      "emergencyPhone": "आपातकालीन फ़ोन",
-      "emergencyRelation": "आपातकालीन संबंध",
-      "noticePeriodDays": "नोटिस अवधि (दिन)",
-      "reportingManager": "रिपोर्टिंग मैनेजर",
-      "department": "विभाग",
-      "shift": "शिफ़्ट",
-      "designation": "पदनाम",
-      "employeeCode": "कर्मचारी कोड",
-      "probationStart": "परिवीक्षा प्रारंभ",
-      "probationEnd": "परिवीक्षा समाप्ति",
-      "confirmationDate": "पुष्टिकरण तिथि",
-      "customRoles": "कस्टम भूमिकाएँ",
-      "additionalManagers": "अतिरिक्त मैनेजर"
-    },
-    "select": {
-      "placeholder": "चुनें"
-    },
-    "gender": {
-      "male": "पुरुष",
-      "female": "महिला",
+    "category": {
+      "workplace": "कार्यस्थल",
+      "management": "प्रबंधन",
+      "process": "प्रक्रिया",
+      "culture": "संस्कृति",
+      "harassment": "उत्पीड़न",
+      "safety": "सुरक्षा",
+      "suggestion": "सुझाव",
       "other": "अन्य"
     },
-    "maritalStatus": {
-      "single": "अविवाहित",
-      "married": "विवाहित",
-      "divorced": "तलाकशुदा",
-      "widowed": "विधवा/विधुर"
+    "sentiment": {
+      "positive": "सकारात्मक",
+      "neutral": "तटस्थ",
+      "negative": "नकारात्मक",
+      "unset": "अनिर्धारित"
+    }
+  },
+  "submitFeedback": {
+    "page": {
+      "title": "फीडबैक सबमिट करें"
     },
-    "placeholder": {
-      "aadhar": "12 अंक",
-      "pan": "ABCDE1234F",
-      "uan": "12 अंक",
-      "passport": "A1234567",
-      "designationSelfService": "बदलने के लिए HR से संपर्क करें",
-      "designation": "उदा. वरिष्ठ इंजीनियर",
-      "empCodeSelfService": "सेट करने के लिए HR से संपर्क करें",
-      "empCode": "उदा. EMP001"
+    "success": {
+      "title": "फीडबैक सबमिट किया गया",
+      "description": "आपका फीडबैक गुमनाम रूप से सबमिट कर दिया गया है। आपकी पहचान न तो संग्रहीत की जाती है और न ही किसी को दिखाई देती है। आप अपने फीडबैक की स्थिति \"मेरा फीडबैक\" पेज पर देख सकते हैं।",
+      "submitAnother": "एक और सबमिट करें"
     },
-    "reportingManager": {
-      "none": "कोई मैनेजर नहीं"
+    "anonymousBanner": {
+      "title": "आपका फीडबैक पूरी तरह गुमनाम है",
+      "description": "आपकी पहचान को हैश कर दिया जाता है और उसे आप तक वापस नहीं जोड़ा जा सकता। HR को फीडबैक की सामग्री दिखाई देगी, लेकिन आपका नाम या ईमेल कभी नहीं।"
     },
-    "department": {
-      "none": "कोई विभाग नहीं"
+    "field": {
+      "category": "श्रेणी",
+      "subject": "विषय",
+      "message": "संदेश",
+      "subjectPlaceholder": "अपने फीडबैक का संक्षिप्त सारांश",
+      "messagePlaceholder": "अपने फीडबैक का विस्तार से वर्णन करें...",
+      "markUrgent": "अत्यावश्यक के रूप में चिह्नित करें"
     },
-    "shift": {
-      "none": "कोई शिफ़्ट नहीं"
+    "action": {
+      "submit": "गुमनाम रूप से सबमिट करें",
+      "submitting": "सबमिट हो रहा है..."
     },
-    "saving": "सहेजा जा रहा है...",
-    "saveChanges": "परिवर्तन सहेजें",
-    "additionalManagers": {
-      "loading": "लोड हो रहा है…",
-      "none": "कोई अतिरिक्त मैनेजर नहीं",
-      "userFallback": "उपयोगकर्ता #{{id}}",
-      "selectedCount_one": "({{count}} चयनित)",
-      "selectedCount_other": "({{count}} चयनित)",
-      "helpText": "प्राथमिक रिपोर्टिंग मैनेजर के समान टीम-स्कोप पहुँच वाले सह-मैनेजर। हर टीम-स्कोप अनुमति में मान्य।",
-      "removeAria": "{{name}} को हटाएँ",
-      "removeAriaFallback": "मैनेजर",
-      "searchPlaceholder": "नाम या ईमेल से खोजें…",
-      "addPlaceholder": "एक और जोड़ें…",
-      "noMatches": "कोई मेल खाता उपयोगकर्ता नहीं",
-      "allSelected": "सभी पात्र उपयोगकर्ता पहले से चयनित हैं",
-      "savingButton": "सहेजा जा रहा है…",
-      "saveButton": "अतिरिक्त मैनेजर सहेजें",
-      "unsavedChanges": "असहेजे परिवर्तन",
-      "saved": "सहेजा गया"
+    "error": {
+      "submitFailed": "फीडबैक सबमिट करने में विफल। कृपया पुनः प्रयास करें।"
     },
-    "apiError": {
-      "requestFailed": "अनुरोध विफल"
-    },
-    "education": {
-      "add": "शिक्षा जोड़ें",
-      "edit": "शिक्षा संपादित करें",
-      "empty": "अभी तक कोई शिक्षा रिकॉर्ड नहीं जोड़ा गया।",
-      "deleteDialog": {
-        "title": "यह शिक्षा रिकॉर्ड हटाएँ?"
-      },
-      "field": {
-        "degree": "डिग्री",
-        "institution": "संस्थान",
-        "fieldOfStudy": "अध्ययन क्षेत्र",
-        "grade": "ग्रेड",
-        "startYear": "प्रारंभ वर्ष",
-        "endYear": "समाप्ति वर्ष"
-      },
-      "placeholder": {
-        "degree": "उदा. बी.टेक",
-        "institution": "उदा. IIT दिल्ली"
-      },
-      "validation": {
-        "required": "डिग्री और संस्थान आवश्यक हैं",
-        "endYear": "समाप्ति वर्ष प्रारंभ वर्ष को या उसके बाद होना चाहिए"
-      },
-      "fromYear": "{{year}} से",
-      "gradeSuffix": "ग्रेड: {{grade}}"
-    },
-    "save": "सहेजें",
-    "edit": "संपादित करें",
-    "delete": "हटाएँ",
-    "experience": {
-      "add": "अनुभव जोड़ें",
-      "edit": "अनुभव संपादित करें",
-      "empty": "अभी तक कोई कार्य अनुभव रिकॉर्ड नहीं जोड़ा गया।",
-      "deleteDialog": {
-        "title": "यह अनुभव रिकॉर्ड हटाएँ?"
-      },
-      "field": {
-        "company": "कंपनी",
-        "designation": "पदनाम",
-        "startDate": "प्रारंभ तिथि",
-        "endDate": "समाप्ति तिथि",
-        "description": "विवरण"
-      },
-      "currentlyWorking": "वर्तमान में यहाँ कार्यरत",
-      "current": "वर्तमान",
-      "present": "वर्तमान",
-      "validation": {
-        "required": "कंपनी, पदनाम और प्रारंभ तिथि आवश्यक हैं"
-      }
-    },
-    "dependents": {
-      "add": "आश्रित जोड़ें",
-      "edit": "आश्रित संपादित करें",
-      "empty": "अभी तक कोई आश्रित नहीं जोड़ा गया।",
-      "deleteDialog": {
-        "title": "यह आश्रित हटाएँ?"
-      },
-      "field": {
-        "name": "नाम",
-        "relationship": "संबंध",
-        "dateOfBirth": "जन्म तिथि",
-        "gender": "लिंग",
-        "nomineePercent": "नामिती %"
-      },
-      "isNominee": "नामिती है",
-      "placeholder": {
-        "relationship": "उदा. पति/पत्नी, संतान, माता-पिता"
-      },
-      "validation": {
-        "required": "नाम और संबंध आवश्यक हैं"
-      },
-      "column": {
-        "name": "नाम",
-        "relationship": "संबंध",
-        "dob": "जन्म तिथि",
-        "gender": "लिंग",
-        "nominee": "नामिती",
-        "actions": "क्रियाएँ"
-      },
-      "nomineeYes": "हाँ",
-      "nomineeNo": "नहीं"
-    },
-    "addresses": {
-      "add": "पता जोड़ें",
-      "edit": "पता संपादित करें",
-      "empty": "अभी तक कोई पता नहीं जोड़ा गया।",
-      "deleteDialog": {
-        "title": "यह पता हटाएँ?"
-      },
-      "field": {
-        "type": "प्रकार",
-        "country": "देश",
-        "line1": "पता पंक्ति 1",
-        "line2": "पता पंक्ति 2",
-        "city": "शहर",
-        "state": "राज्य",
-        "zipcode": "पिन कोड"
-      },
-      "type": {
-        "current": "वर्तमान",
-        "permanent": "स्थायी"
-      },
-      "validation": {
-        "required": "पता पंक्ति 1, शहर, राज्य और पिन कोड आवश्यक हैं"
-      }
-    },
-    "customFields": {
-      "loading": "कस्टम फ़ील्ड लोड हो रहे हैं...",
-      "emptyTitle": "अभी तक कर्मचारियों के लिए कोई कस्टम फ़ील्ड परिभाषित नहीं किए गए हैं।",
-      "emptyHint": "HR प्रशासक कस्टम फ़ील्ड सेटिंग्स पृष्ठ से कस्टम फ़ील्ड बना सकते हैं।",
-      "heading": "कस्टम फ़ील्ड",
-      "saveFailed": "कस्टम फ़ील्ड सहेजने में विफल",
-      "defaultSection": "कस्टम फ़ील्ड",
-      "display": {
-        "yes": "हाँ",
-        "no": "नहीं"
-      },
-      "selectPlaceholder": "चुनें...",
-      "filePlaceholder": "फ़ाइल संदर्भ या पथ"
+    "category": {
+      "workplace": "कार्यस्थल",
+      "management": "प्रबंधन",
+      "process": "प्रक्रिया",
+      "culture": "संस्कृति",
+      "harassment": "उत्पीड़न",
+      "safety": "सुरक्षा",
+      "suggestion": "सुझाव",
+      "other": "अन्य"
     }
   },
   "assetDetail": {
@@ -3099,23 +6054,23 @@
       "sent_to_repair": "मरम्मत के लिए भेजा गया",
       "repaired": "मरम्मत की गई",
       "retired": "सेवामुक्त किया गया",
-      "lost": "खोया हुआ दर्ज किया गया",
+      "lost": "खोया हुआ",
       "found": "मिल गया",
-      "damaged": "क्षतिग्रस्त दर्ज किया गया",
+      "damaged": "क्षतिग्रस्त",
       "updated": "अपडेट किया गया"
     },
-    "actions": {
+    "buttons": {
       "edit": "संपादित करें",
       "assign": "आवंटित करें",
       "return": "वापस करें",
       "sendForRepair": "मरम्मत के लिए भेजें",
       "repairComplete": "मरम्मत पूर्ण",
       "retire": "सेवामुक्त करें",
-      "reportLost": "खोया हुआ रिपोर्ट करें",
-      "markFound": "मिल गया चिह्नित करें"
+      "reportLost": "खोया दर्ज करें",
+      "markFound": "मिला हुआ चिह्नित करें"
     },
     "info": {
-      "title": "एसेट जानकारी",
+      "heading": "एसेट जानकारी",
       "assetTag": "एसेट टैग",
       "category": "श्रेणी",
       "uncategorized": "अवर्गीकृत",
@@ -3123,107 +6078,332 @@
       "brand": "ब्रांड",
       "model": "मॉडल",
       "location": "स्थान",
-      "purchaseDate": "खरीद की तारीख",
-      "purchaseCost": "खरीद मूल्य",
+      "purchaseDate": "खरीद तिथि",
+      "purchaseCost": "खरीद लागत",
       "warrantyExpiry": "वारंटी समाप्ति",
-      "expired": "(समाप्त)",
+      "expiredSuffix": " (समाप्त)",
       "description": "विवरण",
-      "notes": "नोट्स"
+      "notes": "टिप्पणियाँ"
     },
     "assignment": {
-      "title": "वर्तमान में आवंटित",
-      "assignedTo": "किसे आवंटित",
-      "assignedAt": "आवंटन का समय",
-      "assignedBy": "आवंटनकर्ता"
+      "heading": "वर्तमान में आवंटित",
+      "assignedTo": "आवंटित (किसे)",
+      "assignedAt": "आवंटन समय",
+      "assignedBy": "आवंटित (किसके द्वारा)"
     },
     "history": {
-      "title": "इतिहास",
-      "toUser": "प्रति: {{name}}",
-      "fromUser": "की ओर से: {{name}}",
+      "heading": "इतिहास",
+      "to": "प्राप्तकर्ता: {{name}}",
+      "from": "प्रेषक: {{name}}",
       "empty": "कोई इतिहास प्रविष्टि नहीं",
-      "deleteEntry": "इतिहास प्रविष्टि हटाएं"
+      "deleteTitle": "इतिहास प्रविष्टि हटाएँ"
     },
     "assignModal": {
       "title": "एसेट आवंटित करें",
-      "assignToLabel": "आवंटित किसे करें",
+      "assignToLabel": "आवंटित करें (किसे) *",
       "selectEmployee": "कर्मचारी चुनें",
-      "notesLabel": "नोट्स",
-      "submitting": "आवंटित किया जा रहा है...",
-      "submit": "आवंटित करें"
-    },
-    "common": {
-      "cancel": "रद्द करें"
+      "notesLabel": "टिप्पणियाँ",
+      "cancel": "रद्द करें",
+      "submit": "आवंटित करें",
+      "submitting": "आवंटित किया जा रहा है..."
     },
     "returnModal": {
       "title": "एसेट वापस करें",
       "conditionLabel": "वापसी पर स्थिति",
-      "notesLabel": "नोट्स",
-      "submitting": "वापस किया जा रहा है...",
-      "submit": "एसेट वापस करें"
+      "notesLabel": "टिप्पणियाँ",
+      "cancel": "रद्द करें",
+      "submit": "एसेट वापस करें",
+      "submitting": "वापस किया जा रहा है..."
     },
     "confirm": {
       "retire": {
         "title": "इस एसेट को सेवामुक्त करें?",
-        "body": "एसेट को सेवामुक्त करने पर वह सक्रिय इन्वेंट्री से हट जाता है। पिछले आवंटन रिकॉर्ड में बने रहते हैं, लेकिन एसेट अब आवंटित नहीं किया जा सकता।",
+        "body": "एसेट को सेवामुक्त करने पर वह सक्रिय इन्वेंट्री से बाहर हो जाता है। पिछले आवंटन रिकॉर्ड में बने रहते हैं, लेकिन एसेट को अब आवंटित नहीं किया जा सकता।",
         "confirmLabel": "एसेट सेवामुक्त करें"
       },
       "lost": {
-        "title": "एसेट को खोया हुआ रिपोर्ट करें?",
-        "body": "इससे एसेट खोया हुआ चिह्नित होगा और ऑडिट इतिहास में दर्ज होगा। आप बाद में एसेट विवरण पृष्ठ से इसे मिल गया चिह्नित कर सकते हैं।",
-        "confirmLabel": "खोया हुआ रिपोर्ट करें"
+        "title": "एसेट को खोया हुआ दर्ज करें?",
+        "body": "इससे एसेट को खोया हुआ चिह्नित किया जाएगा और ऑडिट इतिहास में दर्ज किया जाएगा। आप बाद में एसेट विवरण पृष्ठ से इसे मिला हुआ चिह्नित कर सकते हैं।",
+        "confirmLabel": "खोया दर्ज करें"
       },
       "found": {
-        "title": "एसेट को मिल गया चिह्नित करें?",
-        "body": "इससे एसेट उपलब्ध के रूप में सक्रिय इन्वेंट्री में वापस आ जाएगा, ताकि इसे फिर से आवंटित किया जा सके।",
-        "confirmLabel": "मिल गया चिह्नित करें"
+        "title": "एसेट को मिला हुआ चिह्नित करें?",
+        "body": "इससे एसेट उपलब्ध के रूप में सक्रिय इन्वेंट्री में वापस आ जाएगा, ताकि उसे पुनः आवंटित किया जा सके।",
+        "confirmLabel": "मिला हुआ चिह्नित करें"
       },
       "repairStart": {
         "title": "एसेट को मरम्मत के लिए भेजें?",
-        "bodyAssigned": "इससे एसेट का आवंटन हट जाएगा और वह 'मरम्मत में' चला जाएगा। वर्तमान धारक इतिहास में दर्ज रहेगा।",
-        "bodyUnassigned": "इससे एसेट 'मरम्मत में' चला जाएगा। मरम्मत पूर्ण होने तक इसे आवंटित नहीं किया जा सकेगा।",
+        "bodyAssigned": "इससे एसेट का आवंटन हट जाएगा और उसे 'मरम्मत में' ले जाया जाएगा। वर्तमान धारक इतिहास में दर्ज रहता है।",
+        "bodyDefault": "इससे एसेट 'मरम्मत में' चला जाएगा। मरम्मत पूर्ण होने तक इसे आवंटित नहीं किया जा सकेगा।",
         "confirmLabel": "मरम्मत के लिए भेजें"
       },
       "repairComplete": {
         "title": "मरम्मत को पूर्ण चिह्नित करें?",
-        "body": "इससे एसेट उपलब्ध के रूप में सक्रिय इन्वेंट्री में वापस आ जाएगा, ताकि इसे फिर से आवंटित किया जा सके।",
+        "body": "इससे एसेट उपलब्ध के रूप में सक्रिय इन्वेंट्री में वापस आ जाएगा, ताकि उसे पुनः आवंटित किया जा सके।",
         "confirmLabel": "मरम्मत पूर्ण चिह्नित करें"
       },
-      "working": "काम जारी है..."
+      "cancel": "रद्द करें",
+      "working": "कार्य जारी है..."
     },
     "editModal": {
       "title": "एसेट संपादित करें",
-      "nameLabel": "नाम",
+      "nameLabel": "नाम *",
       "categoryLabel": "श्रेणी",
+      "uncategorized": "अवर्गीकृत",
       "serialNumberLabel": "सीरियल नंबर",
       "brandLabel": "ब्रांड",
       "modelLabel": "मॉडल",
       "conditionLabel": "स्थिति",
-      "purchaseDateLabel": "खरीद की तारीख",
-      "purchaseCostLabel": "खरीद मूल्य",
-      "currencyPrefix": "₹ INR",
+      "purchaseDateLabel": "खरीद तिथि",
+      "purchaseCostLabel": "खरीद लागत",
       "purchaseCostHint": "राशि पैसे में।",
       "warrantyExpiryLabel": "वारंटी समाप्ति",
       "locationLabel": "स्थान",
       "descriptionLabel": "विवरण",
-      "notesLabel": "नोट्स",
-      "saving": "सहेजा जा रहा है...",
-      "save": "बदलाव सहेजें"
+      "notesLabel": "टिप्पणियाँ",
+      "cancel": "रद्द करें",
+      "save": "परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है..."
     },
-    "historyDelete": {
-      "title": "इतिहास प्रविष्टि हटाएं?",
-      "body": "इससे केवल यह लॉग पंक्ति हटती है। एसेट की वर्तमान स्थिति अपरिवर्तित रहती है — पिछले आवंटन या कार्रवाइयां वापस नहीं होतीं।",
-      "deleting": "हटाया जा रहा है...",
-      "confirm": "प्रविष्टि हटाएं"
+    "conditionOptions": {
+      "new": "नया",
+      "good": "अच्छा",
+      "fair": "ठीक-ठाक",
+      "poor": "खराब"
+    },
+    "deleteHistory": {
+      "title": "इतिहास प्रविष्टि हटाएँ?",
+      "body": "इससे केवल यह लॉग पंक्ति हटती है। एसेट की वर्तमान स्थिति अपरिवर्तित रहती है — पिछले आवंटन या कार्य वापस नहीं होते।",
+      "cancel": "रद्द करें",
+      "confirm": "प्रविष्टि हटाएँ",
+      "deleting": "हटाया जा रहा है..."
     },
     "errors": {
       "updateFailed": "एसेट अपडेट करने में विफल",
       "deleteHistoryFailed": "इतिहास प्रविष्टि हटाने में विफल",
-      "warrantyBeforePurchase": "वारंटी समाप्ति खरीद की तारीख से पहले नहीं हो सकती।",
+      "warrantyBeforePurchase": "वारंटी समाप्ति खरीद तिथि से पहले नहीं हो सकती।",
       "retireFailed": "एसेट सेवामुक्त करने में विफल",
-      "reportLostFailed": "एसेट को खोया हुआ रिपोर्ट करने में विफल",
-      "markFoundFailed": "एसेट को मिल गया चिह्नित करने में विफल",
+      "reportLostFailed": "एसेट को खोया हुआ दर्ज करने में विफल",
+      "markFoundFailed": "एसेट को मिला हुआ चिह्नित करने में विफल",
       "sendToRepairFailed": "एसेट को मरम्मत के लिए भेजने में विफल",
       "completeRepairFailed": "मरम्मत पूर्ण करने में विफल"
     }
+  },
+  "assetCategories": {
+    "header": {
+      "title": "एसेट श्रेणियाँ",
+      "subtitle": "एसेट को प्रकार के अनुसार व्यवस्थित करें"
+    },
+    "actions": {
+      "addCategory": "श्रेणी जोड़ें",
+      "edit": "संपादित करें",
+      "delete": "हटाएँ"
+    },
+    "list": {
+      "loading": "श्रेणियाँ लोड हो रही हैं...",
+      "empty": "अभी तक कोई श्रेणी नहीं। अपनी पहली श्रेणी बनाएँ।"
+    },
+    "table": {
+      "name": "नाम",
+      "description": "विवरण",
+      "actions": "कार्रवाइयाँ"
+    },
+    "form": {
+      "editTitle": "श्रेणी संपादित करें",
+      "newTitle": "नई श्रेणी",
+      "nameLabel": "नाम *",
+      "namePlaceholder": "जैसे लैपटॉप, मॉनिटर, फ़ोन",
+      "descriptionLabel": "विवरण",
+      "cancel": "रद्द करें",
+      "update": "अपडेट करें",
+      "create": "बनाएँ"
+    },
+    "delete": {
+      "title": "श्रेणी निष्क्रिय करें?",
+      "message": "{{name}} को निष्क्रिय करें? इस श्रेणी से टैग किए गए मौजूदा एसेट टैग बनाए रखेंगे, लेकिन इसे पुनर्स्थापित किए जाने तक यहाँ कोई नया एसेट नहीं रखा जा सकता।",
+      "cancel": "रद्द करें",
+      "confirm": "निष्क्रिय करें",
+      "inProgress": "निष्क्रिय किया जा रहा है..."
+    },
+    "errors": {
+      "deactivateFailed": "श्रेणी निष्क्रिय करने में विफल"
+    }
+  },
+  "myAssets": {
+    "page": {
+      "title": "मेरी संपत्तियां",
+      "subtitle": "आपको सौंपे गए उपकरण और संपत्तियां"
+    },
+    "empty": {
+      "title": "आपको कोई संपत्ति नहीं सौंपी गई",
+      "description": "जब आपका संगठन आपको उपकरण सौंपेगा, तो वे यहां दिखाई देंगे।"
+    },
+    "card": {
+      "serialNumber": "क्र.सं.: {{serial}}",
+      "assigned": "सौंपा गया {{date}}",
+      "warranty": "वारंटी: {{date}}",
+      "warrantyExpiredSuffix": "(समाप्त)"
+    },
+    "condition": {
+      "new": "नया",
+      "good": "अच्छा",
+      "fair": "ठीक-ठाक",
+      "poor": "खराब"
+    }
+  },
+  "apiKeysCard": {
+    "emptyDate": "—",
+    "status": {
+      "revoked": "निरस्त",
+      "expired": "समाप्त",
+      "active": "सक्रिय"
+    },
+    "toast": {
+      "createError": "API कुंजी बनाने में विफल",
+      "copyError": "कॉपी नहीं हो सका — चुनकर मैन्युअल रूप से कॉपी करें",
+      "revokeSuccess": "API कुंजी निरस्त की गई",
+      "revokeError": "कुंजी निरस्त करने में विफल"
+    },
+    "confirm": {
+      "revoke": "\"{{name}}\" को निरस्त करें? इसका उपयोग करने वाला कोई भी इंटीग्रेशन तुरंत काम करना बंद कर देगा।"
+    },
+    "heading": "API कुंजियाँ",
+    "newKeyButton": "नई कुंजी",
+    "description": "EmpCloud API तक प्रोग्रामेटिक पहुँच के लिए कुंजियाँ बनाएँ। एक ही कुंजी EmpCloud और Payroll मॉड्यूल में काम करती है, और उसे बनाने वाले एडमिन की अनुमतियाँ रखती है।",
+    "howTo": {
+      "title": "अपनी API कुंजी का उपयोग कैसे करें",
+      "intro": "बनाई गई कुंजी एक <strong>Bearer token</strong> है। इसे हर API अनुरोध में <code>Authorization</code> हेडर में भेजें — ठीक वैसे ही जैसे लॉग-इन सेशन टोकन:",
+      "bulletBothSystems": "<strong>दोनों सिस्टम में काम करती है।</strong> एक ही टोकन EmpCloud API और Payroll मॉड्यूल API दोनों के लिए प्रमाणीकरण करता है — किसी अलग लॉगिन या टोकन विनिमय की ज़रूरत नहीं।",
+      "bulletInheritsPermissions": "<strong>आपकी अनुमतियाँ विरासत में लेती है।</strong> कुंजी केवल वही कर सकती है जो उसे बनाने वाला एडमिन कर सकता है। यह हमेशा उस एडमिन की मौजूदा भूमिका को दर्शाती है — भूमिका बदलें और कुंजी की पहुँच भी उसके साथ बदल जाती है।",
+      "bulletShownOnce": "<strong>केवल एक बार दिखाई जाती है।</strong> पूरी कुंजी निर्माण के समय केवल एक बार प्रदर्शित होती है। इसे किसी सुरक्षित स्थान (सीक्रेट्स मैनेजर) में संग्रहीत करें — हम केवल एक हैश की गई प्रति रखते हैं और इसे दोबारा नहीं दिखा सकते।",
+      "bulletRevocable": "<strong>निरस्त और समाप्त की जा सकती है।</strong> वैकल्पिक समाप्ति सेट करें, या किसी भी समय कुंजी निरस्त करें। निरस्त या समाप्त कुंजियाँ हर जगह तुरंत काम करना बंद कर देती हैं। कुंजी को पासवर्ड की तरह मानें — जिसके पास यह है वह आपकी अनुमतियों के साथ कार्य कर सकता है।"
+    },
+    "reveal": {
+      "warning": "इस कुंजी को अभी कॉपी करें — यह दोबारा नहीं दिखाई जाएगी।",
+      "copied": "कॉपी हो गई",
+      "copy": "कॉपी करें",
+      "dismissAria": "बंद करें",
+      "bearerHint": "इसे Authorization हेडर में Bearer token के रूप में उपयोग करें:"
+    },
+    "form": {
+      "nameLabel": "कुंजी का नाम",
+      "namePlaceholder": "जैसे उपस्थिति निर्यात",
+      "expiresLabel": "समाप्ति (दिनों में)",
+      "expiresPlaceholder": "कभी नहीं",
+      "generating": "बनाई जा रही है…",
+      "generate": "कुंजी बनाएँ",
+      "cancel": "रद्द करें"
+    },
+    "list": {
+      "loading": "कुंजियाँ लोड हो रही हैं…",
+      "empty": "अभी तक कोई API कुंजी नहीं।"
+    },
+    "table": {
+      "name": "नाम",
+      "key": "कुंजी",
+      "status": "स्थिति",
+      "lastUsed": "अंतिम उपयोग",
+      "expires": "समाप्ति",
+      "created": "निर्मित",
+      "neverExpires": "कभी नहीं"
+    },
+    "revokeAction": "निरस्त करें"
+  },
+  "dateRangePicker": {
+    "preset": {
+      "today": "आज",
+      "yesterday": "कल",
+      "last7": "पिछले 7 दिन",
+      "last30": "पिछले 30 दिन",
+      "thisMonth": "इस महीने",
+      "lastMonth": "पिछले महीने",
+      "customRange": "कस्टम रेंज"
+    },
+    "trigger": {
+      "placeholder": "तिथि सीमा चुनें"
+    },
+    "dialog": {
+      "ariaLabel": "तिथि सीमा चुनें"
+    },
+    "footer": {
+      "empty": "—"
+    },
+    "action": {
+      "clear": "साफ़ करें",
+      "cancel": "रद्द करें",
+      "apply": "लागू करें"
+    }
+  },
+  "navSection": {
+    "countBadge": {
+      "overflow": "99+"
+    }
+  },
+  "assetBulkUpload": {
+    "header": {
+      "title": "CSV / Excel से एसेट बल्क इंपोर्ट करें"
+    },
+    "actions": {
+      "downloadTemplate": "टेम्पलेट डाउनलोड करें",
+      "close": "बंद करें",
+      "cancel": "रद्द करें"
+    },
+    "upload": {
+      "requiredHint": "आवश्यक: <0>name</0>. अन्य कॉलम वैकल्पिक हैं।",
+      "dropzoneTitle": "अपनी CSV या Excel फ़ाइल यहाँ खींचें और छोड़ें",
+      "dropzoneSubtitle": "या ब्राउज़ करने के लिए क्लिक करें",
+      "tipsHeading": "सुझाव:",
+      "tips": {
+        "purchaseCost": "<0>purchase_cost</0> पैसे में राशि है (उदा. ₹1,500 के लिए 150000)।",
+        "conditionStatus": "<0>condition_status</0> इनमें से एक होना चाहिए: new, good, fair, poor.",
+        "categoryAutoCreate": "अज्ञात <0>category_name</0> मान स्वतः बन जाते हैं।",
+        "dateFormats": "तारीखों के लिए YYYY-MM-DD या Excel तारीख सेल स्वीकार्य हैं।"
+      }
+    },
+    "importing": {
+      "message": "एसेट इंपोर्ट हो रहे हैं... कृपया प्रतीक्षा करें।"
+    },
+    "done": {
+      "completeTitle": "इंपोर्ट पूर्ण",
+      "rowError": "पंक्ति {{row}}:",
+      "emptyFile": "अपलोड की गई फ़ाइल में कोई पंक्ति नहीं मिली।",
+      "importedCount_one": "{{count}} एसेट सफलतापूर्वक इंपोर्ट किया गया।",
+      "importedCount_other": "{{count}} एसेट सफलतापूर्वक इंपोर्ट किए गए।",
+      "createdCategoriesTitle_one": "नई श्रेणी बनाई गई ({{count}}):",
+      "createdCategoriesTitle_other": "नई श्रेणियाँ बनाई गईं ({{count}}):",
+      "skippedRows_one": "त्रुटियों के साथ {{count}} पंक्ति छोड़ी गई",
+      "skippedRows_other": "त्रुटियों के साथ {{count}} पंक्तियाँ छोड़ी गईं"
+    },
+    "errors": {
+      "bulkImportFailed": "बल्क इंपोर्ट विफल रहा"
+    }
+  },
+  "customRolesField": {
+    "label": "कस्टम रोल",
+    "loading": "लोड हो रहा है…",
+    "emptyReadonly": "कोई कस्टम रोल असाइन नहीं किया गया",
+    "helpText": "इस उपयोगकर्ता की प्राथमिक भूमिका के अतिरिक्त सूक्ष्म अनुमतियाँ प्रदान करने वाले अतिरिक्त रोल। रोल प्रबंधित करें",
+    "helpTextLink": "सेटिंग्स → रोल और अनुमतियाँ",
+    "removeAria": "{{name}} हटाएँ",
+    "placeholderEmpty": "कस्टम रोल असाइन करने के लिए क्लिक करें…",
+    "placeholderMore": "एक और रोल जोड़ें…",
+    "noneToAssign": "असाइन करने के लिए कोई कस्टम रोल नहीं है। सेटिंग्स → रोल और अनुमतियाँ में एक बनाएँ।",
+    "noMatches": "कोई मिलता-जुलता रोल नहीं",
+    "error": {
+      "requestFailed": "अनुरोध विफल रहा"
+    },
+    "assignedCount_one": "({{count}} असाइन किया गया)",
+    "assignedCount_other": "({{count}} असाइन किए गए)",
+    "permissionCount_one": "{{count}} अनुमति",
+    "permissionCount_other": "{{count}} अनुमतियाँ"
+  },
+  "viewModeToggle": {
+    "myView": "मेरा व्यू",
+    "adminView": "एडमिन व्यू",
+    "myViewTitle": "व्यक्तिगत सेल्फ-सर्विस व्यू",
+    "adminViewTitle": "एडमिन व्यू — केवल वे आइटम जो आपकी कस्टम-रोल अनुमतियाँ अनलॉक करती हैं"
+  },
+  "aiBadge": {
+    "label": "AI संचालित"
   }
 }

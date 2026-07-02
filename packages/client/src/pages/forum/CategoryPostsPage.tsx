@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import api from "@/api/client";
@@ -17,25 +18,26 @@ import {
   Filter,
 } from "lucide-react";
 
-const POST_TYPE_CONFIG: Record<string, { label: string; color: string; icon: typeof MessageCircle }> = {
-  discussion: { label: "Discussion", color: "bg-blue-100 text-blue-700", icon: MessagesSquare },
-  question: { label: "Question", color: "bg-purple-100 text-purple-700", icon: HelpCircle },
-  idea: { label: "Idea", color: "bg-amber-100 text-amber-700", icon: Lightbulb },
-  poll: { label: "Poll", color: "bg-green-100 text-green-700", icon: BarChart3 },
+const POST_TYPE_CONFIG: Record<string, { labelKey: string; color: string; icon: typeof MessageCircle }> = {
+  discussion: { labelKey: "categoryPosts.postType.discussion", color: "bg-blue-100 text-blue-700", icon: MessagesSquare },
+  question: { labelKey: "categoryPosts.postType.question", color: "bg-purple-100 text-purple-700", icon: HelpCircle },
+  idea: { labelKey: "categoryPosts.postType.idea", color: "bg-amber-100 text-amber-700", icon: Lightbulb },
+  poll: { labelKey: "categoryPosts.postType.poll", color: "bg-green-100 text-green-700", icon: BarChart3 },
 };
 
-function timeAgo(dateStr: string) {
+function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string) {
   const now = new Date();
   const date = new Date(dateStr);
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t("categoryPosts.time.justNow");
+  if (diff < 3600) return t("categoryPosts.time.minutesAgo", { count: Math.floor(diff / 60) });
+  if (diff < 86400) return t("categoryPosts.time.hoursAgo", { count: Math.floor(diff / 3600) });
+  if (diff < 604800) return t("categoryPosts.time.daysAgo", { count: Math.floor(diff / 86400) });
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 export default function CategoryPostsPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [postType, setPostType] = useState("");
@@ -84,7 +86,7 @@ export default function CategoryPostsPage() {
             )}
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {category?.name || "Category"}
+                {category?.name || t("categoryPosts.header.defaultCategoryName")}
               </h1>
               {category?.description && (
                 <p className="text-gray-500 text-sm mt-0.5">{category.description}</p>
@@ -96,7 +98,7 @@ export default function CategoryPostsPage() {
           to={`/forum/new?category=${id}`}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" /> New Post
+          <Plus className="h-4 w-4" /> {t("categoryPosts.header.newPost")}
         </Link>
       </div>
 
@@ -109,20 +111,20 @@ export default function CategoryPostsPage() {
             onChange={(e) => { setPostType(e.target.value); setPage(1); }}
             className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
           >
-            <option value="">All Types</option>
-            <option value="discussion">Discussions</option>
-            <option value="question">Questions</option>
-            <option value="idea">Ideas</option>
-            <option value="poll">Polls</option>
+            <option value="">{t("categoryPosts.filters.allTypes")}</option>
+            <option value="discussion">{t("categoryPosts.filters.discussions")}</option>
+            <option value="question">{t("categoryPosts.filters.questions")}</option>
+            <option value="idea">{t("categoryPosts.filters.ideas")}</option>
+            <option value="poll">{t("categoryPosts.filters.polls")}</option>
           </select>
         </div>
 
         <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
           {[
-            { key: "recent", label: "Recent" },
-            { key: "popular", label: "Popular" },
-            { key: "trending", label: "Active" },
-            { key: "views", label: "Most Viewed" },
+            { key: "recent", labelKey: "categoryPosts.sort.recent" },
+            { key: "popular", labelKey: "categoryPosts.sort.popular" },
+            { key: "trending", labelKey: "categoryPosts.sort.active" },
+            { key: "views", labelKey: "categoryPosts.sort.mostViewed" },
           ].map((s) => (
             <button
               key={s.key}
@@ -133,7 +135,7 @@ export default function CategoryPostsPage() {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              {s.label}
+              {t(s.labelKey)}
             </button>
           ))}
         </div>
@@ -143,11 +145,11 @@ export default function CategoryPostsPage() {
       <div className="space-y-3">
         {isLoading ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            Loading posts...
+            {t("categoryPosts.list.loading")}
           </div>
         ) : posts.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            No posts in this category yet. Start the conversation!
+            {t("categoryPosts.list.empty")}
           </div>
         ) : (
           posts.map((post: any) => {
@@ -171,16 +173,16 @@ export default function CategoryPostsPage() {
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${typeConfig.color}`}>
                         <TypeIcon className="h-3 w-3" />
-                        {typeConfig.label}
+                        {t(typeConfig.labelKey)}
                       </span>
                       {Boolean(post.is_pinned) && (
                         <span className="inline-flex items-center gap-1 text-xs text-amber-600">
-                          <Pin className="h-3 w-3" /> Pinned
+                          <Pin className="h-3 w-3" /> {t("categoryPosts.badge.pinned")}
                         </span>
                       )}
                       {Boolean(post.is_locked) && (
                         <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                          <Lock className="h-3 w-3" /> Locked
+                          <Lock className="h-3 w-3" /> {t("categoryPosts.badge.locked")}
                         </span>
                       )}
                     </div>
@@ -192,7 +194,7 @@ export default function CategoryPostsPage() {
 
                     <div className="flex items-center gap-4 text-xs text-gray-400">
                       <span>{post.author_first_name} {post.author_last_name}</span>
-                      <span>{timeAgo(post.created_at)}</span>
+                      <span>{timeAgo(post.created_at, t)}</span>
                       <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
                       <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.like_count}</span>
                       <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" /> {post.reply_count}</span>
@@ -209,7 +211,11 @@ export default function CategoryPostsPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("categoryPosts.pagination.pageInfo", {
+              page: meta.page,
+              totalPages: meta.total_pages,
+              count: meta.total,
+            })}
           </p>
           <div className="flex gap-2">
             <button
@@ -217,14 +223,14 @@ export default function CategoryPostsPage() {
               disabled={page === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Previous
+              {t("categoryPosts.pagination.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next
+              {t("categoryPosts.pagination.next")}
             </button>
           </div>
         </div>

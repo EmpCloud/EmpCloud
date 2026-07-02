@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import {
@@ -181,11 +182,12 @@ function StatusBadge({
 }: {
   status: "active" | "configured" | "not_configured";
 }) {
+  const { t } = useTranslation();
   if (status === "active") {
     return (
       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
         <CheckCircle2 className="w-3 h-3" />
-        Active
+        {t("aiConfig.status.active")}
       </span>
     );
   }
@@ -193,14 +195,14 @@ function StatusBadge({
     return (
       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
         <Circle className="w-3 h-3" />
-        Configured
+        {t("aiConfig.status.configured")}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
       <XCircle className="w-3 h-3" />
-      Not configured
+      {t("aiConfig.status.notConfigured")}
     </span>
   );
 }
@@ -233,6 +235,7 @@ function ProviderCard({
   ) => Promise<TestResult | null>;
   isSaving: boolean;
 }) {
+  const { t } = useTranslation();
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState(provider.defaultBaseUrl || "");
   const [customModel, setCustomModel] = useState("");
@@ -348,7 +351,7 @@ function ProviderCard({
           {provider.needsApiKey && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                API Key
+                {t("aiConfig.field.apiKey")}
               </label>
               <div className="relative">
                 <input
@@ -357,8 +360,10 @@ function ProviderCard({
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder={
                     configMap[provider.keyField]
-                      ? `Current: ${configMap[provider.keyField]}`
-                      : "Enter API key..."
+                      ? t("aiConfig.placeholder.apiKeyCurrent", {
+                          value: configMap[provider.keyField],
+                        })
+                      : t("aiConfig.placeholder.apiKeyEnter")
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
                 />
@@ -381,13 +386,15 @@ function ProviderCard({
           {provider.baseUrlField && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Base URL
+                {t("aiConfig.field.baseUrl")}
               </label>
               <input
                 type="text"
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
-                placeholder={provider.defaultBaseUrl || "https://api.example.com"}
+                placeholder={
+                  provider.defaultBaseUrl || t("aiConfig.placeholder.baseUrl")
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -396,7 +403,7 @@ function ProviderCard({
           {/* Model selector */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Model
+              {t("aiConfig.field.model")}
             </label>
             {provider.models.length > 0 ? (
               <select
@@ -415,7 +422,7 @@ function ProviderCard({
                 type="text"
                 value={customModel}
                 onChange={(e) => setCustomModel(e.target.value)}
-                placeholder="Enter model name (e.g., my-model)"
+                placeholder={t("aiConfig.placeholder.customModel")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             )}
@@ -438,7 +445,9 @@ function ProviderCard({
               <div>
                 <p>{testResult.message}</p>
                 <p className="text-xs mt-1 opacity-75">
-                  Latency: {testResult.latency_ms}ms
+                  {t("aiConfig.testResult.latency", {
+                    ms: testResult.latency_ms,
+                  })}
                 </p>
               </div>
             </div>
@@ -459,7 +468,7 @@ function ProviderCard({
               ) : (
                 <Zap className="w-4 h-4" />
               )}
-              Test Connection
+              {t("aiConfig.button.testConnection")}
             </button>
 
             <button
@@ -481,7 +490,9 @@ function ProviderCard({
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
-              {isActive ? "Active" : "Save & Activate"}
+              {isActive
+                ? t("aiConfig.button.active")
+                : t("aiConfig.button.saveActivate")}
             </button>
 
             {isActive && (
@@ -490,7 +501,7 @@ function ProviderCard({
                 className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100"
               >
                 <X className="w-4 h-4" />
-                Deactivate
+                {t("aiConfig.button.deactivate")}
               </button>
             )}
           </div>
@@ -505,6 +516,7 @@ function ProviderCard({
 // ---------------------------------------------------------------------------
 
 export default function AIConfigPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [maxTokens, setMaxTokens] = useState(4096);
 
@@ -605,7 +617,9 @@ export default function AIConfigPage() {
     } catch (err: any) {
       return {
         success: false,
-        message: err?.response?.data?.error?.message || "Test request failed",
+        message:
+          err?.response?.data?.error?.message ||
+          t("aiConfig.testResult.requestFailed"),
         latency_ms: 0,
       };
     }
@@ -632,11 +646,10 @@ export default function AIConfigPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <Sparkles className="w-7 h-7 text-indigo-600" />
-          AI Configuration
+          {t("aiConfig.title")}
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Configure AI providers for the HR chatbot assistant. Keys set here
-          override environment variables.
+          {t("aiConfig.subtitle")}
         </p>
       </div>
 
@@ -667,26 +680,26 @@ export default function AIConfigPage() {
               <h2 className="font-semibold text-gray-900">
                 {activeProvider !== "none" ? (
                   <>
-                    AI-Powered Mode{" "}
+                    {t("aiConfig.banner.aiPoweredMode")}{" "}
                     <span className="text-indigo-600 capitalize">
                       ({PROVIDERS.find((p) => p.id === activeProvider)?.name ||
                         activeProvider})
                     </span>
                   </>
                 ) : (
-                  "Basic Mode (No AI Provider Active)"
+                  t("aiConfig.banner.basicMode")
                 )}
               </h2>
               <p className="text-sm text-gray-500">
                 {activeProvider !== "none" ? (
                   <>
-                    Model: <strong>{currentModel}</strong> | Status:{" "}
-                    <span className="text-green-600 font-medium">
-                      {statusData?.status}
-                    </span>
+                    {t("aiConfig.banner.modelStatus", {
+                      model: currentModel,
+                      status: statusData?.status,
+                    })}
                   </>
                 ) : (
-                  "The chatbot is running in rule-based mode. Activate a provider below to enable AI-powered responses."
+                  t("aiConfig.banner.basicModeHint")
                 )}
               </p>
             </div>
@@ -698,7 +711,7 @@ export default function AIConfigPage() {
       <div className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Settings className="w-5 h-5" />
-          Providers
+          {t("aiConfig.section.providers")}
         </h2>
 
         {PROVIDERS.map((provider) => (
@@ -720,13 +733,13 @@ export default function AIConfigPage() {
       <div className="border border-gray-200 rounded-xl p-4 space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Settings className="w-5 h-5" />
-          General Settings
+          {t("aiConfig.section.generalSettings")}
         </h2>
 
         {/* Max tokens */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Max Tokens: <strong>{maxTokens}</strong>
+            {t("aiConfig.field.maxTokens", { count: maxTokens })}
           </label>
           <input
             type="range"
@@ -752,7 +765,7 @@ export default function AIConfigPage() {
             ) : (
               <Check className="w-3 h-3" />
             )}
-            Save Max Tokens
+            {t("aiConfig.button.saveMaxTokens")}
           </button>
         </div>
       </div>
@@ -762,23 +775,12 @@ export default function AIConfigPage() {
         <div className="flex items-start gap-2">
           <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="font-medium">How it works</p>
+            <p className="font-medium">{t("aiConfig.info.title")}</p>
             <ul className="mt-1 list-disc list-inside space-y-1 text-amber-700">
-              <li>
-                API keys are encrypted at rest using AES-256-GCM and never
-                returned unmasked
-              </li>
-              <li>
-                Settings stored here override environment variables (.env)
-              </li>
-              <li>
-                Only one provider can be active at a time. Switching providers
-                takes effect immediately.
-              </li>
-              <li>
-                Use "Test Connection" to verify your API key and model before
-                activating
-              </li>
+              <li>{t("aiConfig.info.encryption")}</li>
+              <li>{t("aiConfig.info.overrideEnv")}</li>
+              <li>{t("aiConfig.info.singleActive")}</li>
+              <li>{t("aiConfig.info.testFirst")}</li>
             </ul>
           </div>
         </div>

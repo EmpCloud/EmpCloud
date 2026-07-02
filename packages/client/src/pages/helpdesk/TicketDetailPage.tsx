@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
@@ -36,6 +37,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function TicketDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
@@ -101,10 +103,10 @@ export default function TicketDetailPage() {
     mutationFn: () => api.post(`/helpdesk/tickets/${id}/resolve`).then((r) => r.data),
     onSuccess: () => {
       invalidateTicketQueries();
-      showToast("success", "Ticket marked as resolved.");
+      showToast("success", t("ticketDetail.toast.resolveSuccess"));
     },
     onError: (err: any) => {
-      showToast("error", extractErrorMessage(err, "Failed to resolve ticket."));
+      showToast("error", extractErrorMessage(err, t("ticketDetail.toast.resolveError")));
     },
   });
 
@@ -112,10 +114,10 @@ export default function TicketDetailPage() {
     mutationFn: () => api.post(`/helpdesk/tickets/${id}/close`).then((r) => r.data),
     onSuccess: () => {
       invalidateTicketQueries();
-      showToast("success", "Ticket closed.");
+      showToast("success", t("ticketDetail.toast.closeSuccess"));
     },
     onError: (err: any) => {
-      showToast("error", extractErrorMessage(err, "Failed to close ticket."));
+      showToast("error", extractErrorMessage(err, t("ticketDetail.toast.closeError")));
     },
   });
 
@@ -123,10 +125,10 @@ export default function TicketDetailPage() {
     mutationFn: () => api.post(`/helpdesk/tickets/${id}/reopen`).then((r) => r.data),
     onSuccess: () => {
       invalidateTicketQueries();
-      showToast("success", "Ticket reopened.");
+      showToast("success", t("ticketDetail.toast.reopenSuccess"));
     },
     onError: (err: any) => {
-      showToast("error", extractErrorMessage(err, "Failed to reopen ticket."));
+      showToast("error", extractErrorMessage(err, t("ticketDetail.toast.reopenError")));
     },
   });
 
@@ -160,7 +162,7 @@ export default function TicketDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading ticket...</div>
+        <div className="text-gray-400">{t("ticketDetail.loading")}</div>
       </div>
     );
   }
@@ -192,7 +194,7 @@ export default function TicketDetailPage() {
         to={isHR ? "/helpdesk/tickets" : "/helpdesk/my-tickets"}
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to tickets
+        <ArrowLeft className="h-4 w-4" /> {t("ticketDetail.backToTickets")}
       </Link>
 
       {/* Ticket Header */}
@@ -206,21 +208,27 @@ export default function TicketDetailPage() {
                   PRIORITY_COLORS[ticket.priority] || ""
                 }`}
               >
-                {ticket.priority}
+                {t(`ticketDetail.priority.${ticket.priority}`, {
+                  defaultValue: ticket.priority,
+                })}
               </span>
               <span
                 className={`text-xs font-medium px-2.5 py-0.5 rounded ${
                   STATUS_COLORS[ticket.status] || ""
                 }`}
               >
-                {ticket.status.replace(/_/g, " ")}
+                {t(`ticketDetail.status.${ticket.status}`, {
+                  defaultValue: ticket.status.replace(/_/g, " "),
+                })}
               </span>
               <span className="text-xs text-gray-400 capitalize bg-gray-50 px-2 py-0.5 rounded">
-                {ticket.category}
+                {t(`ticketDetail.category.${ticket.category}`, {
+                  defaultValue: ticket.category,
+                })}
               </span>
               {isOverdue && (
                 <span className="text-xs font-medium px-2 py-0.5 rounded bg-red-100 text-red-700 flex items-center gap-1">
-                  <AlertTriangle className="h-3 w-3" /> SLA Breached
+                  <AlertTriangle className="h-3 w-3" /> {t("ticketDetail.slaBreached")}
                 </span>
               )}
             </div>
@@ -229,13 +237,14 @@ export default function TicketDetailPage() {
               {ticket.description}
             </p>
             <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
-              <span>Raised by: <strong>{ticket.raised_by_name}</strong></span>
+              <span>{t("ticketDetail.raisedBy", { name: ticket.raised_by_name })}</span>
               <span>
-                Created:{" "}
-                {new Date(ticket.created_at).toLocaleString()}
+                {t("ticketDetail.created", {
+                  date: new Date(ticket.created_at).toLocaleString(),
+                })}
               </span>
               {ticket.assigned_to_name && (
-                <span>Assigned to: <strong>{ticket.assigned_to_name}</strong></span>
+                <span>{t("ticketDetail.assignedTo", { name: ticket.assigned_to_name })}</span>
               )}
             </div>
           </div>
@@ -243,23 +252,31 @@ export default function TicketDetailPage() {
           {/* SLA info */}
           <div className="shrink-0 bg-gray-50 rounded-lg p-4 min-w-[200px]">
             <h4 className="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
-              <Clock className="h-3.5 w-3.5" /> SLA Deadlines
+              <Clock className="h-3.5 w-3.5" /> {t("ticketDetail.slaDeadlines")}
             </h4>
             <div className="space-y-2 text-xs">
               <div>
-                <span className="text-gray-500">First Response:</span>
+                <span className="text-gray-500">{t("ticketDetail.firstResponse")}</span>
                 <p className={`font-medium ${ticket.first_response_at ? "text-green-600" : now > respDue ? "text-red-600" : "text-gray-700"}`}>
                   {ticket.first_response_at
-                    ? `Responded ${new Date(ticket.first_response_at).toLocaleString()}`
-                    : `Due ${new Date(ticket.sla_response_due).toLocaleString()}`}
+                    ? t("ticketDetail.responded", {
+                        date: new Date(ticket.first_response_at).toLocaleString(),
+                      })
+                    : t("ticketDetail.due", {
+                        date: new Date(ticket.sla_response_due).toLocaleString(),
+                      })}
                 </p>
               </div>
               <div>
-                <span className="text-gray-500">Resolution:</span>
+                <span className="text-gray-500">{t("ticketDetail.resolution")}</span>
                 <p className={`font-medium ${ticket.resolved_at ? "text-green-600" : isOverdue ? "text-red-600" : "text-gray-700"}`}>
                   {ticket.resolved_at
-                    ? `Resolved ${new Date(ticket.resolved_at).toLocaleString()}`
-                    : `Due ${new Date(ticket.sla_resolution_due).toLocaleString()}`}
+                    ? t("ticketDetail.resolved", {
+                        date: new Date(ticket.resolved_at).toLocaleString(),
+                      })
+                    : t("ticketDetail.due", {
+                        date: new Date(ticket.sla_resolution_due).toLocaleString(),
+                      })}
                 </p>
               </div>
             </div>
@@ -273,7 +290,7 @@ export default function TicketDetailPage() {
               onClick={() => setShowAssignForm(!showAssignForm)}
               className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
             >
-              <UserPlus className="h-3.5 w-3.5" /> Assign
+              <UserPlus className="h-3.5 w-3.5" /> {t("ticketDetail.action.assign")}
             </button>
           )}
           {isResolvable && (
@@ -282,7 +299,7 @@ export default function TicketDetailPage() {
               disabled={resolveMutation.isPending}
               className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
             >
-              <CheckCircle2 className="h-3.5 w-3.5" /> Resolve
+              <CheckCircle2 className="h-3.5 w-3.5" /> {t("ticketDetail.action.resolve")}
             </button>
           )}
           {isClosable && (
@@ -291,7 +308,7 @@ export default function TicketDetailPage() {
               disabled={closeMutation.isPending}
               className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
             >
-              <XCircle className="h-3.5 w-3.5" /> Close
+              <XCircle className="h-3.5 w-3.5" /> {t("ticketDetail.action.close")}
             </button>
           )}
           {isReopenable && (
@@ -300,7 +317,7 @@ export default function TicketDetailPage() {
               disabled={reopenMutation.isPending}
               className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-orange-200 text-orange-700 hover:bg-orange-50 disabled:opacity-50"
             >
-              <RotateCcw className="h-3.5 w-3.5" /> Reopen
+              <RotateCcw className="h-3.5 w-3.5" /> {t("ticketDetail.action.reopen")}
             </button>
           )}
           {canRate && (
@@ -308,7 +325,7 @@ export default function TicketDetailPage() {
               onClick={() => setShowRatingForm(!showRatingForm)}
               className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-yellow-200 text-yellow-700 hover:bg-yellow-50"
             >
-              <Star className="h-3.5 w-3.5" /> Rate Service
+              <Star className="h-3.5 w-3.5" /> {t("ticketDetail.action.rateService")}
             </button>
           )}
         </div>
@@ -321,7 +338,7 @@ export default function TicketDetailPage() {
               onChange={(e) => setAssignUserId(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             >
-              <option value="">Select a user to assign...</option>
+              <option value="">{t("ticketDetail.assign.selectUser")}</option>
               {(usersData || [])
                 .filter((u: any) => HR_ROLES.includes(u.role))
                 .map((u: any) => (
@@ -335,7 +352,7 @@ export default function TicketDetailPage() {
               disabled={!assignUserId || assignMutation.isPending}
               className="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700 disabled:opacity-50"
             >
-              Assign
+              {t("ticketDetail.action.assign")}
             </button>
           </form>
         )}
@@ -344,7 +361,7 @@ export default function TicketDetailPage() {
         {showRatingForm && canRate && (
           <form onSubmit={handleRate} className="mt-3 p-4 bg-yellow-50 rounded-lg border border-yellow-100">
             <p className="text-sm font-medium text-gray-700 mb-2">
-              How satisfied are you with the resolution?
+              {t("ticketDetail.rating.prompt")}
             </p>
             <div className="flex items-center gap-1 mb-3">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -367,7 +384,7 @@ export default function TicketDetailPage() {
             <textarea
               value={ratingComment}
               onChange={(e) => setRatingComment(e.target.value)}
-              placeholder="Additional feedback (optional)"
+              placeholder={t("ticketDetail.rating.feedbackPlaceholder")}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[60px] mb-3"
             />
             <button
@@ -375,7 +392,7 @@ export default function TicketDetailPage() {
               disabled={rating < 1 || rateMutation.isPending}
               className="px-4 py-2 bg-yellow-600 text-white text-sm rounded-lg hover:bg-yellow-700 disabled:opacity-50"
             >
-              Submit Rating
+              {t("ticketDetail.rating.submit")}
             </button>
           </form>
         )}
@@ -384,7 +401,7 @@ export default function TicketDetailPage() {
         {ticket.satisfaction_rating && (
           <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Satisfaction:</span>
+              <span className="text-sm font-medium text-gray-700">{t("ticketDetail.satisfaction")}</span>
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
@@ -409,7 +426,7 @@ export default function TicketDetailPage() {
 
       {/* Conversation Thread */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">Conversation</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">{t("ticketDetail.conversation")}</h3>
 
         {ticket.comments && ticket.comments.length > 0 ? (
           <div className="space-y-4">
@@ -436,7 +453,7 @@ export default function TicketDetailPage() {
                     </span>
                     {c.is_internal && (
                       <span className="flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-                        <Lock className="h-3 w-3" /> Internal Note
+                        <Lock className="h-3 w-3" /> {t("ticketDetail.internalNote")}
                       </span>
                     )}
                     <span className="text-xs text-gray-400 ml-auto">
@@ -452,7 +469,7 @@ export default function TicketDetailPage() {
           </div>
         ) : (
           <p className="text-sm text-gray-400 text-center py-4">
-            No comments yet. Start the conversation below.
+            {t("ticketDetail.noComments")}
           </p>
         )}
       </div>
@@ -464,7 +481,7 @@ export default function TicketDetailPage() {
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Write a reply..."
+              placeholder={t("ticketDetail.replyPlaceholder")}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px] mb-3"
               required
             />
@@ -479,7 +496,7 @@ export default function TicketDetailPage() {
                       className="rounded border-gray-300"
                     />
                     <Lock className="h-3.5 w-3.5 text-amber-600" />
-                    Internal note (not visible to employee)
+                    {t("ticketDetail.internalNoteToggle")}
                   </label>
                 )}
               </div>
@@ -489,7 +506,7 @@ export default function TicketDetailPage() {
                 className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
                 <Send className="h-4 w-4" />
-                {addCommentMutation.isPending ? "Sending..." : "Send Reply"}
+                {addCommentMutation.isPending ? t("ticketDetail.sending") : t("ticketDetail.sendReply")}
               </button>
             </div>
           </form>

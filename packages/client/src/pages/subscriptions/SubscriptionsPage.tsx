@@ -2,6 +2,7 @@ import { useSubscriptions, useBillingSummary, useModules, useUpdateSubscription,
 import { CreditCard, TrendingUp, ArrowRight, Pencil, X, Check, Trash2, Users, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface EditModalProps {
   subscription: any;
@@ -12,20 +13,21 @@ interface EditModalProps {
 }
 
 function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLoading }: EditModalProps) {
+  const { t } = useTranslation();
   const [planTier, setPlanTier] = useState(subscription.plan_tier);
   const [totalSeats, setTotalSeats] = useState(subscription.total_seats);
   const [billingCycle, setBillingCycle] = useState(subscription.billing_cycle);
 
   const plans = [
-    { value: "basic", label: "Basic" },
-    { value: "professional", label: "Professional" },
-    { value: "enterprise", label: "Enterprise" },
+    { value: "basic", label: t("subscriptionsPage.planTier.basic", { defaultValue: "Basic" }) },
+    { value: "professional", label: t("subscriptionsPage.planTier.professional", { defaultValue: "Professional" }) },
+    { value: "enterprise", label: t("subscriptionsPage.planTier.enterprise", { defaultValue: "Enterprise" }) },
   ];
 
   const cycles = [
-    { value: "monthly", label: "Monthly" },
-    { value: "quarterly", label: "Quarterly" },
-    { value: "annual", label: "Annual" },
+    { value: "monthly", label: t("subscriptionsPage.billingCycle.monthly", { defaultValue: "Monthly" }) },
+    { value: "quarterly", label: t("subscriptionsPage.billingCycle.quarterly", { defaultValue: "Quarterly" }) },
+    { value: "annual", label: t("subscriptionsPage.billingCycle.annual", { defaultValue: "Annual" }) },
   ];
 
   const hasChanges = planTier !== subscription.plan_tier || totalSeats !== subscription.total_seats || billingCycle !== subscription.billing_cycle;
@@ -48,7 +50,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-6 border-b">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Edit Subscription</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t("subscriptionsPage.editModal.title")}</h2>
             <p className="text-sm text-gray-500">{moduleName}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -59,7 +61,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         <div className="p-6 space-y-5">
           {/* Plan Tier */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">Plan Tier</label>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">{t("subscriptionsPage.editModal.planTierLabel")}</label>
             <div className="grid grid-cols-3 gap-2">
               {plans.map(plan => (
                 <button
@@ -80,7 +82,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Total Seats */}
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Users className="h-4 w-4" /> Total Seats
+              <Users className="h-4 w-4" /> {t("subscriptionsPage.editModal.totalSeatsLabel")}
             </label>
             <div className="flex items-center gap-3">
               <button
@@ -105,9 +107,9 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
               </button>
             </div>
             <div className="flex justify-between mt-1">
-              <p className="text-xs text-gray-400">Currently using {subscription.used_seats} seats</p>
+              <p className="text-xs text-gray-400">{t("subscriptionsPage.editModal.currentlyUsing", { seats: subscription.used_seats })}</p>
               {seatsReduced && (
-                <p className="text-xs text-red-500 font-medium">Cannot reduce below {subscription.used_seats} (in use)</p>
+                <p className="text-xs text-red-500 font-medium">{t("subscriptionsPage.editModal.cannotReduceBelow", { seats: subscription.used_seats })}</p>
               )}
             </div>
           </div>
@@ -115,7 +117,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Billing Cycle */}
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Calendar className="h-4 w-4" /> Billing Cycle
+              <Calendar className="h-4 w-4" /> {t("subscriptionsPage.editModal.billingCycleLabel")}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {cycles.map(cycle => (
@@ -137,16 +139,22 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Change Summary */}
           {hasChanges && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
-              <p className="font-medium text-amber-800 mb-1">Changes:</p>
+              <p className="font-medium text-amber-800 mb-1">{t("subscriptionsPage.editModal.changesHeading")}</p>
               <ul className="text-amber-700 space-y-0.5">
                 {planTier !== subscription.plan_tier && (
-                  <li>Plan: <span className="line-through">{subscription.plan_tier}</span> → <span className="font-medium">{planTier}</span></li>
+                  <li>{t("subscriptionsPage.editModal.change.plan", {
+                    from: t(`subscriptionsPage.planTier.${subscription.plan_tier}`, { defaultValue: subscription.plan_tier }),
+                    to: t(`subscriptionsPage.planTier.${planTier}`, { defaultValue: planTier }),
+                  })}</li>
                 )}
                 {totalSeats !== subscription.total_seats && (
-                  <li>Seats: <span className="line-through">{subscription.total_seats}</span> → <span className="font-medium">{totalSeats}</span></li>
+                  <li>{t("subscriptionsPage.editModal.change.seats", { from: subscription.total_seats, to: totalSeats })}</li>
                 )}
                 {billingCycle !== subscription.billing_cycle && (
-                  <li>Cycle: <span className="line-through">{subscription.billing_cycle}</span> → <span className="font-medium">{billingCycle}</span></li>
+                  <li>{t("subscriptionsPage.editModal.change.cycle", {
+                    from: t(`subscriptionsPage.billingCycle.${subscription.billing_cycle}`, { defaultValue: subscription.billing_cycle }),
+                    to: t(`subscriptionsPage.billingCycle.${billingCycle}`, { defaultValue: billingCycle }),
+                  })}</li>
                 )}
               </ul>
             </div>
@@ -155,25 +163,25 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           {/* Trial-end warning */}
           {willEndTrial && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
-              <p className="font-medium text-red-800 mb-1">⚠️ This will end your free trial</p>
+              <p className="font-medium text-red-800 mb-1">{t("subscriptionsPage.editModal.trialWarning.title")}</p>
               <p className="text-red-700">
-                {seatsIncreasing && "Adding seats"}
-                {!seatsIncreasing && tierUpgrading && "Upgrading your plan tier"}
-                {!seatsIncreasing && !tierUpgrading && cycleLengthening && "Switching to a longer billing cycle"}
-                {" "}during the trial will activate the subscription immediately. An invoice for the first billing period will be generated and due today.
+                {seatsIncreasing && t("subscriptionsPage.editModal.trialWarning.reason.seats")}
+                {!seatsIncreasing && tierUpgrading && t("subscriptionsPage.editModal.trialWarning.reason.tier")}
+                {!seatsIncreasing && !tierUpgrading && cycleLengthening && t("subscriptionsPage.editModal.trialWarning.reason.cycle")}
+                {t("subscriptionsPage.editModal.trialWarning.body")}
               </p>
             </div>
           )}
         </div>
 
         <div className="flex items-center justify-between p-6 border-t bg-gray-50 rounded-b-2xl">
-          <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+          <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-700">{t("subscriptionsPage.editModal.cancel")}</button>
           <button
             onClick={() => onSave(subscription.id, { plan_tier: planTier, total_seats: totalSeats, billing_cycle: billingCycle })}
             disabled={isLoading || !hasChanges || seatsReduced}
             className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? t("subscriptionsPage.editModal.saving") : t("subscriptionsPage.editModal.save")}
           </button>
         </div>
       </div>
@@ -182,6 +190,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 }
 
 export default function SubscriptionsPage() {
+  const { t } = useTranslation();
   const { data: subscriptions, isLoading } = useSubscriptions();
   const { data: billing } = useBillingSummary();
   const { data: modules } = useModules();
@@ -202,24 +211,24 @@ export default function SubscriptionsPage() {
   const handleUpdate = async (id: number, data: object) => {
     await updateSub.mutateAsync({ id, data });
     setEditingSub(null);
-    setToast("Subscription updated successfully");
+    setToast(t("subscriptionsPage.toast.updated"));
     setTimeout(() => setToast(null), 4000);
   };
 
   const handleCancel = async (id: number) => {
     await cancelSub.mutateAsync(id);
     setCancelConfirm(null);
-    setToast("Subscription cancelled");
+    setToast(t("subscriptionsPage.toast.cancelled"));
     setTimeout(() => setToast(null), 4000);
   };
 
-  if (isLoading) return <div className="text-gray-500">Loading subscriptions...</div>;
+  if (isLoading) return <div className="text-gray-500">{t("subscriptionsPage.loading")}</div>;
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Subscriptions</h1>
-        <p className="text-gray-500 mt-1">Manage your module subscriptions and billing.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("subscriptionsPage.header.title")}</h1>
+        <p className="text-gray-500 mt-1">{t("subscriptionsPage.header.subtitle")}</p>
       </div>
 
       {toast && (
@@ -231,7 +240,7 @@ export default function SubscriptionsPage() {
       {editingSub && (
         <EditSubscriptionModal
           subscription={editingSub}
-          moduleName={((moduleMap as any).get(editingSub.module_id) as any)?.name || "Module"}
+          moduleName={((moduleMap as any).get(editingSub.module_id) as any)?.name || t("subscriptionsPage.moduleFallback")}
           onClose={() => setEditingSub(null)}
           onSave={handleUpdate}
           isLoading={updateSub.isPending}
@@ -242,16 +251,16 @@ export default function SubscriptionsPage() {
       {cancelConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(null)}>
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Cancel Subscription?</h3>
-            <p className="text-sm text-gray-500 mb-4">This will cancel the subscription and revoke access for all assigned seats. This action cannot be undone.</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">{t("subscriptionsPage.cancelModal.title")}</h3>
+            <p className="text-sm text-gray-500 mb-4">{t("subscriptionsPage.cancelModal.body")}</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Keep</button>
+              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">{t("subscriptionsPage.cancelModal.keep")}</button>
               <button
                 onClick={() => handleCancel(cancelConfirm)}
                 disabled={cancelSub.isPending}
                 className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
-                {cancelSub.isPending ? "Cancelling..." : "Yes, Cancel"}
+                {cancelSub.isPending ? t("subscriptionsPage.cancelModal.confirming") : t("subscriptionsPage.cancelModal.confirm")}
               </button>
             </div>
           </div>
@@ -262,7 +271,7 @@ export default function SubscriptionsPage() {
         to="/billing"
         className="flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-6 py-4 mb-6 hover:bg-brand-100 transition-colors group"
       >
-        <p className="text-sm font-medium text-brand-700">View detailed invoices and payment history</p>
+        <p className="text-sm font-medium text-brand-700">{t("subscriptionsPage.billing.viewInvoicesLink")}</p>
         <ArrowRight className="h-4 w-4 text-brand-600 group-hover:translate-x-1 transition-transform" />
       </Link>
 
@@ -270,11 +279,11 @@ export default function SubscriptionsPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp className="h-5 w-5 text-brand-600" />
-            <h2 className="font-semibold text-gray-900">Monthly Cost</h2>
+            <h2 className="font-semibold text-gray-900">{t("subscriptionsPage.billing.monthlyCostHeading")}</h2>
           </div>
           <p className="text-3xl font-bold text-gray-900">
             {formatCurrency(billing.total_monthly_cost, billing.currency)}
-            <span className="text-sm font-normal text-gray-500"> /month</span>
+            <span className="text-sm font-normal text-gray-500">{t("subscriptionsPage.billing.perMonthSuffix")}</span>
           </p>
         </div>
       )}
@@ -290,7 +299,7 @@ export default function SubscriptionsPage() {
                     <CreditCard className="h-5 w-5 text-brand-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>
+                    <h3 className="font-semibold text-gray-900">{mod?.name || t("subscriptionsPage.moduleFallback")}</h3>
                     <p className="text-xs text-gray-500">{mod?.slug}</p>
                   </div>
                 </div>
@@ -301,21 +310,21 @@ export default function SubscriptionsPage() {
                     sub.status === "cancelled" ? "bg-gray-100 text-gray-500" :
                     "bg-red-50 text-red-700"
                   }`}>
-                    {sub.status}
+                    {t(`subscriptionsPage.status.${sub.status}`, { defaultValue: sub.status })}
                   </span>
                   {sub.status !== "cancelled" && (
                     <>
                       <button
                         onClick={() => setEditingSub(sub)}
                         className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
-                        title="Edit subscription"
+                        title={t("subscriptionsPage.card.tooltip.edit")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setCancelConfirm(sub.id)}
                         className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Cancel subscription"
+                        title={t("subscriptionsPage.card.tooltip.cancel")}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -332,7 +341,7 @@ export default function SubscriptionsPage() {
                 if (daysLeft <= 0) {
                   return (
                     <div className="mt-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
-                      Trial expired — converting to active subscription shortly. First invoice will be issued today.
+                      {t("subscriptionsPage.trial.expired")}
                     </div>
                   );
                 }
@@ -340,15 +349,15 @@ export default function SubscriptionsPage() {
                 return (
                   <div className={`mt-3 ${tone === "amber" ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-blue-50 border-blue-200 text-blue-700"} border rounded-lg px-3 py-2 text-xs flex items-center gap-1.5`}>
                     <Calendar className="h-3.5 w-3.5" />
-                    Trial ends in {daysLeft} day{daysLeft === 1 ? "" : "s"} ({trialEnd.toLocaleDateString()})
+                    {t("subscriptionsPage.trial.endsIn", { count: daysLeft, date: trialEnd.toLocaleDateString() })}
                   </div>
                 );
               })()}
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-100">
                 <div>
-                  <p className="text-xs text-gray-500">Plan</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{sub.plan_tier}</p>
+                  <p className="text-xs text-gray-500">{t("subscriptionsPage.card.field.plan")}</p>
+                  <p className="text-sm font-medium text-gray-900 capitalize">{t(`subscriptionsPage.planTier.${sub.plan_tier}`, { defaultValue: sub.plan_tier })}</p>
                 </div>
                 {/* #1448 — Seat tile is now a link to /users?module=<slug> so
                     admins can quickly see which employees have this seat. */}
@@ -356,11 +365,11 @@ export default function SubscriptionsPage() {
                   to={`/users?module=${mod?.slug || ""}`}
                   className="group"
                 >
-                  <p className="text-xs text-gray-500 group-hover:text-brand-600">Seats</p>
+                  <p className="text-xs text-gray-500 group-hover:text-brand-600">{t("subscriptionsPage.card.field.seats")}</p>
                   <p className="text-sm font-medium text-gray-900 group-hover:text-brand-700 group-hover:underline">
                     {sub.used_seats}/{sub.total_seats}
                     {sub.used_seats >= sub.total_seats && (
-                      <span className="text-xs text-red-500 ml-1">(full)</span>
+                      <span className="text-xs text-red-500 ml-1">{t("subscriptionsPage.card.seatsFull")}</span>
                     )}
                   </p>
                   {/* Seat usage bar */}
@@ -372,14 +381,14 @@ export default function SubscriptionsPage() {
                   </div>
                 </Link>
                 <div>
-                  <p className="text-xs text-gray-500">Price/Seat</p>
+                  <p className="text-xs text-gray-500">{t("subscriptionsPage.card.field.pricePerSeat")}</p>
                   <p className="text-sm font-medium text-gray-900">
                     {formatCurrency(Number(sub.price_per_seat), sub.currency)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Billing Cycle</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{sub.billing_cycle}</p>
+                  <p className="text-xs text-gray-500">{t("subscriptionsPage.card.field.billingCycle")}</p>
+                  <p className="text-sm font-medium text-gray-900 capitalize">{t(`subscriptionsPage.billingCycle.${sub.billing_cycle}`, { defaultValue: sub.billing_cycle })}</p>
                 </div>
               </div>
             </div>

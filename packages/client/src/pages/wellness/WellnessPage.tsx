@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { Link } from "react-router-dom";
 import {
@@ -29,6 +30,7 @@ const PROGRAM_TYPE_CONFIG: Record<string, { label: string; color: string; icon: 
 };
 
 export default function WellnessPage() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState("");
   // #1375 — Surface enroll errors and confirmations inline
@@ -63,14 +65,14 @@ export default function WellnessPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wellness-programs"] });
       queryClient.invalidateQueries({ queryKey: ["wellness-summary"] });
-      setEnrollMessage({ type: "success", text: "Successfully enrolled in program" });
+      setEnrollMessage({ type: "success", text: t("wellnessPage.enroll.success") });
       setTimeout(() => setEnrollMessage(null), 4000);
     },
     onError: (err: any) => {
       const msg =
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
-        "Failed to enroll in program";
+        t("wellnessPage.enroll.error");
       setEnrollMessage({ type: "error", text: msg });
       setTimeout(() => setEnrollMessage(null), 5000);
     },
@@ -99,9 +101,9 @@ export default function WellnessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Wellness Programs</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("wellnessPage.header.title")}</h1>
           <p className="text-gray-500 mt-1">
-            Explore programs, track your well-being, and achieve your health goals
+            {t("wellnessPage.header.subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -109,13 +111,13 @@ export default function WellnessPage() {
             to="/wellness/check-in"
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
           >
-            Daily Check-in
+            {t("wellnessPage.actions.dailyCheckIn")}
           </Link>
           <Link
             to="/wellness/my"
             className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
           >
-            My Wellness
+            {t("wellnessPage.actions.myWellness")}
           </Link>
         </div>
       </div>
@@ -135,8 +137,10 @@ export default function WellnessPage() {
                 <Heart className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Check-in Streak</p>
-                <p className="text-xl font-bold text-gray-900">{summaryData.checkin_streak} days</p>
+                <p className="text-sm text-gray-500">{t("wellnessPage.stats.checkInStreak")}</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {t("wellnessPage.stats.checkInStreakValue", { count: summaryData.checkin_streak })}
+                </p>
               </div>
             </div>
           </Link>
@@ -149,7 +153,7 @@ export default function WellnessPage() {
                 <Dumbbell className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Active Programs</p>
+                <p className="text-sm text-gray-500">{t("wellnessPage.stats.activePrograms")}</p>
                 <p className="text-xl font-bold text-gray-900">{summaryData.enrolled_programs?.length || 0}</p>
               </div>
             </div>
@@ -163,7 +167,7 @@ export default function WellnessPage() {
                 <Trophy className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Goals Completed</p>
+                <p className="text-sm text-gray-500">{t("wellnessPage.stats.goalsCompleted")}</p>
                 <p className="text-xl font-bold text-gray-900">{summaryData.completed_goals_count || 0}</p>
               </div>
             </div>
@@ -177,8 +181,8 @@ export default function WellnessPage() {
                 <Sparkles className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Latest Mood</p>
-                <p className="text-xl font-bold text-gray-900 capitalize">{summaryData.latest_mood || "---"}</p>
+                <p className="text-sm text-gray-500">{t("wellnessPage.stats.latestMood")}</p>
+                <p className="text-xl font-bold text-gray-900 capitalize">{summaryData.latest_mood || t("wellnessPage.stats.moodEmpty")}</p>
               </div>
             </div>
           </Link>
@@ -195,23 +199,25 @@ export default function WellnessPage() {
           }}
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
         >
-          <option value="">All Types</option>
+          <option value="">{t("wellnessPage.filter.allTypes")}</option>
           {Object.entries(PROGRAM_TYPE_CONFIG).map(([key, { label }]) => (
             <option key={key} value={key}>
-              {label}
+              {t(`wellnessPage.programType.${key}`, { defaultValue: label })}
             </option>
           ))}
         </select>
-        <span className="text-sm text-gray-500">{total} programs available</span>
+        <span className="text-sm text-gray-500">
+          {t("wellnessPage.filter.programsAvailable", { count: total })}
+        </span>
       </div>
 
       {/* Programs Grid */}
       {isLoading ? (
-        <div className="text-center py-12 text-gray-400">Loading programs...</div>
+        <div className="text-center py-12 text-gray-400">{t("wellnessPage.list.loading")}</div>
       ) : programs.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
           <Heart className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No wellness programs available yet</p>
+          <p className="text-gray-500">{t("wellnessPage.list.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -229,12 +235,12 @@ export default function WellnessPage() {
                       <Icon className={`h-5 w-5 ${cfg.color.split(" ")[1]}`} />
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color}`}>
-                      {cfg.label}
+                      {t(`wellnessPage.programType.${program.program_type}`, { defaultValue: cfg.label })}
                     </span>
                   </div>
                   {program.points_reward > 0 && (
                     <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                      +{program.points_reward} pts
+                      {t("wellnessPage.card.pointsReward", { count: program.points_reward })}
                     </span>
                   )}
                 </div>
@@ -250,12 +256,12 @@ export default function WellnessPage() {
                       {new Date(program.start_date).toLocaleDateString()} —{" "}
                       {program.end_date
                         ? new Date(program.end_date).toLocaleDateString()
-                        : "Ongoing"}
+                        : t("wellnessPage.card.ongoing")}
                     </span>
                   )}
                   <span>
-                    {program.enrolled_count}
-                    {program.max_participants ? `/${program.max_participants}` : ""} enrolled
+                    {t("wellnessPage.card.enrolledCount", { count: program.enrolled_count })}
+                    {program.max_participants ? ` / ${program.max_participants}` : ""}
                   </span>
                 </div>
 
@@ -264,7 +270,7 @@ export default function WellnessPage() {
                     disabled
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 text-green-700 border border-green-200 rounded-lg text-sm font-medium cursor-not-allowed"
                   >
-                    Enrolled
+                    {t("wellnessPage.card.enrolledButton")}
                   </button>
                 ) : (
                   <button
@@ -272,7 +278,7 @@ export default function WellnessPage() {
                     disabled={enrollMutation.isPending}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium disabled:opacity-50"
                   >
-                    Enroll Now <ArrowRight className="h-4 w-4" />
+                    {t("wellnessPage.card.enrollNow")} <ArrowRight className="h-4 w-4" />
                   </button>
                 )}
               </div>
@@ -292,7 +298,7 @@ export default function WellnessPage() {
             <ChevronLeft className="h-4 w-4" />
           </button>
           <span className="text-sm text-gray-600">
-            Page {page} of {totalPages}
+            {t("wellnessPage.pagination.pageOf", { page, totalPages })}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}

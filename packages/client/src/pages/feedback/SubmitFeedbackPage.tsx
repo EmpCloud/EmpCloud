@@ -4,11 +4,16 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/api/client";
 import { MessageSquarePlus, Send, AlertTriangle, CheckCircle } from "lucide-react";
 
-// Category values are stable identifiers; the labels render via
-// t("submitFeedback.category.<value>") with the capitalized value as fallback.
-const CATEGORY_VALUES = [
-  "workplace", "management", "process", "culture", "harassment", "safety", "suggestion", "other",
-] as const;
+const CATEGORIES = [
+  { value: "workplace", label: "Workplace" },
+  { value: "management", label: "Management" },
+  { value: "process", label: "Process" },
+  { value: "culture", label: "Culture" },
+  { value: "harassment", label: "Harassment" },
+  { value: "safety", label: "Safety" },
+  { value: "suggestion", label: "Suggestion" },
+  { value: "other", label: "Other" },
+];
 
 export default function SubmitFeedbackPage() {
   const { t } = useTranslation();
@@ -38,19 +43,19 @@ export default function SubmitFeedbackPage() {
     return (
       <div>
         <div className="flex items-center gap-3 mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">{t("submitFeedback.title")}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("submitFeedback.page.title")}</h1>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center max-w-lg mx-auto">
           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("submitFeedback.successHeading")}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("submitFeedback.success.title")}</h2>
           <p className="text-sm text-gray-500 mb-6">
-            {t("submitFeedback.successMessage")}
+            {t("submitFeedback.success.description")}
           </p>
           <button
             onClick={() => setSubmitted(false)}
             className="bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
-            {t("submitFeedback.submitAnother")}
+            {t("submitFeedback.success.submitAnother")}
           </button>
         </div>
       </div>
@@ -60,16 +65,16 @@ export default function SubmitFeedbackPage() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t("submitFeedback.title")}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("submitFeedback.page.title")}</h1>
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 max-w-2xl">
         <div className="flex items-start gap-3">
           <MessageSquarePlus className="h-5 w-5 text-amber-600 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-amber-800">{t("submitFeedback.bannerTitle")}</p>
+            <p className="text-sm font-medium text-amber-800">{t("submitFeedback.anonymousBanner.title")}</p>
             <p className="text-xs text-amber-600 mt-1">
-              {t("submitFeedback.bannerBody")}
+              {t("submitFeedback.anonymousBanner.description")}
             </p>
           </div>
         </div>
@@ -77,39 +82,39 @@ export default function SubmitFeedbackPage() {
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 max-w-2xl space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t("submitFeedback.categoryLabel")} <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("submitFeedback.field.category")} <span className="text-red-500">*</span></label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
-            {CATEGORY_VALUES.map((c) => (
-              <option key={c} value={c}>
-                {t(`submitFeedback.category.${c}`, { defaultValue: c.charAt(0).toUpperCase() + c.slice(1) })}
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {t(`submitFeedback.category.${c.value}`, { defaultValue: c.label })}
               </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t("submitFeedback.subjectLabel")} <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("submitFeedback.field.subject")} <span className="text-red-500">*</span></label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            placeholder={t("submitFeedback.subjectPlaceholder")}
+            placeholder={t("submitFeedback.field.subjectPlaceholder")}
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t("submitFeedback.messageLabel")} <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("submitFeedback.field.message")} <span className="text-red-500">*</span></label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[160px]"
-            placeholder={t("submitFeedback.messagePlaceholder")}
+            placeholder={t("submitFeedback.field.messagePlaceholder")}
             required
           />
         </div>
@@ -124,7 +129,7 @@ export default function SubmitFeedbackPage() {
             />
             <span className="text-sm text-gray-700 flex items-center gap-1.5">
               <AlertTriangle className="h-4 w-4 text-red-500" />
-              {t("submitFeedback.markUrgent")}
+              {t("submitFeedback.field.markUrgent")}
             </span>
           </label>
         </div>
@@ -136,13 +141,13 @@ export default function SubmitFeedbackPage() {
             className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
-            {submitMutation.isPending ? t("submitFeedback.submitting") : t("submitFeedback.submitAnon")}
+            {submitMutation.isPending ? t("submitFeedback.action.submitting") : t("submitFeedback.action.submit")}
           </button>
         </div>
 
         {submitMutation.isError && (
           <p className="text-sm text-red-600 mt-2">
-            {t("submitFeedback.submitError")}
+            {t("submitFeedback.error.submitFailed")}
           </p>
         )}
       </form>

@@ -7,6 +7,7 @@
 // transparently starts/gets the direct conversation first, then forwards into it.
 
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ChatMessage, ConversationSummary } from "@empcloud/shared";
 import api from "@/api/client";
@@ -49,6 +50,7 @@ export function ForwardModal({
   onClose: () => void;
   onForwarded: () => void;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState(false);
@@ -134,14 +136,14 @@ export function ForwardModal({
       const allTargets = [...chatTargets, ...employeeTargets];
       const convIds: number[] = [];
       for (const key of selected) {
-        const t = allTargets.find((x) => x.key === key);
-        if (!t) continue;
-        if (t.kind === "conversation") {
-          convIds.push(t.id);
+        const tgt = allTargets.find((x) => x.key === key);
+        if (!tgt) continue;
+        if (tgt.kind === "conversation") {
+          convIds.push(tgt.id);
         } else {
           // Defensive: never start a direct chat with yourself.
-          if (t.userId === meId) continue;
-          const res = await api.post("/chat/conversations/direct", { user_id: t.userId });
+          if (tgt.userId === meId) continue;
+          const res = await api.post("/chat/conversations/direct", { user_id: tgt.userId });
           convIds.push(res.data.data.id);
         }
       }
@@ -156,11 +158,11 @@ export function ForwardModal({
       const n = messageIds.length;
       showToast(
         "success",
-        `Forwarded ${n} message${n > 1 ? "s" : ""} to ${convIds.length} chat${convIds.length > 1 ? "s" : ""}.`,
+        t("forwardModal.toast.forwardSuccess", { count: n, chatCount: convIds.length }),
       );
       onForwarded();
     } catch {
-      showToast("error", "Couldn't forward. Please try again.");
+      showToast("error", t("forwardModal.toast.forwardError"));
     } finally {
       setSending(false);
     }
@@ -169,17 +171,20 @@ export function ForwardModal({
   // Preview line: single message text/attachment, or "N messages".
   const preview =
     messages.length === 1
-      ? messages[0].body || (messages[0].attachment ? `📎 ${messages[0].attachment.name}` : "Message")
-      : `${messages.length} messages`;
+      ? messages[0].body ||
+        (messages[0].attachment
+          ? t("forwardModal.preview.attachment", { name: messages[0].attachment.name })
+          : t("forwardModal.preview.messageFallback"))
+      : t("forwardModal.preview.multiple", { count: messages.length });
 
-  const Row = ({ t }: { t: Target }) => {
-    const isSel = selected.has(t.key);
-    const isGroup = t.kind === "conversation" && t.isGroup;
-    const { first, last } = splitName(t.title);
-    const avatarUserId = t.kind === "conversation" ? t.counterpartId : t.userId;
+  const Row = ({ target }: { target: Target }) => {
+    const isSel = selected.has(target.key);
+    const isGroup = target.kind === "conversation" && target.isGroup;
+    const { first, last } = splitName(target.title);
+    const avatarUserId = target.kind === "conversation" ? target.counterpartId : target.userId;
     return (
       <button
-        onClick={() => toggle(t.key)}
+        onClick={() => toggle(target.key)}
         className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left ${
           isSel ? "bg-brand-50" : "hover:bg-gray-50"
         }`}
@@ -191,16 +196,16 @@ export function ForwardModal({
         ) : (
           <EmployeeAvatar
             userId={avatarUserId}
-            hasPhoto={!!t.photo}
+            hasPhoto={!!target.photo}
             firstName={first}
             lastName={last}
             size="md"
           />
         )}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-gray-800">{t.title}</span>
-          {t.kind === "employee" && t.sub && (
-            <span className="block truncate text-xs text-gray-400">{t.sub}</span>
+          <span className="block truncate text-sm font-medium text-gray-800">{target.title}</span>
+          {target.kind === "employee" && target.sub && (
+            <span className="block truncate text-xs text-gray-400">{target.sub}</span>
           )}
         </span>
         <span
@@ -223,7 +228,7 @@ export function ForwardModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900">Forward to…</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("forwardModal.heading.title")}</h2>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
             <X className="h-5 w-5" />
           </button>
@@ -232,7 +237,7 @@ export function ForwardModal({
         {/* The message being forwarded */}
         <div className="px-5 pt-3">
           <div className="rounded-lg border-l-2 border-brand-400 bg-brand-50/60 px-3 py-2">
-            <p className="text-xs text-gray-400">Forwarding</p>
+            <p className="text-xs text-gray-400">{t("forwardModal.section.forwarding")}</p>
             <p className="truncate text-sm text-gray-700">{preview}</p>
           </div>
         </div>
@@ -244,7 +249,7 @@ export function ForwardModal({
               autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search chats & people…"
+              placeholder={t("forwardModal.search.placeholder")}
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             />
           </div>
@@ -252,30 +257,32 @@ export function ForwardModal({
 
         <div className="flex-1 overflow-y-auto px-2 pb-2 border-t border-gray-100">
           {nothing && empLoading ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">Loading…</p>
+            <p className="px-3 py-6 text-center text-sm text-gray-400">{t("forwardModal.state.loading")}</p>
           ) : nothing ? (
             <p className="px-3 py-6 text-center text-sm text-gray-400">
-              {q ? `No matches for "${search}".` : "No one to forward to."}
+              {q
+                ? t("forwardModal.state.noMatches", { query: search })
+                : t("forwardModal.state.noTargets")}
             </p>
           ) : (
             <>
               {chatTargets.length > 0 && (
                 <>
                   <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                    Chats
+                    {t("forwardModal.section.chats")}
                   </p>
-                  {chatTargets.map((t) => (
-                    <Row key={t.key} t={t} />
+                  {chatTargets.map((target) => (
+                    <Row key={target.key} target={target} />
                   ))}
                 </>
               )}
               {employeeTargets.length > 0 && (
                 <>
                   <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                    People
+                    {t("forwardModal.section.people")}
                   </p>
-                  {employeeTargets.map((t) => (
-                    <Row key={t.key} t={t} />
+                  {employeeTargets.map((target) => (
+                    <Row key={target.key} target={target} />
                   ))}
                 </>
               )}
@@ -284,14 +291,16 @@ export function ForwardModal({
         </div>
 
         <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-100">
-          <span className="text-xs text-gray-400">{selected.size} selected</span>
+          <span className="text-xs text-gray-400">
+            {t("forwardModal.footer.selectedCount", { count: selected.size })}
+          </span>
           <button
             onClick={handleForward}
             disabled={selected.size === 0 || sending}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
             <Forward className="h-4 w-4" />
-            {sending ? "Forwarding…" : "Forward"}
+            {sending ? t("forwardModal.button.forwarding") : t("forwardModal.button.forward")}
           </button>
         </div>
       </div>

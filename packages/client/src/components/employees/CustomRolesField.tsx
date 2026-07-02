@@ -7,16 +7,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import api from "@/api/client";
 import { usePermissions } from "@/lib/use-permissions";
 
-function extractApiError(err: any): string {
+function extractApiError(err: any, t: (key: string) => string): string {
   return (
     err?.response?.data?.error?.message ||
     err?.response?.data?.message ||
     err?.message ||
-    "Request failed"
+    t("customRolesField.error.requestFailed")
   );
 }
 
@@ -30,6 +31,7 @@ export default function CustomRolesField({
   /** When true, drops the help-text + nav link (modal context). */
   compact?: boolean;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   // Reading/assigning custom roles requires roles:view / roles:manage. Without
   // it both /roles/users/:id and /roles 403, and the field has no purpose, so
@@ -99,12 +101,12 @@ export default function CustomRolesField({
   if (!canEdit) {
     return (
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Custom Roles</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t("customRolesField.label")}</label>
         <div className="min-h-[40px] flex flex-wrap items-center gap-1.5 border border-gray-200 rounded-md bg-gray-50 px-2 py-2">
           {isLoading ? (
-            <span className="text-sm text-gray-400">Loading…</span>
+            <span className="text-sm text-gray-400">{t("customRolesField.loading")}</span>
           ) : assigned.length === 0 ? (
-            <span className="text-sm text-gray-400">No custom roles assigned</span>
+            <span className="text-sm text-gray-400">{t("customRolesField.emptyReadonly")}</span>
           ) : (
             assigned.map((r) => (
               <span
@@ -124,19 +126,18 @@ export default function CustomRolesField({
   return (
     <div ref={containerRef}>
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        Custom Roles
+        {t("customRolesField.label")}
         {assigned.length > 0 && (
           <span className="ml-2 text-xs font-normal text-gray-400">
-            ({assigned.length} assigned)
+            {t("customRolesField.assignedCount", { count: assigned.length })}
           </span>
         )}
       </label>
       {!compact && (
         <p className="text-xs text-gray-500 mb-2">
-          Additional roles that grant fine-grained permissions on top of this user's
-          primary role. Manage roles in{" "}
+          {t("customRolesField.helpText")}{" "}
           <a href="/roles" className="text-brand-600 hover:underline">
-            Settings → Roles &amp; Permissions
+            {t("customRolesField.helpTextLink")}
           </a>
           .
         </p>
@@ -159,7 +160,7 @@ export default function CustomRolesField({
                 onClick={(e) => { e.stopPropagation(); unassign.mutate(r.id); }}
                 disabled={unassign.isPending}
                 className="ml-0.5 h-4 w-4 flex items-center justify-center rounded-full hover:bg-brand-200 disabled:opacity-50"
-                aria-label={`Remove ${r.name}`}
+                aria-label={t("customRolesField.removeAria", { name: r.name })}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -172,8 +173,8 @@ export default function CustomRolesField({
             onFocus={() => setOpen(true)}
             placeholder={
               assigned.length === 0
-                ? "Click to assign a custom role…"
-                : "Add another role…"
+                ? t("customRolesField.placeholderEmpty")
+                : t("customRolesField.placeholderMore")
             }
             className="flex-1 min-w-[140px] outline-none text-sm py-0.5 bg-transparent"
           />
@@ -184,8 +185,8 @@ export default function CustomRolesField({
             {filtered.length === 0 ? (
               <div className="px-3 py-2 text-sm text-gray-400">
                 {candidates.length === 0
-                  ? "No custom roles to assign. Create one in Settings → Roles & Permissions."
-                  : "No matching roles"}
+                  ? t("customRolesField.noneToAssign")
+                  : t("customRolesField.noMatches")}
               </div>
             ) : (
               filtered.map((r) => (
@@ -202,7 +203,7 @@ export default function CustomRolesField({
                       <span className="block text-xs text-gray-400 truncate">{r.description}</span>
                     )}
                     <span className="block text-[10px] text-gray-400 mt-0.5">
-                      {(r.permissions || []).length} permission{(r.permissions || []).length === 1 ? "" : "s"}
+                      {t("customRolesField.permissionCount", { count: (r.permissions || []).length })}
                     </span>
                   </span>
                 </button>
@@ -214,7 +215,7 @@ export default function CustomRolesField({
 
       {(assign.isError || unassign.isError) && (
         <p className="text-xs text-red-600 mt-1">
-          {extractApiError(assign.error || unassign.error)}
+          {extractApiError(assign.error || unassign.error, t)}
         </p>
       )}
     </div>

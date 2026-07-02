@@ -9,6 +9,7 @@
 // ============================================================================
 
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Upload,
@@ -155,6 +156,7 @@ interface Props {
 }
 
 export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Props) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [step, setStep] = useState<"upload" | "preview" | "importing" | "done">("upload");
   const [preview, setPreview] = useState<ServerImportPreview | null>(null);
@@ -182,7 +184,8 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
       setPreview(res.data.data);
       setStep("preview");
     } catch (err: any) {
-      const msg = err?.response?.data?.error?.message || err?.message || "Failed to parse file";
+      const msg =
+        err?.response?.data?.error?.message || err?.message || t("csvImport.parseError");
       setUploadError(msg);
     }
   }, []);
@@ -244,7 +247,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
         err?.message ||
-        "Import failed";
+        t("csvImport.failed");
       setUploadError(msg);
       setStep("preview");
     }
@@ -264,7 +267,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="h-5 w-5 text-brand-600" />
             <h2 className="text-lg font-semibold text-gray-900">
-              Import Employees from Excel / CSV
+              {t("csvImport.modal.title")}
             </h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -281,10 +284,10 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
                   onClick={downloadTemplate}
                   className="flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-4 py-2 rounded-lg hover:bg-brand-50"
                 >
-                  <Download className="h-4 w-4" /> Download Template
+                  <Download className="h-4 w-4" /> {t("csvImport.downloadTemplate")}
                 </button>
                 <span className="text-sm text-gray-500">
-                  Download a sample Excel file with the correct headers.
+                  {t("csvImport.downloadTemplateHint")}
                 </span>
               </div>
 
@@ -302,9 +305,9 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               >
                 <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
                 <p className="text-sm font-medium text-gray-700">
-                  Drag & drop your Excel or CSV file here
+                  {t("csvImport.dropzone.title")}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">or click to browse</p>
+                <p className="text-xs text-gray-400 mt-1">{t("csvImport.dropzone.browse")}</p>
                 <input
                   ref={fileRef}
                   type="file"
@@ -329,15 +332,19 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
             <div className="space-y-4">
               <div className="flex items-center gap-4 text-sm">
                 <span className="flex items-center gap-1 text-green-700">
-                  <CheckCircle2 className="h-4 w-4" /> {validRows.length} valid
+                  <CheckCircle2 className="h-4 w-4" />{" "}
+                  {t("csvImport.preview.valid", { count: validRows.length })}
                 </span>
                 {invalidRows.length > 0 && (
                   <span className="flex items-center gap-1 text-red-600">
-                    <XCircle className="h-4 w-4" /> {invalidRows.length} invalid
+                    <XCircle className="h-4 w-4" />{" "}
+                    {t("csvImport.preview.invalid", { count: invalidRows.length })}
                   </span>
                 )}
                 <span className="text-gray-400">|</span>
-                <span className="text-gray-500">{preview.totalRows} total rows</span>
+                <span className="text-gray-500">
+                  {t("csvImport.preview.totalRows", { count: preview.totalRows })}
+                </span>
                 <button
                   onClick={() => {
                     setStep("upload");
@@ -346,7 +353,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
                   }}
                   className="ml-auto text-sm text-gray-500 hover:text-gray-700 underline"
                 >
-                  Upload different file
+                  {t("csvImport.preview.uploadDifferent")}
                 </button>
               </div>
 
@@ -359,12 +366,15 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               {invalidRows.length > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                   <div className="flex items-center gap-2 text-red-700 font-medium text-sm mb-2">
-                    <AlertTriangle className="h-4 w-4" /> Rows with errors (fix your file and re-upload)
+                    <AlertTriangle className="h-4 w-4" /> {t("csvImport.preview.errorsHeading")}
                   </div>
                   <div className="space-y-1 max-h-40 overflow-y-auto">
                     {invalidRows.map((err, i) => (
                       <p key={i} className="text-xs text-red-600">
-                        <span className="font-medium">Row {err.row}:</span> {err.errors.join("; ")}
+                        <span className="font-medium">
+                          {t("csvImport.preview.rowLabel", { row: err.row })}
+                        </span>{" "}
+                        {err.errors.join("; ")}
                       </p>
                     ))}
                   </div>
@@ -376,18 +386,18 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
                   <table className="min-w-full text-xs">
                     <thead className="bg-gray-50 sticky top-0">
                       <tr>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">First Name</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Last Name</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Email</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Password</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Role</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Emp Code</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Designation</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Department</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Location</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Manager</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Type</th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500">Joining</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.firstName")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.lastName")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.email")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.password")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.role")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.empCode")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.designation")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.department")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.location")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.manager")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.type")}</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-500">{t("csvImport.table.joining")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -397,7 +407,11 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
                           <td className="px-3 py-2">{row.last_name}</td>
                           <td className="px-3 py-2">{row.email}</td>
                           <td className="px-3 py-2 text-gray-400">
-                            {row.password ? "••••••••" : <em className="text-gray-400">invite</em>}
+                            {row.password ? (
+                              "••••••••"
+                            ) : (
+                              <em className="text-gray-400">{t("csvImport.table.inviteFallback")}</em>
+                            )}
                           </td>
                           <td className="px-3 py-2">{row.role || "employee"}</td>
                           <td className="px-3 py-2">{row.emp_code}</td>
@@ -424,7 +438,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
           {step === "importing" && (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
               <Loader2 className="h-10 w-10 text-brand-600 animate-spin" />
-              <p className="text-sm text-gray-600">Importing employees... please wait.</p>
+              <p className="text-sm text-gray-600">{t("csvImport.importing")}</p>
             </div>
           )}
 
@@ -433,10 +447,9 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               <div className="flex items-center gap-3 text-green-700 bg-green-50 border border-green-200 rounded-lg p-4">
                 <CheckCircle2 className="h-6 w-6 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-sm">Import Complete</p>
+                  <p className="font-semibold text-sm">{t("csvImport.done.title")}</p>
                   <p className="text-sm mt-0.5">
-                    {importResult.count} employee{importResult.count !== 1 ? "s" : ""} imported
-                    successfully.
+                    {t("csvImport.done.summary", { count: importResult.count })}
                   </p>
                 </div>
               </div>
@@ -444,7 +457,9 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               {importResult.createdDepartments && importResult.createdDepartments.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-sm font-medium text-blue-700 mb-1">
-                    New departments created ({importResult.createdDepartments.length}):
+                    {t("csvImport.done.departmentsCreated", {
+                      count: importResult.createdDepartments.length,
+                    })}
                   </p>
                   <p className="text-xs text-blue-600">
                     {importResult.createdDepartments.join(", ")}
@@ -455,7 +470,9 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               {importResult.createdLocations && importResult.createdLocations.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-sm font-medium text-blue-700 mb-1">
-                    New locations created ({importResult.createdLocations.length}):
+                    {t("csvImport.done.locationsCreated", {
+                      count: importResult.createdLocations.length,
+                    })}
                   </p>
                   <p className="text-xs text-blue-600">
                     {importResult.createdLocations.join(", ")}
@@ -466,13 +483,15 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               {importResult.skipped && importResult.skipped.length > 0 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <p className="text-sm font-medium text-amber-700 mb-2">
-                    Skipped {importResult.skipped.length} row
-                    {importResult.skipped.length !== 1 ? "s" : ""} with errors:
+                    {t("csvImport.done.skipped", { count: importResult.skipped.length })}
                   </p>
                   <div className="space-y-1 max-h-40 overflow-y-auto">
                     {importResult.skipped.map((err, i) => (
                       <p key={i} className="text-xs text-amber-700">
-                        <span className="font-medium">Row {err.row}:</span> {err.errors.join("; ")}
+                        <span className="font-medium">
+                          {t("csvImport.preview.rowLabel", { row: err.row })}
+                        </span>{" "}
+                        {err.errors.join("; ")}
                       </p>
                     ))}
                   </div>
@@ -490,7 +509,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
             >
               <Upload className="h-4 w-4" />
-              Import {validRows.length} valid employee{validRows.length !== 1 ? "s" : ""}
+              {t("csvImport.submit", { count: validRows.length })}
             </button>
           )}
           {step === "done" && (
@@ -498,7 +517,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               onClick={onClose}
               className="bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
             >
-              Close
+              {t("csvImport.close")}
             </button>
           )}
           {(step === "upload" || step === "preview") && (
@@ -506,7 +525,7 @@ export default function CsvImportUsersModal({ onClose, invalidateKeys = [] }: Pr
               onClick={onClose}
               className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg"
             >
-              Cancel
+              {t("csvImport.cancel")}
             </button>
           )}
         </div>

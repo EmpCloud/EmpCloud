@@ -9,6 +9,7 @@
 // can't send) — the same pattern EmployeeAvatar uses for photos.
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { FileText, Image as ImageIcon, Download } from "lucide-react";
 import type { ChatAttachment } from "@empcloud/shared";
 import api from "@/api/client";
@@ -51,6 +52,7 @@ export function MessageAttachment({
    */
   onBubble?: boolean;
 }) {
+  const { t } = useTranslation();
   // White card styling only makes sense on a colored bubble.
   const onBrand = mine && onBubble;
   const isImage = attachment.is_image;
@@ -97,7 +99,7 @@ export function MessageAttachment({
       type="button"
       onClick={openBlob}
       disabled={!blobUrl}
-      title={`Open ${attachment.name}`}
+      title={t("messageAttachment.card.openTitle", { name: attachment.name })}
       className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left max-w-[260px] transition-colors ${
         onBrand
           ? "border-white/30 bg-white/10 hover:bg-white/20"

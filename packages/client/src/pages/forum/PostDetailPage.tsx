@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import api from "@/api/client";
@@ -23,25 +24,26 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
-const POST_TYPE_CONFIG: Record<string, { label: string; color: string; icon: typeof MessageCircle }> = {
-  discussion: { label: "Discussion", color: "bg-blue-100 text-blue-700", icon: MessagesSquare },
-  question: { label: "Question", color: "bg-purple-100 text-purple-700", icon: HelpCircle },
-  idea: { label: "Idea", color: "bg-amber-100 text-amber-700", icon: Lightbulb },
-  poll: { label: "Poll", color: "bg-green-100 text-green-700", icon: BarChart3 },
+const POST_TYPE_CONFIG: Record<string, { labelKey: string; color: string; icon: typeof MessageCircle }> = {
+  discussion: { labelKey: "postType.discussion", color: "bg-blue-100 text-blue-700", icon: MessagesSquare },
+  question: { labelKey: "postType.question", color: "bg-purple-100 text-purple-700", icon: HelpCircle },
+  idea: { labelKey: "postType.idea", color: "bg-amber-100 text-amber-700", icon: Lightbulb },
+  poll: { labelKey: "postType.poll", color: "bg-green-100 text-green-700", icon: BarChart3 },
 };
 
-function timeAgo(dateStr: string) {
+function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string) {
   const now = new Date();
   const date = new Date(dateStr);
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t("postDetail.time.justNow");
+  if (diff < 3600) return t("postDetail.time.minutesAgo", { count: Math.floor(diff / 60) });
+  if (diff < 86400) return t("postDetail.time.hoursAgo", { count: Math.floor(diff / 3600) });
+  if (diff < 604800) return t("postDetail.time.daysAgo", { count: Math.floor(diff / 86400) });
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 export default function PostDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -130,7 +132,7 @@ export default function PostDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-gray-400">Loading post...</div>
+        <div className="text-gray-400">{t("postDetail.loading")}</div>
       </div>
     );
   }
@@ -138,7 +140,7 @@ export default function PostDetailPage() {
   if (!post) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-gray-400">Post not found</div>
+        <div className="text-gray-400">{t("postDetail.notFound")}</div>
       </div>
     );
   }
@@ -150,6 +152,7 @@ export default function PostDetailPage() {
   const canAcceptAnswers = post.post_type === "question" && isAuthor;
 
   function ReplyCard({ reply, depth = 0 }: { reply: any; depth?: number }) {
+    const { t } = useTranslation();
     const children = getChildren(reply.id);
     const canDeleteReply = user?.id === reply.author_id || isHR;
 
@@ -168,10 +171,10 @@ export default function PostDetailPage() {
                 <span className="text-sm font-medium text-gray-900">
                   {reply.author_first_name} {reply.author_last_name}
                 </span>
-                <span className="text-xs text-gray-400">{timeAgo(reply.created_at)}</span>
+                <span className="text-xs text-gray-400">{timeAgo(reply.created_at, t)}</span>
                 {Boolean(reply.is_accepted) && (
                   <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                    <CheckCircle2 className="h-3 w-3" /> Accepted Answer
+                    <CheckCircle2 className="h-3 w-3" /> {t("postDetail.reply.acceptedAnswer")}
                   </span>
                 )}
               </div>
@@ -203,7 +206,7 @@ export default function PostDetailPage() {
                     }}
                     className="flex items-center gap-1 text-xs text-gray-400 hover:text-brand-600 transition-colors"
                   >
-                    <CornerDownRight className="h-3.5 w-3.5" /> Reply
+                    <CornerDownRight className="h-3.5 w-3.5" /> {t("postDetail.reply.replyAction")}
                   </button>
                 )}
 
@@ -212,7 +215,7 @@ export default function PostDetailPage() {
                     onClick={() => acceptReply.mutate(reply.id)}
                     className="flex items-center gap-1 text-xs text-gray-400 hover:text-green-600 transition-colors"
                   >
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Accept Answer
+                    <CheckCircle2 className="h-3.5 w-3.5" /> {t("postDetail.reply.acceptAnswer")}
                   </button>
                 )}
 
@@ -269,16 +272,16 @@ export default function PostDetailPage() {
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${typeConfig.color}`}>
                 <TypeIcon className="h-3 w-3" />
-                {typeConfig.label}
+                {t(`postDetail.${typeConfig.labelKey}`)}
               </span>
               {Boolean(post.is_pinned) && (
                 <span className="inline-flex items-center gap-1 text-xs text-amber-600">
-                  <Pin className="h-3 w-3" /> Pinned
+                  <Pin className="h-3 w-3" /> {t("postDetail.badge.pinned")}
                 </span>
               )}
               {Boolean(post.is_locked) && (
                 <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                  <Lock className="h-3 w-3" /> Locked
+                  <Lock className="h-3 w-3" /> {t("postDetail.badge.locked")}
                 </span>
               )}
             </div>
@@ -289,7 +292,7 @@ export default function PostDetailPage() {
               <span className="font-medium text-gray-600">
                 {post.author_first_name} {post.author_last_name}
               </span>
-              <span>{timeAgo(post.created_at)}</span>
+              <span>{timeAgo(post.created_at, t)}</span>
               <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
             </div>
 
@@ -327,12 +330,12 @@ export default function PostDetailPage() {
                 }`}
               >
                 <Heart className={`h-4 w-4 ${post.user_liked ? "fill-current" : ""}`} />
-                {post.like_count > 0 ? post.like_count : "Like"}
+                {post.like_count > 0 ? post.like_count : t("postDetail.action.like")}
               </button>
 
               <span className="flex items-center gap-1.5 text-sm text-gray-500">
                 <MessageCircle className="h-4 w-4" />
-                {post.reply_count} {post.reply_count === 1 ? "reply" : "replies"}
+                {t("postDetail.replyCount", { count: post.reply_count })}
               </span>
 
               {/* HR actions */}
@@ -343,14 +346,14 @@ export default function PostDetailPage() {
                     className="flex items-center gap-1 text-xs text-gray-400 hover:text-amber-600 transition-colors ml-auto"
                   >
                     <Pin className="h-3.5 w-3.5" />
-                    {post.is_pinned ? "Unpin" : "Pin"}
+                    {post.is_pinned ? t("postDetail.action.unpin") : t("postDetail.action.pin")}
                   </button>
                   <button
                     onClick={() => lockPost.mutate()}
                     className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     <Lock className="h-3.5 w-3.5" />
-                    {post.is_locked ? "Unlock" : "Lock"}
+                    {post.is_locked ? t("postDetail.action.unlock") : t("postDetail.action.lock")}
                   </button>
                 </>
               )}
@@ -360,7 +363,7 @@ export default function PostDetailPage() {
                   onClick={() => setShowDeletePost(true)}
                   className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                  <Trash2 className="h-3.5 w-3.5" /> {t("postDetail.action.delete")}
                 </button>
               )}
             </div>
@@ -371,11 +374,11 @@ export default function PostDetailPage() {
       {/* Replies */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          {replies.length} {replies.length === 1 ? "Reply" : "Replies"}
+          {t("postDetail.replies.heading", { count: replies.length })}
         </h2>
 
         {topLevelReplies.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4">No replies yet. Be the first to respond!</p>
+          <p className="text-sm text-gray-400 py-4">{t("postDetail.replies.empty")}</p>
         ) : (
           topLevelReplies.map((reply: any) => (
             <ReplyCard key={reply.id} reply={reply} />
@@ -388,7 +391,7 @@ export default function PostDetailPage() {
             {replyingTo && (
               <div className="flex items-center gap-2 mb-2 text-xs text-gray-500">
                 <CornerDownRight className="h-3 w-3" />
-                Replying to {replyingToName}
+                {t("postDetail.form.replyingTo", { name: replyingToName })}
                 <button
                   type="button"
                   onClick={() => {
@@ -397,7 +400,7 @@ export default function PostDetailPage() {
                   }}
                   className="text-brand-600 hover:text-brand-700"
                 >
-                  Cancel
+                  {t("postDetail.form.cancel")}
                 </button>
               </div>
             )}
@@ -412,7 +415,7 @@ export default function PostDetailPage() {
                 <textarea
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  placeholder="Write a reply..."
+                  placeholder={t("postDetail.form.placeholder")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px] focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y"
                   required
                 />
@@ -423,7 +426,7 @@ export default function PostDetailPage() {
                     className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
                   >
                     <Send className="h-4 w-4" />
-                    {submitReply.isPending ? "Posting..." : "Reply"}
+                    {submitReply.isPending ? t("postDetail.form.posting") : t("postDetail.form.submit")}
                   </button>
                 </div>
               </div>
@@ -432,15 +435,15 @@ export default function PostDetailPage() {
         ) : (
           <div className="mt-6 pt-4 border-t border-gray-100 text-center text-sm text-gray-400">
             <Lock className="h-4 w-4 inline mr-1" />
-            This post is locked. No new replies allowed.
+            {t("postDetail.locked.message")}
           </div>
         )}
       </div>
 
       <ConfirmDialog
         open={deleteReplyId !== null}
-        title="Delete this reply?"
-        confirmText="Delete"
+        title={t("postDetail.deleteReply.title")}
+        confirmText={t("postDetail.deleteReply.confirm")}
         variant="danger"
         loading={deleteReply.isPending}
         onConfirm={() => deleteReplyId !== null && deleteReply.mutate(deleteReplyId)}
@@ -449,9 +452,9 @@ export default function PostDetailPage() {
 
       <ConfirmDialog
         open={showDeletePost}
-        title="Delete this post and all its replies?"
-        description="This cannot be undone."
-        confirmText="Delete"
+        title={t("postDetail.deletePost.title")}
+        description={t("postDetail.deletePost.description")}
+        confirmText={t("postDetail.deletePost.confirm")}
         variant="danger"
         loading={deletePost.isPending}
         onConfirm={() => deletePost.mutate()}

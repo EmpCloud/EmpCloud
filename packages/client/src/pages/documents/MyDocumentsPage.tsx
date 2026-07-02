@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import api from "@/api/client";
 import {
   FileText,
@@ -53,25 +55,25 @@ function getExpiryStatus(expiresAt: string | null): "ok" | "warning" | "expired"
   return "ok";
 }
 
-function getVerificationBadge(doc: any) {
+function getVerificationBadge(doc: any, t: TFunction) {
   const status = doc.verification_status || (doc.is_verified ? "verified" : "pending");
   switch (status) {
     case "verified":
       return (
         <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full w-fit">
-          <CheckCircle className="h-3 w-3" /> Verified
+          <CheckCircle className="h-3 w-3" /> {t("myDocuments.status.verified")}
         </span>
       );
     case "rejected":
       return (
         <span className="flex items-center gap-1 text-xs text-red-700 bg-red-50 px-2 py-1 rounded-full w-fit">
-          <XCircle className="h-3 w-3" /> Rejected
+          <XCircle className="h-3 w-3" /> {t("myDocuments.status.rejected")}
         </span>
       );
     default:
       return (
         <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full w-fit">
-          <Clock className="h-3 w-3" /> Pending
+          <Clock className="h-3 w-3" /> {t("myDocuments.status.pending")}
         </span>
       );
   }
@@ -94,6 +96,7 @@ async function downloadDocument(docId: number, docName: string) {
 // --- Component ---
 
 export default function MyDocumentsPage() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [showUpload, setShowUpload] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -130,16 +133,16 @@ export default function MyDocumentsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Documents</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("myDocuments.page.title")}</h1>
           <p className="text-gray-500 mt-1">
-            Upload, view, and track the status of your documents.
+            {t("myDocuments.page.subtitle")}
           </p>
         </div>
         <button
           onClick={() => setShowUpload(!showUpload)}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
-          <Upload className="h-4 w-4" /> Upload Document
+          <Upload className="h-4 w-4" /> {t("myDocuments.actions.uploadDocument")}
         </button>
       </div>
 
@@ -150,7 +153,7 @@ export default function MyDocumentsPage() {
           className="bg-white rounded-xl border border-gray-200 p-6 mb-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">Upload Document</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t("myDocuments.upload.heading")}</h3>
             <button
               type="button"
               onClick={() => setShowUpload(false)}
@@ -162,7 +165,7 @@ export default function MyDocumentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                File *
+                {t("myDocuments.upload.fileLabel")}
               </label>
               <input
                 type="file"
@@ -174,19 +177,19 @@ export default function MyDocumentsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Document Name
+                {t("myDocuments.upload.nameLabel")}
               </label>
               <input
                 type="text"
                 value={uploadName}
                 onChange={(e) => setUploadName(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Optional - defaults to file name"
+                placeholder={t("myDocuments.upload.namePlaceholder")}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category *
+                {t("myDocuments.upload.categoryLabel")}
               </label>
               <select
                 value={uploadCategory}
@@ -194,7 +197,7 @@ export default function MyDocumentsPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 required
               >
-                <option value="">Select category</option>
+                <option value="">{t("myDocuments.upload.categoryPlaceholder")}</option>
                 {categories.map((c: any) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -204,7 +207,7 @@ export default function MyDocumentsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Expiry Date
+                {t("myDocuments.upload.expiryLabel")}
               </label>
               <input
                 type="date"
@@ -221,7 +224,9 @@ export default function MyDocumentsPage() {
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />{" "}
-              {uploadDoc.isPending ? "Uploading..." : "Upload"}
+              {uploadDoc.isPending
+                ? t("myDocuments.upload.submitting")
+                : t("myDocuments.upload.submit")}
             </button>
           </div>
         </form>
@@ -230,16 +235,16 @@ export default function MyDocumentsPage() {
       {/* Documents List */}
       <div className="space-y-3">
         {isLoading ? (
-          <div className="text-center py-12 text-gray-400">Loading your documents...</div>
+          <div className="text-center py-12 text-gray-400">{t("myDocuments.list.loading")}</div>
         ) : docs.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-400">You haven't uploaded any documents yet.</p>
+            <p className="text-gray-400">{t("myDocuments.list.empty")}</p>
             <button
               onClick={() => setShowUpload(true)}
               className="mt-3 text-sm text-brand-600 font-medium hover:text-brand-800"
             >
-              Upload your first document
+              {t("myDocuments.list.uploadFirst")}
             </button>
           </div>
         ) : (
@@ -307,41 +312,43 @@ export default function MyDocumentsPage() {
                             <Clock className="h-3 w-3" />
                           )}
                           {expiryStatus === "expired"
-                            ? "Expired"
+                            ? t("myDocuments.expiry.expired")
                             : expiryStatus === "warning"
-                              ? "Expiring soon"
-                              : "Expires"}{" "}
+                              ? t("myDocuments.expiry.expiringSoon")
+                              : t("myDocuments.expiry.expires")}{" "}
                           {new Date(doc.expires_at).toLocaleDateString()}
                         </p>
                       )}
                       {doc.verification_status === "rejected" && doc.rejection_reason && (
                         <p className="text-xs text-red-600 mt-1">
-                          Rejection reason: {doc.rejection_reason}
+                          {t("myDocuments.doc.rejectionReason", {
+                            reason: doc.rejection_reason,
+                          })}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    {getVerificationBadge(doc)}
+                    {getVerificationBadge(doc, t)}
                     <div className="flex items-center gap-2">
                       <button
                         onClick={async () => {
                           try {
                             await downloadDocument(doc.id, doc.name);
                           } catch {
-                            showToast("error", "Failed to download document.");
+                            showToast("error", t("myDocuments.toast.downloadFailed"));
                           }
                         }}
                         className="text-xs text-brand-600 hover:text-brand-800 font-medium"
                       >
-                        Download
+                        {t("myDocuments.doc.download")}
                       </button>
                       {(doc.verification_status === "rejected" || isRejected) && (
                         <button
                           onClick={() => setShowUpload(true)}
                           className="text-xs text-brand-600 hover:text-brand-800 font-medium"
                         >
-                          Re-upload
+                          {t("myDocuments.doc.reupload")}
                         </button>
                       )}
                     </div>
@@ -357,7 +364,11 @@ export default function MyDocumentsPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("myDocuments.pagination.summary", {
+              page: meta.page,
+              totalPages: meta.total_pages,
+              count: meta.total,
+            })}
           </p>
           <div className="flex gap-2">
             <button
@@ -365,14 +376,14 @@ export default function MyDocumentsPage() {
               disabled={page === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Previous
+              {t("myDocuments.pagination.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next
+              {t("myDocuments.pagination.next")}
             </button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
 import {
@@ -39,6 +40,7 @@ const SENTIMENT_COLORS: Record<string, string> = {
 };
 
 export default function FeedbackDashboardPage() {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["feedback-dashboard"],
     queryFn: () => api.get("/feedback/dashboard").then((r) => r.data.data),
@@ -47,9 +49,9 @@ export default function FeedbackDashboardPage() {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">Feedback Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-8">{t("feedbackDashboard.title")}</h1>
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-          Loading dashboard...
+          {t("feedbackDashboard.loading")}
         </div>
       </div>
     );
@@ -72,8 +74,8 @@ export default function FeedbackDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Feedback Dashboard</h1>
-          <p className="text-gray-500 mt-1">Overview of anonymous employee feedback.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("feedbackDashboard.title")}</h1>
+          <p className="text-gray-500 mt-1">{t("feedbackDashboard.subtitle")}</p>
         </div>
       </div>
 
@@ -86,7 +88,7 @@ export default function FeedbackDashboardPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-500">Total Feedback</p>
+              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.totalFeedback")}</p>
             </div>
           </div>
         </Link>
@@ -98,7 +100,7 @@ export default function FeedbackDashboardPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.urgentCount}</p>
-              <p className="text-xs text-gray-500">Urgent Items</p>
+              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.urgentItems")}</p>
             </div>
           </div>
         </Link>
@@ -110,7 +112,7 @@ export default function FeedbackDashboardPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.responseRate}%</p>
-              <p className="text-xs text-gray-500">Response Rate</p>
+              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.responseRate")}</p>
             </div>
           </div>
         </Link>
@@ -124,7 +126,7 @@ export default function FeedbackDashboardPage() {
               <p className="text-2xl font-bold text-gray-900">
                 {stats.byStatus.find((s: any) => s.status === "new")?.count || 0}
               </p>
-              <p className="text-xs text-gray-500">New / Unread</p>
+              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.newUnread")}</p>
             </div>
           </div>
         </Link>
@@ -133,15 +135,15 @@ export default function FeedbackDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Category Breakdown */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">By Category</h2>
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.byCategory")}</h2>
           {stats.byCategory.length === 0 ? (
-            <p className="text-sm text-gray-400">No data yet.</p>
+            <p className="text-sm text-gray-400">{t("feedbackDashboard.empty.noData")}</p>
           ) : (
             <div className="space-y-3">
               {stats.byCategory.map((item: any) => (
                 <div key={item.category}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-gray-700 capitalize">{item.category}</span>
+                    <span className="text-gray-700 capitalize">{t(`feedbackDashboard.category.${item.category}`, { defaultValue: item.category })}</span>
                     <span className="font-medium text-gray-900">{item.count}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
@@ -158,15 +160,15 @@ export default function FeedbackDashboardPage() {
 
         {/* Sentiment Distribution */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">Sentiment Distribution</h2>
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.sentimentDistribution")}</h2>
           {stats.bySentiment.length === 0 ? (
-            <p className="text-sm text-gray-400">No data yet.</p>
+            <p className="text-sm text-gray-400">{t("feedbackDashboard.empty.noData")}</p>
           ) : (
             <div className="space-y-3">
               {stats.bySentiment.map((item: any) => (
                 <div key={item.sentiment}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-gray-700 capitalize">{item.sentiment || "unset"}</span>
+                    <span className="text-gray-700 capitalize">{t(`feedbackDashboard.sentiment.${item.sentiment || "unset"}`, { defaultValue: item.sentiment || "unset" })}</span>
                     <span className="font-medium text-gray-900">{item.count}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2">
@@ -184,7 +186,7 @@ export default function FeedbackDashboardPage() {
 
       {/* Status Breakdown */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 mb-8">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">By Status</h2>
+        <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.byStatus")}</h2>
         <div className="flex flex-wrap gap-3">
           {stats.byStatus.map((item: any) => {
             const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG.new;
@@ -195,7 +197,7 @@ export default function FeedbackDashboardPage() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cfg.color}`}
               >
                 <StatusIcon className="h-4 w-4" />
-                <span className="text-sm font-medium">{cfg.label}</span>
+                <span className="text-sm font-medium">{t(`feedbackDashboard.status.${item.status}`, { defaultValue: cfg.label })}</span>
                 <span className="text-sm font-bold">{item.count}</span>
               </div>
             );
@@ -205,9 +207,9 @@ export default function FeedbackDashboardPage() {
 
       {/* Recent Feedback */}
       <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">Recent Feedback</h2>
+        <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.recentFeedback")}</h2>
         {stats.recent.length === 0 ? (
-          <p className="text-sm text-gray-400">No feedback yet.</p>
+          <p className="text-sm text-gray-400">{t("feedbackDashboard.empty.noFeedback")}</p>
         ) : (
           <div className="space-y-3">
             {stats.recent.map((f: any) => {
@@ -222,10 +224,10 @@ export default function FeedbackDashboardPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-gray-500 capitalize">{f.category}</span>
+                      <span className="text-xs font-medium text-gray-500 capitalize">{t(`feedbackDashboard.category.${f.category}`, { defaultValue: f.category })}</span>
                       <span className={`inline-flex items-center gap-1 text-xs ${statusCfg.color} px-2 py-0.5 rounded-full`}>
                         <StatusIcon className="h-3 w-3" />
-                        {statusCfg.label}
+                        {t(`feedbackDashboard.status.${f.status}`, { defaultValue: statusCfg.label })}
                       </span>
                       {f.is_urgent && (
                         <AlertTriangle className="h-3.5 w-3.5 text-red-500" />

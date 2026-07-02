@@ -9,6 +9,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation, Trans } from "react-i18next";
 import {
   Upload,
   Download,
@@ -102,6 +103,7 @@ interface Props {
 }
 
 export default function AssetBulkUploadModal({ onClose }: Props) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [step, setStep] = useState<"upload" | "importing" | "done">("upload");
   const [result, setResult] = useState<BulkImportResult | null>(null);
@@ -129,12 +131,12 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
         const msg =
           err?.response?.data?.error?.message ||
           err?.message ||
-          "Bulk import failed";
+          t("assetBulkUpload.errors.bulkImportFailed");
         setUploadError(msg);
         setStep("upload");
       }
     },
-    [queryClient],
+    [queryClient, t],
   );
 
   const onDrop = useCallback(
@@ -174,7 +176,7 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="h-5 w-5 text-brand-600" />
             <h2 className="text-lg font-semibold text-gray-900">
-              Bulk Import Assets from CSV / Excel
+              {t("assetBulkUpload.header.title")}
             </h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -191,10 +193,13 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
                   onClick={downloadTemplate}
                   className="flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-4 py-2 rounded-lg hover:bg-brand-50"
                 >
-                  <Download className="h-4 w-4" /> Download Template
+                  <Download className="h-4 w-4" /> {t("assetBulkUpload.actions.downloadTemplate")}
                 </button>
                 <span className="text-sm text-gray-500">
-                  Required: <code className="text-xs bg-gray-100 px-1 rounded">name</code>. Other columns are optional.
+                  <Trans
+                    i18nKey="assetBulkUpload.upload.requiredHint"
+                    components={[<code className="text-xs bg-gray-100 px-1 rounded" />]}
+                  />
                 </span>
               </div>
 
@@ -212,9 +217,11 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
               >
                 <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
                 <p className="text-sm font-medium text-gray-700">
-                  Drag &amp; drop your CSV or Excel file here
+                  {t("assetBulkUpload.upload.dropzoneTitle")}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">or click to browse</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {t("assetBulkUpload.upload.dropzoneSubtitle")}
+                </p>
                 <input
                   ref={fileRef}
                   type="file"
@@ -235,13 +242,28 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 space-y-1">
                 <p>
-                  <strong>Tips:</strong>
+                  <strong>{t("assetBulkUpload.upload.tipsHeading")}</strong>
                 </p>
                 <ul className="list-disc list-inside space-y-0.5">
-                  <li><code>purchase_cost</code> is the amount in paise (e.g. 150000 for ₹1,500).</li>
-                  <li><code>condition_status</code> must be one of: new, good, fair, poor.</li>
-                  <li>Unknown <code>category_name</code> values are auto-created.</li>
-                  <li>Dates accept YYYY-MM-DD or Excel date cells.</li>
+                  <li>
+                    <Trans
+                      i18nKey="assetBulkUpload.upload.tips.purchaseCost"
+                      components={[<code />]}
+                    />
+                  </li>
+                  <li>
+                    <Trans
+                      i18nKey="assetBulkUpload.upload.tips.conditionStatus"
+                      components={[<code />]}
+                    />
+                  </li>
+                  <li>
+                    <Trans
+                      i18nKey="assetBulkUpload.upload.tips.categoryAutoCreate"
+                      components={[<code />]}
+                    />
+                  </li>
+                  <li>{t("assetBulkUpload.upload.tips.dateFormats")}</li>
                 </ul>
               </div>
             </div>
@@ -250,7 +272,7 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
           {step === "importing" && (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
               <Loader2 className="h-10 w-10 text-brand-600 animate-spin" />
-              <p className="text-sm text-gray-600">Importing assets... please wait.</p>
+              <p className="text-sm text-gray-600">{t("assetBulkUpload.importing.message")}</p>
             </div>
           )}
 
@@ -259,9 +281,9 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
               <div className="flex items-center gap-3 text-green-700 bg-green-50 border border-green-200 rounded-lg p-4">
                 <CheckCircle2 className="h-6 w-6 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-sm">Import Complete</p>
+                  <p className="font-semibold text-sm">{t("assetBulkUpload.done.completeTitle")}</p>
                   <p className="text-sm mt-0.5">
-                    {result.imported} asset{result.imported !== 1 ? "s" : ""} imported successfully.
+                    {t("assetBulkUpload.done.importedCount", { count: result.imported })}
                   </p>
                 </div>
               </div>
@@ -269,7 +291,9 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
               {result.createdCategories && result.createdCategories.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-sm font-medium text-blue-700 mb-1">
-                    New categories created ({result.createdCategories.length}):
+                    {t("assetBulkUpload.done.createdCategoriesTitle", {
+                      count: result.createdCategories.length,
+                    })}
                   </p>
                   <p className="text-xs text-blue-600">
                     {result.createdCategories.join(", ")}
@@ -280,13 +304,16 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
               {result.errors && result.errors.length > 0 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <div className="flex items-center gap-2 text-amber-700 font-medium text-sm mb-2">
-                    <AlertTriangle className="h-4 w-4" /> Skipped {result.errors.length} row
-                    {result.errors.length !== 1 ? "s" : ""} with errors
+                    <AlertTriangle className="h-4 w-4" />{" "}
+                    {t("assetBulkUpload.done.skippedRows", { count: result.errors.length })}
                   </div>
                   <div className="space-y-1 max-h-48 overflow-y-auto">
                     {result.errors.map((err, i) => (
                       <p key={i} className="text-xs text-amber-700">
-                        <span className="font-medium">Row {err.row}:</span> {err.errors.join("; ")}
+                        <span className="font-medium">
+                          {t("assetBulkUpload.done.rowError", { row: err.row })}
+                        </span>{" "}
+                        {err.errors.join("; ")}
                       </p>
                     ))}
                   </div>
@@ -295,7 +322,7 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
 
               {result.imported === 0 && result.errors.length === 0 && (
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-600 flex items-center gap-2">
-                  <XCircle className="h-4 w-4" /> No rows found in the uploaded file.
+                  <XCircle className="h-4 w-4" /> {t("assetBulkUpload.done.emptyFile")}
                 </div>
               )}
             </div>
@@ -309,7 +336,7 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
               onClick={onClose}
               className="bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
             >
-              Close
+              {t("assetBulkUpload.actions.close")}
             </button>
           ) : (
             <button
@@ -317,7 +344,7 @@ export default function AssetBulkUploadModal({ onClose }: Props) {
               disabled={step === "importing"}
               className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Cancel
+              {t("assetBulkUpload.actions.cancel")}
             </button>
           )}
         </div>

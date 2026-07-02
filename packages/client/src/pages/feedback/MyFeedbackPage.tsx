@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { MessageSquare, Clock, CheckCircle, AlertTriangle, Eye, Archive, Search, Pencil, X } from "lucide-react";
@@ -41,6 +42,7 @@ function canEdit(f: any): boolean {
 }
 
 export default function MyFeedbackPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<any | null>(null);
@@ -66,7 +68,7 @@ export default function MyFeedbackPage() {
       setEditError(null);
     },
     onError: (err: any) =>
-      setEditError(err?.response?.data?.error?.message || "Failed to update feedback"),
+      setEditError(err?.response?.data?.error?.message || t("myFeedback.error.updateFailed")),
   });
 
   const openEdit = (f: any) => {
@@ -86,11 +88,11 @@ export default function MyFeedbackPage() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">My Feedback</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("myFeedback.page.title")}</h1>
       </div>
 
       <p className="text-sm text-gray-500 mb-6">
-        View the status of your anonymously submitted feedback and any responses from HR.
+        {t("myFeedback.page.subtitle")}
       </p>
 
       <div className="space-y-4">
@@ -110,13 +112,13 @@ export default function MyFeedbackPage() {
         ) : feedbackList.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-lg font-medium text-gray-500 mb-1">No feedback submitted yet</p>
-            <p className="text-sm text-gray-400 mb-4">Share your thoughts anonymously with HR.</p>
+            <p className="text-lg font-medium text-gray-500 mb-1">{t("myFeedback.empty.title")}</p>
+            <p className="text-sm text-gray-400 mb-4">{t("myFeedback.empty.description")}</p>
             <a
               href="/feedback/submit"
               className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
             >
-              Submit Feedback
+              {t("myFeedback.empty.submitCta")}
             </a>
           </div>
         ) : (
@@ -133,16 +135,16 @@ export default function MyFeedbackPage() {
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${catColor}`}>
-                      {f.category}
+                      {t(`myFeedback.category.${f.category}`, { defaultValue: f.category })}
                     </span>
                     <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full ${statusCfg.color}`}>
                       <StatusIcon className="h-3 w-3" />
-                      {statusCfg.label}
+                      {t(`myFeedback.status.${f.status}`, { defaultValue: statusCfg.label })}
                     </span>
                     {f.is_urgent && (
                       <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-100 text-red-700">
                         <AlertTriangle className="h-3 w-3" />
-                        Urgent
+                        {t("myFeedback.card.urgentBadge")}
                       </span>
                     )}
                   </div>
@@ -165,22 +167,23 @@ export default function MyFeedbackPage() {
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
                     >
                       <Pencil className="h-3.5 w-3.5" />
-                      Edit
+                      {t("myFeedback.card.editButton")}
                     </button>
                   </div>
                 )}
 
                 {f.admin_response && (
                   <div className="bg-brand-50 border border-brand-200 rounded-lg p-4">
-                    <p className="text-xs font-medium text-brand-700 mb-1">HR Response</p>
+                    <p className="text-xs font-medium text-brand-700 mb-1">{t("myFeedback.card.hrResponseLabel")}</p>
                     <p className="text-sm text-brand-800">{f.admin_response}</p>
                     {f.responded_at && (
                       <p className="text-xs text-brand-500 mt-2">
-                        Responded on{" "}
-                        {new Date(f.responded_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
+                        {t("myFeedback.card.respondedOn", {
+                          date: new Date(f.responded_at).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          }),
                         })}
                       </p>
                     )}
@@ -200,7 +203,7 @@ export default function MyFeedbackPage() {
           />
           <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full p-6 z-10">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Edit Feedback</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t("myFeedback.editModal.title")}</h3>
               <button
                 onClick={() => setEditing(null)}
                 className="text-gray-400 hover:text-gray-600"
@@ -212,20 +215,20 @@ export default function MyFeedbackPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("myFeedback.editModal.categoryLabel")}</label>
                 <select
                   value={editForm.category}
                   onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 >
                   {CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
+                    <option key={c.value} value={c.value}>{t(`myFeedback.category.${c.value}`, { defaultValue: c.label })}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("myFeedback.editModal.subjectLabel")}</label>
                 <input
                   type="text"
                   value={editForm.subject}
@@ -235,7 +238,7 @@ export default function MyFeedbackPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("myFeedback.editModal.messageLabel")}</label>
                 <textarea
                   value={editForm.message}
                   onChange={(e) => setEditForm({ ...editForm, message: e.target.value })}
@@ -251,7 +254,7 @@ export default function MyFeedbackPage() {
                   className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
                 />
                 <AlertTriangle className="h-4 w-4 text-red-500" />
-                Mark as urgent
+                {t("myFeedback.editModal.markUrgent")}
               </label>
 
               {editError && (
@@ -267,7 +270,7 @@ export default function MyFeedbackPage() {
                 disabled={updateMutation.isPending}
                 className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
-                Cancel
+                {t("myFeedback.editModal.cancel")}
               </button>
               <button
                 onClick={() =>
@@ -288,7 +291,7 @@ export default function MyFeedbackPage() {
                 }
                 className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
               >
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? t("myFeedback.editModal.saving") : t("myFeedback.editModal.save")}
               </button>
             </div>
           </div>
@@ -298,7 +301,11 @@ export default function MyFeedbackPage() {
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <p className="text-sm text-gray-500">
-            Page {meta.page} of {meta.total_pages} ({meta.total} total)
+            {t("myFeedback.pagination.summary", {
+              page: meta.page,
+              totalPages: meta.total_pages,
+              total: meta.total,
+            })}
           </p>
           <div className="flex gap-2">
             <button
@@ -306,14 +313,14 @@ export default function MyFeedbackPage() {
               disabled={page === 1}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Previous
+              {t("myFeedback.pagination.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
             >
-              Next
+              {t("myFeedback.pagination.next")}
             </button>
           </div>
         </div>

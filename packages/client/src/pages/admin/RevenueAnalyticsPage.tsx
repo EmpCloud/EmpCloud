@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   TrendingUp,
@@ -46,6 +47,7 @@ function formatINR(paise: number): string {
 }
 
 export default function RevenueAnalyticsPage() {
+  const { t } = useTranslation();
   const { data: revenue, isLoading } = useQuery({
     queryKey: ["admin-revenue-full"],
     queryFn: () => api.get("/admin/revenue", { params: { period: "12m" } }).then((r) => r.data.data),
@@ -61,7 +63,7 @@ export default function RevenueAnalyticsPage() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-2">
           <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">Loading...</span>
+          <span className="text-sm text-gray-400">{t("revenueAnalytics.loading")}</span>
         </div>
       </div>
     );
@@ -78,9 +80,9 @@ export default function RevenueAnalyticsPage() {
             <BarChart3 className="h-5 w-5 text-amber-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Revenue Analytics</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("revenueAnalytics.title")}</h1>
             <p className="text-gray-500 mt-0.5 text-sm">
-              Financial overview and revenue breakdown.
+              {t("revenueAnalytics.subtitle")}
             </p>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function RevenueAnalyticsPage() {
             )}
           </div>
           <p className="text-2xl font-bold text-gray-900 mt-3">{formatINR(revenue?.mrr ?? 0)}</p>
-          <p className="text-sm text-gray-500 mt-1">Monthly Recurring Revenue</p>
+          <p className="text-sm text-gray-500 mt-1">{t("revenueAnalytics.stats.mrr")}</p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -113,7 +115,7 @@ export default function RevenueAnalyticsPage() {
             <DollarSign className="h-5 w-5 text-indigo-600" />
           </div>
           <p className="text-2xl font-bold text-gray-900 mt-3">{formatINR(revenue?.arr ?? 0)}</p>
-          <p className="text-sm text-gray-500 mt-1">Annual Recurring Revenue</p>
+          <p className="text-sm text-gray-500 mt-1">{t("revenueAnalytics.stats.arr")}</p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -123,9 +125,12 @@ export default function RevenueAnalyticsPage() {
           <p className="text-2xl font-bold text-gray-900 mt-3">
             {subscriptions?.overall_utilization ?? 0}%
           </p>
-          <p className="text-sm text-gray-500 mt-1">Seat Utilization</p>
+          <p className="text-sm text-gray-500 mt-1">{t("revenueAnalytics.stats.seatUtilization")}</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {subscriptions?.used_seats?.toLocaleString() ?? 0} / {subscriptions?.total_seats?.toLocaleString() ?? 0} seats
+            {t("revenueAnalytics.stats.seats", {
+              used: subscriptions?.used_seats?.toLocaleString() ?? 0,
+              total: subscriptions?.total_seats?.toLocaleString() ?? 0,
+            })}
           </p>
         </div>
 
@@ -136,7 +141,7 @@ export default function RevenueAnalyticsPage() {
           <p className="text-2xl font-bold text-gray-900 mt-3">
             {(revenue?.top_customers || []).length}
           </p>
-          <p className="text-sm text-gray-500 mt-1">Paying Customers</p>
+          <p className="text-sm text-gray-500 mt-1">{t("revenueAnalytics.stats.payingCustomers")}</p>
         </div>
       </div>
 
@@ -144,7 +149,7 @@ export default function RevenueAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Monthly Revenue Trend */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend (Last 12 Months)</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("revenueAnalytics.charts.revenueTrend.title")}</h2>
           {revenue?.revenue_trend?.length > 0 ? (
             <ResponsiveContainer width="100%" height={320}>
               <LineChart data={revenue.revenue_trend}>
@@ -164,14 +169,14 @@ export default function RevenueAnalyticsPage() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[320px] text-gray-400 text-sm">
-              No trend data yet
+              {t("revenueAnalytics.charts.revenueTrend.empty")}
             </div>
           )}
         </div>
 
         {/* Revenue by Module */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Module</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("revenueAnalytics.charts.revenueByModule.title")}</h2>
           {revenue?.revenue_by_module?.length > 0 ? (
             <ResponsiveContainer width="100%" height={320}>
               <BarChart data={revenue.revenue_by_module}>
@@ -179,12 +184,12 @@ export default function RevenueAnalyticsPage() {
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-15} textAnchor="end" height={60} />
                 <YAxis tickFormatter={(v) => formatINR(v)} tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(value: any) => formatINR(Number(value))} />
-                <Bar dataKey="revenue" name="Revenue" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="revenue" name={t("revenueAnalytics.charts.revenueByModule.series")} fill="#8b5cf6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[320px] text-gray-400 text-sm">
-              No data
+              {t("revenueAnalytics.charts.empty")}
             </div>
           )}
         </div>
@@ -194,7 +199,7 @@ export default function RevenueAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue by Plan Tier (Pie) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Plan Tier</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("revenueAnalytics.charts.revenueByTier.title")}</h2>
           {revenue?.revenue_by_tier?.length > 0 ? (
             <div className="flex items-center gap-6">
               <ResponsiveContainer width="60%" height={280}>
@@ -225,7 +230,7 @@ export default function RevenueAnalyticsPage() {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 capitalize">{tier.plan_tier}</p>
                       <p className="text-xs text-gray-500">
-                        {tier.count} subs - {formatINR(tier.revenue)}
+                        {t("revenueAnalytics.charts.revenueByTier.subsLabel", { count: tier.count, revenue: formatINR(tier.revenue) })}
                       </p>
                     </div>
                   </div>
@@ -234,14 +239,14 @@ export default function RevenueAnalyticsPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center h-[280px] text-gray-400 text-sm">
-              No data
+              {t("revenueAnalytics.charts.empty")}
             </div>
           )}
         </div>
 
         {/* Billing Cycle Distribution */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Billing Cycle Distribution</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("revenueAnalytics.charts.billingCycle.title")}</h2>
           {revenue?.billing_cycle_distribution?.length > 0 ? (
             <div className="space-y-4 pt-4">
               {revenue.billing_cycle_distribution.map((cycle: any) => {
@@ -257,7 +262,7 @@ export default function RevenueAnalyticsPage() {
                         {cycle.billing_cycle}
                       </span>
                       <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-600">{cycle.count} subs</span>
+                        <span className="text-sm text-gray-600">{t("revenueAnalytics.charts.billingCycle.subs", { count: cycle.count })}</span>
                         <span className="text-sm font-medium text-gray-900">{formatINR(cycle.revenue)}</span>
                       </div>
                     </div>
@@ -267,14 +272,14 @@ export default function RevenueAnalyticsPage() {
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{pct}% of subscriptions</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{t("revenueAnalytics.charts.billingCycle.percentOfSubscriptions", { percent: pct })}</p>
                   </div>
                 );
               })}
             </div>
           ) : (
             <div className="flex items-center justify-center h-[280px] text-gray-400 text-sm">
-              No data
+              {t("revenueAnalytics.charts.empty")}
             </div>
           )}
         </div>
@@ -282,16 +287,16 @@ export default function RevenueAnalyticsPage() {
 
       {/* Top 10 Customers */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Customers by Revenue</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("revenueAnalytics.topCustomers.title")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left py-3 px-4 font-medium text-gray-500">#</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Organization</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Email</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Subscriptions</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Monthly Spend</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("revenueAnalytics.topCustomers.columns.rank")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("revenueAnalytics.topCustomers.columns.organization")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("revenueAnalytics.topCustomers.columns.email")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("revenueAnalytics.topCustomers.columns.subscriptions")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("revenueAnalytics.topCustomers.columns.monthlySpend")}</th>
               </tr>
             </thead>
             <tbody>
@@ -330,7 +335,7 @@ export default function RevenueAnalyticsPage() {
               {(!revenue?.top_customers || revenue.top_customers.length === 0) && (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-gray-400">
-                    No customer data yet
+                    {t("revenueAnalytics.topCustomers.empty")}
                   </td>
                 </tr>
               )}

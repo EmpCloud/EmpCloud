@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
@@ -7,13 +8,13 @@ import {
   CheckCircle, ArrowUpRight, MessageSquare,
 } from "lucide-react";
 
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  submitted: { label: "Submitted", color: "bg-blue-100 text-blue-700" },
-  under_investigation: { label: "Under Investigation", color: "bg-yellow-100 text-yellow-700" },
-  escalated: { label: "Escalated", color: "bg-orange-100 text-orange-700" },
-  resolved: { label: "Resolved", color: "bg-green-100 text-green-700" },
-  dismissed: { label: "Dismissed", color: "bg-gray-100 text-gray-600" },
-  closed: { label: "Closed", color: "bg-gray-100 text-gray-500" },
+const STATUS_CONFIG: Record<string, { color: string }> = {
+  submitted: { color: "bg-blue-100 text-blue-700" },
+  under_investigation: { color: "bg-yellow-100 text-yellow-700" },
+  escalated: { color: "bg-orange-100 text-orange-700" },
+  resolved: { color: "bg-green-100 text-green-700" },
+  dismissed: { color: "bg-gray-100 text-gray-600" },
+  closed: { color: "bg-gray-100 text-gray-500" },
 };
 
 const SEVERITY_BADGE: Record<string, string> = {
@@ -26,6 +27,7 @@ const SEVERITY_BADGE: Record<string, string> = {
 const STATUSES = ["submitted", "under_investigation", "escalated", "resolved", "dismissed", "closed"];
 
 export default function ReportDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const qc = useQueryClient();
 
@@ -114,7 +116,8 @@ export default function ReportDetailPage() {
 
   if (!data) return null;
 
-  const statusCfg = STATUS_CONFIG[data.status] || { label: data.status, color: "bg-gray-100 text-gray-600" };
+  const statusCfg = STATUS_CONFIG[data.status] || { color: "bg-gray-100 text-gray-600" };
+  const statusLabel = t(`reportDetail.status.${data.status}`, { defaultValue: data.status });
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -128,10 +131,10 @@ export default function ReportDetailPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-gray-900 font-mono">{data.case_number}</h1>
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCfg.color}`}>
-              {statusCfg.label}
+              {statusLabel}
             </span>
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${SEVERITY_BADGE[data.severity] || ""}`}>
-              {data.severity}
+              {t(`reportDetail.severity.${data.severity}`, { defaultValue: data.severity })}
             </span>
           </div>
         </div>
@@ -145,18 +148,18 @@ export default function ReportDetailPage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{data.subject}</h2>
             <div className="flex gap-4 mb-4 text-sm">
               <div>
-                <span className="text-gray-500">Category:</span>{" "}
+                <span className="text-gray-500">{t("reportDetail.reportInfo.categoryLabel")}</span>{" "}
                 <span className="font-medium capitalize">{data.category?.replace(/_/g, " ")}</span>
               </div>
               <div>
-                <span className="text-gray-500">Anonymous:</span>{" "}
+                <span className="text-gray-500">{t("reportDetail.reportInfo.anonymousLabel")}</span>{" "}
                 <span className={`font-medium ${data.is_anonymous ? "text-green-600" : "text-gray-700"}`}>
-                  {data.is_anonymous ? "Yes" : "No"}
+                  {data.is_anonymous ? t("reportDetail.reportInfo.anonymousYes") : t("reportDetail.reportInfo.anonymousNo")}
                 </span>
               </div>
               {!data.is_anonymous && data.reporter_name && (
                 <div>
-                  <span className="text-gray-500">Reporter:</span>{" "}
+                  <span className="text-gray-500">{t("reportDetail.reportInfo.reporterLabel")}</span>{" "}
                   <span className="font-medium">{data.reporter_name}</span>
                 </div>
               )}
@@ -166,7 +169,7 @@ export default function ReportDetailPage() {
             </div>
             {data.evidence_paths && data.evidence_paths.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Evidence Files:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">{t("reportDetail.reportInfo.evidenceFilesLabel")}</p>
                 <div className="flex flex-wrap gap-2">
                   {data.evidence_paths.map((path: string, idx: number) => (
                     <span key={idx} className="px-3 py-1 bg-gray-100 rounded-lg text-sm text-gray-600">
@@ -180,7 +183,7 @@ export default function ReportDetailPage() {
 
           {/* Investigation Timeline */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">Investigation Timeline</h3>
+            <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">{t("reportDetail.timeline.heading")}</h3>
             {data.updates && data.updates.length > 0 ? (
               <div className="space-y-4">
                 {data.updates.map((u: any) => (
@@ -192,26 +195,26 @@ export default function ReportDetailPage() {
                         </span>
                         {u.is_visible_to_reporter && (
                           <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">
-                            Visible to Reporter
+                            {t("reportDetail.timeline.visibleToReporterBadge")}
                           </span>
                         )}
                       </div>
                       <p className="text-sm text-gray-800">{u.content}</p>
                       <p className="text-xs text-gray-400 mt-1">
-                        {u.created_by_name || "System"} &middot; {new Date(u.created_at).toLocaleString()}
+                        {u.created_by_name || t("reportDetail.timeline.systemAuthor")} &middot; {new Date(u.created_at).toLocaleString()}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-400">No updates yet</p>
+              <p className="text-sm text-gray-400">{t("reportDetail.timeline.empty")}</p>
             )}
           </div>
 
           {/* Add Update */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">Add Update</h3>
+            <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">{t("reportDetail.addUpdate.heading")}</h3>
             <div className="space-y-3">
               <div className="flex gap-3">
                 <select
@@ -219,9 +222,9 @@ export default function ReportDetailPage() {
                   onChange={(e) => setUpdateType(e.target.value)}
                   className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                 >
-                  <option value="note">Internal Note</option>
-                  <option value="response_to_reporter">Response to Reporter</option>
-                  <option value="status_change">Status Change Note</option>
+                  <option value="note">{t("reportDetail.addUpdate.typeNote")}</option>
+                  <option value="response_to_reporter">{t("reportDetail.addUpdate.typeResponseToReporter")}</option>
+                  <option value="status_change">{t("reportDetail.addUpdate.typeStatusChange")}</option>
                 </select>
                 <label className="flex items-center gap-2 text-sm text-gray-600">
                   <input
@@ -230,14 +233,14 @@ export default function ReportDetailPage() {
                     onChange={(e) => setVisibleToReporter(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  Visible to reporter
+                  {t("reportDetail.addUpdate.visibleToReporterCheckbox")}
                 </label>
               </div>
               <textarea
                 value={updateContent}
                 onChange={(e) => setUpdateContent(e.target.value)}
                 rows={3}
-                placeholder="Write an update or note..."
+                placeholder={t("reportDetail.addUpdate.contentPlaceholder")}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
               <button
@@ -246,7 +249,7 @@ export default function ReportDetailPage() {
                 className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition flex items-center gap-2"
               >
                 <MessageSquare className="h-4 w-4" />
-                {updateMutation.isPending ? "Sending..." : "Add Update"}
+                {updateMutation.isPending ? t("reportDetail.addUpdate.submitSending") : t("reportDetail.addUpdate.submit")}
               </button>
             </div>
           </div>
@@ -258,33 +261,33 @@ export default function ReportDetailPage() {
           <div className="bg-white rounded-xl shadow-sm border p-5 space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <Clock className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-500">Submitted:</span>
+              <span className="text-gray-500">{t("reportDetail.info.submittedLabel")}</span>
               <span className="text-gray-900">{new Date(data.created_at).toLocaleDateString()}</span>
             </div>
             {data.investigator_name && (
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-500">Investigator:</span>
+                <span className="text-gray-500">{t("reportDetail.info.investigatorLabel")}</span>
                 <span className="text-gray-900">{data.investigator_name}</span>
               </div>
             )}
             {data.escalated_to && (
               <div className="flex items-center gap-2 text-sm">
                 <ArrowUpRight className="h-4 w-4 text-orange-500" />
-                <span className="text-gray-500">Escalated to:</span>
+                <span className="text-gray-500">{t("reportDetail.info.escalatedToLabel")}</span>
                 <span className="text-gray-900">{data.escalated_to}</span>
               </div>
             )}
             {data.resolved_at && (
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span className="text-gray-500">Resolved:</span>
+                <span className="text-gray-500">{t("reportDetail.info.resolvedLabel")}</span>
                 <span className="text-gray-900">{new Date(data.resolved_at).toLocaleDateString()}</span>
               </div>
             )}
             {data.resolution && (
               <div className="mt-2 p-3 bg-green-50 rounded-lg text-sm text-green-800">
-                <p className="font-medium mb-1">Resolution:</p>
+                <p className="font-medium mb-1">{t("reportDetail.info.resolutionLabel")}</p>
                 <p>{data.resolution}</p>
               </div>
             )}
@@ -292,9 +295,9 @@ export default function ReportDetailPage() {
 
           {/* Assign Investigator */}
           <div className="bg-white rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Assign Investigator</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("reportDetail.assign.heading")}</h4>
             {usersError && (
-              <p className="text-xs text-red-600 mb-2">Failed to load users. Please refresh the page.</p>
+              <p className="text-xs text-red-600 mb-2">{t("reportDetail.assign.loadUsersError")}</p>
             )}
             <div className="flex items-center gap-2">
               <select
@@ -305,14 +308,18 @@ export default function ReportDetailPage() {
               >
                 <option value="">
                   {usersLoading
-                    ? "Loading users..."
+                    ? t("reportDetail.assign.optionLoading")
                     : usersError
-                    ? "Error loading users"
-                    : "Select investigator..."}
+                    ? t("reportDetail.assign.optionError")
+                    : t("reportDetail.assign.optionSelect")}
                 </option>
                 {(usersData || []).map((u: any) => (
                   <option key={u.id} value={String(u.id)}>
-                    {u.first_name} {u.last_name} ({u.email})
+                    {t("reportDetail.assign.userOption", {
+                      firstName: u.first_name,
+                      lastName: u.last_name,
+                      email: u.email,
+                    })}
                   </option>
                 ))}
               </select>
@@ -326,26 +333,26 @@ export default function ReportDetailPage() {
             </div>
             {assignMutation.isError && (
               <p className="text-xs text-red-600 mt-2">
-                {(assignMutation.error as any)?.response?.data?.error?.message || "Failed to assign investigator. Please try again."}
+                {(assignMutation.error as any)?.response?.data?.error?.message || t("reportDetail.assign.error")}
               </p>
             )}
             {assignMutation.isSuccess && (
-              <p className="text-xs text-green-600 mt-2">Investigator assigned successfully.</p>
+              <p className="text-xs text-green-600 mt-2">{t("reportDetail.assign.success")}</p>
             )}
           </div>
 
           {/* Change Status */}
           <div className="bg-white rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Change Status</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("reportDetail.changeStatus.heading")}</h4>
             <div className="space-y-2">
               <select
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               >
-                <option value="">Select status...</option>
+                <option value="">{t("reportDetail.changeStatus.optionSelect")}</option>
                 {STATUSES.filter((s) => s !== data.status).map((s) => (
-                  <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
+                  <option key={s} value={s}>{t(`reportDetail.status.${s}`, { defaultValue: s.replace(/_/g, " ") })}</option>
                 ))}
               </select>
               {(newStatus === "resolved" || newStatus === "dismissed" || newStatus === "closed") && (
@@ -353,7 +360,7 @@ export default function ReportDetailPage() {
                   value={resolution}
                   onChange={(e) => setResolution(e.target.value)}
                   rows={2}
-                  placeholder="Resolution notes..."
+                  placeholder={t("reportDetail.changeStatus.resolutionPlaceholder")}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
                 />
               )}
@@ -362,7 +369,7 @@ export default function ReportDetailPage() {
                 disabled={!newStatus || statusMutation.isPending}
                 className="w-full px-3 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition"
               >
-                {statusMutation.isPending ? "Updating..." : "Update Status"}
+                {statusMutation.isPending ? t("reportDetail.changeStatus.submitUpdating") : t("reportDetail.changeStatus.submit")}
               </button>
             </div>
           </div>
@@ -371,14 +378,14 @@ export default function ReportDetailPage() {
           <div className="bg-white rounded-xl shadow-sm border p-5">
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-orange-500" />
-              Escalate Externally
+              {t("reportDetail.escalate.heading")}
             </h4>
             <div className="space-y-2">
               <input
                 type="text"
                 value={escalateTo}
                 onChange={(e) => setEscalateTo(e.target.value)}
-                placeholder="External body or authority"
+                placeholder={t("reportDetail.escalate.placeholder")}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               />
               <button
@@ -387,7 +394,7 @@ export default function ReportDetailPage() {
                 className="w-full px-3 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 disabled:opacity-50 transition flex items-center justify-center gap-2"
               >
                 <ArrowUpRight className="h-4 w-4" />
-                {escalateMutation.isPending ? "Escalating..." : "Escalate Report"}
+                {escalateMutation.isPending ? t("reportDetail.escalate.submitEscalating") : t("reportDetail.escalate.submit")}
               </button>
             </div>
           </div>

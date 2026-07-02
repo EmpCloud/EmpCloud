@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Headphones,
@@ -53,7 +53,9 @@ export default function HelpdeskDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">{t("helpdeskDashboard.loading")}</div>
+        <div className="text-gray-400">
+          {t("helpdeskDashboard.loading")}
+        </div>
       </div>
     );
   }
@@ -64,28 +66,28 @@ export default function HelpdeskDashboardPage() {
   // counts are clickable — fixes issue #1398.
   const statCards = [
     {
-      label: t("helpdeskDashboard.stat.totalOpen"),
+      label: t("helpdeskDashboard.stats.totalOpen"),
       value: stats.total_open,
       icon: Clock,
       color: "text-blue-600 bg-blue-50",
       href: "/helpdesk/tickets?status=open",
     },
     {
-      label: t("helpdeskDashboard.stat.inProgress"),
+      label: t("helpdeskDashboard.stats.inProgress"),
       value: stats.in_progress + stats.awaiting_response,
       icon: Headphones,
       color: "text-yellow-600 bg-yellow-50",
       href: "/helpdesk/tickets?status=in_progress",
     },
     {
-      label: t("helpdeskDashboard.stat.overdue"),
+      label: t("helpdeskDashboard.stats.overdue"),
       value: stats.overdue,
       icon: AlertTriangle,
       color: "text-red-600 bg-red-50",
       href: "/helpdesk/tickets?sla=breached",
     },
     {
-      label: t("helpdeskDashboard.stat.resolvedToday"),
+      label: t("helpdeskDashboard.stats.resolvedToday"),
       value: stats.resolved_today,
       icon: CheckCircle2,
       color: "text-green-600 bg-green-50",
@@ -102,7 +104,9 @@ export default function HelpdeskDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("helpdeskDashboard.title")}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {t("helpdeskDashboard.title")}
+          </h1>
           <p className="text-gray-500 mt-1">
             {t("helpdeskDashboard.subtitle")}
           </p>
@@ -144,7 +148,7 @@ export default function HelpdeskDashboardPage() {
         {/* SLA Compliance */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" /> {t("helpdeskDashboard.slaCompliance.heading")}
+            <BarChart3 className="h-4 w-4" /> {t("helpdeskDashboard.sla.compliance")}
           </h3>
           <div className="flex items-center justify-center">
             <div className="relative w-32 h-32">
@@ -176,21 +180,23 @@ export default function HelpdeskDashboardPage() {
             </div>
           </div>
           <p className="text-center text-xs text-gray-500 mt-3">
-            {t("helpdeskDashboard.slaCompliance.caption")}
+            {t("helpdeskDashboard.sla.resolvedWithinSla")}
           </p>
         </div>
 
         {/* Avg Resolution Time */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <Clock className="h-4 w-4" /> {t("helpdeskDashboard.avgResolution.heading")}
+            <Clock className="h-4 w-4" /> {t("helpdeskDashboard.metrics.avgResolutionTime")}
           </h3>
           <div className="flex items-center justify-center mt-4">
             <div className="text-center">
               <p className="text-4xl font-bold text-gray-900">
                 {stats.avg_resolution_hours}
               </p>
-              <p className="text-sm text-gray-500 mt-1">{t("helpdeskDashboard.avgResolution.unit")}</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {t("helpdeskDashboard.metrics.hours")}
+              </p>
             </div>
           </div>
         </div>
@@ -198,7 +204,7 @@ export default function HelpdeskDashboardPage() {
         {/* Satisfaction */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-            <Star className="h-4 w-4" /> {t("helpdeskDashboard.satisfaction.heading")}
+            <Star className="h-4 w-4" /> {t("helpdeskDashboard.satisfaction.title")}
           </h3>
           <div className="flex items-center justify-center mt-4">
             <div className="text-center">
@@ -218,7 +224,9 @@ export default function HelpdeskDashboardPage() {
                 {stats.avg_satisfaction ?? t("helpdeskDashboard.satisfaction.notAvailable")}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                {t("helpdeskDashboard.satisfaction.ratingCount", { count: stats.rated_count })}
+                {t("helpdeskDashboard.satisfaction.ratingCount", {
+                  count: stats.rated_count,
+                })}
               </p>
             </div>
           </div>
@@ -229,17 +237,19 @@ export default function HelpdeskDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">
-            {t("helpdeskDashboard.categoryBreakdown.heading")}
+            {t("helpdeskDashboard.categoryBreakdown.title")}
           </h3>
           <div className="space-y-3">
             {stats.category_breakdown.map((cat: any) => (
               <div key={cat.category} className="flex items-center gap-3">
                 <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded ${
+                  className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
                     CATEGORY_COLORS[cat.category] || "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {t(`helpdeskDashboard.category.${cat.category}`, { defaultValue: cat.category })}
+                  {t(`helpdeskDashboard.category.${cat.category}`, {
+                    defaultValue: cat.category,
+                  })}
                 </span>
                 <div className="flex-1 bg-gray-100 rounded-full h-2">
                   <div
@@ -256,7 +266,7 @@ export default function HelpdeskDashboardPage() {
             ))}
             {stats.category_breakdown.length === 0 && (
               <p className="text-sm text-gray-400 text-center py-4">
-                {t("helpdeskDashboard.noTicketsYet")}
+                {t("helpdeskDashboard.emptyState.noTickets")}
               </p>
             )}
           </div>
@@ -265,7 +275,7 @@ export default function HelpdeskDashboardPage() {
         {/* Recent Tickets */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">
-            {t("helpdeskDashboard.recentTickets.heading")}
+            {t("helpdeskDashboard.recentTickets.title")}
           </h3>
           <div className="space-y-3">
             {stats.recent_tickets.slice(0, 8).map((ticket: any) => (
@@ -289,21 +299,25 @@ export default function HelpdeskDashboardPage() {
                       PRIORITY_COLORS[ticket.priority] || ""
                     }`}
                   >
-                    {t(`helpdeskDashboard.priority.${ticket.priority}`, { defaultValue: ticket.priority })}
+                    {t(`helpdeskDashboard.priority.${ticket.priority}`, {
+                      defaultValue: ticket.priority,
+                    })}
                   </span>
                   <span
                     className={`text-xs px-2 py-0.5 rounded font-medium ${
                       STATUS_COLORS[ticket.status] || ""
                     }`}
                   >
-                    {t(`helpdeskDashboard.status.${ticket.status}`, { defaultValue: ticket.status.replace("_", " ") })}
+                    {t(`helpdeskDashboard.status.${ticket.status}`, {
+                      defaultValue: ticket.status.replace("_", " "),
+                    })}
                   </span>
                 </div>
               </Link>
             ))}
             {stats.recent_tickets.length === 0 && (
               <p className="text-sm text-gray-400 text-center py-4">
-                {t("helpdeskDashboard.noTicketsYet")}
+                {t("helpdeskDashboard.emptyState.noTickets")}
               </p>
             )}
           </div>

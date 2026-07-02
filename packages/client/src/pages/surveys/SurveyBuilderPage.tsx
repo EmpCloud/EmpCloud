@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Trash2, GripVertical, Save, Play, ArrowLeft } from "lucide-react";
@@ -20,25 +21,26 @@ function nextQuestionKey() {
 }
 
 const QUESTION_TYPES = [
-  { value: "rating_1_5", label: "Rating (1-5)" },
-  { value: "rating_1_10", label: "Rating (1-10)" },
-  { value: "enps_0_10", label: "eNPS (0-10)" },
-  { value: "yes_no", label: "Yes / No" },
-  { value: "multiple_choice", label: "Multiple Choice" },
-  { value: "text", label: "Free Text" },
-  { value: "scale", label: "Scale" },
+  { value: "rating_1_5", labelKey: "questionType.rating_1_5", labelDefault: "Rating (1-5)" },
+  { value: "rating_1_10", labelKey: "questionType.rating_1_10", labelDefault: "Rating (1-10)" },
+  { value: "enps_0_10", labelKey: "questionType.enps_0_10", labelDefault: "eNPS (0-10)" },
+  { value: "yes_no", labelKey: "questionType.yes_no", labelDefault: "Yes / No" },
+  { value: "multiple_choice", labelKey: "questionType.multiple_choice", labelDefault: "Multiple Choice" },
+  { value: "text", labelKey: "questionType.text", labelDefault: "Free Text" },
+  { value: "scale", labelKey: "questionType.scale", labelDefault: "Scale" },
 ];
 
 const SURVEY_TYPES = [
-  { value: "pulse", label: "Pulse Survey" },
-  { value: "enps", label: "eNPS Survey" },
-  { value: "engagement", label: "Engagement Survey" },
-  { value: "custom", label: "Custom Survey" },
-  { value: "onboarding", label: "Onboarding Survey" },
-  { value: "exit_survey", label: "Exit Survey" },
+  { value: "pulse", labelKey: "surveyType.pulse", labelDefault: "Pulse Survey" },
+  { value: "enps", labelKey: "surveyType.enps", labelDefault: "eNPS Survey" },
+  { value: "engagement", labelKey: "surveyType.engagement", labelDefault: "Engagement Survey" },
+  { value: "custom", labelKey: "surveyType.custom", labelDefault: "Custom Survey" },
+  { value: "onboarding", labelKey: "surveyType.onboarding", labelDefault: "Onboarding Survey" },
+  { value: "exit_survey", labelKey: "surveyType.exit_survey", labelDefault: "Exit Survey" },
 ];
 
 export default function SurveyBuilderPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("id");
@@ -143,7 +145,7 @@ export default function SurveyBuilderPage() {
 
   const validateDates = () => {
     if (startDate && endDate && endDate < startDate) {
-      showToast("error", "End date cannot be before the start date.");
+      showToast("error", t("surveyBuilder.toast.endBeforeStart"));
       return false;
     }
     return true;
@@ -218,77 +220,77 @@ export default function SurveyBuilderPage() {
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {editId ? "Edit Survey" : "Create Survey"}
+            {editId ? t("surveyBuilder.header.editTitle") : t("surveyBuilder.header.createTitle")}
           </h1>
-          <p className="text-gray-500 mt-0.5">Design your survey and add questions.</p>
+          <p className="text-gray-500 mt-0.5">{t("surveyBuilder.header.subtitle")}</p>
         </div>
       </div>
 
       {/* Survey Details */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Survey Details</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("surveyBuilder.details.heading")}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.titleLabel")}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              placeholder="e.g., Q1 2026 Employee Pulse Survey"
+              placeholder={t("surveyBuilder.details.titlePlaceholder")}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.descriptionLabel")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px]"
-              placeholder="Brief description of the survey purpose..."
+              placeholder={t("surveyBuilder.details.descriptionPlaceholder")}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.typeLabel")}</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                {SURVEY_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
+                {SURVEY_TYPES.map((st) => (
+                  <option key={st.value} value={st.value}>{t(`surveyBuilder.${st.labelKey}`, { defaultValue: st.labelDefault })}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.targetAudienceLabel")}</label>
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                <option value="all">All Employees</option>
-                <option value="department">By Department</option>
-                <option value="role">By Role</option>
-                <option value="custom">Custom</option>
+                <option value="all">{t("surveyBuilder.target.all")}</option>
+                <option value="department">{t("surveyBuilder.target.department")}</option>
+                <option value="role">{t("surveyBuilder.target.role")}</option>
+                <option value="custom">{t("surveyBuilder.target.custom")}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Recurrence</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.recurrenceLabel")}</label>
               <select
                 value={recurrence}
                 onChange={(e) => setRecurrence(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               >
-                <option value="none">One-time</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
+                <option value="none">{t("surveyBuilder.recurrence.none")}</option>
+                <option value="weekly">{t("surveyBuilder.recurrence.weekly")}</option>
+                <option value="monthly">{t("surveyBuilder.recurrence.monthly")}</option>
+                <option value="quarterly">{t("surveyBuilder.recurrence.quarterly")}</option>
               </select>
             </div>
 
@@ -299,18 +301,18 @@ export default function SurveyBuilderPage() {
                 labels now say "Start Date & Time" and there's a helper line
                 under each input making the expectation explicit. */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date &amp; Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.startDateLabel")}</label>
               <input
                 type="datetime-local"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
-              <p className="text-xs text-gray-400 mt-1">Pick a date and a time of day.</p>
+              <p className="text-xs text-gray-400 mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date &amp; Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.endDateLabel")}</label>
               <input
                 type="datetime-local"
                 value={endDate}
@@ -318,7 +320,7 @@ export default function SurveyBuilderPage() {
                 min={startDate || undefined}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
               />
-              <p className="text-xs text-gray-400 mt-1">Pick a date and a time of day.</p>
+              <p className="text-xs text-gray-400 mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
             </div>
 
             <div className="flex items-center gap-3 pt-6">
@@ -331,7 +333,7 @@ export default function SurveyBuilderPage() {
                 />
                 <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-brand-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full" />
               </label>
-              <span className="text-sm font-medium text-gray-700">Anonymous</span>
+              <span className="text-sm font-medium text-gray-700">{t("surveyBuilder.details.anonymousLabel")}</span>
             </div>
           </div>
         </div>
@@ -340,12 +342,12 @@ export default function SurveyBuilderPage() {
       {/* Questions Builder */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Questions</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t("surveyBuilder.questions.heading")}</h2>
           <button
             onClick={addQuestion}
             className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
           >
-            <Plus className="h-4 w-4" /> Add Question
+            <Plus className="h-4 w-4" /> {t("surveyBuilder.questions.addButton")}
           </button>
         </div>
 
@@ -358,7 +360,7 @@ export default function SurveyBuilderPage() {
                     onClick={() => moveQuestion(idx, "up")}
                     disabled={idx === 0}
                     className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
-                    title="Move up"
+                    title={t("surveyBuilder.questions.moveUpTitle")}
                   >
                     <GripVertical className="h-4 w-4" />
                   </button>
@@ -372,20 +374,20 @@ export default function SurveyBuilderPage() {
                       value={q.question_text}
                       onChange={(e) => updateQuestion(idx, "question_text", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                      placeholder="Enter question text..."
+                      placeholder={t("surveyBuilder.questions.textPlaceholder")}
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Type</label>
+                      <label className="block text-xs text-gray-500 mb-1">{t("surveyBuilder.questions.typeLabel")}</label>
                       <select
                         value={q.question_type}
                         onChange={(e) => updateQuestion(idx, "question_type", e.target.value)}
                         className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
                       >
                         {QUESTION_TYPES.map((qt) => (
-                          <option key={qt.value} value={qt.value}>{qt.label}</option>
+                          <option key={qt.value} value={qt.value}>{t(`surveyBuilder.${qt.labelKey}`, { defaultValue: qt.labelDefault })}</option>
                         ))}
                       </select>
                     </div>
@@ -398,7 +400,7 @@ export default function SurveyBuilderPage() {
                           onChange={(e) => updateQuestion(idx, "is_required", e.target.checked)}
                           className="rounded border-gray-300"
                         />
-                        Required
+                        {t("surveyBuilder.questions.requiredLabel")}
                       </label>
                     </div>
                   </div>
@@ -407,7 +409,7 @@ export default function SurveyBuilderPage() {
                   {q.question_type === "multiple_choice" && (
                     <div>
                       <label className="block text-xs text-gray-500 mb-1">
-                        Options (one per line)
+                        {t("surveyBuilder.questions.optionsLabel")}
                       </label>
                       <textarea
                         value={(q.options || []).join("\n")}
@@ -416,14 +418,14 @@ export default function SurveyBuilderPage() {
                           updateQuestion(idx, "options", opts.length > 0 ? opts : null);
                         }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[60px]"
-                        placeholder={"Option A\nOption B\nOption C"}
+                        placeholder={t("surveyBuilder.questions.optionsPlaceholder")}
                       />
                     </div>
                   )}
 
                   {/* Preview */}
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-2">Preview</p>
+                    <p className="text-xs text-gray-400 mb-2">{t("surveyBuilder.questions.previewLabel")}</p>
                     <QuestionPreview question={q} />
                   </div>
                 </div>
@@ -432,7 +434,7 @@ export default function SurveyBuilderPage() {
                   onClick={() => removeQuestion(idx)}
                   disabled={questions.length <= 1}
                   className="p-1.5 rounded hover:bg-red-50 text-red-400 hover:text-red-600 disabled:opacity-30"
-                  title="Remove question"
+                  title={t("surveyBuilder.questions.removeTitle")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -448,21 +450,21 @@ export default function SurveyBuilderPage() {
           onClick={() => navigate("/surveys/list")}
           className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
         >
-          Cancel
+          {t("surveyBuilder.actions.cancel")}
         </button>
         <button
           onClick={handleSaveDraft}
           disabled={isPending || !title.trim()}
           className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
         >
-          <Save className="h-4 w-4" /> Save as Draft
+          <Save className="h-4 w-4" /> {t("surveyBuilder.actions.saveDraft")}
         </button>
         <button
           onClick={handlePublish}
           disabled={isPending || !title.trim() || questions.every((q) => !q.question_text.trim())}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
         >
-          <Play className="h-4 w-4" /> Save & Publish
+          <Play className="h-4 w-4" /> {t("surveyBuilder.actions.savePublish")}
         </button>
       </div>
     </div>
@@ -470,10 +472,11 @@ export default function SurveyBuilderPage() {
 }
 
 function QuestionPreview({ question }: { question: Question }) {
+  const { t } = useTranslation();
   const { question_type, question_text } = question;
 
   if (!question_text) {
-    return <p className="text-xs text-gray-300 italic">Type a question to see preview</p>;
+    return <p className="text-xs text-gray-300 italic">{t("surveyBuilder.preview.emptyHint")}</p>;
   }
 
   if (question_type === "rating_1_5") {
@@ -523,8 +526,8 @@ function QuestionPreview({ question }: { question: Question }) {
           ))}
         </div>
         <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
-          <span>Not likely</span>
-          <span>Very likely</span>
+          <span>{t("surveyBuilder.preview.enpsNotLikely")}</span>
+          <span>{t("surveyBuilder.preview.enpsVeryLikely")}</span>
         </div>
       </div>
     );
@@ -535,15 +538,19 @@ function QuestionPreview({ question }: { question: Question }) {
       <div>
         <p className="text-sm text-gray-700 mb-2">{question_text}</p>
         <div className="flex gap-3">
-          <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-green-50 hover:border-green-300">Yes</button>
-          <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-red-50 hover:border-red-300">No</button>
+          <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-green-50 hover:border-green-300">{t("surveyBuilder.preview.yes")}</button>
+          <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-red-50 hover:border-red-300">{t("surveyBuilder.preview.no")}</button>
         </div>
       </div>
     );
   }
 
   if (question_type === "multiple_choice") {
-    const opts = question.options || ["Option A", "Option B", "Option C"];
+    const opts = question.options || [
+      t("surveyBuilder.preview.optionA"),
+      t("surveyBuilder.preview.optionB"),
+      t("surveyBuilder.preview.optionC"),
+    ];
     return (
       <div>
         <p className="text-sm text-gray-700 mb-2">{question_text}</p>
@@ -566,7 +573,7 @@ function QuestionPreview({ question }: { question: Question }) {
         <textarea
           disabled
           className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white min-h-[60px]"
-          placeholder="Employee will type their answer here..."
+          placeholder={t("surveyBuilder.preview.textPlaceholder")}
         />
       </div>
     );

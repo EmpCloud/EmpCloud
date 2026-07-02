@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import {
   Package,
@@ -34,6 +35,7 @@ function formatINR(paise: number): string {
 }
 
 export default function ModuleAnalyticsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: modules, isLoading } = useQuery({
@@ -55,7 +57,7 @@ export default function ModuleAnalyticsPage() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-2">
           <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">Loading...</span>
+          <span className="text-sm text-gray-400">{t("moduleAnalytics.loading")}</span>
         </div>
       </div>
     );
@@ -74,9 +76,9 @@ export default function ModuleAnalyticsPage() {
             <Package className="h-5 w-5 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Module Analytics</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("moduleAnalytics.title")}</h1>
             <p className="text-gray-500 mt-0.5 text-sm">
-              Detailed metrics for each module across the platform.
+              {t("moduleAnalytics.subtitle")}
             </p>
           </div>
         </div>
@@ -90,7 +92,7 @@ export default function ModuleAnalyticsPage() {
               <Package className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Active Modules</p>
+              <p className="text-sm text-gray-500">{t("moduleAnalytics.stats.activeModules")}</p>
               <p className="text-xl font-bold text-gray-900">{(modules || []).length}</p>
             </div>
           </div>
@@ -101,7 +103,7 @@ export default function ModuleAnalyticsPage() {
               <Users className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Subscribers</p>
+              <p className="text-sm text-gray-500">{t("moduleAnalytics.stats.totalSubscribers")}</p>
               <p className="text-xl font-bold text-gray-900">{totalSubscribers}</p>
             </div>
           </div>
@@ -112,7 +114,7 @@ export default function ModuleAnalyticsPage() {
               <Layers className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Seats</p>
+              <p className="text-sm text-gray-500">{t("moduleAnalytics.stats.totalSeats")}</p>
               <p className="text-xl font-bold text-gray-900">{totalSeats.toLocaleString()}</p>
             </div>
           </div>
@@ -123,7 +125,7 @@ export default function ModuleAnalyticsPage() {
               <TrendingUp className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Module Revenue</p>
+              <p className="text-sm text-gray-500">{t("moduleAnalytics.stats.totalModuleRevenue")}</p>
               <p className="text-xl font-bold text-gray-900">{formatINR(totalRevenue)}</p>
             </div>
           </div>
@@ -134,7 +136,7 @@ export default function ModuleAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue by Module (Bar) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Module</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("moduleAnalytics.charts.revenueByModule")}</h2>
           {modules?.length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={modules.filter((m: any) => m.revenue > 0)}>
@@ -142,19 +144,19 @@ export default function ModuleAnalyticsPage() {
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-20} textAnchor="end" height={70} />
                 <YAxis tickFormatter={(v) => formatINR(v)} tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(value: any) => formatINR(Number(value))} />
-                <Bar dataKey="revenue" name="Revenue" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="revenue" name={t("moduleAnalytics.charts.revenueSeries")} fill="#6366f1" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[350px] text-gray-400 text-sm">
-              No revenue data
+              {t("moduleAnalytics.charts.noRevenueData")}
             </div>
           )}
         </div>
 
         {/* Subscribers by Module (Pie) */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Subscriber Distribution</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("moduleAnalytics.charts.subscriberDistribution")}</h2>
           {modules?.filter((m: any) => m.subscriber_count > 0).length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <PieChart>
@@ -179,14 +181,14 @@ export default function ModuleAnalyticsPage() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[350px] text-gray-400 text-sm">
-              No subscriber data
+              {t("moduleAnalytics.charts.noSubscriberData")}
             </div>
           )}
         </div>
       </div>
 
       {/* Module Cards Grid */}
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Module Details</h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("moduleAnalytics.details.heading")}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {(modules || []).map((mod: any) => (
           <div
@@ -206,13 +208,15 @@ export default function ModuleAnalyticsPage() {
                       : "bg-gray-100 text-gray-500"
                   }`}
                 >
-                  {mod.subscriber_count > 0 ? `${mod.subscriber_count} orgs` : "No subscribers"}
+                  {mod.subscriber_count > 0
+                    ? t("moduleAnalytics.details.orgCount", { count: mod.subscriber_count })
+                    : t("moduleAnalytics.details.noSubscribers")}
                 </span>
                 <button
                   onClick={() => toggleModuleMut.mutate({ id: mod.id, is_active: false })}
                   disabled={toggleModuleMut.isPending}
                   className="p-1 text-green-500 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                  title="Disable module"
+                  title={t("moduleAnalytics.details.disableModule")}
                 >
                   <Power className="h-4 w-4" />
                 </button>
@@ -224,25 +228,25 @@ export default function ModuleAnalyticsPage() {
             <div className="grid grid-cols-3 gap-3 pt-4 border-t border-gray-100">
               <div className="text-center">
                 <p className="text-lg font-bold text-gray-900">{mod.subscriber_count}</p>
-                <p className="text-xs text-gray-500">Subscribers</p>
+                <p className="text-xs text-gray-500">{t("moduleAnalytics.details.subscribers")}</p>
               </div>
               <div className="text-center">
                 <p className="text-lg font-bold text-gray-900">
                   {mod.used_seats}
                   <span className="text-sm text-gray-400">/{mod.total_seats}</span>
                 </p>
-                <p className="text-xs text-gray-500">Seats</p>
+                <p className="text-xs text-gray-500">{t("moduleAnalytics.details.seats")}</p>
               </div>
               <div className="text-center">
                 <p className="text-lg font-bold text-gray-900">{formatINR(mod.revenue)}</p>
-                <p className="text-xs text-gray-500">Revenue</p>
+                <p className="text-xs text-gray-500">{t("moduleAnalytics.details.revenue")}</p>
               </div>
             </div>
             {/* Seat utilization bar */}
             {mod.total_seats > 0 && (
               <div className="mt-3">
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                  <span>Seat Utilization</span>
+                  <span>{t("moduleAnalytics.details.seatUtilization")}</span>
                   <span>{mod.seat_utilization}%</span>
                 </div>
                 <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
@@ -262,7 +266,7 @@ export default function ModuleAnalyticsPage() {
             {/* Tier distribution */}
             {Object.keys(mod.tier_distribution || {}).length > 0 && (
               <div className="mt-3 pt-3 border-t border-gray-100">
-                <p className="text-xs text-gray-500 mb-2">Plan Distribution</p>
+                <p className="text-xs text-gray-500 mb-2">{t("moduleAnalytics.details.planDistribution")}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {Object.entries(mod.tier_distribution).map(([tier, count]) => (
                     <span
@@ -281,19 +285,19 @@ export default function ModuleAnalyticsPage() {
 
       {/* Detailed Table */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Detailed Metrics</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("moduleAnalytics.table.heading")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Module</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Slug</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Subscribers</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Total Seats</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Used Seats</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Utilization</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Revenue</th>
-                <th className="text-center py-3 px-4 font-medium text-gray-500">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.module")}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.slug")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.subscribers")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.totalSeats")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.usedSeats")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.utilization")}</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.revenue")}</th>
+                <th className="text-center py-3 px-4 font-medium text-gray-500">{t("moduleAnalytics.table.status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -327,7 +331,7 @@ export default function ModuleAnalyticsPage() {
                       className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-green-700 bg-green-50 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors"
                     >
                       <Power className="h-3.5 w-3.5" />
-                      Active
+                      {t("moduleAnalytics.status.active")}
                     </button>
                   </td>
                 </tr>

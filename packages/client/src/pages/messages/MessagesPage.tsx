@@ -12,6 +12,7 @@
 // for which thread is open, so conversations are deep-linkable.
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ConversationSummary, MessageSearchResult } from "@empcloud/shared";
@@ -70,6 +71,7 @@ function ConversationRow({
   active: boolean;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const isGroup = conv.type === "group";
   const cp = conv.counterpart;
   const { first, last } = splitName(conv.title);
@@ -104,7 +106,7 @@ function ConversationRow({
               {conv.title}
             </span>
             {conv.is_muted && (
-              <BellOff className="h-3 w-3 flex-shrink-0 text-gray-400" aria-label="Muted" />
+              <BellOff className="h-3 w-3 flex-shrink-0 text-gray-400" aria-label={t("messagesPage.conversationRow.mutedAriaLabel")} />
             )}
           </span>
           {conv.last_message_at && (
@@ -118,7 +120,7 @@ function ConversationRow({
         </div>
         <div className="flex items-center justify-between gap-2 mt-0.5">
           <span className={`text-xs truncate ${conv.unread_count > 0 ? "text-gray-700" : "text-gray-400"}`}>
-            {conv.last_message ?? (isGroup ? "Group created" : "No messages yet")}
+            {conv.last_message ?? (isGroup ? t("messagesPage.conversationRow.groupCreated") : t("messagesPage.conversationRow.noMessagesYet"))}
           </span>
           {conv.unread_count > 0 && (
             // Muted chats still count unread, but the badge is subdued (grey) so
@@ -128,7 +130,7 @@ function ConversationRow({
                 conv.is_muted ? "bg-gray-400" : "bg-brand-600"
               }`}
             >
-              {conv.unread_count > 99 ? "99+" : conv.unread_count}
+              {conv.unread_count > 99 ? t("messagesPage.conversationRow.unreadCountOverflow") : conv.unread_count}
             </span>
           )}
         </div>
@@ -140,6 +142,7 @@ function ConversationRow({
 // --- Page -------------------------------------------------------------------
 
 export default function MessagesPage() {
+  const { t } = useTranslation();
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -156,7 +159,7 @@ export default function MessagesPage() {
   const handleMyPhoto = async (f: File | null) => {
     if (!f || !me) return;
     if (!f.type.startsWith("image/")) {
-      showToast("error", "Profile photo must be an image.");
+      showToast("error", t("messagesPage.toast.photoMustBeImage"));
       return;
     }
     const form = new FormData();
@@ -169,9 +172,9 @@ export default function MessagesPage() {
       qc.invalidateQueries({ queryKey: ["employee-photo", me.id] });
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
       setPhotoBust((n) => n + 1);
-      showToast("success", "Profile photo updated.");
+      showToast("success", t("messagesPage.toast.photoUpdated"));
     } catch {
-      showToast("error", "Couldn't upload the photo.");
+      showToast("error", t("messagesPage.toast.photoUploadFailed"));
     }
   };
 
@@ -191,7 +194,7 @@ export default function MessagesPage() {
       qc.invalidateQueries({ queryKey: ["chat-conversations"] });
       setEditingStatus(false);
     } catch {
-      showToast("error", "Couldn't update your status. Please try again.");
+      showToast("error", t("messagesPage.toast.statusUpdateFailed"));
     }
   };
 
@@ -235,7 +238,7 @@ export default function MessagesPage() {
       setShowProfile(false);
       navigate(`/messages/${res.data.data.id}`);
     } catch {
-      showToast("error", "Couldn't open your notes.");
+      showToast("error", t("messagesPage.toast.openNotesFailed"));
     }
   };
 
@@ -273,8 +276,8 @@ export default function MessagesPage() {
                   <button
                     type="button"
                     onClick={() => setShowProfile((v) => !v)}
-                    title="Your profile"
-                    aria-label="Your profile"
+                    title={t("messagesPage.profile.yourProfileTitle")}
+                    aria-label={t("messagesPage.profile.yourProfileTitle")}
                     className="relative block rounded-full ring-2 ring-transparent hover:ring-brand-200"
                   >
                     <EmployeeAvatar
@@ -297,8 +300,8 @@ export default function MessagesPage() {
                           <button
                             type="button"
                             onClick={() => photoInputRef.current?.click()}
-                            title="Change your profile photo"
-                            aria-label="Change your profile photo"
+                            title={t("messagesPage.profile.changePhotoTitle")}
+                            aria-label={t("messagesPage.profile.changePhotoTitle")}
                             className="group relative flex-shrink-0"
                           >
                             <EmployeeAvatar
@@ -321,13 +324,13 @@ export default function MessagesPage() {
                             onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
                           />
                           <p className="truncate text-sm font-semibold text-gray-900">
-                            {me ? `${me.first_name} ${me.last_name}` : "You"}
+                            {me ? `${me.first_name} ${me.last_name}` : t("messagesPage.profile.youFallback")}
                           </p>
                         </div>
                         {/* Status */}
                         <div className="mt-3">
                           <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-400">
-                            Status
+                            {t("messagesPage.profile.statusLabel")}
                           </p>
                           {editingStatus ? (
                             <div className="flex items-center gap-1.5">
@@ -340,7 +343,7 @@ export default function MessagesPage() {
                                   else if (e.key === "Escape") setEditingStatus(false);
                                 }}
                                 maxLength={140}
-                                placeholder="Set a status…"
+                                placeholder={t("messagesPage.profile.statusPlaceholder")}
                                 data-gramm="false"
                                 className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
                               />
@@ -349,7 +352,7 @@ export default function MessagesPage() {
                                 onClick={saveStatus}
                                 className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
                               >
-                                Save
+                                {t("messagesPage.profile.save")}
                               </button>
                             </div>
                           ) : (
@@ -359,12 +362,12 @@ export default function MessagesPage() {
                                 setStatusDraft(myStatus?.status ?? "");
                                 setEditingStatus(true);
                               }}
-                              title="Set your status"
+                              title={t("messagesPage.profile.setStatusTitle")}
                               className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1 text-left text-sm text-gray-600 hover:bg-gray-50"
                             >
                               <Pencil className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                               <span className="truncate">
-                                {myStatus?.status || "Set a status…"}
+                                {myStatus?.status || t("messagesPage.profile.statusPlaceholder")}
                               </span>
                             </button>
                           )}
@@ -376,7 +379,7 @@ export default function MessagesPage() {
                           className="mt-3 flex w-full items-center gap-2 rounded-lg border-t border-gray-100 px-2 pt-3 text-left text-sm text-brand-700 hover:text-brand-800"
                         >
                           <Bookmark className="h-4 w-4 flex-shrink-0" />
-                          Message yourself (notes)
+                          {t("messagesPage.profile.messageYourself")}
                         </button>
                       </div>
                     </>
@@ -387,13 +390,13 @@ export default function MessagesPage() {
                   type="button"
                   onClick={() => setShowProfile((v) => !v)}
                   className="min-w-0 text-left"
-                  title="Your profile"
+                  title={t("messagesPage.profile.yourProfileTitle")}
                 >
                   <p className="truncate text-base font-semibold leading-snug text-gray-900">
-                    {me ? `${me.first_name} ${me.last_name}` : "You"}
+                    {me ? `${me.first_name} ${me.last_name}` : t("messagesPage.profile.youFallback")}
                   </p>
                   <p className="truncate text-xs leading-snug text-gray-500">
-                    {myStatus?.status || "Set a status…"}
+                    {myStatus?.status || t("messagesPage.profile.statusPlaceholder")}
                   </p>
                 </button>
               </div>
@@ -401,7 +404,7 @@ export default function MessagesPage() {
                 onClick={() => setShowNewChat(true)}
                 className="flex items-center gap-1.5 bg-brand-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-700 flex-shrink-0"
               >
-                <Plus className="h-4 w-4" /> New chat
+                <Plus className="h-4 w-4" /> {t("messagesPage.list.newChat")}
               </button>
             </div>
             <div className="relative h-10">
@@ -410,7 +413,7 @@ export default function MessagesPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search chats & messages…"
+                placeholder={t("messagesPage.search.placeholder")}
                 // data-gramm*: stop Grammarly/extensions from injecting an overlay
                 // widget here (its outline was floating up over the heading).
                 data-gramm="false"
@@ -432,8 +435,10 @@ export default function MessagesPage() {
               >
                 <Archive className="h-4 w-4 text-gray-400" />
                 {showArchived
-                  ? "← Back to chats"
-                  : `Archived${archivedCount > 0 ? ` (${archivedCount})` : ""}`}
+                  ? t("messagesPage.list.backToChats")
+                  : archivedCount > 0
+                    ? t("messagesPage.list.archivedWithCount", { count: archivedCount })
+                    : t("messagesPage.list.archived")}
               </button>
             )}
             {isLoading ? (
@@ -450,17 +455,17 @@ export default function MessagesPage() {
               </div>
             ) : isError ? (
               <div className="p-6 text-center text-sm text-red-500">
-                Failed to load conversations. Please try again.
+                {t("messagesPage.list.loadError")}
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center px-6 py-12 text-gray-400">
                 <MessagesSquare className="h-10 w-10 mb-3 text-gray-300" />
                 {search ? (
-                  <p className="text-sm">No conversations match "{search}".</p>
+                  <p className="text-sm">{t("messagesPage.list.noSearchMatch", { query: search })}</p>
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-gray-500">No conversations yet</p>
-                    <p className="text-xs mt-1">Start one with the "New chat" button.</p>
+                    <p className="text-sm font-medium text-gray-500">{t("messagesPage.list.noConversationsTitle")}</p>
+                    <p className="text-xs mt-1">{t("messagesPage.list.noConversationsHint")}</p>
                   </>
                 )}
               </div>
@@ -481,14 +486,14 @@ export default function MessagesPage() {
             {debouncedSearch.trim().length >= 2 && (
               <div className="mt-1">
                 <p className="px-2 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                  Messages
+                  {t("messagesPage.search.messagesHeader")}
                   {searchingMessages && (
                     <span className="ml-2 inline-block h-3 w-3 align-middle border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin" />
                   )}
                 </p>
                 {!searchingMessages && !showMessageResults ? (
                   <p className="px-2 py-2 text-xs text-gray-400">
-                    No messages match “{debouncedSearch.trim()}”.
+                    {t("messagesPage.search.noMessageMatch", { query: debouncedSearch.trim() })}
                   </p>
                 ) : (
                   (messageHits ?? []).map((hit) => (
@@ -509,7 +514,7 @@ export default function MessagesPage() {
                         </span>
                       </span>
                       <span className="truncate text-xs text-gray-500 w-full">
-                        <span className="text-gray-400">{hit.sender_name}: </span>
+                        <span className="text-gray-400">{t("messagesPage.search.senderPrefix", { name: hit.sender_name })}</span>
                         {hit.body}
                       </span>
                     </button>
@@ -536,9 +541,9 @@ export default function MessagesPage() {
               <div className="h-16 w-16 rounded-2xl bg-brand-50 text-brand-500 flex items-center justify-center mb-4">
                 <MessagesSquare className="h-8 w-8" />
               </div>
-              <p className="text-lg font-medium text-gray-600">Your messages</p>
+              <p className="text-lg font-medium text-gray-600">{t("messagesPage.empty.yourMessagesTitle")}</p>
               <p className="text-sm mt-1 max-w-xs">
-                Select a conversation on the left, or start a new chat to begin messaging.
+                {t("messagesPage.empty.yourMessagesHint")}
               </p>
             </div>
           )}

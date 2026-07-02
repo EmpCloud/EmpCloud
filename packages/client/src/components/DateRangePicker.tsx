@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { CalendarDays, ChevronDown, X } from "lucide-react";
 import { DayPicker, type DateRange } from "react-day-picker";
 import "react-day-picker/style.css";
@@ -51,13 +52,13 @@ const parseIso = (iso: string): Date | undefined => {
 // active highlight.
 type PresetKey = "today" | "yesterday" | "last7" | "last30" | "thisMonth" | "lastMonth";
 
-const PRESETS: { key: PresetKey; label: string }[] = [
-  { key: "today", label: "Today" },
-  { key: "yesterday", label: "Yesterday" },
-  { key: "last7", label: "Last 7 Days" },
-  { key: "last30", label: "Last 30 Days" },
-  { key: "thisMonth", label: "This Month" },
-  { key: "lastMonth", label: "Last Month" },
+const PRESETS: { key: PresetKey; labelKey: string }[] = [
+  { key: "today", labelKey: "dateRangePicker.preset.today" },
+  { key: "yesterday", labelKey: "dateRangePicker.preset.yesterday" },
+  { key: "last7", labelKey: "dateRangePicker.preset.last7" },
+  { key: "last30", labelKey: "dateRangePicker.preset.last30" },
+  { key: "thisMonth", labelKey: "dateRangePicker.preset.thisMonth" },
+  { key: "lastMonth", labelKey: "dateRangePicker.preset.lastMonth" },
 ];
 
 const presetRange = (kind: PresetKey): { from: Date; to: Date } => {
@@ -103,6 +104,7 @@ export function DateRangePicker({
   label,
   compact,
 }: Props) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<DateRange | undefined>(() => ({
     from: parseIso(from),
@@ -126,11 +128,11 @@ export function DateRangePicker({
 
   // Detect which preset (if any) an ISO from/to pair corresponds to, so the
   // sidebar can highlight it when the picker is reopened on an existing range.
-  const detectPreset = (f: string, t: string): PresetKey | "custom" | null => {
+  const detectPreset = (f: string, toIso: string): PresetKey | "custom" | null => {
     if (!f) return null;
     for (const p of PRESETS) {
       const r = presetRange(p.key);
-      if (isoOf(r.from) === f && isoOf(r.to) === t) return p.key;
+      if (isoOf(r.from) === f && isoOf(r.to) === toIso) return p.key;
     }
     return "custom";
   };
@@ -256,9 +258,9 @@ export function DateRangePicker({
 
   const handleApply = () => {
     const f = draft?.from ? isoOf(draft.from) : "";
-    const t = draft?.to ? isoOf(draft.to) : "";
+    const toIso = draft?.to ? isoOf(draft.to) : "";
     if (!allowEmpty && !f) return;
-    onApply(f, t);
+    onApply(f, toIso);
     setOpen(false);
   };
 
@@ -271,13 +273,17 @@ export function DateRangePicker({
   };
 
   const triggerLabel =
-    from && to ? `${fmt(from)} - ${fmt(to)}` : from ? fmt(from) : "Select date range";
+    from && to
+      ? `${fmt(from)} - ${fmt(to)}`
+      : from
+        ? fmt(from)
+        : t("dateRangePicker.trigger.placeholder");
 
   const defaultMonth = useMemo(() => draft?.from ?? new Date(), [draft?.from]);
 
   const footerLabel = draft?.from
     ? `${fmt(isoOf(draft.from))}${draft?.to ? ` - ${fmt(isoOf(draft.to))}` : ""}`
-    : "—";
+    : t("dateRangePicker.footer.empty");
 
   return (
     <div ref={wrapRef} className={`relative inline-block ${className || ""}`}>
@@ -304,7 +310,7 @@ export function DateRangePicker({
           <div
             ref={panelRef}
             role="dialog"
-            aria-label="Pick a date range"
+            aria-label={t("dateRangePicker.dialog.ariaLabel")}
             // Portalled to document.body so it escapes the overflow /
             // stacking context of any modal it's rendered inside. Fixed
             // positioning + z-[60] keeps it above modal backdrops (which
@@ -335,7 +341,7 @@ export function DateRangePicker({
                         : "text-gray-600 hover:bg-gray-100"
                     }`}
                   >
-                    {p.label}
+                    {t(p.labelKey)}
                   </button>
                 ))}
                 <button
@@ -347,7 +353,7 @@ export function DateRangePicker({
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
-                  Custom Range
+                  {t("dateRangePicker.preset.customRange")}
                 </button>
               </div>
 
@@ -377,7 +383,7 @@ export function DateRangePicker({
                     onClick={handleClear}
                     className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600"
                   >
-                    <X className="h-3 w-3" /> Clear
+                    <X className="h-3 w-3" /> {t("dateRangePicker.action.clear")}
                   </button>
                 )}
               </div>
@@ -387,7 +393,7 @@ export function DateRangePicker({
                   onClick={() => setOpen(false)}
                   className="rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
                 >
-                  Cancel
+                  {t("dateRangePicker.action.cancel")}
                 </button>
                 <button
                   type="button"
@@ -395,7 +401,7 @@ export function DateRangePicker({
                   disabled={!allowEmpty && !draft?.from}
                   className="rounded-md bg-brand-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
                 >
-                  Apply
+                  {t("dateRangePicker.action.apply")}
                 </button>
               </div>
             </div>

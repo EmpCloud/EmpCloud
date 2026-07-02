@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
@@ -20,23 +21,23 @@ import {
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
-const EVENT_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-  meeting: { label: "Meeting", color: "bg-blue-100 text-blue-700" },
-  training: { label: "Training", color: "bg-purple-100 text-purple-700" },
-  celebration: { label: "Celebration", color: "bg-pink-100 text-pink-700" },
-  team_building: { label: "Team Building", color: "bg-green-100 text-green-700" },
-  town_hall: { label: "Town Hall", color: "bg-amber-100 text-amber-700" },
-  holiday: { label: "Holiday", color: "bg-red-100 text-red-700" },
-  workshop: { label: "Workshop", color: "bg-indigo-100 text-indigo-700" },
-  social: { label: "Social", color: "bg-teal-100 text-teal-700" },
-  other: { label: "Other", color: "bg-gray-100 text-gray-700" },
+const EVENT_TYPE_CONFIG: Record<string, { labelKey: string; color: string }> = {
+  meeting: { labelKey: "meeting", color: "bg-blue-100 text-blue-700" },
+  training: { labelKey: "training", color: "bg-purple-100 text-purple-700" },
+  celebration: { labelKey: "celebration", color: "bg-pink-100 text-pink-700" },
+  team_building: { labelKey: "team_building", color: "bg-green-100 text-green-700" },
+  town_hall: { labelKey: "town_hall", color: "bg-amber-100 text-amber-700" },
+  holiday: { labelKey: "holiday", color: "bg-red-100 text-red-700" },
+  workshop: { labelKey: "workshop", color: "bg-indigo-100 text-indigo-700" },
+  social: { labelKey: "social", color: "bg-teal-100 text-teal-700" },
+  other: { labelKey: "other", color: "bg-gray-100 text-gray-700" },
 };
 
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  upcoming: { label: "Upcoming", color: "bg-blue-100 text-blue-700" },
-  ongoing: { label: "Ongoing", color: "bg-green-100 text-green-700" },
-  completed: { label: "Completed", color: "bg-gray-100 text-gray-600" },
-  cancelled: { label: "Cancelled", color: "bg-red-100 text-red-700" },
+const STATUS_CONFIG: Record<string, { labelKey: string; color: string }> = {
+  upcoming: { labelKey: "upcoming", color: "bg-blue-100 text-blue-700" },
+  ongoing: { labelKey: "ongoing", color: "bg-green-100 text-green-700" },
+  completed: { labelKey: "completed", color: "bg-gray-100 text-gray-600" },
+  cancelled: { labelKey: "cancelled", color: "bg-red-100 text-red-700" },
 };
 
 function formatDateTime(dateStr: string) {
@@ -51,6 +52,7 @@ function formatDateTime(dateStr: string) {
 }
 
 export default function EventDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
@@ -81,13 +83,13 @@ export default function EventDetailPage() {
       navigate("/events");
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete event"),
+      setDeleteError(err?.response?.data?.error?.message || t("eventDetail.delete.error")),
   });
 
   if (isLoading) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-        Loading event...
+        {t("eventDetail.state.loading")}
       </div>
     );
   }
@@ -95,7 +97,7 @@ export default function EventDetailPage() {
   if (!data) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-        Event not found.
+        {t("eventDetail.state.notFound")}
       </div>
     );
   }
@@ -114,7 +116,7 @@ export default function EventDetailPage() {
           to="/events"
           className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Events
+          <ArrowLeft className="h-4 w-4" /> {t("eventDetail.header.backToEvents")}
         </Link>
         {isHR && (
           <button
@@ -124,7 +126,7 @@ export default function EventDetailPage() {
             }}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 hover:bg-red-50"
           >
-            <Trash2 className="h-3.5 w-3.5" /> Delete
+            <Trash2 className="h-3.5 w-3.5" /> {t("eventDetail.header.delete")}
           </button>
         )}
       </div>
@@ -134,14 +136,14 @@ export default function EventDetailPage() {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${typeConfig.color}`}>
-              {typeConfig.label}
+              {t(`eventDetail.type.${typeConfig.labelKey}`)}
             </span>
             <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${statusConfig.color}`}>
-              {statusConfig.label}
+              {t(`eventDetail.status.${statusConfig.labelKey}`)}
             </span>
             {event.is_mandatory && (
               <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-50 text-red-600">
-                <Star className="h-3 w-3" /> Mandatory
+                <Star className="h-3 w-3" /> {t("eventDetail.badge.mandatory")}
               </span>
             )}
           </div>
@@ -162,7 +164,7 @@ export default function EventDetailPage() {
               <Calendar className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-xs text-gray-400">Date</p>
+              <p className="text-xs text-gray-400">{t("eventDetail.details.dateLabel")}</p>
               <p className="text-sm font-medium text-gray-900">
                 {event.is_all_day
                   ? new Date(event.start_date).toLocaleDateString("en-US", {
@@ -170,12 +172,12 @@ export default function EventDetailPage() {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
-                    }) + " (All Day)"
+                    }) + t("eventDetail.details.allDaySuffix")
                   : formatDateTime(event.start_date)}
               </p>
               {event.end_date && !event.is_all_day && (
                 <p className="text-xs text-gray-500">
-                  to {formatDateTime(event.end_date)}
+                  {t("eventDetail.details.dateRange", { date: formatDateTime(event.end_date) })}
                 </p>
               )}
             </div>
@@ -187,7 +189,7 @@ export default function EventDetailPage() {
                 <MapPin className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-xs text-gray-400">Location</p>
+                <p className="text-xs text-gray-400">{t("eventDetail.details.locationLabel")}</p>
                 <p className="text-sm font-medium text-gray-900">{event.location}</p>
               </div>
             </div>
@@ -199,14 +201,14 @@ export default function EventDetailPage() {
                 <Video className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-xs text-gray-400">Virtual Meeting</p>
+                <p className="text-xs text-gray-400">{t("eventDetail.details.virtualLabel")}</p>
                 <a
                   href={event.virtual_link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-brand-600 hover:underline"
                 >
-                  Join Online
+                  {t("eventDetail.details.joinOnline")}
                 </a>
               </div>
             </div>
@@ -217,11 +219,14 @@ export default function EventDetailPage() {
               <Users className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-xs text-gray-400">Attendees</p>
+              <p className="text-xs text-gray-400">{t("eventDetail.details.attendeesLabel")}</p>
               <p className="text-sm font-medium text-gray-900">
-                {event.attending_count || 0} attending
-                {event.maybe_count > 0 && `, ${event.maybe_count} maybe`}
-                {event.max_attendees ? ` / ${event.max_attendees} max` : ""}
+                {t("eventDetail.details.attendingCount", { count: event.attending_count || 0 })}
+                {event.maybe_count > 0 &&
+                  t("eventDetail.details.maybeSuffix", { count: event.maybe_count })}
+                {event.max_attendees
+                  ? t("eventDetail.details.maxSuffix", { count: event.max_attendees })
+                  : ""}
               </p>
             </div>
           </div>
@@ -231,10 +236,10 @@ export default function EventDetailPage() {
         {event.status !== "cancelled" && event.status !== "completed" && (
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-sm font-semibold text-gray-700 mb-3">
-              Your RSVP
+              {t("eventDetail.rsvp.heading")}
               {myRsvp && (
                 <span className="ml-2 text-xs font-normal text-gray-400">
-                  (Currently: {myRsvp.status})
+                  {t("eventDetail.rsvp.currently", { status: myRsvp.status })}
                 </span>
               )}
             </h3>
@@ -248,7 +253,7 @@ export default function EventDetailPage() {
                     : "border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-300 hover:text-green-700"
                 }`}
               >
-                <CheckCircle className="h-4 w-4" /> Attending
+                <CheckCircle className="h-4 w-4" /> {t("eventDetail.rsvp.attending")}
               </button>
               <button
                 onClick={() => rsvpMutation.mutate("maybe")}
@@ -259,7 +264,7 @@ export default function EventDetailPage() {
                     : "border-gray-300 text-gray-600 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700"
                 }`}
               >
-                <HelpCircle className="h-4 w-4" /> Maybe
+                <HelpCircle className="h-4 w-4" /> {t("eventDetail.rsvp.maybe")}
               </button>
               <button
                 onClick={() => rsvpMutation.mutate("declined")}
@@ -270,7 +275,7 @@ export default function EventDetailPage() {
                     : "border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700"
                 }`}
               >
-                <XCircle className="h-4 w-4" /> Decline
+                <XCircle className="h-4 w-4" /> {t("eventDetail.rsvp.decline")}
               </button>
             </div>
           </div>
@@ -282,7 +287,7 @@ export default function EventDetailPage() {
             {attendingRsvps.length > 0 && (
               <div className="mb-4">
                 <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                  Attending ({attendingRsvps.length})
+                  {t("eventDetail.attendees.attendingHeading", { count: attendingRsvps.length })}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {attendingRsvps.map((r: any) => (
@@ -300,7 +305,7 @@ export default function EventDetailPage() {
             {maybeRsvps.length > 0 && (
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                  Maybe ({maybeRsvps.length})
+                  {t("eventDetail.attendees.maybeHeading", { count: maybeRsvps.length })}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {maybeRsvps.map((r: any) => (
@@ -335,11 +340,9 @@ export default function EventDetailPage() {
                   <Trash2 className="h-5 w-5 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete event?</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t("eventDetail.delete.title")}</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    Delete{" "}
-                    <span className="font-medium text-gray-700">{event.title}</span>?
-                    This permanently removes the event and its RSVPs. This cannot be undone.
+                    {t("eventDetail.delete.confirm", { name: event.title })}
                   </p>
                 </div>
               </div>
@@ -356,7 +359,7 @@ export default function EventDetailPage() {
                 disabled={deleteMutation.isPending}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
               >
-                Cancel
+                {t("eventDetail.delete.cancel")}
               </button>
               <button
                 type="button"
@@ -366,10 +369,10 @@ export default function EventDetailPage() {
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("eventDetail.delete.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("eventDetail.delete.confirmButton")
                 )}
               </button>
             </div>
