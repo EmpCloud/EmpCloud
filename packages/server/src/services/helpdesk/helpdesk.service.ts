@@ -790,7 +790,8 @@ export async function createArticle(
     organization_id: orgId,
     title: data.title,
     slug: finalSlug,
-    content: data.content,
+    // Rich-text (HTML) content — sanitize on write; the KB view renders it as HTML.
+    content: sanitizeHtml(data.content),
     category: data.category,
     is_published: data.is_published ?? false,
     is_featured: data.is_featured ?? false,
@@ -919,7 +920,7 @@ export async function updateArticle(
 
   const updateData: Record<string, any> = { updated_at: new Date() };
   if (data.title !== undefined) updateData.title = data.title;
-  if (data.content !== undefined) updateData.content = data.content;
+  if (data.content !== undefined) updateData.content = sanitizeHtml(data.content);
   if (data.category !== undefined) updateData.category = data.category;
   if (data.slug !== undefined) updateData.slug = data.slug;
   if (data.is_published !== undefined) updateData.is_published = data.is_published;

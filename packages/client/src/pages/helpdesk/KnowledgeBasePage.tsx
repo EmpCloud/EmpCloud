@@ -3,6 +3,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import RichTextEditor, { isRichTextEmpty } from "@/components/ui/RichTextEditor";
 import {
   BookMarked,
   Search,
@@ -423,12 +424,10 @@ export default function KnowledgeBasePage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("kb.contentLabel")}
               </label>
-              <textarea
+              <RichTextEditor
                 value={formContent}
-                onChange={(e) => setFormContent(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[200px]"
+                onChange={setFormContent}
                 placeholder={t("kb.contentPlaceholder")}
-                required
               />
             </div>
 
@@ -446,7 +445,7 @@ export default function KnowledgeBasePage() {
                   createArticle.isPending ||
                   updateArticle.isPending ||
                   !formTitle.trim() ||
-                  !formContent.trim()
+                  isRichTextEmpty(formContent)
                 }
                 className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
