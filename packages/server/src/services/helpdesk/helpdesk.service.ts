@@ -6,6 +6,7 @@ import { getDB } from "../../db/connection.js";
 import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { createNotification } from "../notification/notification.service.js";
+import { sanitizeHtml } from "../../utils/sanitize-html.js";
 
 // ---------------------------------------------------------------------------
 // SLA Configuration by Priority
@@ -49,7 +50,9 @@ export async function createTicket(
     category: data.category,
     priority,
     subject: data.subject,
-    description: data.description,
+    // Description is now rich-text (HTML) from the client editor — sanitize on write
+    // via the shared allow-list (same as announcements/policies) to prevent stored XSS.
+    description: sanitizeHtml(data.description),
     status: "open",
     assigned_to: null,
     department_id: data.department_id || null,
