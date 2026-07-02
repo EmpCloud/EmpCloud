@@ -3886,7 +3886,9 @@
         "endBeforeStart": "End date cannot be before start date."
       },
       "cancel": "Cancel",
-      "submit": "Create Event"
+      "submit": "Create Event",
+      "editTitle": "Edit Event",
+      "updateSubmit": "Update Event"
     },
     "upcoming": {
       "title": "Upcoming Events",
@@ -3897,7 +3899,9 @@
       "cancel": "Cancel",
       "deleteTitle": "Delete event",
       "attending_one": "{{count}} attending",
-      "attending_other": "{{count}} attending"
+      "attending_other": "{{count}} attending",
+      "edit": "Edit",
+      "editTitle": "Edit event"
     },
     "deleteModal": {
       "title": "Delete event?",
@@ -3906,6 +3910,12 @@
       "confirm": "Delete",
       "deleting": "Deleting...",
       "error": "Failed to delete event"
+    },
+    "toast": {
+      "created": "Event created",
+      "updated": "Event updated",
+      "createFailed": "Failed to create event",
+      "updateFailed": "Failed to update event"
     }
   },
   "surveyBuilder": {

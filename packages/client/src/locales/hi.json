@@ -3886,7 +3886,9 @@
         "endBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
       },
       "cancel": "रद्द करें",
-      "submit": "इवेंट बनाएं"
+      "submit": "इवेंट बनाएं",
+      "editTitle": "इवेंट संपादित करें",
+      "updateSubmit": "इवेंट अपडेट करें"
     },
     "upcoming": {
       "title": "आगामी इवेंट",
@@ -3897,7 +3899,9 @@
       "cancel": "रद्द करें",
       "deleteTitle": "इवेंट हटाएं",
       "attending_one": "{{count}} उपस्थित",
-      "attending_other": "{{count}} उपस्थित"
+      "attending_other": "{{count}} उपस्थित",
+      "edit": "संपादित करें",
+      "editTitle": "इवेंट संपादित करें"
     },
     "deleteModal": {
       "title": "इवेंट हटाएं?",
@@ -3906,6 +3910,12 @@
       "confirm": "हटाएं",
       "deleting": "हटाया जा रहा है...",
       "error": "इवेंट हटाने में विफल"
+    },
+    "toast": {
+      "created": "इवेंट बनाया गया",
+      "updated": "इवेंट अपडेट किया गया",
+      "createFailed": "इवेंट बनाने में विफल",
+      "updateFailed": "इवेंट अपडेट करने में विफल"
     }
   },
   "surveyBuilder": {
