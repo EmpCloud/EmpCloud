@@ -4375,7 +4375,8 @@
       "cancel": "キャンセル",
       "creating": "作成中...",
       "submit": "目標を作成",
-      "errorEndBeforeStart": "終了日は開始日より前に設定できません。"
+      "errorEndBeforeStart": "終了日は開始日より前に設定できません。",
+      "createSuccess": "目標を作成しました"
     },
     "progressModal": {
       "title": "進捗の更新",

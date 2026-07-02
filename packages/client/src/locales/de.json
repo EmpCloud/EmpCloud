@@ -4375,7 +4375,8 @@
       "cancel": "Abbrechen",
       "creating": "Wird erstellt ...",
       "submit": "Ziel erstellen",
-      "errorEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen."
+      "errorEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+      "createSuccess": "Ziel erstellt"
     },
     "progressModal": {
       "title": "Fortschritt aktualisieren",

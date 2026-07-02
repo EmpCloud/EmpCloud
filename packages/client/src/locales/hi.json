@@ -4375,7 +4375,8 @@
       "cancel": "रद्द करें",
       "creating": "बनाया जा रहा है...",
       "submit": "लक्ष्य बनाएं",
-      "errorEndBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।"
+      "errorEndBeforeStart": "समाप्ति तिथि आरंभ तिथि से पहले नहीं हो सकती।",
+      "createSuccess": "लक्ष्य बनाया गया"
     },
     "progressModal": {
       "title": "प्रगति अपडेट करें",
