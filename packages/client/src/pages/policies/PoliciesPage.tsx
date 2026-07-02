@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
 import { FileText, Plus, Check, ChevronDown, ChevronUp, Users, Trash2, Pencil } from "lucide-react";
 
 // Defensive fallback for legacy rows that slipped past validation with a
@@ -632,6 +633,15 @@ function HRPoliciesView() {
                         if (viewAckFor === id) setViewAckFor(null);
                         if (viewContentFor === id) setViewContentFor(null);
                         setConfirmDeleteId(null);
+                        showToast("success", t("policies.toast.deleted"));
+                      },
+                      onError: (err: any) => {
+                        showToast(
+                          "error",
+                          err?.response?.data?.error?.message ||
+                            err?.response?.data?.message ||
+                            t("policies.toast.deleteFailed"),
+                        );
                       },
                     });
                   }}

@@ -848,6 +848,10 @@
       "deleteConfirmPrefix": "Möchten Sie wirklich",
       "deleteConfirmSuffix": " löschen? Die Richtlinie wird für Mitarbeiter ausgeblendet; vorhandene Bestätigungen werden für die Prüfung aufbewahrt.",
       "deleteConfirmGeneric": "Möchten Sie diese Richtlinie wirklich löschen?"
+    },
+    "toast": {
+      "deleted": "Richtlinie gelöscht",
+      "deleteFailed": "Richtlinie konnte nicht gelöscht werden"
     }
   },
   "announcements": {
