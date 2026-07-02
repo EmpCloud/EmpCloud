@@ -848,6 +848,12 @@
       "deleteConfirmPrefix": "本当に削除しますか:",
       "deleteConfirmSuffix": "？ この方針は従業員に非表示になります。既存の承認は監査のために保持されます。",
       "deleteConfirmGeneric": "この方針を本当に削除しますか？"
+    },
+    "toast": {
+      "updated": "ポリシーを更新しました",
+      "created": "ポリシーを作成しました",
+      "updateFailed": "ポリシーの更新に失敗しました",
+      "createFailed": "ポリシーの作成に失敗しました"
     }
   },
   "announcements": {

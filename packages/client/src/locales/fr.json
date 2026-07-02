@@ -848,6 +848,12 @@
       "deleteConfirmPrefix": "Voulez-vous vraiment supprimer",
       "deleteConfirmSuffix": " ? La politique sera masquée pour les employés ; les accusés de réception existants sont conservés à des fins d'audit.",
       "deleteConfirmGeneric": "Voulez-vous vraiment supprimer cette politique ?"
+    },
+    "toast": {
+      "updated": "Politique mise à jour",
+      "created": "Politique créée",
+      "updateFailed": "Échec de la mise à jour de la politique",
+      "createFailed": "Échec de la création de la politique"
     }
   },
   "announcements": {

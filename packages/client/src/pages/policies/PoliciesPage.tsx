@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
 import { FileText, Plus, Check, ChevronDown, ChevronUp, Users, Trash2, Pencil } from "lucide-react";
 
 // Defensive fallback for legacy rows that slipped past validation with a
@@ -281,12 +282,23 @@ function HRPoliciesView() {
       category: category || null,
       effective_date: effectiveDate || null,
     };
-    if (editingId != null) {
-      await updatePolicy.mutateAsync({ id: editingId, data: payload });
-    } else {
-      await createPolicy.mutateAsync(payload);
+    const isEditing = editingId != null;
+    try {
+      if (isEditing) {
+        await updatePolicy.mutateAsync({ id: editingId, data: payload });
+      } else {
+        await createPolicy.mutateAsync(payload);
+      }
+      showToast("success", isEditing ? t("policies.toast.updated") : t("policies.toast.created"));
+      resetForm();
+    } catch (err: any) {
+      // Keep the form open with the user's edits intact so they can retry.
+      const msg =
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        (isEditing ? t("policies.toast.updateFailed") : t("policies.toast.createFailed"));
+      showToast("error", msg);
     }
-    resetForm();
   };
 
   const isSavingPolicy = editingId != null ? updatePolicy.isPending : createPolicy.isPending;

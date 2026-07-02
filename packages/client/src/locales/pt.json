@@ -848,6 +848,12 @@
       "deleteConfirmPrefix": "Tem certeza de que deseja excluir",
       "deleteConfirmSuffix": "? A política ficará oculta para os funcionários; as confirmações existentes são mantidas para auditoria.",
       "deleteConfirmGeneric": "Tem certeza de que deseja excluir esta política?"
+    },
+    "toast": {
+      "updated": "Política atualizada",
+      "created": "Política criada",
+      "updateFailed": "Falha ao atualizar a política",
+      "createFailed": "Falha ao criar a política"
     }
   },
   "announcements": {

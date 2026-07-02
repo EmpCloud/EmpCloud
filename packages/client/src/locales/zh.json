@@ -848,6 +848,12 @@
       "deleteConfirmPrefix": "确定要删除",
       "deleteConfirmSuffix": "吗？该政策将对员工隐藏；现有确认记录将保留以供审计。",
       "deleteConfirmGeneric": "确定要删除此政策吗？"
+    },
+    "toast": {
+      "updated": "政策已更新",
+      "created": "政策已创建",
+      "updateFailed": "政策更新失败",
+      "createFailed": "政策创建失败"
     }
   },
   "announcements": {

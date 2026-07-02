@@ -848,6 +848,12 @@
       "deleteConfirmPrefix": "هل أنت متأكد أنك تريد حذف",
       "deleteConfirmSuffix": "؟ ستُخفى السياسة عن الموظفين؛ ويتم الاحتفاظ بالإقرارات الحالية للتدقiق.",
       "deleteConfirmGeneric": "هل أنت متأكد أنك تريد حذف هذه السياسة؟"
+    },
+    "toast": {
+      "updated": "تم تحديث السياسة",
+      "created": "تم إنشاء السياسة",
+      "updateFailed": "تعذّر تحديث السياسة",
+      "createFailed": "تعذّر إنشاء السياسة"
     }
   },
   "announcements": {

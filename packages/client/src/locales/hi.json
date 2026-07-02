@@ -848,6 +848,12 @@
       "deleteConfirmPrefix": "क्या आप वाकई हटाना चाहते हैं",
       "deleteConfirmSuffix": "? नीति कर्मचारियों से छिपा दी जाएगी; मौजूदा स्वीकृतियां ऑडिट के लिए बनी रहेंगी।",
       "deleteConfirmGeneric": "क्या आप वाकई इस नीति को हटाना चाहते हैं?"
+    },
+    "toast": {
+      "updated": "नीति अपडेट की गई",
+      "created": "नीति बनाई गई",
+      "updateFailed": "नीति अपडेट करने में विफल",
+      "createFailed": "नीति बनाने में विफल"
     }
   },
   "announcements": {
