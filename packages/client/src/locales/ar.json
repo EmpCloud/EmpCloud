@@ -6579,6 +6579,13 @@
     },
     "errors": {
       "deactivateFailed": "فشل إلغاء تنشيط الفئة"
+    },
+    "toast": {
+      "created": "تمت إضافة الفئة",
+      "updated": "تم تحديث الفئة",
+      "deactivated": "تم إلغاء تنشيط الفئة",
+      "createFailed": "فشل في إضافة الفئة",
+      "updateFailed": "فشل في تحديث الفئة"
     }
   },
   "myAssets": {

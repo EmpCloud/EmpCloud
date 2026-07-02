@@ -6227,6 +6227,13 @@
     },
     "errors": {
       "deactivateFailed": "Kategorie konnte nicht deaktiviert werden"
+    },
+    "toast": {
+      "created": "Kategorie hinzugefügt",
+      "updated": "Kategorie aktualisiert",
+      "deactivated": "Kategorie deaktiviert",
+      "createFailed": "Kategorie konnte nicht hinzugefügt werden",
+      "updateFailed": "Kategorie konnte nicht aktualisiert werden"
     }
   },
   "myAssets": {

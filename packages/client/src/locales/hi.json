@@ -6227,6 +6227,13 @@
     },
     "errors": {
       "deactivateFailed": "श्रेणी निष्क्रिय करने में विफल"
+    },
+    "toast": {
+      "created": "श्रेणी जोड़ी गई",
+      "updated": "श्रेणी अपडेट की गई",
+      "deactivated": "श्रेणी निष्क्रिय की गई",
+      "createFailed": "श्रेणी जोड़ने में विफल",
+      "updateFailed": "श्रेणी अपडेट करने में विफल"
     }
   },
   "myAssets": {

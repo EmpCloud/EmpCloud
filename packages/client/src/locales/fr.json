@@ -6227,6 +6227,13 @@
     },
     "errors": {
       "deactivateFailed": "Échec de la désactivation de la catégorie"
+    },
+    "toast": {
+      "created": "Catégorie ajoutée",
+      "updated": "Catégorie mise à jour",
+      "deactivated": "Catégorie désactivée",
+      "createFailed": "Échec de l'ajout de la catégorie",
+      "updateFailed": "Échec de la mise à jour de la catégorie"
     }
   },
   "myAssets": {

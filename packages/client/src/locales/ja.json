@@ -6227,6 +6227,13 @@
     },
     "errors": {
       "deactivateFailed": "カテゴリの無効化に失敗しました"
+    },
+    "toast": {
+      "created": "カテゴリを追加しました",
+      "updated": "カテゴリを更新しました",
+      "deactivated": "カテゴリを無効化しました",
+      "createFailed": "カテゴリの追加に失敗しました",
+      "updateFailed": "カテゴリの更新に失敗しました"
     }
   },
   "myAssets": {

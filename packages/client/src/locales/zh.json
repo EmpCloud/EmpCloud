@@ -6227,6 +6227,13 @@
     },
     "errors": {
       "deactivateFailed": "停用类别失败"
+    },
+    "toast": {
+      "created": "已添加类别",
+      "updated": "已更新类别",
+      "deactivated": "已停用类别",
+      "createFailed": "添加类别失败",
+      "updateFailed": "更新类别失败"
     }
   },
   "myAssets": {
