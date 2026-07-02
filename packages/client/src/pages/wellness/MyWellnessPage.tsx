@@ -145,7 +145,7 @@ export default function MyWellnessPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t("myWellness.header.title")}</h1>
           <p className="text-gray-500 mt-1">{t("myWellness.header.subtitle")}</p>
@@ -170,7 +170,7 @@ export default function MyWellnessPage() {
 
   if (isError) {
     return (
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="space-y-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t("myWellness.header.title")}</h1>
           <p className="text-gray-500 mt-1">{t("myWellness.header.subtitle")}</p>
@@ -187,7 +187,7 @@ export default function MyWellnessPage() {
   const checkIns = checkInsData?.data || [];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
