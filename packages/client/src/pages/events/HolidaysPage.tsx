@@ -5,6 +5,7 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { PartyPopper, Plus, Trash2, CalendarDays } from "lucide-react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { showToast } from "@/components/ui/Toast";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -113,11 +114,12 @@ export default function HolidaysPage() {
           is_mandatory: data.is_mandatory,
         })
         .then((r) => r.data.data),
-    onSuccess: () => {
+    onSuccess: (_created, vars) => {
       qc.invalidateQueries({ queryKey: ["holidays"] });
       setShowAdd(false);
       setForm({ title: "", description: "", start_date: "", end_date: "", is_mandatory: false });
       setAddError("");
+      showToast("success", t("holidays.addSuccess", { title: vars.title.trim() }));
     },
     onError: (err: any) => {
       setAddError(err?.response?.data?.error?.message || t("holidays.addError"));

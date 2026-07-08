@@ -2356,6 +2356,7 @@
     "cancel": "Abbrechen",
     "adding": "Wird hinzugefügt...",
     "addError": "Feiertag konnte nicht hinzugefügt werden.",
+    "addSuccess": "Feiertag „{{title}}“ erfolgreich hinzugefügt.",
     "loading": "Feiertage werden geladen...",
     "empty": "Noch keine Feiertage aufgeführt.",
     "emptyHint": "Klicken Sie auf \"Feiertag hinzufügen\", um zu beginnen.",

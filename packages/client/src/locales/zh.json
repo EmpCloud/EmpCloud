@@ -2356,6 +2356,7 @@
     "cancel": "取消",
     "adding": "正在添加...",
     "addError": "添加节假日失败。",
+    "addSuccess": "已成功添加节假日\"{{title}}\"。",
     "loading": "正在加载节假日...",
     "empty": "尚无节假日列出。",
     "emptyHint": "点击“添加节假日”开始。",
