@@ -346,7 +346,7 @@ export default function LeaveDashboardPage() {
               return (
                 <div
                   key={type.id}
-                  className="bg-white rounded-xl border border-gray-200 p-5"
+                  className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col h-full"
                 >
                   <div className="flex items-center gap-3 mb-1">
                     <div
@@ -429,14 +429,16 @@ export default function LeaveDashboardPage() {
                     const den = usePeriod ? periodQuota : total;
                     const pct = den > 0 ? Math.min(100, (num / den) * 100) : 0;
                     return (
-                      <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full transition-all"
-                          style={{
-                            width: `${pct}%`,
-                            backgroundColor: typeColor,
-                          }}
-                        />
+                      <div className="mt-auto pt-3">
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div
+                            className="h-2 rounded-full transition-all"
+                            style={{
+                              width: `${pct}%`,
+                              backgroundColor: typeColor,
+                            }}
+                          />
+                        </div>
                       </div>
                     );
                   })()}
