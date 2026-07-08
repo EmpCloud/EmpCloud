@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import api from "@/api/client";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import {
   MessageCircle,
   Send,
@@ -12,6 +14,7 @@ import {
   Loader2,
   Sparkles,
   ArrowLeft,
+  Minimize2,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -305,11 +308,13 @@ function TypingIndicator() {
 
 export default function ChatbotPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { i18n } = useTranslation();
   const [activeConvoId, setActiveConvoId] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -376,7 +381,9 @@ export default function ChatbotPage() {
     onSuccess: (deletedId: number) => {
       queryClient.invalidateQueries({ queryKey: ["chatbot-conversations"] });
       if (activeConvoId === deletedId) setActiveConvoId(null);
+      setDeleteId(null);
     },
+    onError: () => setDeleteId(null),
   });
 
   // Scroll to bottom on new messages
@@ -400,13 +407,38 @@ export default function ChatbotPage() {
   );
 
   const handleNewChat = useCallback(() => {
+    // Don't pile up empty conversations — if the active chat has no messages
+    // yet, just reuse it instead of creating another blank one.
+    const active = conversations.find((c) => c.id === activeConvoId);
+    if (active && active.message_count === 0) {
+      setShowSidebar(false);
+      inputRef.current?.focus();
+      return;
+    }
     createConvo.mutate();
-  }, [createConvo]);
+  }, [conversations, activeConvoId, createConvo]);
 
   const handleSelectConvo = useCallback((id: number) => {
     setActiveConvoId(id);
     setShowSidebar(false);
   }, []);
+
+  // Back — return to the conversation list / landing (and surface the
+  // sidebar on mobile where it is hidden while a chat is open).
+  const handleBack = useCallback(() => {
+    setActiveConvoId(null);
+    setShowSidebar(true);
+  }, []);
+
+  // Minimize — collapse the full-page assistant back to the previous page.
+  const handleMinimize = useCallback(() => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/");
+  }, [navigate]);
+
+  // Only list conversations that actually hold messages — a freshly created
+  // (or fully cleared) chat stays out of the list until the first message.
+  const visibleConversations = conversations.filter((c) => c.message_count > 0);
 
   return (
     <div className="h-[calc(100vh-7rem)] flex rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm">
@@ -447,14 +479,14 @@ export default function ChatbotPage() {
 
         {/* Conversation list */}
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {conversations.length === 0 ? (
+          {visibleConversations.length === 0 ? (
             <div className="text-center py-12 px-4">
               <MessageCircle className="h-10 w-10 text-gray-300 mx-auto mb-3" />
               <p className="text-sm text-gray-400">No conversations yet</p>
               <p className="text-xs text-gray-400 mt-1">Start a new conversation above</p>
             </div>
           ) : (
-            conversations.map((c) => (
+            visibleConversations.map((c) => (
               <div
                 key={c.id}
                 className={`group flex items-center gap-2 rounded-lg cursor-pointer transition-colors ${
@@ -481,7 +513,7 @@ export default function ChatbotPage() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    deleteConvo.mutate(c.id);
+                    setDeleteId(c.id);
                   }}
                   className="shrink-0 p-1.5 mr-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-md hover:bg-red-50"
                 >
@@ -500,8 +532,9 @@ export default function ChatbotPage() {
             {/* Chat header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white shrink-0">
               <button
-                onClick={() => setShowSidebar(true)}
-                className="md:hidden p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                onClick={handleBack}
+                title="Back to conversations"
+                className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
@@ -525,6 +558,13 @@ export default function ChatbotPage() {
                   )}
                 </div>
               </div>
+              <button
+                onClick={handleMinimize}
+                title="Minimize assistant"
+                className="ml-auto p-1.5 text-gray-500 hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors"
+              >
+                <Minimize2 className="h-4 w-4" />
+              </button>
             </div>
 
             {/* Messages */}
@@ -617,7 +657,14 @@ export default function ChatbotPage() {
           </>
         ) : (
           /* Empty state — no conversation selected */
-          <div className="flex-1 flex flex-col items-center justify-center bg-gray-50/50">
+          <div className="relative flex-1 flex flex-col items-center justify-center bg-gray-50/50">
+            <button
+              onClick={handleMinimize}
+              title="Minimize assistant"
+              className="absolute top-3 right-3 p-1.5 text-gray-500 hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors"
+            >
+              <Minimize2 className="h-4 w-4" />
+            </button>
             <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-6 shadow-xl shadow-violet-200">
               <Sparkles className="h-10 w-10 text-white" />
             </div>
@@ -652,6 +699,18 @@ export default function ChatbotPage() {
           </div>
         )}
       </div>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Delete conversation?"
+        description="This conversation and all of its messages will be permanently deleted. This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+        loading={deleteConvo.isPending}
+        onConfirm={() => deleteId !== null && deleteConvo.mutate(deleteId)}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 }
