@@ -2356,6 +2356,7 @@
     "cancel": "Cancelar",
     "adding": "Agregando...",
     "addError": "No se pudo agregar el festivo.",
+    "addSuccess": "Festivo \"{{title}}\" agregado correctamente.",
     "loading": "Cargando festivos...",
     "empty": "Aún no hay festivos en la lista.",
     "emptyHint": "Haz clic en \"Agregar Festivo\" para empezar.",

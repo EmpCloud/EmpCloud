@@ -2356,6 +2356,7 @@
     "cancel": "Cancel",
     "adding": "Adding...",
     "addError": "Failed to add holiday.",
+    "addSuccess": "Holiday \"{{title}}\" added successfully.",
     "loading": "Loading holidays...",
     "empty": "No holidays listed yet.",
     "emptyHint": "Click \"Add Holiday\" to get started.",
