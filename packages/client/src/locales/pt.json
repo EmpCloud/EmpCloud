@@ -4809,6 +4809,7 @@
       "headcountMinError": "O orçamento de headcount deve ser de no mínimo 1.",
       "saving": "Salvando...",
       "saveChanges": "Salvar alterações",
+      "updateSuccess": "Cargo \"{{title}}\" atualizado com sucesso.",
       "updateFailedInline": "Falha ao atualizar a posição"
     },
     "employmentType": {

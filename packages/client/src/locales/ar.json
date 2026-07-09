@@ -5073,6 +5073,7 @@
       "headcountMinError": "يجب ألا يقل عدد الوظائف المخطّط عن 1.",
       "saving": "جارٍ الحفظ...",
       "saveChanges": "حفظ التغييرات",
+      "updateSuccess": "تم تحديث الوظيفة \"{{title}}\" بنجاح.",
       "updateFailedInline": "تعذّر تحديث المنصب"
     },
     "employmentType": {

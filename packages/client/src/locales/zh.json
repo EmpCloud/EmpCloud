@@ -4809,6 +4809,7 @@
       "headcountMinError": "编制人数至少为 1。",
       "saving": "保存中...",
       "saveChanges": "保存更改",
+      "updateSuccess": "已成功更新职位\"{{title}}\"。",
       "updateFailedInline": "更新职位失败"
     },
     "employmentType": {

@@ -4809,6 +4809,7 @@
       "headcountMinError": "La plantilla presupuestada debe ser al menos 1.",
       "saving": "Guardando...",
       "saveChanges": "Guardar cambios",
+      "updateSuccess": "Puesto \"{{title}}\" actualizado correctamente.",
       "updateFailedInline": "No se pudo actualizar el puesto"
     },
     "employmentType": {

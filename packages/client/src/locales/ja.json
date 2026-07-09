@@ -4809,6 +4809,7 @@
       "headcountMinError": "定員数は1以上である必要があります。",
       "saving": "保存中...",
       "saveChanges": "変更を保存",
+      "updateSuccess": "ポジション「{{title}}」を更新しました。",
       "updateFailedInline": "ポジションを更新できませんでした"
     },
     "employmentType": {
