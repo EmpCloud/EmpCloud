@@ -848,6 +848,14 @@
       "deleteConfirmPrefix": "Tem certeza de que deseja excluir",
       "deleteConfirmSuffix": "? A política ficará oculta para os funcionários; as confirmações existentes são mantidas para auditoria.",
       "deleteConfirmGeneric": "Tem certeza de que deseja excluir esta política?"
+    },
+    "toast": {
+      "deleted": "Política excluída",
+      "deleteFailed": "Falha ao excluir política",
+      "updated": "Política atualizada",
+      "created": "Política criada",
+      "updateFailed": "Falha ao atualizar a política",
+      "createFailed": "Falha ao criar a política"
     }
   },
   "announcements": {
@@ -1058,6 +1066,10 @@
       "requestedCheckOut": "Saída solicitada",
       "checkoutAfterCheckin": "O horário de saída deve ser posterior ao horário de entrada.",
       "submit": "Enviar",
+      "submitSuccess": "Solicitação de regularização enviada com sucesso.",
+      "submitError": "Falha ao enviar a solicitação de regularização.",
+      "approveSuccess": "Solicitação de regularização aprovada.",
+      "rejectSuccess": "Solicitação de regularização rejeitada.",
       "rejectionPrompt": "Motivo da rejeição (opcional):",
       "noRecords": "Nenhuma solicitação de regularização",
       "approve": "Aprovar",
@@ -1213,6 +1225,7 @@
       "errorDelete": "Falha ao excluir a solicitação.",
       "errorCheckoutAfter": "O horário de saída deve ser posterior ao de entrada.",
       "errorSubmit": "Falha ao enviar a solicitação de regularização.",
+      "regSuccess": "Solicitação de regularização enviada com sucesso.",
       "loadingTimeline": "Carregando linha do tempo…",
       "timelineError": "Não foi possível carregar a linha do tempo deste registro.",
       "noPunches": "Sem histórico de marcações para este dia.",
@@ -1765,6 +1778,7 @@
       "criticalRole": "Cargo Crítico",
       "creating": "Criando...",
       "failedCreate": "Falha ao criar o cargo",
+      "createSuccess": "Cargo \"{{title}}\" criado com sucesso.",
       "searchPlaceholder": "Buscar por título ou código...",
       "allDepartments": "Todos os departamentos",
       "allStatuses": "Todos os status",
@@ -1779,6 +1793,7 @@
       "colCritical": "Crítico",
       "noPositions": "Nenhum cargo encontrado",
       "deleteTooltip": "Excluir cargo",
+      "editTooltip": "Editar cargo",
       "pageOf": "Página {{page}} de {{total_pages}} ({{total}} no total)",
       "deleteTitle": "Excluir cargo?",
       "deleteConfirm": "Excluir {{title}}? As atribuições ativas são encerradas e o cargo é fechado. Esta ação não pode ser desfeita.",
@@ -2365,6 +2380,10 @@
     "adding": "Adicionando...",
     "addError": "Falha ao adicionar feriado.",
     "addSuccess": "Feriado \"{{title}}\" adicionado com sucesso.",
+    "editHoliday": "Editar feriado",
+    "updating": "Atualizando...",
+    "editSuccess": "Feriado \"{{title}}\" atualizado com sucesso.",
+    "editError": "Falha ao atualizar o feriado.",
     "loading": "Carregando feriados...",
     "empty": "Nenhum feriado listado ainda.",
     "emptyHint": "Clique em \"Adicionar Feriado\" para começar.",
@@ -3895,7 +3914,9 @@
         "endBeforeStart": "A data de término não pode ser anterior à data de início."
       },
       "cancel": "Cancelar",
-      "submit": "Criar evento"
+      "submit": "Criar evento",
+      "editTitle": "Editar evento",
+      "updateSubmit": "Atualizar evento"
     },
     "upcoming": {
       "title": "Próximos eventos",
@@ -3906,7 +3927,9 @@
       "cancel": "Cancelar",
       "deleteTitle": "Excluir evento",
       "attending_one": "{{count}} confirmado",
-      "attending_other": "{{count}} confirmados"
+      "attending_other": "{{count}} confirmados",
+      "edit": "Editar",
+      "editTitle": "Editar evento"
     },
     "deleteModal": {
       "title": "Excluir evento?",
@@ -3915,6 +3938,12 @@
       "confirm": "Excluir",
       "deleting": "Excluindo...",
       "error": "Falha ao excluir o evento"
+    },
+    "toast": {
+      "created": "Evento criado",
+      "updated": "Evento atualizado",
+      "createFailed": "Falha ao criar o evento",
+      "updateFailed": "Falha ao atualizar o evento"
     }
   },
   "surveyBuilder": {
@@ -4384,7 +4413,8 @@
       "cancel": "Cancelar",
       "creating": "Criando...",
       "submit": "Criar Meta",
-      "errorEndBeforeStart": "A data de término não pode ser anterior à data de início."
+      "errorEndBeforeStart": "A data de término não pode ser anterior à data de início.",
+      "createSuccess": "Meta criada"
     },
     "progressModal": {
       "title": "Atualizar Progresso",
@@ -4789,6 +4819,7 @@
       "headcountMinError": "O orçamento de headcount deve ser de no mínimo 1.",
       "saving": "Salvando...",
       "saveChanges": "Salvar alterações",
+      "updateSuccess": "Cargo \"{{title}}\" atualizado com sucesso.",
       "updateFailedInline": "Falha ao atualizar a posição"
     },
     "employmentType": {
@@ -6236,6 +6267,13 @@
     },
     "errors": {
       "deactivateFailed": "Falha ao desativar a categoria"
+    },
+    "toast": {
+      "created": "Categoria adicionada",
+      "updated": "Categoria atualizada",
+      "deactivated": "Categoria desativada",
+      "createFailed": "Falha ao adicionar categoria",
+      "updateFailed": "Falha ao atualizar categoria"
     }
   },
   "myAssets": {

@@ -7,6 +7,7 @@ import { usePermissions } from "@/lib/use-permissions";
 import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { showToast } from "@/components/ui/Toast";
+import RichTextEditor, { isRichTextEmpty } from "@/components/ui/RichTextEditor";
 
 // Roles for the targeting dropdown. Labels come from i18n
 // (announcements.page.roles.*).
@@ -248,12 +249,10 @@ export default function AnnouncementsPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldContent")} <span className="text-red-500">*</span></label>
-            <textarea
+            <RichTextEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[120px]"
+              onChange={setContent}
               placeholder={t("announcements.page.contentPlaceholder")}
-              required
             />
           </div>
 
@@ -359,8 +358,8 @@ export default function AnnouncementsPage() {
             </button>
             <button
               type="submit"
-              disabled={isSaving}
-              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              disabled={isSaving || !title.trim() || isRichTextEmpty(content)}
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Megaphone className="h-4 w-4" />{" "}
               {editId != null ? t("announcements.page.saveChanges") : t("announcements.page.publish")}
@@ -428,7 +427,7 @@ export default function AnnouncementsPage() {
                           which caused authored markup to leak as literal
                           <p>...</p> tags to readers (#1634). */}
                       <div
-                        className={`mt-1 text-sm leading-relaxed prose prose-sm max-w-none ${
+                        className={`rich-text mt-1 ${
                           isExpanded ? "" : "line-clamp-2"
                         } ${isRead ? "text-gray-500" : "text-gray-600"}`}
                         dangerouslySetInnerHTML={{ __html: a.content || "" }}

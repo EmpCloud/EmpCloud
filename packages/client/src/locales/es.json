@@ -848,6 +848,14 @@
       "deleteConfirmPrefix": "¿Seguro que quieres eliminar",
       "deleteConfirmSuffix": "? La política se ocultará a los empleados; las confirmaciones existentes se conservan para auditoría.",
       "deleteConfirmGeneric": "¿Seguro que quieres eliminar esta política?"
+    },
+    "toast": {
+      "deleted": "Política eliminada",
+      "deleteFailed": "No se pudo eliminar la política",
+      "updated": "Política actualizada",
+      "created": "Política creada",
+      "updateFailed": "No se pudo actualizar la política",
+      "createFailed": "No se pudo crear la política"
     }
   },
   "announcements": {
@@ -1058,6 +1066,10 @@
       "requestedCheckOut": "Salida solicitada",
       "checkoutAfterCheckin": "La hora de salida debe ser posterior a la hora de entrada.",
       "submit": "Enviar",
+      "submitSuccess": "Solicitud de regularización enviada correctamente.",
+      "submitError": "No se pudo enviar la solicitud de regularización.",
+      "approveSuccess": "Solicitud de regularización aprobada.",
+      "rejectSuccess": "Solicitud de regularización rechazada.",
       "rejectionPrompt": "Motivo del rechazo (opcional):",
       "noRecords": "No hay solicitudes de regularización",
       "approve": "Aprobar",
@@ -1213,6 +1225,7 @@
       "errorDelete": "No se pudo eliminar la solicitud.",
       "errorCheckoutAfter": "La hora de salida debe ser posterior a la de entrada.",
       "errorSubmit": "No se pudo enviar la solicitud de regularización.",
+      "regSuccess": "Solicitud de regularización enviada correctamente.",
       "loadingTimeline": "Cargando cronología…",
       "timelineError": "No se pudo cargar la cronología de este registro.",
       "noPunches": "Sin historial de marcajes para este día.",
@@ -1765,6 +1778,7 @@
       "criticalRole": "Rol Crítico",
       "creating": "Creando...",
       "failedCreate": "Error al crear la posición",
+      "createSuccess": "Puesto \"{{title}}\" creado correctamente.",
       "searchPlaceholder": "Buscar por título o código...",
       "allDepartments": "Todos los departamentos",
       "allStatuses": "Todos los estados",
@@ -1779,6 +1793,7 @@
       "colCritical": "Crítica",
       "noPositions": "No se encontraron posiciones",
       "deleteTooltip": "Eliminar posición",
+      "editTooltip": "Editar puesto",
       "pageOf": "Página {{page}} de {{total_pages}} ({{total}} en total)",
       "deleteTitle": "¿Eliminar posición?",
       "deleteConfirm": "¿Eliminar {{title}}? Las asignaciones activas finalizan y la posición se cierra. Esta acción no se puede deshacer.",
@@ -2365,6 +2380,10 @@
     "adding": "Agregando...",
     "addError": "No se pudo agregar el festivo.",
     "addSuccess": "Festivo \"{{title}}\" agregado correctamente.",
+    "editHoliday": "Editar festivo",
+    "updating": "Actualizando...",
+    "editSuccess": "Festivo \"{{title}}\" actualizado correctamente.",
+    "editError": "No se pudo actualizar el festivo.",
     "loading": "Cargando festivos...",
     "empty": "Aún no hay festivos en la lista.",
     "emptyHint": "Haz clic en \"Agregar Festivo\" para empezar.",
@@ -3895,7 +3914,9 @@
         "endBeforeStart": "La fecha de fin no puede ser anterior a la de inicio."
       },
       "cancel": "Cancelar",
-      "submit": "Crear evento"
+      "submit": "Crear evento",
+      "editTitle": "Editar evento",
+      "updateSubmit": "Actualizar evento"
     },
     "upcoming": {
       "title": "Próximos eventos",
@@ -3906,7 +3927,9 @@
       "cancel": "Cancelar",
       "deleteTitle": "Eliminar evento",
       "attending_one": "{{count}} asistente",
-      "attending_other": "{{count}} asistentes"
+      "attending_other": "{{count}} asistentes",
+      "edit": "Editar",
+      "editTitle": "Editar evento"
     },
     "deleteModal": {
       "title": "¿Eliminar evento?",
@@ -3915,6 +3938,12 @@
       "confirm": "Eliminar",
       "deleting": "Eliminando...",
       "error": "No se pudo eliminar el evento"
+    },
+    "toast": {
+      "created": "Evento creado",
+      "updated": "Evento actualizado",
+      "createFailed": "No se pudo crear el evento",
+      "updateFailed": "No se pudo actualizar el evento"
     }
   },
   "surveyBuilder": {
@@ -4384,7 +4413,8 @@
       "cancel": "Cancelar",
       "creating": "Creando...",
       "submit": "Crear meta",
-      "errorEndBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio."
+      "errorEndBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio.",
+      "createSuccess": "Objetivo creado"
     },
     "progressModal": {
       "title": "Actualizar progreso",
@@ -4789,6 +4819,7 @@
       "headcountMinError": "La plantilla presupuestada debe ser al menos 1.",
       "saving": "Guardando...",
       "saveChanges": "Guardar cambios",
+      "updateSuccess": "Puesto \"{{title}}\" actualizado correctamente.",
       "updateFailedInline": "No se pudo actualizar el puesto"
     },
     "employmentType": {
@@ -6236,6 +6267,13 @@
     },
     "errors": {
       "deactivateFailed": "No se pudo desactivar la categoría"
+    },
+    "toast": {
+      "created": "Categoría añadida",
+      "updated": "Categoría actualizada",
+      "deactivated": "Categoría desactivada",
+      "createFailed": "No se pudo añadir la categoría",
+      "updateFailed": "No se pudo actualizar la categoría"
     }
   },
   "myAssets": {

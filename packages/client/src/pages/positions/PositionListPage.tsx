@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle, Trash2, Loader2 } from "lucide-react";
+import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Loader2 } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
+import { showToast } from "@/components/ui/Toast";
 
 export default function PositionListPage() {
   const { t } = useTranslation();
@@ -118,8 +119,9 @@ export default function PositionListPage() {
 
   const createMutation = useMutation({
     mutationFn: (data: object) => api.post("/positions", data).then((r) => r.data.data),
-    onSuccess: () => {
+    onSuccess: (created: any) => {
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setShowCreate(false);
       setForm({
         title: "",
@@ -132,7 +134,10 @@ export default function PositionListPage() {
         max_salary: "",
         currency: "INR",
       });
+      showToast("success", tx("createSuccess", { title: created?.title ?? "" }) as string);
     },
+    // Create errors are already surfaced inline under the form (see the
+    // createMutation.isError block in the JSX), so we don't also toast.
   });
 
   const handleCreate = (e: React.FormEvent) => {
@@ -425,16 +430,25 @@ export default function PositionListPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => {
-                        setDeleteTarget({ id: pos.id, title: pos.title });
-                        setDeleteError(null);
-                      }}
-                      className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
-                      title={tx("deleteTooltip") as string}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        to={`/positions/${pos.id}?edit=1`}
+                        className="p-1.5 rounded-lg text-gray-400 hover:bg-brand-50 hover:text-brand-600"
+                        title={tx("editTooltip") as string}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setDeleteTarget({ id: pos.id, title: pos.title });
+                          setDeleteError(null);
+                        }}
+                        className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
+                        title={tx("deleteTooltip") as string}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

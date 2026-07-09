@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save, Loader2 } from "lucide-react";
 import { useDepartments } from "@/api/hooks";
@@ -12,6 +12,7 @@ export default function PositionDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const [showAssign, setShowAssign] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -120,10 +121,12 @@ export default function PositionDetailPage() {
   const updateMutation = useMutation({
     mutationFn: (data: object) =>
       api.put(`/positions/${id}`, data).then((r) => r.data.data),
-    onSuccess: () => {
+    onSuccess: (updated: any) => {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setShowEdit(false);
+      showToast("success", t("positionDetail.editForm.updateSuccess", { title: updated?.title ?? "" }));
     },
     onError: (err: any) => {
       const msg =
@@ -149,6 +152,29 @@ export default function PositionDetailPage() {
     onError: (err: any) =>
       setDeleteError(err?.response?.data?.error?.message || t("positionDetail.error.deleteFailed")),
   });
+
+  // Deep-link support: opening this page with ?edit=1 (e.g. the pencil on the
+  // positions list) prefills and opens the edit form automatically, then
+  // strips the param so a refresh/back doesn't re-open it.
+  useEffect(() => {
+    if (searchParams.get("edit") !== "1" || !data) return;
+    setEditForm({
+      title: data.title || "",
+      department_id: data.department_id ? String(data.department_id) : "",
+      employment_type: data.employment_type || "full_time",
+      headcount_budget: data.headcount_budget != null ? String(data.headcount_budget) : "1",
+      is_critical: data.is_critical || false,
+      job_description: data.job_description || "",
+      min_salary: data.min_salary ? String(data.min_salary) : "",
+      max_salary: data.max_salary ? String(data.max_salary) : "",
+      currency: data.currency || "INR",
+    });
+    setShowEdit(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("edit");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, searchParams]);
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-64"><div className="text-gray-400">{t("positionDetail.loading")}</div></div>;

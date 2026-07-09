@@ -848,6 +848,14 @@
       "deleteConfirmPrefix": "确定要删除",
       "deleteConfirmSuffix": "吗？该政策将对员工隐藏；现有确认记录将保留以供审计。",
       "deleteConfirmGeneric": "确定要删除此政策吗？"
+    },
+    "toast": {
+      "deleted": "策略已删除",
+      "deleteFailed": "删除策略失败",
+      "updated": "政策已更新",
+      "created": "政策已创建",
+      "updateFailed": "政策更新失败",
+      "createFailed": "政策创建失败"
     }
   },
   "announcements": {
@@ -1058,6 +1066,10 @@
       "requestedCheckOut": "申请签退时间",
       "checkoutAfterCheckin": "签退时间必须晚于签到时间。",
       "submit": "提交",
+      "submitSuccess": "考勤更正申请已成功提交。",
+      "submitError": "提交考勤更正申请失败。",
+      "approveSuccess": "考勤更正申请已批准。",
+      "rejectSuccess": "考勤更正申请已拒绝。",
       "rejectionPrompt": "拒绝原因（可选）：",
       "noRecords": "暂无补签申请",
       "approve": "批准",
@@ -1213,6 +1225,7 @@
       "errorDelete": "删除申请失败。",
       "errorCheckoutAfter": "签退时间必须晚于签到时间。",
       "errorSubmit": "提交考勤修正申请失败。",
+      "regSuccess": "考勤更正申请已成功提交。",
       "loadingTimeline": "正在加载时间线…",
       "timelineError": "无法加载此记录的时间线。",
       "noPunches": "这一天没有打卡历史。",
@@ -1765,6 +1778,7 @@
       "criticalRole": "关键岗位",
       "creating": "创建中...",
       "failedCreate": "创建职位失败",
+      "createSuccess": "已成功创建职位\"{{title}}\"。",
       "searchPlaceholder": "按标题或编号搜索...",
       "allDepartments": "所有部门",
       "allStatuses": "所有状态",
@@ -1779,6 +1793,7 @@
       "colCritical": "关键",
       "noPositions": "未找到职位",
       "deleteTooltip": "删除职位",
+      "editTooltip": "编辑职位",
       "pageOf": "第 {{page}} 页,共 {{total_pages}} 页(共 {{total}} 条)",
       "deleteTitle": "删除职位?",
       "deleteConfirm": "删除 {{title}}?活动分配将被终止,职位将关闭。此操作无法撤消。",
@@ -2365,6 +2380,10 @@
     "adding": "正在添加...",
     "addError": "添加节假日失败。",
     "addSuccess": "已成功添加节假日\"{{title}}\"。",
+    "editHoliday": "编辑节假日",
+    "updating": "更新中...",
+    "editSuccess": "已成功更新节假日\"{{title}}\"。",
+    "editError": "更新节假日失败。",
     "loading": "正在加载节假日...",
     "empty": "尚无节假日列出。",
     "emptyHint": "点击“添加节假日”开始。",
@@ -3895,7 +3914,9 @@
         "endBeforeStart": "结束日期不能早于开始日期。"
       },
       "cancel": "取消",
-      "submit": "创建活动"
+      "submit": "创建活动",
+      "editTitle": "编辑活动",
+      "updateSubmit": "更新活动"
     },
     "upcoming": {
       "title": "即将举行的活动",
@@ -3906,7 +3927,9 @@
       "cancel": "取消",
       "deleteTitle": "删除活动",
       "attending_one": "{{count}} 人参加",
-      "attending_other": "{{count}} 人参加"
+      "attending_other": "{{count}} 人参加",
+      "edit": "编辑",
+      "editTitle": "编辑活动"
     },
     "deleteModal": {
       "title": "删除活动？",
@@ -3915,6 +3938,12 @@
       "confirm": "删除",
       "deleting": "删除中…",
       "error": "删除活动失败"
+    },
+    "toast": {
+      "created": "活动已创建",
+      "updated": "活动已更新",
+      "createFailed": "创建活动失败",
+      "updateFailed": "更新活动失败"
     }
   },
   "surveyBuilder": {
@@ -4384,7 +4413,8 @@
       "cancel": "取消",
       "creating": "创建中...",
       "submit": "创建目标",
-      "errorEndBeforeStart": "结束日期不能早于开始日期。"
+      "errorEndBeforeStart": "结束日期不能早于开始日期。",
+      "createSuccess": "目标已创建"
     },
     "progressModal": {
       "title": "更新进度",
@@ -4789,6 +4819,7 @@
       "headcountMinError": "编制人数至少为 1。",
       "saving": "保存中...",
       "saveChanges": "保存更改",
+      "updateSuccess": "已成功更新职位\"{{title}}\"。",
       "updateFailedInline": "更新职位失败"
     },
     "employmentType": {
@@ -6236,6 +6267,13 @@
     },
     "errors": {
       "deactivateFailed": "停用类别失败"
+    },
+    "toast": {
+      "created": "已添加类别",
+      "updated": "已更新类别",
+      "deactivated": "已停用类别",
+      "createFailed": "添加类别失败",
+      "updateFailed": "更新类别失败"
     }
   },
   "myAssets": {

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
-import { PartyPopper, Plus, Trash2, CalendarDays } from "lucide-react";
+import { PartyPopper, Plus, Trash2, CalendarDays, Pencil } from "lucide-react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { showToast } from "@/components/ui/Toast";
 
@@ -60,6 +60,9 @@ export default function HolidaysPage() {
   const user = useAuthStore((s) => s.user);
   const isHR = user ? HR_ROLES.includes(user.role) : false;
   const [showAdd, setShowAdd] = useState(false);
+  // When set, the Add-Holiday form is in EDIT mode for this holiday id;
+  // null means it is in CREATE mode.
+  const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -126,6 +129,35 @@ export default function HolidaysPage() {
     },
   });
 
+  const updateHoliday = useMutation({
+    mutationFn: (data: { id: number } & typeof form) =>
+      api
+        .put(`/events/${data.id}`, {
+          title: data.title,
+          description: data.description || null,
+          // Same T00:00:00 calendar-day handling as create (see above).
+          start_date: data.start_date ? `${data.start_date}T00:00:00` : undefined,
+          end_date: data.end_date
+            ? `${data.end_date}T00:00:00`
+            : data.start_date
+              ? `${data.start_date}T00:00:00`
+              : undefined,
+          is_mandatory: data.is_mandatory,
+        })
+        .then((r) => r.data.data),
+    onSuccess: (_updated, vars) => {
+      qc.invalidateQueries({ queryKey: ["holidays"] });
+      setShowAdd(false);
+      setEditId(null);
+      setForm({ title: "", description: "", start_date: "", end_date: "", is_mandatory: false });
+      setAddError("");
+      showToast("success", t("holidays.editSuccess", { title: vars.title.trim() }));
+    },
+    onError: (err: any) => {
+      setAddError(err?.response?.data?.error?.message || t("holidays.editError"));
+    },
+  });
+
   // Per-row mandatory toggle. HR clicks the badge to flip is_mandatory on
   // a single holiday — used for restricted/optional holidays (Bakrid, Holi,
   // Onam) where the office stays open and a present employee should remain
@@ -150,8 +182,42 @@ export default function HolidaysPage() {
     e.preventDefault();
     setAddError("");
     if (!form.title.trim() || !form.start_date) return;
-    createHoliday.mutate(form);
+    if (editId != null) {
+      updateHoliday.mutate({ id: editId, ...form });
+    } else {
+      createHoliday.mutate(form);
+    }
   };
+
+  // Convert an API date/ISO string to the YYYY-MM-DD value that a native
+  // <input type="date"> expects. Guards against empty/short values.
+  const toDateInput = (val: string | null | undefined) =>
+    val && val.length >= 10 ? val.slice(0, 10) : "";
+
+  // Prefill the form with a holiday's current values and switch it to edit
+  // mode. We keep the RAW description (which may carry the "[type:…]" tag) so
+  // the round-trip through PUT preserves the holiday's type.
+  const startEdit = (h: Holiday) => {
+    setEditId(h.id);
+    setForm({
+      title: h.title,
+      description: h.description ?? "",
+      start_date: toDateInput(h.start_date),
+      end_date: h.end_date ? toDateInput(h.end_date) : "",
+      is_mandatory: !!Number(h.is_mandatory),
+    });
+    setAddError("");
+    setShowAdd(true);
+  };
+
+  const closeForm = () => {
+    setShowAdd(false);
+    setEditId(null);
+    setForm({ title: "", description: "", start_date: "", end_date: "", is_mandatory: false });
+    setAddError("");
+  };
+
+  const isSaving = createHoliday.isPending || updateHoliday.isPending;
 
   // Sort holidays by date
   const sortedHolidays = [...holidays].sort(
@@ -191,7 +257,7 @@ export default function HolidaysPage() {
         </div>
         {isHR && (
           <button
-            onClick={() => setShowAdd(!showAdd)}
+            onClick={() => (showAdd ? closeForm() : (setEditId(null), setShowAdd(true)))}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t("holidays.addHoliday")}
@@ -202,7 +268,9 @@ export default function HolidaysPage() {
       {/* Add Holiday Form */}
       {showAdd && isHR && (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("holidays.addHoliday")}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            {editId != null ? t("holidays.editHoliday") : t("holidays.addHoliday")}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("holidays.holidayName")}</label>
@@ -269,21 +337,23 @@ export default function HolidaysPage() {
           <div className="flex justify-end gap-3 mt-4">
             <button
               type="button"
-              onClick={() => {
-                setShowAdd(false);
-                setForm({ title: "", description: "", start_date: "", end_date: "", is_mandatory: false });
-                setAddError("");
-              }}
+              onClick={closeForm}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               {t("holidays.cancel")}
             </button>
             <button
               type="submit"
-              disabled={createHoliday.isPending}
+              disabled={isSaving}
               className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              {createHoliday.isPending ? t("holidays.adding") : t("holidays.addHoliday")}
+              {editId != null
+                ? isSaving
+                  ? t("holidays.updating")
+                  : t("holidays.editHoliday")
+                : isSaving
+                  ? t("holidays.adding")
+                  : t("holidays.addHoliday")}
             </button>
           </div>
           {addError && <p className="text-sm text-red-600 mt-2">{addError}</p>}
@@ -377,6 +447,15 @@ export default function HolidaysPage() {
                       </button>
                     );
                   })()}
+                  {isHR && (
+                    <button
+                      onClick={() => startEdit(h)}
+                      className="text-gray-400 hover:text-brand-600 p-1"
+                      title={t("holidays.editHoliday")}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                  )}
                   {isHR && (
                     <button
                       onClick={() => setDeleteTarget({ id: h.id, title: h.title })}

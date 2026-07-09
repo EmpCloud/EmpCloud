@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
 import { Link } from "react-router-dom";
 import {
   Calendar,
@@ -13,6 +14,7 @@ import {
   Clock,
   CalendarDays,
   Trash2,
+  Pencil,
   Loader2,
 } from "lucide-react";
 
@@ -43,6 +45,8 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
 export default function EventDashboardPage() {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
+  // When set, the form is editing an existing event (PUT) rather than creating one (POST).
+  const [editingId, setEditingId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   // Form state
@@ -70,6 +74,18 @@ export default function EventDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["events-dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["events"] });
       resetForm();
+      showToast("success", t("eventDashboard.toast.created"));
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: object }) =>
+      api.put(`/events/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events-dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      resetForm();
+      showToast("success", t("eventDashboard.toast.updated"));
     },
   });
 
@@ -109,12 +125,50 @@ export default function EventDashboardPage() {
     setTargetIds("");
     setMaxAttendees("");
     setIsMandatory(false);
+    setDateError("");
+    setEditingId(null);
     setShowForm(false);
   }
 
+  // `<input type="datetime-local">` expects "YYYY-MM-DDTHH:mm" in LOCAL time. The
+  // API returns an ISO/UTC timestamp, so convert to a local wall-clock string
+  // (subtracting the tz offset) before binding, else the value shows blank.
+  function toLocalInput(value?: string | null): string {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return "";
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 16);
+  }
+
+  const startEdit = (event: any) => {
+    setEditingId(event.id);
+    setTitle(event.title || "");
+    setDescription(event.description || "");
+    setEventType(event.event_type || "other");
+    setStartDate(toLocalInput(event.start_date));
+    setEndDate(toLocalInput(event.end_date));
+    setIsAllDay(!!event.is_all_day);
+    setLocation(event.location || "");
+    setVirtualLink(event.virtual_link || "");
+    setTargetType(event.target_type || "all");
+    setTargetIds(
+      event.target_ids == null
+        ? ""
+        : typeof event.target_ids === "string"
+          ? event.target_ids
+          : JSON.stringify(event.target_ids),
+    );
+    setMaxAttendees(event.max_attendees != null ? String(event.max_attendees) : "");
+    setIsMandatory(!!event.is_mandatory);
+    setDateError("");
+    setShowForm(true);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const [dateError, setDateError] = useState("");
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setDateError("");
 
@@ -123,7 +177,7 @@ export default function EventDashboardPage() {
       return;
     }
 
-    await createMutation.mutateAsync({
+    const payload = {
       title,
       description: description || null,
       event_type: eventType,
@@ -136,7 +190,24 @@ export default function EventDashboardPage() {
       target_ids: targetIds || null,
       max_attendees: maxAttendees ? parseInt(maxAttendees) : null,
       is_mandatory: isMandatory,
-    });
+    };
+
+    const isEditing = editingId != null;
+    try {
+      if (isEditing) {
+        await updateMutation.mutateAsync({ id: editingId, data: payload });
+      } else {
+        await createMutation.mutateAsync(payload);
+      }
+    } catch (err: any) {
+      // Keep the form open with the user's input intact so they can retry.
+      showToast(
+        "error",
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          (isEditing ? t("eventDashboard.toast.updateFailed") : t("eventDashboard.toast.createFailed")),
+      );
+    }
   };
 
   return (
@@ -147,7 +218,16 @@ export default function EventDashboardPage() {
           <p className="text-gray-500 mt-1">{t("eventDashboard.header.subtitle")}</p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            // Toggling the header button always starts a fresh CREATE, even if
+            // the form was previously opened in edit mode.
+            if (showForm) {
+              resetForm();
+            } else {
+              setEditingId(null);
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> {t("eventDashboard.header.createEvent")}
@@ -224,10 +304,12 @@ export default function EventDashboardPage() {
         </div>
       )}
 
-      {/* Create Event Form */}
+      {/* Create / Edit Event Form */}
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">{t("eventDashboard.form.title")}</h2>
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {editingId != null ? t("eventDashboard.form.editTitle") : t("eventDashboard.form.title")}
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
@@ -402,10 +484,11 @@ export default function EventDashboardPage() {
             </button>
             <button
               type="submit"
-              disabled={createMutation.isPending}
+              disabled={createMutation.isPending || updateMutation.isPending}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
             >
-              <Calendar className="h-4 w-4" /> {t("eventDashboard.form.submit")}
+              <Calendar className="h-4 w-4" />{" "}
+              {editingId != null ? t("eventDashboard.form.updateSubmit") : t("eventDashboard.form.submit")}
             </button>
           </div>
         </form>
@@ -459,6 +542,16 @@ export default function EventDashboardPage() {
                   >
                     {t("eventDashboard.upcoming.view")}
                   </Link>
+                  {event.status !== "cancelled" && (
+                    <button
+                      onClick={() => startEdit(event)}
+                      className="flex items-center gap-1 text-xs text-gray-500 hover:text-brand-600"
+                      title={t("eventDashboard.upcoming.editTitle")}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      {t("eventDashboard.upcoming.edit")}
+                    </button>
+                  )}
                   {event.status !== "cancelled" && (
                     <button
                       onClick={() => cancelMutation.mutate(event.id)}

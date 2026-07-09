@@ -848,6 +848,14 @@
       "deleteConfirmPrefix": "本当に削除しますか:",
       "deleteConfirmSuffix": "？ この方針は従業員に非表示になります。既存の承認は監査のために保持されます。",
       "deleteConfirmGeneric": "この方針を本当に削除しますか？"
+    },
+    "toast": {
+      "deleted": "ポリシーを削除しました",
+      "deleteFailed": "ポリシーの削除に失敗しました",
+      "updated": "ポリシーを更新しました",
+      "created": "ポリシーを作成しました",
+      "updateFailed": "ポリシーの更新に失敗しました",
+      "createFailed": "ポリシーの作成に失敗しました"
     }
   },
   "announcements": {
@@ -1058,6 +1066,10 @@
       "requestedCheckOut": "申請する退勤時刻",
       "checkoutAfterCheckin": "退勤時刻は出勤時刻より後である必要があります。",
       "submit": "送信",
+      "submitSuccess": "勤怠修正リクエストを送信しました。",
+      "submitError": "勤怠修正リクエストの送信に失敗しました。",
+      "approveSuccess": "勤怠修正リクエストを承認しました。",
+      "rejectSuccess": "勤怠修正リクエストを却下しました。",
       "rejectionPrompt": "却下理由（任意）:",
       "noRecords": "修正申請はありません",
       "approve": "承認",
@@ -1213,6 +1225,7 @@
       "errorDelete": "申請の削除に失敗しました。",
       "errorCheckoutAfter": "退勤時刻は出勤時刻より後である必要があります。",
       "errorSubmit": "修正申請の送信に失敗しました。",
+      "regSuccess": "勤怠修正リクエストを送信しました。",
       "loadingTimeline": "タイムラインを読み込み中…",
       "timelineError": "この記録のタイムラインを読み込めませんでした。",
       "noPunches": "この日の打刻履歴はありません。",
@@ -1765,6 +1778,7 @@
       "criticalRole": "重要な役割",
       "creating": "作成中...",
       "failedCreate": "ポジションの作成に失敗しました",
+      "createSuccess": "ポジション「{{title}}」を作成しました。",
       "searchPlaceholder": "タイトルまたはコードで検索...",
       "allDepartments": "すべての部門",
       "allStatuses": "すべてのステータス",
@@ -1779,6 +1793,7 @@
       "colCritical": "重要",
       "noPositions": "ポジションが見つかりません",
       "deleteTooltip": "ポジションを削除",
+      "editTooltip": "ポジションを編集",
       "pageOf": "{{total_pages}} ページ中 {{page}} ページ (合計 {{total}} 件)",
       "deleteTitle": "ポジションを削除しますか?",
       "deleteConfirm": "{{title}} を削除しますか? 有効な割当は終了し、ポジションは閉じられます。この操作は取り消せません。",
@@ -2365,6 +2380,10 @@
     "adding": "追加中...",
     "addError": "祝日の追加に失敗しました。",
     "addSuccess": "祝日「{{title}}」を追加しました。",
+    "editHoliday": "祝日を編集",
+    "updating": "更新中...",
+    "editSuccess": "祝日「{{title}}」を更新しました。",
+    "editError": "祝日の更新に失敗しました。",
     "loading": "祝日を読み込み中...",
     "empty": "まだ祝日が登録されていません。",
     "emptyHint": "開始するには「祝日を追加」をクリックしてください。",
@@ -3895,7 +3914,9 @@
         "endBeforeStart": "終了日は開始日より前に設定できません。"
       },
       "cancel": "キャンセル",
-      "submit": "イベントを作成"
+      "submit": "イベントを作成",
+      "editTitle": "イベントを編集",
+      "updateSubmit": "イベントを更新"
     },
     "upcoming": {
       "title": "今後のイベント",
@@ -3906,7 +3927,9 @@
       "cancel": "キャンセル",
       "deleteTitle": "イベントを削除",
       "attending_one": "{{count}}人が参加",
-      "attending_other": "{{count}}人が参加"
+      "attending_other": "{{count}}人が参加",
+      "edit": "編集",
+      "editTitle": "イベントを編集"
     },
     "deleteModal": {
       "title": "イベントを削除しますか？",
@@ -3915,6 +3938,12 @@
       "confirm": "削除",
       "deleting": "削除中...",
       "error": "イベントの削除に失敗しました"
+    },
+    "toast": {
+      "created": "イベントを作成しました",
+      "updated": "イベントを更新しました",
+      "createFailed": "イベントの作成に失敗しました",
+      "updateFailed": "イベントの更新に失敗しました"
     }
   },
   "surveyBuilder": {
@@ -4384,7 +4413,8 @@
       "cancel": "キャンセル",
       "creating": "作成中...",
       "submit": "目標を作成",
-      "errorEndBeforeStart": "終了日は開始日より前に設定できません。"
+      "errorEndBeforeStart": "終了日は開始日より前に設定できません。",
+      "createSuccess": "目標を作成しました"
     },
     "progressModal": {
       "title": "進捗の更新",
@@ -4789,6 +4819,7 @@
       "headcountMinError": "定員数は1以上である必要があります。",
       "saving": "保存中...",
       "saveChanges": "変更を保存",
+      "updateSuccess": "ポジション「{{title}}」を更新しました。",
       "updateFailedInline": "ポジションを更新できませんでした"
     },
     "employmentType": {
@@ -6236,6 +6267,13 @@
     },
     "errors": {
       "deactivateFailed": "カテゴリの無効化に失敗しました"
+    },
+    "toast": {
+      "created": "カテゴリを追加しました",
+      "updated": "カテゴリを更新しました",
+      "deactivated": "カテゴリを無効化しました",
+      "createFailed": "カテゴリの追加に失敗しました",
+      "updateFailed": "カテゴリの更新に失敗しました"
     }
   },
   "myAssets": {

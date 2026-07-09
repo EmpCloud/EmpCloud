@@ -848,6 +848,14 @@
       "deleteConfirmPrefix": "هل أنت متأكد أنك تريد حذف",
       "deleteConfirmSuffix": "؟ ستُخفى السياسة عن الموظفين؛ ويتم الاحتفاظ بالإقرارات الحالية للتدقiق.",
       "deleteConfirmGeneric": "هل أنت متأكد أنك تريد حذف هذه السياسة؟"
+    },
+    "toast": {
+      "deleted": "تم حذف السياسة",
+      "deleteFailed": "تعذّر حذف السياسة",
+      "updated": "تم تحديث السياسة",
+      "created": "تم إنشاء السياسة",
+      "updateFailed": "تعذّر تحديث السياسة",
+      "createFailed": "تعذّر إنشاء السياسة"
     }
   },
   "announcements": {
@@ -1058,6 +1066,10 @@
       "requestedCheckOut": "الانصراف المطلوب",
       "checkoutAfterCheckin": "يجب أن يكون وقت الانصراف بعد وقت الحضور.",
       "submit": "إرسال",
+      "submitSuccess": "تم إرسال طلب التسوية بنجاح.",
+      "submitError": "فشل إرسال طلب التسوية.",
+      "approveSuccess": "تمت الموافقة على طلب التسوية.",
+      "rejectSuccess": "تم رفض طلب التسوية.",
       "rejectionPrompt": "سبب الرفض (اختياري):",
       "noRecords": "لا توجد طلبات تسوية",
       "approve": "موافقة",
@@ -1213,6 +1225,7 @@
       "errorDelete": "فشل حذف الطلب.",
       "errorCheckoutAfter": "يجب أن يكون وقت الخروج بعد وقت الدخول.",
       "errorSubmit": "فشل إرسال طلب التسوية.",
+      "regSuccess": "تم إرسال طلب التسوية بنجاح.",
       "loadingTimeline": "جارٍ تحميل المخطط الزمني…",
       "timelineError": "تعذّر تحميل المخطط الزمني لهذا السجل.",
       "noPunches": "لا يوجد سجل بصمات لهذا اليوم.",
@@ -1765,6 +1778,7 @@
       "criticalRole": "وظيفة حرجة",
       "creating": "جاري الإنشاء...",
       "failedCreate": "فشل إنشاء الوظيفة",
+      "createSuccess": "تم إنشاء الوظيفة \"{{title}}\" بنجاح.",
       "searchPlaceholder": "البحث بالعنوان أو الرمز...",
       "allDepartments": "جميع الأقسام",
       "allStatuses": "جميع الحالات",
@@ -1779,6 +1793,7 @@
       "colCritical": "حرجة",
       "noPositions": "لم يتم العثور على وظائف",
       "deleteTooltip": "حذف الوظيفة",
+      "editTooltip": "تعديل الوظيفة",
       "pageOf": "صفحة {{page}} من {{total_pages}} (المجموع {{total}})",
       "deleteTitle": "حذف الوظيفة؟",
       "deleteConfirm": "هل تريد حذف {{title}}؟ ستنتهي التعيينات النشطة وستُغلق الوظيفة. لا يمكن التراجع عن هذا الإجراء.",
@@ -2365,6 +2380,10 @@
     "adding": "جارٍ الإضافة...",
     "addError": "فشل إضافة العطلة.",
     "addSuccess": "تمت إضافة العطلة \"{{title}}\" بنجاح.",
+    "editHoliday": "تعديل العطلة",
+    "updating": "جارٍ التحديث...",
+    "editSuccess": "تم تحديث العطلة \"{{title}}\" بنجاح.",
+    "editError": "فشل تحديث العطلة.",
     "loading": "جارٍ تحميل العطلات...",
     "empty": "لا توجد عطلات مدرجة بعد.",
     "emptyHint": "انقر على \"إضافة عطلة\" للبدء.",
@@ -4051,7 +4070,9 @@
         "endBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
       },
       "cancel": "إلغاء",
-      "submit": "إنشاء فعالية"
+      "submit": "إنشاء فعالية",
+      "editTitle": "تعديل الفعالية",
+      "updateSubmit": "تحديث الفعالية"
     },
     "upcoming": {
       "title": "الفعاليات القادمة",
@@ -4066,7 +4087,9 @@
       "attending_two": "مشاركان ({{count}})",
       "attending_few": "{{count}} مشاركين",
       "attending_many": "{{count}} مشاركًا",
-      "attending_other": "{{count}} مشارك"
+      "attending_other": "{{count}} مشارك",
+      "edit": "تعديل",
+      "editTitle": "تعديل الفعالية"
     },
     "deleteModal": {
       "title": "حذف الفعالية؟",
@@ -4075,6 +4098,12 @@
       "confirm": "حذف",
       "deleting": "جارٍ الحذف...",
       "error": "فشل حذف الفعالية"
+    },
+    "toast": {
+      "created": "تم إنشاء الفعالية",
+      "updated": "تم تحديث الفعالية",
+      "createFailed": "تعذّر إنشاء الفعالية",
+      "updateFailed": "تعذّر تحديث الفعالية"
     }
   },
   "surveyBuilder": {
@@ -4580,7 +4609,8 @@
       "cancel": "إلغاء",
       "creating": "جارٍ الإنشاء...",
       "submit": "إنشاء الهدف",
-      "errorEndBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
+      "errorEndBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء.",
+      "createSuccess": "تم إنشاء الهدف"
     },
     "progressModal": {
       "title": "تحديث التقدم",
@@ -5053,6 +5083,7 @@
       "headcountMinError": "يجب ألا يقل عدد الوظائف المخطّط عن 1.",
       "saving": "جارٍ الحفظ...",
       "saveChanges": "حفظ التغييرات",
+      "updateSuccess": "تم تحديث الوظيفة \"{{title}}\" بنجاح.",
       "updateFailedInline": "تعذّر تحديث المنصب"
     },
     "employmentType": {
@@ -6588,6 +6619,13 @@
     },
     "errors": {
       "deactivateFailed": "فشل إلغاء تنشيط الفئة"
+    },
+    "toast": {
+      "created": "تمت إضافة الفئة",
+      "updated": "تم تحديث الفئة",
+      "deactivated": "تم إلغاء تنشيط الفئة",
+      "createFailed": "فشل في إضافة الفئة",
+      "updateFailed": "فشل في تحديث الفئة"
     }
   },
   "myAssets": {

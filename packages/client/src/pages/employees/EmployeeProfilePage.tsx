@@ -1398,7 +1398,14 @@ function EducationTab({ data, userId, canEdit }: { data?: any[]; userId: number;
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.education.empty")}</p>
+        !showForm && (
+          <div className="flex flex-col items-center justify-center text-center py-12">
+            <div className="h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+              <GraduationCap className="h-6 w-6 text-gray-300" />
+            </div>
+            <p className="text-sm text-gray-400">{t("employeeProfile.education.empty")}</p>
+          </div>
+        )
       ) : (
         <div className="space-y-4">
           {data.map((edu: any) => (
@@ -1647,7 +1654,14 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.experience.empty")}</p>
+        !showForm && (
+          <div className="flex flex-col items-center justify-center text-center py-12">
+            <div className="h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+              <Briefcase className="h-6 w-6 text-gray-300" />
+            </div>
+            <p className="text-sm text-gray-400">{t("employeeProfile.experience.empty")}</p>
+          </div>
+        )
       ) : (
         <div className="space-y-4">
           {data.map((exp: any) => (
@@ -1918,7 +1932,14 @@ function DependentsTab({ data, userId, canEdit }: { data?: any[]; userId: number
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.dependents.empty")}</p>
+        !showForm && (
+          <div className="flex flex-col items-center justify-center text-center py-12">
+            <div className="h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+              <Users className="h-6 w-6 text-gray-300" />
+            </div>
+            <p className="text-sm text-gray-400">{t("employeeProfile.dependents.empty")}</p>
+          </div>
+        )
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -2195,7 +2216,14 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
       )}
 
       {!data || data.length === 0 ? (
-        !showForm && <p className="text-sm text-gray-400">{t("employeeProfile.addresses.empty")}</p>
+        !showForm && (
+          <div className="flex flex-col items-center justify-center text-center py-12">
+            <div className="h-12 w-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+              <MapPin className="h-6 w-6 text-gray-300" />
+            </div>
+            <p className="text-sm text-gray-400">{t("employeeProfile.addresses.empty")}</p>
+          </div>
+        )
       ) : (
         <div className="space-y-4">
           {data.map((addr: any) => (
