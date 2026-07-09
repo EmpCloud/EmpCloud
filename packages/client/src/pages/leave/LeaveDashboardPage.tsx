@@ -9,6 +9,7 @@ import { CalendarDays, PlusCircle, Clock, CheckCircle2, XCircle, Ban, AlertCircl
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
+import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
 
 // Kept for any legacy callers — page now uses permission-based gates below.
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin", "manager"];
@@ -46,7 +47,7 @@ export default function LeaveDashboardPage() {
   // shows for users with the corresponding leave permissions, regardless of
   // primary role. A custom role granting leave:approve / view_all /
   // manage_policies / override_balance unlocks the admin sections.
-  const { has: hasPerm } = usePermissions();
+  const { has: hasPerm, permissions } = usePermissions();
   const isAdmin = hasPerm(
     "leave:view_all",
     "leave:view_team",
@@ -54,6 +55,18 @@ export default function LeaveDashboardPage() {
     "leave:manage_policies",
     "leave:override_balance",
   ) || (user ? HR_ROLES.includes(user.role) : false);
+
+  // Personal sections (own balances, Apply Leave, own applications) belong to
+  // the employee/self experience. Mirror the DashboardLayout view-toggle rule:
+  // a non-HR user with admin permissions gets the "My view / Admin view"
+  // toggle, and when they're in Admin view we hide their personal leave.
+  // Everyone else (HR users without a toggle, plain employees) is treated as
+  // self view — their behaviour is unchanged.
+  const isHRUser = user ? HR_ROLES.includes(user.role) : false;
+  const viewMode = useViewModeStore((s) => s.viewMode);
+  const hasAdminPerms = hasAnyAdminPermission(permissions);
+  const showViewToggle = !isHRUser && hasAdminPerms;
+  const isSelfView = !(showViewToggle && viewMode === "admin");
   const [showApply, setShowApply] = useState(false);
   // When set, the apply form is in edit-mode and submits PATCH instead of POST.
   // Cleared whenever the form closes or completes successfully.
@@ -280,19 +293,23 @@ export default function LeaveDashboardPage() {
               <Settings2 className="h-4 w-4" /> {t('leave.dashboard.leaveSettings')}
             </Link>
           )}
-          <button
-            type="button"
-            onClick={() => setShowApply(true)}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer"
-          >
-            <PlusCircle className="h-4 w-4" /> {t('leave.applyLeave')}
-          </button>
+          {isSelfView && (
+            <button
+              type="button"
+              onClick={() => setShowApply(true)}
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 cursor-pointer"
+            >
+              <PlusCircle className="h-4 w-4" /> {t('leave.applyLeave')}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Balance Cards — #1409: render one card per active leave type so
           employees see all configured types even when a balance row has not
-          yet been initialized (missing rows render as zero). */}
+          yet been initialized (missing rows render as zero).
+          Hidden in Admin view — own leave balance is personal/self-only. */}
+      {isSelfView && (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {loadingBalances ? (
           <>
@@ -447,9 +464,10 @@ export default function LeaveDashboardPage() {
             })
         )}
       </div>
+      )}
 
-      {/* Quick Apply Form */}
-      {showApply && (
+      {/* Quick Apply Form — self view only (own leave application). */}
+      {isSelfView && showApply && (
         <form
           ref={applyFormRef}
           onSubmit={handleSubmit}
@@ -605,21 +623,26 @@ export default function LeaveDashboardPage() {
       {/* Pending Approvals — Admin/Manager View */}
       {isAdmin && <PendingApprovals leaveTypes={leaveTypes} />}
 
-      {/* Recent Applications */}
-      <RecentApplications
-        leaveTypes={leaveTypes}
-        locale={i18n.language}
-        onEdit={startEdit}
-        onCancel={(id: number) => setCancelTargetId(id)}
-        cancelPending={cancelLeave.isPending}
-      />
+      {/* Recent Applications — the current user's OWN leave applications, so
+          only shown in self view (hidden in Admin view). */}
+      {isSelfView && (
+        <>
+          <RecentApplications
+            leaveTypes={leaveTypes}
+            locale={i18n.language}
+            onEdit={startEdit}
+            onCancel={(id: number) => setCancelTargetId(id)}
+            cancelPending={cancelLeave.isPending}
+          />
 
-      {/* Legend */}
-      <div className="flex items-center gap-6 text-xs text-gray-500 mt-6">
-        <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-amber-500" /> {t('common.pending')}</span>
-        <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> {t('common.approved')}</span>
-        <span className="flex items-center gap-1"><XCircle className="h-3.5 w-3.5 text-red-500" /> {t('common.rejected')}</span>
-      </div>
+          {/* Legend */}
+          <div className="flex items-center gap-6 text-xs text-gray-500 mt-6">
+            <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-amber-500" /> {t('common.pending')}</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> {t('common.approved')}</span>
+            <span className="flex items-center gap-1"><XCircle className="h-3.5 w-3.5 text-red-500" /> {t('common.rejected')}</span>
+          </div>
+        </>
+      )}
 
       <ConfirmDialog
         open={cancelTargetId !== null}
