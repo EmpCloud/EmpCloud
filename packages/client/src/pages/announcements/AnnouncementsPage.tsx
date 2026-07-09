@@ -4,8 +4,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
-import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { Megaphone, Plus, Check, AlertTriangle, AlertCircle, Info, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { showToast } from "@/components/ui/Toast";
 import RichTextEditor, { isRichTextEmpty } from "@/components/ui/RichTextEditor";
 
 // Roles for the targeting dropdown. Labels come from i18n
@@ -48,6 +49,18 @@ function useCreateAnnouncement() {
   });
 }
 
+function useUpdateAnnouncement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: object }) =>
+      api.put(`/announcements/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["announcements"] });
+      qc.invalidateQueries({ queryKey: ["announcements-unread"] });
+    },
+  });
+}
+
 function useMarkAsRead() {
   const qc = useQueryClient();
   return useMutation({
@@ -74,6 +87,8 @@ export default function AnnouncementsPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
+  // When set, the form is editing this announcement id; null = create mode.
+  const [editId, setEditId] = useState<number | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   // Confirm-delete dialog state (replaces window.confirm). Holds the
   // announcement awaiting confirmation so the dialog can show its title.
@@ -81,6 +96,7 @@ export default function AnnouncementsPage() {
   const { data, isLoading } = useAnnouncements(page);
   const { data: unreadCount } = useUnreadCount();
   const createAnnouncement = useCreateAnnouncement();
+  const updateAnnouncement = useUpdateAnnouncement();
   const markAsRead = useMarkAsRead();
   const user = useAuthStore((s) => s.user);
 
@@ -109,27 +125,74 @@ export default function AnnouncementsPage() {
   const [selectedTargetIds, setSelectedTargetIds] = useState<string[]>([]);
   const [expiresAt, setExpiresAt] = useState("");
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Content is HTML now — guard against a visually-blank editor (innerHTML
-    // like "<br>") that the removed `required` attribute used to catch.
-    if (!title.trim() || isRichTextEmpty(content)) return;
-    await createAnnouncement.mutateAsync({
-      title,
-      content,
-      priority,
-      target_type: targetType,
-      target_ids: selectedTargetIds.length > 0 ? JSON.stringify(selectedTargetIds) : null,
-      expires_at: expiresAt || null,
-    });
+  const resetForm = () => {
     setTitle("");
     setContent("");
     setPriority("normal");
     setTargetType("all");
     setSelectedTargetIds([]);
     setExpiresAt("");
-    setShowForm(false);
   };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditId(null);
+    resetForm();
+  };
+
+  // Prefill the form from an existing announcement and switch to edit mode.
+  // target_ids is stored as a JSON string on the server; parse it back to the
+  // string[] the checkbox UI expects. expires_at is sliced to the 16-char
+  // "YYYY-MM-DDTHH:mm" shape a datetime-local input needs.
+  const startEdit = (a: any) => {
+    setEditId(a.id);
+    setTitle(a.title ?? "");
+    setContent(a.content ?? "");
+    setPriority(a.priority ?? "normal");
+    setTargetType(a.target_type ?? "all");
+    let ids: string[] = [];
+    if (a.target_ids) {
+      try {
+        const parsed = JSON.parse(a.target_ids);
+        if (Array.isArray(parsed)) ids = parsed.map(String);
+      } catch {
+        ids = [];
+      }
+    }
+    setSelectedTargetIds(ids);
+    setExpiresAt(a.expires_at ? String(a.expires_at).slice(0, 16) : "");
+    setShowForm(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      title,
+      content,
+      priority,
+      target_type: targetType,
+      target_ids: selectedTargetIds.length > 0 ? JSON.stringify(selectedTargetIds) : null,
+      expires_at: expiresAt || null,
+    };
+    try {
+      if (editId != null) {
+        await updateAnnouncement.mutateAsync({ id: editId, data: payload });
+        showToast("success", t("announcements.page.updateSuccess", { title: title.trim() }));
+      } else {
+        await createAnnouncement.mutateAsync(payload);
+        showToast("success", t("announcements.page.createSuccess", { title: title.trim() }));
+      }
+      closeForm();
+    } catch (err: any) {
+      showToast(
+        "error",
+        err?.response?.data?.error?.message ??
+          (editId != null ? t("announcements.page.updateError") : t("announcements.page.createError")),
+      );
+    }
+  };
+
+  const isSaving = createAnnouncement.isPending || updateAnnouncement.isPending;
 
   const handleTargetToggle = (id: string) => {
     setSelectedTargetIds((prev) =>
@@ -157,7 +220,7 @@ export default function AnnouncementsPage() {
         </div>
         {isHR && (
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => (showForm ? closeForm() : (setEditId(null), resetForm(), setShowForm(true)))}
             className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t("announcements.page.newAnnouncement")}
@@ -167,8 +230,10 @@ export default function AnnouncementsPage() {
 
       {/* Create Announcement Form */}
       {showForm && isHR && (
-        <form onSubmit={handleCreate} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">{t("announcements.page.createTitle")}</h2>
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {editId != null ? t("announcements.page.editTitle") : t("announcements.page.createTitle")}
+          </h2>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldTitle")} <span className="text-red-500">*</span></label>
@@ -286,17 +351,18 @@ export default function AnnouncementsPage() {
           <div className="flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => setShowForm(false)}
+              onClick={closeForm}
               className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
             >
               {t("announcements.page.cancel")}
             </button>
             <button
               type="submit"
-              disabled={createAnnouncement.isPending || !title.trim() || isRichTextEmpty(content)}
+              disabled={isSaving || !title.trim() || isRichTextEmpty(content)}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Megaphone className="h-4 w-4" /> {t("announcements.page.publish")}
+              <Megaphone className="h-4 w-4" />{" "}
+              {editId != null ? t("announcements.page.saveChanges") : t("announcements.page.publish")}
             </button>
           </div>
         </form>
@@ -390,6 +456,16 @@ export default function AnnouncementsPage() {
                           className="flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 disabled:opacity-50"
                         >
                           <Check className="h-3.5 w-3.5" /> {t("announcements.page.markRead")}
+                        </button>
+                      )}
+                      {canManage && (
+                        <button
+                          onClick={() => startEdit(a)}
+                          title={t("announcements.page.editTitle")}
+                          aria-label={t("announcements.page.editAria", { title: a.title })}
+                          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-brand-700 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
+                        >
+                          <Pencil className="h-3.5 w-3.5" /> {t("announcements.page.edit")}
                         </button>
                       )}
                       {canManage && (
