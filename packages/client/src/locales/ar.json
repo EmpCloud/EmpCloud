@@ -1771,6 +1771,7 @@
       "colCritical": "حرجة",
       "noPositions": "لم يتم العثور على وظائف",
       "deleteTooltip": "حذف الوظيفة",
+      "editTooltip": "تعديل الوظيفة",
       "pageOf": "صفحة {{page}} من {{total_pages}} (المجموع {{total}})",
       "deleteTitle": "حذف الوظيفة؟",
       "deleteConfirm": "هل تريد حذف {{title}}؟ ستنتهي التعيينات النشطة وستُغلق الوظيفة. لا يمكن التراجع عن هذا الإجراء.",

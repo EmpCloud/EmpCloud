@@ -1771,6 +1771,7 @@
       "colCritical": "Crítica",
       "noPositions": "No se encontraron posiciones",
       "deleteTooltip": "Eliminar posición",
+      "editTooltip": "Editar puesto",
       "pageOf": "Página {{page}} de {{total_pages}} ({{total}} en total)",
       "deleteTitle": "¿Eliminar posición?",
       "deleteConfirm": "¿Eliminar {{title}}? Las asignaciones activas finalizan y la posición se cierra. Esta acción no se puede deshacer.",

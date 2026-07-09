@@ -1771,6 +1771,7 @@
       "colCritical": "重要",
       "noPositions": "ポジションが見つかりません",
       "deleteTooltip": "ポジションを削除",
+      "editTooltip": "ポジションを編集",
       "pageOf": "{{total_pages}} ページ中 {{page}} ページ (合計 {{total}} 件)",
       "deleteTitle": "ポジションを削除しますか?",
       "deleteConfirm": "{{title}} を削除しますか? 有効な割当は終了し、ポジションは閉じられます。この操作は取り消せません。",

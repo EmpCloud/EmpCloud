@@ -1771,6 +1771,7 @@
       "colCritical": "महत्वपूर्ण",
       "noPositions": "कोई पद नहीं मिला",
       "deleteTooltip": "पद हटाएँ",
+      "editTooltip": "पद संपादित करें",
       "pageOf": "पृष्ठ {{page}} / {{total_pages}} (कुल {{total}})",
       "deleteTitle": "पद हटाएँ?",
       "deleteConfirm": "{{title}} हटाएँ? सक्रिय असाइनमेंट समाप्त हो जाते हैं और पद बंद हो जाता है। यह क्रिया वापस नहीं की जा सकती।",

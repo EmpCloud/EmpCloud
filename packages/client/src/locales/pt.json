@@ -1771,6 +1771,7 @@
       "colCritical": "Crítico",
       "noPositions": "Nenhum cargo encontrado",
       "deleteTooltip": "Excluir cargo",
+      "editTooltip": "Editar cargo",
       "pageOf": "Página {{page}} de {{total_pages}} ({{total}} no total)",
       "deleteTitle": "Excluir cargo?",
       "deleteConfirm": "Excluir {{title}}? As atribuições ativas são encerradas e o cargo é fechado. Esta ação não pode ser desfeita.",

@@ -1771,6 +1771,7 @@
       "colCritical": "关键",
       "noPositions": "未找到职位",
       "deleteTooltip": "删除职位",
+      "editTooltip": "编辑职位",
       "pageOf": "第 {{page}} 页,共 {{total_pages}} 页(共 {{total}} 条)",
       "deleteTitle": "删除职位?",
       "deleteConfirm": "删除 {{title}}?活动分配将被终止,职位将关闭。此操作无法撤消。",
