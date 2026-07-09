@@ -850,6 +850,8 @@
       "deleteConfirmGeneric": "Möchten Sie diese Richtlinie wirklich löschen?"
     },
     "toast": {
+      "deleted": "Richtlinie gelöscht",
+      "deleteFailed": "Richtlinie konnte nicht gelöscht werden",
       "updated": "Richtlinie aktualisiert",
       "created": "Richtlinie erstellt",
       "updateFailed": "Richtlinie konnte nicht aktualisiert werden",

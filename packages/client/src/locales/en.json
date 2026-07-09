@@ -850,6 +850,8 @@
       "deleteConfirmGeneric": "Are you sure you want to delete this policy?"
     },
     "toast": {
+      "deleted": "Policy deleted",
+      "deleteFailed": "Failed to delete policy",
       "updated": "Policy updated",
       "created": "Policy created",
       "updateFailed": "Failed to update policy",

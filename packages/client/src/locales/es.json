@@ -850,6 +850,8 @@
       "deleteConfirmGeneric": "¿Seguro que quieres eliminar esta política?"
     },
     "toast": {
+      "deleted": "Política eliminada",
+      "deleteFailed": "No se pudo eliminar la política",
       "updated": "Política actualizada",
       "created": "Política creada",
       "updateFailed": "No se pudo actualizar la política",

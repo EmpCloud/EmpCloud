@@ -850,6 +850,8 @@
       "deleteConfirmGeneric": "क्या आप वाकई इस नीति को हटाना चाहते हैं?"
     },
     "toast": {
+      "deleted": "नीति हटा दी गई",
+      "deleteFailed": "नीति हटाने में विफल",
       "updated": "नीति अपडेट की गई",
       "created": "नीति बनाई गई",
       "updateFailed": "नीति अपडेट करने में विफल",

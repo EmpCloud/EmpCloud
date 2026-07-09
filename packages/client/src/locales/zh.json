@@ -850,6 +850,8 @@
       "deleteConfirmGeneric": "确定要删除此政策吗？"
     },
     "toast": {
+      "deleted": "策略已删除",
+      "deleteFailed": "删除策略失败",
       "updated": "政策已更新",
       "created": "政策已创建",
       "updateFailed": "政策更新失败",

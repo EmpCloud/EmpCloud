@@ -850,6 +850,8 @@
       "deleteConfirmGeneric": "この方針を本当に削除しますか？"
     },
     "toast": {
+      "deleted": "ポリシーを削除しました",
+      "deleteFailed": "ポリシーの削除に失敗しました",
       "updated": "ポリシーを更新しました",
       "created": "ポリシーを作成しました",
       "updateFailed": "ポリシーの更新に失敗しました",

@@ -664,6 +664,15 @@ function HRPoliciesView() {
                         if (viewAckFor === id) setViewAckFor(null);
                         if (viewContentFor === id) setViewContentFor(null);
                         setConfirmDeleteId(null);
+                        showToast("success", t("policies.toast.deleted"));
+                      },
+                      onError: (err: any) => {
+                        showToast(
+                          "error",
+                          err?.response?.data?.error?.message ||
+                            err?.response?.data?.message ||
+                            t("policies.toast.deleteFailed"),
+                        );
                       },
                     });
                   }}
