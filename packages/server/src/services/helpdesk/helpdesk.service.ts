@@ -6,6 +6,7 @@ import { getDB } from "../../db/connection.js";
 import { NotFoundError, ForbiddenError, ValidationError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { createNotification } from "../notification/notification.service.js";
+import { sanitizeHtml } from "../../utils/sanitize-html.js";
 
 // ---------------------------------------------------------------------------
 // SLA Configuration by Priority
@@ -49,7 +50,9 @@ export async function createTicket(
     category: data.category,
     priority,
     subject: data.subject,
-    description: data.description,
+    // Description is now rich-text (HTML) from the client editor — sanitize on write
+    // via the shared allow-list (same as announcements/policies) to prevent stored XSS.
+    description: sanitizeHtml(data.description),
     status: "open",
     assigned_to: null,
     department_id: data.department_id || null,
@@ -787,7 +790,8 @@ export async function createArticle(
     organization_id: orgId,
     title: data.title,
     slug: finalSlug,
-    content: data.content,
+    // Rich-text (HTML) content — sanitize on write; the KB view renders it as HTML.
+    content: sanitizeHtml(data.content),
     category: data.category,
     is_published: data.is_published ?? false,
     is_featured: data.is_featured ?? false,
@@ -916,7 +920,7 @@ export async function updateArticle(
 
   const updateData: Record<string, any> = { updated_at: new Date() };
   if (data.title !== undefined) updateData.title = data.title;
-  if (data.content !== undefined) updateData.content = data.content;
+  if (data.content !== undefined) updateData.content = sanitizeHtml(data.content);
   if (data.category !== undefined) updateData.category = data.category;
   if (data.slug !== undefined) updateData.slug = data.slug;
   if (data.is_published !== undefined) updateData.is_published = data.is_published;

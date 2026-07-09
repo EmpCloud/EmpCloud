@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
+import RichTextEditor, { isRichTextEmpty, richTextToPlainText } from "@/components/ui/RichTextEditor";
 import {
   Plus,
   TicketCheck,
@@ -171,12 +172,10 @@ export default function MyTicketsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("helpdesk.myTicketsPage.description")}
               </label>
-              <textarea
+              <RichTextEditor
                 value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[120px]"
+                onChange={setFormDescription}
                 placeholder={t("helpdesk.myTicketsPage.descriptionPlaceholder")}
-                required
               />
             </div>
 
@@ -190,7 +189,7 @@ export default function MyTicketsPage() {
               </button>
               <button
                 type="submit"
-                disabled={createTicket.isPending || !formSubject.trim() || !formDescription.trim()}
+                disabled={createTicket.isPending || !formSubject.trim() || isRichTextEmpty(formDescription)}
                 className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <TicketCheck className="h-4 w-4" />
@@ -285,7 +284,7 @@ export default function MyTicketsPage() {
                     {ticket.subject}
                   </h3>
                   <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                    {ticket.description}
+                    {richTextToPlainText(ticket.description)}
                   </p>
                 </div>
                 <div className="text-right shrink-0">

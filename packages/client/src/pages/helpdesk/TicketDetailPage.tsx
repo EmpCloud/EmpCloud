@@ -18,6 +18,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+// Ticket descriptions are now rich-text (HTML, sanitized server-side). New tickets
+// store HTML; older ones are plain text — keep whitespace-pre-wrap only for the latter.
+const isHtmlContent = (s?: string | null): boolean => !!s && /<[a-z][\s\S]*>/i.test(s);
+
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -233,9 +237,10 @@ export default function TicketDetailPage() {
               )}
             </div>
             <h1 className="text-xl font-bold text-gray-900">{ticket.subject}</h1>
-            <p className="text-sm text-gray-600 mt-2 whitespace-pre-wrap">
-              {ticket.description}
-            </p>
+            <div
+              className={`rich-text text-sm text-gray-600 mt-2 ${isHtmlContent(ticket.description) ? "" : "whitespace-pre-wrap"}`}
+              dangerouslySetInnerHTML={{ __html: ticket.description || "" }}
+            />
             <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
               <span>{t("ticketDetail.raisedBy", { name: ticket.raised_by_name })}</span>
               <span>

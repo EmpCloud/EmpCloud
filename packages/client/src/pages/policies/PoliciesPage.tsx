@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/lib/auth-store";
 import api from "@/api/client";
 import { FileText, Plus, Check, ChevronDown, ChevronUp, Users, Trash2, Pencil } from "lucide-react";
+import RichTextEditor, { isRichTextEmpty } from "@/components/ui/RichTextEditor";
 
 // Defensive fallback for legacy rows that slipped past validation with a
 // blank/whitespace-only title (#1636). Returns the original title when
@@ -12,6 +13,14 @@ import { FileText, Plus, Check, ChevronDown, ChevronUp, Users, Trash2, Pencil } 
 function policyTitle(p: { title?: string | null }, untitled: string): string {
   const t = (p.title || "").trim();
   return t || untitled;
+}
+
+// Policies created before the rich-text editor are stored as plain text with
+// newline breaks; newer ones store HTML. Detect HTML so display panels can add
+// `whitespace-pre-wrap` for the legacy plain-text rows (preserving their line
+// breaks) without injecting blank lines between HTML block elements.
+function isHtmlContent(s: string | null | undefined): boolean {
+  return !!s && /<\/?[a-z][^>]*>/i.test(s);
 }
 
 // ---------------------------------------------------------------------------
@@ -169,7 +178,13 @@ function EmployeePoliciesView() {
                 </button>
                 {isOpen && (
                   <div className="px-6 pb-4 border-t border-gray-100">
-                    <div className="prose prose-sm max-w-none py-4 text-gray-700 whitespace-pre-wrap">{p.content}</div>
+                    {/* Content is sanitized server-side via sanitizeHtml() on
+                        write, so rendering it as HTML is safe. Legacy plain-text
+                        rows keep their line breaks via whitespace-pre-wrap. */}
+                    <div
+                      className={`rich-text py-4 ${isHtmlContent(p.content) ? "" : "whitespace-pre-wrap"}`}
+                      dangerouslySetInnerHTML={{ __html: p.content || "" }}
+                    />
                     {p.effective_date && (
                       <p className="text-xs text-gray-400 mb-3">{t("policies.page.effective", { date: p.effective_date })}</p>
                     )}
@@ -275,6 +290,9 @@ function HRPoliciesView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Content is HTML now — guard against a visually-blank editor (innerHTML
+    // like "<br>") that `value.trim()` would wrongly treat as filled.
+    if (!title.trim() || isRichTextEmpty(content)) return;
     const payload = {
       title,
       content,
@@ -363,13 +381,10 @@ function HRPoliciesView() {
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("policies.page.fieldContent")} <span className="text-red-500">*</span></label>
-              <textarea
+              <RichTextEditor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                onChange={setContent}
                 placeholder={t("policies.page.contentPlaceholder")}
-                required
               />
             </div>
           </div>
@@ -383,7 +398,7 @@ function HRPoliciesView() {
             </button>
             <button
               type="submit"
-              disabled={isSavingPolicy || !title.trim() || !content.trim()}
+              disabled={isSavingPolicy || !title.trim() || isRichTextEmpty(content)}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {editingId != null ? (
@@ -504,7 +519,12 @@ function HRPoliciesView() {
                             {p.effective_date && (
                               <p className="text-xs text-gray-400 mb-2">{t("policies.page.effective", { date: p.effective_date })}</p>
                             )}
-                            <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap text-sm leading-relaxed">{p.content}</div>
+                            {/* Sanitized server-side on write — safe as HTML.
+                                Legacy plain-text rows keep their line breaks. */}
+                            <div
+                              className={`rich-text ${isHtmlContent(p.content) ? "" : "whitespace-pre-wrap"}`}
+                              dangerouslySetInnerHTML={{ __html: p.content || "" }}
+                            />
                           </div>
                         </div>
                       </td>
