@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
+import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
 import { PlusCircle, Clock, CheckCircle2, XCircle, CalendarDays, Plus } from "lucide-react";
 
 interface CompOffRequest {
@@ -34,8 +36,20 @@ export default function CompOffPage() {
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const isHR = user && HR_ROLES.includes(user.role);
+  // Personal sections (own balance, own request form, "My Requests") belong to
+  // the self experience. Mirror the DashboardLayout view-toggle rule so that a
+  // non-HR user with admin permissions who flips to Admin view sees only the HR
+  // management sections (Credit Balance, Pending Approvals), not their own
+  // comp-off. HR users have no toggle → isSelfView stays true (unchanged).
+  const { permissions } = usePermissions();
+  const viewMode = useViewModeStore((s) => s.viewMode);
+  const showViewToggle = !isHR && hasAnyAdminPermission(permissions);
+  const isSelfView = !(showViewToggle && viewMode === "admin");
   const [showForm, setShowForm] = useState(false);
   const [tab, setTab] = useState<"my" | "pending">("my");
+  // In Admin view the "My Requests" tab is hidden, so force the Pending
+  // Approvals table regardless of the persisted tab state.
+  const effectiveTab = isSelfView ? tab : "pending";
   const [rejectReason, setRejectReason] = useState("");
   const [actionId, setActionId] = useState<number | null>(null);
 
@@ -192,12 +206,14 @@ export default function CompOffPage() {
               <Plus className="h-4 w-4" /> Credit Balance
             </button>
           )}
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
-          >
-            <PlusCircle className="h-4 w-4" /> {t('leave.compOff.request')}
-          </button>
+          {isSelfView && (
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            >
+              <PlusCircle className="h-4 w-4" /> {t('leave.compOff.request')}
+            </button>
+          )}
         </div>
       </div>
 
@@ -282,7 +298,8 @@ export default function CompOffPage() {
         </form>
       )}
 
-      {/* Balance Card */}
+      {/* Balance Cards — own comp-off balance & counts; self view only. */}
+      {isSelfView && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center gap-3 mb-2">
@@ -327,9 +344,10 @@ export default function CompOffPage() {
           </div>
         </div>
       </div>
+      )}
 
-      {/* Request Form */}
-      {showForm && (
+      {/* Request Form — own comp-off request; self view only. */}
+      {isSelfView && showForm && (
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-xl border border-gray-200 p-6 mb-8"
@@ -409,21 +427,23 @@ export default function CompOffPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setTab("my")}
-          className={`px-4 py-2 text-sm font-medium rounded-lg ${
-            tab === "my"
-              ? "bg-brand-50 text-brand-700"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
-        >
-          {t('leave.compOff.myRequests')}
-        </button>
+        {isSelfView && (
+          <button
+            onClick={() => setTab("my")}
+            className={`px-4 py-2 text-sm font-medium rounded-lg ${
+              effectiveTab === "my"
+                ? "bg-brand-50 text-brand-700"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {t('leave.compOff.myRequests')}
+          </button>
+        )}
         {isHR && (
           <button
             onClick={() => setTab("pending")}
             className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              tab === "pending"
+              effectiveTab === "pending"
                 ? "bg-brand-50 text-brand-700"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
@@ -438,8 +458,8 @@ export default function CompOffPage() {
         )}
       </div>
 
-      {/* My Requests Table */}
-      {tab === "my" && (
+      {/* My Requests Table — own comp-off history; self view only. */}
+      {isSelfView && effectiveTab === "my" && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -494,7 +514,7 @@ export default function CompOffPage() {
       )}
 
       {/* Pending Approvals Table (HR View) */}
-      {tab === "pending" && isHR && (
+      {effectiveTab === "pending" && isHR && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
