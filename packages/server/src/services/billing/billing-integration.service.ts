@@ -371,30 +371,64 @@ export async function getPayments(
 // Summary
 // ---------------------------------------------------------------------------
 
-export async function getBillingSummary(orgId: number): Promise<object> {
-  const [invoiceResult, paymentResult] = await Promise.all([
-    getInvoices(orgId, { page: 1, perPage: 5 }),
-    getPayments(orgId, { page: 1, perPage: 5 }),
-  ]);
+/**
+ * Assemble the /billing/summary response shape from already-fetched inputs.
+ * Pure (no I/O) so it can be unit-tested directly.
+ *
+ * Emits the camelCase fields the dashboard + /billing overview cards read
+ * (monthlyRecurring, outstandingAmount, overdueCount, nextInvoiceDate) — these
+ * were previously absent, so those surfaces fell back to ₹0 while the /billing
+ * plan card (fed by the local total) showed the real figure. monthlyRecurring
+ * is sourced from the same local subscription total so all surfaces agree.
+ */
+export function buildBillingSummary(
+  invoiceResult: any,
+  paymentResult: any,
+  local: { subscriptions?: any[]; total_monthly_cost?: number; currency?: string },
+  nowMs: number,
+) {
+  const invoiceList = Array.isArray(invoiceResult?.invoices) ? invoiceResult.invoices : [];
 
-  const invoiceList = Array.isArray(invoiceResult?.invoices)
-    ? invoiceResult.invoices
-    : [];
-
+  const isUnpaid = (inv: any) =>
+    inv.status === "sent" || inv.status === "overdue" || inv.status === "viewed";
   const outstandingAmount = invoiceList
-    .filter((inv: any) => inv.status === "sent" || inv.status === "overdue" || inv.status === "viewed")
+    .filter(isUnpaid)
     .reduce((sum: number, inv: any) => sum + (Number(inv.amountDue) || Number(inv.total) || 0), 0);
+  const overdueCount = invoiceList.filter((inv: any) => inv.status === "overdue").length;
 
-  const currency = await getOrgCurrency(orgId);
+  // Next invoice date = earliest upcoming period end across active subscriptions.
+  const nextInvoiceDate =
+    (local.subscriptions ?? [])
+      .map((s: any) => s.current_period_end)
+      .filter((d: any) => !!d && new Date(d).getTime() >= nowMs)
+      .sort((a: any, b: any) => new Date(a).getTime() - new Date(b).getTime())[0] ?? null;
 
   return {
     recent_invoices: invoiceList,
-    recent_payments: Array.isArray(paymentResult?.payments)
-      ? paymentResult.payments
-      : [],
+    recent_payments: Array.isArray(paymentResult?.payments) ? paymentResult.payments : [],
+    // camelCase fields consumed by the dashboard + /billing overview cards.
+    monthlyRecurring: local.total_monthly_cost ?? 0,
+    outstandingAmount,
+    overdueCount,
+    nextInvoiceDate,
+    currency: local.currency,
+    // snake_case kept for backward compatibility with any existing consumers.
     outstanding_amount: outstandingAmount,
-    currency,
   };
+}
+
+export async function getBillingSummary(orgId: number): Promise<object> {
+  const [invoiceResult, paymentResult, local] = await Promise.all([
+    getInvoices(orgId, { page: 1, perPage: 5 }),
+    getPayments(orgId, { page: 1, perPage: 5 }),
+    // Reuse the local subscription cost aggregation so the dashboard and the
+    // /billing overview report the SAME monthly recurring figure that the
+    // /billing plan card shows.
+    getLocalBillingSummary(orgId),
+  ]);
+
+  const currency = local.currency || (await getOrgCurrency(orgId));
+  return buildBillingSummary(invoiceResult, paymentResult, { ...local, currency }, Date.now());
 }
 
 // ---------------------------------------------------------------------------

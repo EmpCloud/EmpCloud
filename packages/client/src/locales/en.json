@@ -851,7 +851,11 @@
     },
     "toast": {
       "deleted": "Policy deleted",
-      "deleteFailed": "Failed to delete policy"
+      "deleteFailed": "Failed to delete policy",
+      "updated": "Policy updated",
+      "created": "Policy created",
+      "updateFailed": "Failed to update policy",
+      "createFailed": "Failed to create policy"
     }
   },
   "announcements": {
@@ -1054,6 +1058,10 @@
       "requestedCheckOut": "Requested Check Out",
       "checkoutAfterCheckin": "Check-out time must be after check-in time.",
       "submit": "Submit",
+      "submitSuccess": "Regularization request submitted successfully.",
+      "submitError": "Failed to submit regularization request.",
+      "approveSuccess": "Regularization request approved.",
+      "rejectSuccess": "Regularization request rejected.",
       "rejectionPrompt": "Rejection reason (optional):",
       "rejectionReason": "Rejection reason",
       "noRecords": "No regularization requests",
@@ -1209,6 +1217,7 @@
       "errorDelete": "Failed to delete request.",
       "errorCheckoutAfter": "Check-out time must be after check-in time.",
       "errorSubmit": "Failed to submit regularization request.",
+      "regSuccess": "Regularization request submitted successfully.",
       "loadingTimeline": "Loading timeline…",
       "timelineError": "Could not load timeline for this record.",
       "noPunches": "No punch history for this day.",
@@ -1761,6 +1770,7 @@
       "criticalRole": "Critical Role",
       "creating": "Creating...",
       "failedCreate": "Failed to create position",
+      "createSuccess": "Position \"{{title}}\" created successfully.",
       "searchPlaceholder": "Search by title or code...",
       "allDepartments": "All Departments",
       "allStatuses": "All Statuses",
@@ -1775,6 +1785,7 @@
       "colCritical": "Critical",
       "noPositions": "No positions found",
       "deleteTooltip": "Delete position",
+      "editTooltip": "Edit position",
       "pageOf": "Page {{page}} of {{total_pages}} ({{total}} total)",
       "deleteTitle": "Delete position?",
       "deleteConfirm": "Delete {{title}}? Active assignments are ended and the position is closed. This cannot be undone.",
@@ -2360,6 +2371,11 @@
     "cancel": "Cancel",
     "adding": "Adding...",
     "addError": "Failed to add holiday.",
+    "addSuccess": "Holiday \"{{title}}\" added successfully.",
+    "editHoliday": "Edit Holiday",
+    "updating": "Updating...",
+    "editSuccess": "Holiday \"{{title}}\" updated successfully.",
+    "editError": "Failed to update holiday.",
     "loading": "Loading holidays...",
     "empty": "No holidays listed yet.",
     "emptyHint": "Click \"Add Holiday\" to get started.",
@@ -3890,7 +3906,9 @@
         "endBeforeStart": "End date cannot be before start date."
       },
       "cancel": "Cancel",
-      "submit": "Create Event"
+      "submit": "Create Event",
+      "editTitle": "Edit Event",
+      "updateSubmit": "Update Event"
     },
     "upcoming": {
       "title": "Upcoming Events",
@@ -3901,7 +3919,9 @@
       "cancel": "Cancel",
       "deleteTitle": "Delete event",
       "attending_one": "{{count}} attending",
-      "attending_other": "{{count}} attending"
+      "attending_other": "{{count}} attending",
+      "edit": "Edit",
+      "editTitle": "Edit event"
     },
     "deleteModal": {
       "title": "Delete event?",
@@ -3910,6 +3930,12 @@
       "confirm": "Delete",
       "deleting": "Deleting...",
       "error": "Failed to delete event"
+    },
+    "toast": {
+      "created": "Event created",
+      "updated": "Event updated",
+      "createFailed": "Failed to create event",
+      "updateFailed": "Failed to update event"
     }
   },
   "surveyBuilder": {
@@ -4379,7 +4405,8 @@
       "cancel": "Cancel",
       "creating": "Creating...",
       "submit": "Create Goal",
-      "errorEndBeforeStart": "End date cannot be before the start date."
+      "errorEndBeforeStart": "End date cannot be before the start date.",
+      "createSuccess": "Goal created"
     },
     "progressModal": {
       "title": "Update Progress",
@@ -4784,6 +4811,7 @@
       "headcountMinError": "Headcount Budget must be at least 1.",
       "saving": "Saving...",
       "saveChanges": "Save Changes",
+      "updateSuccess": "Position \"{{title}}\" updated successfully.",
       "updateFailedInline": "Failed to update position"
     },
     "employmentType": {
@@ -6231,6 +6259,13 @@
     },
     "errors": {
       "deactivateFailed": "Failed to deactivate category"
+    },
+    "toast": {
+      "created": "Category added",
+      "updated": "Category updated",
+      "deactivated": "Category deactivated",
+      "createFailed": "Failed to add category",
+      "updateFailed": "Failed to update category"
     }
   },
   "myAssets": {

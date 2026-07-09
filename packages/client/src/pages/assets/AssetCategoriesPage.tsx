@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import { showToast } from "@/components/ui/Toast";
 import {
   Plus,
   FolderOpen,
@@ -33,6 +34,7 @@ export default function AssetCategoriesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["asset-categories"] });
       resetForm();
+      showToast("success", t("assetCategories.toast.created"));
     },
   });
 
@@ -42,6 +44,7 @@ export default function AssetCategoriesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["asset-categories"] });
       resetForm();
+      showToast("success", t("assetCategories.toast.updated"));
     },
   });
 
@@ -51,6 +54,7 @@ export default function AssetCategoriesPage() {
       queryClient.invalidateQueries({ queryKey: ["asset-categories"] });
       setDeleteTarget(null);
       setDeleteError(null);
+      showToast("success", t("assetCategories.toast.deactivated"));
     },
     onError: (err: any) =>
       setDeleteError(err?.response?.data?.error?.message || t("assetCategories.errors.deactivateFailed")),
@@ -73,10 +77,21 @@ export default function AssetCategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const data = { name: formName, description: formDescription || null };
-    if (editingId) {
-      await updateCategory.mutateAsync({ id: editingId, data });
-    } else {
-      await createCategory.mutateAsync(data);
+    const isEditing = editingId != null;
+    try {
+      if (isEditing) {
+        await updateCategory.mutateAsync({ id: editingId, data });
+      } else {
+        await createCategory.mutateAsync(data);
+      }
+    } catch (err: any) {
+      // Keep the form open with the user's input so they can retry.
+      showToast(
+        "error",
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          (isEditing ? t("assetCategories.toast.updateFailed") : t("assetCategories.toast.createFailed")),
+      );
     }
   };
 

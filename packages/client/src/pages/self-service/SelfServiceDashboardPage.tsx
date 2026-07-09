@@ -22,6 +22,7 @@ import { usePermissions } from "@/lib/use-permissions";
 import { leaveTypeLabel } from "@/lib/leave-type-label";
 import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 import { showToast } from "@/components/ui/Toast";
+import { richTextToPlainText } from "@/components/ui/RichTextEditor";
 import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
 
 function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
@@ -389,7 +390,7 @@ export default function SelfServiceDashboardPage() {
                 <li key={a.id}>
                   <p className="text-sm font-medium text-gray-900">{a.title}</p>
                   <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
-                    {a.content || a.body || ""}
+                    {richTextToPlainText(a.content) || a.body || ""}
                   </p>
                 </li>
               ))}

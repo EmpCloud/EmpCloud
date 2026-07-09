@@ -851,7 +851,11 @@
     },
     "toast": {
       "deleted": "Richtlinie gelöscht",
-      "deleteFailed": "Richtlinie konnte nicht gelöscht werden"
+      "deleteFailed": "Richtlinie konnte nicht gelöscht werden",
+      "updated": "Richtlinie aktualisiert",
+      "created": "Richtlinie erstellt",
+      "updateFailed": "Richtlinie konnte nicht aktualisiert werden",
+      "createFailed": "Richtlinie konnte nicht erstellt werden"
     }
   },
   "announcements": {
@@ -1054,6 +1058,10 @@
       "requestedCheckOut": "Beantragte Ausstempelung",
       "checkoutAfterCheckin": "Die Ausstempelzeit muss nach der Einstempelzeit liegen.",
       "submit": "Einreichen",
+      "submitSuccess": "Regularisierungsantrag erfolgreich eingereicht.",
+      "submitError": "Regularisierungsantrag konnte nicht eingereicht werden.",
+      "approveSuccess": "Regularisierungsantrag genehmigt.",
+      "rejectSuccess": "Regularisierungsantrag abgelehnt.",
       "rejectionPrompt": "Ablehnungsgrund (optional):",
       "noRecords": "Keine Regularisierungsanträge",
       "approve": "Genehmigen",
@@ -1209,6 +1217,7 @@
       "errorDelete": "Antrag konnte nicht gelöscht werden.",
       "errorCheckoutAfter": "Die Ausstempelzeit muss nach der Einstempelzeit liegen.",
       "errorSubmit": "Korrekturantrag konnte nicht gesendet werden.",
+      "regSuccess": "Regularisierungsantrag erfolgreich eingereicht.",
       "loadingTimeline": "Zeitleiste wird geladen…",
       "timelineError": "Zeitleiste für diesen Eintrag konnte nicht geladen werden.",
       "noPunches": "Kein Stempelverlauf für diesen Tag.",
@@ -1761,6 +1770,7 @@
       "criticalRole": "Kritische Rolle",
       "creating": "Wird erstellt...",
       "failedCreate": "Position konnte nicht erstellt werden",
+      "createSuccess": "Position „{{title}}“ erfolgreich erstellt.",
       "searchPlaceholder": "Nach Titel oder Code suchen...",
       "allDepartments": "Alle Abteilungen",
       "allStatuses": "Alle Status",
@@ -1775,6 +1785,7 @@
       "colCritical": "Kritisch",
       "noPositions": "Keine Positionen gefunden",
       "deleteTooltip": "Position löschen",
+      "editTooltip": "Position bearbeiten",
       "pageOf": "Seite {{page}} von {{total_pages}} ({{total}} insgesamt)",
       "deleteTitle": "Position löschen?",
       "deleteConfirm": "{{title}} löschen? Aktive Zuweisungen werden beendet und die Position wird geschlossen. Dies kann nicht rückgängig gemacht werden.",
@@ -2360,6 +2371,11 @@
     "cancel": "Abbrechen",
     "adding": "Wird hinzugefügt...",
     "addError": "Feiertag konnte nicht hinzugefügt werden.",
+    "addSuccess": "Feiertag „{{title}}“ erfolgreich hinzugefügt.",
+    "editHoliday": "Feiertag bearbeiten",
+    "updating": "Wird aktualisiert...",
+    "editSuccess": "Feiertag „{{title}}“ erfolgreich aktualisiert.",
+    "editError": "Feiertag konnte nicht aktualisiert werden.",
     "loading": "Feiertage werden geladen...",
     "empty": "Noch keine Feiertage aufgeführt.",
     "emptyHint": "Klicken Sie auf \"Feiertag hinzufügen\", um zu beginnen.",
@@ -3890,7 +3906,9 @@
         "endBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen."
       },
       "cancel": "Abbrechen",
-      "submit": "Event erstellen"
+      "submit": "Event erstellen",
+      "editTitle": "Ereignis bearbeiten",
+      "updateSubmit": "Ereignis aktualisieren"
     },
     "upcoming": {
       "title": "Anstehende Events",
@@ -3901,7 +3919,9 @@
       "cancel": "Absagen",
       "deleteTitle": "Event löschen",
       "attending_one": "{{count}} Teilnahme",
-      "attending_other": "{{count}} Teilnahmen"
+      "attending_other": "{{count}} Teilnahmen",
+      "edit": "Bearbeiten",
+      "editTitle": "Ereignis bearbeiten"
     },
     "deleteModal": {
       "title": "Event löschen?",
@@ -3910,6 +3930,12 @@
       "confirm": "Löschen",
       "deleting": "Wird gelöscht...",
       "error": "Event konnte nicht gelöscht werden"
+    },
+    "toast": {
+      "created": "Ereignis erstellt",
+      "updated": "Ereignis aktualisiert",
+      "createFailed": "Ereignis konnte nicht erstellt werden",
+      "updateFailed": "Ereignis konnte nicht aktualisiert werden"
     }
   },
   "surveyBuilder": {
@@ -4379,7 +4405,8 @@
       "cancel": "Abbrechen",
       "creating": "Wird erstellt ...",
       "submit": "Ziel erstellen",
-      "errorEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen."
+      "errorEndBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+      "createSuccess": "Ziel erstellt"
     },
     "progressModal": {
       "title": "Fortschritt aktualisieren",
@@ -4784,6 +4811,7 @@
       "headcountMinError": "Das Stellenbudget muss mindestens 1 betragen.",
       "saving": "Wird gespeichert...",
       "saveChanges": "Änderungen speichern",
+      "updateSuccess": "Position „{{title}}“ erfolgreich aktualisiert.",
       "updateFailedInline": "Position konnte nicht aktualisiert werden"
     },
     "employmentType": {
@@ -6231,6 +6259,13 @@
     },
     "errors": {
       "deactivateFailed": "Kategorie konnte nicht deaktiviert werden"
+    },
+    "toast": {
+      "created": "Kategorie hinzugefügt",
+      "updated": "Kategorie aktualisiert",
+      "deactivated": "Kategorie deaktiviert",
+      "createFailed": "Kategorie konnte nicht hinzugefügt werden",
+      "updateFailed": "Kategorie konnte nicht aktualisiert werden"
     }
   },
   "myAssets": {

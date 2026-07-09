@@ -563,9 +563,19 @@ export default function OrgChartPage() {
         await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
         const dataUrl = await toPng(node, {
-          cacheBust: true,
+          // NOTE: cacheBust is deliberately OFF. It appends a query string to
+          // every image URL, which (a) breaks the `blob:` object-URLs that
+          // EmployeeAvatar uses for manually-uploaded photos and (b) forces a
+          // re-fetch of the authenticated biometric-face API images — either of
+          // which made toPng throw and surfaced as "Export failed" (#1651).
           backgroundColor: "#f8fafc", // matches the slate-50 viewport bg
           pixelRatio: 2,
+          // Don't let a single un-inlinable avatar/font kill the whole export:
+          // fall back to a transparent pixel for images that can't be captured,
+          // and skip webfont inlining (not needed for the chart's visual).
+          imagePlaceholder:
+            "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
+          skipFonts: true,
         });
 
         const stamp = new Date().toISOString().split("T")[0];

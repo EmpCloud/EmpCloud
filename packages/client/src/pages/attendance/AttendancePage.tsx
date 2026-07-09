@@ -154,7 +154,11 @@ export default function AttendancePage() {
       setShowRegForm(false);
       setRegForm({ date: "", requested_check_in: "", requested_check_out: "", reason: "" });
       setRegFormError(null);
+      showToast("success", t("attendance.my.regSuccess"));
     },
+    // Submit errors are already surfaced inline under the form (see the
+    // regFormError / submitRegularization.isError blocks in the JSX), so we
+    // don't also raise an error toast here to avoid double-messaging.
   });
 
   // Withdraw a still-pending regularization request. Only pending rows expose

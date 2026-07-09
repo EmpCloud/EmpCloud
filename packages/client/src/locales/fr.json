@@ -851,7 +851,11 @@
     },
     "toast": {
       "deleted": "Politique supprimée",
-      "deleteFailed": "Échec de la suppression de la politique"
+      "deleteFailed": "Échec de la suppression de la politique",
+      "updated": "Politique mise à jour",
+      "created": "Politique créée",
+      "updateFailed": "Échec de la mise à jour de la politique",
+      "createFailed": "Échec de la création de la politique"
     }
   },
   "announcements": {
@@ -1054,6 +1058,10 @@
       "requestedCheckOut": "Sortie demandée",
       "checkoutAfterCheckin": "L'heure de sortie doit être postérieure à l'heure d'arrivée.",
       "submit": "Soumettre",
+      "submitSuccess": "Demande de régularisation envoyée avec succès.",
+      "submitError": "Échec de l'envoi de la demande de régularisation.",
+      "approveSuccess": "Demande de régularisation approuvée.",
+      "rejectSuccess": "Demande de régularisation rejetée.",
       "rejectionPrompt": "Motif du refus (facultatif) :",
       "noRecords": "Aucune demande de régularisation",
       "approve": "Approuver",
@@ -1209,6 +1217,7 @@
       "errorDelete": "Échec de la suppression de la demande.",
       "errorCheckoutAfter": "L'heure de départ doit être postérieure à l'heure d'arrivée.",
       "errorSubmit": "Échec de l'envoi de la demande de régularisation.",
+      "regSuccess": "Demande de régularisation envoyée avec succès.",
       "loadingTimeline": "Chargement de la chronologie…",
       "timelineError": "Impossible de charger la chronologie de cet enregistrement.",
       "noPunches": "Aucun historique de pointage pour ce jour.",
@@ -1761,6 +1770,7 @@
       "criticalRole": "Rôle critique",
       "creating": "Création...",
       "failedCreate": "Échec de la création du poste",
+      "createSuccess": "Poste « {{title}} » créé avec succès.",
       "searchPlaceholder": "Rechercher par titre ou code...",
       "allDepartments": "Tous les départements",
       "allStatuses": "Tous les statuts",
@@ -1775,6 +1785,7 @@
       "colCritical": "Critique",
       "noPositions": "Aucun poste trouvé",
       "deleteTooltip": "Supprimer le poste",
+      "editTooltip": "Modifier le poste",
       "pageOf": "Page {{page}} sur {{total_pages}} ({{total}} au total)",
       "deleteTitle": "Supprimer le poste ?",
       "deleteConfirm": "Supprimer {{title}} ? Les affectations actives sont clôturées et le poste est fermé. Cette action est irréversible.",
@@ -2360,6 +2371,11 @@
     "cancel": "Annuler",
     "adding": "Ajout...",
     "addError": "Échec de l'ajout du jour férié.",
+    "addSuccess": "Jour férié « {{title}} » ajouté avec succès.",
+    "editHoliday": "Modifier le jour férié",
+    "updating": "Mise à jour...",
+    "editSuccess": "Jour férié « {{title}} » mis à jour avec succès.",
+    "editError": "Échec de la mise à jour du jour férié.",
     "loading": "Chargement des jours fériés...",
     "empty": "Aucun jour férié répertorié pour l'instant.",
     "emptyHint": "Cliquez sur « Ajouter un jour férié » pour commencer.",
@@ -3890,7 +3906,9 @@
         "endBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
       },
       "cancel": "Annuler",
-      "submit": "Créer un événement"
+      "submit": "Créer un événement",
+      "editTitle": "Modifier l'événement",
+      "updateSubmit": "Mettre à jour l'événement"
     },
     "upcoming": {
       "title": "Événements à venir",
@@ -3901,7 +3919,9 @@
       "cancel": "Annuler",
       "deleteTitle": "Supprimer l'événement",
       "attending_one": "{{count}} participant",
-      "attending_other": "{{count}} participants"
+      "attending_other": "{{count}} participants",
+      "edit": "Modifier",
+      "editTitle": "Modifier l'événement"
     },
     "deleteModal": {
       "title": "Supprimer l'événement ?",
@@ -3910,6 +3930,12 @@
       "confirm": "Supprimer",
       "deleting": "Suppression...",
       "error": "Échec de la suppression de l'événement"
+    },
+    "toast": {
+      "created": "Événement créé",
+      "updated": "Événement mis à jour",
+      "createFailed": "Échec de la création de l'événement",
+      "updateFailed": "Échec de la mise à jour de l'événement"
     }
   },
   "surveyBuilder": {
@@ -4379,7 +4405,8 @@
       "cancel": "Annuler",
       "creating": "Création...",
       "submit": "Créer l'objectif",
-      "errorEndBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
+      "errorEndBeforeStart": "La date de fin ne peut pas être antérieure à la date de début.",
+      "createSuccess": "Objectif créé"
     },
     "progressModal": {
       "title": "Mettre à jour la progression",
@@ -4784,6 +4811,7 @@
       "headcountMinError": "L'effectif budgété doit être d'au moins 1.",
       "saving": "Enregistrement...",
       "saveChanges": "Enregistrer les modifications",
+      "updateSuccess": "Poste « {{title}} » mis à jour avec succès.",
       "updateFailedInline": "Échec de la mise à jour du poste"
     },
     "employmentType": {
@@ -6231,6 +6259,13 @@
     },
     "errors": {
       "deactivateFailed": "Échec de la désactivation de la catégorie"
+    },
+    "toast": {
+      "created": "Catégorie ajoutée",
+      "updated": "Catégorie mise à jour",
+      "deactivated": "Catégorie désactivée",
+      "createFailed": "Échec de l'ajout de la catégorie",
+      "updateFailed": "Échec de la mise à jour de la catégorie"
     }
   },
   "myAssets": {
