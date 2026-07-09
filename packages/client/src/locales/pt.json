@@ -6245,6 +6245,13 @@
     },
     "errors": {
       "deactivateFailed": "Falha ao desativar a categoria"
+    },
+    "toast": {
+      "created": "Categoria adicionada",
+      "updated": "Categoria atualizada",
+      "deactivated": "Categoria desativada",
+      "createFailed": "Falha ao adicionar categoria",
+      "updateFailed": "Falha ao atualizar categoria"
     }
   },
   "myAssets": {
