@@ -165,13 +165,19 @@ export default function RegularizationsPage() {
       qc.invalidateQueries({ queryKey: ["regularizations"] });
       setShowForm(false);
       setForm({ date: "", requested_check_in: "", requested_check_out: "", reason: "" });
+      setFormError(null);
+      showToast("success", t("attendance.regularizations.submitSuccess"));
     },
+    // The inline formError only covers client-side validation; API submit
+    // failures were previously swallowed silently, so surface them as a toast.
+    onError: (err: any) =>
+      showToast("error", err?.response?.data?.error?.message ?? t("attendance.regularizations.submitError")),
   });
 
   const processReg = useMutation({
     mutationFn: ({ id, status, rejection_reason }: { id: number; status: "approved" | "rejected"; rejection_reason?: string }) =>
       api.put(`/attendance/regularizations/${id}/approve`, { status, rejection_reason }).then((r) => r.data.data),
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
       // BUG-22: the pending list didn't drop the approved/rejected row until a
       // manual refresh. invalidateQueries by default only refetches ACTIVE
       // queries and resolves immediately without awaiting; await it with an
@@ -181,6 +187,12 @@ export default function RegularizationsPage() {
       // Close the reject modal once the rejection lands.
       setRejectTarget(null);
       setRejectReason("");
+      showToast(
+        "success",
+        variables.status === "approved"
+          ? t("attendance.regularizations.approveSuccess")
+          : t("attendance.regularizations.rejectSuccess"),
+      );
     },
     onError: (err: any) =>
       showToast("error", err?.response?.data?.error?.message ?? "Action failed."),
