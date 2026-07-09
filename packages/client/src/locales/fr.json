@@ -1757,6 +1757,7 @@
       "criticalRole": "Rôle critique",
       "creating": "Création...",
       "failedCreate": "Échec de la création du poste",
+      "createSuccess": "Poste « {{title}} » créé avec succès.",
       "searchPlaceholder": "Rechercher par titre ou code...",
       "allDepartments": "Tous les départements",
       "allStatuses": "Tous les statuts",

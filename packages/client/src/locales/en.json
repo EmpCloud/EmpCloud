@@ -1757,6 +1757,7 @@
       "criticalRole": "Critical Role",
       "creating": "Creating...",
       "failedCreate": "Failed to create position",
+      "createSuccess": "Position \"{{title}}\" created successfully.",
       "searchPlaceholder": "Search by title or code...",
       "allDepartments": "All Departments",
       "allStatuses": "All Statuses",

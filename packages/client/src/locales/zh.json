@@ -1757,6 +1757,7 @@
       "criticalRole": "关键岗位",
       "creating": "创建中...",
       "failedCreate": "创建职位失败",
+      "createSuccess": "已成功创建职位\"{{title}}\"。",
       "searchPlaceholder": "按标题或编号搜索...",
       "allDepartments": "所有部门",
       "allStatuses": "所有状态",
