@@ -4781,6 +4781,7 @@
       "headcountMinError": "नियुक्ति बजट कम से कम 1 होना चाहिए।",
       "saving": "सहेज रहा है...",
       "saveChanges": "बदलाव सहेजें",
+      "updateSuccess": "पद \"{{title}}\" सफलतापूर्वक अपडेट किया गया।",
       "updateFailedInline": "पद अपडेट करने में विफल"
     },
     "employmentType": {

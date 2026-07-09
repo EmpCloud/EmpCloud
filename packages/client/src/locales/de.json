@@ -4781,6 +4781,7 @@
       "headcountMinError": "Das Stellenbudget muss mindestens 1 betragen.",
       "saving": "Wird gespeichert...",
       "saveChanges": "Änderungen speichern",
+      "updateSuccess": "Position „{{title}}“ erfolgreich aktualisiert.",
       "updateFailedInline": "Position konnte nicht aktualisiert werden"
     },
     "employmentType": {

@@ -4781,6 +4781,7 @@
       "headcountMinError": "L'effectif budgété doit être d'au moins 1.",
       "saving": "Enregistrement...",
       "saveChanges": "Enregistrer les modifications",
+      "updateSuccess": "Poste « {{title}} » mis à jour avec succès.",
       "updateFailedInline": "Échec de la mise à jour du poste"
     },
     "employmentType": {

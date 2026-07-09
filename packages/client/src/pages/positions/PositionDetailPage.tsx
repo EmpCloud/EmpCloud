@@ -120,10 +120,12 @@ export default function PositionDetailPage() {
   const updateMutation = useMutation({
     mutationFn: (data: object) =>
       api.put(`/positions/${id}`, data).then((r) => r.data.data),
-    onSuccess: () => {
+    onSuccess: (updated: any) => {
       queryClient.invalidateQueries({ queryKey: ["position", id] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position-dashboard"] });
       setShowEdit(false);
+      showToast("success", t("positionDetail.editForm.updateSuccess", { title: updated?.title ?? "" }));
     },
     onError: (err: any) => {
       const msg =

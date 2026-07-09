@@ -4781,6 +4781,7 @@
       "headcountMinError": "Headcount Budget must be at least 1.",
       "saving": "Saving...",
       "saveChanges": "Save Changes",
+      "updateSuccess": "Position \"{{title}}\" updated successfully.",
       "updateFailedInline": "Failed to update position"
     },
     "employmentType": {
