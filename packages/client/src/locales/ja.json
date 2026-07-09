@@ -1768,6 +1768,7 @@
       "criticalRole": "重要な役割",
       "creating": "作成中...",
       "failedCreate": "ポジションの作成に失敗しました",
+      "createSuccess": "ポジション「{{title}}」を作成しました。",
       "searchPlaceholder": "タイトルまたはコードで検索...",
       "allDepartments": "すべての部門",
       "allStatuses": "すべてのステータス",

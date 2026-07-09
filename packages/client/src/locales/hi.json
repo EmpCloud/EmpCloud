@@ -1768,6 +1768,7 @@
       "criticalRole": "महत्वपूर्ण भूमिका",
       "creating": "बना रहा है...",
       "failedCreate": "पद बनाने में विफल",
+      "createSuccess": "पद \"{{title}}\" सफलतापूर्वक बनाया गया।",
       "searchPlaceholder": "शीर्षक या कोड से खोजें...",
       "allDepartments": "सभी विभाग",
       "allStatuses": "सभी स्थितियाँ",

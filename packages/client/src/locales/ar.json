@@ -1768,6 +1768,7 @@
       "criticalRole": "وظيفة حرجة",
       "creating": "جاري الإنشاء...",
       "failedCreate": "فشل إنشاء الوظيفة",
+      "createSuccess": "تم إنشاء الوظيفة \"{{title}}\" بنجاح.",
       "searchPlaceholder": "البحث بالعنوان أو الرمز...",
       "allDepartments": "جميع الأقسام",
       "allStatuses": "جميع الحالات",

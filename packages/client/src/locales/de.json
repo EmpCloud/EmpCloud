@@ -1768,6 +1768,7 @@
       "criticalRole": "Kritische Rolle",
       "creating": "Wird erstellt...",
       "failedCreate": "Position konnte nicht erstellt werden",
+      "createSuccess": "Position „{{title}}“ erfolgreich erstellt.",
       "searchPlaceholder": "Nach Titel oder Code suchen...",
       "allDepartments": "Alle Abteilungen",
       "allStatuses": "Alle Status",

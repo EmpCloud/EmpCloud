@@ -1768,6 +1768,7 @@
       "criticalRole": "Cargo Crítico",
       "creating": "Criando...",
       "failedCreate": "Falha ao criar o cargo",
+      "createSuccess": "Cargo \"{{title}}\" criado com sucesso.",
       "searchPlaceholder": "Buscar por título ou código...",
       "allDepartments": "Todos os departamentos",
       "allStatuses": "Todos os status",

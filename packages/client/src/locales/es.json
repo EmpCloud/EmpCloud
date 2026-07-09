@@ -1768,6 +1768,7 @@
       "criticalRole": "Rol Crítico",
       "creating": "Creando...",
       "failedCreate": "Error al crear la posición",
+      "createSuccess": "Puesto \"{{title}}\" creado correctamente.",
       "searchPlaceholder": "Buscar por título o código...",
       "allDepartments": "Todos los departamentos",
       "allStatuses": "Todos los estados",
