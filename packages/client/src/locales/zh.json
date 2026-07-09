@@ -3893,7 +3893,9 @@
         "endBeforeStart": "结束日期不能早于开始日期。"
       },
       "cancel": "取消",
-      "submit": "创建活动"
+      "submit": "创建活动",
+      "editTitle": "编辑活动",
+      "updateSubmit": "更新活动"
     },
     "upcoming": {
       "title": "即将举行的活动",
@@ -3904,7 +3906,9 @@
       "cancel": "取消",
       "deleteTitle": "删除活动",
       "attending_one": "{{count}} 人参加",
-      "attending_other": "{{count}} 人参加"
+      "attending_other": "{{count}} 人参加",
+      "edit": "编辑",
+      "editTitle": "编辑活动"
     },
     "deleteModal": {
       "title": "删除活动？",
@@ -3913,6 +3917,12 @@
       "confirm": "删除",
       "deleting": "删除中…",
       "error": "删除活动失败"
+    },
+    "toast": {
+      "created": "活动已创建",
+      "updated": "活动已更新",
+      "createFailed": "创建活动失败",
+      "updateFailed": "更新活动失败"
     }
   },
   "surveyBuilder": {

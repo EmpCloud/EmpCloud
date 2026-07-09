@@ -3893,7 +3893,9 @@
         "endBeforeStart": "Das Enddatum darf nicht vor dem Startdatum liegen."
       },
       "cancel": "Abbrechen",
-      "submit": "Event erstellen"
+      "submit": "Event erstellen",
+      "editTitle": "Ereignis bearbeiten",
+      "updateSubmit": "Ereignis aktualisieren"
     },
     "upcoming": {
       "title": "Anstehende Events",
@@ -3904,7 +3906,9 @@
       "cancel": "Absagen",
       "deleteTitle": "Event löschen",
       "attending_one": "{{count}} Teilnahme",
-      "attending_other": "{{count}} Teilnahmen"
+      "attending_other": "{{count}} Teilnahmen",
+      "edit": "Bearbeiten",
+      "editTitle": "Ereignis bearbeiten"
     },
     "deleteModal": {
       "title": "Event löschen?",
@@ -3913,6 +3917,12 @@
       "confirm": "Löschen",
       "deleting": "Wird gelöscht...",
       "error": "Event konnte nicht gelöscht werden"
+    },
+    "toast": {
+      "created": "Ereignis erstellt",
+      "updated": "Ereignis aktualisiert",
+      "createFailed": "Ereignis konnte nicht erstellt werden",
+      "updateFailed": "Ereignis konnte nicht aktualisiert werden"
     }
   },
   "surveyBuilder": {

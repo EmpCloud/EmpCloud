@@ -3893,7 +3893,9 @@
         "endBeforeStart": "終了日は開始日より前に設定できません。"
       },
       "cancel": "キャンセル",
-      "submit": "イベントを作成"
+      "submit": "イベントを作成",
+      "editTitle": "イベントを編集",
+      "updateSubmit": "イベントを更新"
     },
     "upcoming": {
       "title": "今後のイベント",
@@ -3904,7 +3906,9 @@
       "cancel": "キャンセル",
       "deleteTitle": "イベントを削除",
       "attending_one": "{{count}}人が参加",
-      "attending_other": "{{count}}人が参加"
+      "attending_other": "{{count}}人が参加",
+      "edit": "編集",
+      "editTitle": "イベントを編集"
     },
     "deleteModal": {
       "title": "イベントを削除しますか？",
@@ -3913,6 +3917,12 @@
       "confirm": "削除",
       "deleting": "削除中...",
       "error": "イベントの削除に失敗しました"
+    },
+    "toast": {
+      "created": "イベントを作成しました",
+      "updated": "イベントを更新しました",
+      "createFailed": "イベントの作成に失敗しました",
+      "updateFailed": "イベントの更新に失敗しました"
     }
   },
   "surveyBuilder": {

@@ -3893,7 +3893,9 @@
         "endBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
       },
       "cancel": "Annuler",
-      "submit": "Créer un événement"
+      "submit": "Créer un événement",
+      "editTitle": "Modifier l'événement",
+      "updateSubmit": "Mettre à jour l'événement"
     },
     "upcoming": {
       "title": "Événements à venir",
@@ -3904,7 +3906,9 @@
       "cancel": "Annuler",
       "deleteTitle": "Supprimer l'événement",
       "attending_one": "{{count}} participant",
-      "attending_other": "{{count}} participants"
+      "attending_other": "{{count}} participants",
+      "edit": "Modifier",
+      "editTitle": "Modifier l'événement"
     },
     "deleteModal": {
       "title": "Supprimer l'événement ?",
@@ -3913,6 +3917,12 @@
       "confirm": "Supprimer",
       "deleting": "Suppression...",
       "error": "Échec de la suppression de l'événement"
+    },
+    "toast": {
+      "created": "Événement créé",
+      "updated": "Événement mis à jour",
+      "createFailed": "Échec de la création de l'événement",
+      "updateFailed": "Échec de la mise à jour de l'événement"
     }
   },
   "surveyBuilder": {

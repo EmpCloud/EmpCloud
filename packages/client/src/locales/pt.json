@@ -3893,7 +3893,9 @@
         "endBeforeStart": "A data de término não pode ser anterior à data de início."
       },
       "cancel": "Cancelar",
-      "submit": "Criar evento"
+      "submit": "Criar evento",
+      "editTitle": "Editar evento",
+      "updateSubmit": "Atualizar evento"
     },
     "upcoming": {
       "title": "Próximos eventos",
@@ -3904,7 +3906,9 @@
       "cancel": "Cancelar",
       "deleteTitle": "Excluir evento",
       "attending_one": "{{count}} confirmado",
-      "attending_other": "{{count}} confirmados"
+      "attending_other": "{{count}} confirmados",
+      "edit": "Editar",
+      "editTitle": "Editar evento"
     },
     "deleteModal": {
       "title": "Excluir evento?",
@@ -3913,6 +3917,12 @@
       "confirm": "Excluir",
       "deleting": "Excluindo...",
       "error": "Falha ao excluir o evento"
+    },
+    "toast": {
+      "created": "Evento criado",
+      "updated": "Evento atualizado",
+      "createFailed": "Falha ao criar o evento",
+      "updateFailed": "Falha ao atualizar o evento"
     }
   },
   "surveyBuilder": {

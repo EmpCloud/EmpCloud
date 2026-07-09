@@ -3893,7 +3893,9 @@
         "endBeforeStart": "La fecha de fin no puede ser anterior a la de inicio."
       },
       "cancel": "Cancelar",
-      "submit": "Crear evento"
+      "submit": "Crear evento",
+      "editTitle": "Editar evento",
+      "updateSubmit": "Actualizar evento"
     },
     "upcoming": {
       "title": "Próximos eventos",
@@ -3904,7 +3906,9 @@
       "cancel": "Cancelar",
       "deleteTitle": "Eliminar evento",
       "attending_one": "{{count}} asistente",
-      "attending_other": "{{count}} asistentes"
+      "attending_other": "{{count}} asistentes",
+      "edit": "Editar",
+      "editTitle": "Editar evento"
     },
     "deleteModal": {
       "title": "¿Eliminar evento?",
@@ -3913,6 +3917,12 @@
       "confirm": "Eliminar",
       "deleting": "Eliminando...",
       "error": "No se pudo eliminar el evento"
+    },
+    "toast": {
+      "created": "Evento creado",
+      "updated": "Evento actualizado",
+      "createFailed": "No se pudo crear el evento",
+      "updateFailed": "No se pudo actualizar el evento"
     }
   },
   "surveyBuilder": {

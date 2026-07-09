@@ -4049,7 +4049,9 @@
         "endBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
       },
       "cancel": "إلغاء",
-      "submit": "إنشاء فعالية"
+      "submit": "إنشاء فعالية",
+      "editTitle": "تعديل الفعالية",
+      "updateSubmit": "تحديث الفعالية"
     },
     "upcoming": {
       "title": "الفعاليات القادمة",
@@ -4064,7 +4066,9 @@
       "attending_two": "مشاركان ({{count}})",
       "attending_few": "{{count}} مشاركين",
       "attending_many": "{{count}} مشاركًا",
-      "attending_other": "{{count}} مشارك"
+      "attending_other": "{{count}} مشارك",
+      "edit": "تعديل",
+      "editTitle": "تعديل الفعالية"
     },
     "deleteModal": {
       "title": "حذف الفعالية؟",
@@ -4073,6 +4077,12 @@
       "confirm": "حذف",
       "deleting": "جارٍ الحذف...",
       "error": "فشل حذف الفعالية"
+    },
+    "toast": {
+      "created": "تم إنشاء الفعالية",
+      "updated": "تم تحديث الفعالية",
+      "createFailed": "تعذّر إنشاء الفعالية",
+      "updateFailed": "تعذّر تحديث الفعالية"
     }
   },
   "surveyBuilder": {
