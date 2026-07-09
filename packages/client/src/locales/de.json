@@ -1783,6 +1783,7 @@
       "colCritical": "Kritisch",
       "noPositions": "Keine Positionen gefunden",
       "deleteTooltip": "Position löschen",
+      "editTooltip": "Position bearbeiten",
       "pageOf": "Seite {{page}} von {{total_pages}} ({{total}} insgesamt)",
       "deleteTitle": "Position löschen?",
       "deleteConfirm": "{{title}} löschen? Aktive Zuweisungen werden beendet und die Position wird geschlossen. Dies kann nicht rückgängig gemacht werden.",

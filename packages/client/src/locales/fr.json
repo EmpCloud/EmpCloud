@@ -1783,6 +1783,7 @@
       "colCritical": "Critique",
       "noPositions": "Aucun poste trouvé",
       "deleteTooltip": "Supprimer le poste",
+      "editTooltip": "Modifier le poste",
       "pageOf": "Page {{page}} sur {{total_pages}} ({{total}} au total)",
       "deleteTitle": "Supprimer le poste ?",
       "deleteConfirm": "Supprimer {{title}} ? Les affectations actives sont clôturées et le poste est fermé. Cette action est irréversible.",

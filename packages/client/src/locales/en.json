@@ -1783,6 +1783,7 @@
       "colCritical": "Critical",
       "noPositions": "No positions found",
       "deleteTooltip": "Delete position",
+      "editTooltip": "Edit position",
       "pageOf": "Page {{page}} of {{total_pages}} ({{total}} total)",
       "deleteTitle": "Delete position?",
       "deleteConfirm": "Delete {{title}}? Active assignments are ended and the position is closed. This cannot be undone.",
