@@ -4382,7 +4382,8 @@
       "cancel": "Annuler",
       "creating": "Création...",
       "submit": "Créer l'objectif",
-      "errorEndBeforeStart": "La date de fin ne peut pas être antérieure à la date de début."
+      "errorEndBeforeStart": "La date de fin ne peut pas être antérieure à la date de début.",
+      "createSuccess": "Objectif créé"
     },
     "progressModal": {
       "title": "Mettre à jour la progression",

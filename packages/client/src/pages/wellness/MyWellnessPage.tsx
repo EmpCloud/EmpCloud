@@ -94,6 +94,15 @@ export default function MyWellnessPage() {
         start_date: new Date().toISOString().split("T")[0],
         end_date: "",
       });
+      showToast("success", t("myWellness.goalModal.createSuccess"));
+    },
+    onError: (err: any) => {
+      showToast(
+        "error",
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          t("myWellness.goalModal.errorCreateFailed"),
+      );
     },
   });
 

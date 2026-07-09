@@ -4382,7 +4382,8 @@
       "cancel": "取消",
       "creating": "创建中...",
       "submit": "创建目标",
-      "errorEndBeforeStart": "结束日期不能早于开始日期。"
+      "errorEndBeforeStart": "结束日期不能早于开始日期。",
+      "createSuccess": "目标已创建"
     },
     "progressModal": {
       "title": "更新进度",

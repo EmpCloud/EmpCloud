@@ -4382,7 +4382,8 @@
       "cancel": "Cancelar",
       "creating": "Criando...",
       "submit": "Criar Meta",
-      "errorEndBeforeStart": "A data de término não pode ser anterior à data de início."
+      "errorEndBeforeStart": "A data de término não pode ser anterior à data de início.",
+      "createSuccess": "Meta criada"
     },
     "progressModal": {
       "title": "Atualizar Progresso",
