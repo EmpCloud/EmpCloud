@@ -307,6 +307,7 @@
     "headcountPlans": "Planes de plantilla",
     "feedback": "Comentarios",
     "events": "Eventos",
+    "celebrations": "Celebraciones",
     "wellness": "Bienestar",
     "forum": "Comunidad",
     "whistleblowing": "Denuncias",
@@ -6452,5 +6453,25 @@
   },
   "aiBadge": {
     "label": "Con tecnología de IA"
+  },
+  "celebrations": {
+    "title": "Celebraciones",
+    "subtitle": "Próximos cumpleaños y aniversarios laborales de los empleados de la empresa.",
+    "birthdays": "Cumpleaños",
+    "anniversaries": "Aniversarios",
+    "today": "Hoy",
+    "filterAll": "Todos",
+    "todaysCelebrations": "Celebraciones de hoy",
+    "thisMonth": "Este mes",
+    "happyBirthday": "¡Feliz cumpleaños! 🎂",
+    "yearsToday": "{{count}} años hoy 🏆",
+    "birthday": "Cumpleaños",
+    "yearsAnniversary": "{{years}} aniversario laboral",
+    "tomorrow": "Mañana",
+    "inDays": "en {{count}} días",
+    "emptyTitle": "No hay celebraciones próximas",
+    "emptyHint": "Los cumpleaños y aniversarios laborales de los próximos 30 días aparecerán aquí.",
+    "noUpcomingTitle": "Nada más este mes",
+    "noUpcomingHint": "No hay más celebraciones próximas en los siguientes 30 días."
   }
 }

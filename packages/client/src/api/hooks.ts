@@ -59,6 +59,24 @@ export function useDepartments() {
   });
 }
 
+// Celebrations — upcoming employee birthdays & work anniversaries (next 30
+// days). The server computes these from date_of_birth / date_of_joining.
+export function useBirthdays() {
+  return useQuery({
+    queryKey: ["celebrations", "birthdays"],
+    queryFn: () => api.get("/employees/birthdays").then((r) => r.data.data),
+    staleTime: 60 * 60 * 1000, // 1h — birthdays don't change intra-day
+  });
+}
+
+export function useAnniversaries() {
+  return useQuery({
+    queryKey: ["celebrations", "anniversaries"],
+    queryFn: () => api.get("/employees/anniversaries").then((r) => r.data.data),
+    staleTime: 60 * 60 * 1000,
+  });
+}
+
 export function useLocations() {
   return useQuery({
     queryKey: ["locations"],

@@ -307,6 +307,7 @@
     "headcountPlans": "Plans d'effectifs",
     "feedback": "Retours",
     "events": "Événements",
+    "celebrations": "Célébrations",
     "wellness": "Bien-être",
     "forum": "Communauté",
     "whistleblowing": "Signalement",
@@ -6452,5 +6453,25 @@
   },
   "aiBadge": {
     "label": "Optimisé par l'IA"
+  },
+  "celebrations": {
+    "title": "Célébrations",
+    "subtitle": "Anniversaires et anniversaires professionnels à venir des employés de l'entreprise.",
+    "birthdays": "Anniversaires",
+    "anniversaries": "Anniv. pro",
+    "today": "Aujourd'hui",
+    "filterAll": "Tous",
+    "todaysCelebrations": "Célébrations du jour",
+    "thisMonth": "Ce mois-ci",
+    "happyBirthday": "Joyeux anniversaire ! 🎂",
+    "yearsToday": "{{count}} ans aujourd'hui 🏆",
+    "birthday": "Anniversaire",
+    "yearsAnniversary": "{{years}} anniversaire professionnel",
+    "tomorrow": "Demain",
+    "inDays": "dans {{count}} jours",
+    "emptyTitle": "Aucune célébration à venir",
+    "emptyHint": "Les anniversaires et anniversaires professionnels des 30 prochains jours apparaîtront ici.",
+    "noUpcomingTitle": "Rien de plus ce mois-ci",
+    "noUpcomingHint": "Aucune autre célébration à venir dans les 30 prochains jours."
   }
 }

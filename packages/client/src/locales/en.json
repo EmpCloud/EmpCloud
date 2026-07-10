@@ -307,6 +307,7 @@
     "headcountPlans": "Headcount Plans",
     "feedback": "Feedback",
     "events": "Events",
+    "celebrations": "Celebrations",
     "wellness": "Wellness",
     "forum": "Community",
     "whistleblowing": "Whistleblowing",
@@ -6452,5 +6453,25 @@
   },
   "aiBadge": {
     "label": "AI Powered"
+  },
+  "celebrations": {
+    "title": "Celebrations",
+    "subtitle": "Upcoming employee birthdays and work anniversaries across the company.",
+    "birthdays": "Birthdays",
+    "anniversaries": "Anniversaries",
+    "today": "Today",
+    "filterAll": "All",
+    "todaysCelebrations": "Today's Celebrations",
+    "thisMonth": "This Month",
+    "happyBirthday": "Happy Birthday! 🎂",
+    "yearsToday": "{{count}} years today 🏆",
+    "birthday": "Birthday",
+    "yearsAnniversary": "{{years}} work anniversary",
+    "tomorrow": "Tomorrow",
+    "inDays": "in {{count}} days",
+    "emptyTitle": "No celebrations coming up",
+    "emptyHint": "Employee birthdays and work anniversaries in the next 30 days will appear here.",
+    "noUpcomingTitle": "Nothing more this month",
+    "noUpcomingHint": "There are no further upcoming celebrations in the next 30 days."
   }
 }

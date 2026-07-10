@@ -307,6 +307,7 @@
     "headcountPlans": "人員計画",
     "feedback": "フィードバック",
     "events": "イベント",
+    "celebrations": "お祝い",
     "wellness": "ウェルネス",
     "forum": "コミュニティ",
     "whistleblowing": "内部通報",
@@ -6452,5 +6453,25 @@
   },
   "aiBadge": {
     "label": "AI搭載"
+  },
+  "celebrations": {
+    "title": "お祝い",
+    "subtitle": "社内の従業員の誕生日と勤続記念日（今後30日間）。",
+    "birthdays": "誕生日",
+    "anniversaries": "勤続記念日",
+    "today": "今日",
+    "filterAll": "すべて",
+    "todaysCelebrations": "今日のお祝い",
+    "thisMonth": "今月",
+    "happyBirthday": "お誕生日おめでとう！🎂",
+    "yearsToday": "本日で{{count}}年 🏆",
+    "birthday": "誕生日",
+    "yearsAnniversary": "勤続{{years}}記念",
+    "tomorrow": "明日",
+    "inDays": "あと{{count}}日",
+    "emptyTitle": "予定されているお祝いはありません",
+    "emptyHint": "今後30日間の従業員の誕生日と勤続記念日がここに表示されます。",
+    "noUpcomingTitle": "今月はこれ以上ありません",
+    "noUpcomingHint": "今後30日間に他のお祝いはありません。"
   }
 }

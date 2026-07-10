@@ -16,6 +16,7 @@ import { assetRoutes } from "./routes/assets.routes";
 import { positionRoutes } from "./routes/positions.routes";
 import { feedbackRoutes } from "./routes/feedback.routes";
 import { eventRoutes } from "./routes/events.routes";
+import { celebrationRoutes } from "./routes/celebrations.routes";
 import { wellnessRoutes } from "./routes/wellness.routes";
 import { forumRoutes } from "./routes/forum.routes";
 import { chatRoutes } from "./routes/chat.routes";
@@ -195,6 +196,7 @@ export default function App() {
           {positionRoutes}
           {feedbackRoutes}
           {eventRoutes}
+          {celebrationRoutes}
           {wellnessRoutes}
           {forumRoutes}
           {chatRoutes}
