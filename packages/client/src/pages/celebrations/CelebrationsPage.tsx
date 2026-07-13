@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PartyPopper, Cake, Award, Sparkles, CalendarDays } from "lucide-react";
+import { PartyPopper, Gift, Award, Sparkles, CalendarDays } from "lucide-react";
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import { useBirthdays, useAnniversaries, useDepartments } from "@/api/hooks";
 
@@ -136,20 +136,20 @@ function ConfettiLayer() {
 // Kind styling
 // ---------------------------------------------------------------------------
 
-// Muted, on-brand tints — birthdays lean warm (rose), anniversaries lean into
-// the brand blue/indigo — so the two are distinguishable but the page stays in
-// the same calm shade as the rest of EMP Cloud.
+// Restrained, enterprise palette: birthdays use a muted amber, anniversaries
+// the brand blue — distinguishable but professional and cohesive with the rest
+// of EMP Cloud (no bright pinks).
 const KIND_STYLE: Record<
   Kind,
-  { Icon: typeof Cake; ring: string; chip: string; softGrad: string; accent: string; bar: string }
+  { Icon: typeof Gift; ring: string; chip: string; softGrad: string; accent: string; bar: string }
 > = {
   birthday: {
-    Icon: Cake,
-    ring: "ring-rose-100",
-    chip: "bg-rose-50 text-rose-600",
-    softGrad: "from-rose-50 to-white",
-    accent: "text-rose-500",
-    bar: "bg-rose-400",
+    Icon: Gift,
+    ring: "ring-amber-100",
+    chip: "bg-amber-50 text-amber-700",
+    softGrad: "from-amber-50 to-white",
+    accent: "text-amber-600",
+    bar: "bg-amber-400",
   },
   anniversary: {
     Icon: Award,
@@ -227,7 +227,7 @@ export default function CelebrationsPage() {
         {/* Compact stat pills */}
         {!isLoading && (
           <div className="flex flex-wrap gap-2">
-            <HeroStat icon={Cake} label={t("celebrations.birthdays")} value={all.filter((c) => c.kind === "birthday").length} accent="text-rose-500" />
+            <HeroStat icon={Gift} label={t("celebrations.birthdays")} value={all.filter((c) => c.kind === "birthday").length} accent="text-amber-600" />
             <HeroStat icon={Award} label={t("celebrations.anniversaries")} value={all.filter((c) => c.kind === "anniversary").length} accent="text-brand-600" />
             <HeroStat icon={Sparkles} label={t("celebrations.today")} value={all.filter((c) => c.daysUntil === 0).length} accent="text-amber-500" />
           </div>
@@ -241,7 +241,7 @@ export default function CelebrationsPage() {
           {t("celebrations.filterAll")}
         </FilterTab>
         <FilterTab active={filter === "birthday"} onClick={() => setFilter("birthday")}>
-          <Cake className="h-4 w-4" /> {t("celebrations.birthdays")}
+          <Gift className="h-4 w-4" /> {t("celebrations.birthdays")}
         </FilterTab>
         <FilterTab active={filter === "anniversary"} onClick={() => setFilter("anniversary")}>
           <Award className="h-4 w-4" /> {t("celebrations.anniversaries")}
@@ -313,7 +313,7 @@ function HeroStat({
   value,
   accent,
 }: {
-  icon: typeof Cake;
+  icon: typeof Gift;
   label: string;
   value: number;
   accent: string;
