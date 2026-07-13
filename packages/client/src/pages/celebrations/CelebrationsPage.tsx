@@ -209,36 +209,32 @@ export default function CelebrationsPage() {
   const upcoming = filtered.filter((c) => c.daysUntil > 0);
 
   return (
-    <div className="space-y-8 pb-10">
-      {/* ── Hero header ─────────────────────────────────────────────────── */}
-      {/* Matches the app's standard page-header gradient (brand blue), e.g.
-          the Dashboard hero — keeps Celebrations on-brand rather than loud. */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-brand-600 to-brand-700 p-6 sm:p-8 text-white shadow-lg">
-        <ConfettiLayer />
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-            <PartyPopper className="h-7 w-7" />
+    <div className="space-y-6 pb-10">
+      {/* ── Header — clean & light, matching the app's other page headers ── */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+            <PartyPopper className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              {t("celebrations.title")}
-            </h1>
-            <p className="mt-1 max-w-xl text-sm text-white/90">{t("celebrations.subtitle")}</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t("celebrations.title")}</h1>
+            <p className="text-sm text-gray-500">{t("celebrations.subtitle")}</p>
           </div>
         </div>
 
-        {/* Quick stats */}
+        {/* Compact stat pills */}
         {!isLoading && (
-          <div className="relative mt-6 flex flex-wrap gap-3">
-            <HeroStat icon={Cake} label={t("celebrations.birthdays")} value={all.filter((c) => c.kind === "birthday").length} />
-            <HeroStat icon={Award} label={t("celebrations.anniversaries")} value={all.filter((c) => c.kind === "anniversary").length} />
-            <HeroStat icon={Sparkles} label={t("celebrations.today")} value={all.filter((c) => c.daysUntil === 0).length} />
+          <div className="flex flex-wrap gap-2">
+            <HeroStat icon={Cake} label={t("celebrations.birthdays")} value={all.filter((c) => c.kind === "birthday").length} accent="text-rose-500" />
+            <HeroStat icon={Award} label={t("celebrations.anniversaries")} value={all.filter((c) => c.kind === "anniversary").length} accent="text-brand-600" />
+            <HeroStat icon={Sparkles} label={t("celebrations.today")} value={all.filter((c) => c.daysUntil === 0).length} accent="text-amber-500" />
           </div>
         )}
       </div>
 
-      {/* ── Filter toggle ───────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* ── Filter toggle — extra top spacing to separate it clearly from
+             the header above (a thin divider + generous gap). ──────────── */}
+      <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-6 mt-2">
         <FilterTab active={filter === "all"} onClick={() => setFilter("all")}>
           {t("celebrations.filterAll")}
         </FilterTab>
@@ -298,12 +294,22 @@ export default function CelebrationsPage() {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function HeroStat({ icon: Icon, label, value }: { icon: typeof Cake; label: string; value: number }) {
+function HeroStat({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: typeof Cake;
+  label: string;
+  value: number;
+  accent: string;
+}) {
   return (
-    <div className="flex items-center gap-2 rounded-xl bg-white/15 px-3.5 py-2 backdrop-blur-sm">
-      <Icon className="h-4 w-4" />
-      <span className="text-lg font-bold tabular-nums">{value}</span>
-      <span className="text-xs text-white/85">{label}</span>
+    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5">
+      <Icon className={`h-4 w-4 ${accent}`} />
+      <span className="text-sm font-bold tabular-nums text-gray-900">{value}</span>
+      <span className="text-xs text-gray-500">{label}</span>
     </div>
   );
 }
