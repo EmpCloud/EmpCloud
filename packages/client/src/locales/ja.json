@@ -984,7 +984,8 @@
       "searchPlaceholder": "氏名、メール、部署で検索",
       "noSearchResults": "検索条件に一致する従業員はいません。",
       "allDepartments": "すべての部門",
-      "allLocations": "すべての勤務地"
+      "allLocations": "すべての勤務地",
+      "export": "エクスポート"
     },
     "export": {
       "title": "勤怠レポートのエクスポート",

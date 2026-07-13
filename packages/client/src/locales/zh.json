@@ -984,7 +984,8 @@
       "searchPlaceholder": "搜索姓名、邮箱或部门",
       "noSearchResults": "没有符合搜索条件的员工。",
       "allDepartments": "所有部门",
-      "allLocations": "所有地点"
+      "allLocations": "所有地点",
+      "export": "导出"
     },
     "export": {
       "title": "导出考勤报表",

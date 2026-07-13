@@ -984,7 +984,8 @@
       "searchPlaceholder": "Buscar nome, e-mail ou departamento",
       "noSearchResults": "Nenhum funcionário corresponde à sua busca.",
       "allDepartments": "Todos os departamentos",
-      "allLocations": "Todos os locais"
+      "allLocations": "Todos os locais",
+      "export": "Exportar"
     },
     "export": {
       "title": "Exportar relatório de presença",

@@ -984,7 +984,8 @@
       "searchPlaceholder": "Name, E-Mail oder Abteilung suchen",
       "noSearchResults": "Keine Mitarbeiter entsprechen Ihrer Suche.",
       "allDepartments": "Alle Abteilungen",
-      "allLocations": "Alle Standorte"
+      "allLocations": "Alle Standorte",
+      "export": "Exportieren"
     },
     "export": {
       "title": "Anwesenheitsbericht exportieren",

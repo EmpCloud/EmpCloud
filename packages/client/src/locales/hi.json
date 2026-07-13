@@ -984,7 +984,8 @@
       "searchPlaceholder": "नाम, ईमेल या विभाग खोजें",
       "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।",
       "allDepartments": "सभी विभाग",
-      "allLocations": "सभी स्थान"
+      "allLocations": "सभी स्थान",
+      "export": "निर्यात"
     },
     "export": {
       "title": "उपस्थिति रिपोर्ट निर्यात करें",

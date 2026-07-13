@@ -984,7 +984,8 @@
       "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو القسم",
       "noSearchResults": "لا يوجد موظفون مطابقون لبحثك.",
       "allDepartments": "جميع الأقسام",
-      "allLocations": "جميع المواقع"
+      "allLocations": "جميع المواقع",
+      "export": "تصدير"
     },
     "export": {
       "title": "تصدير تقرير الحضور",

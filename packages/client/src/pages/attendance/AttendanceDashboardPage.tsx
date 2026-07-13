@@ -372,6 +372,29 @@ export default function AttendanceDashboardPage() {
           if (s === "on_leave") return { label: t('attendance.onLeave'), color: "bg-purple-50 text-purple-700" };
           return { label: t('attendance.absent'), color: "bg-red-50 text-red-700" };
         };
+
+        // Export exactly what's on screen — the current tab + department /
+        // location / search filters — as an .xlsx via the shared helper.
+        const exportBreakdown = () => {
+          const headers = [
+            t('common.name'),
+            t('attendance.department'),
+            t('attendance.location'),
+            t('common.status'),
+            t('attendance.checkIn'),
+            t('attendance.breakdown.lateBy'),
+          ];
+          const rows = filteredList.map((emp: any) => [
+            `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim(),
+            emp.department ?? "",
+            emp.location ?? "",
+            statusLabel(emp).label,
+            emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
+            Number(emp.late_minutes) > 0 ? `${emp.late_minutes} min` : "",
+          ]);
+          downloadExcel(headers, rows, `attendance-${breakdownOpen}-${breakdownDate}.xlsx`, "Attendance");
+        };
+
         return (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -395,6 +418,16 @@ export default function AttendanceDashboardPage() {
                     className="px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm"
                   />
                 </div>
+                <button
+                  type="button"
+                  onClick={exportBreakdown}
+                  disabled={breakdownLoading || filteredList.length === 0}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={t('attendance.breakdown.export')}
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t('attendance.breakdown.export')}</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setBreakdownOpen(null)}

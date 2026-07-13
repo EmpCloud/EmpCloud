@@ -984,7 +984,8 @@
       "searchPlaceholder": "Rechercher un nom, un e-mail ou un service",
       "noSearchResults": "Aucun employé ne correspond à votre recherche.",
       "allDepartments": "Tous les services",
-      "allLocations": "Tous les emplacements"
+      "allLocations": "Tous les emplacements",
+      "export": "Exporter"
     },
     "export": {
       "title": "Exporter le rapport de présence",

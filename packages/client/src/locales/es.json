@@ -984,7 +984,8 @@
       "searchPlaceholder": "Buscar nombre, correo electrónico o departamento",
       "noSearchResults": "Ningún empleado coincide con su búsqueda.",
       "allDepartments": "Todos los departamentos",
-      "allLocations": "Todas las ubicaciones"
+      "allLocations": "Todas las ubicaciones",
+      "export": "Exportar"
     },
     "export": {
       "title": "Exportar informe de asistencia",

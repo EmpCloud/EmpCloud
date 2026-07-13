@@ -984,7 +984,8 @@
       "minSuffix": "min",
       "close": "Close",
       "allDepartments": "All departments",
-      "allLocations": "All locations"
+      "allLocations": "All locations",
+      "export": "Export"
     },
     "export": {
       "title": "Export Attendance Report",
