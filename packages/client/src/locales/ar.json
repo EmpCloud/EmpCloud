@@ -982,7 +982,9 @@
       "close": "إغلاق",
       "dateLabel": "التاريخ",
       "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو القسم",
-      "noSearchResults": "لا يوجد موظفون مطابقون لبحثك."
+      "noSearchResults": "لا يوجد موظفون مطابقون لبحثك.",
+      "allDepartments": "جميع الأقسام",
+      "allLocations": "جميع المواقع"
     },
     "export": {
       "title": "تصدير تقرير الحضور",
@@ -1308,7 +1310,8 @@
         "reset": "إعادة تعيين"
       },
       "applyLeaveFailed": "فشل تطبيق الإجازة"
-    }
+    },
+    "location": "الموقع"
   },
   "manager": {
     "title": "فريقي",

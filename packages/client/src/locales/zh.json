@@ -982,7 +982,9 @@
       "close": "关闭",
       "dateLabel": "日期",
       "searchPlaceholder": "搜索姓名、邮箱或部门",
-      "noSearchResults": "没有符合搜索条件的员工。"
+      "noSearchResults": "没有符合搜索条件的员工。",
+      "allDepartments": "所有部门",
+      "allLocations": "所有地点"
     },
     "export": {
       "title": "导出考勤报表",
@@ -1308,7 +1310,8 @@
         "reset": "重置"
       },
       "applyLeaveFailed": "申请请假失败"
-    }
+    },
+    "location": "地点"
   },
   "manager": {
     "title": "我的团队",

@@ -982,7 +982,9 @@
       "noEmployeesInCategory": "No employees in this category.",
       "lateBy": "Late By",
       "minSuffix": "min",
-      "close": "Close"
+      "close": "Close",
+      "allDepartments": "All departments",
+      "allLocations": "All locations"
     },
     "export": {
       "title": "Export Attendance Report",
@@ -1308,7 +1310,8 @@
         "reset": "Reset"
       },
       "applyLeaveFailed": "Failed to apply leave"
-    }
+    },
+    "location": "Location"
   },
   "manager": {
     "title": "My Team",

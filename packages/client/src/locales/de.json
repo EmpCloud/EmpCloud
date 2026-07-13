@@ -982,7 +982,9 @@
       "close": "Schließen",
       "dateLabel": "Datum",
       "searchPlaceholder": "Name, E-Mail oder Abteilung suchen",
-      "noSearchResults": "Keine Mitarbeiter entsprechen Ihrer Suche."
+      "noSearchResults": "Keine Mitarbeiter entsprechen Ihrer Suche.",
+      "allDepartments": "Alle Abteilungen",
+      "allLocations": "Alle Standorte"
     },
     "export": {
       "title": "Anwesenheitsbericht exportieren",
@@ -1308,7 +1310,8 @@
         "reset": "Zurücksetzen"
       },
       "applyLeaveFailed": "Urlaub konnte nicht beantragt werden"
-    }
+    },
+    "location": "Standort"
   },
   "manager": {
     "title": "Mein Team",

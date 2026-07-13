@@ -982,7 +982,9 @@
       "close": "बंद करें",
       "dateLabel": "दिनांक",
       "searchPlaceholder": "नाम, ईमेल या विभाग खोजें",
-      "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।"
+      "noSearchResults": "आपकी खोज से कोई कर्मचारी मेल नहीं खाता।",
+      "allDepartments": "सभी विभाग",
+      "allLocations": "सभी स्थान"
     },
     "export": {
       "title": "उपस्थिति रिपोर्ट निर्यात करें",
@@ -1308,7 +1310,8 @@
         "reset": "रीसेट"
       },
       "applyLeaveFailed": "अवकाश लागू करने में विफल"
-    }
+    },
+    "location": "स्थान"
   },
   "manager": {
     "title": "मेरी टीम",

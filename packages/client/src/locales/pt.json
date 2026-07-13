@@ -982,7 +982,9 @@
       "close": "Fechar",
       "dateLabel": "Data",
       "searchPlaceholder": "Buscar nome, e-mail ou departamento",
-      "noSearchResults": "Nenhum funcionário corresponde à sua busca."
+      "noSearchResults": "Nenhum funcionário corresponde à sua busca.",
+      "allDepartments": "Todos os departamentos",
+      "allLocations": "Todos os locais"
     },
     "export": {
       "title": "Exportar relatório de presença",
@@ -1308,7 +1310,8 @@
         "reset": "Redefinir"
       },
       "applyLeaveFailed": "Falha ao aplicar a licença"
-    }
+    },
+    "location": "Local"
   },
   "manager": {
     "title": "Minha Equipe",

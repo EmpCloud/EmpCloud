@@ -877,6 +877,7 @@ export async function getDashboardBreakdown(orgId: number, date?: string, userId
 
   const baseQuery = db("users as u")
     .leftJoin("organization_departments as d", "u.department_id", "d.id")
+    .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
     .leftJoin("attendance_records as ar", function () {
       this.on("ar.user_id", "=", "u.id").andOnVal("ar.date", "=", forDate);
     })
@@ -895,6 +896,7 @@ export async function getDashboardBreakdown(orgId: number, date?: string, userId
       "u.email",
       "u.designation",
       "d.name as department",
+      "loc.name as location",
       "ar.status as attendance_status",
       "ar.check_in as check_in_time",
       "ar.check_out as check_out_time",

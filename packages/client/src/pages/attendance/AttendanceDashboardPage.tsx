@@ -248,6 +248,8 @@ export default function AttendanceDashboardPage() {
   const [breakdownDate, setBreakdownDate] = useState(todayStr);
   const [breakdownPage, setBreakdownPage] = useState(1);
   const [breakdownSearch, setBreakdownSearch] = useState("");
+  const [breakdownDept, setBreakdownDept] = useState("");
+  const [breakdownLoc, setBreakdownLoc] = useState("");
   const BREAKDOWN_PAGE_SIZE = 10;
 
   const { data: breakdown, isLoading: breakdownLoading } = useQuery({
@@ -265,6 +267,8 @@ export default function AttendanceDashboardPage() {
     setBreakdownDate(todayStr);
     setBreakdownPage(1);
     setBreakdownSearch("");
+    setBreakdownDept("");
+    setBreakdownLoc("");
     setBreakdownOpen(category);
   };
 
@@ -333,15 +337,29 @@ export default function AttendanceDashboardPage() {
               ...(breakdown?.on_leave ?? []),
             ]
           : (breakdown?.[breakdownOpen] ?? []);
-        // Client-side search over name / email / department within the tab.
+        // Department / location dropdown options — distinct values present in
+        // the current tab, sorted, so we never show an option with no rows.
+        const deptOptions = Array.from(
+          new Set(tabList.map((e: any) => e.department).filter(Boolean) as string[])
+        ).sort((a, b) => a.localeCompare(b));
+        const locOptions = Array.from(
+          new Set(tabList.map((e: any) => e.location).filter(Boolean) as string[])
+        ).sort((a, b) => a.localeCompare(b));
+
+        // Client-side filter: search (name/email/dept) + department + location.
         const q = breakdownSearch.trim().toLowerCase();
-        const filteredList = q
-          ? tabList.filter((emp: any) =>
+        const filteredList = tabList.filter((emp: any) => {
+          if (q) {
+            const matches =
               `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.toLowerCase().includes(q) ||
               String(emp.email ?? "").toLowerCase().includes(q) ||
-              String(emp.department ?? "").toLowerCase().includes(q)
-            )
-          : tabList;
+              String(emp.department ?? "").toLowerCase().includes(q);
+            if (!matches) return false;
+          }
+          if (breakdownDept && emp.department !== breakdownDept) return false;
+          if (breakdownLoc && emp.location !== breakdownLoc) return false;
+          return true;
+        });
         const totalPages = Math.max(1, Math.ceil(filteredList.length / BREAKDOWN_PAGE_SIZE));
         // Clamp so a shrinking list (after a tab/date/search change) can never
         // strand us on an out-of-range page.
@@ -417,7 +435,7 @@ export default function AttendanceDashboardPage() {
                 })}
               </div>
             </div>
-            <div className="px-6 py-3 border-b border-gray-200">
+            <div className="px-6 py-3 border-b border-gray-200 space-y-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
@@ -427,6 +445,30 @@ export default function AttendanceDashboardPage() {
                   placeholder={t('attendance.breakdown.searchPlaceholder')}
                   className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
                 />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <select
+                  value={breakdownDept}
+                  onChange={(e) => { setBreakdownDept(e.target.value); setBreakdownPage(1); }}
+                  className="flex-1 min-w-[10rem] px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                  aria-label={t('attendance.department')}
+                >
+                  <option value="">{t('attendance.breakdown.allDepartments')}</option>
+                  {deptOptions.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+                <select
+                  value={breakdownLoc}
+                  onChange={(e) => { setBreakdownLoc(e.target.value); setBreakdownPage(1); }}
+                  className="flex-1 min-w-[10rem] px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                  aria-label={t('attendance.location')}
+                >
+                  <option value="">{t('attendance.breakdown.allLocations')}</option>
+                  {locOptions.map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="overflow-y-auto flex-1 px-6 py-4">

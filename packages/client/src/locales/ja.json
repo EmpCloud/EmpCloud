@@ -982,7 +982,9 @@
       "close": "閉じる",
       "dateLabel": "日付",
       "searchPlaceholder": "氏名、メール、部署で検索",
-      "noSearchResults": "検索条件に一致する従業員はいません。"
+      "noSearchResults": "検索条件に一致する従業員はいません。",
+      "allDepartments": "すべての部門",
+      "allLocations": "すべての勤務地"
     },
     "export": {
       "title": "勤怠レポートのエクスポート",
@@ -1308,7 +1310,8 @@
         "reset": "リセット"
       },
       "applyLeaveFailed": "休暇の適用に失敗しました"
-    }
+    },
+    "location": "勤務地"
   },
   "manager": {
     "title": "マイチーム",
