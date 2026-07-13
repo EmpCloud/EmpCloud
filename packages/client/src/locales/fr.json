@@ -983,7 +983,10 @@
       "close": "Fermer",
       "dateLabel": "Date",
       "searchPlaceholder": "Rechercher un nom, un e-mail ou un service",
-      "noSearchResults": "Aucun employé ne correspond à votre recherche."
+      "noSearchResults": "Aucun employé ne correspond à votre recherche.",
+      "allDepartments": "Tous les services",
+      "allLocations": "Tous les emplacements",
+      "export": "Exporter"
     },
     "export": {
       "title": "Exporter le rapport de présence",
@@ -1309,7 +1312,8 @@
         "reset": "Réinitialiser"
       },
       "applyLeaveFailed": "Échec de l'application du congé"
-    }
+    },
+    "location": "Emplacement"
   },
   "manager": {
     "title": "Mon équipe",

@@ -983,7 +983,10 @@
       "close": "Cerrar",
       "dateLabel": "Fecha",
       "searchPlaceholder": "Buscar nombre, correo electrónico o departamento",
-      "noSearchResults": "Ningún empleado coincide con su búsqueda."
+      "noSearchResults": "Ningún empleado coincide con su búsqueda.",
+      "allDepartments": "Todos los departamentos",
+      "allLocations": "Todas las ubicaciones",
+      "export": "Exportar"
     },
     "export": {
       "title": "Exportar informe de asistencia",
@@ -1309,7 +1312,8 @@
         "reset": "Restablecer"
       },
       "applyLeaveFailed": "No se pudo aplicar el permiso"
-    }
+    },
+    "location": "Ubicación"
   },
   "manager": {
     "title": "Mi Equipo",
