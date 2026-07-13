@@ -6472,6 +6472,8 @@
     "emptyTitle": "Aucune célébration à venir",
     "emptyHint": "Les anniversaires et anniversaires professionnels des 30 prochains jours apparaîtront ici.",
     "noUpcomingTitle": "Rien de plus ce mois-ci",
-    "noUpcomingHint": "Aucune autre célébration à venir dans les 30 prochains jours."
+    "noUpcomingHint": "Aucune autre célébration à venir dans les 30 prochains jours.",
+    "noneToday": "Aucune célébration aujourd'hui",
+    "noneTodayHint": "Découvrez ci-dessous qui arrive ce mois-ci."
   }
 }

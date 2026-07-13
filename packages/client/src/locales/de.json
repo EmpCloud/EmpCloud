@@ -6472,6 +6472,8 @@
     "emptyTitle": "Keine anstehenden Feiern",
     "emptyHint": "Geburtstage und Arbeitsjubiläen der nächsten 30 Tage erscheinen hier.",
     "noUpcomingTitle": "Nichts weiter diesen Monat",
-    "noUpcomingHint": "In den nächsten 30 Tagen gibt es keine weiteren Feiern."
+    "noUpcomingHint": "In den nächsten 30 Tagen gibt es keine weiteren Feiern.",
+    "noneToday": "Heute keine Feiern",
+    "noneTodayHint": "Sieh unten, wer diesen Monat ansteht."
   }
 }

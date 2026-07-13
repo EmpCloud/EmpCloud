@@ -6472,6 +6472,8 @@
     "emptyTitle": "暂无即将到来的庆祝",
     "emptyHint": "未来30天内的员工生日和工作周年纪念将显示在此处。",
     "noUpcomingTitle": "本月没有更多",
-    "noUpcomingHint": "未来30天内没有其他庆祝活动。"
+    "noUpcomingHint": "未来30天内没有其他庆祝活动。",
+    "noneToday": "今天没有庆祝活动",
+    "noneTodayHint": "查看下方本月即将到来的庆祝。"
   }
 }

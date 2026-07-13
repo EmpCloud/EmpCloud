@@ -141,7 +141,7 @@ function ConfettiLayer() {
 // the same calm shade as the rest of EMP Cloud.
 const KIND_STYLE: Record<
   Kind,
-  { Icon: typeof Cake; ring: string; chip: string; softGrad: string; accent: string }
+  { Icon: typeof Cake; ring: string; chip: string; softGrad: string; accent: string; bar: string }
 > = {
   birthday: {
     Icon: Cake,
@@ -149,6 +149,7 @@ const KIND_STYLE: Record<
     chip: "bg-rose-50 text-rose-600",
     softGrad: "from-rose-50 to-white",
     accent: "text-rose-500",
+    bar: "bg-rose-400",
   },
   anniversary: {
     Icon: Award,
@@ -156,6 +157,7 @@ const KIND_STYLE: Record<
     chip: "bg-brand-50 text-brand-700",
     softGrad: "from-brand-50 to-white",
     accent: "text-brand-600",
+    bar: "bg-brand-500",
   },
 };
 
@@ -256,7 +258,7 @@ export default function CelebrationsPage() {
       ) : (
         <>
           {/* ── Today ─────────────────────────────────────────────────── */}
-          {today.length > 0 && (
+          {today.length > 0 ? (
             <section>
               <SectionHeading emoji="🎉" title={t("celebrations.todaysCelebrations")} count={today.length} />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -265,6 +267,17 @@ export default function CelebrationsPage() {
                 ))}
               </div>
             </section>
+          ) : (
+            // No one celebrating today — a warm anchor instead of a bare list.
+            <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gradient-to-r from-brand-50 to-white p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-800">{t("celebrations.noneToday")}</p>
+                <p className="text-xs text-gray-500">{t("celebrations.noneTodayHint")}</p>
+              </div>
+            </div>
           )}
 
           {/* ── This month ────────────────────────────────────────────── */}
@@ -390,8 +403,17 @@ function TodayCard({ c, deptName, t }: { c: Celebration; deptName: string; t: TF
 function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: TFn }) {
   const s = KIND_STYLE[c.kind];
   const Icon = s.Icon;
+  const soon = c.daysUntil <= 1; // today/tomorrow → subtle emphasis
+
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3.5 shadow-sm transition hover:border-gray-200 hover:shadow-md">
+    <div
+      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border bg-white p-3.5 pl-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+        soon ? "border-gray-200" : "border-gray-100"
+      }`}
+    >
+      {/* Colored left accent bar — type at a glance */}
+      <span className={`absolute inset-y-0 left-0 w-1 ${s.bar}`} aria-hidden />
+
       <EmployeeAvatar
         userId={c.id}
         hasPhoto={!!c.photoPath}
@@ -400,26 +422,33 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
         size="lg"
         ring={`ring-2 ${s.ring}`}
       />
+
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-gray-900">
           {c.firstName} {c.lastName}
         </p>
-        <div className="mt-0.5 flex items-center gap-1.5">
-          <Icon className={`h-3.5 w-3.5 ${s.accent}`} />
-          <span className="text-xs text-gray-500">
+        <div className="mt-1 flex items-center gap-1.5">
+          <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium ${s.chip}`}>
+            <Icon className="h-3 w-3" />
             {c.kind === "birthday"
               ? t("celebrations.birthday")
               : t("celebrations.yearsAnniversary", { years: ordinal(c.years ?? 0) })}
-            {deptName ? ` · ${deptName}` : ""}
           </span>
+          {deptName && <span className="truncate text-xs text-gray-400">{deptName}</span>}
         </div>
       </div>
-      <div className="shrink-0 text-right">
-        <p className="flex items-center justify-end gap-1 text-sm font-semibold text-gray-900">
-          <CalendarDays className="h-3.5 w-3.5 text-gray-400" />
+
+      {/* Date badge — soft pill so the "when" reads clearly */}
+      <div
+        className={`shrink-0 rounded-lg px-2.5 py-1.5 text-center ${
+          soon ? s.chip : "bg-gray-50 text-gray-600"
+        }`}
+      >
+        <p className="flex items-center justify-center gap-1 text-sm font-bold tabular-nums leading-none">
+          <CalendarDays className="h-3.5 w-3.5 opacity-70" />
           {fmtMonthDay(c.nextDate)}
         </p>
-        <p className="text-[11px] font-medium text-gray-400">
+        <p className="mt-1 text-[11px] font-medium leading-none opacity-80">
           {c.daysUntil === 1
             ? t("celebrations.tomorrow")
             : t("celebrations.inDays", { count: c.daysUntil })}

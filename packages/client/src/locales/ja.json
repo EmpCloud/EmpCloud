@@ -6472,6 +6472,8 @@
     "emptyTitle": "予定されているお祝いはありません",
     "emptyHint": "今後30日間の従業員の誕生日と勤続記念日がここに表示されます。",
     "noUpcomingTitle": "今月はこれ以上ありません",
-    "noUpcomingHint": "今後30日間に他のお祝いはありません。"
+    "noUpcomingHint": "今後30日間に他のお祝いはありません。",
+    "noneToday": "本日のお祝いはありません",
+    "noneTodayHint": "今月の予定を下でご覧ください。"
   }
 }

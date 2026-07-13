@@ -6472,6 +6472,8 @@
     "emptyTitle": "No celebrations coming up",
     "emptyHint": "Employee birthdays and work anniversaries in the next 30 days will appear here.",
     "noUpcomingTitle": "Nothing more this month",
-    "noUpcomingHint": "There are no further upcoming celebrations in the next 30 days."
+    "noUpcomingHint": "There are no further upcoming celebrations in the next 30 days.",
+    "noneToday": "No celebrations today",
+    "noneTodayHint": "Check out who's coming up this month below."
   }
 }
