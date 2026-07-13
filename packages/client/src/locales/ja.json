@@ -6463,6 +6463,8 @@
     "filterAll": "すべて",
     "todaysCelebrations": "今日のお祝い",
     "thisMonth": "今月",
+    "upcoming": "今後の予定",
+    "upcomingRange": "今後30日間",
     "happyBirthday": "お誕生日おめでとう！🎂",
     "yearsToday": "本日で{{count}}年 🏆",
     "birthday": "誕生日",
