@@ -6467,6 +6467,8 @@
     "filterAll": "全部",
     "todaysCelebrations": "今日庆祝",
     "thisMonth": "本月",
+    "upcoming": "即将到来",
+    "upcomingRange": "未来 30 天",
     "happyBirthday": "生日快乐！🎂",
     "yearsToday": "今天{{count}}周年 🏆",
     "birthday": "生日",

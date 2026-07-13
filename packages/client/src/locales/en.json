@@ -6467,6 +6467,8 @@
     "filterAll": "All",
     "todaysCelebrations": "Today's Celebrations",
     "thisMonth": "This Month",
+    "upcoming": "Upcoming",
+    "upcomingRange": "Next 30 days",
     "happyBirthday": "Happy Birthday! 🎂",
     "yearsToday": "{{count}} years today 🏆",
     "birthday": "Birthday",
