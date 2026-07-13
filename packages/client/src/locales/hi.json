@@ -307,6 +307,7 @@
     "headcountPlans": "हेडकाउंट योजनाएँ",
     "feedback": "प्रतिक्रिया",
     "events": "कार्यक्रम",
+    "celebrations": "उत्सव",
     "wellness": "स्वास्थ्य",
     "forum": "समुदाय",
     "whistleblowing": "शिकायत रिपोर्ट",
@@ -6452,5 +6453,27 @@
   },
   "aiBadge": {
     "label": "AI संचालित"
+  },
+  "celebrations": {
+    "title": "उत्सव",
+    "subtitle": "कंपनी में आने वाले कर्मचारी जन्मदिन और कार्य वर्षगांठ।",
+    "birthdays": "जन्मदिन",
+    "anniversaries": "वर्षगांठ",
+    "today": "आज",
+    "filterAll": "सभी",
+    "todaysCelebrations": "आज के उत्सव",
+    "thisMonth": "इस माह",
+    "happyBirthday": "जन्मदिन मुबारक! 🎂",
+    "yearsToday": "आज {{count}} वर्ष 🏆",
+    "birthday": "जन्मदिन",
+    "yearsAnniversary": "{{years}} कार्य वर्षगांठ",
+    "tomorrow": "कल",
+    "inDays": "{{count}} दिनों में",
+    "emptyTitle": "कोई आगामी उत्सव नहीं",
+    "emptyHint": "अगले 30 दिनों में कर्मचारी जन्मदिन और कार्य वर्षगांठ यहाँ दिखेंगे।",
+    "noUpcomingTitle": "इस माह और कुछ नहीं",
+    "noUpcomingHint": "अगले 30 दिनों में कोई और आगामी उत्सव नहीं है।",
+    "noneToday": "आज कोई उत्सव नहीं",
+    "noneTodayHint": "नीचे देखें इस माह किसका उत्सव आ रहा है।"
   }
 }

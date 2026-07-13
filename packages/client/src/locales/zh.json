@@ -307,6 +307,7 @@
     "headcountPlans": "人员编制规划",
     "feedback": "反馈",
     "events": "活动",
+    "celebrations": "庆祝",
     "wellness": "健康",
     "forum": "社区",
     "whistleblowing": "举报",
@@ -6452,5 +6453,27 @@
   },
   "aiBadge": {
     "label": "AI 驱动"
+  },
+  "celebrations": {
+    "title": "庆祝",
+    "subtitle": "公司员工即将到来的生日和工作周年纪念。",
+    "birthdays": "生日",
+    "anniversaries": "周年纪念",
+    "today": "今天",
+    "filterAll": "全部",
+    "todaysCelebrations": "今日庆祝",
+    "thisMonth": "本月",
+    "happyBirthday": "生日快乐！🎂",
+    "yearsToday": "今天{{count}}周年 🏆",
+    "birthday": "生日",
+    "yearsAnniversary": "{{years}}工作周年",
+    "tomorrow": "明天",
+    "inDays": "{{count}}天后",
+    "emptyTitle": "暂无即将到来的庆祝",
+    "emptyHint": "未来30天内的员工生日和工作周年纪念将显示在此处。",
+    "noUpcomingTitle": "本月没有更多",
+    "noUpcomingHint": "未来30天内没有其他庆祝活动。",
+    "noneToday": "今天没有庆祝活动",
+    "noneTodayHint": "查看下方本月即将到来的庆祝。"
   }
 }

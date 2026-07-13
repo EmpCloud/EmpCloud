@@ -307,6 +307,7 @@
     "headcountPlans": "Personalbedarfspläne",
     "feedback": "Feedback",
     "events": "Veranstaltungen",
+    "celebrations": "Feiern",
     "wellness": "Wohlbefinden",
     "forum": "Gemeinschaft",
     "whistleblowing": "Hinweisgeber",
@@ -6452,5 +6453,27 @@
   },
   "aiBadge": {
     "label": "KI-gestützt"
+  },
+  "celebrations": {
+    "title": "Feiern",
+    "subtitle": "Bevorstehende Geburtstage und Arbeitsjubiläen der Mitarbeiter im Unternehmen.",
+    "birthdays": "Geburtstage",
+    "anniversaries": "Jubiläen",
+    "today": "Heute",
+    "filterAll": "Alle",
+    "todaysCelebrations": "Heutige Feiern",
+    "thisMonth": "Diesen Monat",
+    "happyBirthday": "Alles Gute zum Geburtstag! 🎂",
+    "yearsToday": "heute {{count}} Jahre 🏆",
+    "birthday": "Geburtstag",
+    "yearsAnniversary": "{{years}} Arbeitsjubiläum",
+    "tomorrow": "Morgen",
+    "inDays": "in {{count}} Tagen",
+    "emptyTitle": "Keine anstehenden Feiern",
+    "emptyHint": "Geburtstage und Arbeitsjubiläen der nächsten 30 Tage erscheinen hier.",
+    "noUpcomingTitle": "Nichts weiter diesen Monat",
+    "noUpcomingHint": "In den nächsten 30 Tagen gibt es keine weiteren Feiern.",
+    "noneToday": "Heute keine Feiern",
+    "noneTodayHint": "Sieh unten, wer diesen Monat ansteht."
   }
 }

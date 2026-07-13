@@ -307,6 +307,7 @@
     "headcountPlans": "خطط الملاك",
     "feedback": "الملاحظات",
     "events": "الفعاليات",
+    "celebrations": "الاحتفالات",
     "wellness": "العافية",
     "forum": "المجتمع",
     "whistleblowing": "الإبلاغ عن المخالفات",
@@ -6824,5 +6825,27 @@
   },
   "aiBadge": {
     "label": "مدعوم بالذكاء الاصطناعي"
+  },
+  "celebrations": {
+    "title": "الاحتفالات",
+    "subtitle": "أعياد ميلاد الموظفين وذكرى العمل القادمة في الشركة.",
+    "birthdays": "أعياد الميلاد",
+    "anniversaries": "ذكرى العمل",
+    "today": "اليوم",
+    "filterAll": "الكل",
+    "todaysCelebrations": "احتفالات اليوم",
+    "thisMonth": "هذا الشهر",
+    "happyBirthday": "عيد ميلاد سعيد! 🎂",
+    "yearsToday": "{{count}} سنوات اليوم 🏆",
+    "birthday": "عيد ميلاد",
+    "yearsAnniversary": "ذكرى العمل {{years}}",
+    "tomorrow": "غدًا",
+    "inDays": "خلال {{count}} أيام",
+    "emptyTitle": "لا توجد احتفالات قادمة",
+    "emptyHint": "ستظهر هنا أعياد ميلاد الموظفين وذكرى العمل خلال الـ30 يومًا القادمة.",
+    "noUpcomingTitle": "لا شيء آخر هذا الشهر",
+    "noUpcomingHint": "لا توجد احتفالات أخرى قادمة خلال الـ30 يومًا القادمة.",
+    "noneToday": "لا توجد احتفالات اليوم",
+    "noneTodayHint": "اطّلع أدناه على من سيأتي هذا الشهر."
   }
 }
