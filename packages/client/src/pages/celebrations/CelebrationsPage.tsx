@@ -280,9 +280,19 @@ export default function CelebrationsPage() {
             </div>
           )}
 
-          {/* ── This month ────────────────────────────────────────────── */}
+          {/* ── Upcoming (next 30 days) ──────────────────────────────────
+              This is a rolling 30-day lookahead from the server, so it
+              deliberately spills into the next calendar month (e.g. an early-
+              August birthday shows in mid-July). Labelled "Upcoming" with a
+              "Next 30 days" caption rather than "This Month" so those
+              next-month entries don't read as a bug. */}
           <section>
-            <SectionHeading emoji="🗓️" title={t("celebrations.thisMonth")} count={upcoming.length} />
+            <SectionHeading
+              emoji="🗓️"
+              title={t("celebrations.upcoming")}
+              hint={t("celebrations.upcomingRange")}
+              count={upcoming.length}
+            />
             {upcoming.length === 0 ? (
               <EmptyState
                 title={t("celebrations.noUpcomingTitle")}
@@ -350,7 +360,17 @@ function FilterTab({
   );
 }
 
-function SectionHeading({ emoji, title, count }: { emoji: string; title: string; count: number }) {
+function SectionHeading({
+  emoji,
+  title,
+  count,
+  hint,
+}: {
+  emoji: string;
+  title: string;
+  count: number;
+  hint?: string;
+}) {
   return (
     <div className="mb-4 flex items-center gap-2">
       <span className="text-lg" aria-hidden>
@@ -360,6 +380,7 @@ function SectionHeading({ emoji, title, count }: { emoji: string; title: string;
       <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600 tabular-nums">
         {count}
       </span>
+      {hint ? <span className="ml-1 text-xs font-medium text-gray-400">{hint}</span> : null}
     </div>
   );
 }
