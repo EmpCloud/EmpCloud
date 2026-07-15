@@ -6481,5 +6481,10 @@
     "noUpcomingHint": "今後30日間に他のお祝いはありません。",
     "noneToday": "本日のお祝いはありません",
     "noneTodayHint": "今月の予定を下でご覧ください。"
+  },
+  "theme": {
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム"
   }
 }

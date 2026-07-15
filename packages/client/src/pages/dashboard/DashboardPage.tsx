@@ -27,12 +27,12 @@ interface Module {
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+    <div className="bg-card rounded-xl border border-border p-6 animate-pulse">
       <div className="flex items-center gap-4">
-        <div className="h-12 w-12 rounded-lg bg-gray-200" />
+        <div className="h-12 w-12 rounded-lg bg-muted" />
         <div>
-          <div className="h-6 w-12 rounded bg-gray-200 mb-2" />
-          <div className="h-4 w-20 rounded bg-gray-200" />
+          <div className="h-6 w-12 rounded bg-muted mb-2" />
+          <div className="h-4 w-20 rounded bg-muted" />
         </div>
       </div>
     </div>
@@ -40,12 +40,12 @@ function StatCardSkeleton() {
 }
 
 const hrmsQuickLinkKeys = [
-  { path: "/employees", labelKey: "dashboard.quickLinks.employees", icon: Users, color: "bg-blue-50 text-blue-600" },
-  { path: "/attendance", labelKey: "dashboard.quickLinks.attendance", icon: Clock, color: "bg-green-50 text-green-600" },
-  { path: "/leave", labelKey: "dashboard.quickLinks.leave", icon: CalendarDays, color: "bg-purple-50 text-purple-600" },
-  { path: "/documents", labelKey: "dashboard.quickLinks.documents", icon: FileText, color: "bg-orange-50 text-orange-600" },
-  { path: "/announcements", labelKey: "dashboard.quickLinks.announcements", icon: Megaphone, color: "bg-pink-50 text-pink-600" },
-  { path: "/policies", labelKey: "dashboard.quickLinks.policies", icon: BookOpen, color: "bg-teal-50 text-teal-600" },
+  { path: "/employees", labelKey: "dashboard.quickLinks.employees", icon: Users, color: "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400" },
+  { path: "/attendance", labelKey: "dashboard.quickLinks.attendance", icon: Clock, color: "bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400" },
+  { path: "/leave", labelKey: "dashboard.quickLinks.leave", icon: CalendarDays, color: "bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400" },
+  { path: "/documents", labelKey: "dashboard.quickLinks.documents", icon: FileText, color: "bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400" },
+  { path: "/announcements", labelKey: "dashboard.quickLinks.announcements", icon: Megaphone, color: "bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400" },
+  { path: "/policies", labelKey: "dashboard.quickLinks.policies", icon: BookOpen, color: "bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400" },
 ];
 
 export default function DashboardPage() {
@@ -124,10 +124,10 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-foreground">
           {t('common.welcome')}, {user?.first_name}
         </h1>
-        <p className="text-gray-500 mt-1">{t('dashboard.subtitle')}</p>
+        <p className="text-muted-foreground mt-1">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Stats cards */}
@@ -141,77 +141,77 @@ export default function DashboardPage() {
             <StatCardSkeleton />
           </>
         ) : statsError ? (
-          <div className="sm:col-span-2 lg:col-span-5 bg-white rounded-xl border border-red-200 p-6 text-center">
+          <div className="sm:col-span-2 lg:col-span-5 bg-card rounded-xl border border-red-200 p-6 text-center">
             <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-            <p className="text-sm text-red-600">Failed to load organization stats. Please try refreshing the page.</p>
+            <p className="text-sm text-red-600 dark:text-red-400">Failed to load organization stats. Please try refreshing the page.</p>
           </div>
         ) : (
           <>
             <Link
               to="/users"
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-blue-600" />
+                <div className="h-12 w-12 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.total_users ?? 0}</p>
-                  <p className="text-sm text-gray-500">{t('dashboard.totalUsers')}</p>
+                  <p className="text-2xl font-bold text-foreground">{stats?.total_users ?? 0}</p>
+                  <p className="text-sm text-muted-foreground">{t('dashboard.totalUsers')}</p>
                 </div>
               </div>
             </Link>
             <Link
               to="/modules"
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-green-50 flex items-center justify-center">
-                  <Package className="h-6 w-6 text-green-600" />
+                <div className="h-12 w-12 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+                  <Package className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.active_subscriptions ?? 0}</p>
-                  <p className="text-sm text-gray-500">{t('dashboard.activeModules')}</p>
+                  <p className="text-2xl font-bold text-foreground">{stats?.active_subscriptions ?? 0}</p>
+                  <p className="text-sm text-muted-foreground">{t('dashboard.activeModules')}</p>
                 </div>
               </div>
             </Link>
             <Link
               to="/settings"
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-purple-50 flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-purple-600" />
+                <div className="h-12 w-12 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+                  <Building2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{stats?.total_departments ?? 0}</p>
-                  <p className="text-sm text-gray-500">{t('dashboard.departments')}</p>
+                  <p className="text-2xl font-bold text-foreground">{stats?.total_departments ?? 0}</p>
+                  <p className="text-sm text-muted-foreground">{t('dashboard.departments')}</p>
                 </div>
               </div>
             </Link>
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-amber-50 flex items-center justify-center">
-                  <Shield className="h-6 w-6 text-amber-600" />
+                <div className="h-12 w-12 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">SOC 2</p>
-                  <p className="text-sm text-gray-500">{t('dashboard.compliant')}</p>
+                  <p className="text-2xl font-bold text-foreground">SOC 2</p>
+                  <p className="text-sm text-muted-foreground">{t('dashboard.compliant')}</p>
                 </div>
               </div>
             </div>
             <Link
               to="/billing"
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-emerald-50 flex items-center justify-center">
-                  <Receipt className="h-6 w-6 text-emerald-600" />
+                <div className="h-12 w-12 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
+                  <Receipt className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-foreground">
                     {billingLoading ? (
-                      <span className="inline-block h-6 w-20 bg-gray-200 rounded animate-pulse" />
+                      <span className="inline-block h-6 w-20 bg-muted rounded animate-pulse" />
                     ) : billingSummary ? (
                       new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
                         (billingSummary.monthlyRecurring ?? 0) / 100
@@ -220,7 +220,7 @@ export default function DashboardPage() {
                       "--"
                     )}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {t('nav.billing')}{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} ${t('dashboard.overdue')})` : ""}
                   </p>
                 </div>
@@ -233,7 +233,7 @@ export default function DashboardPage() {
       {/* Core HRMS — Always shown (it IS the platform) */}
       {hrmsModule && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.coreHRMS')}</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.coreHRMS')}</h2>
           <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-xl p-8 text-white">
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -275,7 +275,7 @@ export default function DashboardPage() {
       {/* Module Insights — live data from subscribed module APIs */}
       {activeSubscriptions.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.moduleInsights')}</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.moduleInsights')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Recruit Widget */}
             {subscribedSlugs.has("emp-recruit") && (
@@ -383,12 +383,12 @@ export default function DashboardPage() {
       )}
 
       {/* Subscribed Modules */}
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.yourModules')}</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.yourModules')}</h2>
       {activeSubscriptions.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">{t('dashboard.noModulesYet')}</p>
-          <Link to="/modules" className="text-brand-600 text-sm font-medium hover:text-brand-700 mt-2 inline-block">
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <Package className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+          <p className="text-muted-foreground">{t('dashboard.noModulesYet')}</p>
+          <Link to="/modules" className="text-brand-600 dark:text-brand-400 text-sm font-medium hover:text-brand-700 mt-2 inline-block">
             {t('dashboard.browseModules')}
           </Link>
         </div>
@@ -414,35 +414,35 @@ export default function DashboardPage() {
             return (
               <div
                 key={sub.id}
-                className="bg-white rounded-xl border border-gray-200 p-6 hover:border-brand-300 transition-colors"
+                className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center">
-                      <Package className="h-5 w-5 text-brand-600" />
+                    <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
+                      <Package className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                     </div>
                     <div>
                       {hasBaseUrl ? (
-                        <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-gray-900 hover:text-brand-600 transition-colors text-left">
+                        <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-foreground hover:text-brand-600 dark:text-brand-400 transition-colors text-left">
                           {displayName}
                         </button>
                       ) : (
-                        <h3 className="font-semibold text-gray-900">{displayName}</h3>
+                        <h3 className="font-semibold text-foreground">{displayName}</h3>
                       )}
-                      <p className="text-xs text-gray-400">{mod?.slug}</p>
+                      <p className="text-xs text-muted-foreground">{mod?.slug}</p>
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                     sub.status === "active"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-yellow-50 text-yellow-700"
+                      ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                      : "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
                   }`}>
                     {displayStatus}
                   </span>
                 </div>
 
                 {/* Description - truncated with expand */}
-                <p className="text-sm text-gray-500 mb-3 leading-relaxed">
+                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                   {isExpanded
                     ? displayDesc
                     : displayDesc.substring(0, 150) + (displayDesc.length > 150 ? "..." : "")
@@ -451,20 +451,20 @@ export default function DashboardPage() {
                 {displayDesc.length > 150 && (
                   <button
                     onClick={() => setExpandedModule(isExpanded ? null : sub.id)}
-                    className="text-xs text-brand-600 hover:text-brand-700 font-medium mb-3 flex items-center gap-0.5"
+                    className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium mb-3 flex items-center gap-0.5"
                   >
                     {isExpanded ? t('dashboard.showLess') : t('dashboard.readMore')}
                     <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                   </button>
                 )}
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
                   <span>{sub.used_seats}/{sub.total_seats} {t('dashboard.seatsUsed')}</span>
-                  <span className="capitalize text-xs bg-gray-100 px-2 py-0.5 rounded-full">{displayPlan}</span>
+                  <span className="capitalize text-xs bg-muted px-2 py-0.5 rounded-full">{displayPlan}</span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-4">
+                <div className="w-full bg-muted rounded-full h-1.5 mb-4">
                   <div
                     className="bg-brand-500 h-1.5 rounded-full transition-all"
                     style={{ width: `${sub.total_seats ? Math.min(100, (sub.used_seats / sub.total_seats) * 100) : 0}%` }}
@@ -478,7 +478,7 @@ export default function DashboardPage() {
                     // module. The token is short-lived, transmitted over HTTPS, and the target module
                     // exchanges it for a server-side session immediately on load.
                     onClick={() => launchModule(mod!.base_url!)}
-                    className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
+                    className="flex items-center gap-1.5 text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700"
                   >
                     {t('dashboard.launch')} <ExternalLink className="h-3.5 w-3.5" />
                   </button>

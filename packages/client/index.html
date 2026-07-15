@@ -7,8 +7,20 @@
     <link rel="apple-touch-icon" href="/empcloud-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EMP Cloud — Enterprise HRMS Platform</title>
+    <!-- Set the theme class before first paint so there's no flash of the wrong
+         theme on load. Mirrors the logic in src/lib/theme.tsx. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("empcloud-theme");
+          var dark = t === "dark" || ((!t || t === "system") &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+  <body class="min-h-screen antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

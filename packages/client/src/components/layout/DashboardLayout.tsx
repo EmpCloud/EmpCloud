@@ -29,6 +29,7 @@ import {
 import { usePermissions } from "@/lib/use-permissions";
 import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
 import { ViewModeToggle } from "./ViewModeToggle";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
@@ -137,14 +138,14 @@ export default function DashboardLayout() {
   // component.
   const renderSidebar = (isCollapsed: boolean) => (
     <div
-      className={`flex h-full flex-col bg-white border-r border-gray-200 transition-[width] duration-200 ${
+      className={`flex h-full flex-col bg-card border-r border-border transition-[width] duration-200 ${
         isCollapsed ? "w-16 sidebar-collapsed" : "w-64"
       }`}
     >
       <Link
         to="/"
         title={isCollapsed ? "EMP Cloud" : undefined}
-        className={`block border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+        className={`block border-b border-border hover:bg-background transition-colors ${
           isCollapsed ? "p-2" : "px-4 py-4"
         }`}
       >
@@ -169,7 +170,7 @@ export default function DashboardLayout() {
               alt="EmpCloud"
               className="h-10 w-auto max-w-full object-contain"
             />
-            <p className="text-xs text-gray-500 truncate w-full text-center">
+            <p className="text-xs text-muted-foreground truncate w-full text-center">
               {user?.org_name}
             </p>
           </div>
@@ -178,7 +179,7 @@ export default function DashboardLayout() {
 
       {/* Close button on mobile */}
       <button
-        className="md:hidden absolute top-4 right-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        className="md:hidden absolute top-4 right-4 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground"
         onClick={() => setSidebarOpen(false)}
       >
         <X className="h-5 w-5" />
@@ -213,7 +214,7 @@ export default function DashboardLayout() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-border">
         {!isCollapsed && (
           <div className="flex items-center gap-3 mb-3">
             <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
@@ -222,17 +223,17 @@ export default function DashboardLayout() {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {user?.first_name} {user?.last_name}
               </p>
-              <p className="text-xs text-gray-500 truncate">{user?.role}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.role}</p>
             </div>
           </div>
         )}
         <button
           onClick={handleLogout}
           aria-label={t('nav.signOut')}
-          className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"} w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors`}
+          className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"} w-full px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors`}
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
           {!isCollapsed && t('nav.signOut')}
@@ -242,7 +243,7 @@ export default function DashboardLayout() {
   );
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       {/* Desktop sidebar */}
       {/* #1575 — overflow-visible on the relative wrapper so the collapse
           chevron (which intentionally protrudes at -right-3) isn't clipped
@@ -260,7 +261,7 @@ export default function DashboardLayout() {
         <button
           onClick={() => setSidebarCollapsed((c) => !c)}
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
+          className="hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
         >
           {sidebarCollapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />
@@ -287,21 +288,22 @@ export default function DashboardLayout() {
       {/* Main content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Top header bar */}
-        <div className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200 bg-white shrink-0 relative z-20">
+        <div className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-border bg-card shrink-0 relative z-20">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 md:hidden"
+            className="rounded-lg p-2 text-muted-foreground hover:bg-muted md:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex-1" />
           <div className="flex items-center gap-3">
             {showViewToggle && <ViewModeToggle />}
+            <ThemeToggle />
             <LanguageSwitcher />
             <NotificationDropdown />
           </div>
         </div>
-        <div className="flex-1 overflow-auto p-4 md:p-8">
+        <div className="flex-1 overflow-auto p-4 md:p-8 bg-background">
           <Outlet />
         </div>
       </div>

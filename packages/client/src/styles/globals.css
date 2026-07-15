@@ -2,9 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Theme tokens (light / dark)
+   Semantic CSS variables that flip when the `.dark` class is toggled on <html>
+   (see src/lib/theme.tsx). Components use the mapped Tailwind utilities
+   (bg-background, text-foreground, bg-card, border-border, …) so a single
+   definition here themes the whole app instead of per-element `dark:` variants.
+   Values are HSL channels (no hsl() wrapper) so Tailwind can apply opacity.
+--------------------------------------------------------------------------- */
+:root {
+  --background: 210 20% 98%;        /* gray-50 — app canvas */
+  --foreground: 222 47% 11%;        /* gray-900 — primary text */
+  --card: 0 0% 100%;                /* white — surfaces/cards */
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;             /* gray-100 — subtle bg */
+  --muted-foreground: 215 16% 47%;  /* gray-500 — secondary text */
+  --border: 214 32% 91%;            /* gray-200 */
+  --input: 214 32% 91%;
+  --ring: 217 91% 60%;              /* brand-500 */
+}
+
+.dark {
+  --background: 222 47% 11%;        /* slate-900-ish canvas */
+  --foreground: 210 40% 98%;        /* near-white text */
+  --card: 217 33% 17%;             /* slate-800 — surfaces */
+  --card-foreground: 210 40% 98%;
+  --popover: 217 33% 17%;
+  --popover-foreground: 210 40% 98%;
+  --muted: 217 33% 20%;            /* slate-700-ish subtle bg */
+  --muted-foreground: 215 20% 65%; /* muted secondary text */
+  --border: 217 24% 27%;           /* slate-700 border */
+  --input: 217 24% 27%;
+  --ring: 217 91% 60%;
+}
+
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-background text-foreground antialiased;
   }
 
   /* RTL (Arabic) layout support — flip directional properties */
