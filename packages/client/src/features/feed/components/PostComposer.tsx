@@ -34,7 +34,7 @@ export function PostComposer({ placeholder, autofocus, onPosted }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-white p-4">
+    <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <AuthorChip
           userId={user?.id}
@@ -49,13 +49,13 @@ export function PostComposer({ placeholder, autofocus, onPosted }: Props) {
         placeholder={placeholder || "Share something with the team..."}
         autoFocus={autofocus}
         rows={3}
-        className="mt-3 w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white"
+        className="mt-3 w-full resize-none rounded-lg border border-border bg-muted px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-card"
       />
       {error && (
-        <div className="mt-2 rounded-lg bg-red-50 p-2 text-xs text-red-700">{error}</div>
+        <div className="mt-2 rounded-lg bg-red-50 dark:bg-red-950/40 p-2 text-xs text-red-700">{error}</div>
       )}
       <div className="mt-3 flex items-center justify-between">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-muted-foreground">
           {content.length > 0 ? `${content.length} characters` : ""}
         </span>
         <button

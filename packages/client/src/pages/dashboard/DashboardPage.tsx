@@ -423,7 +423,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       {hasBaseUrl ? (
-                        <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-foreground hover:text-brand-600 dark:text-brand-400 transition-colors text-left">
+                        <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors text-left">
                           {displayName}
                         </button>
                       ) : (
