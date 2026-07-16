@@ -60,17 +60,17 @@ const moduleIcons: Record<string, any> = {
 };
 
 const moduleColors: Record<string, { bg: string; text: string }> = {
-  "emp-payroll":     { bg: "bg-emerald-50",  text: "text-emerald-600" },
-  "emp-recruit":     { bg: "bg-blue-50",     text: "text-blue-600" },
-  "emp-performance": { bg: "bg-orange-50",   text: "text-orange-600" },
-  "emp-rewards":     { bg: "bg-yellow-50",   text: "text-yellow-600" },
-  "emp-exit":        { bg: "bg-red-50",      text: "text-red-600" },
-  "emp-monitor":     { bg: "bg-purple-50",   text: "text-purple-600" },
-  "emp-field":       { bg: "bg-teal-50",     text: "text-teal-600" },
-  "emp-biometrics":  { bg: "bg-pink-50",     text: "text-pink-600" },
-  "emp-projects":    { bg: "bg-indigo-50",   text: "text-indigo-600" },
-  "emp-lms":         { bg: "bg-cyan-50",     text: "text-cyan-600" },
-  "emp-billing":     { bg: "bg-gray-50",     text: "text-gray-600" },
+  "emp-payroll":     { bg: "bg-emerald-50 dark:bg-emerald-950/40",  text: "text-emerald-600 dark:text-emerald-400" },
+  "emp-recruit":     { bg: "bg-blue-50 dark:bg-blue-950/40",     text: "text-blue-600 dark:text-blue-400" },
+  "emp-performance": { bg: "bg-orange-50 dark:bg-orange-950/40",   text: "text-orange-600 dark:text-orange-400" },
+  "emp-rewards":     { bg: "bg-yellow-50 dark:bg-yellow-950/40",   text: "text-yellow-600 dark:text-yellow-400" },
+  "emp-exit":        { bg: "bg-red-50 dark:bg-red-950/40",      text: "text-red-600 dark:text-red-400" },
+  "emp-monitor":     { bg: "bg-purple-50 dark:bg-purple-950/40",   text: "text-purple-600 dark:text-purple-400" },
+  "emp-field":       { bg: "bg-teal-50 dark:bg-teal-950/40",     text: "text-teal-600 dark:text-teal-400" },
+  "emp-biometrics":  { bg: "bg-pink-50 dark:bg-pink-950/40",     text: "text-pink-600 dark:text-pink-400" },
+  "emp-projects":    { bg: "bg-indigo-50 dark:bg-indigo-950/40",   text: "text-indigo-600 dark:text-indigo-400" },
+  "emp-lms":         { bg: "bg-cyan-50 dark:bg-cyan-950/40",     text: "text-cyan-600 dark:text-cyan-400" },
+  "emp-billing":     { bg: "bg-muted",     text: "text-muted-foreground" },
 };
 
 // ---------------------------------------------------------------------------
@@ -92,11 +92,11 @@ function formatDate(iso: string): string {
 }
 
 const statusColors: Record<string, string> = {
-  paid: "bg-green-50 text-green-700",
-  sent: "bg-blue-50 text-blue-700",
-  overdue: "bg-red-50 text-red-700",
-  draft: "bg-gray-100 text-gray-600",
-  void: "bg-gray-100 text-gray-400",
+  paid: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  sent: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  overdue: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300",
+  draft: "bg-muted text-muted-foreground",
+  void: "bg-muted text-muted-foreground",
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -105,7 +105,7 @@ function StatusBadge({ status }: { status: string }) {
   const display = translatedStatus !== `common.${status}` ? translatedStatus : status;
   return (
     <span
-      className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[status] || "bg-gray-100 text-gray-600"}`}
+      className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${statusColors[status] || "bg-muted text-muted-foreground"}`}
     >
       {display}
     </span>
@@ -147,13 +147,13 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-6 border-b">
+      <div className="bg-card rounded-2xl shadow-xl w-full max-w-md mx-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{t('billing.editModal.title')}</h2>
-            <p className="text-sm text-gray-500">{moduleName}</p>
+            <h2 className="text-lg font-bold text-foreground">{t('billing.editModal.title')}</h2>
+            <p className="text-sm text-muted-foreground">{moduleName}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -161,7 +161,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         <div className="p-6 space-y-5">
           {/* Plan Tier */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">{t('billing.editModal.planTier')}</label>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">{t('billing.editModal.planTier')}</label>
             <div className="grid grid-cols-3 gap-2">
               {plans.map(plan => (
                 <button
@@ -169,8 +169,8 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
                   onClick={() => setPlanTier(plan.value)}
                   className={`py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
                     planTier === plan.value
-                      ? "border-brand-500 bg-brand-50 text-brand-700"
-                      : "border-gray-200 text-gray-600 hover:border-gray-300"
+                      ? "border-brand-500 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                      : "border-border text-muted-foreground hover:border-muted-foreground"
                   }`}
                 >
                   {plan.label}
@@ -181,13 +181,13 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
           {/* Total Seats */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-2">
               <Users className="h-4 w-4" /> {t('billing.editModal.totalSeats')}
             </label>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setTotalSeats(Math.max(1, totalSeats - 1))}
-                className="h-10 w-10 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
+                className="h-10 w-10 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted"
               >
                 -
               </button>
@@ -197,17 +197,17 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
                 max={10000}
                 value={totalSeats}
                 onChange={e => setTotalSeats(Math.max(1, Number(e.target.value)))}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center text-lg font-semibold focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-lg text-center text-lg font-semibold focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
               <button
                 onClick={() => setTotalSeats(totalSeats + 1)}
-                className="h-10 w-10 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
+                className="h-10 w-10 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-muted"
               >
                 +
               </button>
             </div>
             <div className="flex justify-between mt-1">
-              <p className="text-xs text-gray-400">{t('billing.editModal.currentlyUsing', { count: subscription.used_seats })}</p>
+              <p className="text-xs text-muted-foreground">{t('billing.editModal.currentlyUsing', { count: subscription.used_seats })}</p>
               {seatsReduced && (
                 <p className="text-xs text-red-500 font-medium">{t('billing.editModal.cannotReduce', { count: subscription.used_seats })}</p>
               )}
@@ -216,7 +216,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
           {/* Billing Cycle */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-2">
               <Calendar className="h-4 w-4" /> {t('billing.editModal.billingCycle')}
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -226,8 +226,8 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
                   onClick={() => setBillingCycle(cycle.value)}
                   className={`py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
                     billingCycle === cycle.value
-                      ? "border-brand-500 bg-brand-50 text-brand-700"
-                      : "border-gray-200 text-gray-600 hover:border-gray-300"
+                      ? "border-brand-500 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                      : "border-border text-muted-foreground hover:border-muted-foreground"
                   }`}
                 >
                   {cycle.label}
@@ -238,9 +238,9 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
           {/* Change Summary */}
           {hasChanges && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
-              <p className="font-medium text-amber-800 mb-1">{t('billing.editModal.changes')}</p>
-              <ul className="text-amber-700 space-y-0.5">
+            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-lg p-3 text-sm">
+              <p className="font-medium text-amber-800 dark:text-amber-200 mb-1">{t('billing.editModal.changes')}</p>
+              <ul className="text-amber-700 dark:text-amber-300 space-y-0.5">
                 {planTier !== subscription.plan_tier && (
                   <li>{t('billing.editModal.plan')}: <span className="line-through">{subscription.plan_tier}</span> → <span className="font-medium">{planTier}</span></li>
                 )}
@@ -255,8 +255,8 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
           )}
         </div>
 
-        <div className="flex items-center justify-between p-6 border-t bg-gray-50 rounded-b-2xl">
-          <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-700">{t('common.cancel')}</button>
+        <div className="flex items-center justify-between p-6 border-t border-border bg-muted rounded-b-2xl">
+          <button onClick={onClose} className="text-sm text-muted-foreground hover:text-foreground">{t('common.cancel')}</button>
           <button
             onClick={() => onSave(subscription.id, { plan_tier: planTier, total_seats: totalSeats, billing_cycle: billingCycle })}
             disabled={isLoading || !hasChanges || seatsReduced}
@@ -345,14 +345,14 @@ export default function BillingPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t('billing.title')}</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-foreground">{t('billing.title')}</h1>
+        <p className="text-muted-foreground mt-1">
           {t('billing.subtitle')}
         </p>
       </div>
 
       {/* Tab bar */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-border mb-6">
         <nav className="flex gap-6 -mb-px">
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -363,8 +363,8 @@ export default function BillingPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-1 pb-3 text-sm font-medium border-b-2 transition-colors ${
                   isActive
-                    ? "border-brand-600 text-brand-700"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-brand-600 text-brand-700 dark:text-brand-300"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -436,15 +436,15 @@ function SubscriptionsTab() {
   if (isLoading) return (
     <div className="space-y-4">
       {[1, 2].map((i) => (
-        <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+        <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 bg-gray-200 rounded-lg" />
+            <div className="h-10 w-10 bg-muted rounded-lg" />
             <div>
-              <div className="h-4 w-32 bg-gray-200 rounded mb-2" />
-              <div className="h-3 w-20 bg-gray-200 rounded" />
+              <div className="h-4 w-32 bg-muted rounded mb-2" />
+              <div className="h-3 w-20 bg-muted rounded" />
             </div>
           </div>
-          <div className="h-3 w-full bg-gray-200 rounded" />
+          <div className="h-3 w-full bg-muted rounded" />
         </div>
       ))}
     </div>
@@ -471,11 +471,11 @@ function SubscriptionsTab() {
       {/* Cancel confirmation */}
       {cancelConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(null)}>
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">{t('billing.cancelModal.title')}</h3>
-            <p className="text-sm text-gray-500 mb-4">{t('billing.cancelModal.message')}</p>
+          <div className="bg-card rounded-xl shadow-xl p-6 max-w-sm mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-foreground mb-2">{t('billing.cancelModal.title')}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t('billing.cancelModal.message')}</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">{t('billing.cancelModal.keep')}</button>
+              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground">{t('billing.cancelModal.keep')}</button>
               <button
                 onClick={() => handleCancel(cancelConfirm)}
                 disabled={cancelSub.isPending}
@@ -490,46 +490,46 @@ function SubscriptionsTab() {
 
       {/* Monthly cost summary */}
       {billing && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-xl border border-border p-6 mb-6">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="h-5 w-5 text-brand-600" />
-            <h2 className="font-semibold text-gray-900">{t('billing.monthlyCost')}</h2>
+            <TrendingUp className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+            <h2 className="font-semibold text-foreground">{t('billing.monthlyCost')}</h2>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
+          <p className="text-3xl font-bold text-foreground">
             {formatCurrency(billing.total_monthly_cost, billing.currency)}
-            <span className="text-sm font-normal text-gray-500"> {t('billing.perMonth')}</span>
+            <span className="text-sm font-normal text-muted-foreground"> {t('billing.perMonth')}</span>
           </p>
         </div>
       )}
 
       {/* Subscription cards */}
       {(!subscriptions || subscriptions.length === 0) ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <CreditCard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">{t('billing.noSubscriptions')}</p>
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <CreditCard className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+          <p className="text-muted-foreground">{t('billing.noSubscriptions')}</p>
         </div>
       ) : (
         <div className="space-y-4">
           {subscriptions.map((sub: any) => {
             const mod = moduleMap.get(sub.module_id) as any;
             return (
-              <div key={sub.id} className="bg-white rounded-xl border border-gray-200 p-6">
+              <div key={sub.id} className="bg-card rounded-xl border border-border p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${moduleColors[mod?.slug]?.bg || "bg-brand-50"}`}>
-                      {(() => { const Icon = moduleIcons[mod?.slug] || Package; const color = moduleColors[mod?.slug]?.text || "text-brand-600"; return <Icon className={`h-5 w-5 ${color}`} />; })()}
+                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${moduleColors[mod?.slug]?.bg || "bg-brand-50 dark:bg-brand-950/40"}`}>
+                      {(() => { const Icon = moduleIcons[mod?.slug] || Package; const color = moduleColors[mod?.slug]?.text || "text-brand-600 dark:text-brand-400"; return <Icon className={`h-5 w-5 ${color}`} />; })()}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{mod?.name || "Module"}</h3>
-                      <p className="text-xs text-gray-500">{mod?.slug}</p>
+                      <h3 className="font-semibold text-foreground">{mod?.name || "Module"}</h3>
+                      <p className="text-xs text-muted-foreground">{mod?.slug}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      sub.status === "active" ? "bg-green-50 text-green-700" :
-                      sub.status === "trial" ? "bg-yellow-50 text-yellow-700" :
-                      sub.status === "cancelled" ? "bg-gray-100 text-gray-500" :
-                      "bg-red-50 text-red-700"
+                      sub.status === "active" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300" :
+                      sub.status === "trial" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300" :
+                      sub.status === "cancelled" ? "bg-muted text-muted-foreground" :
+                      "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                     }`}>
                       {(() => { const k = `common.${sub.status}`; const tr = t(k); return tr !== k ? tr : sub.status; })()}
                     </span>
@@ -537,14 +537,14 @@ function SubscriptionsTab() {
                       <>
                         <button
                           onClick={() => setEditingSub(sub)}
-                          className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                          className="p-1.5 text-muted-foreground hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded-lg transition-colors"
                           title={t('billing.editTooltip')}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setCancelConfirm(sub.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
                           title={t('billing.cancelTooltip')}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -554,21 +554,21 @@ function SubscriptionsTab() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-100">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-border">
                   <div>
-                    <p className="text-xs text-gray-500">{t('billing.labels.plan')}</p>
-                    <p className="text-sm font-medium text-gray-900 capitalize">{(() => { const k = `plans.${sub.plan_tier?.toLowerCase?.() ?? ""}`; const tr = t(k); return tr !== k ? tr : sub.plan_tier; })()}</p>
+                    <p className="text-xs text-muted-foreground">{t('billing.labels.plan')}</p>
+                    <p className="text-sm font-medium text-foreground capitalize">{(() => { const k = `plans.${sub.plan_tier?.toLowerCase?.() ?? ""}`; const tr = t(k); return tr !== k ? tr : sub.plan_tier; })()}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t('billing.labels.seats')}</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-muted-foreground">{t('billing.labels.seats')}</p>
+                    <p className="text-sm font-medium text-foreground">
                       {sub.used_seats}/{sub.total_seats}
                       {sub.used_seats >= sub.total_seats && (
                         <span className="text-xs text-red-500 ml-1">{t('billing.full')}</span>
                       )}
                     </p>
                     {/* Seat usage bar */}
-                    <div className="w-full bg-gray-100 rounded-full h-1 mt-1">
+                    <div className="w-full bg-muted rounded-full h-1 mt-1">
                       <div
                         className={`h-1 rounded-full ${sub.used_seats >= sub.total_seats ? "bg-red-500" : "bg-brand-500"}`}
                         style={{ width: `${Math.min(100, (sub.used_seats / sub.total_seats) * 100)}%` }}
@@ -576,14 +576,14 @@ function SubscriptionsTab() {
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t('billing.labels.pricePerSeat')}</p>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-xs text-muted-foreground">{t('billing.labels.pricePerSeat')}</p>
+                    <p className="text-sm font-medium text-foreground">
                       {formatCurrency(Number(sub.price_per_seat), sub.currency)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{t('billing.labels.billingCycle')}</p>
-                    <p className="text-sm font-medium text-gray-900 capitalize">{(() => { const k = `billing.cycles.${sub.billing_cycle}`; const tr = t(k); return tr !== k ? tr : sub.billing_cycle; })()}</p>
+                    <p className="text-xs text-muted-foreground">{t('billing.labels.billingCycle')}</p>
+                    <p className="text-sm font-medium text-foreground capitalize">{(() => { const k = `billing.cycles.${sub.billing_cycle}`; const tr = t(k); return tr !== k ? tr : sub.billing_cycle; })()}</p>
                   </div>
                 </div>
               </div>
@@ -607,9 +607,9 @@ function OverviewTab() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
-            <div className="h-3 w-20 bg-gray-200 rounded mb-3" />
-            <div className="h-7 w-24 bg-gray-200 rounded" />
+          <div key={i} className="bg-card rounded-xl border border-border p-5 animate-pulse">
+            <div className="h-3 w-20 bg-muted rounded mb-3" />
+            <div className="h-7 w-24 bg-muted rounded" />
           </div>
         ))}
       </div>
@@ -618,9 +618,9 @@ function OverviewTab() {
 
   if (!summary) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-        <AlertCircle className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">{t('billing.overview.noData')}</p>
+      <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <AlertCircle className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-muted-foreground">{t('billing.overview.noData')}</p>
       </div>
     );
   }
@@ -634,59 +634,59 @@ function OverviewTab() {
 
   const paymentStatusColor =
     paymentStatusKey === "overdue"
-      ? "bg-red-50 text-red-700"
+      ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
       : paymentStatusKey === "pastDue"
-        ? "bg-yellow-50 text-yellow-700"
-        : "bg-green-50 text-green-700";
+        ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+        : "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Outstanding Balance */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center">
-            <AlertCircle className="h-5 w-5 text-red-600" />
+          <div className="h-10 w-10 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           </div>
-          <p className="text-sm text-gray-500">{t('billing.overview.outstandingBalance')}</p>
+          <p className="text-sm text-muted-foreground">{t('billing.overview.outstandingBalance')}</p>
         </div>
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-3xl font-bold text-foreground">
           {formatCurrency(summary.outstandingAmount ?? 0, summary.currency)}
         </p>
       </div>
 
       {/* Next Invoice Date */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-            <Calendar className="h-5 w-5 text-blue-600" />
+          <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+            <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <p className="text-sm text-gray-500">{t('billing.overview.nextInvoiceDate')}</p>
+          <p className="text-sm text-muted-foreground">{t('billing.overview.nextInvoiceDate')}</p>
         </div>
-        <p className="text-2xl font-bold text-gray-900">
+        <p className="text-2xl font-bold text-foreground">
           {summary.nextInvoiceDate ? formatDate(summary.nextInvoiceDate) : "N/A"}
         </p>
       </div>
 
       {/* Monthly Recurring Cost */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center">
-            <DollarSign className="h-5 w-5 text-brand-600" />
+          <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
+            <DollarSign className="h-5 w-5 text-brand-600 dark:text-brand-400" />
           </div>
-          <p className="text-sm text-gray-500">{t('billing.overview.monthlyRecurring')}</p>
+          <p className="text-sm text-muted-foreground">{t('billing.overview.monthlyRecurring')}</p>
         </div>
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-3xl font-bold text-foreground">
           {formatCurrency(summary.monthlyRecurring ?? 0, summary.currency)}
         </p>
       </div>
 
       {/* Payment Status */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-            <CreditCard className="h-5 w-5 text-green-600" />
+          <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+            <CreditCard className="h-5 w-5 text-green-600 dark:text-green-400" />
           </div>
-          <p className="text-sm text-gray-500">{t('billing.overview.paymentStatus')}</p>
+          <p className="text-sm text-muted-foreground">{t('billing.overview.paymentStatus')}</p>
         </div>
         <span className={`text-sm px-3 py-1 rounded-full font-semibold capitalize ${paymentStatusColor}`}>
           {t(`billing.overview.${paymentStatusKey}`)}
@@ -710,30 +710,30 @@ function InvoicesTab() {
   const invoices = invoiceData?.invoices ?? invoiceData?.data ?? [];
   const meta = { page: invoiceData?.page ?? 1, totalPages: invoiceData?.totalPages ?? 1, total: invoiceData?.total ?? 0 };
 
-  if (isLoading) return <div className="text-gray-400">{t('billing.invoices.loading')}</div>;
+  if (isLoading) return <div className="text-muted-foreground">{t('billing.invoices.loading')}</div>;
 
   if (invoices.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-        <Receipt className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">{t('billing.invoices.none')}</p>
+      <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <Receipt className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-muted-foreground">{t('billing.invoices.none')}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="text-left px-4 py-3 font-medium text-gray-500 w-8" />
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.invoices.number')}</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.invoices.date')}</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.invoices.dueDate')}</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-500">{t('billing.invoices.amount')}</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-500">{t('billing.invoices.status')}</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-500" />
+            <tr className="bg-muted border-b border-border">
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground w-8" />
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.invoices.number')}</th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.invoices.date')}</th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.invoices.dueDate')}</th>
+              <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('billing.invoices.amount')}</th>
+              <th className="text-center px-4 py-3 font-medium text-muted-foreground">{t('billing.invoices.status')}</th>
+              <th className="text-right px-4 py-3 font-medium text-muted-foreground" />
             </tr>
           </thead>
           <tbody>
@@ -755,21 +755,21 @@ function InvoicesTab() {
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t('billing.invoices.pagination', { page: meta.page, totalPages: meta.totalPages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+              className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-40"
             >
               {t('billing.invoices.previous')}
             </button>
             <button
               disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+              className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-40"
             >
               {t('billing.invoices.next')}
             </button>
@@ -935,14 +935,14 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
         {loading ? t('billing.invoices.processing') : t('billing.invoices.payNow')}
       </button>
       {showGateways && (
-        <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[160px]">
-          <button onClick={(e) => { e.stopPropagation(); handlePay("stripe"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-t-lg font-medium text-gray-700">
+        <div className="absolute left-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-10 min-w-[160px]">
+          <button onClick={(e) => { e.stopPropagation(); handlePay("stripe"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-muted rounded-t-lg font-medium text-muted-foreground">
             Stripe (Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 font-medium text-gray-700">
+          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-muted font-medium text-muted-foreground">
             Razorpay (UPI/Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 rounded-b-lg font-medium text-gray-700">
+          <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-muted rounded-b-lg font-medium text-muted-foreground">
             PayPal
           </button>
         </div>
@@ -1029,11 +1029,11 @@ function InvoiceRow({
   return (
     <>
       <tr
-        className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+        className="border-b border-border hover:bg-muted transition-colors cursor-pointer"
         onClick={onToggle}
       >
         <td className="px-4 py-3">
-          <span className="text-gray-400">
+          <span className="text-muted-foreground">
             {isExpanded ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
@@ -1041,10 +1041,10 @@ function InvoiceRow({
             )}
           </span>
         </td>
-        <td className="px-4 py-3 font-medium text-brand-600 hover:text-brand-700">{invoice.invoiceNumber}</td>
-        <td className="px-4 py-3 text-gray-600">{formatDate(invoice.issueDate)}</td>
-        <td className="px-4 py-3 text-gray-600">{formatDate(invoice.dueDate)}</td>
-        <td className="px-4 py-3 text-right font-medium text-gray-900">
+        <td className="px-4 py-3 font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300">{invoice.invoiceNumber}</td>
+        <td className="px-4 py-3 text-muted-foreground">{formatDate(invoice.issueDate)}</td>
+        <td className="px-4 py-3 text-muted-foreground">{formatDate(invoice.dueDate)}</td>
+        <td className="px-4 py-3 text-right font-medium text-foreground">
           {formatCurrency(invoiceTotal, invoice.currency)}
         </td>
         <td className="px-4 py-3 text-center">
@@ -1053,7 +1053,7 @@ function InvoiceRow({
         <td className="px-4 py-3 text-right">
           <button
             onClick={handleDownloadPdf}
-            className="inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 font-medium"
+            className="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium"
             title="Download PDF"
           >
             <Download className="h-3.5 w-3.5" />
@@ -1063,42 +1063,42 @@ function InvoiceRow({
       </tr>
       {isExpanded && (
         <tr>
-          <td colSpan={7} className="bg-gray-50 px-6 py-5 border-b border-gray-200">
+          <td colSpan={7} className="bg-muted px-6 py-5 border-b border-border">
             {/* Invoice Detail View */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
               <div>
-                <p className="text-xs text-gray-500 mb-1">Invoice Number</p>
-                <p className="text-sm font-semibold text-gray-900">{invoice.invoiceNumber}</p>
+                <p className="text-xs text-muted-foreground mb-1">Invoice Number</p>
+                <p className="text-sm font-semibold text-foreground">{invoice.invoiceNumber}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Issue Date</p>
-                <p className="text-sm text-gray-900">{formatDate(invoice.issueDate)}</p>
+                <p className="text-xs text-muted-foreground mb-1">Issue Date</p>
+                <p className="text-sm text-foreground">{formatDate(invoice.issueDate)}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Due Date</p>
-                <p className="text-sm text-gray-900">{formatDate(invoice.dueDate)}</p>
+                <p className="text-xs text-muted-foreground mb-1">Due Date</p>
+                <p className="text-sm text-foreground">{formatDate(invoice.dueDate)}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Status</p>
+                <p className="text-xs text-muted-foreground mb-1">Status</p>
                 <StatusBadge status={invoice.status} />
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Currency</p>
-                <p className="text-sm text-gray-900">{invoice.currency || "USD"}</p>
+                <p className="text-xs text-muted-foreground mb-1">Currency</p>
+                <p className="text-sm text-foreground">{invoice.currency || "USD"}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-1">Reference</p>
-                <p className="text-sm text-gray-900">{invoice.referenceNumber || "—"}</p>
+                <p className="text-xs text-muted-foreground mb-1">Reference</p>
+                <p className="text-sm text-foreground">{invoice.referenceNumber || "—"}</p>
               </div>
             </div>
 
             {/* Line Items */}
             {invoice.items?.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs font-medium text-gray-500 mb-2 uppercase">Line Items</p>
+                <p className="text-xs font-medium text-muted-foreground mb-2 uppercase">Line Items</p>
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="text-gray-500 border-b border-gray-200">
+                    <tr className="text-muted-foreground border-b border-border">
                       <th className="text-left pb-2 font-medium">Description</th>
                       <th className="text-right pb-2 font-medium">Qty</th>
                       <th className="text-right pb-2 font-medium">Rate</th>
@@ -1107,11 +1107,11 @@ function InvoiceRow({
                   </thead>
                   <tbody>
                     {invoice.items.map((item: any, idx: number) => (
-                      <tr key={idx} className="border-t border-gray-100">
-                        <td className="py-2 text-gray-700">{item.name || item.description}</td>
-                        <td className="py-2 text-right text-gray-600">{item.quantity}</td>
-                        <td className="py-2 text-right text-gray-600">{formatCurrency(item.rate || item.unitPrice || 0, invoice.currency)}</td>
-                        <td className="py-2 text-right font-medium text-gray-900">
+                      <tr key={idx} className="border-t border-border">
+                        <td className="py-2 text-muted-foreground">{item.name || item.description}</td>
+                        <td className="py-2 text-right text-muted-foreground">{item.quantity}</td>
+                        <td className="py-2 text-right text-muted-foreground">{formatCurrency(item.rate || item.unitPrice || 0, invoice.currency)}</td>
+                        <td className="py-2 text-right font-medium text-foreground">
                           {formatCurrency(item.amount || (item.quantity * (item.rate || item.unitPrice || 0)), invoice.currency)}
                         </td>
                       </tr>
@@ -1122,39 +1122,39 @@ function InvoiceRow({
             )}
 
             {/* Totals */}
-            <div className="border-t border-gray-200 pt-3 space-y-1">
+            <div className="border-t border-border pt-3 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">{formatCurrency(invoice.subtotal ?? invoiceTotal, invoice.currency)}</span>
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-foreground">{formatCurrency(invoice.subtotal ?? invoiceTotal, invoice.currency)}</span>
               </div>
               {invoice.discountAmount > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Discount</span>
-                  <span className="text-green-600">-{formatCurrency(invoice.discountAmount, invoice.currency)}</span>
+                  <span className="text-muted-foreground">Discount</span>
+                  <span className="text-green-600 dark:text-green-400">-{formatCurrency(invoice.discountAmount, invoice.currency)}</span>
                 </div>
               )}
               {invoice.taxAmount > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Tax</span>
-                  <span className="text-gray-900">{formatCurrency(invoice.taxAmount, invoice.currency)}</span>
+                  <span className="text-muted-foreground">Tax</span>
+                  <span className="text-foreground">{formatCurrency(invoice.taxAmount, invoice.currency)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm font-bold border-t border-gray-300 pt-2">
-                <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">{formatCurrency(invoiceTotal, invoice.currency)}</span>
+              <div className="flex justify-between text-sm font-bold border-t border-border pt-2">
+                <span className="text-foreground">Total</span>
+                <span className="text-foreground">{formatCurrency(invoiceTotal, invoice.currency)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Paid</span>
-                <span className="text-green-600">{formatCurrency(amountPaid, invoice.currency)}</span>
+                <span className="text-muted-foreground">Paid</span>
+                <span className="text-green-600 dark:text-green-400">{formatCurrency(amountPaid, invoice.currency)}</span>
               </div>
               <div className="flex justify-between text-sm font-semibold">
-                <span className="text-gray-700">Amount Due</span>
-                <span className={amountDue > 0 ? "text-red-600" : "text-green-600"}>{formatCurrency(amountDue, invoice.currency)}</span>
+                <span className="text-muted-foreground">Amount Due</span>
+                <span className={amountDue > 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>{formatCurrency(amountDue, invoice.currency)}</span>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 mt-4 pt-3 border-t border-gray-200">
+            <div className="flex gap-3 mt-4 pt-3 border-t border-border">
               <button
                 onClick={(e) => { e.stopPropagation(); handleDownloadPdf(e); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-brand-600 text-white rounded-lg hover:bg-brand-700"
@@ -1165,7 +1165,7 @@ function InvoiceRow({
                 <PayNowButton invoiceId={invoice.id} />
               )}
               {invoice.notes && (
-                <div className="text-xs text-gray-500 italic">Note: {invoice.notes}</div>
+                <div className="text-xs text-muted-foreground italic">Note: {invoice.notes}</div>
               )}
             </div>
           </td>
@@ -1188,40 +1188,40 @@ function PaymentsTab() {
   const payments = paymentData?.payments ?? paymentData?.data ?? [];
   const meta = { page: paymentData?.page ?? 1, totalPages: paymentData?.totalPages ?? 1, total: paymentData?.total ?? 0 };
 
-  if (isLoading) return <div className="text-gray-400">{t('billing.payments.loading')}</div>;
+  if (isLoading) return <div className="text-muted-foreground">{t('billing.payments.loading')}</div>;
 
   if (payments.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-        <CreditCard className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">{t('billing.payments.none')}</p>
+      <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <CreditCard className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-muted-foreground">{t('billing.payments.none')}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.date')}</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-500">{t('billing.payments.amount')}</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.method')}</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.reference')}</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-500">{t('billing.payments.invoice')}</th>
+            <tr className="bg-muted border-b border-border">
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.payments.date')}</th>
+              <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t('billing.payments.amount')}</th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.payments.method')}</th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.payments.reference')}</th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t('billing.payments.invoice')}</th>
             </tr>
           </thead>
           <tbody>
             {payments.map((p: any) => (
-              <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-3 text-gray-600">{formatDate(p.date)}</td>
-                <td className="px-4 py-3 text-right font-medium text-gray-900">
+              <tr key={p.id} className="border-b border-border hover:bg-muted transition-colors">
+                <td className="px-4 py-3 text-muted-foreground">{formatDate(p.date)}</td>
+                <td className="px-4 py-3 text-right font-medium text-foreground">
                   {formatCurrency(p.amount, p.currency)}
                 </td>
-                <td className="px-4 py-3 text-gray-600 capitalize">{p.method}</td>
-                <td className="px-4 py-3 text-gray-500 font-mono text-xs">{p.reference}</td>
-                <td className="px-4 py-3 text-gray-500 text-xs">{p.invoiceId || "—"}</td>
+                <td className="px-4 py-3 text-muted-foreground capitalize">{p.method}</td>
+                <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{p.reference}</td>
+                <td className="px-4 py-3 text-muted-foreground text-xs">{p.invoiceId || "—"}</td>
               </tr>
             ))}
           </tbody>
@@ -1230,21 +1230,21 @@ function PaymentsTab() {
 
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t('billing.payments.pagination', { page: meta.page, totalPages: meta.totalPages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+              className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-40"
             >
               {t('billing.invoices.previous')}
             </button>
             <button
               disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+              className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-40"
             >
               {t('billing.invoices.next')}
             </button>
