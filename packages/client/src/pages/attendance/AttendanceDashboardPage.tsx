@@ -279,18 +279,18 @@ export default function AttendanceDashboardPage() {
     color: string;
     category: BreakdownCategory | null;
   }[] = [
-    { label: t('attendance.totalEmployees'), value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", category: "total" },
-    { label: t('attendance.presentToday'), value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", category: "present" },
-    { label: t('attendance.absentToday'), value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 text-red-700", category: "absent" },
-    { label: t('attendance.lateToday'), value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", category: "late" },
-    { label: t('attendance.onLeave'), value: dashboard?.on_leave ?? "-", icon: Clock, color: "bg-purple-50 text-purple-700", category: "on_leave" },
+    { label: t('attendance.totalEmployees'), value: dashboard?.total_employees ?? "-", icon: Users, color: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", category: "total" },
+    { label: t('attendance.presentToday'), value: dashboard?.present ?? "-", icon: UserCheck, color: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300", category: "present" },
+    { label: t('attendance.absentToday'), value: dashboard?.absent ?? "-", icon: UserX, color: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300", category: "absent" },
+    { label: t('attendance.lateToday'), value: dashboard?.late ?? "-", icon: AlertTriangle, color: "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300", category: "late" },
+    { label: t('attendance.onLeave'), value: dashboard?.on_leave ?? "-", icon: Clock, color: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", category: "on_leave" },
   ];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">{t('attendance.dashboardTitle')} <AiBadge label={t('attendance.aiInsights')} /></h1>
-        <p className="text-gray-500 mt-1">{t('attendance.dashboardSubtitle')}</p>
+        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">{t('attendance.dashboardTitle')} <AiBadge label={t('attendance.aiInsights')} /></h1>
+        <p className="text-muted-foreground mt-1">{t('attendance.dashboardSubtitle')}</p>
       </div>
 
       {/* Stats Cards */}
@@ -303,8 +303,8 @@ export default function AttendanceDashboardPage() {
                 <s.icon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{dashLoading ? <span className="inline-block h-7 w-10 bg-gray-200 rounded animate-pulse" /> : s.value}</p>
-                <p className="text-xs text-gray-500">{s.label}</p>
+                <p className="text-2xl font-bold text-foreground">{dashLoading ? <span className="inline-block h-7 w-10 bg-muted rounded animate-pulse" /> : s.value}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
               </div>
             </div>
           );
@@ -313,13 +313,13 @@ export default function AttendanceDashboardPage() {
               key={s.label}
               type="button"
               onClick={() => openBreakdown(s.category!)}
-              className="bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
+              className="bg-card rounded-xl border border-border p-5 text-left hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
               aria-label={s.label}
             >
               {content}
             </button>
           ) : (
-            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
+            <div key={s.label} className="bg-card rounded-xl border border-border p-5">
               {content}
             </div>
           );
@@ -367,10 +367,10 @@ export default function AttendanceDashboardPage() {
         const pageList = filteredList.slice((safePage - 1) * BREAKDOWN_PAGE_SIZE, safePage * BREAKDOWN_PAGE_SIZE);
         const statusLabel = (emp: any) => {
           const s = emp.attendance_status;
-          if (s === "present" || s === "checked_in") return { label: t('attendance.present'), color: "bg-green-50 text-green-700" };
-          if (s === "half_day") return { label: t('attendance.statusHalfDay'), color: "bg-green-50 text-green-700" };
-          if (s === "on_leave") return { label: t('attendance.onLeave'), color: "bg-purple-50 text-purple-700" };
-          return { label: t('attendance.absent'), color: "bg-red-50 text-red-700" };
+          if (s === "present" || s === "checked_in") return { label: t('attendance.present'), color: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300" };
+          if (s === "half_day") return { label: t('attendance.statusHalfDay'), color: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300" };
+          if (s === "on_leave") return { label: t('attendance.onLeave'), color: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" };
+          return { label: t('attendance.absent'), color: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300" };
         };
 
         // Export exactly what's on screen — the current tab + department /
@@ -401,21 +401,21 @@ export default function AttendanceDashboardPage() {
           onClick={() => setBreakdownOpen(null)}
         >
           <div
-            className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col"
+            className="bg-card rounded-xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">{t('attendance.breakdown.title', { date: breakdown?.date ?? breakdownDate })}</h3>
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">{t('attendance.breakdown.title', { date: breakdown?.date ?? breakdownDate })}</h3>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="breakdown-date" className="text-xs font-medium text-gray-500 whitespace-nowrap">{t('attendance.breakdown.dateLabel')}</label>
+                  <label htmlFor="breakdown-date" className="text-xs font-medium text-muted-foreground whitespace-nowrap">{t('attendance.breakdown.dateLabel')}</label>
                   <input
                     id="breakdown-date"
                     type="date"
                     value={breakdownDate}
                     max={todayStr}
                     onChange={(e) => { setBreakdownDate(e.target.value); setBreakdownPage(1); }}
-                    className="px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground px-2.5 py-1.5 border border-border rounded-lg text-sm"
                   />
                 </div>
                 <button
@@ -431,22 +431,22 @@ export default function AttendanceDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setBreakdownOpen(null)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-muted-foreground"
                   aria-label={t('attendance.breakdown.close')}
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
             </div>
-            <div className="px-6 pt-4 border-b border-gray-200">
+            <div className="px-6 pt-4 border-b border-border">
               <div className="flex gap-1 flex-wrap">
                 {(
                   [
-                    { key: "total", label: t('attendance.breakdown.tabAll'), color: "text-blue-700 border-blue-600" },
-                    { key: "present", label: t('attendance.present'), color: "text-green-700 border-green-600" },
-                    { key: "absent", label: t('attendance.absent'), color: "text-red-700 border-red-600" },
-                    { key: "on_leave", label: t('attendance.onLeave'), color: "text-purple-700 border-purple-600" },
-                    { key: "late", label: t('attendance.late'), color: "text-yellow-700 border-yellow-600" },
+                    { key: "total", label: t('attendance.breakdown.tabAll'), color: "text-blue-700 dark:text-blue-300 border-blue-600" },
+                    { key: "present", label: t('attendance.present'), color: "text-green-700 dark:text-green-300 border-green-600" },
+                    { key: "absent", label: t('attendance.absent'), color: "text-red-700 dark:text-red-300 border-red-600" },
+                    { key: "on_leave", label: t('attendance.onLeave'), color: "text-purple-700 dark:text-purple-300 border-purple-600" },
+                    { key: "late", label: t('attendance.late'), color: "text-yellow-700 dark:text-yellow-300 border-yellow-600" },
                   ] as const
                 ).map((tab) => {
                   const count = tab.key === "total"
@@ -459,7 +459,7 @@ export default function AttendanceDashboardPage() {
                       type="button"
                       onClick={() => { setBreakdownOpen(tab.key); setBreakdownPage(1); }}
                       className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
-                        active ? tab.color : "text-gray-500 border-transparent hover:text-gray-700"
+                        active ? tab.color : "text-muted-foreground border-transparent hover:text-foreground"
                       }`}
                     >
                       {tab.label} ({breakdownLoading ? "…" : count})
@@ -468,22 +468,22 @@ export default function AttendanceDashboardPage() {
                 })}
               </div>
             </div>
-            <div className="px-6 py-3 border-b border-gray-200 space-y-2">
+            <div className="px-6 py-3 border-b border-border space-y-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   value={breakdownSearch}
                   onChange={(e) => { setBreakdownSearch(e.target.value); setBreakdownPage(1); }}
                   placeholder={t('attendance.breakdown.searchPlaceholder')}
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
                 <select
                   value={breakdownDept}
                   onChange={(e) => { setBreakdownDept(e.target.value); setBreakdownPage(1); }}
-                  className="flex-1 min-w-[10rem] px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                  className="flex-1 min-w-[10rem] px-3 py-2 border border-border rounded-lg text-sm bg-card"
                   aria-label={t('attendance.department')}
                 >
                   <option value="">{t('attendance.breakdown.allDepartments')}</option>
@@ -494,7 +494,7 @@ export default function AttendanceDashboardPage() {
                 <select
                   value={breakdownLoc}
                   onChange={(e) => { setBreakdownLoc(e.target.value); setBreakdownPage(1); }}
-                  className="flex-1 min-w-[10rem] px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                  className="flex-1 min-w-[10rem] px-3 py-2 border border-border rounded-lg text-sm bg-card"
                   aria-label={t('attendance.location')}
                 >
                   <option value="">{t('attendance.breakdown.allLocations')}</option>
@@ -507,10 +507,10 @@ export default function AttendanceDashboardPage() {
             <div className="overflow-y-auto flex-1 px-6 py-4">
               {breakdownLoading ? (
                 <div className="flex justify-center py-12">
-                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : filteredList.length === 0 ? (
-                <p className="text-center text-sm text-gray-500 py-12">
+                <p className="text-center text-sm text-muted-foreground py-12">
                   {tabList.length === 0
                     ? t('attendance.breakdown.noEmployeesInCategory')
                     : t('attendance.breakdown.noSearchResults')}
@@ -518,7 +518,7 @@ export default function AttendanceDashboardPage() {
               ) : (
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs text-gray-500 uppercase border-b border-gray-200">
+                    <tr className="text-left text-xs text-muted-foreground uppercase border-b border-border">
                       <th className="py-2 font-medium">{t('common.name')}</th>
                       <th className="py-2 font-medium">{t('attendance.department')}</th>
                       <th className="py-2 font-medium whitespace-nowrap">{t('attendance.checkIn')}</th>
@@ -530,20 +530,20 @@ export default function AttendanceDashboardPage() {
                     {pageList.map((emp: any) => {
                       const s = breakdownOpen === "total" ? statusLabel(emp) : null;
                       return (
-                        <tr key={emp.id} className="border-b border-gray-100 last:border-0">
+                        <tr key={emp.id} className="border-b border-border last:border-0">
                           <td className="py-3">
-                            <div className="font-medium text-gray-900">{emp.first_name} {emp.last_name}</div>
-                            <div className="text-xs text-gray-500">{emp.email}</div>
+                            <div className="font-medium text-foreground">{emp.first_name} {emp.last_name}</div>
+                            <div className="text-xs text-muted-foreground">{emp.email}</div>
                           </td>
-                          <td className="py-3 text-gray-700">{emp.department || "—"}</td>
-                          <td className="py-3 text-gray-700">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                          <td className="py-3 text-muted-foreground">{emp.department || "—"}</td>
+                          <td className="py-3 text-muted-foreground">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
                           {breakdownOpen === "total" && s && (
                             <td className="py-3">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${s.color}`}>{s.label}</span>
                             </td>
                           )}
                           {breakdownOpen === "late" && (
-                            <td className="py-3 text-yellow-700 font-medium">{emp.late_minutes} {t('attendance.breakdown.minSuffix')}</td>
+                            <td className="py-3 text-yellow-700 dark:text-yellow-300 font-medium">{emp.late_minutes} {t('attendance.breakdown.minSuffix')}</td>
                           )}
                         </tr>
                       );
@@ -555,20 +555,20 @@ export default function AttendanceDashboardPage() {
             {/* Pagination footer — always shown when there are results so the
                 control is visibly part of the modal even for a single page. */}
             {!breakdownLoading && filteredList.length > 0 && (
-              <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-                <p className="text-sm text-gray-500">{t('attendance.pagination', { page: safePage, totalPages, total: filteredList.length })}</p>
+              <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+                <p className="text-sm text-muted-foreground">{t('attendance.pagination', { page: safePage, totalPages, total: filteredList.length })}</p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setBreakdownPage(Math.max(1, safePage - 1))}
                     disabled={safePage === 1}
-                    className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                    className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
                   >
                     {t('attendance.previous')}
                   </button>
                   <button
                     onClick={() => setBreakdownPage(Math.min(totalPages, safePage + 1))}
                     disabled={safePage >= totalPages}
-                    className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                    className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
                   >
                     {t('attendance.next')}
                   </button>
@@ -584,33 +584,33 @@ export default function AttendanceDashboardPage() {
       <div className="flex gap-3 mb-6">
         <Link
           to="/attendance/regularizations"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
         >
-          <ClipboardCheck className="h-4 w-4 text-amber-600" />
+          <ClipboardCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           {t('attendance.regularizationRequests')}
         </Link>
         <Link
           to="/attendance/shifts"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
         >
-          <SlidersHorizontal className="h-4 w-4 text-brand-600" />
+          <SlidersHorizontal className="h-4 w-4 text-brand-600 dark:text-brand-400" />
           {t('attendance.shiftManagement')}
         </Link>
       </div>
 
       {/* Date & Department Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-xl border border-border p-4 mb-6">
         <div className="flex items-center gap-2 mb-3">
-          <Filter className="h-4 w-4 text-gray-500" />
-          <h3 className="text-sm font-semibold text-gray-700">{t('attendance.filters')}</h3>
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold text-muted-foreground">{t('attendance.filters')}</h3>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.month')}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">{t('attendance.month')}</label>
             <select
               value={month}
               onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
             >
               {months.map((m) => (
                 <option key={m.value} value={m.value}>{m.label}</option>
@@ -618,11 +618,11 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.year')}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">{t('attendance.year')}</label>
             <select
               value={year}
               onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
             >
               {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => (
                 <option key={y} value={y}>{y}</option>
@@ -630,11 +630,11 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.department')}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">{t('attendance.department')}</label>
             <select
               value={departmentId ?? ""}
               onChange={(e) => { setDepartmentId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
             >
               <option value="">{t('attendance.allDepartments')}</option>
               {departments.map((d: any) => (
@@ -643,11 +643,11 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Location</label>
             <select
               value={locationId ?? ""}
               onChange={(e) => { setLocationId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
             >
               <option value="">All locations</option>
               {locations.map((l: any) => (
@@ -656,11 +656,11 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Role</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Role</label>
             <select
               value={roleFilter}
               onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
             >
               <option value="">All roles</option>
               {ROLE_OPTIONS.map((r) => (
@@ -669,17 +669,17 @@ export default function AttendanceDashboardPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Search employee</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">Search employee</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Name, email, code"
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-52"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm w-52"
             />
           </div>
-          <div className="border-l border-gray-200 pl-3">
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.dateFrom')} &mdash; {t('attendance.dateTo')}</label>
+          <div className="border-l border-border pl-3">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">{t('attendance.dateFrom')} &mdash; {t('attendance.dateTo')}</label>
             {/* Single composite control replaces the legacy from + to pair.
                 Apply still drives `appliedDateFrom` / `appliedDateTo` so the
                 server contract is unchanged. */}
@@ -706,7 +706,7 @@ export default function AttendanceDashboardPage() {
           </div>
           <button
             onClick={handleClearFilters}
-            className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-3 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
           >
             {t('attendance.clearFilters')}
           </button>
@@ -731,45 +731,45 @@ export default function AttendanceDashboardPage() {
       {/* Export Modal */}
       {showExport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
-                  <Download className="h-5 w-5 text-green-600" />
+                <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+                  <Download className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{t('attendance.export.title')}</h3>
-                  <p className="text-xs text-gray-400">{t('attendance.export.subtitle')}</p>
+                  <h3 className="text-lg font-semibold text-foreground">{t('attendance.export.title')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('attendance.export.subtitle')}</p>
                 </div>
               </div>
-              <button onClick={() => setShowExport(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+              <button onClick={() => setShowExport(false)} className="text-muted-foreground hover:text-muted-foreground"><X className="h-5 w-5" /></button>
             </div>
 
             <div className="px-6 py-5 space-y-5">
               {/* Report Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('attendance.export.reportType')}</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">{t('attendance.export.reportType')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setExportType("detailed")}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "detailed" ? "border-brand-600 bg-brand-50" : "border-gray-200 hover:border-gray-300"}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "detailed" ? "border-brand-600 bg-brand-50 dark:bg-brand-950/40" : "border-border hover:border-border"}`}
                   >
-                    <FileSpreadsheet className={`h-5 w-5 ${exportType === "detailed" ? "text-brand-600" : "text-gray-400"}`} />
+                    <FileSpreadsheet className={`h-5 w-5 ${exportType === "detailed" ? "text-brand-600 dark:text-brand-400" : "text-muted-foreground"}`} />
                     <div className="text-left">
-                      <p className="text-sm font-medium text-gray-900">{t('attendance.export.detailed')}</p>
-                      <p className="text-xs text-gray-400">{t('attendance.export.detailedDesc')}</p>
+                      <p className="text-sm font-medium text-foreground">{t('attendance.export.detailed')}</p>
+                      <p className="text-xs text-muted-foreground">{t('attendance.export.detailedDesc')}</p>
                     </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setExportType("consolidated")}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "consolidated" ? "border-brand-600 bg-brand-50" : "border-gray-200 hover:border-gray-300"}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "consolidated" ? "border-brand-600 bg-brand-50 dark:bg-brand-950/40" : "border-border hover:border-border"}`}
                   >
-                    <BarChart3 className={`h-5 w-5 ${exportType === "consolidated" ? "text-brand-600" : "text-gray-400"}`} />
+                    <BarChart3 className={`h-5 w-5 ${exportType === "consolidated" ? "text-brand-600 dark:text-brand-400" : "text-muted-foreground"}`} />
                     <div className="text-left">
-                      <p className="text-sm font-medium text-gray-900">{t('attendance.export.consolidated')}</p>
-                      <p className="text-xs text-gray-400">{t('attendance.export.consolidatedDesc')}</p>
+                      <p className="text-sm font-medium text-foreground">{t('attendance.export.consolidated')}</p>
+                      <p className="text-xs text-muted-foreground">{t('attendance.export.consolidatedDesc')}</p>
                     </div>
                   </button>
                 </div>
@@ -779,26 +779,26 @@ export default function AttendanceDashboardPage() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <label className="flex items-center gap-2 text-sm">
-                    <input type="radio" checked={!exportUseRange} onChange={() => setExportUseRange(false)} className="text-brand-600" />
+                    <input type="radio" checked={!exportUseRange} onChange={() => setExportUseRange(false)} className="text-brand-600 dark:text-brand-400" />
                     {t('attendance.export.monthYear')}
                   </label>
                   <label className="flex items-center gap-2 text-sm">
-                    <input type="radio" checked={exportUseRange} onChange={() => setExportUseRange(true)} className="text-brand-600" />
+                    <input type="radio" checked={exportUseRange} onChange={() => setExportUseRange(true)} className="text-brand-600 dark:text-brand-400" />
                     {t('attendance.export.customRange')}
                   </label>
                 </div>
                 {!exportUseRange ? (
                   <div className="grid grid-cols-2 gap-3">
-                    <select value={exportMonth} onChange={(e) => setExportMonth(Number(e.target.value))} className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <select value={exportMonth} onChange={(e) => setExportMonth(Number(e.target.value))} className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm">
                       {months.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
                     </select>
-                    <select value={exportYear} onChange={(e) => setExportYear(Number(e.target.value))} className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <select value={exportYear} onChange={(e) => setExportYear(Number(e.target.value))} className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm">
                       {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">{t('attendance.export.from')} &mdash; {t('attendance.export.to')}</label>
+                    <label className="block text-xs text-muted-foreground mb-1">{t('attendance.export.from')} &mdash; {t('attendance.export.to')}</label>
                     {/* Same composite control as the dashboard filter so the
                         export flow feels consistent. allowEmpty so users can
                         wipe the picked range without picking a new one. */}
@@ -818,23 +818,23 @@ export default function AttendanceDashboardPage() {
               {/* Filters */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">{t('attendance.department')}</label>
-                  <select value={exportDept} onChange={(e) => setExportDept(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">{t('attendance.department')}</label>
+                  <select value={exportDept} onChange={(e) => setExportDept(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm">
                     <option value="">{t('attendance.allDepartments')}</option>
                     {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
-                  <select value={exportLoc} onChange={(e) => setExportLoc(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Location</label>
+                  <select value={exportLoc} onChange={(e) => setExportLoc(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm">
                     <option value="">All locations</option>
                     {locations.map((l: any) => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
                 </div>
                 {exportType === "detailed" && (
                   <div className="col-span-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">{t('common.status')}</label>
-                    <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">{t('common.status')}</label>
+                    <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm">
                       <option value="">{t('attendance.export.allStatuses')}</option>
                       <option value="present">{t('attendance.present')}</option>
                       <option value="checked_in">{t('attendance.statusCheckedIn')}</option>
@@ -847,18 +847,18 @@ export default function AttendanceDashboardPage() {
               </div>
 
               {/* What's included */}
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs font-medium text-gray-500 mb-1">{t('attendance.export.includes')}</p>
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-xs font-medium text-muted-foreground mb-1">{t('attendance.export.includes')}</p>
                 {exportType === "detailed" ? (
-                  <p className="text-xs text-gray-400">{t('attendance.export.includesDetailed')}</p>
+                  <p className="text-xs text-muted-foreground">{t('attendance.export.includesDetailed')}</p>
                 ) : (
-                  <p className="text-xs text-gray-400">{t('attendance.export.includesConsolidated')}</p>
+                  <p className="text-xs text-muted-foreground">{t('attendance.export.includesConsolidated')}</p>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">{t('attendance.export.cancel')}</button>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted rounded-b-2xl">
+              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted">{t('attendance.export.cancel')}</button>
               <button
                 onClick={handleExport}
                 disabled={exporting || (exportUseRange && !exportDateFrom)}
@@ -872,48 +872,48 @@ export default function AttendanceDashboardPage() {
       )}
 
       {/* Attendance Records Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">
             {t('attendance.recordsTitle', { month: months.find((m) => m.value === month)?.label, year })}
             {departmentId ? ` ${t('attendance.filteredSuffix')}` : ""}
           </h2>
         </div>
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
               <th className="px-3 py-3 w-10"></th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.name')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.department')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.date')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkIn')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkOut')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('common.status')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('attendance.late')}</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">Details</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('common.name')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.department')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('common.date')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkIn')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkOut')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('common.status')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.late')}</th>
+              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">Details</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {recLoading ? (
               <>
                 {[1, 2, 3, 4].map((i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-3 py-4"><div className="h-4 w-4 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-28 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-10 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-6 bg-gray-200 rounded ml-auto" /></td>
+                    <td className="px-3 py-4"><div className="h-4 w-4 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-28 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-12 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-10 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-6 bg-muted rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={10} className="px-6 py-8 text-center text-gray-400">{t('attendance.noRecords')}</td></tr>
+              <tr><td colSpan={10} className="px-6 py-8 text-center text-muted-foreground">{t('attendance.noRecords')}</td></tr>
             ) : (
               records.map((r: any) => (
                 <RecordRow key={r.id} record={r} t={t} onView={() => setDetailRecord(r)} />
@@ -923,11 +923,11 @@ export default function AttendanceDashboardPage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">{t('attendance.previous')}</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">{t('attendance.next')}</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t('attendance.previous')}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t('attendance.next')}</button>
             </div>
           </div>
         )}
@@ -961,10 +961,10 @@ interface PunchRow {
 }
 
 function sourceMeta(source: string): { label: string; Icon: typeof Fingerprint; cls: string } {
-  if (source === "biometric") return { label: "Biometric", Icon: Fingerprint, cls: "bg-purple-50 text-purple-700" };
-  if (source === "app") return { label: "Mobile app", Icon: Smartphone, cls: "bg-blue-50 text-blue-700" };
-  if (source === "dashboard") return { label: "Web", Icon: Monitor, cls: "bg-emerald-50 text-emerald-700" };
-  return { label: source || "Manual", Icon: Monitor, cls: "bg-gray-100 text-gray-700" };
+  if (source === "biometric") return { label: "Biometric", Icon: Fingerprint, cls: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" };
+  if (source === "app") return { label: "Mobile app", Icon: Smartphone, cls: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" };
+  if (source === "dashboard") return { label: "Web", Icon: Monitor, cls: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300" };
+  return { label: source || "Manual", Icon: Monitor, cls: "bg-muted text-muted-foreground" };
 }
 
 function fmtPunchTime(iso: string): string {
@@ -987,12 +987,12 @@ function RecordRow({
   const [expanded, setExpanded] = useState(false);
   return (
     <>
-    <tr className="hover:bg-gray-50">
+    <tr className="hover:bg-muted">
       <td className="px-3 py-4 w-10">
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="inline-flex items-center justify-center p-1.5 rounded text-gray-500 hover:bg-gray-100"
+          className="inline-flex items-center justify-center p-1.5 rounded text-muted-foreground hover:bg-muted"
           aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
           title={expanded ? "Hide timeline" : "Show timeline"}
           aria-expanded={expanded}
@@ -1002,20 +1002,20 @@ function RecordRow({
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+          <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300">
             {r.first_name?.[0]}{r.last_name?.[0]}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
-            <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
+            <p className="text-sm font-medium text-foreground">{r.first_name} {r.last_name}</p>
+            <p className="text-xs text-muted-foreground">{r.emp_code || r.email}</p>
           </div>
         </div>
       </td>
-      <td className="px-6 py-4 text-sm text-gray-600">{r.department_name || "-"}</td>
-      <td className="px-6 py-4 text-sm text-gray-600">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
-      <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
-      <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
-      <td className="px-6 py-4 text-sm text-gray-600">
+      <td className="px-6 py-4 text-sm text-muted-foreground">{r.department_name || "-"}</td>
+      <td className="px-6 py-4 text-sm text-muted-foreground">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
+      <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+      <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+      <td className="px-6 py-4 text-sm text-muted-foreground">
         {(() => {
           // #1949 — `worked_minutes` is only filled at check-out, so for
           // rows still on the clock we'd otherwise show 0. Derive a live
@@ -1030,7 +1030,7 @@ function RecordRow({
             const ageMinutes = (Date.now() - checkInTime) / 60000;
             if (ageMinutes > ACTIVE_HOURS * 60) {
               return (
-                <span className="inline-flex items-center gap-1 text-amber-700">
+                <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-300">
                   <AlertTriangle className="h-3.5 w-3.5" />
                   Missed check-out
                 </span>
@@ -1040,7 +1040,7 @@ function RecordRow({
             return (
               <span className="inline-flex items-center gap-1">
                 {`${Math.floor(live / 60)}h ${live % 60}m`}
-                <span className="text-[10px] text-gray-400">(so far)</span>
+                <span className="text-[10px] text-muted-foreground">(so far)</span>
               </span>
             );
           }
@@ -1063,11 +1063,11 @@ function RecordRow({
           const leaveSuffix = r.leave_type_code || r.leave_type_name;
           return (
             <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-              effStatus === "present" ? "bg-green-50 text-green-700"
-                : effStatus === "checked_in" ? "bg-brand-50 text-brand-700"
-                : effStatus === "half_day" ? "bg-yellow-50 text-yellow-700"
-                : effStatus === "on_leave" ? "bg-blue-50 text-blue-700"
-                : "bg-red-50 text-red-700"
+              effStatus === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                : effStatus === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                : effStatus === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+                : effStatus === "on_leave" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+                : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
             }`}>
               {(() => {
                 if (isHalfLeavePresent) {
@@ -1099,14 +1099,14 @@ function RecordRow({
           );
         })()}
       </td>
-      <td className="px-6 py-4 text-sm text-gray-600">
+      <td className="px-6 py-4 text-sm text-muted-foreground">
         {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
       </td>
       <td className="px-6 py-4 text-right">
         <button
           type="button"
           onClick={onView}
-          className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
+          className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40"
           aria-label="View attendance details"
           title="View details"
         >
@@ -1127,16 +1127,16 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
     staleTime: 60_000,
   });
   return (
-    <tr className="bg-gray-50">
+    <tr className="bg-muted">
       <td colSpan={colSpan} className="px-6 py-4">
         {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
           </div>
         ) : isError ? (
-          <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+          <p className="text-sm text-red-600 dark:text-red-400">Could not load timeline for this record.</p>
         ) : !data?.punches?.length ? (
-          <p className="text-sm text-gray-500">No punch history for this day.</p>
+          <p className="text-sm text-muted-foreground">No punch history for this day.</p>
         ) : (
           <ol className="space-y-2">
             {(data.punches as PunchRow[]).map((p, idx, arr) => {
@@ -1144,15 +1144,15 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
               const isLast = idx === arr.length - 1 && arr.length > 1;
               const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
               const labelCls = isFirst
-                ? "bg-green-100 text-green-800"
+                ? "bg-green-100 dark:bg-green-950/40 text-green-800"
                 : isLast
-                ? "bg-rose-100 text-rose-800"
-                : "bg-gray-200 text-gray-700";
+                ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800"
+                : "bg-muted text-muted-foreground";
               const meta = sourceMeta(p.source);
               const Icon = meta.Icon;
               return (
                 <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
-                  <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                  <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
                     {label}
                   </span>
@@ -1160,13 +1160,13 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
                     <Icon className="w-3 h-3" /> {meta.label}
                   </span>
                   {p.latitude != null && p.longitude != null && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
                     </span>
                   )}
                   {p.device_identifier && (
-                    <span className="text-xs text-gray-500" title="Device identifier">
-                      <span className="text-gray-400">via</span> {p.device_identifier}
+                    <span className="text-xs text-muted-foreground" title="Device identifier">
+                      <span className="text-muted-foreground">via</span> {p.device_identifier}
                     </span>
                   )}
                 </li>
@@ -1220,11 +1220,11 @@ function AttendanceDetailModal({
     return base;
   })();
   const statusCls =
-    r.status === "present" ? "bg-green-50 text-green-700"
-      : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-      : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-      : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-      : "bg-red-50 text-red-700";
+    r.status === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+      : r.status === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+      : r.status === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+      : r.status === "on_leave" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+      : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300";
 
   return (
     <div
@@ -1232,13 +1232,13 @@ function AttendanceDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Attendance details</h3>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <h3 className="text-lg font-semibold text-foreground">Attendance details</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
               {r.first_name} {r.last_name}
               {r.emp_code ? ` · ${r.emp_code}` : ""}
               {r.date ? ` · ${new Date(r.date).toLocaleDateString()}` : ""}
@@ -1247,7 +1247,7 @@ function AttendanceDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1 rounded"
+            className="text-muted-foreground hover:text-muted-foreground p-1 rounded"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -1258,31 +1258,31 @@ function AttendanceDetailModal({
           {/* Top summary grid — same data as the row but laid out for reading */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
             <div>
-              <p className="text-xs uppercase text-gray-400">{t('attendance.department')}</p>
-              <p className="text-gray-800 mt-0.5">{r.department_name || "-"}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t('attendance.department')}</p>
+              <p className="text-foreground mt-0.5">{r.department_name || "-"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t('attendance.checkIn')}</p>
-              <p className="text-gray-800 mt-0.5">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t('attendance.checkIn')}</p>
+              <p className="text-foreground mt-0.5">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t('attendance.checkOut')}</p>
-              <p className="text-gray-800 mt-0.5">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t('attendance.checkOut')}</p>
+              <p className="text-foreground mt-0.5">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t('attendance.tableWorked')}</p>
-              <p className="text-gray-800 mt-0.5">
+              <p className="text-xs uppercase text-muted-foreground">{t('attendance.tableWorked')}</p>
+              <p className="text-foreground mt-0.5">
                 {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t('attendance.late')}</p>
-              <p className="text-gray-800 mt-0.5">
+              <p className="text-xs uppercase text-muted-foreground">{t('attendance.late')}</p>
+              <p className="text-foreground mt-0.5">
                 {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t('common.status')}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t('common.status')}</p>
               <p className="mt-0.5">
                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCls}`}>{statusLabel}</span>
               </p>
@@ -1291,15 +1291,15 @@ function AttendanceDetailModal({
 
           {/* Timeline */}
           <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-3">Punch timeline</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase mb-3">Punch timeline</p>
             {isLoading ? (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
               </div>
             ) : isError ? (
-              <p className="text-sm text-red-600">Could not load timeline for this record.</p>
+              <p className="text-sm text-red-600 dark:text-red-400">Could not load timeline for this record.</p>
             ) : !data?.punches?.length ? (
-              <p className="text-sm text-gray-500">No punch history for this day.</p>
+              <p className="text-sm text-muted-foreground">No punch history for this day.</p>
             ) : (
               <ol className="space-y-2">
                 {(data.punches as PunchRow[]).map((p, idx, arr) => {
@@ -1307,15 +1307,15 @@ function AttendanceDetailModal({
                   const isLast = idx === arr.length - 1 && arr.length > 1;
                   const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
                   const labelCls = isFirst
-                    ? "bg-green-100 text-green-800"
+                    ? "bg-green-100 dark:bg-green-950/40 text-green-800"
                     : isLast
-                    ? "bg-rose-100 text-rose-800"
-                    : "bg-gray-200 text-gray-700";
+                    ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800"
+                    : "bg-muted text-muted-foreground";
                   const meta = sourceMeta(p.source);
                   const Icon = meta.Icon;
                   return (
                     <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
-                      <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                      <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
                         {label}
                       </span>
@@ -1323,13 +1323,13 @@ function AttendanceDetailModal({
                         <Icon className="w-3 h-3" /> {meta.label}
                       </span>
                       {p.latitude != null && p.longitude != null && (
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                           {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
                         </span>
                       )}
                       {p.device_identifier && (
-                        <span className="text-xs text-gray-500" title="Device identifier">
-                          <span className="text-gray-400">via</span> {p.device_identifier}
+                        <span className="text-xs text-muted-foreground" title="Device identifier">
+                          <span className="text-muted-foreground">via</span> {p.device_identifier}
                         </span>
                       )}
                     </li>
@@ -1340,11 +1340,11 @@ function AttendanceDetailModal({
           </div>
         </div>
 
-        <div className="px-6 py-3 border-t border-gray-200 flex justify-end">
+        <div className="px-6 py-3 border-t border-border flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted"
           >
             Close
           </button>

@@ -62,11 +62,11 @@ export default function VacanciesPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
+          <p className="text-muted-foreground mt-1">
             {tx("subtitle")}
             {vacancies.length > 0 && (
-              <span className="ml-2 text-brand-600 font-medium">
+              <span className="ml-2 text-brand-600 dark:text-brand-400 font-medium">
                 {tx("positionsWithOpenings", { count: vacancies.length })}
               </span>
             )}
@@ -76,33 +76,33 @@ export default function VacanciesPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-400">{tx("loading")}</div>
+          <div className="text-muted-foreground">{tx("loading")}</div>
         </div>
       ) : vacancies.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <Briefcase className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-gray-900">{tx("noVacanciesTitle")}</h3>
-          <p className="text-sm text-gray-500 mt-1">{tx("noVacanciesSubtitle")}</p>
+        <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <Briefcase className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-foreground">{tx("noVacanciesTitle")}</h3>
+          <p className="text-sm text-muted-foreground mt-1">{tx("noVacanciesSubtitle")}</p>
         </div>
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([dept, positions]) => (
             <div key={dept}>
-              <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">{dept}</h2>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{dept}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {positions.map((pos: any) => (
                   <div
                     key={pos.id}
-                    className="bg-white rounded-xl border border-gray-200 p-5 hover:border-brand-300 hover:shadow-sm transition-all group"
+                    className="bg-card rounded-xl border border-border p-5 hover:border-brand-300 hover:shadow-sm transition-all group"
                   >
                     <Link to={`/positions/${pos.id}`} className="block">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="text-sm font-semibold text-gray-900 group-hover:text-brand-600">
+                          <h3 className="text-sm font-semibold text-foreground group-hover:text-brand-600">
                             {pos.title}
                           </h3>
                           {pos.code ? (
-                            <span className="text-xs font-mono text-gray-400">{pos.code}</span>
+                            <span className="text-xs font-mono text-muted-foreground">{pos.code}</span>
                           ) : null}
                         </div>
                         {pos.is_critical && (
@@ -110,7 +110,7 @@ export default function VacanciesPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
                         <span className="capitalize">{(pos.employment_type || "").replace("_", " ")}</span>
                         {pos.location_name && (
                           <span className="flex items-center gap-1">
@@ -121,12 +121,12 @@ export default function VacanciesPage() {
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-lg font-bold text-amber-600">{pos.open_count}</span>
-                          <span className="text-xs text-gray-500 ml-1">
+                          <span className="text-lg font-bold text-amber-600 dark:text-amber-400">{pos.open_count}</span>
+                          <span className="text-xs text-muted-foreground ml-1">
                             {tx("openings", { count: pos.open_count })}
                           </span>
                         </div>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                           {tx("filledRatio", { filled: pos.headcount_filled, budget: pos.headcount_budget })}
                         </span>
                       </div>
@@ -135,7 +135,7 @@ export default function VacanciesPage() {
                           so when both salaries are 0/null React doesn't print
                           a stray "0" instead of skipping the block. */}
                       {pos.min_salary || pos.max_salary ? (
-                        <div className="mt-2 text-xs text-gray-400">
+                        <div className="mt-2 text-xs text-muted-foreground">
                           {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
                         </div>
                       ) : null}
@@ -154,7 +154,7 @@ export default function VacanciesPage() {
                         setPending({ id: pos.id, title: pos.title });
                       }}
                       disabled={markFilledMutation.isPending}
-                      className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-green-600 hover:text-green-700 disabled:opacity-50"
+                      className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 hover:text-green-700 disabled:opacity-50"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {markFilledMutation.isPending && markFilledMutation.variables === pos.id
